@@ -131,9 +131,9 @@ public class ConsignmentVisit_FR  extends Fragment implements OnClickListener
 			//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
 			
 			if(Global.lastOrdID.isEmpty())
-				Global.lastOrdID = generator.getNextID(myPref.getLastOrdID());
+				Global.lastOrdID = generator.getNextID();
 			else
-				Global.lastOrdID = generator.getNextID(Global.lastOrdID);
+				Global.lastOrdID = generator.getNextID();
 			
 //			if (Global.lastOrdID.isEmpty()&&ordersHandler.getDBSize() == 0)
 //				Global.lastOrdID = generator.generate("",0);
@@ -161,7 +161,7 @@ public class ConsignmentVisit_FR  extends Fragment implements OnClickListener
 //			else if(!myPref.getLastConsTransID().isEmpty())
 //				consTransID = myPref.getLastConsTransID();
 			//myPref.setLastConsTransID(generator.getNextID(myPref.getLastConsTransID()));
-			consTransID = generator.getNextID(myPref.getLastConsTransID());
+			consTransID = generator.getNextID();
 			
 			
 			//consTransID = generator.generate(consTransID, 3);

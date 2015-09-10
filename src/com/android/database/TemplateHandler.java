@@ -204,7 +204,7 @@ public class TemplateHandler {
 		GenerateNewID generator = new GenerateNewID(activity);
 		StringBuilder sb = new StringBuilder();
 		
-		Global.lastOrdID = generator.getNextID(myPref.getLastOrdID());
+		Global.lastOrdID = generator.getNextID();
 		
 		/*sb.append("SELECT ord_id,ord_timecreated,ord_total,ord_subtotal,ord_discount,ord_taxamount, (ord_subtotal+ord_taxamount-ord_discount) AS 'gran_total',tipAmount FROM Orders WHERE ord_id = '");
 		sb.append(ordID).append("'");*/

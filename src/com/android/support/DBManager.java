@@ -45,7 +45,7 @@ public class DBManager {
 		this.DBHelper = new DatabaseHelper(this.activity);
 		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
 			_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null, SQLiteDatabase.OPEN_READWRITE);
-		exportDBFile();
+		//exportDBFile();
 	}
 
 	public DBManager(Activity activ, int type) {
@@ -55,7 +55,7 @@ public class DBManager {
 		myPref = new MyPreferences(activity);
 		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
 			_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null, SQLiteDatabase.OPEN_READWRITE);
-		exportDBFile();
+		//exportDBFile();
 	}
 
 	private void exportDBFile() {
