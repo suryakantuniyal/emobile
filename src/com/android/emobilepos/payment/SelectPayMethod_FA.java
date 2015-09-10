@@ -130,7 +130,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		
 		paymentHandlerDB = new PaymentsHandler(this);
 		GenerateNewID generator = new GenerateNewID(this);
-		pay_id = generator.getNextID(myPref.getLastPayID());
+		pay_id = generator.getNextID();
 		
 
 
@@ -925,7 +925,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				GenerateNewID generator = new GenerateNewID(this);
 				previous_pay_id = pay_id;
 				//pay_id = generator.generate(pay_id,1);
-				pay_id = generator.getNextID(pay_id);
+				pay_id = generator.getNextID();
 				String temp = Global.formatDoubleStrToCurrency("0.00");
 				
 				if(isFromMainMenu||extras.getBoolean("histinvoices"))
@@ -1104,7 +1104,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 //				tempPay_id = generator.generate("",1);
 //			else
 //				tempPay_id = generator.generate(paymentHandlerDB.getLastPayID(),1);
-			tempPay_id = generator.getNextID(myPref.getLastPayID());
+			tempPay_id = generator.getNextID();
 			
 			loyaltyRewardPayment.pay_id = tempPay_id;
 			

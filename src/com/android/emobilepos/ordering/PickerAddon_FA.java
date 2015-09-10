@@ -344,7 +344,7 @@ public class PickerAddon_FA  extends FragmentActivity  implements OnClickListene
 				
 				GenerateNewID generator = new GenerateNewID(activity);
 				//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-				Global.lastOrdID = generator.getNextID(myPref.getLastOrdID());
+				Global.lastOrdID = generator.getNextID();
 //				if (handler.getDBSize() == 0)
 //					Global.lastOrdID = generator.generate("", 0);
 //				else

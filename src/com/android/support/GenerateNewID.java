@@ -16,11 +16,11 @@ public class GenerateNewID {
 		myPref = new MyPreferences(activity);
 	}
 
-	public String getNextID(String lastID) {
+	public String getNextID() {
 		StringBuilder sb = new StringBuilder();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy", Locale.getDefault());
 		String year = sdf.format(new Date());
-		String lastOrderId = OrdersHandler.getLastOrderId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+		String lastID = OrdersHandler.getLastOrderId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
 		if (lastID == null)
 			lastID = "";
 

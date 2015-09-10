@@ -140,7 +140,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener
 //				consTransID = cih.getLastConsTransID();
 //			else if(!myPref.getLastConsTransID().isEmpty())
 //				consTransID = myPref.getLastConsTransID();
-			consTransID = generator.getNextID(myPref.getLastConsTransID());
+			consTransID = generator.getNextID();
 			
 			//consTransID = generator.generate(consTransID, 3);
 			signatureData.put("ConsTrans_ID", consTransID);

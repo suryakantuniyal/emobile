@@ -443,7 +443,7 @@ public class PaymentsHandler {
 		//myPref.setLastPayID(idGenerator.getNextID(myPref.getLastPayID()));
 		
 		
-		payment.pay_id = idGenerator.getNextID(myPref.getLastPayID());
+		payment.pay_id = idGenerator.getNextID();
 		payment.pay_type = "1";
 		payment.isVoid = "1";
 		payment.pay_issync = "0";

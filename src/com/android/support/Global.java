@@ -1440,7 +1440,7 @@ public class Global extends Application {
 
 		if(!Global.isFromOnHold&&Global.lastOrdID.isEmpty())
 		{
-			Global.lastOrdID = generator.getNextID(myPref.getLastOrdID());
+			Global.lastOrdID = generator.getNextID();
 		}
 		
 		ord.ord_id = Global.lastOrdID;
