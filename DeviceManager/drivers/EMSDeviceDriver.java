@@ -156,6 +156,8 @@ public class EMSDeviceDriver {
 		} else if (this instanceof EMSOneil4te) {
 			if (device != null && device.getIsOpen())
 				device.close();
+		} else if (this instanceof EMSPowaPOS) {
+			powaPOS.dispose();
 		}
 	}
 
@@ -565,12 +567,12 @@ public class EMSDeviceDriver {
 			if (!receiptSignature.isEmpty()) {
 				encodedSignature = receiptSignature;
 				this.printImage(1);
-				print(enableCenter); // center
+				//print(enableCenter); // center
 				sb.setLength(0);
 				sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
 				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
 				print(sb.toString(), FORMAT);
-				print(disableCenter); // disable
+				//print(disableCenter); // disable
 										// center
 			}
 
