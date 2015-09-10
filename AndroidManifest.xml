@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.emobilepos.app"
-    android:versionCode="93"
+    android:versionCode="94"
     android:versionName="1.0.79" >
 
     <uses-sdk
