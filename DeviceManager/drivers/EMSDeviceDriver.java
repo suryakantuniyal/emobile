@@ -834,7 +834,7 @@ public class EMSDeviceDriver {
 				}
 
 			} else if (this instanceof EMSPowaPOS) {
-				powaPOS.printImage(scaleDown(myBitmap, 300, false));
+				//powaPOS.printImage(scaleDown(myBitmap, 300, false));
 				powaPOS.printImage(myBitmap);
 			} else if (this instanceof EMSsnbc) {
 				int PrinterWidth = 640;

@@ -24,6 +24,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -133,12 +134,14 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
+						Looper.prepare();
 						powaPOS = new PowaPOS(EMSPowaPOS.this.activity, peripheralCallback);
 						PowaTSeries mcu = new PowaTSeries(EMSPowaPOS.this.activity);
 						powaPOS.addPeripheral(mcu);
 						PowaS10Scanner scanner = new PowaS10Scanner(EMSPowaPOS.this.activity);
 						powaPOS.addPeripheral(scanner);
 						myProgressDialog.dismiss();
+						Looper.loop();
 					}
 				}).start();
 
