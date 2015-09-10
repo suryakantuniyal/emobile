@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/bg_white_page">
+        
+    
+        <TextView
+        android:id="@+id/HeaderTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/consignment_title"
+        android:textSize="@dimen/header_bar_text_size"
+        android:textAppearance="@style/white_text_appearance"
+        style="@style/text_shadow"/>
+    
+    <ListView
+        android:id="@+id/consignmentListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+         android:divider="@color/listview_divider"
+       	android:dividerHeight="0.1dp"
+        android:padding="10dp">
+    </ListView>
+
+</LinearLayout>

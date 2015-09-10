@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:background="@drawable/bg_white_page">
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:gravity="center_horizontal">
+
+    <Button
+        android:id="@+id/btnReportDaySummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:padding="25dp"
+        android:layout_marginTop="10dp"
+        android:textSize="@dimen/sales_tab_lv_text_size"
+        android:textAppearance="@style/white_text_appearance"
+        android:background="@drawable/blue_btn_selector"
+        android:text="@string/report_but_title" />
+
+    <Button
+        android:id="@+id/btnReportPerShift"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:padding="25dp"
+        android:textSize="@dimen/sales_tab_lv_text_size"
+        android:textAppearance="@style/white_text_appearance"
+        android:background="@drawable/blue_btn_selector"
+        android:text="@string/report_per_shift" />
+
+		<Button
+        android:id="@+id/btnEndOfDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:padding="25dp"
+        android:textSize="@dimen/sales_tab_lv_text_size"
+        android:textAppearance="@style/white_text_appearance"
+        android:background="@drawable/blue_btn_selector"
+        android:visibility="gone"
+        android:text="End of day" />
+	
+</LinearLayout>
+</ScrollView>
