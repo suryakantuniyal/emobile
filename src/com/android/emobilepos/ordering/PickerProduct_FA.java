@@ -1087,7 +1087,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 		if(!Global.isFromOnHold&&Global.lastOrdID.isEmpty())
 		{
 			//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-			Global.lastOrdID = generator.getNextID(myPref.getLastOrdID());
+			Global.lastOrdID = generator.getNextID();
 //			if (handler.getDBSize() == 0)
 //				Global.lastOrdID = generator.generate("",0);
 //			else

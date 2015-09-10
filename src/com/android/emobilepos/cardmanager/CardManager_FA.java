@@ -414,7 +414,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack,OnCl
 //				tempPay_id = generator.generate(paymentHandlerDB.getLastPayID(),1);
 			
 			
-			tempPay_id = generator.getNextID(myPref.getLastPayID());
+			tempPay_id = generator.getNextID();
 			payment.pay_id = tempPay_id;
 			
 

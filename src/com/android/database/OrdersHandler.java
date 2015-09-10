@@ -417,12 +417,14 @@ public class OrdersHandler {
 	public static String getLastOrderId(int deviceId, int year) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select max(ord_id) from ").append(table_name)
-				.append(" WHERE ord_id like '" + deviceId + "-%-" + year + "'");
+				.append(" WHERE ord_id like '").append(deviceId).append("-%-").append(year).append("'");
 
 		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
 		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
 		cursor.moveToFirst();
 		String max = cursor.getString(0);
+		cursor.close();
+		stmt.close();
 		return max;
 	}
 

@@ -421,7 +421,7 @@ public class ViewStoreForwardTrans_FA extends FragmentActivity implements OnItem
 		GenerateNewID generator = new GenerateNewID(this);
 		MyPreferences myPref = new MyPreferences(this);
 		
-		newPayment.pay_id =generator.getNextID(myPref.getLastPayID());
+		newPayment.pay_id =generator.getNextID();
 		
 		newPayment.emp_id = myCursor.getString(myCursor.getColumnIndex("emp_id"));
 		
