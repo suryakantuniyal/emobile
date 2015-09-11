@@ -107,7 +107,11 @@ public class EMSDeviceDriver {
 	protected void addTotalLines(Context context, Order anOrder, List<Orders> orders, StringBuilder sb, int lineWidth) {
 		itemDiscTotal = 0;
 		for (Orders order : orders) {
-			itemDiscTotal += Double.parseDouble(order.getItemDiscount());
+			try {
+				itemDiscTotal += Double.parseDouble(order.getItemDiscount());
+			} catch (NumberFormatException e) {
+				itemDiscTotal = 0;
+			}
 		}
 		saveAmount = itemDiscTotal + Double.parseDouble(anOrder.ord_discount);
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_subtotal),
@@ -156,7 +160,7 @@ public class EMSDeviceDriver {
 		} else if (this instanceof EMSOneil4te) {
 			if (device != null && device.getIsOpen())
 				device.close();
-		} 
+		}
 	}
 
 	protected void print(String str) {
@@ -492,7 +496,7 @@ public class EMSDeviceDriver {
 						Global.formatDoubleToCurrency(0.00), lineWidth, 0));
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
 						Global.formatDoubleToCurrency(0.00), lineWidth, 0));
-;
+				;
 			} else {
 				tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
 				String _pay_type = payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
@@ -550,10 +554,10 @@ public class EMSDeviceDriver {
 							Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
 							.append("\n\n");
 				}
-				
+
 			}
 			print(sb.toString(), FORMAT);
-		
+
 			print(textHandler.newLines(2), FORMAT);
 			if (type != 1)
 				printYouSave(String.valueOf(saveAmount), lineWidth);
@@ -565,13 +569,13 @@ public class EMSDeviceDriver {
 			if (!receiptSignature.isEmpty()) {
 				encodedSignature = receiptSignature;
 				this.printImage(1);
-				//print(enableCenter); // center
+				// print(enableCenter); // center
 				sb.setLength(0);
 				sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
 				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
 				print(sb.toString(), FORMAT);
-				//print(disableCenter); // disable
-										// center
+				// print(disableCenter); // disable
+				// center
 			}
 
 			if (isFromHistory) {
@@ -590,7 +594,7 @@ public class EMSDeviceDriver {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			
+
 			releasePrinter();
 		}
 
@@ -737,7 +741,7 @@ public class EMSDeviceDriver {
 				}
 
 			} else if (this instanceof EMSPowaPOS) {
-				//powaPOS.printImage(scaleDown(myBitmap, 300, false));
+				// powaPOS.printImage(scaleDown(myBitmap, 300, false));
 				powaPOS.printImage(myBitmap);
 			} else if (this instanceof EMSsnbc) {
 				int PrinterWidth = 640;
@@ -783,7 +787,7 @@ public class EMSDeviceDriver {
 		if (!sb.toString().isEmpty()) {
 			sb.append(textHandler.newLines(2));
 			print(sb.toString());
-		
+
 		}
 	}
 
@@ -794,10 +798,10 @@ public class EMSDeviceDriver {
 		print(textHandler.ivuLines(lineWidth), FORMAT);
 		sb.setLength(0);
 		sb.append(textHandler.newLines(2));
-		
+
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_youSave),
 				Global.formatDoubleStrToCurrency(saveAmount), lineWidth, 0));
-		
+
 		sb.append(textHandler.newLines(2));
 		print(sb.toString());
 		print(textHandler.ivuLines(lineWidth), FORMAT);
