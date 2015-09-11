@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -654,7 +656,13 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
 				if (!global.orderProducts.get(i).isReturned)
 					discountableAmount = discountableAmount.add(prodPrice);
-				itemsDiscountTotal += (Double.parseDouble(global.orderProducts.get(i).discount_value));
+				try {
+					if (global.orderProducts.get(i).discount_value != null
+							&& !global.orderProducts.get(i).discount_value.isEmpty())
+						itemsDiscountTotal += (Double.parseDouble(global.orderProducts.get(i).discount_value));
+				} catch (NumberFormatException e) {
+
+				}
 				amount = amount.add(prodPrice);
 				// amount = amount.add(new
 				// BigDecimal(global.orderProducts.get(i).item));
@@ -669,7 +677,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 				itemCount.setText(Integer.toString(size));
 
 			discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
-//			discountable_sub_total = discountable_sub_total.subtract(new BigDecimal(itemsDiscountTotal));
+			// discountable_sub_total = discountable_sub_total.subtract(new
+			// BigDecimal(itemsDiscountTotal));
 			sub_total = amount.subtract(Global.rewardChargeAmount);
 			subTotal.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(sub_total)));
 
@@ -678,7 +687,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 			globalDiscount.setText(Global.getCurrencyFrmt(discount_amount.toString()));
 			globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount)));
 
-			gran_total = sub_total.subtract(discount_amount).add(tax_amount).subtract(new BigDecimal(itemsDiscountTotal));
+			gran_total = sub_total.subtract(discount_amount).add(tax_amount)
+					.subtract(new BigDecimal(itemsDiscountTotal));
 			// gran_total =
 			// discountable_sub_total.subtract(discount_amount).add(tax_amount);
 			OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),

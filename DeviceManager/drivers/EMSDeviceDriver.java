@@ -585,9 +585,7 @@ public class EMSDeviceDriver {
 				print(textHandler.newLines(4));
 			}
 
-			if (isPOSPrinter) {
-				print(new byte[] { 0x1b, 0x64, 0x02 }); // Cut
-			}
+			cutPaper();
 		} catch (StarIOPortException e) {
 
 		} catch (JAException e) {
@@ -598,6 +596,21 @@ public class EMSDeviceDriver {
 			releasePrinter();
 		}
 
+	}
+
+	public void cutPaper() {
+		if (this instanceof EMSsnbc) {
+			// ******************************************************************************************
+			// print in page mode
+			int error_code = pos_sdk.pageModePrint();
+
+			error_code = pos_sdk.systemCutPaper(66, 0);
+
+			// *****************************************************************************************
+			// clear buffer in page mode
+			error_code = pos_sdk.pageModeClearBuffer();
+		} else if (isPOSPrinter)
+			print(new byte[] { 0x1b, 0x64, 0x02 }); // Cut
 	}
 
 	private void CopyArray(byte[] srcArray, Byte[] cpyArray) {
