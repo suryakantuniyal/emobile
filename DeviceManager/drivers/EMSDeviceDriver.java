@@ -156,9 +156,7 @@ public class EMSDeviceDriver {
 		} else if (this instanceof EMSOneil4te) {
 			if (device != null && device.getIsOpen())
 				device.close();
-		} else if (this instanceof EMSPowaPOS) {
-			powaPOS.dispose();
-		}
+		} 
 	}
 
 	protected void print(String str) {
