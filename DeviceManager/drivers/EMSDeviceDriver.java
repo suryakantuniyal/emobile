@@ -49,8 +49,8 @@ import android.graphics.Color;
 import android.util.Base64;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
-import drivers.mpop.Communication;
-import drivers.mpop.PrinterFunctions;
+import drivers.star.utils.Communication;
+import drivers.star.utils.PrinterFunctions;
 
 public class EMSDeviceDriver {
 	protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();

@@ -27,9 +27,9 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Base64;
-import drivers.mpop.CommandDataList;
-import drivers.mpop.Communication;
-import drivers.mpop.PrinterFunctions;
+import drivers.star.utils.CommandDataList;
+import drivers.star.utils.Communication;
+import drivers.star.utils.PrinterFunctions;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
