@@ -480,20 +480,17 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			}
 		}
 
-		if(myPref.isET1(true, false)||myPref.isMC40(true, false))
-			{
-				ourIntentAction = getString(R.string.intentAction3);
-				Intent i = getIntent();
-				handleDecodeData(i);
-				cardSwipe.setChecked(true);
-			}
-			else if(myPref.isSam4s(true, false)||myPref.isPAT100(true, false))
-			{
-				cardSwipe.setChecked(true);
-				_msrUsbSams = new EMSIDTechUSB(activity,callBack);
-				if(_msrUsbSams.OpenDevice())
-					_msrUsbSams.StartReadingThread();
-			}
+		if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
+			ourIntentAction = getString(R.string.intentAction3);
+			Intent i = getIntent();
+			handleDecodeData(i);
+			cardSwipe.setChecked(true);
+		} else if (myPref.isSam4s(true, false) || myPref.isPAT100(true, false)) {
+			cardSwipe.setChecked(true);
+			_msrUsbSams = new EMSIDTechUSB(activity, callBack);
+			if (_msrUsbSams.OpenDevice())
+				_msrUsbSams.StartReadingThread();
+		}
 	}
 
 	private void populateCardInfo() {
@@ -1924,7 +1921,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		year.setText(formatedYear);
 		ownersName.setText(cardInfoManager.getCardOwnerName());
 		cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
-
+		
 		creditCardType = cardInfoManager.getCardType();
 		scrollView.fullScroll(ScrollView.FOCUS_UP);
 	}

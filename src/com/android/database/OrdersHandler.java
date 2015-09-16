@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.android.emobilepos.models.Order;
+import com.android.support.Customer;
 import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -322,6 +323,72 @@ public class OrdersHandler {
 		return exists;
 	}
 
+	public Order getOrder(String orderId) // Will populate all unsynchronized orders
+	// for XML post
+	{
+		StringBuilder sb = new StringBuilder();
+		
+			sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
+					.append(" WHERE ord_id = '").append(orderId).append("'");
+		// sb.append("SELECT o.*, Count(p.pay_id) AS 'pay_count' FROM
+		// ").append(table_name).append(" o LEFT JOIN Payments p ");
+		// sb.append("ON p.job_id = o.ord_id AND p.pay_issync = '1' WHERE
+		// o.ord_issync = '0' AND o.processed != '0' AND o.is_stored_fwd = '0'
+		// GROUP BY o.ord_id ");
+		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Order order = new Order(this.activity);
+		if(cursor.moveToFirst()){
+		
+			order.ord_HoldName=cursor.getString(cursor.getColumnIndex("ord_HoldName"));
+			order.ord_id=cursor.getString(cursor.getColumnIndex("ord_id"));
+			order.qbord_id= cursor.getString(cursor.getColumnIndex("qbord_id"));
+			order.emp_id = cursor.getString(cursor.getColumnIndex("emp_id"));
+			order.cust_id=cursor.getString(cursor.getColumnIndex("cust_id"));
+			order.clerk_id=cursor.getString(cursor.getColumnIndex("clerk_id"));
+			order.c_email=cursor.getString(cursor.getColumnIndex("c_email"));
+			order.ord_signature=cursor.getString(cursor.getColumnIndex("ord_signature"));
+			order.ord_po=cursor.getString(cursor.getColumnIndex("ord_po"));
+			order.total_lines=cursor.getString(cursor.getColumnIndex("total_lines"));
+			order.total_lines_pay=cursor.getString(cursor.getColumnIndex("total_lines_pay"));
+			order.ord_total=cursor.getString(cursor.getColumnIndex("ord_total"));
+			order.ord_comment=cursor.getString(cursor.getColumnIndex("ord_comment"));
+			order.ord_delivery=cursor.getString(cursor.getColumnIndex("ord_delivery"));
+			order.ord_timecreated=cursor.getString(cursor.getColumnIndex("ord_timecreated"));
+			order.ord_timesync=cursor.getString(cursor.getColumnIndex("ord_timesync"));
+			order.qb_synctime=cursor.getString(cursor.getColumnIndex("qb_synctime"));
+			order.emailed=cursor.getString(cursor.getColumnIndex("emailed"));
+			order.processed=cursor.getString(cursor.getColumnIndex("processed"));
+			order.ord_type=cursor.getString(cursor.getColumnIndex("ord_type"));
+			order.ord_claimnumber=cursor.getString(cursor.getColumnIndex("ord_claimnumber"));
+			order.ord_rganumber=cursor.getString(cursor.getColumnIndex("ord_rganumber"));
+			order.ord_returns_pu=cursor.getString(cursor.getColumnIndex("ord_returns_pu"));
+			order.ord_inventory=cursor.getString(cursor.getColumnIndex("ord_inventory"));
+			order.ord_issync=cursor.getString(cursor.getColumnIndex("ord_issync"));
+			order.tax_id=cursor.getString(cursor.getColumnIndex("tax_id"));
+			order.ord_shipvia=cursor.getString(cursor.getColumnIndex("ord_shipvia"));
+			order.ord_shipto=cursor.getString(cursor.getColumnIndex("ord_shipto"));
+			order.ord_terms=cursor.getString(cursor.getColumnIndex("ord_terms"));
+			order.ord_custmsg=cursor.getString(cursor.getColumnIndex("ord_custmsg"));
+			order.ord_class=cursor.getString(cursor.getColumnIndex("ord_class"));
+			order.ord_subtotal=cursor.getString(cursor.getColumnIndex("ord_subtotal"));
+			order.ord_taxamount=cursor.getString(cursor.getColumnIndex("ord_taxamount"));
+			order.ord_discount=cursor.getString(cursor.getColumnIndex("ord_discount"));
+			order.ord_discount_id=cursor.getString(cursor.getColumnIndex("ord_discount_id"));
+			order.ord_latitude=cursor.getString(cursor.getColumnIndex("ord_latitude"));
+			order.ord_longitude=cursor.getString(cursor.getColumnIndex("ord_longitude"));
+			order.tipAmount=cursor.getString(cursor.getColumnIndex("tipAmount"));
+			order.VAT=Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1") ? true : false);
+
+			
+			CustomersHandler custHandler = new CustomersHandler(this.activity);
+			Customer customer = custHandler.getCustomer(order.cust_id);
+			order.customer = customer;
+	
+		}
+		cursor.close();
+		return order;
+	}
+
 	public Cursor getUnsyncOrders() // Will populate all unsynchronized orders
 									// for XML post
 	{
@@ -416,8 +483,8 @@ public class OrdersHandler {
 
 	public static String getLastOrderId(int deviceId, int year) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("select max(ord_id) from ").append(table_name)
-				.append(" WHERE ord_id like '").append(deviceId).append("-%-").append(year).append("'");
+		sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(deviceId)
+				.append("-%-").append(year).append("'");
 
 		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
 		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);

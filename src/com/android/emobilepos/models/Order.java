@@ -1,5 +1,6 @@
 package com.android.emobilepos.models;
 
+import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -58,6 +59,7 @@ public class Order {
 	public String gran_total = emp;
 	public String cust_name = emp;
 	public String sync_id = emp;
+	public Customer customer;
 	
 
 	//private Global global;

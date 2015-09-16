@@ -27,6 +27,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.emobilepos.app.R;
 import com.idtechproducts.unimagsdk.tasks.GetReaderTypeTask;
 import com.starmicronics.stario.StarIOPortException;
@@ -1185,7 +1186,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 								StringBuilder sb = new StringBuilder();
 								for (int i = 0; i < firstTrack.length; i++)
 									sb.append(firstTrack[i].trim()).append(" ");
-
+								
 								cardManager.setCardOwnerName(sb.toString());
 								if (cardNumber.length() > 1) {
 									int temp = cardNumber.length();
@@ -1193,6 +1194,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 									cardManager.setCardLast4(last4Digits);
 
 									cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(cardNumber));
+									cardManager.setCardType(ProcessCreditCard_FA.cardType(cardNumber));
+									
 									if (!Global.isEncryptSwipe)
 										cardManager.setCardNumUnencrypted(cardNumber);
 									// if(Global.isEncryptSwipe)

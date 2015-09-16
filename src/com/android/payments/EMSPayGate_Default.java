@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.xmlpull.v1.XmlSerializer;
 
 import com.android.database.CustomersHandler;
+import com.android.database.OrdersHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.support.CreditCardInfo;
@@ -123,7 +124,7 @@ public class EMSPayGate_Default {
 				serializer.endTag(empstr, "wToken");
 				generateERP();
 				generateAmountBlock();
-
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 
@@ -132,7 +133,7 @@ public class EMSPayGate_Default {
 			case ReturnGeniusAction:
 				generateERP();
 				generateAmountBlock();
-
+				generateOrderBlock(payment.job_id);
 				generateContactInfoBlock(payment.cust_id);
 
 				if (Global.isIvuLoto)
@@ -155,7 +156,7 @@ public class EMSPayGate_Default {
 			case ActivateRewardAction:
 			case ReverseCreditCardAction:
 				generateCardBlock(data, isSwipe);
-
+				
 				if (isSwipe)
 					generateTrackData();
 
@@ -164,7 +165,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-
+				generateOrderBlock(payment.job_id);
 				generateContactInfoBlock(payment.cust_id);
 
 				if (isSwipe)
@@ -207,6 +208,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
+				generateOrderBlock(payment.job_id);
 				//generateOrderBlock();
 				generateContactInfoBlock(payment.cust_id);
 
@@ -228,6 +230,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
+				generateOrderBlock(payment.job_id);
 				generateContactInfoBlock(payment.cust_id);
 				generateVoidBlock();
 
@@ -240,6 +243,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
+				generateOrderBlock(payment.job_id);
 				generateContactInfoBlock(payment.cust_id);
 
 				serializer.endTag(empstr, "epay");
@@ -262,6 +266,7 @@ public class EMSPayGate_Default {
 			case GetTelcoInfoByTag:
 				generateERP();
 				generateAmountBlock();
+				generateOrderBlock(payment.job_id);
 				generateBoloroBlock();
 
 				serializer.endTag(empstr, "epay");
@@ -270,6 +275,7 @@ public class EMSPayGate_Default {
 			case ProcessBoloroCheckout:
 				generateERP();
 				generateAmountBlock();
+				generateOrderBlock(payment.job_id);
 				generateContactInfoBlock(payment.cust_id);
 				generateBoloroBlock();
 
@@ -295,9 +301,11 @@ public class EMSPayGate_Default {
 		return test;
 	}
 
-	public void generateOrderBlock() {
+	public void generateOrderBlock(String orderId) {
 		try {
-			GenerateXML.buildOrder(serializer, false, new Order(this.activity));
+			OrdersHandler handler = new OrdersHandler(this.activity);
+			GenerateXML xmlGen = new GenerateXML(this.activity);
+			xmlGen.buildOrder(serializer, false, handler.getOrder(orderId));
 		} catch (IllegalArgumentException | IllegalStateException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
