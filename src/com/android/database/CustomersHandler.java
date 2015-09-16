@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.emobilepos.models.Address;
 import com.android.support.Customer;
 import com.android.support.DBManager;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -20,38 +21,38 @@ import android.database.sqlite.SQLiteStatement;
 
 
 public class CustomersHandler {
-	private final String cust_id = "cust_id";
-	private final String cust_id_ref = "cust_id_ref";
-	private final String qb_sync = "qb_sync";
-	private final String zone_id = "zone_id";
-	private final String CompanyName = "CompanyName";
-	private final String Salutation = "Salutation";
-	private final String cust_contact = "cust_contact";
-	private final String cust_name = "cust_name";
-	private final String cust_chain = "cust_chain";
-	private final String cust_balance = "cust_balance";
-	private final String cust_limit = "cust_limit";
-	private final String cust_firstName = "cust_firstName";
-	private final String cust_middleName = "cust_middleName";
-	private final String cust_lastName = "cust_lastName";
-	private final String cust_phone = "cust_phone";
-	private final String cust_email = "cust_email";
-	private final String cust_fax = "cust_fax";
-	private final String cust_update = "cust_update";
-	private final String isactive = "isactive";
-	private final String cust_ordertype = "cust_ordertype";
-	private final String cust_taxable = "cust_taxable";
-	private final String cust_salestaxcode = "cust_salestaxcode";
-	private final String pricelevel_id = "pricelevel_id";
-	private final String cust_terms = "cust_terms";
-	private final String cust_pwd = "cust_pwd";
-	private final String cust_securityquestion = "cust_securityquestion";
-	private final String cust_securityanswer = "cust_securityanswer";
-	private final String cust_points = "cust_points";
-	private final String custidkey = "custidkey";
-	private final String cust_id_numeric = "cust_id_numeric";
-	private final String cust_dob = "cust_dob";
-	private final String AccountNumnber = "AccountNumnber";
+	private static final String cust_id = "cust_id";
+	private static  final String cust_id_ref = "cust_id_ref";
+	private static  final String qb_sync = "qb_sync";
+	private static  final String zone_id = "zone_id";
+	private static  final String CompanyName = "CompanyName";
+	private static  final String Salutation = "Salutation";
+	private static  final String cust_contact = "cust_contact";
+	private static  final String cust_name = "cust_name";
+	private static  final String cust_chain = "cust_chain";
+	private static  final String cust_balance = "cust_balance";
+	private static  final String cust_limit = "cust_limit";
+	private static  final String cust_firstName = "cust_firstName";
+	private  static final String cust_middleName = "cust_middleName";
+	private static  final String cust_lastName = "cust_lastName";
+	private static  final String cust_phone = "cust_phone";
+	private static  final String cust_email = "cust_email";
+	private static  final String cust_fax = "cust_fax";
+	private static  final String cust_update = "cust_update";
+	private static  final String isactive = "isactive";
+	private static  final String cust_ordertype = "cust_ordertype";
+	private static  final String cust_taxable = "cust_taxable";
+	private static  final String cust_salestaxcode = "cust_salestaxcode";
+	private static  final String pricelevel_id = "pricelevel_id";
+	private static  final String cust_terms = "cust_terms";
+	private static  final String cust_pwd = "cust_pwd";
+	private static  final String cust_securityquestion = "cust_securityquestion";
+	private static  final String cust_securityanswer = "cust_securityanswer";
+	private  static final String cust_points = "cust_points";
+	private static  final String custidkey = "custidkey";
+	private static  final String cust_id_numeric = "cust_id_numeric";
+	private static  final String cust_dob = "cust_dob";
+	private static  final String AccountNumnber = "AccountNumnber";
 
 	private static final String table_name = "Customers";
 
@@ -571,6 +572,48 @@ public class CustomersHandler {
 		return mapValues;
 	}
 	
+	public  Customer getCustomer(String customerId){
+	
+		Customer customer = new Customer();
+		customer.shippingAddress=new Address();
+		customer.billingAddress=new Address();
+		if(customerId!=null&&!customerId.isEmpty())
+		{
+			//SQLiteDatabase db = dbManager.openReadableDB();
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append("SELECT c.cust_firstName,c.cust_lastName,b.addr_b_str1,b.addr_b_str2,b.addr_b_str3,b.addr_b_city,b.addr_b_state,b.addr_b_country,");
+			sb.append("b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode ");
+			sb.append("FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?");
+			
+			
+			Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{customerId});
+			
+			if(cursor.moveToFirst())
+			{
+				customer.cust_firstName= cursor.getString(cursor.getColumnIndex(cust_firstName));
+				customer.cust_lastName=cursor.getString(cursor.getColumnIndex(cust_lastName));
+				customer.billingAddress.addr_b_str1=cursor.getString(cursor.getColumnIndex("addr_b_str1"));
+				customer.billingAddress.addr_b_str2=cursor.getString(cursor.getColumnIndex("addr_b_str2"));
+				customer.billingAddress.addr_b_str3=cursor.getString(cursor.getColumnIndex("addr_b_str3"));
+				customer.billingAddress.addr_b_city=cursor.getString(cursor.getColumnIndex("addr_b_city"));
+				customer.billingAddress.addr_b_state= cursor.getString(cursor.getColumnIndex("addr_b_state"));
+				customer.billingAddress.addr_b_country=cursor.getString(cursor.getColumnIndex("addr_b_country"));
+				customer.billingAddress.addr_b_zipcode= cursor.getString(cursor.getColumnIndex("addr_b_zipcode"));
+				customer.shippingAddress.addr_s_str1= cursor.getString(cursor.getColumnIndex("addr_s_str1"));
+				customer.shippingAddress.addr_s_str2= cursor.getString(cursor.getColumnIndex("addr_s_str2"));
+				customer.shippingAddress.addr_s_str3= cursor.getString(cursor.getColumnIndex("addr_s_str3"));
+				customer.shippingAddress.addr_s_city= cursor.getString(cursor.getColumnIndex("addr_s_city"));
+				customer.shippingAddress.addr_s_state= cursor.getString(cursor.getColumnIndex("addr_s_state"));
+				customer.shippingAddress.addr_s_country= cursor.getString(cursor.getColumnIndex("addr_s_country"));
+				customer.shippingAddress.addr_s_zipcode= cursor.getString(cursor.getColumnIndex("addr_s_zipcode"));
+			}
+			
+			cursor.close();
+			//db.close();
+		}
+		return customer;
+	}
 	
 	
 	public String[] getContactInfoBlock(String custID)

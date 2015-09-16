@@ -1,5 +1,6 @@
 package com.android.support;
 
+import com.android.emobilepos.models.Address;
 
 public class Customer 
 {
@@ -34,4 +35,6 @@ public class Customer
 	public String cust_securityanswer = empStr;
 	public String cust_points = empStr;
 	public String cust_dob = empStr;
+	public Address shippingAddress;
+	public Address billingAddress;
 }

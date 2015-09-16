@@ -2,6 +2,7 @@ package com.android.support;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.android.database.TimeClockHandler;
 import com.android.database.TransferInventory_DB;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
@@ -33,6 +35,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import android.net.Uri;
+import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
 
@@ -41,7 +45,7 @@ public class GenerateXML {
 	private MyPreferences info;
 	private StringBuilder ending = new StringBuilder();
 	private Activity thisActivity;
-	private String empstr = "";
+	private static String empstr = "";
 	private DBManager dbManager;
 	private MyPreferences myPref;
 
@@ -773,6 +777,177 @@ public class GenerateXML {
 		// myDB.close();
 	}
 
+	public void buildOrder(XmlSerializer serializer, boolean isOnHold, Order order)
+			throws IllegalArgumentException, IllegalStateException, IOException {
+		order.ord_timesync = DateUtils.getDateAsString(new Date());
+		serializer.startTag(empstr, "Order");
+
+		if (isOnHold) {
+			serializer.startTag(empstr, "holdName");
+			serializer.text(order.ord_HoldName);
+			serializer.endTag(empstr, "holdName");
+		}
+
+		serializer.startTag(empstr, "ord_id");
+		serializer.text(order.ord_id);
+		serializer.endTag(empstr, "ord_id");
+
+		serializer.startTag(empstr, "qbord_id");
+		serializer.text(order.qbord_id);
+		serializer.endTag(empstr, "qbord_id");
+
+		serializer.startTag(empstr, "emp_id");
+		serializer.text(order.emp_id);
+		serializer.endTag(empstr, "emp_id");
+
+		serializer.startTag(empstr, "cust_id");
+		serializer.text(order.cust_id);
+		serializer.endTag(empstr, "cust_id");
+
+		serializer.startTag(empstr, "clerk_id");
+		serializer.text(order.clerk_id);
+		serializer.endTag(empstr, "clerk_id");
+
+		serializer.startTag(empstr, "cust_email");
+		serializer.text(order.c_email);
+		serializer.endTag(empstr, "cust_email");
+
+		serializer.startTag(empstr, "ord_signature");
+		serializer.text(order.ord_signature);
+		serializer.endTag(empstr, "ord_signature");
+
+		serializer.startTag(empstr, "ord_po");
+		serializer.text(order.ord_po);
+		serializer.endTag(empstr, "ord_po");
+
+		serializer.startTag(empstr, "total_lines");
+		serializer.text(order.total_lines);
+		serializer.endTag(empstr, "total_lines");
+
+		serializer.startTag(empstr, "total_lines_pay");
+		serializer.text(order.total_lines_pay);
+		serializer.endTag(empstr, "total_lines_pay");
+
+		serializer.startTag(empstr, "ord_total");
+		serializer.text(order.ord_total);
+		serializer.endTag(empstr, "ord_total");
+
+		serializer.startTag(empstr, "ord_comment");
+		serializer.text(order.ord_comment);
+		serializer.endTag(empstr, "ord_comment");
+
+		serializer.startTag(empstr, "ord_delivery");
+		serializer.text(order.ord_delivery);
+		serializer.endTag(empstr, "ord_delivery");
+
+		serializer.startTag(empstr, "ord_timecreated");
+		serializer.text(order.ord_timecreated);
+		serializer.endTag(empstr, "ord_timecreated");
+
+		serializer.startTag(empstr, "ord_timesync");
+		serializer.text(order.ord_timesync);
+		serializer.endTag(empstr, "ord_timesync");
+
+		serializer.startTag(empstr, "qb_synctime");
+		serializer.text(order.qb_synctime);
+		serializer.endTag(empstr, "qb_synctime");
+
+		serializer.startTag(empstr, "emailed");
+		serializer.text(order.emailed);
+		serializer.endTag(empstr, "emailed");
+
+		serializer.startTag(empstr, "processed");
+		serializer.text(order.processed);
+		serializer.endTag(empstr, "processed");
+
+		serializer.startTag(empstr, "ord_type");
+		serializer.text(order.ord_type);
+		serializer.endTag(empstr, "ord_type");
+
+		serializer.startTag(empstr, "ord_claimnumber");
+		serializer.text(order.ord_claimnumber);
+		serializer.endTag(empstr, "ord_claimnumber");
+
+		serializer.startTag(empstr, "ord_rganumber");
+		serializer.text(order.ord_rganumber);
+		serializer.endTag(empstr, "ord_rganumber");
+
+		serializer.startTag(empstr, "ord_returns_pu");
+		serializer.text(order.ord_returns_pu);
+		serializer.endTag(empstr, "ord_returns_pu");
+
+		serializer.startTag(empstr, "ord_inventory");
+		serializer.text(order.ord_inventory);
+		serializer.endTag(empstr, "ord_inventory");
+
+		serializer.startTag(empstr, "ord_issync");
+		serializer.text(order.ord_issync);
+		serializer.endTag(empstr, "ord_issync");
+
+		serializer.startTag(empstr, "tax_id");
+		serializer.text(order.tax_id);
+		serializer.endTag(empstr, "tax_id");
+
+		serializer.startTag(empstr, "ord_shipvia");
+		serializer.text(order.ord_shipvia);
+		serializer.endTag(empstr, "ord_shipvia");
+
+		serializer.startTag(empstr, "ord_shipto");
+		serializer.text(order.ord_shipto);
+		serializer.endTag(empstr, "ord_shipto");
+
+		serializer.startTag(empstr, "ord_terms");
+		serializer.text(order.ord_terms);
+		serializer.endTag(empstr, "ord_terms");
+
+		serializer.startTag(empstr, "ord_custmsg");
+		serializer.text(order.ord_custmsg);
+		serializer.endTag(empstr, "ord_custmsg");
+
+		serializer.startTag(empstr, "ord_class");
+		serializer.text(order.ord_class);
+		serializer.endTag(empstr, "ord_class");
+
+		serializer.startTag(empstr, "ord_subtotal");
+		serializer.text(order.ord_subtotal);
+		serializer.endTag(empstr, "ord_subtotal");
+
+		serializer.startTag(empstr, "ord_taxamount");
+		serializer.text(order.ord_taxamount);
+		serializer.endTag(empstr, "ord_taxamount");
+
+		serializer.startTag(empstr, "ord_discount");
+		serializer.text(order.ord_discount);
+		serializer.endTag(empstr, "ord_discount");
+
+		serializer.startTag(empstr, "ord_discount_id");
+		serializer.text(order.ord_discount_id);
+		serializer.endTag(empstr, "ord_discount_id");
+
+		serializer.startTag(empstr, "ord_latitude");
+		serializer.text(order.ord_latitude);
+		serializer.endTag(empstr, "ord_latitude");
+
+		serializer.startTag(empstr, "ord_longitude");
+		serializer.text(order.ord_longitude);
+		serializer.endTag(empstr, "ord_longitude");
+
+		serializer.startTag(empstr, "tipAmount");
+		serializer.text(order.tipAmount);
+		serializer.endTag(empstr, "tipAmount");
+
+		serializer.startTag(empstr, "VAT");
+		serializer.text(Boolean.toString(order.VAT.equals("1") ? true : false));
+		serializer.endTag(empstr, "VAT");
+
+		serializer.startTag(empstr, "OrderProducts");
+		buildOrderProducts(serializer, order.ord_id, myPref.getPreferences(MyPreferences.pref_restaurant_mode),
+				isOnHold);
+		serializer.endTag(empstr, "OrderProducts");
+		serializer.endTag(empstr, "Order");
+
+	}
+
 	private String getCustAddr(HashMap<String, String> map, String key) {
 		String val = map.get(key);
 		if (val == null)
@@ -810,10 +985,12 @@ public class GenerateXML {
 
 					serializer.endTag(empstr, "isPrinted");
 
-					serializer.startTag(empstr, "item_void");
-					serializer.text(cursor.getString(cursor.getColumnIndex("item_void")));
-					serializer.endTag(empstr, "item_void");
-
+					String itemVoid = cursor.getString(cursor.getColumnIndex("item_void"));
+					if (!TextUtils.isEmpty(itemVoid)) {
+						serializer.startTag(empstr, "item_void");
+						serializer.text(cursor.getString(cursor.getColumnIndex("item_void")));
+						serializer.endTag(empstr, "item_void");
+					}
 					serializer.startTag(empstr, "ordprod_id");
 					serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_id")));
 					serializer.endTag(empstr, "ordprod_id");
@@ -963,7 +1140,7 @@ public class GenerateXML {
 			serializer.startTag(empstr, "ASXML");
 
 			buildAccountInformation(serializer);
-
+			// buildOrder(serializer, isOnHold, order);
 			serializer.startTag(empstr, "Payments");
 			buildPayments(serializer);
 			serializer.endTag(empstr, "Payments");
@@ -1774,6 +1951,21 @@ public class GenerateXML {
 		}
 		c.close();
 		// myDB.close();
+	}
+
+	public static XmlSerializer getXmlSerializer() {
+		XmlSerializer serializer = Xml.newSerializer();
+		StringWriter writer = new StringWriter();
+		try {
+			serializer.setOutput(writer);
+			serializer.startDocument("UTF-8", true);
+			serializer.startTag(empstr, "ASXML");
+		} catch (IllegalArgumentException | IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return serializer;
 	}
 
 	public String synchShift() {
