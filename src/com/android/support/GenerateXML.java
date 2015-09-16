@@ -235,6 +235,7 @@ public class GenerateXML {
 
 		sb.append(value).append("?RegID=").append(info.getAcctNumber());
 		sb.append("&MSemployeeID=").append(info.getEmpID());
+		sb.append("&empID=").append(info.getEmpID());
 		sb.append("&MSZoneID=").append(info.getZoneID());
 		sb.append(ending.toString());
 		return (sb.toString());

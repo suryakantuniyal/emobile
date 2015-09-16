@@ -1474,7 +1474,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			Intent intent = new Intent(this, ProcessCreditCard_FA.class);
 			intent.putExtra("paymethod_id", payType.get(position - 1)[0]);
 			intent.putExtra("paymentmethod_type", payType.get(position-1)[2]);
-			intent.putExtra("requireTransID", payType.get(position-1)[4]=="1"?true:false);
+			intent.putExtra("requireTransID", payType.get(position-1)[4].equalsIgnoreCase("1")?true:false);
 			if(payType.get(position-1)[2].toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))
 				intent.putExtra("isDebit", true);
 			else
