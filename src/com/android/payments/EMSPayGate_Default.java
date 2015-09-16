@@ -133,12 +133,12 @@ public class EMSPayGate_Default {
 			case ReturnGeniusAction:
 				generateERP();
 				generateAmountBlock();
-				generateOrderBlock(payment.job_id);
+				
 				generateContactInfoBlock(payment.cust_id);
 
 				if (Global.isIvuLoto)
 					generateEvertec();
-
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;
@@ -165,7 +165,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				generateOrderBlock(payment.job_id);
+				
 				generateContactInfoBlock(payment.cust_id);
 
 				if (isSwipe)
@@ -173,7 +173,7 @@ public class EMSPayGate_Default {
 
 				if (Global.isIvuLoto)
 					generateEvertec();
-
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;
@@ -208,7 +208,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				generateOrderBlock(payment.job_id);
+				
 				//generateOrderBlock();
 				generateContactInfoBlock(payment.cust_id);
 
@@ -216,7 +216,8 @@ public class EMSPayGate_Default {
 					generateEncryptedBlock();
 
 				generateVoidBlock();
-
+				
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 
@@ -230,10 +231,10 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				generateOrderBlock(payment.job_id);
+				
 				generateContactInfoBlock(payment.cust_id);
 				generateVoidBlock();
-
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;
@@ -243,9 +244,9 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				generateOrderBlock(payment.job_id);
+				
 				generateContactInfoBlock(payment.cust_id);
-
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;
@@ -266,19 +267,19 @@ public class EMSPayGate_Default {
 			case GetTelcoInfoByTag:
 				generateERP();
 				generateAmountBlock();
-				generateOrderBlock(payment.job_id);
+				
 				generateBoloroBlock();
-
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;
 			case ProcessBoloroCheckout:
 				generateERP();
 				generateAmountBlock();
-				generateOrderBlock(payment.job_id);
+				
 				generateContactInfoBlock(payment.cust_id);
 				generateBoloroBlock();
-
+				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;

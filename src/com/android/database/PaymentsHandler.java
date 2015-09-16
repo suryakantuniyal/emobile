@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
 
 public class PaymentsHandler {
 
@@ -159,14 +160,14 @@ public class PaymentsHandler {
 			insert.bindString(index(paymethod_id), payment.paymethod_id==null?"":payment.paymethod_id); // paymethod_id
 			insert.bindString(index(pay_check), payment.pay_check==null?"":payment.pay_check); // pay_check
 			insert.bindString(index(pay_receipt), payment.pay_receipt==null?"":payment.pay_receipt); // pay_receipt
-			insert.bindString(index(pay_amount), payment.pay_amount==null?"0":payment.pay_amount); // pay_amount
-			insert.bindString(index(pay_dueamount), payment.pay_dueamount==null?"0":payment.pay_dueamount); //pay_dueamount;
+			insert.bindString(index(pay_amount), TextUtils.isEmpty(payment.pay_amount)?"0":payment.pay_amount); // pay_amount
+			insert.bindString(index(pay_dueamount), TextUtils.isEmpty(payment.pay_dueamount)?"0":payment.pay_dueamount); //pay_dueamount;
 			insert.bindString(index(pay_comment), payment.pay_comment==null?"":payment.pay_comment); // pay_comment
 			insert.bindString(index(pay_timecreated), payment.pay_timecreated==null?"":payment.pay_timecreated); // pay_timecreated
 			insert.bindString(index(pay_timesync), payment.pay_timesync==null?"":payment.pay_timesync); // pay_timesync
 			insert.bindString(index(account_id), payment.account_id==null?"":payment.account_id); // account_id
-			insert.bindString(index(processed), payment.processed==null?"0":payment.processed); // processed
-			insert.bindString(index(pay_issync), payment.pay_issync==null?"0":payment.pay_issync); // pay_issync
+			insert.bindString(index(processed), TextUtils.isEmpty(payment.processed)?"0":payment.processed); // processed
+			insert.bindString(index(pay_issync), TextUtils.isEmpty(payment.pay_issync)?"0":payment.pay_issync); // pay_issync
 			insert.bindString(index(pay_transid), payment.pay_transid==null?"":payment.pay_transid); // pay_transid
 			insert.bindString(index(pay_refnum), payment.pay_refnum==null?"":payment.pay_refnum); // pay_refnum
 			insert.bindString(index(pay_name), payment.pay_name==null?"":payment.pay_name); // pay_name
@@ -192,18 +193,18 @@ public class PaymentsHandler {
 
 			insert.bindString(index(user_ID), payment.user_ID==null?"":payment.user_ID); //user_ID
 			insert.bindString(index(pay_type), payment.pay_type==null?"":payment.pay_type);	//pay_type
-			insert.bindString(index(pay_tip), payment.pay_tip==null?"0":payment.pay_tip);	//pay_tip
+			insert.bindString(index(pay_tip), TextUtils.isEmpty(payment.pay_tip)?"0":payment.pay_tip);	//pay_tip
 			insert.bindString(index(ccnum_last4), payment.ccnum_last4==null?"":payment.ccnum_last4);	//ccnum_last4
 			insert.bindString(index(pay_phone), payment.pay_phone==null?"":payment.pay_phone);	//pay_phone
 			insert.bindString(index(pay_email), payment.pay_email==null?"":payment.pay_email);	//pay_email
-			insert.bindString(index(isVoid), payment.isVoid==null?"0":payment.isVoid);	//isVoid
+			insert.bindString(index(isVoid), TextUtils.isEmpty(payment.isVoid)?"0":payment.isVoid);	//isVoid
 			insert.bindString(index(pay_latitude), payment.pay_latitude==null?"":payment.pay_latitude);	//pay_latitude
 			insert.bindString(index(pay_longitude), payment.pay_longitude==null?"":payment.pay_longitude);	//pay_longitude
-			insert.bindString(index(tipAmount), payment.tipAmount==null?"0":payment.tipAmount);	//tipAmount
+			insert.bindString(index(tipAmount), TextUtils.isEmpty(payment.tipAmount)?"0":payment.tipAmount);	//tipAmount
 			insert.bindString(index(clerk_id), payment.clerk_id==null?"":payment.clerk_id);	//clerk_id
 			
 			
-			insert.bindString(index(is_refund), payment.is_refund==null?"0":payment.is_refund);	//is_refund
+			insert.bindString(index(is_refund), TextUtils.isEmpty(payment.is_refund)?"0":payment.is_refund);	//is_refund
 			insert.bindString(index(ref_num), payment.ref_num==null?"":payment.ref_num);	//ref_num
 			insert.bindString(index(card_type), payment.card_type==null?"":payment.card_type);	//card_type
 			
@@ -211,9 +212,9 @@ public class PaymentsHandler {
 			insert.bindString(index(IvuLottoNumber), payment.IvuLottoNumber==null?"":payment.IvuLottoNumber);	//IvuLottoNumber
 			insert.bindString(index(IvuLottoQR), payment.IvuLottoQR==null?"":payment.IvuLottoQR);	//IvuLottoQR
 			
-			insert.bindString(index(Tax1_amount), payment.Tax1_amount==null?"0":payment.Tax1_amount);
+			insert.bindString(index(Tax1_amount), TextUtils.isEmpty(payment.Tax1_amount)?"0":payment.Tax1_amount);
 			insert.bindString(index(Tax1_name), payment.Tax1_name==null?"":payment.Tax1_name);
-			insert.bindString(index(Tax2_amount), payment.Tax2_amount==null?"0":payment.Tax2_amount);
+			insert.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.Tax2_amount)?"0":payment.Tax2_amount);
 			insert.bindString(index(Tax2_name), payment.Tax2_name==null?"":payment.Tax2_name);
 			
 
