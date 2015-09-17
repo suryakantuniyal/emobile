@@ -37,6 +37,7 @@ import com.google.analytics.tracking.android.Tracker;
 import android.app.Activity;
 import android.os.Debug;
 import android.os.Environment;
+import android.util.Log;
 
 public class Post {
 
@@ -236,7 +237,9 @@ public class Post {
 				e.printStackTrace();
 			}
 		} else {
+			Log.d("Request XMKL:", entity.toString());
 			response = this.postRequest(postLink, entity.toString());
+			Log.d("Request XMKL:", response.toString());
 		}
 
 		return response;

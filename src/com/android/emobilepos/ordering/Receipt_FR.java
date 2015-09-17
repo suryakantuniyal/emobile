@@ -1795,40 +1795,41 @@ public class Receipt_FR extends Fragment
 	}
 
 	private void proceedToRemove(int pos, int removePos) {
-		String quant = global.orderProducts.get(pos).ordprod_qty;
-		String prodID = global.orderProducts.get(pos).prod_id;
-
+		// String quant = global.orderProducts.get(pos).ordprod_qty;
+		// String prodID = global.orderProducts.get(pos).prod_id;
+		OrderProducts product = global.orderProducts.get(pos);
 		if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
-			double totalQty = (Double) Global.getFormatedNumber(true, global.qtyCounter.get(prodID));
-			double qty = Double.parseDouble(quant);
+			double totalQty = (Double) Global.getFormatedNumber(true, global.qtyCounter.get(product.prod_id));
+			double qty = Double.parseDouble(product.ordprod_qty);
 			double sum = totalQty - qty;
-			global.qtyCounter.put(prodID, Double.toString(sum));
+			global.qtyCounter.put(product.prod_id, Double.toString(sum));
 		} else {
-			int totalQty = (Integer) Global.getFormatedNumber(false, global.qtyCounter.get(prodID));
-			int qty = Integer.parseInt(quant);
+			int totalQty = (Integer) Global.getFormatedNumber(false, global.qtyCounter.get(product.prod_id));
+			int qty = Integer.parseInt(product.ordprod_qty);
 			int sum = totalQty - qty;
 
-			global.qtyCounter.put(prodID, Integer.toString(sum));
+			global.qtyCounter.put(product.prod_id, Integer.toString(sum));
 		}
 
 		if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
-			global.orderProducts.get(pos).item_void = "1";
+			product.item_void = "1";
 			String val = global.orderProducts.get(pos).ordprod_name;
 
-			global.orderProducts.get(pos).ordprod_name = val + " [VOIDED]";
-			global.orderProducts.get(pos).overwrite_price = "0";
+			product.ordprod_name = val + " [VOIDED]";
+			product.overwrite_price = "0";
 		} else {
 			OrderProductsHandler ordProdDB = new OrderProductsHandler(activity);
-			ordProdDB.deleteOrderProduct(global.orderProducts.get(pos).ordprod_id);
+			ordProdDB.deleteOrderProduct(product.ordprod_id);
 
 			if (Global.addonSelectionMap != null)
-				Global.addonSelectionMap.remove(global.orderProducts.get(pos).ordprod_id);
-			if (Global.orderProductAddonsMap != null) {
-				for (OrderProducts op : Global.orderProductAddonsMap.get(global.orderProducts.get(pos).ordprod_id)) {
-					ordProdDB.deleteOrderProduct(op.ordprod_id);
-				}
+				Global.addonSelectionMap.remove(product.ordprod_id);
+			if (Global.orderProductAddonsMap != null && !Global.orderProductAddonsMap.isEmpty()) {
+				if (Global.orderProductAddonsMap.get(product.ordprod_id) != null)
+					for (OrderProducts op : Global.orderProductAddonsMap.get(product.ordprod_id)) {
+						ordProdDB.deleteOrderProduct(op.ordprod_id);
+					}
 
-				Global.orderProductAddonsMap.remove(global.orderProducts.get(pos).ordprod_id);
+				Global.orderProductAddonsMap.remove(product.ordprod_id);
 			}
 			global.orderProducts.remove(pos);
 		}
