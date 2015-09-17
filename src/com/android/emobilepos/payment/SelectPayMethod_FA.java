@@ -191,6 +191,21 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			EMSPAT100.getTerminalDisp().clearText();
 			EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
 		}
+		
+		if(!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()&&!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).equals("0"))
+		{
+			String default_paymethod_id = myPref.getPreferencesValue(MyPreferences.pref_default_payment_method);
+			int i = 0;
+			for(String[] arr:payType)
+			{
+				if(arr[0].equals(default_paymethod_id))
+				{
+					selectPayment(i+1);
+					break;
+				}
+				i++;
+			}
+		}
 	}
 
 	

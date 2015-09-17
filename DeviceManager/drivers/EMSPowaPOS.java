@@ -68,8 +68,7 @@ import protocols.EMSDeviceManagerPrinterDelegate;
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 	private int LINE_WIDTH = 48;
 
-	private String encodedSignature;
-	private String encodedQRCode = "";
+
 
 	private Handler handler;
 	private ProgressDialog myProgressDialog;
