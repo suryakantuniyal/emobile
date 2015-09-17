@@ -133,7 +133,7 @@ public class EMSPayGate_Default {
 			case ReturnGeniusAction:
 				generateERP();
 				generateAmountBlock();
-				
+
 				generateContactInfoBlock(payment.cust_id);
 
 				if (Global.isIvuLoto)
@@ -141,6 +141,31 @@ public class EMSPayGate_Default {
 				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
+				break;
+			case ActivateGiftCardAction:
+			case ActivateLoyaltyCardAction:
+			case ActivateRewardAction:
+				generateCardBlock(data, isSwipe);
+
+				if (isSwipe)
+					generateTrackData();
+
+				if (actions == EAction.ChargeDebitAction)
+					generatePinBlock();
+
+				generateERP();
+				generateAmountBlock();
+
+				generateContactInfoBlock(payment.cust_id);
+
+				if (isSwipe)
+					generateEncryptedBlock();
+
+				if (Global.isIvuLoto)
+					generateEvertec();
+				serializer.endTag(empstr, "epay");
+				serializer.endDocument();
+
 				break;
 			case CreditCardAuthAction:
 			case ChargeCreditCardAction:
@@ -151,12 +176,9 @@ public class EMSPayGate_Default {
 			case AddValueGiftCardAction:
 			case AddValueLoyaltyCardAction:
 			case AddValueRewardAction:
-			case ActivateGiftCardAction:
-			case ActivateLoyaltyCardAction:
-			case ActivateRewardAction:
 			case ReverseCreditCardAction:
 				generateCardBlock(data, isSwipe);
-				
+
 				if (isSwipe)
 					generateTrackData();
 
@@ -165,7 +187,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				
+
 				generateContactInfoBlock(payment.cust_id);
 
 				if (isSwipe)
@@ -208,15 +230,15 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				
-				//generateOrderBlock();
+
+				// generateOrderBlock();
 				generateContactInfoBlock(payment.cust_id);
 
 				if (isSwipe)
 					generateEncryptedBlock();
 
 				generateVoidBlock();
-				
+
 				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
@@ -231,7 +253,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				
+
 				generateContactInfoBlock(payment.cust_id);
 				generateVoidBlock();
 				generateOrderBlock(payment.job_id);
@@ -244,7 +266,7 @@ public class EMSPayGate_Default {
 
 				generateERP();
 				generateAmountBlock();
-				
+
 				generateContactInfoBlock(payment.cust_id);
 				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
@@ -267,7 +289,7 @@ public class EMSPayGate_Default {
 			case GetTelcoInfoByTag:
 				generateERP();
 				generateAmountBlock();
-				
+
 				generateBoloroBlock();
 				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
@@ -276,7 +298,7 @@ public class EMSPayGate_Default {
 			case ProcessBoloroCheckout:
 				generateERP();
 				generateAmountBlock();
-				
+
 				generateContactInfoBlock(payment.cust_id);
 				generateBoloroBlock();
 				generateOrderBlock(payment.job_id);
