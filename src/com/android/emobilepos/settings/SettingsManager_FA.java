@@ -797,6 +797,15 @@ public class SettingsManager_FA extends FragmentActivity {
 								EMSDeviceManager edm = new EMSDeviceManager();
 								Global.mainPrinterManager = edm.getManager();
 								Global.mainPrinterManager.loadDrivers(activity, Global.BAMBOO, false);
+
+							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
+									|| val[pos].toUpperCase(Locale.getDefault()).contains("ICM")) {
+								myPref.sledType(false, Global.ISMP);
+
+								EMSDeviceManager edm = new EMSDeviceManager();
+
+								Global.btSled = edm.getManager();
+								Global.btSled.loadDrivers(activity, Global.ISMP, false);
 							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
 							{
 								myPref.printerType(false, Global.ZEBRA);

@@ -470,12 +470,18 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.printerType(true, -2);
-			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
-					&& !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(callBack);
-			} else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
-				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
-						&& !cardReaderConnected)
+			int _sled_type = myPref.sledType(true, -2);
+			if(_swiper_type!=-1&&Global.btSwiper!=null&&Global.btSwiper.currentDevice!=null&&!cardReaderConnected)
+			{
+				Global.btSwiper.currentDevice.loadCardReader(callBack);				
+			}
+			else if(_sled_type!=-1&&Global.btSled!=null&&Global.btSled.currentDevice!=null&&!cardReaderConnected)
+			{
+				Global.btSled.currentDevice.loadCardReader(callBack);
+			}
+			else if(_printer_type!=-1&&Global.deviceHasMSR(_printer_type))
+			{
+				if (Global.mainPrinterManager != null&&Global.mainPrinterManager.currentDevice!=null&&!cardReaderConnected)
 					Global.mainPrinterManager.currentDevice.loadCardReader(callBack);
 			}
 		}
