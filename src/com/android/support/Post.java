@@ -240,9 +240,7 @@ public class Post {
 			Log.d("Request XMKL:", entity.toString());
 			response = this.postRequest(postLink, entity.toString());
 			Log.d("Request XMKL:", response.toString());
-			if(type==13){
-				response=Global.TIME_OUT;
-			}
+			
 		}
 
 		return response;
