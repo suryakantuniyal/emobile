@@ -184,7 +184,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 				|| Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
 			if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
 				Global.mainPrinterManager.currentDevice.loadScanner(callBackMSR);
-			else if (Global.btSled != null && Global.btSled.currentDevice != null)
+			if (Global.btSled != null && Global.btSled.currentDevice != null)
 				Global.btSled.currentDevice.loadScanner(callBackMSR);
 		}
 		hasBeenCreated = true;

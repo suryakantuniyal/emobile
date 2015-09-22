@@ -8,6 +8,9 @@ import util.RasterDocument.RasSpeed;
 import util.RasterDocument.RasTopMargin;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -689,14 +692,48 @@ public class EMSDeviceDriver {
 
 			if (this instanceof EMSBluetoothStarPrinter) {
 				// if (!isPOSPrinter) {
-				byte[] data;
-				if (isPOSPrinter)
-					data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
-							SCBBitmapConverter.Rotation.Normal, myBitmap);
-				else {
-					util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
-					data = starbitmap.getImageEscPosDataForPrinting();
+				byte[] data = null;
+				File logoFile;
+				FileOutputStream fos;
+				try {
+					if (isPOSPrinter) {
+						logoFile = new File(activity.getCacheDir() + "/logoPOSBytes");
+						if (logoFile.exists()) {
+							data = new byte[(int) logoFile.length()];
+							FileInputStream fis = new FileInputStream(logoFile);
+							fis.read(data);
+							fis.close();
+						} else {
+							data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
+									SCBBitmapConverter.Rotation.Normal, myBitmap);
+						}
+					} else {
+						logoFile = new File(activity.getCacheDir() + "/logoBytes");
+						if (logoFile.exists()) {
+							data = new byte[(int) logoFile.length()];
+							FileInputStream fis = new FileInputStream(logoFile);
+							fis.read(data);
+							fis.close();
+						} else {
+							util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
+							data = starbitmap.getImageEscPosDataForPrinting();
+						}
+					}
+					if (!logoFile.exists()) {
+						fos = new FileOutputStream(logoFile);
+						fos.write(data);
+						fos.close();
+					}
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+
 				Communication.Result result;
 				result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
 
@@ -716,7 +753,7 @@ public class EMSDeviceDriver {
 
 					}
 					try {
-						Thread.sleep(800);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -766,7 +803,7 @@ public class EMSDeviceDriver {
 			}
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 			}
 		}
