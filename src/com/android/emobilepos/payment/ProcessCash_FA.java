@@ -216,8 +216,10 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener{
 				{
 					paid.setBackgroundResource(R.drawable.edittext_border);
 					
-					if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
+					if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null){
 						Global.mainPrinterManager.currentDevice.openCashDrawer();
+						
+					}
 					
 					if(!isInvoice||(isInvoice&&!isMultiInvoice))
 						new processPaymentAsync().execute(false);

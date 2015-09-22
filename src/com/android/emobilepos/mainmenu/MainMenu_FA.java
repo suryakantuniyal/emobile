@@ -256,6 +256,18 @@ public class MainMenu_FA extends FragmentActivity {
 				else
 					sb.append(_peripheralName).append(": ").append("Failed to connect\n");
 			}
+			if ((myPref.sledType(true, -2) != -1) && (Global.btSled == null))
+			{
+				edm = new EMSDeviceManager();
+				Global.btSled = edm.getManager();
+				_peripheralName = Global.getPeripheralName(myPref.sledType(true, -2));
+				// Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
+				// -2), false);
+				if (Global.btSled.loadMultiDriver(activity, myPref.sledType(true, -2), 0, false, null,null))
+					sb.append(_peripheralName).append(": ").append("Connected\n");
+				else
+					sb.append(_peripheralName).append(": ").append("Failed to connect\n");
+			}
 			if ((myPref.printerType(true, -2) != -1) && (Global.mainPrinterManager == null))// ||(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice==null)))
 			{
 				edm = new EMSDeviceManager();

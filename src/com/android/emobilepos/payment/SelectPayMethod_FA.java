@@ -672,7 +672,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		@Override
 		protected String doInBackground(Boolean... params) {
 			// TODO Auto-generated method stub
-
+			Global.mainPrinterManager.currentDevice.loadScanner(null);
 			wasReprint = params[0];
 			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
 			{

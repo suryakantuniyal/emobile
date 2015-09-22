@@ -37,7 +37,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
 	public void unregisterPrinter();
 
-	public void loadCardReader(EMSCallBack callBack);
+	public void loadCardReader(EMSCallBack callBack, boolean isDebitCard);
 	
 	public void loadScanner(EMSCallBack _callBack);
 

@@ -475,7 +475,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack callBack) {
+	public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 
 	}
