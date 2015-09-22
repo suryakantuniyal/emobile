@@ -1442,7 +1442,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 
 		callBack = _callBack;

@@ -19,6 +19,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 import main.EMSDeviceManager;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
@@ -174,7 +175,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
 	@Override
 	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
@@ -244,15 +245,16 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 		callBack = _callBack;
-
+		mIsDebit = isDebitCard;
 		if (handler == null)
 			handler = new Handler();
 
 		new Thread(new Runnable() {
 			public void run() {
+
 				RBA_API.SetParam(PARAMETER_ID.P23_REQ_FORM_NAME, "CCOD.K3Z");
 				RBA_API.SetParam(PARAMETER_ID.P23_REQ_PROMPT_INDEX, "Slide, Tap or Insert Card");
 				RBA_API.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, "MCS");
@@ -274,6 +276,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 					// Toast.makeText(activity, "card was swiper calling
 					// callback..", Toast.LENGTH_LONG).show();
 					callBack.cardWasReadSuccessfully(true, cardManager);
+					//getAcctNum();
+					// MSG31_PinEntry("4123456789012345");
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -410,8 +414,18 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 				cardManager = new CreditCardInfo();
 				CardParser.parseCreditCard(activity, raw_data.toString(), cardManager);
 				if (mIsDebit) {
-					// prompt pin
-					MSG31_PinEntry(cardManager.getCardNumUnencrypted());
+					//handler.post(doUpdateViews);
+					//String retValue = MSG29_GetVariable("00398");
+					//MSG31_PinEntry(cardManager.getCardNumUnencrypted());
+					//getAcctNum();
+					String retValue = MSG29_GetVariable("00398");
+
+					if (retValue == null) {
+						// For Testing This Value Will Be Hardcoded
+						MSG31_PinEntry("4123456789012345");
+					} else {
+						MSG31_PinEntry(retValue);
+					}
 				} else
 					handler.post(doUpdateViews);
 			}
@@ -550,6 +564,54 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	public void printEndOfDayReport(String date, String clerk_id) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void getAcctNum() {
+		String retValue = MSG29_GetVariable("00398");
+
+		if (retValue == null) {
+			// For Testing This Value Will Be Hardcoded
+			MSG31_PinEntry("4123456789012345");
+		} else {
+			MSG31_PinEntry(retValue);
+		}
+	}
+
+	public String MSG29_GetVariable(String variable) {
+		if (!getConnectionStatus()) {
+			return null;
+		}
+
+		RBA_API.SetParam(PARAMETER_ID.P29_REQ_VARIABLE_ID, variable);
+
+		ERROR_ID result = RBA_API.ProcessMessage(MESSAGE_ID.M29_GET_VARIABLE);
+		if (result != ERROR_ID.RESULT_SUCCESS) {
+			return null;
+		} else {
+			String varID = RBA_API.GetParam(PARAMETER_ID.P29_RES_VARIABLE_ID);
+			String status = RBA_API.GetParam(PARAMETER_ID.P29_RES_STATUS);
+
+			switch (Integer.parseInt(status)) {
+			case 2: {
+				String varData = RBA_API.GetParam(PARAMETER_ID.P29_RES_VARIABLE_DATA);
+				return varData;
+			}
+			default:
+				return null;
+			}
+		}
+	}
+
+	/*
+	 * ------------------------------ Get Connection Status
+	 * ------------------------------
+	 */
+	public boolean getConnectionStatus() {
+		if (RBA_API.GetConnectionStatus() != RBA_API.ConnectionStatus.CONNECTED) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 }

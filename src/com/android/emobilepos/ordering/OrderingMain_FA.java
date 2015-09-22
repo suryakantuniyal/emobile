@@ -964,11 +964,11 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 			int _printer_type = myPref.printerType(true, -2);
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
 					&& !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(callBackMSR);
+				Global.btSwiper.currentDevice.loadCardReader(callBackMSR, false);
 			} else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
 				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
 						&& !cardReaderConnected)
-					Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR);
+					Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
 			} else {
 				swiperLabel.setText(R.string.disconnected);
 				swiperLabel.setTextColor(Color.RED);
@@ -1278,7 +1278,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 			uniMagReader.startReading();
 		} else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
 				&& Global.mainPrinterManager != null)
-			Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR);
+			Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
 		// new DeviceLoad().execute(callBackMSR);
 	}
 

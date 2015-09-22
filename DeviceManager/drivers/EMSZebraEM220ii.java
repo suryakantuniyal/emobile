@@ -687,7 +687,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 		callBack = _callBack;
 		myPrinter.getMsrMode();

@@ -274,11 +274,11 @@ public class OrderAttrEdit_FA extends FragmentActivity
 			int _printer_type = myPref.printerType(true, -2);
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
 					&& !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(callBack);
+				Global.btSwiper.currentDevice.loadCardReader(callBack, false);
 			} else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
 				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
 						&& !cardReaderConnected)
-					Global.mainPrinterManager.currentDevice.loadCardReader(callBack);
+					Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
 			}
 		}
 
@@ -427,7 +427,7 @@ public class OrderAttrEdit_FA extends FragmentActivity
 			uniMagReader.startReading();
 		} else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
 				&& Global.mainPrinterManager != null)
-			Global.mainPrinterManager.currentDevice.loadCardReader(callBack);
+			Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
 	}
 
 	@Override
