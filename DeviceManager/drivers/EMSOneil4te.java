@@ -1251,7 +1251,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 
 	}

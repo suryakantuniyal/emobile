@@ -288,11 +288,11 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack,OnCl
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.printerType(true, -2);
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(msrCallBack);
+				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
 			} else if (_printer_type != -1
 					&& (_printer_type == Global.STAR || _printer_type == Global.BAMBOO || _printer_type == Global.ZEBRA)) {
 				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null && !cardReaderConnected)
-					Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack);
+					Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
 			}
 		}
 		// }
@@ -661,7 +661,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack,OnCl
 			uniMagReader.startReading();
 		}
 		else if(magtekReader==null&&Global.btSwiper==null&&_msrUsbSams==null&&Global.mainPrinterManager!=null)
-			Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack);
+			Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
 	}
 	
 	

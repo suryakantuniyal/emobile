@@ -8,6 +8,9 @@ import util.RasterDocument.RasSpeed;
 import util.RasterDocument.RasTopMargin;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -107,7 +110,11 @@ public class EMSDeviceDriver {
 	protected void addTotalLines(Context context, Order anOrder, List<Orders> orders, StringBuilder sb, int lineWidth) {
 		itemDiscTotal = 0;
 		for (Orders order : orders) {
-			itemDiscTotal += Double.parseDouble(order.getItemDiscount());
+			try {
+				itemDiscTotal += Double.parseDouble(order.getItemDiscount());
+			} catch (NumberFormatException e) {
+				itemDiscTotal = 0;
+			}
 		}
 		saveAmount = itemDiscTotal + Double.parseDouble(anOrder.ord_discount);
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_subtotal),
@@ -116,9 +123,7 @@ public class EMSDeviceDriver {
 				Global.formatDoubleStrToCurrency(String.valueOf(itemDiscTotal)), lineWidth, 0));
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_global_discount),
 				Global.formatDoubleStrToCurrency(anOrder.ord_discount), lineWidth, 0));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_discount),
-		// Global.formatDoubleStrToCurrency(anOrder.ord_discount), lineWidth,
-		// 0));
+
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_tax),
 				Global.formatDoubleStrToCurrency(anOrder.ord_taxamount), lineWidth, 0));
 	}
@@ -451,8 +456,6 @@ public class EMSDeviceDriver {
 					sb.append(String.format(tempSB.toString(), "   ", orders.get(i).getQty(),
 							Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
 							Global.getCurrencyFormat(orders.get(i).getTotal()))).append("\n\n");
-
-					// this.printString(sb.toString());
 					print(sb.toString(), FORMAT);
 					sb.setLength(0);
 
@@ -460,8 +463,7 @@ public class EMSDeviceDriver {
 			}
 			print(sb.toString(), FORMAT);
 			sb.setLength(0);
-			// port.writePort(textHandler.lines(lineWidth).getBytes(FORMAT), 0,
-			// textHandler.lines(lineWidth).length());
+
 			print(textHandler.lines(lineWidth), FORMAT);
 			addTotalLines(this.activity, anOrder, orders, sb, lineWidth);
 
@@ -497,8 +499,7 @@ public class EMSDeviceDriver {
 						Global.formatDoubleToCurrency(0.00), lineWidth, 0));
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
 						Global.formatDoubleToCurrency(0.00), lineWidth, 0));
-				// port.writePort(sb.toString().getBytes(FORMAT), 0,
-				// sb.toString().length());
+				;
 			} else {
 				tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
 				String _pay_type = payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
@@ -556,34 +557,28 @@ public class EMSDeviceDriver {
 							Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
 							.append("\n\n");
 				}
-				// port.writePort(sb.toString().getBytes(FORMAT), 0,
-				// sb.toString().length());
+
 			}
 			print(sb.toString(), FORMAT);
-			// port.writePort(sb.toString().getBytes(FORMAT), 0,
-			// sb.toString().length());
-			// port.writePort(textHandler.newLines(2).getBytes(FORMAT), 0,
-			// textHandler.newLines(2).length());
+
 			print(textHandler.newLines(2), FORMAT);
 			if (type != 1)
 				printYouSave(String.valueOf(saveAmount), lineWidth);
 			if (printPref.contains(MyPreferences.print_footer))
 				printFooter(lineWidth);
 
-			// port.writePort(textHandler.newLines(2).getBytes(FORMAT), 0,
-			// textHandler.newLines(2).length());
 			print(textHandler.newLines(2), FORMAT);
 			receiptSignature = anOrder.ord_signature;
 			if (!receiptSignature.isEmpty()) {
 				encodedSignature = receiptSignature;
 				this.printImage(1);
-				print(enableCenter); // center
+				// print(enableCenter); // center
 				sb.setLength(0);
 				sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
 				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
 				print(sb.toString(), FORMAT);
-				print(disableCenter); // disable
-										// center
+				// print(disableCenter); // disable
+				// center
 			}
 
 			if (isFromHistory) {
@@ -593,24 +588,32 @@ public class EMSDeviceDriver {
 				print(textHandler.newLines(4));
 			}
 
-			if (isPOSPrinter) {
-				print(new byte[] { 0x1b, 0x64, 0x02 }); // Cut
-			}
+			cutPaper();
 		} catch (StarIOPortException e) {
 
 		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			// if (port != null) {
-			// try {
-			// StarIOPort.releasePort(port);
-			// } catch (StarIOPortException e) {
-			// }
-			// }
+
 			releasePrinter();
 		}
 
+	}
+
+	public void cutPaper() {
+		if (this instanceof EMSsnbc) {
+			// ******************************************************************************************
+			// print in page mode
+			int error_code = pos_sdk.pageModePrint();
+
+			error_code = pos_sdk.systemCutPaper(66, 0);
+
+			// *****************************************************************************************
+			// clear buffer in page mode
+			error_code = pos_sdk.pageModeClearBuffer();
+		} else if (isPOSPrinter)
+			print(new byte[] { 0x1b, 0x64, 0x02 }); // Cut
 	}
 
 	private void CopyArray(byte[] srcArray, Byte[] cpyArray) {
@@ -665,7 +668,6 @@ public class EMSDeviceDriver {
 			File imgFile = new File(myPref.getAccountLogoPath());
 			if (imgFile.exists()) {
 				myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
 			}
 			break;
 		}
@@ -690,96 +692,51 @@ public class EMSDeviceDriver {
 
 			if (this instanceof EMSBluetoothStarPrinter) {
 				// if (!isPOSPrinter) {
-				byte[] data;
-				if (isPOSPrinter)
-					data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
-							SCBBitmapConverter.Rotation.Normal, myBitmap);
-				else {
-					util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
-					data = starbitmap.getImageEscPosDataForPrinting();
+				byte[] data = null;
+				File logoFile;
+				FileOutputStream fos;
+				try {
+					if (isPOSPrinter) {
+						logoFile = new File(activity.getCacheDir() + "/logoPOSBytes");
+						if (logoFile.exists()) {
+							data = new byte[(int) logoFile.length()];
+							FileInputStream fis = new FileInputStream(logoFile);
+							fis.read(data);
+							fis.close();
+						} else {
+							data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
+									SCBBitmapConverter.Rotation.Normal, myBitmap);
+						}
+					} else {
+						logoFile = new File(activity.getCacheDir() + "/logoBytes");
+						if (logoFile.exists()) {
+							data = new byte[(int) logoFile.length()];
+							FileInputStream fis = new FileInputStream(logoFile);
+							fis.read(data);
+							fis.close();
+						} else {
+							util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
+							data = starbitmap.getImageEscPosDataForPrinting();
+						}
+					}
+					if (!logoFile.exists()) {
+						fos = new FileOutputStream(logoFile);
+						fos.write(data);
+						fos.close();
+					}
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+
 				Communication.Result result;
 				result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
 
-				// ///////
-				//
-				// ///////
-				//
-				// starbitmap = new util.StarBitmap(myBitmap, false, 350,
-				// PAPER_WIDTH);
-				// // port = StarIOPort.getPort(portName, portSettings,
-				// 10000,
-				// // this.activity);
-				// if (port != null) {
-				// byte[] command =
-				// starbitmap.getImageEscPosDataForPrinting();
-				// port.writePort(command, 0, command.length);
-				// port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); //
-				// set
-				// // to
-				// // windows-1252
-				// }
-				// /////////
-				//
-				// /////////
-				//
-				// ArrayList<Byte> commands = new ArrayList<Byte>();
-				// Byte[] tempList;
-				//
-				// RasterDocument rasterDoc = new
-				// RasterDocument(RasSpeed.Medium, RasPageEndMode.None,
-				// RasPageEndMode.None, RasTopMargin.Standard, 0, 0, 0);
-				// // Bitmap bm = BitmapFactory.decodeResource(res, source);
-				// starbitmap = new util.StarBitmap(myBitmap, false, 350,
-				// PAPER_WIDTH);
-				//
-				// byte[] command = rasterDoc.BeginDocumentCommandData();
-				// tempList = new Byte[command.length];
-				// CopyArray(command, tempList);
-				// commands.addAll(Arrays.asList(tempList));
-				//
-				// command = starbitmap.getImageRasterDataForPrinting();
-				// tempList = new Byte[command.length];
-				// CopyArray(command, tempList);
-				// commands.addAll(Arrays.asList(tempList));
-				//
-				// command = rasterDoc.EndDocumentCommandData();
-				// tempList = new Byte[command.length];
-				// CopyArray(command, tempList);
-				// commands.addAll(Arrays.asList(tempList));
-				//
-				// byte[] commandToSendToPrinter =
-				// convertFromListByteArrayTobyteArray(commands);
-				// port.writePort(commandToSendToPrinter, 0,
-				// commandToSendToPrinter.length);
-				// // Communication.sendCommands(commandToSendToPrinter,
-				// port,
-				// // this.activity);
-				// } else {
-				// // if (!isPOSPrinter) {
-				// // util.StarBitmap starbitmap = new
-				// // util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
-				// // // port = StarIOPort.getPort(portName, portSettings,
-				// // // 10000,
-				// // // this.activity);
-				// // if (port != null) {
-				// // byte[] command =
-				// // starbitmap.getImageEscPosDataForPrinting();
-				// // port.writePort(command, 0, command.length);
-				// // port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3);
-				// //
-				// // set
-				// // // to
-				// // // windows-1252
-				// // }
-				// // } else
-				// this.PrintBitmapImage(myBitmap, false, PAPER_WIDTH);
-				//
-				// try {
-				// Thread.sleep(2000);
-				// } catch (InterruptedException e) {
-				// }
-				// }
 			} else if (this instanceof EMSPAT100) {
 				printerApi.printImage(myBitmap, 0);
 			} else if (this instanceof EMSBlueBambooP25) {
@@ -796,7 +753,7 @@ public class EMSDeviceDriver {
 
 					}
 					try {
-						Thread.sleep(800);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -834,7 +791,7 @@ public class EMSDeviceDriver {
 				}
 
 			} else if (this instanceof EMSPowaPOS) {
-				//powaPOS.printImage(scaleDown(myBitmap, 300, false));
+				// powaPOS.printImage(scaleDown(myBitmap, 300, false));
 				powaPOS.printImage(myBitmap);
 			} else if (this instanceof EMSsnbc) {
 				int PrinterWidth = 640;
@@ -846,7 +803,7 @@ public class EMSDeviceDriver {
 			}
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 			}
 		}
@@ -880,12 +837,7 @@ public class EMSDeviceDriver {
 		if (!sb.toString().isEmpty()) {
 			sb.append(textHandler.newLines(2));
 			print(sb.toString());
-			// byte[] outputByteBuffer = sb.toString().getBytes();
-			// if (this instanceof EMSBluetoothStarPrinter)
-			// print(enableCenter);
-			// print(outputByteBuffer);
-			// if (this instanceof EMSBluetoothStarPrinter)
-			// print(disableCenter);
+
 		}
 	}
 
@@ -896,13 +848,10 @@ public class EMSDeviceDriver {
 		print(textHandler.ivuLines(lineWidth), FORMAT);
 		sb.setLength(0);
 		sb.append(textHandler.newLines(2));
-		// port.writePort(sb.toString().getBytes(), 0,
-		// sb.toString().length());
-		// sb.setLength(0);
+
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_youSave),
 				Global.formatDoubleStrToCurrency(saveAmount), lineWidth, 0));
-		// port.writePort(sb.toString().getBytes(), 0,
-		// sb.toString().length());
+
 		sb.append(textHandler.newLines(2));
 		print(sb.toString());
 		print(textHandler.ivuLines(lineWidth), FORMAT);

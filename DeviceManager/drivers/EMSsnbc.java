@@ -1083,7 +1083,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 	}
 	
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 	}
 	

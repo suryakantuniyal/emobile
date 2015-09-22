@@ -68,8 +68,7 @@ import protocols.EMSDeviceManagerPrinterDelegate;
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 	private int LINE_WIDTH = 48;
 
-	private String encodedSignature;
-	private String encodedQRCode = "";
+
 
 	private Handler handler;
 	private ProgressDialog myProgressDialog;
@@ -1097,7 +1096,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 		callBack = _callBack;
 	}

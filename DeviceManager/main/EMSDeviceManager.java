@@ -99,6 +99,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 			aDevice = new EMSPAT100();
 			aDevice.connect(activity, -1, true, instance);
 			break;
+		case Global.ISMP:
+			aDevice = new EMSIngenico();
+			aDevice.connect(activity, -1, true, instance);
+			break;
 		}
 	}
 	
@@ -134,6 +138,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 			break;
 		case Global.PAT100:
 			aDevice = new EMSPAT100();
+			break;
+		case Global.ISMP:
+			aDevice = new EMSIngenico();
+			break;
 		}
 		if(aDevice!=null)
 			return aDevice.autoConnect(activity, instance,paperSize,isPOSPrinter, portName, portNumber);

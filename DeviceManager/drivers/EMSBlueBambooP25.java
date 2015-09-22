@@ -224,7 +224,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		}
 	}
 
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 
 		if (handler == null)
 			handler = new Handler();
