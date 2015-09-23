@@ -1334,17 +1334,15 @@ public class Global extends Application {
 	{
 		Orders order = new Orders();
 		OrderProducts ord = new OrderProducts();
-
 		
 		int sum = 0;
 		if(this.qtyCounter.containsKey(data[0]))
 			sum = Integer.parseInt(this.qtyCounter.get(data[0]));
-		
-		order.setQty("1");
 
 		if(!OrderingMain_FA.returnItem)
 			global.qtyCounter.put(data[0], Integer.toString(sum + 1));
-		
+		else 
+			global.qtyCounter.put(data[0], Integer.toString(sum - 1));
 		if(OrderingMain_FA.returnItem)
 			ord.isReturned = true;
 
