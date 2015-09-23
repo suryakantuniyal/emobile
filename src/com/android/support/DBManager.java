@@ -41,11 +41,18 @@ public class DBManager {
 
 	private void InitializeSQLCipher() {
 		SQLiteDatabase.loadLibs(activity);
-		File databaseFile = new File(DB_FILEPATH);
-		databaseFile.mkdirs();
-		databaseFile.delete();
-		_db = SQLiteDatabase.openOrCreateDatabase(databaseFile, password, null);
+		// File databaseFile = new
+		// File(activity.getDatabasePath("emobilepos.db").getPath());
+		// databaseFile.mkdirs();
+		// databaseFile.delete();
+//		File dbFile = new File(activity.getDatabasePath("emobilepos.db").getPath());
+//		if (!dbFile.exists()) {
+//			dbFile.mkdirs();
+//			dbFile.delete();
+//		}
+        _db = SQLiteDatabase.openDatabase(myPref.getDBpath(), password, null, SQLiteDatabase.OPEN_READWRITE);
 
+		//_db = SQLiteDatabase.openOrCreateDatabase(dbFile, password, null);
 	}
 
 	public DBManager(Activity activity) {
@@ -53,9 +60,9 @@ public class DBManager {
 		myPref = new MyPreferences(activity);
 		managerInstance = this;
 		this.DBHelper = new DatabaseHelper(this.activity);
-		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
+		if ((_db == null || !_db.isOpen()))
 			InitializeSQLCipher();
-		// exportDBFile();
+		exportDBFile();
 	}
 
 	public DBManager(Activity activ, int type) {
@@ -63,9 +70,9 @@ public class DBManager {
 		managerInstance = this;
 		this.type = type;
 		myPref = new MyPreferences(activity);
-		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
+		if ((_db == null || !_db.isOpen()))
 			InitializeSQLCipher();
-		// exportDBFile();
+		exportDBFile();
 	}
 
 	private void exportDBFile() {
