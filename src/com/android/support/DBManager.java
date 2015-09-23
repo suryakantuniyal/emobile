@@ -19,10 +19,10 @@ import android.app.Activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDiskIOException;
-import android.database.sqlite.SQLiteOpenHelper;
+
 import android.os.Environment;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDiskIOException;
 
 public class DBManager {
 	public static final int VERSION = 31;
@@ -37,6 +37,16 @@ public class DBManager {
 	private boolean sendAndReceive = false;
 	public static SQLiteDatabase _db;
 	public static String DB_FILEPATH = "/data/data/com.emobilepos.app/databases/emobilepos.sqlite";
+	private String password = "test123";
+
+	private void InitializeSQLCipher() {
+		SQLiteDatabase.loadLibs(activity);
+		File databaseFile = new File(DB_FILEPATH);
+		databaseFile.mkdirs();
+		databaseFile.delete();
+		_db = SQLiteDatabase.openOrCreateDatabase(databaseFile, password, null);
+
+	}
 
 	public DBManager(Activity activity) {
 		this.activity = activity;
@@ -44,8 +54,8 @@ public class DBManager {
 		managerInstance = this;
 		this.DBHelper = new DatabaseHelper(this.activity);
 		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
-			_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null, SQLiteDatabase.OPEN_READWRITE);
-		//exportDBFile();
+			InitializeSQLCipher();
+		// exportDBFile();
 	}
 
 	public DBManager(Activity activ, int type) {
@@ -54,8 +64,8 @@ public class DBManager {
 		this.type = type;
 		myPref = new MyPreferences(activity);
 		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
-			_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null, SQLiteDatabase.OPEN_READWRITE);
-		//exportDBFile();
+			InitializeSQLCipher();
+		// exportDBFile();
 	}
 
 	private void exportDBFile() {
@@ -91,7 +101,7 @@ public class DBManager {
 
 	public void updateDB() {
 		this.DBHelper = new DatabaseHelper(this.activity);
-		this.DBHelper.getWritableDatabase();
+		this.DBHelper.getWritableDatabase(password);
 	}
 
 	// public SQLiteDatabase openWritableDB()
@@ -155,7 +165,7 @@ public class DBManager {
 		}
 	}
 
-	private class DatabaseHelper extends SQLiteOpenHelper {
+	private class DatabaseHelper extends net.sqlcipher.database.SQLiteOpenHelper {
 		DatabaseHelper(Context context) {
 			super(context, DB_NAME, null, VERSION);
 		}

@@ -7,18 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import android.app.Activity;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
-
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
+
+import android.app.Activity;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.Log;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class TransferLocations_DB {
 	public static final String trans_id = "trans_id";

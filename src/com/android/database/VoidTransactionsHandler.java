@@ -4,14 +4,13 @@ package com.android.database;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.emobilepos.models.Order;
+import com.android.support.DBManager;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
-
-import com.android.emobilepos.models.Order;
-import com.android.support.DBManager;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class VoidTransactionsHandler {
 

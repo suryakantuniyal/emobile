@@ -5,15 +5,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.support.ConsignmentTransaction;
+import com.android.support.DBManager;
+import com.android.support.MyPreferences;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
-
-import com.android.support.ConsignmentTransaction;
-import com.android.support.DBManager;
-import com.android.support.MyPreferences;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class ConsignmentTransactionHandler 
 {

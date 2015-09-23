@@ -15,7 +15,7 @@ import com.google.analytics.tracking.android.Tracker;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class InvoicesHandler {
 
