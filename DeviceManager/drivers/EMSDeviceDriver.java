@@ -1,12 +1,5 @@
 package drivers;
 
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
-import util.RasterDocument;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,7 +25,6 @@ import com.android.database.PaymentsHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -50,12 +42,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Base64;
+import android.util.Log;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.star.utils.Communication;
 import drivers.star.utils.PrinterFunctions;
+import main.EMSDeviceManager;
+import plaintext.EMSPlainTextHelper;
+import util.RasterDocument;
+import util.RasterDocument.RasPageEndMode;
+import util.RasterDocument.RasSpeed;
+import util.RasterDocument.RasTopMargin;
 
 public class EMSDeviceDriver {
+	public static final boolean PRINT_TO_LOG = false;
 	protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 	protected double itemDiscTotal = 0;
 	protected double saveAmount;
@@ -167,6 +167,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void print(String str) {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", str);
+			return;
+		}
 		if (this instanceof EMSBluetoothStarPrinter) {
 			try {
 				port.writePort(str.toString().getBytes(), 0, str.toString().length());
@@ -206,6 +210,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void print(byte[] byteArray) {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", new String(byteArray));
+			return;
+		}
 		if (this instanceof EMSBluetoothStarPrinter) {
 			try {
 				port.writePort(byteArray, 0, byteArray.length);
@@ -241,6 +249,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void print(String str, String FORMAT) {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", str);
+			return;
+		}
 		if (this instanceof EMSBluetoothStarPrinter) {
 			try {
 				port.writePort(str.getBytes(FORMAT), 0, str.length());
@@ -550,7 +562,7 @@ public class EMSDeviceDriver {
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
 							Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
 
-					tempAmount = formatStrToDouble(granTotal) - tempAmount;
+					tempAmount = Math.abs(formatStrToDouble(granTotal)) - tempAmount;
 					if (tempAmount > 0)
 						tempAmount = 0.00;
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
@@ -624,6 +636,12 @@ public class EMSDeviceDriver {
 
 	public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable, int lineWidth)
 			throws StarIOPortException {
+
+		if (PRINT_TO_LOG) {
+			Log.d("Print", "*******Image Print***********");
+			return;
+		}
+
 		ArrayList<Byte> commands = new ArrayList<Byte>();
 		Byte[] tempList;
 
@@ -661,6 +679,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void printImage(int type) throws StarIOPortException, JAException {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", "*******Image Print***********");
+			return;
+		}
 		Bitmap myBitmap = null;
 		switch (type) {
 		case 0: // Logo
