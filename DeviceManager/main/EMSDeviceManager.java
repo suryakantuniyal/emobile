@@ -115,9 +115,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 		case Global.MAGTEK:
 			aDevice = new EMSMagtekAudioCardReader();
 			break;
-		case Global.STAR:
-			aDevice = new EMSBluetoothStarPrinter();
-			break;
 		case Global.BAMBOO:
 			aDevice = new EMSBlueBambooP25();
 			break;
@@ -141,6 +138,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 			break;
 		case Global.ISMP:
 			aDevice = new EMSIngenico();
+			break;
+		case Global.STAR:
+			aDevice = new EMSBluetoothStarPrinter();
 			break;
 		}
 		if(aDevice!=null)

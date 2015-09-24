@@ -6,15 +6,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
-
 import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
+
+import android.app.Activity;
+import android.database.Cursor;
+import net.sqlcipher.database.SQLiteStatement;
 
 
 
@@ -106,10 +106,10 @@ public class ProductsAttrHandler
 				insert.bindString(index(attr_desc), getData(attr_desc, i)); // attr_desc
 				insert.bindString(index(attr_group), getData(attr_group, i)); // attr_group
 				insert.bindString(index(attr_group_id), getData(attr_group_id, i)); // attr_group_id
-
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
