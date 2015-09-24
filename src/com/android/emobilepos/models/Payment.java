@@ -2,8 +2,11 @@ package com.android.emobilepos.models;
 
 
 
+import java.io.Serializable;
+
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.Gson;
 
 import android.app.Activity;
 
@@ -130,5 +133,10 @@ public class Payment {
 		emp_id = myPref.getEmpID();
 		
 		
+	}
+
+	public String toJson() {
+		Gson gson = new Gson();
+		return gson.toJson(this);
 	}
 }

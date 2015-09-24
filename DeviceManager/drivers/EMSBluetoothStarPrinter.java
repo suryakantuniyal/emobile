@@ -1922,7 +1922,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 		releasePrinter();
 		port = null;
 		if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline)
-			port = StarIOPort.getPort(portName, portSettings, 30000, activity);
+			port = StarIOPort.getPort(portName, portSettings, 10000, activity);
 		return port;
 	}
 }
