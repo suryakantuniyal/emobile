@@ -1058,6 +1058,7 @@ public class SynchMethods
 				}
 
 			} while (c.moveToNext());
+			c.close();
 		} catch (Exception e) {
 			Tracker tracker = EasyTracker.getInstance(activity);
 			tracker.send(MapBuilder.createException(

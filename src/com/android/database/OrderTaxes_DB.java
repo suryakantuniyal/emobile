@@ -87,6 +87,7 @@ public class OrderTaxes_DB {
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			Tracker tracker = EasyTracker.getInstance(activity);

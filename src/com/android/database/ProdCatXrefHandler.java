@@ -28,8 +28,8 @@ public class ProdCatXrefHandler {
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
 	private Activity activity;
-	private List<HashMap<String,Integer>>dictionaryListMap;
-	
+	private List<HashMap<String, Integer>> dictionaryListMap;
+
 	public static final String table_name = "ProdCatXref";
 
 	public ProdCatXrefHandler(Activity activity) {
@@ -62,12 +62,11 @@ public class ProdCatXrefHandler {
 		}
 		return empStr;
 	}
-	
+
 	private int index(String tag) {
 		return attrHash.get(tag);
 	}
 
-	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
 		DBManager._db.beginTransaction();
 		try {
@@ -76,7 +75,8 @@ public class ProdCatXrefHandler {
 			dictionaryListMap = dictionary;
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
+			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
+					.append("VALUES (").append(sb2.toString()).append(")");
 			insert = DBManager._db.compileStatement(sb.toString());
 
 			int size = addrData.size();
@@ -92,6 +92,7 @@ public class ProdCatXrefHandler {
 				insert.clearBindings();
 
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -103,18 +104,17 @@ public class ProdCatXrefHandler {
 			DBManager._db.endTransaction();
 		}
 	}
-	
 
 	public long getDBSize() {
-		//SQLiteDatabase db = dbManager.openReadableDB();
+		// SQLiteDatabase db = dbManager.openReadableDB();
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name);
 
 		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
-
-		//db.close();
+		stmt.close();
+		// db.close();
 		return count;
 	}
 

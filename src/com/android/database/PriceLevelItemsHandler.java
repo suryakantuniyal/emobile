@@ -97,6 +97,7 @@ public class PriceLevelItemsHandler {
 				insert.clearBindings();
 
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

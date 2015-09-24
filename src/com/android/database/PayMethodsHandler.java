@@ -104,6 +104,7 @@ public class PayMethodsHandler {
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

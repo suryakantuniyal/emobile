@@ -37,7 +37,7 @@ public class DBManager {
 	private boolean sendAndReceive = false;
 	public static SQLiteDatabase _db;
 	public static String DB_FILEPATH = "/data/data/com.emobilepos.app/databases/emobilepos.sqlite";
-	private String password = "test123";
+	private String password = "!@#QWEASDZXC";
 
 	private void InitializeSQLCipher() {
 		SQLiteDatabase.loadLibs(activity);

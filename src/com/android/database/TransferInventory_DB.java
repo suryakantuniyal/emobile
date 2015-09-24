@@ -82,7 +82,7 @@ public class TransferInventory_DB {
 				insert.execute();
 				insert.clearBindings();
 			}
-			
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 
 		} catch (Exception e) {

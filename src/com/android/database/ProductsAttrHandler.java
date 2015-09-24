@@ -106,10 +106,10 @@ public class ProductsAttrHandler
 				insert.bindString(index(attr_desc), getData(attr_desc, i)); // attr_desc
 				insert.bindString(index(attr_group), getData(attr_group, i)); // attr_group
 				insert.bindString(index(attr_group_id), getData(attr_group_id, i)); // attr_group_id
-
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

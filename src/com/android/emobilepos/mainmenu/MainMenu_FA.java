@@ -239,7 +239,7 @@ public class MainMenu_FA extends FragmentActivity {
 
 				} while (c.moveToNext());
 			}
-
+			c.close();
 			String _portName = "";
 			String _peripheralName = "";
 			if ((myPref.swiperType(true, -2) != -1) && (Global.btSwiper == null))

@@ -111,6 +111,7 @@ public class ShipMethodHandler {
 				insert.clearBindings();
 
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -149,6 +150,7 @@ public class ShipMethodHandler {
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -180,6 +182,7 @@ public class ShipMethodHandler {
 
 			insert.execute();
 			insert.clearBindings();
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
