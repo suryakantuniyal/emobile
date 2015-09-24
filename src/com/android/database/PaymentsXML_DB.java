@@ -4,16 +4,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
-
 import com.android.support.DBManager;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
+
+import android.app.Activity;
+import android.database.Cursor;
+import android.util.Log;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class PaymentsXML_DB {
 
@@ -71,6 +71,7 @@ public class PaymentsXML_DB {
 			
 			insert.execute();
 			insert.clearBindings();
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			Tracker tracker = EasyTracker.getInstance(activity);

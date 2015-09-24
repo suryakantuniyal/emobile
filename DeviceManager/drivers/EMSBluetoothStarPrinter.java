@@ -176,8 +176,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 			} catch (InterruptedException e) {
 			}
 
-			StarPrinterStatus status = port.retreiveStatus();
-			if (status.offline == false) {
+			if (port != null && port.retreiveStatus().offline == false) {
 				didConnect = true;
 
 			}
@@ -1919,17 +1918,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 	}
 
-	private StarIOPort getStarIOPort() {
-		try {
-			releasePrinter();
-			port = null;
-			if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline)
-				port = StarIOPort.getPort(portName, portSettings, 30000, activity);
-		} catch (StarIOPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			port = null;
-		}
+	private StarIOPort getStarIOPort() throws StarIOPortException {
+		releasePrinter();
+		port = null;
+		if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline)
+			port = StarIOPort.getPort(portName, portSettings, 30000, activity);
 		return port;
 	}
 }

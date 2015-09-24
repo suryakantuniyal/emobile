@@ -12,7 +12,7 @@ import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class ProductChainXrefHandler {
 
@@ -99,7 +99,7 @@ public class ProductChainXrefHandler {
 				insert.clearBindings();
 
 			}
-
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

@@ -5,8 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.crypto.digests.MD5Digest;
+import org.kobjects.base64.Base64;
 
 import com.android.database.CustomersHandler;
 
@@ -19,10 +23,13 @@ import android.app.Activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDiskIOException;
-import android.database.sqlite.SQLiteOpenHelper;
+
 import android.os.Environment;
+import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDiskIOException;
 
 public class DBManager {
 	public static final int VERSION = 31;
@@ -37,15 +44,39 @@ public class DBManager {
 	private boolean sendAndReceive = false;
 	public static SQLiteDatabase _db;
 	public static String DB_FILEPATH = "/data/data/com.emobilepos.app/databases/emobilepos.sqlite";
+	public static final String PASSWORD = "em0b1l3p05";
+
+	private String getPassword() {
+		MessageDigest digester;
+		String md5 = null;
+		String android_id = Secure.getString(activity.getContentResolver(), Secure.ANDROID_ID);
+		try {
+			digester = MessageDigest.getInstance("MD5");
+			digester.update(android_id.getBytes());
+			md5 = Base64.encode(digester.digest());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return PASSWORD;
+		}
+		if (TextUtils.isEmpty(md5))
+			return PASSWORD;
+		return md5;
+	}
+
+	private void InitializeSQLCipher() {
+		SQLiteDatabase.loadLibs(activity);
+		_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), getPassword(), null, SQLiteDatabase.OPEN_READWRITE);
+	}
 
 	public DBManager(Activity activity) {
 		this.activity = activity;
 		myPref = new MyPreferences(activity);
 		managerInstance = this;
 		this.DBHelper = new DatabaseHelper(this.activity);
-		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
-			_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null, SQLiteDatabase.OPEN_READWRITE);
-		//exportDBFile();
+		if ((_db == null || !_db.isOpen()))
+			InitializeSQLCipher();
+		// exportDBFile();
 	}
 
 	public DBManager(Activity activ, int type) {
@@ -53,12 +84,12 @@ public class DBManager {
 		managerInstance = this;
 		this.type = type;
 		myPref = new MyPreferences(activity);
-		if ((_db == null || !_db.isOpen()) && !myPref.getDBpath().isEmpty())
-			_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null, SQLiteDatabase.OPEN_READWRITE);
-		//exportDBFile();
+		if ((_db == null || !_db.isOpen()))
+			InitializeSQLCipher();
+		// exportDBFile();
 	}
 
-	private void exportDBFile() {
+	public void exportDBFile() {
 		File dbFile = new File(DB_FILEPATH);
 		File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
 		try {
@@ -91,57 +122,33 @@ public class DBManager {
 
 	public void updateDB() {
 		this.DBHelper = new DatabaseHelper(this.activity);
-		this.DBHelper.getWritableDatabase();
+		this.DBHelper.getWritableDatabase(getPassword());
 	}
 
-	// public SQLiteDatabase openWritableDB()
-	// {
-	// SQLiteDatabase db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null,
-	// SQLiteDatabase.OPEN_READWRITE);
-	// return db;
-	// }
-	//
-	//
-	// public SQLiteDatabase openReadableDB()
-	// {
-	// SQLiteDatabase db = null;
-	// try
-	// {
-	// db = SQLiteDatabase.openDatabase(myPref.getDBpath(), null,
-	// SQLiteDatabase.OPEN_READONLY);
-	// }catch(Exception e)
-	// {
-	//
-	// throw new RuntimeException(e);
-	// }
-	// return db;
-	//
-	// }
-
-	public void dbBackupDB() {
-		File backupDB = null;
-		try {
-			File sd = Environment.getExternalStorageDirectory();
-
-			if (sd.canWrite()) {
-				String currPath = myPref.getDBpath();
-				String backup = "emobilepos.sqlite";
-				File currDB = new File(currPath);
-				backupDB = new File(sd, backup);
-
-				if (currDB.exists()) {
-					FileChannel src = new FileInputStream(currDB).getChannel();
-					FileChannel dst = new FileOutputStream(backupDB).getChannel();
-
-					dst.transferFrom(src, 0, src.size());
-					src.close();
-					dst.close();
-				}
-			}
-		} catch (Exception e) {
-
-		}
-	}
+//	public void dbBackupDB() {
+//		File backupDB = null;
+//		try {
+//			File sd = Environment.getExternalStorageDirectory();
+//
+//			if (sd.canWrite()) {
+//				String currPath = myPref.getDBpath();
+//				String backup = "emobilepos.sqlite";
+//				File currDB = new File(currPath);
+//				backupDB = new File(sd, backup);
+//
+//				if (currDB.exists()) {
+//					FileChannel src = new FileInputStream(currDB).getChannel();
+//					FileChannel dst = new FileOutputStream(backupDB).getChannel();
+//
+//					dst.transferFrom(src, 0, src.size());
+//					src.close();
+//					dst.close();
+//				}
+//			}
+//		} catch (Exception e) {
+//
+//		}
+//	}
 
 	public void deleteAllTablesData() {
 		// SQLiteDatabase db = this.openWritableDB();
@@ -155,7 +162,7 @@ public class DBManager {
 		}
 	}
 
-	private class DatabaseHelper extends SQLiteOpenHelper {
+	private class DatabaseHelper extends net.sqlcipher.database.SQLiteOpenHelper {
 		DatabaseHelper(Context context) {
 			super(context, DB_NAME, null, VERSION);
 		}

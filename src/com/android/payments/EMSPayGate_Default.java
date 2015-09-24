@@ -173,9 +173,6 @@ public class EMSPayGate_Default {
 			case ChargeRewardAction:
 			case ChargeGiftCardAction:
 			case ChargeLoyaltyCardAction:
-			case AddValueGiftCardAction:
-			case AddValueLoyaltyCardAction:
-			case AddValueRewardAction:
 			case ReverseCreditCardAction:
 				generateCardBlock(data, isSwipe);
 
@@ -196,6 +193,32 @@ public class EMSPayGate_Default {
 				if (Global.isIvuLoto)
 					generateEvertec();
 				generateOrderBlock(payment.job_id);
+				serializer.endTag(empstr, "epay");
+				serializer.endDocument();
+				break;
+
+			case AddValueGiftCardAction:
+			case AddValueLoyaltyCardAction:
+			case AddValueRewardAction:
+				generateCardBlock(data, isSwipe);
+
+				if (isSwipe)
+					generateTrackData();
+
+				if (actions == EAction.ChargeDebitAction)
+					generatePinBlock();
+
+				generateERP();
+				generateAmountBlock();
+
+				generateContactInfoBlock(payment.cust_id);
+
+				if (isSwipe)
+					generateEncryptedBlock();
+
+				if (Global.isIvuLoto)
+					generateEvertec();
+
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;

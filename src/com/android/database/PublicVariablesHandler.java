@@ -46,6 +46,7 @@ public class PublicVariablesHandler {
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			db.setTransactionSuccessful();
 		} catch (Exception e) {
 			String err = "error";

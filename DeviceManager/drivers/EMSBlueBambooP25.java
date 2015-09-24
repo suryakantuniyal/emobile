@@ -210,19 +210,19 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		}
 	}
 
-	public void printString(String theString) {
-		byte[] header = { 0x1B, 0x21, 0x01 };
-		byte[] lang = new byte[] { (byte) 0x1B, (byte) 0x4B, (byte) 0x31, (byte) 0x1B, (byte) 0x52, 48 };
-
-		try {
-			this.outputStream.write(header);
-			this.outputStream.write(lang);
-			this.outputStream.write(theString.getBytes("UTF-8"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void printString(String theString) {
+//		byte[] header = { 0x1B, 0x21, 0x01 };
+//		byte[] lang = new byte[] { (byte) 0x1B, (byte) 0x4B, (byte) 0x31, (byte) 0x1B, (byte) 0x52, 48 };
+//
+//		try {
+//			this.outputStream.write(header);
+//			this.outputStream.write(lang);
+//			this.outputStream.write(theString.getBytes("UTF-8"));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 
@@ -697,7 +697,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
 		this.printHeader();
 
-		this.printString("\n");
+		print("\n");
 		StringBuilder tempSB = new StringBuilder();
 
 		tempSB.append("* ").append(payArray[0]);
@@ -751,10 +751,10 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
 					Global.formatDoubleStrToCurrency(change), LINE_WIDTH, 0));
 
-		this.printString(sb.toString());
+		print(sb.toString());
 
 		sb.setLength(0);
-		this.printString(textHandler.newLines(2));
+		print(textHandler.newLines(2));
 
 		if (!isCashPayment && !isCheckPayment) {
 			if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
@@ -770,8 +770,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 			}
 			sb.append(textHandler.centeredString("x" + textHandler.lines(LINE_WIDTH / 2), LINE_WIDTH));
 			sb.append(textHandler.centeredString(getString(R.string.receipt_signature), LINE_WIDTH));
-			this.printString(sb.toString());
-			this.printString(textHandler.newLines(2));
+			print(sb.toString());
+			print(textHandler.newLines(2));
 			sb.setLength(0);
 		}
 
@@ -779,12 +779,12 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 			sb = new StringBuilder();
 
 			if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-				this.printString("\n");
-				this.printString(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-				this.printString(textHandler.centeredString("IVULOTO: " + payArray[13], LINE_WIDTH));
-				this.printString(textHandler.centeredString(payArray[12], LINE_WIDTH));
-				this.printString(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-				this.printString("\n");
+				print("\n");
+				print(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
+				print(textHandler.centeredString("IVULOTO: " + payArray[13], LINE_WIDTH));
+				print(textHandler.centeredString(payArray[12], LINE_WIDTH));
+				print(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
+				print("\n");
 			} else {
 				encodedQRCode = payArray[14];
 
@@ -800,13 +800,13 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 				sb.append(payArray[12]).append("\n");
 				sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
 
-				this.printString(sb.toString());
+				print(sb.toString());
 			}
 			sb.setLength(0);
 		}
 
 		this.printFooter();
-		this.printString(textHandler.newLines(3));
+		print(textHandler.newLines(3));
 
 		if (!isCashPayment && !isCheckPayment) {
 			sb.append(textHandler.oneColumnLineWithLeftAlignedText(creditCardFooting, LINE_WIDTH, 0));
@@ -816,8 +816,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		if (isReprint) {
 			sb.append(textHandler.centeredString("*** Copy ***", LINE_WIDTH));
 		}
-		this.printString(sb.toString());
-		this.printString(textHandler.newLines(3));
+		print(sb.toString());
+		print(textHandler.newLines(3));
 
 		return true;
 	}
@@ -917,7 +917,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 		StringBuilder sb = new StringBuilder();
 		StringBuilder sb_refunds = new StringBuilder();
-		this.printString(textHandler.newLines(3));
+		print(textHandler.newLines(3));
 		sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 		sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
 		sb.append(textHandler.centeredString("Device: " + myPref.getEmpName() + "(" + myPref.getEmpID() + ")",
@@ -936,7 +936,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		double payGranTotal = 0.00;
 		double refundGranTotal = 0.00;
 
-		this.printString(sb.toString());
+		print(sb.toString());
 		sb.setLength(0);
 		for (int i = 0; i < size; i++) {
 
@@ -967,10 +967,10 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 				Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
 
-		this.printString(sb.toString());
-		this.printString(sb_refunds.toString());
-		this.printString(textHandler.newLines(5));
-		this.printString("");
+		print(sb.toString());
+		print(sb_refunds.toString());
+		print(textHandler.newLines(5));
+		print("");
 
 		return true;
 	}
@@ -1393,7 +1393,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 			totalLines += 1;
 			ordTotal += Double.parseDouble(myConsignment.get(i).invoice_total);
 
-			this.printString(sb.toString());
+			print(sb.toString());
 			sb.setLength(0);
 		}
 
@@ -1410,7 +1410,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 				LINE_WIDTH, 0));
 		sb.append(textHandler.newLines(3));
 
-		this.printString(sb.toString());
+		print(sb.toString());
 
 		if (printPref.contains(MyPreferences.print_footer))
 			this.printFooter();
@@ -1422,7 +1422,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 			e.printStackTrace();
 		}
 
-		this.printString(textHandler.newLines(3));
+		print(textHandler.newLines(3));
 		// db.close();
 
 		return true;
@@ -1557,7 +1557,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:",
 							Global.formatDoubleStrToCurrency("0"), LINE_WIDTH, 5)).append(textHandler.newLines(2));
 
-				this.printString(sb.toString());
+				print(sb.toString());
 				sb.setLength(0);
 			}
 		}
@@ -1575,7 +1575,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 				Global.formatDoubleStrToCurrency(map.get("total_grand_total")), LINE_WIDTH, 0));
 		sb.append(textHandler.newLines(3));
 
-		this.printString(sb.toString());
+		print(sb.toString());
 
 		if (printPref.contains(MyPreferences.print_footer))
 			this.printFooter();
@@ -1587,7 +1587,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 			e.printStackTrace();
 		}
 
-		this.printString(textHandler.newLines(3));
+		print(textHandler.newLines(3));
 
 		return true;
 	}

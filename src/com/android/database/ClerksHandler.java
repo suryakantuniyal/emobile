@@ -4,15 +4,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
-
 import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
+
+import android.app.Activity;
+import android.database.Cursor;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class ClerksHandler 
 {
@@ -138,6 +138,7 @@ public class ClerksHandler
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

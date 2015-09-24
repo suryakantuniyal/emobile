@@ -6,13 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-
-
-import android.app.Activity;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
-
 import com.android.emobilepos.models.OrderProducts;
 import com.android.support.DBManager;
 import com.android.support.GenerateNewID;
@@ -22,39 +15,45 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
 
+import android.app.Activity;
+import android.content.ContentValues;
+import android.database.Cursor;
+import net.sqlcipher.database.SQLiteStatement;
+
 public class TemplateHandler {
 
-	private final String _id = "_id"; 
+	private final String _id = "_id";
 	private final String cust_id = "cust_id";
 	private final String product_id = "product_id";
 	private final String quantity = "quantity";
-	
+
 	private final String price_level_id = "price_level_id";
 	private final String price_level = "price_level";
-	
+
 	private final String name = "name";
 	private final String price = "price";
 	private final String overwrite_price = "overwrite_price";
 	private final String _update = "_update";
 	private final String isactive = "isactive";
 	private final String isSync = "isSync";
-	
-	//private final String itemTotal = "itemTotal";
 
-	private final List<String> attr = Arrays.asList(new String[] { _id,cust_id,product_id,name,overwrite_price,quantity,price,price_level_id,price_level,_update,isactive,isSync});
+	// private final String itemTotal = "itemTotal";
+
+	private final List<String> attr = Arrays.asList(new String[] { _id, cust_id, product_id, name, overwrite_price,
+			quantity, price, price_level_id, price_level, _update, isactive, isSync });
 
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
-	private List<String[]>addrData;
-	private List<HashMap<String,Integer>>dictionaryListMap;
+	private List<String[]> addrData;
+	private List<HashMap<String, Integer>> dictionaryListMap;
 	private MyPreferences myPref;
 	private static final String table_name = "Templates";
 	private Activity activity;
 	private Global global;
 
 	public TemplateHandler(Activity activity) {
-		//global = (Global) activity.getApplication();
+		// global = (Global) activity.getApplication();
 		myPref = new MyPreferences(activity);
 		global = (Global) activity.getApplication();
 		attrHash = new HashMap<String, Integer>();
@@ -81,8 +80,7 @@ public class TemplateHandler {
 	private int index(String tag) {
 		return attrHash.get(tag);
 	}
-	
-	
+
 	private String getData(String tag, int record) {
 		Integer i = dictionaryListMap.get(record).get(tag);
 		if (i != null) {
@@ -90,60 +88,64 @@ public class TemplateHandler {
 		}
 		return empStr;
 	}
-	
-	
+
 	public void insert(String custID) {
-		//SQLiteDatabase db = SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS| SQLiteDatabase.OPEN_READWRITE);
-		
-		//SQLiteDatabase db = dbManager.openWritableDB();
+		// SQLiteDatabase db =
+		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
+		// SQLiteDatabase.NO_LOCALIZED_COLLATORS|
+		// SQLiteDatabase.OPEN_READWRITE);
+
+		// SQLiteDatabase db = dbManager.openWritableDB();
 		DBManager._db.beginTransaction();
 		try {
 
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString())
-					.append(")");
-			
-			DBManager._db.execSQL("DELETE FROM Templates WHERE cust_id='"+custID+"'");
+			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
+					.append("VALUES (").append(sb2.toString()).append(")");
+
+			DBManager._db.execSQL("DELETE FROM Templates WHERE cust_id='" + custID + "'");
 			insert = DBManager._db.compileStatement(sb.toString());
 
 			int size = global.orderProducts.size();
-			for(int i = 0 ; i<size; i++)
-			{
+			for (int i = 0; i < size; i++) {
 				OrderProducts prod = global.orderProducts.get(i);
-				insert.bindString(index(_id), empStr);	//_id
-				insert.bindString(index(cust_id), custID); 	//cust_id																		
-				insert.bindString(index(product_id), prod.prod_id==null?"":prod.prod_id); 	//product_id
-				insert.bindString(index(quantity), prod.ordprod_qty==null?"0":prod.ordprod_qty);	//quantity
-				insert.bindString(index(price_level_id), prod.pricelevel_id==null?"":prod.pricelevel_id);	//price_level_id
-				insert.bindString(index(price_level), prod.priceLevelName==null?"":prod.priceLevelName);	//price_level
-				
-				insert.bindString(index(name), prod.ordprod_name==null?"":prod.ordprod_name);	//name
-				//insert.bindString(index(price), global.cur_orders.get(i).getValue());
-				insert.bindString(index(overwrite_price), prod.overwrite_price==null?"0":prod.overwrite_price); 	// cust_id
-				//insert.bindString(index(itemTotal), global.orderProducts.get(i).getSetData(itemTotal, true, empStr));
+				insert.bindString(index(_id), empStr); // _id
+				insert.bindString(index(cust_id), custID); // cust_id
+				insert.bindString(index(product_id), prod.prod_id == null ? "" : prod.prod_id); // product_id
+				insert.bindString(index(quantity), prod.ordprod_qty == null ? "0" : prod.ordprod_qty); // quantity
+				insert.bindString(index(price_level_id), prod.pricelevel_id == null ? "" : prod.pricelevel_id); // price_level_id
+				insert.bindString(index(price_level), prod.priceLevelName == null ? "" : prod.priceLevelName); // price_level
+
+				insert.bindString(index(name), prod.ordprod_name == null ? "" : prod.ordprod_name); // name
+				// insert.bindString(index(price),
+				// global.cur_orders.get(i).getValue());
+				insert.bindString(index(overwrite_price), prod.overwrite_price == null ? "0" : prod.overwrite_price); // cust_id
+				// insert.bindString(index(itemTotal),
+				// global.orderProducts.get(i).getSetData(itemTotal, true,
+				// empStr));
 				insert.bindString(index(_update), "");
 				insert.bindString(index(isactive), "true");
 				insert.bindString(index(isSync), "0");
-	
+
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.OrdersHandler (at Class.insert)]");
-			
+
 			Tracker tracker = EasyTracker.getInstance(activity);
 			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 			DBManager._db.endTransaction();
 		}
-		//db.close();
+		// db.close();
 	}
-	
-	
+
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
 		DBManager._db.beginTransaction();
 		try {
@@ -152,7 +154,8 @@ public class TemplateHandler {
 			dictionaryListMap = dictionary;
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
+			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
+					.append("VALUES (").append(sb2.toString()).append(")");
 			insert = DBManager._db.compileStatement(sb.toString());
 
 			int size = addrData.size();
@@ -178,6 +181,7 @@ public class TemplateHandler {
 				insert.execute();
 				insert.clearBindings();
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -189,36 +193,44 @@ public class TemplateHandler {
 			DBManager._db.endTransaction();
 		}
 	}
-	
-	
-	public List<HashMap<String,String>> getTemplate(String custID)
-	{
-		//SQLiteDatabase db = SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READWRITE);
-		
-		//SQLiteDatabase db = dbManager.openReadableDB();
-		
-		List<HashMap<String,String>>orderList = new ArrayList<HashMap<String,String>>();
-		//OrderProducts anOrder = new OrderProducts();
-		HashMap<String,String>map = new HashMap<String,String>();
-		
+
+	public List<HashMap<String, String>> getTemplate(String custID) {
+		// SQLiteDatabase db =
+		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
+		// SQLiteDatabase.NO_LOCALIZED_COLLATORS |
+		// SQLiteDatabase.OPEN_READWRITE);
+
+		// SQLiteDatabase db = dbManager.openReadableDB();
+
+		List<HashMap<String, String>> orderList = new ArrayList<HashMap<String, String>>();
+		// OrderProducts anOrder = new OrderProducts();
+		HashMap<String, String> map = new HashMap<String, String>();
+
 		GenerateNewID generator = new GenerateNewID(activity);
 		StringBuilder sb = new StringBuilder();
-		
+
 		Global.lastOrdID = generator.getNextID();
-		
-		/*sb.append("SELECT ord_id,ord_timecreated,ord_total,ord_subtotal,ord_discount,ord_taxamount, (ord_subtotal+ord_taxamount-ord_discount) AS 'gran_total',tipAmount FROM Orders WHERE ord_id = '");
-		sb.append(ordID).append("'");*/
-		
-		sb.append("SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  FROM Templates t ");
-		sb.append("LEFT JOIN Products p ON t.product_id = p.prod_id LEFT JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id  WHERE cust_id = ?");
-		
-		
-		//SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name, (o.ord_subtotal+o.ord_taxamount-o.ord_discount) AS 'gran_total' FROM Orders o LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE o.ord_id = '50-00000-2012'
-		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{custID});
-		
-		if(cursor.moveToFirst())
-		{
+
+		/*
+		 * sb.append(
+		 * "SELECT ord_id,ord_timecreated,ord_total,ord_subtotal,ord_discount,ord_taxamount, (ord_subtotal+ord_taxamount-ord_discount) AS 'gran_total',tipAmount FROM Orders WHERE ord_id = '"
+		 * ); sb.append(ordID).append("'");
+		 */
+
+		sb.append(
+				"SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  FROM Templates t ");
+		sb.append(
+				"LEFT JOIN Products p ON t.product_id = p.prod_id LEFT JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id  WHERE cust_id = ?");
+
+		// SELECT
+		// o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name,
+		// (o.ord_subtotal+o.ord_taxamount-o.ord_discount) AS 'gran_total' FROM
+		// Orders o LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE
+		// o.ord_id = '50-00000-2012'
+
+		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { custID });
+
+		if (cursor.moveToFirst()) {
 			int i_prod_id = cursor.getColumnIndex(product_id);
 			int i_prod_name = cursor.getColumnIndex(name);
 			int i_overwrite_price = cursor.getColumnIndex(overwrite_price);
@@ -226,8 +238,7 @@ public class TemplateHandler {
 			int i_prod_price = cursor.getColumnIndex(price);
 			int i_prod_desc = cursor.getColumnIndex("prod_desc");
 			int i_prod_istaxable = cursor.getColumnIndex("prod_istaxable");
-			do
-			{
+			do {
 				map.put("prod_id", cursor.getString(i_prod_id));
 				map.put("prod_name", cursor.getString(i_prod_name));
 				map.put(overwrite_price, cursor.getString(i_overwrite_price));
@@ -236,75 +247,76 @@ public class TemplateHandler {
 				map.put("prod_istaxable", cursor.getString(i_prod_istaxable));
 				map.put("ord_id", Global.lastOrdID);
 				map.put("ordprod_id", UUID.randomUUID().toString());
-				
-				double total = Double.parseDouble(map.get("ordprod_qty"))*Double.parseDouble(map.get(overwrite_price));
+
+				double total = Double.parseDouble(map.get("ordprod_qty"))
+						* Double.parseDouble(map.get(overwrite_price));
 				map.put("itemTotal", Double.toString(total));
 				map.put("itemSubtotal", Double.toString(total));
 				map.put("ordprod_desc", cursor.getString(i_prod_desc));
-				
-				
-				
+
 				orderList.add(map);
-				map = new HashMap<String,String>();
-				
-			}while(cursor.moveToNext());
+				map = new HashMap<String, String>();
+
+			} while (cursor.moveToNext());
 		}
 		cursor.close();
-		//db.close();
+		// db.close();
 		return orderList;
 	}
-	
-	
-	public Cursor getUnsyncTemplates()
-	{
-		//SQLiteDatabase db = myDB;
+
+	public Cursor getUnsyncTemplates() {
+		// SQLiteDatabase db = myDB;
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append("SELECT * FROM Templates WHERE isSync = '0'");
-		
+
 		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
 		return cursor;
-		
+
 	}
+
 	public long getNumUnsyncTemplates() {
-		//SQLiteDatabase db = SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READWRITE);
-		
-		//SQLiteDatabase db = dbManager.openReadableDB();
-		
+		// SQLiteDatabase db =
+		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
+		// SQLiteDatabase.NO_LOCALIZED_COLLATORS |
+		// SQLiteDatabase.OPEN_READWRITE);
+
+		// SQLiteDatabase db = dbManager.openReadableDB();
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE isSync = '0'");
 
 		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
-
-		//db.close();
+		stmt.close();
+		// db.close();
 		return count;
 	}
-	
 
-	public boolean unsyncTemplatesLeft()
-	{
+	public boolean unsyncTemplatesLeft() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE isSync = '0'");
 
 		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
-		
-		if(count==0)
+		stmt.close();
+		if (count == 0)
 			return false;
 		return true;
 	}
-	
-	
+
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
 		DBManager._db.execSQL(sb.toString());
 	}
-	
+
 	public void updateIsSync(List<String[]> list) {
-		//SQLiteDatabase db = SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS| SQLiteDatabase.OPEN_READWRITE);
-		//SQLiteDatabase db = dbManager.openWritableDB();
+		// SQLiteDatabase db =
+		// SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
+		// SQLiteDatabase.NO_LOCALIZED_COLLATORS|
+		// SQLiteDatabase.OPEN_READWRITE);
+		// SQLiteDatabase db = dbManager.openWritableDB();
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(cust_id).append(" = ? AND ").append(product_id).append(" = ?");
@@ -314,8 +326,8 @@ public class TemplateHandler {
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
 			args.put("isSync", list.get(i)[0]);
-			DBManager._db.update(table_name, args, sb.toString(), new String[] {list.get(i)[1],list.get(i)[2]});
+			DBManager._db.update(table_name, args, sb.toString(), new String[] { list.get(i)[1], list.get(i)[2] });
 		}
-		//db.close();
+		// db.close();
 	}
 }

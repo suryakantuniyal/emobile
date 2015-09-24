@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.support.DBManager;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
-
-import com.android.support.DBManager;
 
 public class ConsignmentSignaturesDBHandler {
 
