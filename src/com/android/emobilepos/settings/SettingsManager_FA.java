@@ -502,7 +502,7 @@ public class SettingsManager_FA extends FragmentActivity {
 						break;
 					case R.string.config_backup_data:
 						DBManager manag = new DBManager(activity);
-						manag.dbBackupDB();
+						manag.exportDBFile();
 						break;
 					}
 				}
