@@ -714,51 +714,24 @@ public class EMSDeviceDriver {
 
 			if (this instanceof EMSBluetoothStarPrinter) {
 				// if (!isPOSPrinter) {
-				byte[] data = null;
-				File logoFile;
-				FileOutputStream fos;
-				try {
-					if (isPOSPrinter) {
-						logoFile = new File(activity.getCacheDir() + "/logoPOSBytes");
-						if (logoFile.exists()) {
-							data = new byte[(int) logoFile.length()];
-							FileInputStream fis = new FileInputStream(logoFile);
-							fis.read(data);
-							fis.close();
-						} else {
-							data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
-									SCBBitmapConverter.Rotation.Normal, myBitmap);
-						}
-					} else {
-						logoFile = new File(activity.getCacheDir() + "/logoBytes");
-						if (logoFile.exists()) {
-							data = new byte[(int) logoFile.length()];
-							FileInputStream fis = new FileInputStream(logoFile);
-							fis.read(data);
-							fis.close();
-						} else {
-							util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
-							data = starbitmap.getImageEscPosDataForPrinting();
-						}
+				byte[] data;
+				if (isPOSPrinter) {
+					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap, PAPER_WIDTH, false);
+					int newWidth = myBitmap.getWidth();
+					if (myBitmap.getWidth() > PAPER_WIDTH) {
+						newWidth = PAPER_WIDTH;
 					}
-					if (!logoFile.exists()) {
-						fos = new FileOutputStream(logoFile);
-						fos.write(data);
-						fos.close();
-					}
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
+					data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(newWidth,
+							SCBBitmapConverter.Rotation.Normal, myBitmap);
+				} else {
+					util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
+					data = starbitmap.getImageEscPosDataForPrinting();
 				}
-
-				Communication.Result result;
-				result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
-
+				enableCenter = new byte[]{0x1b, 0x1d, 0x61, 0x01};
+				port.writePort(enableCenter, 0, enableCenter.length);
+				Communication.sendCommands(enableCenter, port, this.activity); 
+				Communication.sendCommands(data, port, this.activity); // 10000mS!!!
+				port.writePort(disableCenter, 0, disableCenter.length);
 			} else if (this instanceof EMSPAT100) {
 				printerApi.printImage(myBitmap, 0);
 			} else if (this instanceof EMSBlueBambooP25) {
