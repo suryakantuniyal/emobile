@@ -839,10 +839,9 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		Gson gson = new Gson();
 		myListview.setSelection(0);
 		myListview.setSelected(false);
-		Payment payment = gson.fromJson(data.getStringExtra("payment"), Payment.class);
+		
 		myAdapter.notifyDataSetChanged();
 		if (resultCode == -1) {
 			if (requestCode == Global.FROM_OPEN_INVOICES)

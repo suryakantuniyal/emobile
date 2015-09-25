@@ -26,6 +26,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Base64;
 import drivers.star.utils.CommandDataList;
 import drivers.star.utils.Communication;
@@ -1921,8 +1922,22 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 	private StarIOPort getStarIOPort() throws StarIOPortException {
 		releasePrinter();
 		port = null;
-		if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline)
+		if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline) {
+			if (portName.toUpperCase().contains("TCP")) {
+				String ip = portName.replace("TCP:", "");
+				int port=80;
+				try {
+					port = TextUtils.isEmpty(portSettings) ? 80 : Integer.parseInt(portSettings);
+				} catch (NumberFormatException e) {					
+					e.printStackTrace();
+					
+				}
+				if (!Global.isIpAvailable(ip, port)) {
+					throw new StarIOPortException("Host not reachable.");
+				}
+			}
 			port = StarIOPort.getPort(portName, portSettings, 10000, activity);
+		}
 		return port;
 	}
 }

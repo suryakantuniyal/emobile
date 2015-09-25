@@ -413,7 +413,7 @@ public class PaymentsHandler {
 		sb.append("SELECT pay_amount FROM Payments WHERE pay_id = '").append(payID).append("'");
 		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
 		String returningVal = "";
-
+		int count = cursor.getCount();
 		if (cursor.moveToFirst()) {
 			returningVal = cursor.getString(cursor.getColumnIndex("pay_amount"));
 		}

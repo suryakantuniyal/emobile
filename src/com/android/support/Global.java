@@ -1675,4 +1675,21 @@ public class Global extends Application {
 
 		this.wasInBackground = false;
 	}
+
+	public static boolean isIpAvailable(String ip, int port) {
+		boolean exists = false;
+		Socket sock;
+		try {
+			SocketAddress sockaddr = new InetSocketAddress(ip, port);
+			// Create an unbound socket
+			sock = new Socket();
+			int timeoutMs = 2000; // 2 seconds
+			sock.connect(sockaddr, timeoutMs);
+			sock.close();
+			exists = true;
+		} catch (Exception e) {
+		}
+
+		return exists;
+	}
 }

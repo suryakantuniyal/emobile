@@ -321,8 +321,8 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 		String amountToBePaid = Double.toString(
 				Global.formatNumFromLocale(fieldAmountPaid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
 		Global.amountPaid = amountToBePaid;
-		payment.pay_dueamount = Global.amountPaid;
-		payment.pay_amount = Global.amountPaid;
+		// payment.pay_dueamount = Global.amountPaid;
+		// payment.pay_amount = Global.amountPaid;
 		payment.pay_name = cardInfoManager.getCardOwnerName();
 
 		payment.originalTotalAmount = Global.amountPaid;
@@ -434,7 +434,11 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 					xr.setContentHandler(handler);
 					xr.parse(inSource);
 					parsedMap = handler.getData();
-
+					payment.pay_amount = parsedMap.get("AuthorizedAmount");
+					double due = Double.parseDouble(payment.originalTotalAmount)
+							- Double.parseDouble(payment.pay_amount);
+					payment.pay_dueamount = String.valueOf(due);
+					Global.amountPaid = payment.pay_amount;
 					if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
 						wasProcessed = true;
 					else if (parsedMap != null && parsedMap.size() > 0) {
@@ -504,13 +508,17 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dlog.dismiss();
+
 				Intent data = new Intent();
-				data.putExtra("payment", payment.toJson());
+				Bundle bundle = new Bundle();
+				bundle.putString("originalTotalAmount", payment.originalTotalAmount);
+
+				bundle.putString("pay_dueamount", payment.pay_dueamount);
+				bundle.putString("pay_amount", payment.pay_amount);
+				Global.amountPaid = payment.pay_amount;
+				data.putExtras(bundle);
 				setResult(-2, data);
-
-				String originalTotalAmount = payment.originalTotalAmount;
 				finish();
-
 			}
 		});
 		dlog.show();
