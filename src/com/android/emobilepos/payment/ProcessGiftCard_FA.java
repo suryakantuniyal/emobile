@@ -16,7 +16,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import protocols.EMSCallBack;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -321,6 +320,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 		String amountToBePaid = Double.toString(
 				Global.formatNumFromLocale(fieldAmountPaid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
 		Global.amountPaid = amountToBePaid;
+		payment.pay_dueamount = Double.toString(Double.parseDouble(Global.amountPaid) - Double.parseDouble(amountToBePaid));
 		// payment.pay_dueamount = Global.amountPaid;
 		// payment.pay_amount = Global.amountPaid;
 		payment.pay_name = cardInfoManager.getCardOwnerName();
