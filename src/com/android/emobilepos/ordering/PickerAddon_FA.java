@@ -39,6 +39,7 @@ import com.android.support.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.GenerateNewID.IdType;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -344,7 +345,7 @@ public class PickerAddon_FA  extends FragmentActivity  implements OnClickListene
 				
 				GenerateNewID generator = new GenerateNewID(activity);
 				//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-				Global.lastOrdID = generator.getNextID();
+				Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 //				if (handler.getDBSize() == 0)
 //					Global.lastOrdID = generator.generate("", 0);
 //				else

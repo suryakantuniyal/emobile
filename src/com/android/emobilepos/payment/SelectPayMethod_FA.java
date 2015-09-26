@@ -58,6 +58,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -130,7 +131,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 		paymentHandlerDB = new PaymentsHandler(this);
 		GenerateNewID generator = new GenerateNewID(this);
-		pay_id = generator.getNextID();
+		pay_id = generator.getNextID(IdType.PAYMENT_ID);
 
 		myAdapter = new CardsListAdapter(this);
 		myListview.setAdapter(myAdapter);
@@ -878,7 +879,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				GenerateNewID generator = new GenerateNewID(this);
 				previous_pay_id = pay_id;
 				// pay_id = generator.generate(pay_id,1);
-				pay_id = generator.getNextID();
+				pay_id = generator.getNextID(IdType.PAYMENT_ID);
 				String temp = Global.formatDoubleStrToCurrency("0.00");
 
 				if (isFromMainMenu || extras.getBoolean("histinvoices"))
@@ -1018,7 +1019,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		// tempPay_id = generator.generate("",1);
 		// else
 		// tempPay_id = generator.generate(paymentHandlerDB.getLastPayID(),1);
-		tempPay_id = generator.getNextID();
+		tempPay_id = generator.getNextID(IdType.PAYMENT_ID);
 
 		loyaltyRewardPayment.pay_id = tempPay_id;
 

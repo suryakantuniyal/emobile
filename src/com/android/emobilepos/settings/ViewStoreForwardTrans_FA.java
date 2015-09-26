@@ -24,6 +24,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.GenerateNewID.IdType;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -421,7 +422,7 @@ public class ViewStoreForwardTrans_FA extends FragmentActivity implements OnItem
 		GenerateNewID generator = new GenerateNewID(this);
 		MyPreferences myPref = new MyPreferences(this);
 		
-		newPayment.pay_id =generator.getNextID();
+		newPayment.pay_id =generator.getNextID(IdType.PAYMENT_ID);
 		
 		newPayment.emp_id = myCursor.getString(myCursor.getColumnIndex("emp_id"));
 		

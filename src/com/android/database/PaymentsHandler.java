@@ -10,6 +10,7 @@ import java.util.List;
 import com.android.emobilepos.models.Payment;
 import com.android.support.DBManager;
 import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -445,7 +446,7 @@ public class PaymentsHandler {
 		// String _orig_pay_id = payment.getSetData("pay_id", true, null);
 		// myPref.setLastPayID(idGenerator.getNextID(myPref.getLastPayID()));
 
-		payment.pay_id = idGenerator.getNextID();
+		payment.pay_id = idGenerator.getNextID(IdType.PAYMENT_ID);
 		payment.pay_type = "1";
 		payment.isVoid = "1";
 		payment.pay_issync = "0";
@@ -1166,4 +1167,20 @@ public class PaymentsHandler {
 		return listPayment;
 
 	}
+
+	public static String getLastPaymentId(int deviceId, int year) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select max(pay_id) from ").append(table_name).append(" WHERE pay_id like '").append(deviceId)
+				.append("-%-").append(year).append("'");
+
+		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		cursor.moveToFirst();
+		String max = cursor.getString(0);
+		cursor.close();
+		stmt.close();
+		return max;
+	}
+
+
 }
