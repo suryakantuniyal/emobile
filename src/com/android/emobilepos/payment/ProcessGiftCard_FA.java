@@ -322,7 +322,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 		Global.amountPaid = amountToBePaid;
 		payment.pay_dueamount = Double.toString(Double.parseDouble(Global.amountPaid) - Double.parseDouble(amountToBePaid));
 		// payment.pay_dueamount = Global.amountPaid;
-		// payment.pay_amount = Global.amountPaid;
+		payment.pay_amount = Global.amountPaid;
 		payment.pay_name = cardInfoManager.getCardOwnerName();
 
 		payment.originalTotalAmount = Global.amountPaid;
