@@ -691,7 +691,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 					LINE_WIDTH, 0));
 		}
 
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 				Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0));
@@ -714,7 +714,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		if (!isCashPayment && !isCheckPayment) {
 			if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-				sb.append(textHandler.newLines(4));
+				sb.append(textHandler.newLines(1));
 			} else if (!payArray[7].isEmpty()) {
 				encodedSignature = payArray[7];
 				try {
@@ -726,7 +726,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			}
 
 			sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 			powaPOS.printText(sb.toString());
 			sb.setLength(0);
 		}
@@ -766,7 +766,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		if (!isCashPayment && !isCheckPayment) {
 
 			powaPOS.printText(creditCardFooting);
-			powaPOS.printText(textHandler.newLines(4));
+			powaPOS.printText(textHandler.newLines(1));
 		}
 
 		if (isReprint) {
@@ -854,12 +854,12 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		StringBuilder sb_refunds = new StringBuilder();
 		// port.writePort(textHandler.newLines(3).getBytes(FORMAT), 0,
 		// textHandler.newLines(3).length());
-		powaPOS.printText(textHandler.newLines(3));
+		powaPOS.printText(textHandler.newLines(1));
 		sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 		sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
 		sb.append(textHandler.centeredString("Device: " + myPref.getEmpName() + "(" + myPref.getEmpID() + ")",
 				LINE_WIDTH));
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 		sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH, 0));
 		sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),
 				LINE_WIDTH, 0));
@@ -896,18 +896,18 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 						Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 3));
 		}
 
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 				Global.formatDoubleStrToCurrency(Double.toString(payGranTotal)), LINE_WIDTH, 4));
-		sb.append(textHandler.newLines(3));
+		sb.append(textHandler.newLines(1));
 
-		sb_refunds.append(textHandler.newLines(2));
+		sb_refunds.append(textHandler.newLines(1));
 		sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 				Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
 
 		powaPOS.printText(sb.toString());
 		powaPOS.printText(sb_refunds.toString());
-		powaPOS.printText(textHandler.newLines(5));
+		powaPOS.printText(textHandler.newLines(1));
 		return true;
 	}
 
@@ -1003,7 +1003,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				myConsignment.get(0).ConsTrans_ID, LINE_WIDTH, 0));
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 				Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-		sb.append(textHandler.newLines(3));
+		sb.append(textHandler.newLines(1));
 
 		for (int i = 0; i < size; i++) {
 			if (!myConsignment.get(i).ConsOriginal_Qty.equals("0")) {
@@ -1044,7 +1044,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 						Global.formatDoubleToCurrency(returnAmount), LINE_WIDTH, 5));
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:",
 						Global.formatDoubleStrToCurrency(myConsignment.get(i).invoice_total), LINE_WIDTH, 5))
-						.append(textHandler.newLines(2));
+						.append(textHandler.newLines(1));
 
 				totalSold += Double.parseDouble(myConsignment.get(i).ConsInvoice_Qty);
 				totalReturned += Double.parseDouble(myConsignment.get(i).ConsReturn_Qty);
@@ -1068,7 +1068,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				LINE_WIDTH, 0));
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:", Global.formatDoubleToCurrency(ordTotal),
 				LINE_WIDTH, 0));
-		sb.append(textHandler.newLines(3));
+		sb.append(textHandler.newLines(1));
 
 		powaPOS.printText(sb.toString());
 
@@ -1082,7 +1082,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			e.printStackTrace();
 		}
 
-		powaPOS.printText(textHandler.newLines(3));
+		powaPOS.printText(textHandler.newLines(1));
 
 		// db.close();
 
@@ -1133,7 +1133,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				myPref.getEmpName(), LINE_WIDTH, 0));
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 				Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-		sb.append(textHandler.newLines(3));
+		sb.append(textHandler.newLines(1));
 
 		for (int i = 0; i < size; i++) {
 			map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
@@ -1173,7 +1173,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			// port.writePort(enableCenter, 0, enableCenter.length); // center
 			sb.setLength(0);
 			sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 			// port.writePort(sb.toString().getBytes(FORMAT), 0,
 			// sb.toString().length());
 			// port.writePort(disableCenter, 0, disableCenter.length); //
@@ -1252,7 +1252,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				sb.append(textHandler.oneColumnLineWithLeftAlignedText(productInfo.get(i)[1], LINE_WIDTH, 5))
 						.append("\n\n");
 			} else
-				sb.append(textHandler.newLines(2));
+				sb.append(textHandler.newLines(1));
 
 			powaPOS.printText(sb.toString());
 			sb.setLength(0);
@@ -1260,7 +1260,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		sb.append(textHandler.centeredString(getString(R.string.receipt_thankyou), LINE_WIDTH));
 		powaPOS.printText(sb.toString());
-		powaPOS.printText(textHandler.newLines(3));
+		powaPOS.printText(textHandler.newLines(1));
 		return true;
 	}
 
@@ -1341,7 +1341,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				sb.setLength(0);
 			}
 		}
-		sb.append(textHandler.newLines(3));
+		sb.append(textHandler.newLines(1));
 		powaPOS.printText(sb.toString());
 
 		// db.close();
@@ -1394,7 +1394,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				map.get("ConsTrans_ID"), LINE_WIDTH, 0));
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 				Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-		sb.append(textHandler.newLines(3));
+		sb.append(textHandler.newLines(1));
 
 		for (int i = 0; i < size; i++) {
 			c.moveToPosition(i);
@@ -1435,7 +1435,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:",
 						Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("item_total"))), LINE_WIDTH, 5))
-						.append(textHandler.newLines(2));
+						.append(textHandler.newLines(1));
 			} else {
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
 						c.getString(c.getColumnIndex("ConsOriginal_Qty")), LINE_WIDTH, 3));
@@ -1463,7 +1463,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:",
 					Global.formatDoubleStrToCurrency(map.get("total_grand_total")), LINE_WIDTH, 0));
 		}
-		sb.append(textHandler.newLines(3));
+		sb.append(textHandler.newLines(1));
 
 		powaPOS.printText(sb.toString());
 
@@ -1477,7 +1477,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			e.printStackTrace();
 		}
 
-		powaPOS.printText(textHandler.newLines(3));
+		powaPOS.printText(textHandler.newLines(1));
 		return true;
 	}
 

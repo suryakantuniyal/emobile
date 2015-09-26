@@ -55,7 +55,7 @@ import util.RasterDocument.RasSpeed;
 import util.RasterDocument.RasTopMargin;
 
 public class EMSDeviceDriver {
-	public static final boolean PRINT_TO_LOG = true;
+	public static final boolean PRINT_TO_LOG = false;
 	protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 	protected double itemDiscTotal = 0;
 	protected double saveAmount;
@@ -513,12 +513,12 @@ public class EMSDeviceDriver {
 						Global.formatDoubleToCurrency(0.00), lineWidth, 0));
 				;
 			} else {
-				tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
+				tempAmount += formatStrToDouble(payArrayList.get(0)[0]);
 				String _pay_type = payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
 				double tempTipAmount = formatStrToDouble(payArrayList.get(0)[2]);
 				StringBuilder tempSB = new StringBuilder();
 				tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
-						Global.formatDoubleStrToCurrency(payArrayList.get(0)[9]) + "[" + payArrayList.get(0)[1] + "]",
+						Global.formatDoubleStrToCurrency(payArrayList.get(0)[0]) + "[" + payArrayList.get(0)[1] + "]",
 						lineWidth, 1));
 				if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
 					tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + payArrayList.get(0)[4],
@@ -531,10 +531,10 @@ public class EMSDeviceDriver {
 
 				for (int i = 1; i < size; i++) {
 					_pay_type = payArrayList.get(i)[1].toUpperCase(Locale.getDefault()).trim();
-					tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[9]);
+					tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[0]);
 					tempTipAmount = tempTipAmount + formatStrToDouble(payArrayList.get(i)[2]);
 					tempSB.append(textHandler
-							.oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(payArrayList.get(i)[9])
+							.oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(payArrayList.get(i)[0])
 									+ "[" + payArrayList.get(i)[1] + "]", lineWidth, 1));
 					if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
 						tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + payArrayList.get(i)[4],
@@ -573,13 +573,13 @@ public class EMSDeviceDriver {
 			}
 			print(sb.toString(), FORMAT);
 
-			print(textHandler.newLines(2), FORMAT);
+			print(textHandler.newLines(1), FORMAT);
 			if (type != 1)
 				printYouSave(String.valueOf(saveAmount), lineWidth);
 			if (printPref.contains(MyPreferences.print_footer))
 				printFooter(lineWidth);
 
-			print(textHandler.newLines(2), FORMAT);
+			print(textHandler.newLines(1), FORMAT);
 			receiptSignature = anOrder.ord_signature;
 			if (!receiptSignature.isEmpty()) {
 				encodedSignature = receiptSignature;
@@ -587,7 +587,7 @@ public class EMSDeviceDriver {
 				// print(enableCenter); // center
 				sb.setLength(0);
 				sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
-				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 				print(sb.toString(), FORMAT);
 				// print(disableCenter); // disable
 				// center
@@ -597,7 +597,7 @@ public class EMSDeviceDriver {
 				sb.setLength(0);
 				sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
 				print(sb.toString());
-				print(textHandler.newLines(4));
+				print(textHandler.newLines(1));
 			}
 
 			cutPaper();
@@ -830,7 +830,7 @@ public class EMSDeviceDriver {
 			sb.append(textHandler.centeredString(header[2], lineWidth));
 
 		if (!sb.toString().isEmpty()) {
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			print(sb.toString());
 
 		}
@@ -842,12 +842,12 @@ public class EMSDeviceDriver {
 
 		print(textHandler.ivuLines(lineWidth), FORMAT);
 		sb.setLength(0);
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_youSave),
 				Global.formatDoubleStrToCurrency(saveAmount), lineWidth, 0));
 
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 		print(sb.toString());
 		print(textHandler.ivuLines(lineWidth), FORMAT);
 
@@ -868,7 +868,7 @@ public class EMSDeviceDriver {
 			sb.append(textHandler.centeredString(footer[2], lineWidth));
 
 		if (!sb.toString().isEmpty()) {
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			print(sb.toString());
 
 		}
