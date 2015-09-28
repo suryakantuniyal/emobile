@@ -41,6 +41,7 @@ import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -131,9 +132,9 @@ public class ConsignmentVisit_FR  extends Fragment implements OnClickListener
 			//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
 			
 			if(Global.lastOrdID.isEmpty())
-				Global.lastOrdID = generator.getNextID();
+				Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 			else
-				Global.lastOrdID = generator.getNextID();
+				Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 			
 //			if (Global.lastOrdID.isEmpty()&&ordersHandler.getDBSize() == 0)
 //				Global.lastOrdID = generator.generate("",0);
@@ -161,7 +162,7 @@ public class ConsignmentVisit_FR  extends Fragment implements OnClickListener
 //			else if(!myPref.getLastConsTransID().isEmpty())
 //				consTransID = myPref.getLastConsTransID();
 			//myPref.setLastConsTransID(generator.getNextID(myPref.getLastConsTransID()));
-			consTransID = generator.getNextID();
+			consTransID = generator.getNextID(IdType.ORDER_ID);
 			
 			
 			//consTransID = generator.generate(consTransID, 3);

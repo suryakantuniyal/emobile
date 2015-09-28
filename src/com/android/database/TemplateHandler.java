@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.support.DBManager;
 import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.analytics.tracking.android.EasyTracker;
@@ -209,7 +210,7 @@ public class TemplateHandler {
 		GenerateNewID generator = new GenerateNewID(activity);
 		StringBuilder sb = new StringBuilder();
 
-		Global.lastOrdID = generator.getNextID();
+		Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 
 		/*
 		 * sb.append(

@@ -48,6 +48,7 @@ import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.android.support.GenerateNewID.IdType;
 //import com.android.emobilepos.RefundMenuActivity.printAsync;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
@@ -1305,7 +1306,7 @@ public class Global extends Application {
 		// }
 
 		if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
-			Global.lastOrdID = generator.getNextID();
+			Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 		}
 
 		ord.ord_id = Global.lastOrdID;
@@ -1674,5 +1675,22 @@ public class Global extends Application {
 		}
 
 		this.wasInBackground = false;
+	}
+
+	public static boolean isIpAvailable(String ip, int port) {
+		boolean exists = false;
+		Socket sock;
+		try {
+			SocketAddress sockaddr = new InetSocketAddress(ip, port);
+			// Create an unbound socket
+			sock = new Socket();
+			int timeoutMs = 2000; // 2 seconds
+			sock.connect(sockaddr, timeoutMs);
+			sock.close();
+			exists = true;
+		} catch (Exception e) {
+		}
+
+		return exists;
 	}
 }

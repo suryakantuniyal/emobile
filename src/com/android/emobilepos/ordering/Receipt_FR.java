@@ -73,6 +73,7 @@ import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
 import com.android.support.DBManager;
 import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -1080,7 +1081,7 @@ public class Receipt_FR extends Fragment
 		TransferInventory_DB dbInventory = new TransferInventory_DB(activity);
 		Global.transferLocation = new TransferLocations_Holder(activity);
 		GenerateNewID generateID = new GenerateNewID(activity);
-		String _temp_id = generateID.getNextID();
+		String _temp_id = generateID.getNextID(IdType.ORDER_ID);
 
 		Global.transferLocation.set(TransferLocations_DB.trans_id, _temp_id);
 		Global.transferLocation.set(TransferLocations_DB.loc_key_from, Global.locationFrom.get(Locations_DB.loc_key));
@@ -1214,7 +1215,7 @@ public class Receipt_FR extends Fragment
 			size = Global.cons_fillup_products.size();
 
 			if (Global.cons_return_products.size() > 0 && size > 0) {
-				Global.lastOrdID = idGenerator.getNextID();
+				Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
 			}
 
 			Global.cons_fillup_order.ord_id = Global.lastOrdID;

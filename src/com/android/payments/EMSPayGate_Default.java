@@ -142,15 +142,37 @@ public class EMSPayGate_Default {
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
 				break;
+			case ActivateGiftCardAction:
+			case ActivateLoyaltyCardAction:
+			case ActivateRewardAction:
+				generateCardBlock(data, isSwipe);
+
+				if (isSwipe)
+					generateTrackData();
+
+				if (actions == EAction.ChargeDebitAction)
+					generatePinBlock();
+
+				generateERP();
+				generateAmountBlock();
+
+				generateContactInfoBlock(payment.cust_id);
+
+				if (isSwipe)
+					generateEncryptedBlock();
+
+				if (Global.isIvuLoto)
+					generateEvertec();
+				serializer.endTag(empstr, "epay");
+				serializer.endDocument();
+
+				break;
 			case CreditCardAuthAction:
 			case ChargeCreditCardAction:
 			case ChargeDebitAction:
 			case ChargeRewardAction:
 			case ChargeGiftCardAction:
 			case ChargeLoyaltyCardAction:
-			case ActivateGiftCardAction:
-			case ActivateLoyaltyCardAction:
-			case ActivateRewardAction:
 			case ReverseCreditCardAction:
 				generateCardBlock(data, isSwipe);
 

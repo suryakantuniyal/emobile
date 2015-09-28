@@ -55,6 +55,7 @@ import com.android.emobilepos.models.OrderProducts;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.GenerateNewID.IdType;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -1087,7 +1088,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 		if(!Global.isFromOnHold&&Global.lastOrdID.isEmpty())
 		{
 			//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-			Global.lastOrdID = generator.getNextID();
+			Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 //			if (handler.getDBSize() == 0)
 //				Global.lastOrdID = generator.generate("",0);
 //			else

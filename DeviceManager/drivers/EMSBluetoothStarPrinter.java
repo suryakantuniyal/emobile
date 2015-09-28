@@ -26,6 +26,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Base64;
 import drivers.star.utils.CommandDataList;
 import drivers.star.utils.Communication;
@@ -441,7 +442,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 						payArray[10], LINE_WIDTH, 0));
 			}
 
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 					Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0));
@@ -461,18 +462,18 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 
 			sb.setLength(0);
-			port.writePort(textHandler.newLines(4).getBytes(FORMAT), 0, textHandler.newLines(2).length());
+			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
 
 			if (!isCashPayment && !isCheckPayment) {
 				if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-					sb.append(textHandler.newLines(4));
+					sb.append(textHandler.newLines(1));
 				} else if (!payArray[7].isEmpty()) {
 					encodedSignature = payArray[7];
 					this.printImage(1);
 				}
 				port.writePort(enableCenter, 0, enableCenter.length); // center
 				sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 				port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 				sb.setLength(0);
 			}
@@ -512,7 +513,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 			if (!isCashPayment && !isCheckPayment) {
 
 				port.writePort(creditCardFooting.getBytes(FORMAT), 0, creditCardFooting.length());
-				temp = textHandler.newLines(4);
+				temp = textHandler.newLines(1);
 				port.writePort(temp.getBytes(FORMAT), 0, temp.length());
 			}
 
@@ -676,10 +677,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 			StringBuilder sb = new StringBuilder();
 			StringBuilder sb_refunds = new StringBuilder();
-			port.writePort(textHandler.newLines(3).getBytes(FORMAT), 0, textHandler.newLines(3).length());
+			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
 			sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 			sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH,
 					0));
 			sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),
@@ -716,18 +717,18 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 							Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 3));
 			}
 
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 					Global.formatDoubleStrToCurrency(Double.toString(payGranTotal)), LINE_WIDTH, 4));
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
-			sb_refunds.append(textHandler.newLines(2));
+			sb_refunds.append(textHandler.newLines(1));
 			sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 					Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
 
 			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 			port.writePort(sb_refunds.toString().getBytes(FORMAT), 0, sb_refunds.toString().length());
-			port.writePort(textHandler.newLines(5).getBytes(FORMAT), 0, textHandler.newLines(5).length());
+			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
 			port.writePort("".getBytes(FORMAT), 0, "".length());
 
 			if (isPOSPrinter) {
@@ -907,7 +908,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					myConsignment.get(0).ConsTrans_ID, LINE_WIDTH, 0));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 					Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
 			for (int i = 0; i < size; i++) {
 				if (!myConsignment.get(i).ConsOriginal_Qty.equals("0")) {
@@ -948,7 +949,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 							Global.formatDoubleToCurrency(returnAmount), LINE_WIDTH, 5));
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:",
 							Global.formatDoubleStrToCurrency(myConsignment.get(i).invoice_total), LINE_WIDTH, 5))
-							.append(textHandler.newLines(2));
+							.append(textHandler.newLines(1));
 
 					totalSold += Double.parseDouble(myConsignment.get(i).ConsInvoice_Qty);
 					totalReturned += Double.parseDouble(myConsignment.get(i).ConsReturn_Qty);
@@ -972,7 +973,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					LINE_WIDTH, 0));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:",
 					Global.formatDoubleToCurrency(ordTotal), LINE_WIDTH, 0));
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
 			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 
@@ -981,7 +982,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 			this.printImage(1);
 
-			port.writePort(textHandler.newLines(3).getBytes(FORMAT), 0, textHandler.newLines(3).length());
+			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
 
 			if (isPOSPrinter) {
 				port.writePort(new byte[] { 0x1b, 0x64, 0x02 }, 0, 3); // Cut
@@ -1302,7 +1303,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					myPref.getEmpName(), LINE_WIDTH, 0));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 					Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
 			for (int i = 0; i < size; i++) {
 				map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
@@ -1337,7 +1338,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(enableCenter, 0, enableCenter.length); // center
 				sb.setLength(0);
 				sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 				port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 				port.writePort(disableCenter, 0, disableCenter.length); // disable
 																		// center
@@ -1445,7 +1446,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					sb.append(textHandler.oneColumnLineWithLeftAlignedText(productInfo.get(i)[1], LINE_WIDTH, 5))
 							.append("\n\n");
 				} else
-					sb.append(textHandler.newLines(2));
+					sb.append(textHandler.newLines(1));
 
 				port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 				sb.setLength(0);
@@ -1461,8 +1462,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 			sb.append(textHandler.centeredString(getString(R.string.receipt_thankyou), LINE_WIDTH));
 			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
-			port.writePort(textHandler.newLines(3).getBytes(FORMAT), 0,
-					textHandler.newLines(3).getBytes(FORMAT).length);
+			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0,
+					textHandler.newLines(1).getBytes(FORMAT).length);
 
 			if (isPOSPrinter) {
 				port.writePort(new byte[] { 0x1b, 0x64, 0x02 }, 0, 3); // Cut
@@ -1603,7 +1604,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					sb.setLength(0);
 				}
 			}
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 			port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
 			if (isPOSPrinter) {
 				byte[] characterExpansion = new byte[] { 0x1b, 0x69, 0x00, 0x00 };
@@ -1711,7 +1712,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					map.get("ConsTrans_ID"), LINE_WIDTH, 0));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 					Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
 			for (int i = 0; i < size; i++) {
 				c.moveToPosition(i);
@@ -1754,7 +1755,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:",
 							Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("item_total"))), LINE_WIDTH,
-							5)).append(textHandler.newLines(2));
+							5)).append(textHandler.newLines(1));
 				} else {
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
 							c.getString(c.getColumnIndex("ConsOriginal_Qty")), LINE_WIDTH, 3));
@@ -1782,7 +1783,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:",
 						Global.formatDoubleStrToCurrency(map.get("total_grand_total")), LINE_WIDTH, 0));
 			}
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
 			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 
@@ -1791,7 +1792,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 			this.printImage(1);
 
-			port.writePort(textHandler.newLines(3).getBytes(FORMAT), 0, textHandler.newLines(3).length());
+			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
 
 			if (isPOSPrinter) {
 				port.writePort(new byte[] { 0x1b, 0x64, 0x02 }, 0, 3); // Cut
@@ -1921,8 +1922,22 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 	private StarIOPort getStarIOPort() throws StarIOPortException {
 		releasePrinter();
 		port = null;
-		if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline)
-			port = StarIOPort.getPort(portName, portSettings, 30000, activity);
+		if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline) {
+			if (portName.toUpperCase().contains("TCP")) {
+				String ip = portName.replace("TCP:", "");
+				int port=80;
+				try {
+					port = TextUtils.isEmpty(portSettings) ? 80 : Integer.parseInt(portSettings);
+				} catch (NumberFormatException e) {					
+					e.printStackTrace();
+					
+				}
+				if (!Global.isIpAvailable(ip, port)) {
+					throw new StarIOPortException("Host not reachable.");
+				}
+			}
+			port = StarIOPort.getPort(portName, portSettings, 10000, activity);
+		}
 		return port;
 	}
 }

@@ -546,12 +546,13 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 		Global.amountPaid = Double.toString(amountToBePaid);
 
-		if ((amountToBePaid - actualAmount) > 0) {
-			payment.pay_dueamount = Double.toString(actualAmount);
-		} else {
-			payment.pay_dueamount = Double.toString(amountToBePaid);
-		}
-
+//		if (amountToBePaid < actualAmount) {
+//			payment.pay_dueamount = Double.toString(actualAmount);
+//		} else {
+//			payment.pay_dueamount = Double.toString(amountToBePaid);
+//		}
+		payment.pay_dueamount = Double.toString(actualAmount - amountToBePaid);
+		
 		payment.pay_amount = Double.toString(amountToBePaid);
 		payment.pay_name = cardInfoManager.getCardOwnerName();
 
@@ -1474,7 +1475,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 						xr.setContentHandler(handler);
 						xr.parse(inSource);
 						parsedMap = handler.getData();
-
+						parsedMap = handler.getData();
+						
 						if (parsedMap != null && parsedMap.size() > 0
 								&& parsedMap.get("epayStatusCode").equals("APPROVED"))
 							wasProcessed = true;
@@ -1738,14 +1740,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 					showPrintDlg(false, false);
 			} else
 				finishPaymentTransaction();
-
-			// if(myPref.getPreferences(MyPreferences.pref_handwritten_signature))
-			// new printAsync().execute(false);
-			// else
-			// if(myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-			// showPrintDlg(true,false);
-			// else
-			// finishPaymentTransaction();
 
 		}
 	}

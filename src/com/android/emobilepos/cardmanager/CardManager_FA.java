@@ -43,6 +43,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -414,7 +415,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack,OnCl
 //				tempPay_id = generator.generate(paymentHandlerDB.getLastPayID(),1);
 			
 			
-			tempPay_id = generator.getNextID();
+			tempPay_id = generator.getNextID(IdType.PAYMENT_ID);
 			payment.pay_id = tempPay_id;
 			
 

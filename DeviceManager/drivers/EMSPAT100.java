@@ -246,7 +246,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 					LINE_WIDTH, 0));
 		}
 
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 				Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0));
@@ -268,13 +268,13 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 		printerApi.printData(sb.toString());
 
 		sb.setLength(0);
-		printerApi.printData(textHandler.newLines(4));
+		printerApi.printData(textHandler.newLines(1));
 		// port.writePort(textHandler.newLines(4).getBytes(FORMAT), 0,
 		// textHandler.newLines(2).length());
 
 		if (!isCashPayment && !isCheckPayment) {
 			if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-				sb.append(textHandler.newLines(4));
+				sb.append(textHandler.newLines(1));
 			} else if (!payArray[7].isEmpty()) {
 				encodedSignature = payArray[7];
 				try {
@@ -286,7 +286,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 			}
 			// port.writePort(enableCenter, 0, enableCenter.length); // center
 			sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 			printerApi.printData(sb.toString());
 			sb.setLength(0);
 		}
@@ -331,7 +331,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 		if (!isCashPayment && !isCheckPayment) {
 
 			printerApi.printData(creditCardFooting);
-			temp = textHandler.newLines(4);
+			temp = textHandler.newLines(1);
 			printerApi.printData(temp);
 		}
 
@@ -400,11 +400,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 			StringBuilder sb = new StringBuilder();
 			StringBuilder sb_refunds = new StringBuilder();
-			printerApi.printData(textHandler.newLines(3));
+			printerApi.printData(textHandler.newLines(1));
 
 			sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 			sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH,
 					0));
 			sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),
@@ -441,18 +441,18 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 							Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 3));
 			}
 
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 					Global.formatDoubleStrToCurrency(Double.toString(payGranTotal)), LINE_WIDTH, 4));
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
-			sb_refunds.append(textHandler.newLines(2));
+			sb_refunds.append(textHandler.newLines(1));
 			sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 					Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
 
 			printerApi.printData(sb.toString());
 			printerApi.printData(sb_refunds.toString());
-			printerApi.printData(textHandler.newLines(5));
+			printerApi.printData(textHandler.newLines(1));
 			// terminal.printData("".getBytes(FORMAT), "".length());
 
 		} catch (Exception e) {
