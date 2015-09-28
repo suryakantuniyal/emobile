@@ -108,13 +108,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 		switch (LINE_WIDTH) {
 		case 32:
-			PAPER_WIDTH = 420;
+			PAPER_WIDTH = 408;
 			break;
 		case 48:
-			PAPER_WIDTH = 1600;
+			PAPER_WIDTH = 576;
 			break;
 		case 69:
-			PAPER_WIDTH = 300;// 5400
+			PAPER_WIDTH = 832;// 5400
 			break;
 		}
 

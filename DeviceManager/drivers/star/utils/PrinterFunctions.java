@@ -242,7 +242,8 @@ public class PrinterFunctions {
 		Byte[] tempList;
 
 		RasterDocument rasterDoc = new RasterDocument(drivers.star.utils.RasterDocument.RasSpeed.Medium,
-				RasPageEndMode.FeedAndFullCut, RasPageEndMode.FeedAndFullCut, RasTopMargin.Standard, 0, 0, 0);
+				RasPageEndMode.FeedToCutter, RasPageEndMode.FeedToCutter, RasTopMargin.Default, 0,
+				0, 0);
 		StarBitmap starbitmap = new StarBitmap(source, false, maxWidth);
 
 		byte[] command = rasterDoc.BeginDocumentCommandData();
