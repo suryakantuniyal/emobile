@@ -1,6 +1,13 @@
 package com.android.emobilepos.ordering;
 
 
+import com.android.support.Global;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,13 +19,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListener{
 	LayoutInflater inflater;

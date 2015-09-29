@@ -15,13 +15,13 @@ import com.android.emobilepos.models.ShiftPeriods;
 import com.android.support.Global;
 import com.emobilepos.app.R;
 
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeadersAdapter{
 

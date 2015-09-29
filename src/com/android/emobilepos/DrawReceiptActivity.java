@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
 import com.android.support.DrawView;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -19,15 +18,12 @@ import com.google.analytics.tracking.android.Tracker;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-
 import android.os.Bundle;
 import android.os.PowerManager;
-
 import android.util.Base64;
 import android.view.View;
-import android.view.Window;
-
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 

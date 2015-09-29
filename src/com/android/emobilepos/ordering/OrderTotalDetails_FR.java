@@ -7,7 +7,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.springframework.util.StringUtils;
+import com.android.database.ProductsHandler;
+import com.android.database.TaxesGroupHandler;
+import com.android.database.TaxesHandler;
+import com.android.emobilepos.models.DataTaxes;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -25,14 +31,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.android.database.ProductsHandler;
-import com.android.database.TaxesGroupHandler;
-import com.android.database.TaxesHandler;
-import com.android.emobilepos.models.DataTaxes;
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.RecalculateCallback {
 	private Spinner taxSpinner, discountSpinner;

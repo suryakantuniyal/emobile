@@ -8,14 +8,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.app.Activity;
-import android.database.sqlite.SQLiteDatabase;
-
-
 import com.android.database.AddressHandler;
 import com.android.database.CategoriesHandler;
 import com.android.database.ClerksHandler;
-import com.android.database.ConsignmentSignaturesDBHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DeviceDefaultValuesHandler;
@@ -51,6 +46,8 @@ import com.android.database.UOMHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+
+import android.app.Activity;
 
 public class SAXSynchHandler extends DefaultHandler {
 

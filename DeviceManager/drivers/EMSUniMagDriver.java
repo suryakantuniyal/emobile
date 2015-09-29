@@ -1,8 +1,5 @@
 package drivers;
 
-import protocols.EMSCallBack;
-import util.CardData;
-
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
@@ -14,7 +11,8 @@ import IDTech.MSR.uniMag.UniMagTools.uniMagReaderToolsMsg;
 import IDTech.MSR.uniMag.UniMagTools.uniMagSDKTools;
 import android.app.Activity;
 import android.os.Handler;
-import android.widget.Toast;
+import protocols.EMSCallBack;
+import util.CardData;
 
 
 public class EMSUniMagDriver implements  uniMagReaderMsg ,uniMagReaderToolsMsg{

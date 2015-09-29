@@ -6,25 +6,17 @@ import java.io.File;
 
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-
 import com.android.support.TouchImageView;
-import com.android.testimgloader.ImageLoaderTest;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 import android.app.Activity;
-
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.view.View;

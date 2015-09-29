@@ -11,6 +11,16 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import com.android.saxhandler.SaxAllEmployeesHandler;
+import com.android.saxhandler.SaxLoginHandler;
+import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -29,16 +39,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.saxhandler.SaxAllEmployeesHandler;
-import com.android.saxhandler.SaxLoginHandler;
-import com.android.saxhandler.SaxSelectedEmpHandler;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 public class SelectEmployee_FA extends FragmentActivity {
 	private ListView myListView;

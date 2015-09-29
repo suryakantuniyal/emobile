@@ -1,12 +1,10 @@
 package com.android.emobilepos.history;
 
 import com.android.database.CustomersHandler;
-import com.android.database.TransferInventory_DB;
 import com.android.database.TransferLocations_DB;
-import com.emobilepos.app.R;
 import com.android.emobilepos.history.details.HistoryInventoryTransferDetails_FA;
-import com.android.emobilepos.history.details.HistoryPaymentDetails_FA;
 import com.android.support.Global;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.content.Context;

@@ -1,6 +1,5 @@
 package drivers;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -12,42 +11,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import main.EMSDeviceManager;
+import com.StarMicronics.jasura.JAException;
+import com.android.database.InvProdHandler;
+import com.android.database.InvoicesHandler;
+import com.android.database.OrderProductsHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
+import com.android.database.PaymentsHandler;
+import com.android.database.ProductsHandler;
+import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.Orders;
+import com.android.support.ConsignmentTransaction;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.starmicronics.stario.StarIOPortException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
-import android.util.Base64;
-
-import com.StarMicronics.jasura.JAException;
-import com.android.database.InvProdHandler;
-import com.android.database.InvoicesHandler;
-import com.android.database.MemoTextHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrderTaxes_DB;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
-import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Orders;
-import com.emobilepos.app.R;
-import com.starmicronics.stario.StarIOPortException;
-import com.android.support.ConsignmentTransaction;
-import com.android.support.DBManager;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-
 import datamaxoneil.connection.Connection_Bluetooth;
-import datamaxoneil.printer.DocumentLP;
-
+import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;

@@ -7,8 +7,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.android.saxhandler.SAXdownloadHandler.Limiters;
-
 public class SaxAllEmployeesHandler extends DefaultHandler {
 	private boolean _inname, _inempid;
 	private List<String> emp_name;

@@ -6,7 +6,6 @@ import com.android.support.Global;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.AsyncTaskLoader;
 
 public class Catalog_Loader extends AsyncTaskLoader<Cursor>

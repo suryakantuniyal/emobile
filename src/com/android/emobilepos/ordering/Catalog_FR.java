@@ -6,6 +6,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.database.CategoriesHandler;
+import com.android.database.ProductAddonsHandler;
+import com.android.database.VolumePricesHandler;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyEditText;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.zzzapi.uart.uart;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -13,9 +26,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
@@ -30,10 +42,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -47,23 +59,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.android.database.CategoriesHandler;
-import com.android.database.ProductAddonsHandler;
-import com.android.database.VolumePricesHandler;
-
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-import com.android.support.Global;
-import com.android.support.MyEditText;
-import com.android.support.MyPreferences;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.partner.pt100.display.DisplayLineApiContext;
-import com.partner.pt100.display.DisplayManager;
-import com.zzzapi.uart.uart;
-
 import drivers.EMSPAT100;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,

@@ -2,22 +2,18 @@ package com.android.emobilepos.adapters;
 
 import java.util.LinkedHashMap;
 
-import com.emobilepos.app.R;
 import com.android.support.Global;
 import com.android.testimgloader.ImageLoaderTest;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-
 import android.widget.BaseAdapter;
-
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;

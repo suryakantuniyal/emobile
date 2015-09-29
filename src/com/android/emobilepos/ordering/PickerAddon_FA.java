@@ -8,11 +8,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.android.database.ProductAddonsHandler;
+import com.android.database.ProductsHandler;
+import com.android.emobilepos.models.OrderProducts;
+import com.android.support.DBManager;
+import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -29,23 +44,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.android.database.OrdersHandler;
-import com.android.database.ProductAddonsHandler;
-import com.android.database.ProductsHandler;
-import com.android.emobilepos.models.OrderProducts;
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-import com.android.support.GenerateNewID;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.GenerateNewID.IdType;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class PickerAddon_FA  extends FragmentActivity  implements OnClickListener
 {

@@ -8,9 +8,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.app.Activity;
-
 import com.android.support.Global;
+
+import android.app.Activity;
 
 public class SAXProcessGeniusHandler extends DefaultHandler {
 	

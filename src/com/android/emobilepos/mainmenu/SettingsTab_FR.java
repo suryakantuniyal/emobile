@@ -1,5 +1,9 @@
 package com.android.emobilepos.mainmenu;
 
+import com.android.emobilepos.settings.SettingsManager_FA;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,16 +11,12 @@ import android.support.v4.app.Fragment;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.settings.SettingsManager_FA;
-import com.android.support.MyPreferences;
 
 public class SettingsTab_FR extends Fragment implements OnClickListener{
 

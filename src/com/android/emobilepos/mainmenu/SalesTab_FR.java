@@ -2,6 +2,27 @@ package com.android.emobilepos.mainmenu;
 
 import java.util.HashMap;
 
+import com.android.database.ClerksHandler;
+import com.android.database.CustomersHandler;
+import com.android.database.Locations_DB;
+import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.adapters.SalesMenuAdapter;
+import com.android.emobilepos.cardmanager.GiftCard_FA;
+import com.android.emobilepos.cardmanager.LoyaltyCard_FA;
+import com.android.emobilepos.cardmanager.RewardCard_FA;
+import com.android.emobilepos.consignment.ConsignmentMain_FA;
+import com.android.emobilepos.customer.ViewCustomers_FA;
+import com.android.emobilepos.history.HistoryOpenInvoices_FA;
+import com.android.emobilepos.holders.Locations_Holder;
+import com.android.emobilepos.locations.LocationsPickerDlog_FR;
+import com.android.emobilepos.locations.LocationsPicker_Listener;
+import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -26,29 +47,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.ClerksHandler;
-import com.android.database.CustomersHandler;
-import com.android.database.Locations_DB;
-import com.android.database.SalesTaxCodesHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.adapters.SalesMenuAdapter;
-import com.android.emobilepos.cardmanager.GiftCard_FA;
-import com.android.emobilepos.cardmanager.LoyaltyCard_FA;
-import com.android.emobilepos.cardmanager.RewardCard_FA;
-import com.android.emobilepos.consignment.ConsignmentMain_FA;
-import com.android.emobilepos.country.CountryPicker;
-import com.android.emobilepos.country.CountryPickerListener;
-import com.android.emobilepos.customer.ViewCustomers_FA;
-import com.android.emobilepos.history.HistoryOpenInvoices_FA;
-import com.android.emobilepos.holders.Locations_Holder;
-import com.android.emobilepos.locations.LocationsPickerDlog_FR;
-import com.android.emobilepos.locations.LocationsPicker_Listener;
-import com.android.emobilepos.ordering.OrderingMain_FA;
-import com.android.emobilepos.payment.SelectPayMethod_FA;
-import com.android.support.DBManager;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class SalesTab_FR extends Fragment {
 	private SalesMenuAdapter myAdapter;

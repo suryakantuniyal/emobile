@@ -1,11 +1,18 @@
 package com.android.emobilepos.customer;
 
+import com.android.database.CustomersHandler;
+import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.history.HistoryTransactions_FA;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
@@ -15,9 +22,9 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -27,14 +34,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-
-import com.android.database.CustomersHandler;
-import com.android.database.SalesTaxCodesHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.history.HistoryTransactions_FA;
-import com.android.support.DBManager;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class ViewCustomers_FA extends FragmentActivity implements OnClickListener, OnItemClickListener{
 	private ListView myListView;

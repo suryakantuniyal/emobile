@@ -1,11 +1,20 @@
 package drivers.star.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.starmicronics.stario.StarIOPort;
+import com.starmicronics.stario.StarIOPortException;
+import com.starmicronics.stario.StarPrinterStatus;
+import com.starmicronics.starioextension.commandbuilder.ISCBBuilder;
+import com.starmicronics.starioextension.commandbuilder.SCBFactory;
+import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
+
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,18 +25,6 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import drivers.star.utils.RasterDocument.RasPageEndMode;
 import drivers.star.utils.RasterDocument.RasTopMargin;
-
-import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
-import com.emobilepos.app.R;
-import com.starmicronics.stario.StarIOPort;
-import com.starmicronics.stario.StarIOPortException;
-import com.starmicronics.stario.StarPrinterStatus;
-import com.starmicronics.starioextension.commandbuilder.ISCBBuilder;
-import com.starmicronics.starioextension.commandbuilder.SCBFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class PrinterFunctions {
 

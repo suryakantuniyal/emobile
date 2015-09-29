@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -35,8 +34,6 @@ import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
-import android.os.Debug;
-import android.os.Environment;
 import android.util.Log;
 
 public class Post {

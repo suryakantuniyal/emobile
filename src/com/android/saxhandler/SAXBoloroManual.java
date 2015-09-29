@@ -3,12 +3,14 @@ package com.android.saxhandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import android.app.Activity;
 
 import com.android.support.BoloroCarrier;
+
+import android.app.Activity;
 
 public class SAXBoloroManual extends DefaultHandler {
 

@@ -1,10 +1,8 @@
 package com.android.emobilepos.payment;
 
-import net.sourceforge.zbar.Config;
-import net.sourceforge.zbar.Image;
-import net.sourceforge.zbar.ImageScanner;
-import net.sourceforge.zbar.Symbol;
-import net.sourceforge.zbar.SymbolSet;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.Camera;
@@ -17,9 +15,11 @@ import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.widget.FrameLayout;
-
-import com.emobilepos.app.R;
-import com.android.support.Global;
+import net.sourceforge.zbar.Config;
+import net.sourceforge.zbar.Image;
+import net.sourceforge.zbar.ImageScanner;
+import net.sourceforge.zbar.Symbol;
+import net.sourceforge.zbar.SymbolSet;
 
 public class TupyxCamera_FA extends FragmentActivity{
 	private Camera mCamera;

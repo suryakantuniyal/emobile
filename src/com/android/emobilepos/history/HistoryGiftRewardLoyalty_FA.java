@@ -2,10 +2,10 @@ package com.android.emobilepos.history;
 
 
 import com.android.database.PaymentsHandler;
-import com.emobilepos.app.R;
 import com.android.emobilepos.history.details.HistoryPaymentDetails_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,7 +22,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window; 
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -30,9 +30,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
 
 public class HistoryGiftRewardLoyalty_FA extends FragmentActivity implements OnItemClickListener, OnTabChangeListener{
 

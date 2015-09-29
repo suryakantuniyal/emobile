@@ -1,5 +1,9 @@
 package com.android.emobilepos.consignment;
 
+import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,14 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.ordering.OrderingMain_FA;
-import com.android.support.Global;
+import android.widget.TextView;
 
 public class ConsignmentMain_FA extends FragmentActivity implements OnItemClickListener
 {

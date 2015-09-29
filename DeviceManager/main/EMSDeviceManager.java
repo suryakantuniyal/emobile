@@ -1,23 +1,32 @@
 package main;
 
 
-import com.emobilepos.app.R;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
-
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import drivers.EMSAsura;
+import drivers.EMSBlueBambooP25;
+import drivers.EMSBluetoothStarPrinter;
+import drivers.EMSDeviceDriver;
+import drivers.EMSIngenico;
+import drivers.EMSMagtekAudioCardReader;
+import drivers.EMSOneil4te;
+import drivers.EMSPAT100;
+import drivers.EMSPowaPOS;
+import drivers.EMSZebraEM220ii;
+import drivers.EMSsnbc;
 import protocols.EMSConnectionDelegate;
 import protocols.EMSDeviceManagerPrinterDelegate;
 import protocols.EMSPrintingDelegate;
-import drivers.*;
 
 public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDelegate {
 

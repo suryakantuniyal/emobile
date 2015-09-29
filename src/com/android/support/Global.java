@@ -20,23 +20,17 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import org.springframework.util.support.Base64;
 
-import main.EMSDeviceManager;
-
 import com.android.crashreport.ExceptionHandler;
-
-import com.emobilepos.app.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
@@ -49,6 +43,7 @@ import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.GenerateNewID.IdType;
+import com.emobilepos.app.R;
 //import com.android.emobilepos.RefundMenuActivity.printAsync;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
@@ -59,18 +54,15 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.zzzapi.uart.uart;
 
-import drivers.EMSPAT100;
-
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.Application;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
-
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
 import android.location.Criteria;
 import android.location.Location;
@@ -84,13 +76,14 @@ import android.text.Selection;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnTouchListener;
-
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import drivers.EMSPAT100;
+import main.EMSDeviceManager;
 
 public class Global extends Application {
 

@@ -8,12 +8,11 @@ import java.util.Map;
 
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
-import com.emobilepos.app.R;
 import com.android.support.Global;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.content.res.Resources;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

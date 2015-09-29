@@ -21,7 +21,23 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import protocols.EMSCallBack;
+import com.android.database.CustomersHandler;
+import com.android.database.InvoicePaymentsHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.PaymentsHandler;
+import com.android.database.PaymentsXML_DB;
+import com.android.database.StoredPayments_DB;
+import com.android.emobilepos.DrawReceiptActivity;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.CreditCardInfo;
+import com.android.support.Encrypt;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -34,7 +50,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
@@ -44,7 +59,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -55,32 +69,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.database.CustomersHandler;
-import com.android.database.InvoicePaymentsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.PaymentsXML_DB;
-import com.android.database.StoredPayments_DB;
-import com.android.emobilepos.DrawReceiptActivity;
-import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.CreditCardInfo;
-import com.android.support.Encrypt;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
-
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import protocols.EMSCallBack;
 
 public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
 

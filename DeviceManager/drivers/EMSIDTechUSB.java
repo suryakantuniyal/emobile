@@ -2,9 +2,6 @@ package drivers;
 import java.util.HashMap;
 import java.util.Iterator;
 
-
-import protocols.EMSCallBack;
- 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -19,6 +16,7 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
+import protocols.EMSCallBack;
  
 public class EMSIDTechUSB {
 	private Activity _activity;

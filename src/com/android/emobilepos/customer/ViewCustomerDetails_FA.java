@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.android.database.AddressHandler;
+import com.android.database.CustomersHandler;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.view.LayoutInflater;
@@ -21,12 +26,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.AddressHandler;
-import com.android.database.CustomersHandler;
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-import com.android.support.Global;
 
 public class ViewCustomerDetails_FA extends Activity {
 	private ListViewAdapter myAdapter;

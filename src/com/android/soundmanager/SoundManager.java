@@ -1,13 +1,13 @@
 package com.android.soundmanager;
 
+import java.util.HashMap;
+
+import com.emobilepos.app.R;
+
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Vibrator;
-
-import java.util.HashMap;
-
-import com.emobilepos.app.R;
 
 
 

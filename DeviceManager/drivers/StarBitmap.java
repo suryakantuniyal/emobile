@@ -1,7 +1,9 @@
 package drivers;
 
-import android.graphics.*;
-import java.util.*;
+import java.util.ArrayList;
+
+import android.graphics.Bitmap;
+import android.graphics.Color;
 
 public class StarBitmap
 {

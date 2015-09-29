@@ -3,6 +3,10 @@ package com.android.emobilepos.ordering;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.android.database.OrdProdAttrList_DB;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -18,11 +22,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.OrdProdAttrList_DB;
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.google.analytics.tracking.android.EasyTracker;
 
 public class OrderAttributes_FA extends FragmentActivity implements OnItemClickListener{
 		

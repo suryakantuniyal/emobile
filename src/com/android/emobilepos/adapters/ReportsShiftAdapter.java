@@ -1,6 +1,10 @@
 package com.android.emobilepos.adapters;
 
 
+import com.android.database.ShiftPeriodsDBHandler;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -11,10 +15,6 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
-
-import com.android.database.ShiftPeriodsDBHandler;
-import com.emobilepos.app.R;
-import com.android.support.Global;
 
 
 public class ReportsShiftAdapter extends BaseAdapter implements Filterable {

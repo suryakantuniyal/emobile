@@ -9,7 +9,6 @@ import org.xmlpull.v1.XmlSerializer;
 
 import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;

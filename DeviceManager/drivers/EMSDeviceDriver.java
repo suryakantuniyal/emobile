@@ -1,9 +1,6 @@
 package drivers;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,7 +30,6 @@ import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
-import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
 
 import POSSDK.POSSDK;
 import android.app.Activity;
@@ -42,14 +38,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.Base64;
 import android.util.Log;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.star.utils.Communication;
 import drivers.star.utils.PrinterFunctions;
-import drivers.star.utils.StarBitmap;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.RasterDocument;

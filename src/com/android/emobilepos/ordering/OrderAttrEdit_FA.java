@@ -2,7 +2,19 @@ package com.android.emobilepos.ordering;
 
 import java.io.IOException;
 
-import protocols.EMSCallBack;
+import com.android.soundmanager.SoundManager;
+import com.android.support.CreditCardInfo;
+import com.android.support.Global;
+import com.android.support.MyEditText;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.honeywell.decodemanager.DecodeManager;
+import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
+import com.honeywell.decodemanager.SymbologyConfigs;
+import com.honeywell.decodemanager.barcode.CommonDefine;
+import com.honeywell.decodemanager.barcode.DecodeResult;
+import com.honeywell.decodemanager.symbologyconfig.SymbologyConfigCodeUPCA;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,33 +31,19 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.soundmanager.SoundManager;
-import com.android.support.CreditCardInfo;
-import com.android.support.Global;
-import com.android.support.MyEditText;
-import com.android.support.MyPreferences;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.honeywell.decodemanager.DecodeManager;
-import com.honeywell.decodemanager.SymbologyConfigs;
-import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
-import com.honeywell.decodemanager.barcode.CommonDefine;
-import com.honeywell.decodemanager.barcode.DecodeResult;
-import com.honeywell.decodemanager.symbologyconfig.SymbologyConfigCodeUPCA;
-
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import protocols.EMSCallBack;
 
 public class OrderAttrEdit_FA extends FragmentActivity
 		implements OnClickListener, OnCheckedChangeListener, EMSCallBack {
