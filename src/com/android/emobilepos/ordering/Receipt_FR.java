@@ -843,8 +843,11 @@ public class Receipt_FR extends Fragment
 					// handler.updateFinishOnHold(Global.lastOrdID));
 					global.order.ord_HoldName = ord_HoldName;
 					global.order.processed = "10";
-
-					handler.insert(global.order);
+					GenerateNewID gen = new GenerateNewID(activity);
+					for (int i = 0; i < 1000; i++) {
+						handler.insert(global.order);
+						global.order.ord_id=gen.getNextID(IdType.ORDER_ID);
+					}
 					global.encodedImage = new String();
 					handler2.insert(global.orderProducts);
 					handler3.insert(global.ordProdAttr);
@@ -894,7 +897,13 @@ public class Receipt_FR extends Fragment
 
 				}
 			} else {
-				handler.insert(global.order);
+                GenerateNewID gen = new GenerateNewID(activity);
+                for (int i = 0; i < 1000; i++) {
+                    handler.insert(global.order);
+                    global.order.ord_id=gen.getNextID(IdType.ORDER_ID);
+                }
+
+				//handler.insert(global.order);
 				handler2.insert(global.orderProducts);
 				handler3.insert(global.ordProdAttr);
 

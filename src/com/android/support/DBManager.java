@@ -77,7 +77,7 @@ public class DBManager {
 		myPref = new MyPreferences(activity);
 		managerInstance = this;
 		SQLiteDatabase.loadLibs(activity);
-		exportDBFile();
+//		exportDBFile();
 		dbMigration();
 		this.DBHelper = new DatabaseHelper(this.activity);
 		if ((_db == null || !_db.isOpen()))
@@ -91,7 +91,7 @@ public class DBManager {
 		this.type = type;
 		myPref = new MyPreferences(activity);
 		SQLiteDatabase.loadLibs(activity);
-		exportDBFile();
+//		exportDBFile();
 		dbMigration();
 		if ((_db == null || !_db.isOpen()))
 			InitializeSQLCipher();
