@@ -25,7 +25,7 @@ import net.sqlcipher.database.SQLiteDiskIOException;
 
 public class DBManager {
 	public static final int VERSION = 31;
-	private static final String DB_NAME = "emobilepos.sqlite";
+	private static final String DB_NAME_OLD = "emobilepos.sqlite";
 	private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
 	private Activity activity;
@@ -101,7 +101,7 @@ public class DBManager {
 	private void dbMigration() {
 		File dbPath = null;
 		try {
-			dbPath = activity.getDatabasePath(DB_NAME);
+			dbPath = activity.getDatabasePath(DB_NAME_OLD);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -109,7 +109,7 @@ public class DBManager {
 		File dbCipherPath = activity.getDatabasePath(CIPHER_DB_NAME);
 		if (dbPath.exists() && !dbCipherPath.exists()) {
 			try {
-				encrypt(activity, DB_NAME, getPassword());
+				encrypt(activity, DB_NAME_OLD, getPassword());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -157,7 +157,7 @@ public class DBManager {
 	public void exportDBFile() {
 		File dbFile = null;
 		try {
-			dbFile = activity.getDatabasePath(DB_NAME);
+			dbFile = activity.getDatabasePath(CIPHER_DB_NAME);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -235,7 +235,7 @@ public class DBManager {
 
 	private class DatabaseHelper extends net.sqlcipher.database.SQLiteOpenHelper {
 		DatabaseHelper(Context context) {
-			super(context, DB_NAME, null, VERSION);
+			super(context, CIPHER_DB_NAME, null, VERSION);
 		}
 
 		@Override
