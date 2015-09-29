@@ -1,6 +1,9 @@
 package com.android.emobilepos.adapters;
 
 
+import com.android.database.ShiftPeriodsDBHandler;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.util.SparseArray;
@@ -9,9 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import com.android.database.ShiftPeriodsDBHandler;
-import com.emobilepos.app.R;
 
 
 public class ShiftDetailsAdapter extends BaseAdapter

@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.android.database.ProductsHandler;
+import com.android.database.ProductsImagesHandler;
+import com.android.emobilepos.ShowProductImageActivity2;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -23,15 +32,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.ProductsHandler;
-import com.android.database.ProductsImagesHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.ShowProductImageActivity2;
-import com.android.support.Global;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class ViewProductDetails_FA  extends FragmentActivity implements OnClickListener{
 	

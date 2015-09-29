@@ -1,5 +1,10 @@
 package com.android.emobilepos.cardmanager;
 
+import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,12 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.google.analytics.tracking.android.EasyTracker;
 
 public class LoyaltyCard_FA extends FragmentActivity implements OnItemClickListener{
 

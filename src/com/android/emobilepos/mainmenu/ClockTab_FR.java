@@ -1,5 +1,10 @@
 package com.android.emobilepos.mainmenu;
 
+import com.android.database.ClerksHandler;
+import com.android.emobilepos.shifts.ClockInOut_FA;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,11 +16,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.android.database.ClerksHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.shifts.ClockInOut_FA;
-import com.android.support.MyPreferences;
 
 public class ClockTab_FR extends Fragment implements OnClickListener
 {

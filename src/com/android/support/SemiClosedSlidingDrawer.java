@@ -34,6 +34,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.SlidingDrawer;
 
 /**
  * This is a modified version of {@link SlidingDrawer} that supports the use

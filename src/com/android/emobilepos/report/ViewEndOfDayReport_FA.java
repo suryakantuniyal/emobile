@@ -4,7 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+import com.android.emobilepos.adapters.ReportEndDayAdapter;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -21,10 +24,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
-
-import com.android.emobilepos.adapters.ReportEndDayAdapter;
-import com.android.support.Global;
-import com.emobilepos.app.R;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickListener{
 	

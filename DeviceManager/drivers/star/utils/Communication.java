@@ -1,10 +1,10 @@
 package drivers.star.utils;
 
-import android.content.Context;
-
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
+
+import android.content.Context;
 
 public class Communication {
     public enum Result {

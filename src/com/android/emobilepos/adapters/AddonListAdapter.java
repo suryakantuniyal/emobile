@@ -1,29 +1,22 @@
 package com.android.emobilepos.adapters;
 
-import java.io.File;
 import java.util.HashMap;
+
+import com.android.support.Global;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Bitmap.CompressFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 
 public class AddonListAdapter extends BaseAdapter implements StickyGridHeadersSimpleAdapter,View.OnClickListener{
 

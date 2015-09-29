@@ -1,6 +1,10 @@
 package com.android.emobilepos.mainmenu;
 
 
+import com.android.support.DBManager;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,10 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-import com.android.support.MyPreferences;
 
 public class AboutTab_FR extends Fragment implements OnClickListener {
 

@@ -20,7 +20,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
 import main.EMSDeviceManager;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;

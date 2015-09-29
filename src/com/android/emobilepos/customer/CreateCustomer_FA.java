@@ -10,6 +10,21 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import com.android.database.AddressHandler;
+import com.android.database.CustomersHandler;
+import com.android.database.PriceLevelHandler;
+import com.android.database.SalesTaxCodesHandler;
+import com.android.database.TaxesHandler;
+import com.android.emobilepos.models.Address;
+import com.android.support.Customer;
+import com.android.support.Global;
+import com.android.support.MyEditText;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -26,6 +41,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -33,25 +49,9 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.RadioGroup.OnCheckedChangeListener;
-
-import com.android.database.AddressHandler;
-import com.android.database.CustomersHandler;
-import com.android.database.PriceLevelHandler;
-import com.android.database.SalesTaxCodesHandler;
-import com.android.database.TaxesHandler;
-import com.android.emobilepos.models.Address;
-import com.emobilepos.app.R;
-import com.android.support.Customer;
-import com.android.support.Global;
-import com.android.support.MyEditText;
-import com.android.support.MyPreferences;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 public class CreateCustomer_FA extends FragmentActivity implements OnCheckedChangeListener,CompoundButton.OnCheckedChangeListener
 ,OnClickListener {

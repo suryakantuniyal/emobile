@@ -1,5 +1,9 @@
 package com.android.emobilepos.consignment;
 
+import com.android.database.CustomerInventoryHandler;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,10 +17,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.CustomerInventoryHandler;
-import com.emobilepos.app.R;
-import com.android.support.Global;
 
 public class ConsignmentHistory_FA extends FragmentActivity
 {

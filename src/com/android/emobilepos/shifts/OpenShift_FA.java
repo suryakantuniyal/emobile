@@ -4,6 +4,13 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import com.android.database.ClerksHandler;
+import com.android.database.ShiftPeriodsDBHandler;
+import com.android.emobilepos.models.ShiftPeriods;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -27,13 +34,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.database.ClerksHandler;
-import com.android.database.ShiftPeriodsDBHandler;
-import com.android.emobilepos.models.ShiftPeriods;
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class OpenShift_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 

@@ -1,11 +1,5 @@
 package com.android.emobilepos.holders;
 
-import android.app.Activity;
-
-import com.android.emobilepos.holders.TransferLocations_Holder.Limiters;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-
 public class TransferInventory_Holder {
 	private String empStr = "";
 	private String trans_id = empStr;

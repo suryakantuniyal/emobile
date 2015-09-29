@@ -1,5 +1,8 @@
 package com.android.emobilepos.consignment;
 
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -10,9 +13,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.support.Global;
 
 public class ConsignmentCheckout_FA extends FragmentActivity 
 {

@@ -8,7 +8,6 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 
 import android.app.Activity;
-import android.text.TextUtils;
 
 public class GenerateNewID {
 	private MyPreferences myPref;

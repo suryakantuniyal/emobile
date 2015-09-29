@@ -1,5 +1,10 @@
 package com.android.emobilepos.ordering;
 
+import com.android.database.ProductAddonsHandler;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -8,11 +13,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.android.database.ProductAddonsHandler;
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class ReceiptMainLV_Adapter extends BaseAdapter {
 

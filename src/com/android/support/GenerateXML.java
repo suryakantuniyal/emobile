@@ -2,9 +2,9 @@ package com.android.support;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Date;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,10 +34,7 @@ import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
 import android.net.Uri;
-import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;

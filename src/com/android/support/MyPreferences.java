@@ -3,21 +3,16 @@ package com.android.support;
 import java.security.AccessControlException;
 import java.security.Guard;
 import java.security.GuardedObject;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
-import java.util.StringTokenizer;
-
-import com.android.database.OrdersHandler;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-
 import android.preference.PreferenceManager;
 import android.util.Base64;
 

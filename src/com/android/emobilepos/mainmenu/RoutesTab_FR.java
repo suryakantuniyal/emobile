@@ -2,6 +2,8 @@ package com.android.emobilepos.mainmenu;
 
 import java.util.Calendar;
 
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -16,19 +18,6 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.android.database.InvoicePaymentsHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ShiftPeriodsDBHandler;
-import com.android.database.TimeClockHandler;
-import com.android.database.TransferInventory_DB;
-import com.android.database.TransferLocations_DB;
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-
-import drivers.EMSIDTechUSB;
 
 public class RoutesTab_FR extends Fragment {
 

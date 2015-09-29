@@ -1,5 +1,10 @@
 package com.android.emobilepos.initialization;
 
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,11 +15,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class SelectPassword_FA extends FragmentActivity {
 	private Activity activity;

@@ -1,7 +1,6 @@
 package com.android.support;
 
 import java.io.InputStream;
-
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -27,9 +26,9 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.util.support.Base64;
 
 import com.emobilepos.app.R;
-import org.springframework.util.support.Base64;
 
 import android.app.Activity;
 

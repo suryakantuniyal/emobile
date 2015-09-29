@@ -3,17 +3,21 @@ package com.android.emobilepos.mainmenu;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
-import main.EMSDeviceManager;
+import com.android.database.PrintersHandler;
+import com.android.emobilepos.adapters.SynchMenuAdapter;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -26,13 +30,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.database.PrintersHandler;
-import com.android.emobilepos.adapters.SynchMenuAdapter;
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
+import main.EMSDeviceManager;
 
 public class MainMenu_FA extends FragmentActivity {
 

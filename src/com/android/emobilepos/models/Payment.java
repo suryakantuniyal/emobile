@@ -1,15 +1,9 @@
 package com.android.emobilepos.models;
 
-import java.io.Serializable;
-
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.google.gson.Gson;
-import com.google.gson.annotations.JsonAdapter;
 
 import android.app.Activity;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 public class Payment {
 

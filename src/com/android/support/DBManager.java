@@ -1,32 +1,24 @@
 package com.android.support;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.crypto.digests.MD5Digest;
 import org.kobjects.base64.Base64;
 
-import com.android.database.CustomersHandler;
-
 import com.android.database.ConsignmentTransactionHandler;
+import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TemplateHandler;
 
 import android.app.Activity;
-
 import android.content.Context;
 import android.content.Intent;
-
 import android.os.Environment;
 import android.provider.Settings.Secure;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteDiskIOException;
@@ -34,6 +26,7 @@ import net.sqlcipher.database.SQLiteDiskIOException;
 public class DBManager {
 	public static final int VERSION = 31;
 	private static final String DB_NAME = "emobilepos.sqlite";
+	private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
 	private Activity activity;
 
@@ -43,7 +36,11 @@ public class DBManager {
 	private MyPreferences myPref;
 	private boolean sendAndReceive = false;
 	public static SQLiteDatabase _db;
-	public static String DB_FILEPATH = "/data/data/com.emobilepos.app/databases/emobilepos.sqlite";
+	// public static String DB_FILEPATH =
+	// "/data/data/com.emobilepos.app/databases/emobilepos.sqlite";
+	// public static String CIPHER_DB_FILEPATH =
+	// "/data/data/com.emobilepos.app/databases/emobilepos.sqlcipher";
+
 	public static final String PASSWORD = "em0b1l3p05";
 
 	private String getPassword() {
@@ -65,18 +62,27 @@ public class DBManager {
 	}
 
 	private void InitializeSQLCipher() {
-		SQLiteDatabase.loadLibs(activity);
-		_db = SQLiteDatabase.openDatabase(myPref.getDBpath(), getPassword(), null, SQLiteDatabase.OPEN_READWRITE);
+		try {
+			_db = SQLiteDatabase.openDatabase(activity.getDatabasePath(CIPHER_DB_NAME).getAbsolutePath(), getPassword(),
+					null, SQLiteDatabase.OPEN_READWRITE);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public DBManager(Activity activity) {
+
 		this.activity = activity;
 		myPref = new MyPreferences(activity);
 		managerInstance = this;
+		SQLiteDatabase.loadLibs(activity);
+		exportDBFile();
+		dbMigration();
 		this.DBHelper = new DatabaseHelper(this.activity);
 		if ((_db == null || !_db.isOpen()))
 			InitializeSQLCipher();
-		// exportDBFile();
+
 	}
 
 	public DBManager(Activity activ, int type) {
@@ -84,13 +90,78 @@ public class DBManager {
 		managerInstance = this;
 		this.type = type;
 		myPref = new MyPreferences(activity);
+		SQLiteDatabase.loadLibs(activity);
+		exportDBFile();
+		dbMigration();
 		if ((_db == null || !_db.isOpen()))
 			InitializeSQLCipher();
-		// exportDBFile();
+
+	}
+
+	private void dbMigration() {
+		File dbPath = null;
+		try {
+			dbPath = activity.getDatabasePath(DB_NAME);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		File dbCipherPath = activity.getDatabasePath(CIPHER_DB_NAME);
+		if (dbPath.exists() && !dbCipherPath.exists()) {
+			try {
+				encrypt(activity, DB_NAME, getPassword());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static void encrypt(Context ctxt, String dbName, String passphrase) throws IOException {
+		File originalFile = ctxt.getDatabasePath(dbName);
+
+		if (originalFile.exists()) {
+			File newFile = File.createTempFile("sqlcipherutils", "tmp", ctxt.getCacheDir());
+
+			SQLiteDatabase db;
+			try {
+				db = SQLiteDatabase.openDatabase(originalFile.getAbsolutePath(), "", null,
+						SQLiteDatabase.OPEN_READWRITE);
+
+				db.rawExecSQL(String.format("ATTACH DATABASE '%s' AS encrypted KEY '%s';", newFile.getAbsolutePath(),
+						passphrase));
+
+				db.rawExecSQL("SELECT sqlcipher_export('encrypted')");
+				db.rawExecSQL("DETACH DATABASE encrypted;");
+
+				int version = db.getVersion();
+
+				db.close();
+
+				db = SQLiteDatabase.openDatabase(newFile.getAbsolutePath(), passphrase, null,
+						SQLiteDatabase.OPEN_READWRITE);
+
+				db.setVersion(version);
+				db.close();
+
+				originalFile.delete();
+				newFile.renameTo(ctxt.getDatabasePath(CIPHER_DB_NAME));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
 	}
 
 	public void exportDBFile() {
-		File dbFile = new File(DB_FILEPATH);
+		File dbFile = null;
+		try {
+			dbFile = activity.getDatabasePath(DB_NAME);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
 		try {
 			FileUtils.copyFile(dbFile, outFile);
@@ -125,30 +196,30 @@ public class DBManager {
 		this.DBHelper.getWritableDatabase(getPassword());
 	}
 
-//	public void dbBackupDB() {
-//		File backupDB = null;
-//		try {
-//			File sd = Environment.getExternalStorageDirectory();
-//
-//			if (sd.canWrite()) {
-//				String currPath = myPref.getDBpath();
-//				String backup = "emobilepos.sqlite";
-//				File currDB = new File(currPath);
-//				backupDB = new File(sd, backup);
-//
-//				if (currDB.exists()) {
-//					FileChannel src = new FileInputStream(currDB).getChannel();
-//					FileChannel dst = new FileOutputStream(backupDB).getChannel();
-//
-//					dst.transferFrom(src, 0, src.size());
-//					src.close();
-//					dst.close();
-//				}
-//			}
-//		} catch (Exception e) {
-//
-//		}
-//	}
+	// public void dbBackupDB() {
+	// File backupDB = null;
+	// try {
+	// File sd = Environment.getExternalStorageDirectory();
+	//
+	// if (sd.canWrite()) {
+	// String currPath = myPref.getDBpath();
+	// String backup = "emobilepos.sqlite";
+	// File currDB = new File(currPath);
+	// backupDB = new File(sd, backup);
+	//
+	// if (currDB.exists()) {
+	// FileChannel src = new FileInputStream(currDB).getChannel();
+	// FileChannel dst = new FileOutputStream(backupDB).getChannel();
+	//
+	// dst.transferFrom(src, 0, src.size());
+	// src.close();
+	// dst.close();
+	// }
+	// }
+	// } catch (Exception e) {
+	//
+	// }
+	// }
 
 	public void deleteAllTablesData() {
 		// SQLiteDatabase db = this.openWritableDB();

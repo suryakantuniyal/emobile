@@ -4,7 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import util.EMSReceiptHelper;
+import com.android.emobilepos.adapters.ReportsMenuAdapter;
+import com.android.emobilepos.adapters.ReportsShiftAdapter;
+import com.android.emobilepos.shifts.ShiftReportDetails_FA;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -24,13 +29,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.adapters.ReportsMenuAdapter;
-import com.android.emobilepos.adapters.ReportsShiftAdapter;
-import com.android.emobilepos.shifts.ShiftReportDetails_FA;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class ViewReport_FA extends FragmentActivity {
 	
