@@ -8,9 +8,11 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 public class GenerateNewID {
 	private MyPreferences myPref;
+	private Activity activity;
 
 	public static enum IdType {
 		ORDER_ID, PAYMENT_ID
@@ -20,6 +22,7 @@ public class GenerateNewID {
 	private static String delims = "[\\-]";
 
 	public GenerateNewID(Activity activity) {
+		this.activity = activity;
 		myPref = new MyPreferences(activity);
 	}
 
@@ -36,10 +39,10 @@ public class GenerateNewID {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy", Locale.getDefault());
 		String year = sdf.format(new Date());
 		String lastID = null;
-		
+
 		switch (idType) {
 		case ORDER_ID:
-			lastID = OrdersHandler.getLastOrderId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+			lastID = OrdersHandler.getInstance(activity).getLastOrderId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
 			break;
 		case PAYMENT_ID:
 			lastID = PaymentsHandler.getLastPaymentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
