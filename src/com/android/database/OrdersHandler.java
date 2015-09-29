@@ -87,6 +87,10 @@ public class OrdersHandler {
 	private static final String table_name = "Orders";
 	private Activity activity;
 
+	public static OrdersHandler getInstance(Activity activity) {
+		return new OrdersHandler(activity);
+	}
+
 	public OrdersHandler(Activity activity) {
 		// global = (Global) activity.getApplication();
 		myPref = new MyPreferences(activity);
@@ -270,7 +274,7 @@ public class OrdersHandler {
 			Tracker tracker = EasyTracker.getInstance(activity);
 			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
-			
+
 			DBManager._db.setTransactionSuccessful();
 			DBManager._db.endTransaction();
 		}
@@ -484,18 +488,37 @@ public class OrdersHandler {
 		return count;
 	}
 
-	public static String getLastOrderId(int deviceId, int year) {
+	public String getLastOrderId(int deviceId, int year) {
+		String lastOrdID = myPref.getLastOrdID();
+		boolean getIdFromDB = false;
 		StringBuilder sb = new StringBuilder();
-		sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(deviceId)
-				.append("-%-").append(year).append("'");
+		if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
+			getIdFromDB = true;
+		} else {
+			String[] tokens = myPref.getLastOrdID().split("-");
+			if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
+				getIdFromDB = true;
+			}
+		}
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-		cursor.moveToFirst();
-		String max = cursor.getString(0);
-		cursor.close();
-		stmt.close();
-		return max;
+		if (getIdFromDB) {
+			sb.append("select max(ord_id) from ").append(table_name).append(" WHERE ord_id like '").append(deviceId)
+					.append("-%-").append(year).append("'");
+
+			SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+			Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+			cursor.moveToFirst();
+			lastOrdID = cursor.getString(0);
+			cursor.close();
+			stmt.close();
+			if (TextUtils.isEmpty(lastOrdID)) {
+				lastOrdID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+			}
+			myPref.setLastOrdID(lastOrdID);
+		}
+
+		return lastOrdID;
+
 	}
 
 	public long getNumUnsyncProcessedOrders() {
