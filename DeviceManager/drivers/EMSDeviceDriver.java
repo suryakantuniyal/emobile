@@ -43,6 +43,7 @@ import android.util.Log;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.star.utils.Communication;
+import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
@@ -720,43 +721,32 @@ public class EMSDeviceDriver {
 		}
 
 		if (myBitmap != null) {
-
+			// myBitmap = BitmapFactory.decodeResource(activity.getResources(),
+			// R.drawable.companylogo);
 			if (this instanceof EMSBluetoothStarPrinter) {
-				// if (!isPOSPrinter) {
+				float diff = PAPER_WIDTH - myBitmap.getWidth();
+				float percentage = diff / myBitmap.getWidth();
+				int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
+				int h = myBitmap.getHeight();
+				Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+				Canvas canvas = new Canvas(canvasBmp);
+				int centreX = (w - myBitmap.getWidth()) / 2;
+				canvas.drawColor(Color.WHITE);
+				canvas.drawBitmap(myBitmap, centreX, 0, null);
+				myBitmap = canvasBmp;
 				byte[] data;
 				if (isPOSPrinter) {
-					//myBitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.companylogo);
-					float diff = PAPER_WIDTH - myBitmap.getWidth();
-					float percentage = diff / myBitmap.getWidth();
-					int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
-					int h = myBitmap.getHeight();// + (int) (myBitmap.getHeight() * percentage);
-					Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-					Canvas canvas = new Canvas(canvasBmp);
-					int centreX = (w - myBitmap.getWidth()) / 2;
-					//int centreY = (h - myBitmap.getHeight()) / 2;
-					canvas.drawColor(Color.WHITE);
-					canvas.drawBitmap(myBitmap, centreX, 0, null);
-					myBitmap = canvasBmp;//myBitmap.createScaledBitmap(myBitmap, w, h, false);
-					// new drivers.StarBitmap(myBitmap, false,
-					// PAPER_WIDTH).ScallImage(myBitmap, PAPER_WIDTH);
+
 					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
 							PAPER_WIDTH, false);
-//					int newWidth = myBitmap.getWidth();
-//					if (myBitmap.getWidth() > PAPER_WIDTH) {
-//						newWidth = PAPER_WIDTH;
-//					}
-//					data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(newWidth,
-//							SCBBitmapConverter.Rotation.Normal, myBitmap);
+
 				} else {
-					util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
-					data = starbitmap.getImageEscPosDataForPrinting();
-					enableCenter = new byte[] { 0x1b, 0x1d, 0x61, 0x01 };
-					port.writePort(enableCenter, 0, enableCenter.length);
-					Communication.sendCommands(enableCenter, port, this.activity);
-					Communication.sendCommands(data, port, this.activity); // 10000mS!!!
-					port.writePort(disableCenter, 0, disableCenter.length);
+
+					MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
+							myBitmap, PAPER_WIDTH, false, false);
+
 				}
-				
+
 			} else if (this instanceof EMSPAT100) {
 				printerApi.printImage(myBitmap, 0);
 			} else if (this instanceof EMSBlueBambooP25) {

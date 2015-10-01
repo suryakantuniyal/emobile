@@ -1,6 +1,8 @@
 package com.android.emobilepos.cardmanager;
 
 import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
+import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter.ViewHolder;
+import com.android.emobilepos.cardmanager.CardManager_FA.GiftCardActions;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.emobilepos.app.R;
@@ -22,7 +24,7 @@ import android.widget.TextView;
 
 public class GiftCard_FA extends FragmentActivity implements OnItemClickListener{
 	
-	private final int ACTIVATE = 0, ADD_BALANCE = 1,BALANCE_INQUIRY = 2, MANUAL_BALANCE = 3;
+	
 	private boolean hasBeenCreated = false;
 	private Global global;
 	
@@ -75,46 +77,27 @@ public class GiftCard_FA extends FragmentActivity implements OnItemClickListener
 	
 	
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		// TODO Auto-generated method stub
-//		Intent intent = null;
-//		switch(pos)
-//		{
-//		case ACTIVATE:
-//			intent = new Intent(this,ActivateCard_FA.class);
-//			intent.putExtra("case", ActivateCard_FA.CASE_GIFT);
-//			break;
-//		case ADD_BALANCE:
-//			intent = new Intent(this,AddBalance_FA.class);
-//			intent.putExtra("case", AddBalance_FA.CASE_GIFT);
-//			break;
-//		case BALANCE_INQUIRY:
-//			intent = new Intent(this,BalanceInquiry_FA.class);
-//			intent.putExtra("case", BalanceInquiry_FA.CASE_GIFT);
-//			break;
-//		case MANUAL_BALANCE:
-//			intent = new Intent(this,ManualAddBalance_FA.class);
-//			intent.putExtra("case", ManualAddBalance_FA.CASE_GIFT);
-//			break;
-//		}
+	public void onItemClick(AdapterView<?> adapterView, View view, int pos, long arg3) {
+
 		Intent intent = new Intent(this,CardManager_FA.class);
 		intent.putExtra("CARD_TYPE", CardManager_FA.CASE_GIFT);
-		switch(pos)
+		ViewHolder viewHolder = (ViewHolder) view.getTag();
+		switch(viewHolder.giftCardActions)
 		{
-		case ACTIVATE:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_ACTIVATE);
+		case CASE_ACTIVATE:
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_ACTIVATE.getCode());
 			startActivity(intent);
 			break;
-		case ADD_BALANCE:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_ADD_BALANCE);
+		case CASE_ADD_BALANCE:
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_ADD_BALANCE.getCode());
 			startActivity(intent);
 			break;
-		case BALANCE_INQUIRY:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_BALANCE_INQUIRY);
+		case CASE_BALANCE_INQUIRY:
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_BALANCE_INQUIRY.getCode());
 			startActivity(intent);
 			break;
-		case MANUAL_BALANCE:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_MANUAL_ADD);
+		case CASE_MANUAL_ADD:
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_MANUAL_ADD.getCode());
 			promptManagerPassword(intent);
 			break;
 		}
