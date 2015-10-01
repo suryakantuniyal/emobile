@@ -1,12 +1,10 @@
 package drivers.star.utils;
 
-import java.util.ArrayList;
+import android.graphics.*;
+import java.util.*;
 
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
-
-import android.graphics.Bitmap;
-import android.graphics.Color;
 
 public class StarBitmap
 {

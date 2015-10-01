@@ -98,15 +98,15 @@ public class LoyaltyCard_FA extends FragmentActivity implements OnItemClickListe
 		switch(pos)
 		{
 		case ACTIVATE:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_ACTIVATE);
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_ACTIVATE);
 			startActivity(intent);
 			break;
 		case BALANCE_INQUIRY:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_BALANCE_INQUIRY);
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_BALANCE_INQUIRY);
 			startActivity(intent);
 			break;
 		case MANUAL_BALANCE:
-			intent.putExtra("PROCESS_TYPE",CardManager_FA.CASE_MANUAL_ADD);
+			intent.putExtra("PROCESS_TYPE",CardManager_FA.GiftCardActions.CASE_MANUAL_ADD);
 			promptManagerPassword(intent);
 			break;
 		}
