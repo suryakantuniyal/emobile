@@ -567,7 +567,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 				}
 
 				if (giftCardActions == GiftCardActions.CASE_ADD_BALANCE
-						|| giftCardActions == GiftCardActions.CASE_MANUAL_ADD) {
+						|| giftCardActions == GiftCardActions.CASE_MANUAL_ADD || giftCardActions == GiftCardActions.CASE_ACTIVATE) {
 					payment.pay_resultcode = parsedMap.get("pay_resultcode");
 					payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
 					payment.pay_transid = parsedMap.get("CreditCardTransID");
