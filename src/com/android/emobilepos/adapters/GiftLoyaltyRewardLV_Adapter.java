@@ -22,7 +22,7 @@ public class GiftLoyaltyRewardLV_Adapter extends BaseAdapter {
 		activity = _activity;
 		inflater = LayoutInflater.from(activity);
 		if (type == 0)
-			giftCardActions = new GiftCardActions[] { GiftCardActions.CASE_ACTIVATE, GiftCardActions.CASE_DEACTIVATE,
+			giftCardActions = new GiftCardActions[] { GiftCardActions.CASE_ACTIVATE,
 					GiftCardActions.CASE_ADD_BALANCE, GiftCardActions.CASE_BALANCE_INQUIRY,
 					GiftCardActions.CASE_MANUAL_ADD };
 		else
