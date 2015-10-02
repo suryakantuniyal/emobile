@@ -9,6 +9,7 @@ import org.xmlpull.v1.XmlSerializer;
 
 import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -17,6 +18,8 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import android.app.Activity;
+import android.renderscript.Program.TextureType;
+import android.text.TextUtils;
 import android.util.Xml;
 
 public class EMSPayGate_Default {
@@ -48,7 +51,7 @@ public class EMSPayGate_Default {
 		writer = new StringWriter();
 	}
 
-	private enum EAction {
+	public static enum EAction {
 		ChargeCreditCardAction(1010), ChargeTupixAction(1010), ChargeCheckAction(1012), ChargeCashAction(
 				1013), ChargeDebitAction(1014),
 
@@ -278,6 +281,7 @@ public class EMSPayGate_Default {
 
 				generateContactInfoBlock(payment.cust_id);
 				generateVoidBlock();
+
 				generateOrderBlock(payment.job_id);
 				serializer.endTag(empstr, "epay");
 				serializer.endDocument();
@@ -350,9 +354,10 @@ public class EMSPayGate_Default {
 		try {
 			OrdersHandler handler = new OrdersHandler(this.activity);
 			GenerateXML xmlGen = new GenerateXML(this.activity);
-			xmlGen.buildOrder(serializer, false, handler.getOrder(orderId));
+			Order order = handler.getOrder(orderId);
+			if (order != null && !TextUtils.isEmpty(order.ord_id))
+				xmlGen.buildOrder(serializer, false, order);
 		} catch (IllegalArgumentException | IllegalStateException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

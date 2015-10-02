@@ -147,13 +147,11 @@ public class PaymentsHandler {
 		// SQLiteDatabase db = dbManager.openWritableDB();
 		DBManager._db.beginTransaction();
 		try {
-
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
+			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(")")
 					.append("VALUES (").append(sb2.toString()).append(")");
 			insert = DBManager._db.compileStatement(sb.toString());
-
 			insert.bindString(index(pay_id), payment.pay_id == null ? "" : payment.pay_id); // pay_id
 			insert.bindString(index(group_pay_id), payment.group_pay_id == null ? "" : payment.group_pay_id); // group_pay_id
 			insert.bindString(index(original_pay_id), payment.original_pay_id == null ? "" : payment.original_pay_id); // group_pay_id
@@ -802,8 +800,18 @@ public class PaymentsHandler {
 	}
 
 	public Cursor getGiftCardAddBalance() {
-		// SQLiteDatabase db = dbManager.openReadableDB();
+	
 		StringBuilder sb = new StringBuilder();
+//		sb.append(pay_id).append(" = ?");
+//
+//		ContentValues args = new ContentValues();
+//
+//		args.put(isVoid, "0");
+//		int update = DBManager._db.update(table_name, args, sb.toString(), new String[] { "19-00020-2015" });
+//
+//		sb.setLength(0);
+		
+		
 
 		sb.append(
 				"SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
