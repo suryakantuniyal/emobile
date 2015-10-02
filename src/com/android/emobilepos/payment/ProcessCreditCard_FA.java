@@ -54,6 +54,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
@@ -182,7 +183,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			requestCode = Global.FROM_JOB_SALES_RECEIPT;
 		} else if (extras.getBoolean("salesrefund")) {
 			isRefund = true;
-			isFromMainMenu = true;
+			isFromMainMenu = TextUtils.isEmpty(extras.getString("amount"))
+					|| Double.parseDouble(extras.getString("amount")) == 0;
 			headerTitle.setText(getString(R.string.card_refund_title));
 		} else if (extras.getBoolean("histinvoices")) {
 			headerTitle.setText(getString(R.string.card_payment_title));
@@ -539,13 +541,13 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 		Global.amountPaid = Double.toString(amountToBePaid);
 
-//		if (amountToBePaid < actualAmount) {
-//			payment.pay_dueamount = Double.toString(actualAmount);
-//		} else {
-//			payment.pay_dueamount = Double.toString(amountToBePaid);
-//		}
+		// if (amountToBePaid < actualAmount) {
+		// payment.pay_dueamount = Double.toString(actualAmount);
+		// } else {
+		// payment.pay_dueamount = Double.toString(amountToBePaid);
+		// }
 		payment.pay_dueamount = Double.toString(actualAmount - amountToBePaid);
-		
+
 		payment.pay_amount = Double.toString(amountToBePaid);
 		payment.pay_name = cardInfoManager.getCardOwnerName();
 
@@ -1469,7 +1471,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 						xr.parse(inSource);
 						parsedMap = handler.getData();
 						parsedMap = handler.getData();
-						
+
 						if (parsedMap != null && parsedMap.size() > 0
 								&& parsedMap.get("epayStatusCode").equals("APPROVED"))
 							wasProcessed = true;
@@ -1960,6 +1962,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 	private void validateProcessPayment() {
 		errorMsg = getString(R.string.card_validation_error);
+		year.setBackgroundResource(android.R.drawable.edit_text);
+		cardNum.setBackgroundResource(android.R.drawable.edit_text);
+		month.setBackgroundResource(android.R.drawable.edit_text);
+		amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
 		boolean error = false;
 		if (cardNum.getText().toString().isEmpty()
 				|| (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
@@ -2010,8 +2016,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 			if (enteredAmount > actualAmount) {
 				errorMsg = getString(R.string.card_overpaid_error);
+				amountPaidField.setBackgroundResource(R.drawable.edittext_wrong_input);
 				error = true;
 			} else if (enteredAmount <= 0) {
+				amountPaidField.setBackgroundResource(R.drawable.edittext_wrong_input);
 				errorMsg = getString(R.string.error_wrong_amount);
 				error = true;
 			}

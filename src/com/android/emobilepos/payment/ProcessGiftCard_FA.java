@@ -40,6 +40,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
@@ -166,12 +167,14 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 		Bundle extras = getIntent().getExtras();
 		if (extras.getBoolean("salespayment")) {
 			headerTitle.setText(getString(R.string.card_payment_title));
-			isFromMainMenu = true;
+			isFromMainMenu = TextUtils.isEmpty(extras.getString("amount"))
+					|| Double.parseDouble(extras.getString("amount")) == 0;
 		} else if (extras.getBoolean("salesreceipt")) {
 			headerTitle.setText(getString(R.string.card_payment_title));
 		} else if (extras.getBoolean("salesrefund")) {
 			isRefund = true;
-			isFromMainMenu = true;
+			isFromMainMenu = TextUtils.isEmpty(extras.getString("amount"))
+					|| Double.parseDouble(extras.getString("amount")) == 0;
 			headerTitle.setText(getString(R.string.card_refund_title));
 		} else if (extras.getBoolean("histinvoices")) {
 			headerTitle.setText(getString(R.string.card_payment_title));
@@ -316,7 +319,8 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 		String amountToBePaid = Double.toString(
 				Global.formatNumFromLocale(fieldAmountPaid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
 		Global.amountPaid = amountToBePaid;
-		payment.pay_dueamount = Double.toString(Double.parseDouble(Global.amountPaid) - Double.parseDouble(amountToBePaid));
+		payment.pay_dueamount = Double
+				.toString(Double.parseDouble(Global.amountPaid) - Double.parseDouble(amountToBePaid));
 		// payment.pay_dueamount = Global.amountPaid;
 		payment.pay_amount = Global.amountPaid;
 		payment.pay_name = cardInfoManager.getCardOwnerName();
@@ -629,8 +633,48 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 			fieldAmountPaid.setText(fieldAmountDue.getText().toString());
 			break;
 		case R.id.processButton:
-			processPayment();
+			if (validatePaymentData())
+				processPayment();
 			break;
 		}
+	}
+
+	private boolean validatePaymentData() {
+		String errorMsg = activity.getString(R.string.card_validation_error);
+		fieldAmountDue.setBackgroundResource(android.R.drawable.edit_text);
+		fieldAmountPaid.setBackgroundResource(android.R.drawable.edit_text);
+		fieldCardNum.setBackgroundResource(android.R.drawable.edit_text);
+		boolean isValid = true;
+		if (TextUtils.isEmpty(fieldAmountDue.getText().toString())
+				|| Double.parseDouble(fieldAmountDue.getText().toString()) <= 0) {
+			isValid = false;
+			fieldAmountDue.setBackgroundResource(R.drawable.edittext_wrong_input);
+		}
+
+		if (TextUtils.isEmpty(fieldAmountPaid.getText().toString())
+				|| Double.parseDouble(fieldAmountPaid.getText().toString()) <= 0) {
+			isValid = false;
+			fieldAmountPaid.setBackgroundResource(R.drawable.edittext_wrong_input);
+			errorMsg = activity.getString(R.string.error_wrong_amount);
+		}
+		if (TextUtils.isEmpty(fieldCardNum.getText().toString())) {
+			isValid = false;
+			fieldCardNum.setBackgroundResource(R.drawable.edittext_wrong_input);
+		}
+
+		double amountDue = TextUtils.isEmpty(fieldAmountDue.getText().toString()) ? 0
+				: Double.parseDouble(fieldAmountDue.getText().toString());
+		double amountPaid = TextUtils.isEmpty(fieldAmountPaid.getText().toString()) ? 0
+				: Double.parseDouble(fieldAmountPaid.getText().toString());
+
+		if (amountPaid > amountDue) {
+			isValid = false;
+			fieldAmountPaid.setBackgroundResource(R.drawable.edittext_wrong_input);
+			errorMsg = activity.getString(R.string.card_overpaid_error);
+		}
+		if (!isValid) {
+			Global.showPrompt(activity, R.string.validation_failed, errorMsg);
+		}
+		return isValid;
 	}
 }
