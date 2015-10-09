@@ -72,7 +72,7 @@ public class GenerateXML {
 
 		try {
 			sb.append("getAuth.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-			sb.append("&p=").append(Uri.encode(URLEncoder.encode(info.getAcctPassword(), UTF_8)));
+			sb.append("&p=").append(URLEncoder.encode(info.getAcctPassword(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
