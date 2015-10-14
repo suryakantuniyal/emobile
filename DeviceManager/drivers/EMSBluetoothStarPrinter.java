@@ -1674,6 +1674,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 			String prodDesc = "";
 
 			int size = c.getCount();
+			this.setPaperWidth(LINE_WIDTH);
 			this.printImage(0);
 
 			if (printPref.contains(MyPreferences.print_header))

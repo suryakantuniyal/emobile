@@ -90,7 +90,7 @@ public class EMSDeviceDriver {
 	public void registerAll() {
 	}
 
-	private void setPaperWidth(int lineWidth) {
+	public void setPaperWidth(int lineWidth) {
 		if (this instanceof EMSBluetoothStarPrinter) {
 			switch (lineWidth) {
 			case 32:
