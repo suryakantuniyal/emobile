@@ -800,18 +800,17 @@ public class PaymentsHandler {
 	}
 
 	public Cursor getGiftCardAddBalance() {
-	
+
 		StringBuilder sb = new StringBuilder();
-//		sb.append(pay_id).append(" = ?");
-//
-//		ContentValues args = new ContentValues();
-//
-//		args.put(isVoid, "0");
-//		int update = DBManager._db.update(table_name, args, sb.toString(), new String[] { "19-00020-2015" });
-//
-//		sb.setLength(0);
-		
-		
+		// sb.append(pay_id).append(" = ?");
+		//
+		// ContentValues args = new ContentValues();
+		//
+		// args.put(isVoid, "0");
+		// int update = DBManager._db.update(table_name, args, sb.toString(),
+		// new String[] { "19-00020-2015" });
+		//
+		// sb.setLength(0);
 
 		sb.append(
 				"SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
@@ -1176,19 +1175,38 @@ public class PaymentsHandler {
 
 	}
 
-	public static String getLastPaymentId(int deviceId, int year) {
+	public String getLastPaymentId(int deviceId, int year) {
+		String lastPayID = myPref.getLastPayID();
+		boolean getIdFromDB = false;
 		StringBuilder sb = new StringBuilder();
-		sb.append("select max(pay_id) from ").append(table_name).append(" WHERE pay_id like '").append(deviceId)
-				.append("-%-").append(year).append("'");
+		if (TextUtils.isEmpty(lastPayID) || lastPayID.length() <= 4) {
+			getIdFromDB = true;
+		} else {
+			String[] tokens = myPref.getLastPayID().split("-");
+			if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
+				getIdFromDB = true;
+			}
+		}
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-		cursor.moveToFirst();
-		String max = cursor.getString(0);
-		cursor.close();
-		stmt.close();
-		return max;
+		if (getIdFromDB) {
+			sb.append("select max(pay_id) from ").append(table_name).append(" WHERE pay_id like '").append(deviceId)
+			.append("-%-").append(year).append("'");
+
+			SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+			Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+			cursor.moveToFirst();
+			lastPayID = cursor.getString(0);
+			cursor.close();
+			stmt.close();
+			if (TextUtils.isEmpty(lastPayID)) {
+				lastPayID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+			}
+			myPref.setLastPayID(lastPayID);
+		}
+		return lastPayID;
 	}
 
-
+	public static PaymentsHandler getInstance(Activity activity) {
+		return new PaymentsHandler(activity);
+	}
 }

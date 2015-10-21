@@ -469,7 +469,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 				payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
 				payment.pay_transid = parsedMap.get("CreditCardTransID");
 				payment.authcode = parsedMap.get("AuthorizationCode");
-
+				payment.processed = "9";
 				Intent intent = new Intent(activity, DrawReceiptActivity.class);
 				intent.putExtra("isFromPayment", true);
 

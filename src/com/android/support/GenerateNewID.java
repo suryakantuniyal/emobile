@@ -44,7 +44,7 @@ public class GenerateNewID {
 			lastID = OrdersHandler.getInstance(activity).getLastOrderId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
 			break;
 		case PAYMENT_ID:
-			lastID = PaymentsHandler.getLastPaymentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+			lastID = PaymentsHandler.getInstance(activity).getLastPaymentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
 			break;
 		}
 
