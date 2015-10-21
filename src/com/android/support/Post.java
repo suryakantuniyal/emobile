@@ -228,7 +228,7 @@ public class Post {
 					response = getRequestUnsecure(new URI(url.toString()));
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace(); 
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
