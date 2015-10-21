@@ -1,9 +1,9 @@
 package com.android.emobilepos.ordering;
 
-import com.emobilepos.app.R;
 import com.android.emobilepos.ShowProductImageActivity2;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;

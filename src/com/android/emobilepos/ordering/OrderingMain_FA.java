@@ -1,7 +1,5 @@
 package com.android.emobilepos.ordering;
 
-
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -14,8 +12,37 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import protocols.EMSCallBack;
-
+import com.android.database.AddressHandler;
+import com.android.database.CustomerInventoryHandler;
+import com.android.database.OrderProductsAttr_DB;
+import com.android.database.OrderProductsHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
+import com.android.database.ProductsHandler;
+import com.android.database.VoidTransactionsHandler;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.soundmanager.SoundManager;
+import com.android.support.CreditCardInfo;
+import com.android.support.DBManager;
+import com.android.support.Encrypt;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+import com.honeywell.decodemanager.DecodeManager;
+import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
+import com.honeywell.decodemanager.SymbologyConfigs;
+import com.honeywell.decodemanager.barcode.CommonDefine;
+import com.honeywell.decodemanager.barcode.DecodeResult;
+import com.honeywell.decodemanager.symbologyconfig.SymbologyConfigCodeUPCA;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -24,7 +51,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.AsyncTask;
@@ -42,7 +68,6 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -50,57 +75,25 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.android.database.AddressHandler;
-import com.android.database.CustomerInventoryHandler;
-import com.android.database.OrderProductsAttr_DB;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.ProductsHandler;
-import com.android.database.VoidTransactionsHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
-import com.android.emobilepos.mainmenu.SalesTab_FR;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Payment;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.soundmanager.SoundManager;
-import com.android.support.CreditCardInfo;
-import com.android.support.DBManager;
-import com.android.support.Encrypt;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
-import com.honeywell.decodemanager.DecodeManager;
-import com.honeywell.decodemanager.SymbologyConfigs;
-import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
-import com.honeywell.decodemanager.barcode.CommonDefine;
-import com.honeywell.decodemanager.barcode.DecodeResult;
-import com.honeywell.decodemanager.symbologyconfig.SymbologyConfigCodeUPCA;
-
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import protocols.EMSCallBack;
 
-
-public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddProductBtnCallback,Receipt_FR.UpdateHeaderTitleCallback,OnClickListener,
-Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,OrderRewards_FR.SwiperRewardCallback, EMSCallBack{
+public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddProductBtnCallback,
+		Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
+		OrderLoyalty_FR.SwiperLoyaltyCallback, OrderRewards_FR.SwiperRewardCallback, EMSCallBack {
 
 	private static String ourIntentAction = "";
 	private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
 	private int orientation;
-	private LinearLayout catalogContainer,receiptContainer;
+	private LinearLayout catalogContainer, receiptContainer;
 	public static OrderingMain_FA instance;
-	
+
 	private Catalog_FR rightFragment;
 	private Receipt_FR leftFragment;
-	private MyPreferences myPref;	
+	private MyPreferences myPref;
 	private Global global;
 	private boolean hasBeenCreated = false;
 	private ProductsHandler handler;
@@ -108,15 +101,12 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 	private static TextView headerTitle;
 	private CustomerInventoryHandler custInventoryHandler;
 
-	
-	//Honeywell Dolphin black
+	// Honeywell Dolphin black
 	private DecodeManager mDecodeManager = null;
 	private final int SCANTIMEOUT = 500000;
 	private boolean scannerInDecodeMode = false;
 	private Activity activity;
-	
-	
-	
+
 	public EMSIDTechUSB _msrUsbSams;
 	public EMSCallBack callBackMSR;
 	private EMSUniMagDriver uniMagReader;
@@ -133,32 +123,30 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 	private Button btnCheckout;
 	private int mTransType = -1;
 	public static boolean returnItem = false;
-	
-		
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.order_main_layout);
-				
+
 		activity = this;
 		instance = this;
-		callBackMSR = (EMSCallBack)this;
+		callBackMSR = (EMSCallBack) this;
 		handler = new ProductsHandler(this);
-		receiptContainer = (LinearLayout)findViewById(R.id.order_receipt_frag_container);
-		catalogContainer = (LinearLayout)findViewById(R.id.order_catalog_frag_container);
-		invisibleSearchMain = (EditText)findViewById(R.id.invisibleSearchMain);
-		global = (Global)getApplication();
-		btnCheckout = (Button)findViewById(R.id.btnCheckOut);
+		receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
+		catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
+		invisibleSearchMain = (EditText) findViewById(R.id.invisibleSearchMain);
+		global = (Global) getApplication();
+		btnCheckout = (Button) findViewById(R.id.btnCheckOut);
 		btnCheckout.setOnClickListener(this);
-		
+
 		myPref = new MyPreferences(this);
-		
+
 		if (!myPref.getIsTablet())
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
-		if (savedInstanceState == null) 
-		{
+
+		if (savedInstanceState == null) {
 			if (!myPref.getIsTablet())
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			orientation = getResources().getConfiguration().orientation;
@@ -169,227 +157,200 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			ft.add(R.id.order_receipt_frag_container, leftFragment);
 			ft.add(R.id.order_catalog_frag_container, rightFragment);
 			ft.commit();
-			
+
 			msrWasLoaded = false;
 			cardReaderConnected = false;
 			wasReadFromReader = false;
 		}
-		
+
 		handleFragments();
 		setupTitle();
 		setCustomerShipToAddress();
-		
+
 		invisibleSearchMain.addTextChangedListener(textWatcher());
 		invisibleSearchMain.requestFocus();
-		
 
 		ourIntentAction = getString(R.string.intentAction);
 		// in case we have been launched by the DataWedge intent plug-in
 		// using the StartActivity method let's handle the intent
 		Intent i = getIntent();
 		handleDecodeData(i);
-		
-		if(Global.deviceHasBarcodeScanner(myPref.printerType(true, -2))&&Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
-		{
-//			new DeviceLoad().execute(callBackMSR);
-			Global.mainPrinterManager.currentDevice.loadScanner(callBackMSR);
+
+		if (Global.deviceHasBarcodeScanner(myPref.printerType(true, -2))
+				|| Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
+			if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
+				Global.mainPrinterManager.currentDevice.loadScanner(callBackMSR);
+			if (Global.btSled != null && Global.btSled.currentDevice != null)
+				Global.btSled.currentDevice.loadScanner(callBackMSR);
 		}
-		
 		hasBeenCreated = true;
 	}
 
-	
-	private void setupTitle()
-	{
+	private void setupTitle() {
 		Bundle extras = getIntent().getExtras();
-		headerTitle = (TextView)findViewById(R.id.headerTitle);
+		headerTitle = (TextView) findViewById(R.id.headerTitle);
 		mTransType = extras.getInt("option_number");
-		headerContainer = (RelativeLayout)findViewById(R.id.headerTitleContainer);
-		if (myPref.isCustSelected()) 
-		{
-			
-			switch (mTransType) 
-			{
-				case 0: {
-					headerTitle.setText(R.string.sales_receipt);
-					break;
-				}
-				case 1: {
-					headerTitle.setText(R.string.order);
-					break;
-				}
-				case 2: {
-					headerTitle.setText(R.string.return_tag);
-					break;
-				}
-				case 3: {
-					headerTitle.setText(R.string.invoice);
-					break;
-				}
-				case 4: 
-				{
-					headerTitle.setText(R.string.estimate);
-					break;
-				}
-				case 9:
-				{
-					if(!Global.isConsignment)
-					{
-						custInventoryHandler = new CustomerInventoryHandler(this);
-						custInventoryHandler.getCustomerInventory();
-						Global.consignSummaryMap = new HashMap<String,HashMap<String,String>>();
-						Global.consignMapKey = new ArrayList<String>();
-						Global.isConsignment = true;
-						
-						
-						// consignmentType 0 = Rack, 1 = Returns, 2 = Fill-up, 3 = Pick-up
-						int consignmentType = extras.getInt("consignmentType",0);
-						
-						if(Global.custInventoryKey==null||Global.custInventoryKey.size()<=0)
-						{
-							consignmentType = Global.IS_CONS_FILLUP;
-						}
-						Global.consignmentType = consignmentType;
-					}
-					switch(Global.consignmentType)
-					{
-						case Global.IS_CONS_RACK:
-							headerTitle.setText(R.string.consignment_stacked);
-							break;
-						case Global.IS_CONS_RETURN:
-							headerTitle.setText(R.string.consignment_returned);
-							break;
-						case Global.IS_CONS_FILLUP:
-							headerTitle.setText(R.string.consignment_filledup);
-							break;
-						case Global.IS_CONS_PICKUP:
-							headerTitle.setText(R.string.consignment_pickup);
-							break;
-					}
+		headerContainer = (RelativeLayout) findViewById(R.id.headerTitleContainer);
+		if (myPref.isCustSelected()) {
 
-					break;
-				}
-				case 13://Inventory Transfer
-					headerTitle.setText(R.string.inventory_transfer);
-					break;
+			switch (mTransType) {
+			case 0: {
+				headerTitle.setText(R.string.sales_receipt);
+				break;
 			}
-		} 
-		else 
-		{
-			switch (mTransType) 
-			{
-				case 0: {
-					headerTitle.setText(R.string.sales_receipt);
+			case 1: {
+				headerTitle.setText(R.string.order);
+				break;
+			}
+			case 2: {
+				headerTitle.setText(R.string.return_tag);
+				break;
+			}
+			case 3: {
+				headerTitle.setText(R.string.invoice);
+				break;
+			}
+			case 4: {
+				headerTitle.setText(R.string.estimate);
+				break;
+			}
+			case 9: {
+				if (!Global.isConsignment) {
+					custInventoryHandler = new CustomerInventoryHandler(this);
+					custInventoryHandler.getCustomerInventory();
+					Global.consignSummaryMap = new HashMap<String, HashMap<String, String>>();
+					Global.consignMapKey = new ArrayList<String>();
+					Global.isConsignment = true;
+
+					// consignmentType 0 = Rack, 1 = Returns, 2 = Fill-up, 3 =
+					// Pick-up
+					int consignmentType = extras.getInt("consignmentType", 0);
+
+					if (Global.custInventoryKey == null || Global.custInventoryKey.size() <= 0) {
+						consignmentType = Global.IS_CONS_FILLUP;
+					}
+					Global.consignmentType = consignmentType;
+				}
+				switch (Global.consignmentType) {
+				case Global.IS_CONS_RACK:
+					headerTitle.setText(R.string.consignment_stacked);
+					break;
+				case Global.IS_CONS_RETURN:
+					headerTitle.setText(R.string.consignment_returned);
+					break;
+				case Global.IS_CONS_FILLUP:
+					headerTitle.setText(R.string.consignment_filledup);
+					break;
+				case Global.IS_CONS_PICKUP:
+					headerTitle.setText(R.string.consignment_pickup);
 					break;
 				}
-				case 1: {
-					headerTitle.setText(R.string.return_tag);
-					break;
-				}
-				case 2:
-				{
-					headerTitle.setText(R.string.sales_receipt);
-					break;
-				}
-				case 13://Inventory Transfer
-					headerTitle.setText(R.string.inventory_transfer);
-					break;
+
+				break;
+			}
+			case 13:// Inventory Transfer
+				headerTitle.setText(R.string.inventory_transfer);
+				break;
+			}
+		} else {
+			switch (mTransType) {
+			case 0: {
+				headerTitle.setText(R.string.sales_receipt);
+				break;
+			}
+			case 1: {
+				headerTitle.setText(R.string.return_tag);
+				break;
+			}
+			case 2: {
+				headerTitle.setText(R.string.sales_receipt);
+				break;
+			}
+			case 13:// Inventory Transfer
+				headerTitle.setText(R.string.inventory_transfer);
+				break;
 			}
 		}
 	}
-	
+
 	private static String savedHeaderTitle = "";
 	private static RelativeLayout headerContainer;
-	
-	public static void switchHeaderTitle(boolean newTitle, String title)
-	{
-		if(newTitle)
-		{
+
+	public static void switchHeaderTitle(boolean newTitle, String title) {
+		if (newTitle) {
 			savedHeaderTitle = headerTitle.getText().toString();
 			headerTitle.setText(title);
 			headerContainer.setBackgroundColor(Color.RED);
-			
-		}
-		else
-		{
+
+		} else {
 			headerTitle.setText(savedHeaderTitle);
 			headerContainer.setBackgroundColor(Color.BLACK);
 		}
 	}
-	
-	
-	
-	private void handleFragments()
-	{
+
+	private void handleFragments() {
 		int _orientation = getResources().getConfiguration().orientation;
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
-		if(leftFragment==null)
-			leftFragment = (Receipt_FR)fm.findFragmentById(R.id.order_receipt_frag_container);
-		if(rightFragment==null)
-			rightFragment = (Catalog_FR)fm.findFragmentById(R.id.order_catalog_frag_container);
-		if(orientation!=_orientation)	//screen orientation occurred
+		if (leftFragment == null)
+			leftFragment = (Receipt_FR) fm.findFragmentById(R.id.order_receipt_frag_container);
+		if (rightFragment == null)
+			rightFragment = (Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container);
+		if (orientation != _orientation) // screen orientation occurred
 		{
-			if(_orientation == Configuration.ORIENTATION_PORTRAIT)//changing from Land to Portrait
+			if (_orientation == Configuration.ORIENTATION_PORTRAIT) // changing
+																	// from Land
+																	// to
+																	// Portrait
 			{
 				catalogContainer.setVisibility(View.GONE);
-			}
-			else	//changing from Portrait to Landscape
+			} else // changing from Portrait to Landscape
 			{
 				catalogContainer.setVisibility(View.VISIBLE);
-				
+
 			}
 			ft.commit();
-		}
-		else
-		{
-			if(_orientation == Configuration.ORIENTATION_PORTRAIT)
-			{
+		} else {
+			if (_orientation == Configuration.ORIENTATION_PORTRAIT) {
 				catalogContainer.setVisibility(View.GONE);
-			}
-			else
-			{
+			} else {
 				catalogContainer.setVisibility(View.VISIBLE);
-				
+
 			}
 		}
 		orientation = _orientation;
 	}
-	
-	
+
 	private boolean isBackPressed = false;
+
 	@Override
 	public void onBackPressed() {
 		boolean tablet = myPref.getIsTablet();
 		isBackPressed = true;
-		if(catalogContainer.getVisibility() == View.VISIBLE&&(!tablet||(tablet&&orientation == Configuration.ORIENTATION_PORTRAIT)))
-		{
+		if (catalogContainer.getVisibility() == View.VISIBLE
+				&& (!tablet || (tablet && orientation == Configuration.ORIENTATION_PORTRAIT))) {
 			catalogContainer.setVisibility(View.GONE);
 			receiptContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_left_right));
 			receiptContainer.setVisibility(View.VISIBLE);
-		}
-		else
-		{
-			if(Global.isFromOnHold)
+		} else {
+			if (Global.isFromOnHold)
 				showDlog(true);
 			else
 				showDlog(false);
 		}
 	}
-	
-	
 
 	@Override
 	public void addProductServices() {
 		// TODO Auto-generated method stub
-				
-		//receiptContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_right_left));
-		
+
+		// receiptContainer.startAnimation(AnimationUtils.loadAnimation(this,
+		// R.anim.anim_right_left));
+
 		catalogContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_right_left));
 		catalogContainer.setVisibility(View.VISIBLE);
 		receiptContainer.setVisibility(View.GONE);
 	}
-	
 
 	@Override
 	public void onClick(View v) {
@@ -398,134 +359,109 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			return;
 		}
 		Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
-		switch(v.getId())
-		{
+		switch (v.getId()) {
 		case R.id.btnCheckOut:
 			btnCheckout.setEnabled(false);
-			if(leftFragment!=null)
-			{
+			if (leftFragment != null) {
 				leftFragment.checkoutOrder();
 			}
 			btnCheckout.setEnabled(true);
 			break;
 		}
 	}
-	
-	
+
 	@Override
 	public void refreshView() {
 		// TODO Auto-generated method stub
-		if(leftFragment!=null)
+		if (leftFragment != null)
 			leftFragment.refreshView();
-		if(rightFragment!=null)
+		if (rightFragment != null)
 			rightFragment.refreshListView();
 	}
-	
-	
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		
-		if(resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT)
-		{
+
+		if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-		}
-		else if (resultCode == 1) {
+		} else if (resultCode == 1) {
 
 			Bundle extras = data.getExtras();
 			String newName = extras.getString("customer_name");
-			
+
 			Global.taxID = "";
 			leftFragment.custName.setText(newName);
 			OrderTotalDetails_FR.getFrag().initSpinners();
-			if(rightFragment!=null)
-			{
+			if (rightFragment != null) {
 				rightFragment.loadCursor();
 			}
-		}
-		else if(resultCode == -1 ||resultCode ==3)				//Void transaction from Sales Receipt
+		} else if (resultCode == -1 || resultCode == 3) // Void transaction from
+														// Sales Receipt
 		{
 			OrderTotalDetails_FR.resetView();
 			global.resetOrderDetailsValues();
 			global.clearListViewData();
-			
-			
-			if(myPref.isSam4s(true, true)||myPref.isPAT100(true, true))
-			{
+
+			if (myPref.isSam4s(true, true) || myPref.isPAT100(true, true)) {
 				Global.showCDTDefault(activity);
 			}
-			
-			reloadDefaultTransaction();
-		}
-		else if(resultCode == 9)
-		{
 
-		}
-		else if(resultCode == 2)
+			reloadDefaultTransaction();
+		} else if (resultCode == 9) {
+
+		} else if (resultCode == 2)
 			this.refreshView();
 	}
-	
-	
-	
-	
-	
+
 	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) 
-	{
-		if(keyCode == 0)
-		{
-				fragOnKeyDown(keyCode);
-				return true;
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == 0) {
+			fragOnKeyDown(keyCode);
+			return true;
 		}
-//		else if (keyCode == 4)
-//		{
-//			Receipt_FR.mainLVAdapter.notifyDataSetChanged();
-//			Receipt_FR.myListView.setSelection(0);
-//			Receipt_FR.myListView.setSelected(false);
-//			Receipt_FR.myListView.invalidateViews();
-//		}
+		// else if (keyCode == 4)
+		// {
+		// Receipt_FR.mainLVAdapter.notifyDataSetChanged();
+		// Receipt_FR.myListView.setSelection(0);
+		// Receipt_FR.myListView.setSelected(false);
+		// Receipt_FR.myListView.invalidateViews();
+		// }
 		return super.onKeyUp(keyCode, event);
 	}
-	
-	
-	private void reloadDefaultTransaction()
-	{
-		if(myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1"))
+
+	private void reloadDefaultTransaction() {
+		if (myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1"))
 			finish();
-		else
-		{
-			DBManager dbManager = new DBManager(MainMenu_FA.activity,Global.FROM_SYNCH_ACTIVITY);
-			if(myPref.getPreferences(MyPreferences.pref_automatic_sync))
-			{
-				//SQLiteDatabase db = dbManager.openWritableDB();
-				dbManager.synchSend(false,true);
+		else {
+			DBManager dbManager = new DBManager(MainMenu_FA.activity, Global.FROM_SYNCH_ACTIVITY);
+			if (myPref.getPreferences(MyPreferences.pref_automatic_sync)) {
+				// SQLiteDatabase db = dbManager.openWritableDB();
+				dbManager.synchSend(false, true);
 			}
-			
+
 			OrderTotalDetails_FR.resetView();
 			finish();
 			myPref.resetCustInfo(getString(R.string.no_customer));
-			SalesTab_FR.startDefault(MainMenu_FA.activity,myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+			SalesTab_FR.startDefault(MainMenu_FA.activity,
+					myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
 		}
 	}
-	
-	
+
 	@Override
 	public void onResume() {
-		
-		if(global.isApplicationSentToBackground(activity))
+
+		if (global.isApplicationSentToBackground(activity))
 			global.loggedIn = false;
 		global.stopActivityTransitionTimer();
-		if(hasBeenCreated&&!global.loggedIn)
-		{
-			if(global.getGlobalDlog()!=null)
+		if (hasBeenCreated && !global.loggedIn) {
+			if (global.getGlobalDlog() != null)
 				global.getGlobalDlog().dismiss();
 			global.promptForMandatoryLogin(this);
 		}
-		
-		if (myPref.isDolphin(true, false)&&mDecodeManager == null) {
-			mDecodeManager = new DecodeManager(this,ScanResultHandler);
+
+		if (myPref.isDolphin(true, false) && mDecodeManager == null) {
+			mDecodeManager = new DecodeManager(this, ScanResultHandler);
 			try {
 				SoundManager.getInstance();
 				SoundManager.initSounds(this);
@@ -537,22 +473,20 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 				e.printStackTrace();
 			}
 		}
-		
-//		SoundManager.getInstance();
-//		SoundManager.initSounds(this);
-//		SoundManager.loadSounds();
-		
+
+		// SoundManager.getInstance();
+		// SoundManager.initSounds(this);
+		// SoundManager.loadSounds();
+
 		super.onResume();
 	}
-	
-	
 
 	@Override
-	public void onDestroy() 
-	{
+	public void onDestroy() {
 		super.onDestroy();
-		if(myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")||(!myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")&&isBackPressed))
-		{
+		if (myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
+				|| (!myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
+						&& isBackPressed)) {
 			if (mDecodeManager != null) {
 				try {
 					mDecodeManager.release();
@@ -562,99 +496,86 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 					e.printStackTrace();
 				}
 			}
-			
+
 			resetMSRValues();
-			
-			if(uniMagReader!=null)
+
+			if (uniMagReader != null)
 				uniMagReader.release();
-			else if(magtekReader!=null)
+			else if (magtekReader != null)
 				magtekReader.closeDevice();
-			else if(Global.btSwiper!=null&&Global.btSwiper.currentDevice!=null)
+			else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
 				Global.btSwiper.currentDevice.releaseCardReader();
-			else if (Global.mainPrinterManager != null&&Global.mainPrinterManager.currentDevice!=null)
-			{
+			else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
 				Global.mainPrinterManager.currentDevice.releaseCardReader();
 				Global.mainPrinterManager.currentDevice.loadScanner(null);
-			}
-			if(_msrUsbSams!=null&&_msrUsbSams.isDeviceOpen())
-			{
-				_msrUsbSams.CloseTheDevice();
-			}
+			} else if (Global.btSled != null && Global.btSled.currentDevice != null)
+				Global.btSled.currentDevice.releaseCardReader();
 		}
 	}
-	
-	
+
 	@Override
-	public void onPause()
-	{
+	public void onPause() {
 		super.onPause();
-		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
+		PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
 		boolean isScreenOn = powerManager.isScreenOn();
-		if(!isScreenOn)
+		if (!isScreenOn)
 			global.loggedIn = false;
-		
-		if(PickerAddon_FA.instance==null&&PickerProduct_FA.instance==null)
+
+		if (PickerAddon_FA.instance == null && PickerProduct_FA.instance == null)
 			global.startActivityTransitionTimer();
 	}
-	
-	
-	private void resetMSRValues()
-	{
+
+	private void resetMSRValues() {
 		cardReaderConnected = false;
 		msrWasLoaded = false;
 		rewardsWasRead = false;
 		wasReadFromReader = false;
 	}
-	
+
 	@Override
-	public void onNewIntent(Intent i) 
-	{
+	public void onNewIntent(Intent i) {
 		super.onNewIntent(i);
 		handleDecodeData(i);
 	}
-	
 
-	private void setCustomerShipToAddress()
-	{
+	private void setCustomerShipToAddress() {
 		AddressHandler addressHandler = new AddressHandler(activity);
-		List<String[]>addressDownloadedItems = addressHandler.getAddress();
+		List<String[]> addressDownloadedItems = addressHandler.getAddress();
 		int size = addressDownloadedItems.size();
-		if(size==1)
-		{
+		if (size == 1) {
 			StringBuilder sb = new StringBuilder();
 			String temp = "";
-			for(int i = 0 ; i<size;i++)
-			{
-				//sb.append("[").append(addressDownloadedItems.get(i)[0]).append("] ");
+			for (int i = 0; i < size; i++) {
+				// sb.append("[").append(addressDownloadedItems.get(i)[0]).append("]
+				// ");
 				temp = addressDownloadedItems.get(i)[1];
-				if(!temp.isEmpty())							//address 1
+				if (!temp.isEmpty()) // address 1
 					sb.append(temp).append(" ");
 				temp = addressDownloadedItems.get(i)[2];
-				if(!temp.isEmpty())							//address 2
+				if (!temp.isEmpty()) // address 2
 					sb.append(temp).append(" ");
 				temp = addressDownloadedItems.get(i)[3];
-				if(!temp.isEmpty())							//address 3
+				if (!temp.isEmpty()) // address 3
 					sb.append(temp).append("\t\t");
 				temp = addressDownloadedItems.get(i)[4];
-				if(!temp.isEmpty())							//address country
+				if (!temp.isEmpty()) // address country
 					sb.append(temp).append(" ");
 				temp = addressDownloadedItems.get(i)[5];
-				if(!temp.isEmpty())							//address city
+				if (!temp.isEmpty()) // address city
 					sb.append(temp).append(",");
-				temp = addressDownloadedItems.get(i)[6];		//address state
-				if(!temp.isEmpty())
+				temp = addressDownloadedItems.get(i)[6]; // address state
+				if (!temp.isEmpty())
 					sb.append(temp).append(" ");
-				
-				temp = addressDownloadedItems.get(i)[7];		//address zip code
-				if(!temp.isEmpty())
+
+				temp = addressDownloadedItems.get(i)[7]; // address zip code
+				if (!temp.isEmpty())
 					sb.append(temp);
 			}
 			global.setSelectedAddressString(sb.toString());
 			global.setSelectedAddress(1);
 		}
 	}
-	
-	
+
 	private void handleDecodeData(Intent i) {
 		// check the intent action is for us
 		if (i.getAction() != null && i.getAction().contentEquals(ourIntentAction)) {
@@ -666,7 +587,7 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 				this.cardInfoManager = Global.parseSimpleMSR(this, data);
 				wasReadFromReader = true;
 				cardInfoManager.setWasSwiped(true);
-				if(loyaltySwiped)
+				if (loyaltySwiped)
 					Global.loyaltyCardInfo = cardInfoManager;
 				else
 					Global.rewardCardInfo = cardInfoManager;
@@ -690,7 +611,8 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 								Catalog_FR.instance.automaticAddOrder(listData);
 							refreshView();
 						} else {
-							Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.limit_onhand));
+							Global.showPrompt(activity, R.string.dlog_title_error,
+									activity.getString(R.string.limit_onhand));
 						}
 					} else {
 						Catalog_FR.instance.searchUPC(data);
@@ -700,49 +622,41 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		}
 	}
 
-	
-	
-	private void showDlog(final boolean isFromOnHold)
-	{
-		final Dialog dlog = new Dialog(this,R.style.Theme_TransparentTest);
+	private void showDlog(final boolean isFromOnHold) {
+		final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
 		dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dlog.setCancelable(false);
 		dlog.setCanceledOnTouchOutside(false);
 		dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-		
-		TextView viewTitle = (TextView)dlog.findViewById(R.id.dlogTitle);
-		TextView viewMsg = (TextView)dlog.findViewById(R.id.dlogMessage);
-		
-		
-		Button btnLeft = (Button)dlog.findViewById(R.id.btnDlogLeft);
-		Button btnRight = (Button)dlog.findViewById(R.id.btnDlogRight);
-		if(isFromOnHold)
-		{
+
+		TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+		TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+
+		Button btnLeft = (Button) dlog.findViewById(R.id.btnDlogLeft);
+		Button btnRight = (Button) dlog.findViewById(R.id.btnDlogRight);
+		if (isFromOnHold) {
 			viewMsg.setVisibility(View.GONE);
 			viewTitle.setText(R.string.cust_dlog_choose_action);
 			btnLeft.setText(R.string.button_void);
 			btnRight.setText(R.string.button_cancel);
-		}
-		else
-		{
+		} else {
 			viewTitle.setText(R.string.warning_title);
 			viewMsg.setText(R.string.warning_exit_now);
 			btnLeft.setText(R.string.button_yes);
 			btnRight.setText(R.string.button_no);
 		}
-		
+
 		btnLeft.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dlog.dismiss();
-				if(isFromOnHold)
+				if (isFromOnHold)
 					leftFragment.voidCancelOnHold(1);
-				else
-				{
-					
-					if(mTransType == 0)//is sales receipt
+				else {
+
+					if (mTransType == 0) // is sales receipt
 						voidTransaction();
 					else
 						deleteTransaction();
@@ -757,39 +671,40 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			}
 		});
 		btnRight.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dlog.dismiss();
-				if(isFromOnHold)
+				if (isFromOnHold)
 					leftFragment.voidCancelOnHold(2);
 			}
 		});
 		dlog.show();
 	}
 
-		
-	
-	
 	private TextWatcher textWatcher() {
 
 		TextWatcher tw = new TextWatcher() {
 			boolean doneScanning = false;
+
 			@Override
 			public void afterTextChanged(Editable s) {
 				if (doneScanning) {
 					doneScanning = false;
 					String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
-					
+
 					String[] listData = handler.getUPCProducts(upc);
 					if (listData[0] != null) {
 						if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-							if(validAutomaticAddQty(listData))
-							{
+							if (validAutomaticAddQty(listData)) {
 								if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
 									int foundPosition = global.checkIfGroupBySKU(activity, listData[0], "1");
-									if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product already exist in list
+									if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
+																							// already
+																							// exist
+																							// in
+																							// list
 									{
 										global.refreshParticularOrder(myPref, foundPosition, listData);
 									} else
@@ -797,23 +712,20 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 								} else
 									Catalog_FR.instance.automaticAddOrder(listData);
 								refreshView();
-								if(OrderingMain_FA.returnItem)
-								{
+								if (OrderingMain_FA.returnItem) {
 									OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-									OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem,"Return");
+									OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
 								}
-							}
-							else
-							{
-								Global.showPrompt(activity,R.string.dlog_title_error,activity.getString(R.string.limit_onhand));
+							} else {
+								Global.showPrompt(activity, R.string.dlog_title_error,
+										activity.getString(R.string.limit_onhand));
 							}
 						} else {
 							Catalog_FR.instance.searchUPC(upc);
 						}
-					}
-					else
-					{
-						Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_item_not_found));
+					} else {
+						Global.showPrompt(activity, R.string.dlog_title_error,
+								getString(R.string.dlog_msg_item_not_found));
 					}
 					invisibleSearchMain.setText("");
 				}
@@ -834,21 +746,15 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		return tw;
 	}
 
-	
 	@Override
 	public void updateHeaderTitle(String val) {
 		// TODO Auto-generated method stub
 		headerTitle.setText(val);
-		if((Global.consignmentType == 2||Global.consignmentType==1)&&rightFragment!=null)
-		{
+		if ((Global.consignmentType == 2 || Global.consignmentType == 1) && rightFragment != null) {
 			rightFragment.loadCursor();
 		}
 	}
-	
-	
-	
-	
-	
+
 	private void fragOnKeyDown(int key_code) {
 		if (key_code == 0) {
 			if (scannerInDecodeMode) {
@@ -865,7 +771,6 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		}
 	}
 
-	
 	// -----Honeywell scanner
 	private void DoScan() {
 		try {
@@ -879,7 +784,6 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		}
 	}
 
-	
 	private Handler ScanResultHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -926,94 +830,77 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		}
 	};
 
-	
-	
 	private void scanAddItem(String upc) {
 		ProductsHandler handler = new ProductsHandler(this);
 		String[] listData = handler.getUPCProducts(upc);
-		//SoundManager.playSound(1, 1);
+		// SoundManager.playSound(1, 1);
 		if (listData[0] != null) {
-			
-			if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) 
-			{
-				if(validAutomaticAddQty(listData))
-				{
-				if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-					int foundPosition = global.checkIfGroupBySKU(this, listData[0], "1");
-					if (foundPosition != -1) // product already exist in list
-					{
-						global.refreshParticularOrder(myPref, foundPosition, listData);
+
+			if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
+				if (validAutomaticAddQty(listData)) {
+					if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+						int foundPosition = global.checkIfGroupBySKU(this, listData[0], "1");
+						if (foundPosition != -1) // product already exist in
+													// list
+						{
+							global.refreshParticularOrder(myPref, foundPosition, listData);
+						} else
+							Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
 					} else
-						Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
-				} else
-					Catalog_FR.instance.automaticAddOrder(listData);
-				refreshView();
+						Catalog_FR.instance.automaticAddOrder(listData);
+					refreshView();
+				} else {
+					Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.limit_onhand));
 				}
-				else
-				{
-					Global.showPrompt(activity,R.string.dlog_title_error,activity.getString(R.string.limit_onhand));
-				}
-				
-			} 
-			else 
-			{
+
+			} else {
 				Catalog_FR.instance.searchUPC(upc);
 			}
 		}
 	}
-	
-	
-	
-	public boolean validAutomaticAddQty(String[] listData)
-	{
-		String addedQty = global.qtyCounter.get(listData[0])==null?"0":global.qtyCounter.get(listData[0]);
-		double newQty = Double.parseDouble(addedQty)+1;
+
+	public boolean validAutomaticAddQty(String[] listData) {
+		String addedQty = global.qtyCounter.get(listData[0]) == null ? "0" : global.qtyCounter.get(listData[0]);
+		double newQty = Double.parseDouble(addedQty) + 1;
 		double onHandQty = Double.parseDouble(listData[4]);
-		if((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand)&&!listData[7].equals("Service")
-				&&(((Global.ord_type==Global.IS_SALES_RECEIPT||Global.ord_type==Global.IS_INVOICE)&&(newQty>onHandQty))))
-						||(Global.isConsignment&&!listData[7].equals("Service")&&!validConsignment(newQty,onHandQty,listData[0])))
-		{
+		if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !listData[7].equals("Service")
+				&& (((Global.ord_type == Global.IS_SALES_RECEIPT || Global.ord_type == Global.IS_INVOICE)
+						&& (newQty > onHandQty))))
+				|| (Global.isConsignment && !listData[7].equals("Service")
+						&& !validConsignment(newQty, onHandQty, listData[0]))) {
 			return false;
-		}
-		else
-		{
+		} else {
 			return true;
 		}
 	}
-	
-	
-	
-	
-	private boolean validConsignment(double selectedQty,double onHandQty,String prodID)
-	{
-		if(Global.isConsignment)
-		{
-			if(Global.consignmentType==Global.IS_CONS_FILLUP&&(onHandQty<=0||selectedQty>onHandQty))
+
+	private boolean validConsignment(double selectedQty, double onHandQty, String prodID) {
+		if (Global.isConsignment) {
+			if (Global.consignmentType == Global.IS_CONS_FILLUP && (onHandQty <= 0 || selectedQty > onHandQty))
 				return false;
-			else if(Global.consignmentType!=Global.IS_CONS_FILLUP&&!Global.custInventoryMap.containsKey(prodID))
+			else if (Global.consignmentType != Global.IS_CONS_FILLUP && !Global.custInventoryMap.containsKey(prodID))
 				return false;
-			else if(Global.consignmentType!=Global.IS_CONS_FILLUP)
-			{
-				if(Global.consignmentType == Global.IS_CONS_RACK&&selectedQty>Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
+			else if (Global.consignmentType != Global.IS_CONS_FILLUP) {
+				if (Global.consignmentType == Global.IS_CONS_RACK
+						&& selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
 					return false;
-				else if(Global.consignmentType == Global.IS_CONS_RETURN)
-				{
-					if(Global.consignment_qtyCounter!=null&&Global.consignment_qtyCounter.containsKey(prodID))//verify rack
+				else if (Global.consignmentType == Global.IS_CONS_RETURN) {
+					if (Global.consignment_qtyCounter != null && Global.consignment_qtyCounter.containsKey(prodID)) // verify
+																													// rack
 					{
 						double rackQty = Double.parseDouble(Global.consignment_qtyCounter.get(prodID));
 						double origQty = Double.parseDouble(Global.custInventoryMap.get(prodID)[2]);
-						if(rackQty==origQty||(rackQty+selectedQty>origQty))
+						if (rackQty == origQty || (rackQty + selectedQty > origQty))
 							return false;
 					}
-				}
-				else if(Global.consignmentType == Global.IS_CONS_PICKUP&&selectedQty>Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
+				} else if (Global.consignmentType == Global.IS_CONS_PICKUP
+						&& selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
 					return false;
 			}
-				
+
 		}
 		return true;
 	}
-	
 
 	private boolean loyaltySwiped = false;
 	private Dialog dlogMSR;
@@ -1026,7 +913,6 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		loyaltySwiped = true;
 	}
 
-
 	@Override
 	public void startRewardSwiper() {
 		// TODO Auto-generated method stub
@@ -1034,145 +920,128 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		loyaltySwiped = false;
 	}
 
-
-		
-	
 	@SuppressWarnings("deprecation")
 	private void setUpCardReader() {
 		Global.isEncryptSwipe = false;
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		if (audioManager.isWiredHeadsetOn()) {
 			String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
-			if(_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1"))
-			{
-				if(_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG))
-				{
+			if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
+				if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
 					uniMagReader = new EMSUniMagDriver();
 					uniMagReader.initializeReader(activity);
-				}
-				else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK))
-				{
+				} else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK)) {
 					magtekReader = new EMSMagtekAudioCardReader(activity);
-					new Thread(new Runnable(){
-						public void run()
-						{
-							magtekReader.connectMagtek(true,callBackMSR);
+					new Thread(new Runnable() {
+						public void run() {
+							magtekReader.connectMagtek(true, callBackMSR);
 						}
 					}).start();
-				}
-				else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER))
-				{
+				} else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
 					roverReader = new EMSRover();
 					roverReader.initializeReader(activity, false);
 				}
 			}
-//			if (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader)) {
-//				uniMagReader = new EMSUniMagDriver();
-//				uniMagReader.initializeReader(activity);
-//			} else {
-//				magtekReader = new EMSMagtekAudioCardReader(activity);
-//				new Thread(new Runnable() {
-//					public void run() {
-//						magtekReader.connectMagtek(true,callBackMSR);
-//					}
-//				}).start();
-//			}
+			// if
+			// (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
+			// {
+			// uniMagReader = new EMSUniMagDriver();
+			// uniMagReader.initializeReader(activity);
+			// } else {
+			// magtekReader = new EMSMagtekAudioCardReader(activity);
+			// new Thread(new Runnable() {
+			// public void run() {
+			// magtekReader.connectMagtek(true,callBackMSR);
+			// }
+			// }).start();
+			// }
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.printerType(true, -2);
-			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(callBackMSR);
+			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
+					&& !cardReaderConnected) {
+				Global.btSwiper.currentDevice.loadCardReader(callBackMSR, false);
 			} else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
-				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null && !cardReaderConnected)
-					Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR);
-			}
-			else
-			{
+				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
+						&& !cardReaderConnected)
+					Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
+			} else {
 				swiperLabel.setText(R.string.disconnected);
 				swiperLabel.setTextColor(Color.RED);
 			}
 		}
 		// }
-		if (myPref.isET1(true, false)||myPref.isMC40(true, false)) {
-//			ourIntentAction = getString(R.string.intentAction2);
-//			Intent i = getIntent();
-//			handleDecodeData(i);
+		if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
+			// ourIntentAction = getString(R.string.intentAction2);
+			// Intent i = getIntent();
+			// handleDecodeData(i);
 			swiperLabel.setText(R.string.connected);
 			swiperLabel.setTextColor(Color.BLUE);
 			msrWasLoaded = true;
 		} else if (myPref.isSam4s(true, false)) {
-			_msrUsbSams = new EMSIDTechUSB(activity,callBackMSR);
+			_msrUsbSams = new EMSIDTechUSB(activity, callBackMSR);
 			_msrUsbSams.OpenDevice();
-			if(_msrUsbSams.isDeviceOpen()&&!_msrUsbSams.isDeviceReading())
+			if (_msrUsbSams.isDeviceOpen() && !_msrUsbSams.isDeviceReading())
 				_msrUsbSams.StartReadingThread();
-			
-				swiperLabel.setText(R.string.connected);
-				swiperLabel.setTextColor(Color.BLUE);
-				msrWasLoaded = true;
-			//}
+
+			swiperLabel.setText(R.string.connected);
+			swiperLabel.setTextColor(Color.BLUE);
+			msrWasLoaded = true;
+			// }
 		}
 	}
-	
-	
-	
-		
-	private void showMSRprompt(final boolean isLoyaltyCard)
-	{
-		if(_msrUsbSams!=null&&_msrUsbSams.isDeviceOpen()&&!_msrUsbSams.isDeviceReading())
+
+	private void showMSRprompt(final boolean isLoyaltyCard) {
+		if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && !_msrUsbSams.isDeviceReading())
 			_msrUsbSams.StartReadingThread();
-		
-		dlogMSR = new Dialog(this,R.style.Theme_TransparentTest);
+
+		dlogMSR = new Dialog(this, R.style.Theme_TransparentTest);
 		dlogMSR.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dlogMSR.setCancelable(false);
 		dlogMSR.setCanceledOnTouchOutside(false);
 		dlogMSR.setContentView(R.layout.dlog_swiper_layout);
-		
-	
-		swiperLabel = (TextView)dlogMSR.findViewById(R.id.dlogMessage);
-		Button btnOK = (Button)dlogMSR.findViewById(R.id.btnDlogLeft);
-		Button btnCancel = (Button)dlogMSR.findViewById(R.id.btnDlogRight);
-		swiperField = (EditText)dlogMSR.findViewById(R.id.dlogFieldSingle);
-		swiperHiddenField = (EditText)dlogMSR.findViewById(R.id.hiddenField);
+
+		swiperLabel = (TextView) dlogMSR.findViewById(R.id.dlogMessage);
+		Button btnOK = (Button) dlogMSR.findViewById(R.id.btnDlogLeft);
+		Button btnCancel = (Button) dlogMSR.findViewById(R.id.btnDlogRight);
+		swiperField = (EditText) dlogMSR.findViewById(R.id.dlogFieldSingle);
+		swiperHiddenField = (EditText) dlogMSR.findViewById(R.id.hiddenField);
 		swiperHiddenField.addTextChangedListener(hiddenTxtWatcher(swiperHiddenField));
 		swiperLabel.setText(R.string.loading);
 		swiperLabel.setTextColor(Color.DKGRAY);
-		
-		
+
 		btnOK.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dlogMSR.dismiss();
-				
+
 				String temp = swiperField.getText().toString().trim();
-				if(temp.length()>0)
-				{	
+				if (temp.length() > 0) {
 					processBalanceInquiry(isLoyaltyCard);
 				}
 			}
 		});
 		btnCancel.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dlogMSR.dismiss();
-				if(_msrUsbSams!=null&&_msrUsbSams.isDeviceOpen()&&_msrUsbSams.isDeviceReading())
+				if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && _msrUsbSams.isDeviceReading())
 					_msrUsbSams.StopReadingThread();
 			}
 		});
 		dlogMSR.show();
-		if(!msrWasLoaded)
+		if (!msrWasLoaded)
 			setUpCardReader();
-		else
-		{
+		else {
 			swiperLabel.setText(R.string.connected);
 			swiperLabel.setTextColor(Color.BLUE);
 		}
 	}
-	
-	
+
 	private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
 
 		TextWatcher tw = new TextWatcher() {
@@ -1199,20 +1068,19 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				// TODO Auto-generated method stub
 				temp = s.toString();
-//				if (temp.contains("\n")&&temp.split("\n").length>=2&&temp.substring(temp.length()-1).contains("\n"))
-//				{
-//					doneScanning = true;
-//				}
-				if(temp.contains(";")&&temp.contains("?")&&temp.contains("\n"))
+				// if
+				// (temp.contains("\n")&&temp.split("\n").length>=2&&temp.substring(temp.length()-1).contains("\n"))
+				// {
+				// doneScanning = true;
+				// }
+				if (temp.contains(";") && temp.contains("?") && temp.contains("\n"))
 					doneScanning = true;
-					
+
 			}
 		};
 		return tw;
 	}
-	
-	
-	
+
 	private void populateCardInfo() {
 		if (!wasReadFromReader) {
 			Encrypt encrypt = new Encrypt(activity);
@@ -1225,24 +1093,20 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			cardInfoManager.setCardNumAESEncrypted(encrypt.encryptWithAES(swiperField.getText().toString()));
 			cardInfoManager.setCardNumUnencrypted(swiperField.getText().toString());
 			cardInfoManager.setWasSwiped(false);
-			if(loyaltySwiped)
+			if (loyaltySwiped)
 				Global.loyaltyCardInfo = cardInfoManager;
 			else
 				Global.rewardCardInfo = cardInfoManager;
 		}
 	}
-	
-	
-	
-	
+
 	private void processBalanceInquiry(boolean isLoyaltyCard) {
 		Payment payment = new Payment(activity);
 		populateCardInfo();
 
-		
 		PayMethodsHandler payHandler = new PayMethodsHandler(activity);
 
-		if(isLoyaltyCard)
+		if (isLoyaltyCard)
 			payment.paymethod_id = payHandler.getPayMethodID("LoyaltyCard");
 		else
 			payment.paymethod_id = payHandler.getPayMethodID("Reward");
@@ -1259,30 +1123,27 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		payment.track_two = cardInfoManager.getEncryptedAESTrack2();
 
 		String cardType = "LoyaltyCard";
-		if(!isLoyaltyCard)
+		if (!isLoyaltyCard)
 			cardType = "Reward";
-		
+
 		payment.card_type = cardType;
 		payment.pay_type = "0";
-		
 
 		EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
 		String generatedURL = new String();
 
-		
-		if(isLoyaltyCard)
-		{
-			generatedURL = payGate.paymentWithAction("BalanceLoyaltyCardAction", wasReadFromReader, cardType, cardInfoManager);
+		if (isLoyaltyCard) {
+			generatedURL = payGate.paymentWithAction("BalanceLoyaltyCardAction", wasReadFromReader, cardType,
+					cardInfoManager);
+		} else {
+			generatedURL = payGate.paymentWithAction("BalanceRewardAction", wasReadFromReader, cardType,
+					cardInfoManager);
 		}
-		else
-		{
-			generatedURL = payGate.paymentWithAction("BalanceRewardAction", wasReadFromReader, cardType, cardInfoManager);
-		}
-		
+
 		new processAsync().execute(generatedURL);
 	}
 
-	private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void>{
+	private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
 
 		@Override
 		protected void onPreExecute() {
@@ -1291,24 +1152,22 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			myProgressDialog.setCancelable(false);
 			myProgressDialog.show();
-	
+
 		}
-		
+
 		@Override
 		protected Void doInBackground(EMSCallBack... params) {
 			Global.mainPrinterManager.currentDevice.loadScanner(params[0]);
 			return null;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 			myProgressDialog.dismiss();
 		}
 	}
-	
-	
-	
+
 	private class processAsync extends AsyncTask<String, String, String> {
 
 		private HashMap<String, String> parsedMap = new HashMap<String, String>();
@@ -1323,9 +1182,8 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			myProgressDialog.setCancelable(false);
 			myProgressDialog.show();
-			
-			if(_msrUsbSams!=null && _msrUsbSams.isDeviceOpen())
-			{
+
+			if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
 				_msrUsbSams.CloseTheDevice();
 			}
 		}
@@ -1399,11 +1257,7 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			}
 		}
 	}
-	
-	
-	
-	
-	
+
 	@Override
 	public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
 		// TODO Auto-generated method stub
@@ -1411,44 +1265,36 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 		wasReadFromReader = true;
 		this.cardInfoManager = cardManager;
 		cardInfoManager.setWasSwiped(true);
-		if(loyaltySwiped)
+		if (loyaltySwiped)
 			Global.loyaltyCardInfo = cardInfoManager;
 		else
 			Global.rewardCardInfo = cardInfoManager;
 		swiperField.setText(cardManager.getCardNumUnencrypted());
-		if(uniMagReader!=null&&uniMagReader.readerIsConnected())
-		{
+		if (uniMagReader != null && uniMagReader.readerIsConnected()) {
 			uniMagReader.startReading();
-		}
-		else if(magtekReader==null&&Global.btSwiper==null&&_msrUsbSams==null&&Global.mainPrinterManager!=null)
-			Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR);
-//			new DeviceLoad().execute(callBackMSR);
+		} else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
+				&& Global.mainPrinterManager != null)
+			Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
+		// new DeviceLoad().execute(callBackMSR);
 	}
-	
-	
-	
-	
 
 	@Override
 	public void readerConnectedSuccessfully(boolean didConnect) {
 		// TODO Auto-generated method stub
-		if(didConnect)
-		{
+		if (didConnect) {
 			msrWasLoaded = true;
 			cardReaderConnected = true;
-			if(uniMagReader!=null&&uniMagReader.readerIsConnected())
+			if (uniMagReader != null && uniMagReader.readerIsConnected())
 				uniMagReader.startReading();
 			swiperLabel.setText(R.string.connected);
 			swiperLabel.setTextColor(Color.BLUE);
-		}
-		else
-		{
+		} else {
 			cardReaderConnected = false;
 			swiperLabel.setText(R.string.disconnected);
 			swiperLabel.setTextColor(Color.RED);
 		}
 	}
-	
+
 	@Override
 	public void scannerWasRead(String data) {
 		// TODO Auto-generated method stub
@@ -1456,50 +1302,48 @@ Catalog_FR.RefreshReceiptViewCallback,OrderLoyalty_FR.SwiperLoyaltyCallback,Orde
 			scanAddItem(data);
 		}
 	}
-	
-	private void voidTransaction()
-	{
-		if(!Global.lastOrdID.isEmpty())
-		{
+
+	private void voidTransaction() {
+		if (!Global.lastOrdID.isEmpty()) {
 			OrdersHandler dbOrders = new OrdersHandler(this);
-			if(global.order.ord_id.isEmpty())
-			{
-				global.order = Receipt_FR.buildOrder(activity, global, myPref,"");
+			if (global.order.ord_id.isEmpty()) {
+				global.order = Receipt_FR.buildOrder(activity, global, myPref, "");
 				OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
 				OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
 				dbOrders.insert(global.order);
 				dbOrdProd.insert(global.orderProducts);
 				dbOrdAttr.insert(global.ordProdAttr);
 			}
-			
+
 			dbOrders.updateIsVoid(Global.lastOrdID);
-			
+
 			VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
-			/*HashMap<String,String> voidedTrans = new HashMap<String,String>();
-			voidedTrans.put("ord_id", Global.lastOrdID);
-			voidedTrans.put("ord_type", global.order.ord_type);*/
-			
+			/*
+			 * HashMap<String,String> voidedTrans = new
+			 * HashMap<String,String>(); voidedTrans.put("ord_id",
+			 * Global.lastOrdID); voidedTrans.put("ord_type",
+			 * global.order.ord_type);
+			 */
+
 			Order order = new Order(activity);
 			order.ord_id = Global.lastOrdID;
 			order.ord_type = global.order.ord_type;
 			voidHandler.insert(order);
-			
+
 		}
 	}
-	
-	private void deleteTransaction()
-	{
-		if(!Global.lastOrdID.isEmpty())
-		{
+
+	private void deleteTransaction() {
+		if (!Global.lastOrdID.isEmpty()) {
 			OrdersHandler dbOrders = new OrdersHandler(this);
 			OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
 			OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
-			
+
 			dbOrders.deleteOrder(Global.lastOrdID);
 			dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
-			for(OrdProdAttrHolder val:global.ordProdAttr)
+			for (OrdProdAttrHolder val : global.ordProdAttr)
 				dbOrdAttr.deleteOrderProduct(val.ordprod_id);
 		}
 	}
-		
+
 }

@@ -1,43 +1,10 @@
 package drivers;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import util.RasterDocument;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Paint.FontMetrics;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.text.Layout.Alignment;
-import android.text.StaticLayout;
-import android.text.TextPaint;
-import android.util.Base64;
 
 import com.StarMicronics.jasura.IBarcodeListener;
 import com.StarMicronics.jasura.IMSRListener;
@@ -61,20 +28,33 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
-import com.emobilepos.app.R;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
-import com.android.support.DBManager;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.starmicronics.stario.StarIOPort;
-import com.starmicronics.stario.StarIOPortException;
-import com.starmicronics.stario.StarPrinterStatus;
+import com.emobilepos.app.R;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.text.TextPaint;
+import android.util.Base64;
 import drivers.EMSBluetoothStarPrinter.ReceiveThread;
-import drivers.EMSBluetoothStarPrinter.StartCardReaderThread;
-import drivers.EMSBluetoothStarPrinter.processConnectionAsync;
+import main.EMSDeviceManager;
+import plaintext.EMSPlainTextHelper;
+import protocols.EMSCallBack;
+import protocols.EMSDeviceManagerPrinterDelegate;
 
 public class EMSAsura extends EMSDeviceDriver
 		implements EMSDeviceManagerPrinterDelegate, IMSRListener, IBarcodeListener {
@@ -1365,9 +1345,9 @@ public class EMSAsura extends EMSDeviceDriver
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
-
+		
 		callBack = _callBack;
 		if (handler == null)
 			handler = new Handler();

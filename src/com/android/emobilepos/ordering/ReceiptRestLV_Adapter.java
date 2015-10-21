@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.android.database.ProductAddonsHandler;
+import com.android.emobilepos.models.OrderProducts;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.mobeta.android.dslv.DragSortListView;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +21,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.android.database.ProductAddonsHandler;
-import com.android.emobilepos.models.OrderProducts;
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.mobeta.android.dslv.DragSortListView;
 
 public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListView.DropListener {
     

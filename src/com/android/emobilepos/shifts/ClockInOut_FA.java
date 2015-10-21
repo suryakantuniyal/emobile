@@ -18,6 +18,17 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import com.android.database.TimeClockHandler;
+import com.android.emobilepos.models.TimeClock;
+import com.android.saxhandler.SAXPostHandler;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -36,17 +47,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-
-import com.android.database.TimeClockHandler;
-import com.android.emobilepos.models.TimeClock;
-import com.emobilepos.app.R;
-import com.android.saxhandler.SAXPostHandler;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
 	private Global global;

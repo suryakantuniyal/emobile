@@ -1,12 +1,10 @@
 package drivers;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import com.StarMicronics.jasura.JAException;
-import com.android.database.MemoTextHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.StoredPayments_DB;
@@ -30,9 +28,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Base64;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
@@ -160,395 +156,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
 		// TODO Auto-generated method stub
 		printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
-		// printPref = myPref.getPrintingPreferences();
-		// EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-		//
-		// OrderProductsHandler handler = new OrderProductsHandler(activity);
-		// OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
-		//
-		// List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-		// List<Orders> orders = handler.getPrintOrderedProducts(ordID);
-		//
-		// OrdersHandler orderHandler = new OrdersHandler(activity);
-		// Order anOrder = orderHandler.getPrintedOrder(ordID);
-		// ClerksHandler clerkHandler = new ClerksHandler(activity);
-		//
-		// StringBuilder sb = new StringBuilder();
-		// int size = orders.size();
-		//
-		// this.printImage(0);
-		//
-		// if (printPref.contains(MyPreferences.print_header))
-		// this.printHeader();
-		//
-		// if (anOrder.isVoid.equals("1"))
-		// sb.append(textHandler.centeredString("*** VOID ***",
-		// LINE_WIDTH)).append("\n\n");
-		//
-		// if (fromOnHold) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText("[" +
-		// getString(R.string.on_hold) + "]",
-		// anOrder.ord_HoldName, LINE_WIDTH, 0));
-		// }
-		//
-		// switch (type) {
-		// case 0: // Order
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.order)
-		// + ":", ordID, LINE_WIDTH,
-		// 0));
-		// break;
-		// case 1: // Return
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.return_tag)
-		// + ":", ordID,
-		// LINE_WIDTH, 0));
-		// break;
-		// case 2: // Invoice
-		// case 7:// Consignment Invoice
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice)
-		// + ":", ordID, LINE_WIDTH,
-		// 0));
-		// break;
-		// case 3: // Estimate
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.estimate)
-		// + ":", ordID,
-		// LINE_WIDTH, 0));
-		// break;
-		// case 5: // Sales Receipt
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt)
-		// + ":", ordID,
-		// LINE_WIDTH, 0));
-		// break;
-		// }
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-		// Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 3),
-		// LINE_WIDTH,
-		// 0));
-		//
-		// if (!myPref.getShiftIsOpen() ||
-		// myPref.getPreferences(MyPreferences.pref_use_clerks)) {
-		// String clerk_id = anOrder.clerk_id;
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
-		// clerkHandler.getClerkName(clerk_id) + "(" + clerk_id + ")",
-		// LINE_WIDTH, 0));
-		// }
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-		// myPref.getEmpName() + "(" + myPref.getEmpID() + ")", LINE_WIDTH, 0));
-		//
-		// String custName = anOrder.cust_name;
-		// if (custName != null && !custName.isEmpty())
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
-		// custName,
-		// LINE_WIDTH, 0));
-		//
-		// custName = anOrder.cust_id;
-		// if (printPref.contains(MyPreferences.print_customer_id) && custName
-		// != null && !custName.isEmpty())
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id),
-		// custName,
-		// LINE_WIDTH, 0));
-		//
-		// String ordComment = anOrder.ord_comment;
-		// if (ordComment != null && !ordComment.isEmpty()) {
-		// sb.append("\n\n");
-		// sb.append("Comments:\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment,
-		// LINE_WIDTH, 3)).append("\n");
-		// }
-		//
-		// sb.append("\n\n");
-		//
-		// // port.writePort(sb.toString().getBytes(), 0,
-		// sb.toString().length());
-		// printerApi.printData(sb.toString());
-		//
-		// sb.setLength(0);
-		//
-		// if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
-		// boolean isRestMode =
-		// myPref.getPreferences(MyPreferences.pref_restaurant_mode);
-		//
-		// int m = 0;
-		// for (int i = 0; i < size; i++) {
-		//
-		// if (isRestMode) {
-		// if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
-		// m = i;
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// orders.get(m).getQty() + "x " + orders.get(m).getName(), LINE_WIDTH,
-		// 1));
-		// for (int j = i + 1; j < size; j++) {
-		// if (orders.get(j).getIsAdded().equals("1"))
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText("- " +
-		// orders.get(j).getName(),
-		// Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
-		// LINE_WIDTH, 2));
-		// else
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-		// "- NO " + orders.get(j).getName(),
-		// Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
-		// LINE_WIDTH, 2));
-		//
-		// if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j
-		// + 1 >= size)) {
-		// i = j;
-		// break;
-		// }
-		//
-		// }
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-		// Global.getCurrencyFormat(orders.get(m).getOverwritePrice()),
-		// LINE_WIDTH, 3))
-		// .append("\n");
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-		// Global.getCurrencyFormat(orders.get(m).getTotal()), LINE_WIDTH,
-		// 3)).append("\n");
-		//
-		// if (printPref.contains(MyPreferences.print_descriptions)) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-		// getString(R.string.receipt_description), "", LINE_WIDTH,
-		// 3)).append("\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getProdDescription(),
-		// LINE_WIDTH, 5)).append("\n");
-		// }
-		//
-		// } else {
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH,
-		// 1));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-		// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// LINE_WIDTH, 3))
-		// .append("\n");
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-		// Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH,
-		// 3)).append("\n");
-		//
-		// if (printPref.contains(MyPreferences.print_descriptions)) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-		// getString(R.string.receipt_description), "", LINE_WIDTH,
-		// 3)).append("\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
-		// LINE_WIDTH, 5)).append("\n");
-		// }
-		// }
-		// } else {
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH,
-		// 1));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-		// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// LINE_WIDTH, 3)).append("\n");
-		//
-		// if (orders.get(i).getDiscountID() != null &&
-		// !orders.get(i).getDiscountID().isEmpty()) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
-		// Global.getCurrencyFormat(orders.get(i).getItemDiscount()),
-		// LINE_WIDTH, 3)).append("\n");
-		// }
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-		// Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH,
-		// 3)).append("\n");
-		//
-		// if (printPref.contains(MyPreferences.print_descriptions)) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description),
-		// "", LINE_WIDTH, 3)).append("\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
-		// LINE_WIDTH, 5)).append("\n");
-		// }
-		//
-		// }
-		//
-		// }
-		// } else {
-		// int padding = LINE_WIDTH / 4;
-		// String tempor = Integer.toString(padding);
-		// StringBuilder tempSB = new StringBuilder();
-		// tempSB.append("%").append(tempor).append("s").append("%").append(tempor).append("s").append("%")
-		// .append(tempor).append("s").append("%").append(tempor).append("s");
-		//
-		// sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price",
-		// "Total")).append("\n\n");
-		//
-		// for (int i = 0; i < size; i++) {
-		//
-		// sb.append(orders.get(i).getName()).append("-").append(orders.get(i).getProdDescription()).append("\n");
-		// // sb.append(textHandler.fourColumnLineWithLeftAlignedText(" ",
-		// // orders.get(i).getQty(),
-		// // Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// // Global.getCurrencyFormat(orders.get(i).getTotal()),
-		// // LINE_WIDTH, 3)).append("\n\n");
-		// sb.append(String.format(tempSB.toString(), " ",
-		// orders.get(i).getQty(),
-		// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// Global.getCurrencyFormat(orders.get(i).getTotal()))).append("\n\n");
-		//
-		// // this.printString(sb.toString());
-		// printerApi.printData(sb.toString());
-		// sb.setLength(0);
-		//
-		// }
-		// }
-		// printerApi.printData(sb.toString());
-		// sb.setLength(0);
-		// printerApi.printData(textHandler.lines(LINE_WIDTH));
-		//
-		//// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
-		//// Global.formatDoubleStrToCurrency(anOrder.ord_subtotal), LINE_WIDTH,
-		// 0));
-		//// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
-		//// Global.formatDoubleStrToCurrency(anOrder.ord_discount), LINE_WIDTH,
-		// 0));
-		//// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tax),
-		//// Global.formatDoubleStrToCurrency(anOrder.ord_taxamount),
-		// LINE_WIDTH, 0));
-		////
-		//// int num_taxes = listOrdTaxes.size();
-		//// if (num_taxes > 0) {
-		//// for (int i = 0; i < num_taxes; i++) {
-		//// sb.append(textHandler.twoColumnLineWithLeftAlignedText(listOrdTaxes.get(i).get(OrderTaxes_DB.tax_name),
-		//// Global.getCurrencyFormat(listOrdTaxes.get(i).get(OrderTaxes_DB.tax_amount)),
-		// LINE_WIDTH, 2));
-		//// }
-		//// }
-		//
-		//
-		// addTotalLines(this.activity, anOrder, orders, sb, LINE_WIDTH);
-		// int num_taxes = listOrdTaxes.size();
-		// addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, LINE_WIDTH, sb);
-		//
-		// sb.append("\n\n");
-		//
-		// String granTotal = anOrder.gran_total;
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
-		// Global.formatDoubleStrToCurrency(granTotal), LINE_WIDTH, 0));
-		//
-		// PaymentsHandler payHandler = new PaymentsHandler(activity);
-		// List<String[]> payArrayList =
-		// payHandler.getPaymentForPrintingTransactions(ordID);
-		// if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
-		// {
-		// StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
-		// payArrayList.addAll(dbStoredPay.getPaymentForPrintingTransactions(ordID));
-		// }
-		// String receiptSignature = new String();
-		// size = payArrayList.size();
-		//
-		// double tempGrandTotal = Double.parseDouble(granTotal);
-		// double tempAmount = 0;
-		// if (size == 0) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-		// Global.formatDoubleToCurrency(tempAmount), LINE_WIDTH, 0));
-		// if (type == 2) // Invoice
-		// {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
-		// Global.formatDoubleToCurrency(tempGrandTotal - tempAmount),
-		// LINE_WIDTH, 0));
-		// }
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-		// Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
-		// Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0));
-		// // port.writePort(sb.toString().getBytes(FORMAT), 0,
-		// // sb.toString().length());
-		// } else {
-		// tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
-		// String _pay_type =
-		// payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
-		// double tempTipAmount = formatStrToDouble(payArrayList.get(0)[2]);
-		// StringBuilder tempSB = new StringBuilder();
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// Global.formatDoubleStrToCurrency(payArrayList.get(0)[9]) + "[" +
-		// payArrayList.get(0)[1] + "]",
-		// LINE_WIDTH, 1));
-		// if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID:
-		// " + payArrayList.get(0)[4],
-		// LINE_WIDTH, 1));
-		// tempSB.append(
-		// textHandler.oneColumnLineWithLeftAlignedText("CC#: *" +
-		// payArrayList.get(0)[5], LINE_WIDTH, 1));
-		// }
-		// if (!payArrayList.get(0)[3].isEmpty())
-		// receiptSignature = payArrayList.get(0)[3];
-		//
-		// for (int i = 1; i < size; i++) {
-		// _pay_type =
-		// payArrayList.get(i)[1].toUpperCase(Locale.getDefault()).trim();
-		// tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[9]);
-		// tempTipAmount = tempTipAmount +
-		// formatStrToDouble(payArrayList.get(i)[2]);
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// Global.formatDoubleStrToCurrency(payArrayList.get(i)[9]) + "[" +
-		// payArrayList.get(i)[1] + "]",
-		// LINE_WIDTH, 1));
-		// if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID:
-		// " + payArrayList.get(i)[4],
-		// LINE_WIDTH, 1));
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("CC#: *" +
-		// payArrayList.get(i)[5],
-		// LINE_WIDTH, 1));
-		// }
-		// if (!payArrayList.get(i)[3].isEmpty())
-		// receiptSignature = payArrayList.get(i)[3];
-		// }
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-		// Global.formatDoubleStrToCurrency(Double.toString(tempAmount)),
-		// LINE_WIDTH, 0));
-		// sb.append(tempSB.toString());
-		// if (type == 2) // Invoice
-		// {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
-		// Global.formatDoubleToCurrency(tempGrandTotal - tempAmount),
-		// LINE_WIDTH, 0));
-		// }
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-		// Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)),
-		// LINE_WIDTH, 0));
-		//
-		// tempAmount = formatStrToDouble(granTotal) - tempAmount;
-		// if (tempAmount > 0)
-		// tempAmount = 0.00;
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
-		// Global.formatDoubleStrToCurrency(Double.toString(tempAmount)),
-		// LINE_WIDTH, 0)).append("\n\n");
-		// // port.writePort(sb.toString().getBytes(FORMAT), 0,
-		// // sb.toString().length());
-		// }
-		//
-		// printerApi.printData(sb.toString());
-		// printerApi.printData(textHandler.newLines(2));
-		//
-		// if (printPref.contains(MyPreferences.print_footer))
-		// this.printFooter();
-		//
-		// printerApi.printData(textHandler.newLines(2));
-		//
-		// receiptSignature = anOrder.ord_signature;
-		// if (!receiptSignature.isEmpty()) {
-		// this.encodedSignature = receiptSignature;
-		// this.printImage(1);
-		// // port.writePort(enableCenter, 0, enableCenter.length); // center
-		// sb.setLength(0);
-		// sb.append("x").append(textHandler.lines(LINE_WIDTH /
-		// 2)).append("\n");
-		// sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
-		// printerApi.printData(sb.toString());
-		// // port.writePort(disableCenter, 0, disableCenter.length); //
-		// // disable center
-		// }
-		//
-		// if (isFromHistory) {
-		// sb.setLength(0);
-		// sb.append(textHandler.centeredString("*** Copy ***", LINE_WIDTH));
-		// printerApi.printData(sb.toString());
-		// printerApi.printData(textHandler.newLines(4));
-		// }
+	
 		return true;
 	}
 
@@ -634,7 +242,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 					LINE_WIDTH, 0));
 		}
 
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 				Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0));
@@ -656,13 +264,13 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 		printerApi.printData(sb.toString());
 
 		sb.setLength(0);
-		printerApi.printData(textHandler.newLines(4));
+		printerApi.printData(textHandler.newLines(1));
 		// port.writePort(textHandler.newLines(4).getBytes(FORMAT), 0,
 		// textHandler.newLines(2).length());
 
 		if (!isCashPayment && !isCheckPayment) {
 			if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-				sb.append(textHandler.newLines(4));
+				sb.append(textHandler.newLines(1));
 			} else if (!payArray[7].isEmpty()) {
 				encodedSignature = payArray[7];
 				try {
@@ -674,7 +282,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 			}
 			// port.writePort(enableCenter, 0, enableCenter.length); // center
 			sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+			sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 			printerApi.printData(sb.toString());
 			sb.setLength(0);
 		}
@@ -719,7 +327,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 		if (!isCashPayment && !isCheckPayment) {
 
 			printerApi.printData(creditCardFooting);
-			temp = textHandler.newLines(4);
+			temp = textHandler.newLines(1);
 			printerApi.printData(temp);
 		}
 
@@ -788,11 +396,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 			StringBuilder sb = new StringBuilder();
 			StringBuilder sb_refunds = new StringBuilder();
-			printerApi.printData(textHandler.newLines(3));
+			printerApi.printData(textHandler.newLines(1));
 
 			sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 			sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH,
 					0));
 			sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),
@@ -829,18 +437,18 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 							Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 3));
 			}
 
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 					Global.formatDoubleStrToCurrency(Double.toString(payGranTotal)), LINE_WIDTH, 4));
-			sb.append(textHandler.newLines(3));
+			sb.append(textHandler.newLines(1));
 
-			sb_refunds.append(textHandler.newLines(2));
+			sb_refunds.append(textHandler.newLines(1));
 			sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 					Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
 
 			printerApi.printData(sb.toString());
 			printerApi.printData(sb_refunds.toString());
-			printerApi.printData(textHandler.newLines(5));
+			printerApi.printData(textHandler.newLines(1));
 			// terminal.printData("".getBytes(FORMAT), "".length());
 
 		} catch (Exception e) {
@@ -863,7 +471,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 	}
 
 	@Override
-	public void loadCardReader(EMSCallBack callBack) {
+	public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 
 	}

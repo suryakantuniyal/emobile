@@ -3,8 +3,8 @@ package com.android.emobilepos.adapters;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.emobilepos.app.R;
 import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.util.SparseArray;

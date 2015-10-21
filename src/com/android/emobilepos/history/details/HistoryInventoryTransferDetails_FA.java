@@ -5,6 +5,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.database.Locations_DB;
+import com.android.database.ProductsImagesHandler;
+import com.android.database.TransferInventory_DB;
+import com.android.emobilepos.holders.Locations_Holder;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,18 +32,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.Locations_DB;
-import com.android.database.OrdersHandler;
-import com.android.database.ProductsImagesHandler;
-import com.android.database.TransferInventory_DB;
-import com.emobilepos.app.R;
-import com.android.emobilepos.holders.Locations_Holder;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class HistoryInventoryTransferDetails_FA extends FragmentActivity{
 

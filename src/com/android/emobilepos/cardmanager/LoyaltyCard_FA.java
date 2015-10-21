@@ -1,5 +1,10 @@
 package com.android.emobilepos.cardmanager;
 
+import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,12 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.google.analytics.tracking.android.EasyTracker;
 
 public class LoyaltyCard_FA extends FragmentActivity implements OnItemClickListener{
 
@@ -99,15 +98,15 @@ public class LoyaltyCard_FA extends FragmentActivity implements OnItemClickListe
 		switch(pos)
 		{
 		case ACTIVATE:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_ACTIVATE);
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_ACTIVATE);
 			startActivity(intent);
 			break;
 		case BALANCE_INQUIRY:
-			intent.putExtra("PROCESS_TYPE", CardManager_FA.CASE_BALANCE_INQUIRY);
+			intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_BALANCE_INQUIRY);
 			startActivity(intent);
 			break;
 		case MANUAL_BALANCE:
-			intent.putExtra("PROCESS_TYPE",CardManager_FA.CASE_MANUAL_ADD);
+			intent.putExtra("PROCESS_TYPE",CardManager_FA.GiftCardActions.CASE_MANUAL_ADD);
 			promptManagerPassword(intent);
 			break;
 		}

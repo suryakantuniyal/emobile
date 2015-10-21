@@ -4,16 +4,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
+import com.android.database.ConsignmentTransactionHandler;
+import com.android.database.CustomersHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.PaymentsHandler;
+import com.android.database.TemplateHandler;
+import com.android.database.TransferLocations_DB;
+import com.android.database.VoidTransactionsHandler;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-
 import android.content.Context;
 import android.content.DialogInterface;
-
-
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
@@ -25,22 +32,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
-
 import android.widget.TextView;
-
-
-import com.android.database.ConsignmentTransactionHandler;
-import com.android.database.CustomersHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.TemplateHandler;
-import com.android.database.TransferLocations_DB;
-import com.android.database.VoidTransactionsHandler;
-
-import com.emobilepos.app.R;
-import com.android.support.DBManager;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 
 public class SynchMenuAdapter extends BaseAdapter implements Filterable {

@@ -1,12 +1,5 @@
 package drivers;
 
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
-import util.RasterDocument;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +22,6 @@ import com.android.database.PaymentsHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -38,21 +30,30 @@ import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
-import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
 
 import POSSDK.POSSDK;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Base64;
+import android.util.Log;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
-import drivers.mpop.Communication;
-import drivers.mpop.PrinterFunctions;
+import drivers.star.utils.Communication;
+import drivers.star.utils.MiniPrinterFunctions;
+import drivers.star.utils.PrinterFunctions;
+import main.EMSDeviceManager;
+import plaintext.EMSPlainTextHelper;
+import util.RasterDocument;
+import util.RasterDocument.RasPageEndMode;
+import util.RasterDocument.RasSpeed;
+import util.RasterDocument.RasTopMargin;
 
 public class EMSDeviceDriver {
+	public static final boolean PRINT_TO_LOG = false;
 	protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 	protected double itemDiscTotal = 0;
 	protected double saveAmount;
@@ -89,19 +90,32 @@ public class EMSDeviceDriver {
 	public void registerAll() {
 	}
 
-	private void setPaperWidth(int lineWidth) {
-		switch (lineWidth) {
-		case 32:
-			PAPER_WIDTH = 420;
-			break;
-		case 48:
-			PAPER_WIDTH = 1600;
-			break;
-		case 69:
-			PAPER_WIDTH = 300;// 5400
-			break;
+	public void setPaperWidth(int lineWidth) {
+		if (this instanceof EMSBluetoothStarPrinter) {
+			switch (lineWidth) {
+			case 32:
+				PAPER_WIDTH = 408;
+				break;
+			case 48:
+				PAPER_WIDTH = 576;
+				break;
+			case 69:
+				PAPER_WIDTH = 832;// 5400
+				break;
+			}
+		} else {
+			switch (lineWidth) {
+			case 32:
+				PAPER_WIDTH = 420;
+				break;
+			case 48:
+				PAPER_WIDTH = 1600;
+				break;
+			case 69:
+				PAPER_WIDTH = 300;// 5400
+				break;
+			}
 		}
-
 	}
 
 	protected void addTotalLines(Context context, Order anOrder, List<Orders> orders, StringBuilder sb, int lineWidth) {
@@ -164,6 +178,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void print(String str) {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", str);
+			return;
+		}
 		if (this instanceof EMSBluetoothStarPrinter) {
 			try {
 				port.writePort(str.toString().getBytes(), 0, str.toString().length());
@@ -203,6 +221,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void print(byte[] byteArray) {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", new String(byteArray));
+			return;
+		}
 		if (this instanceof EMSBluetoothStarPrinter) {
 			try {
 				port.writePort(byteArray, 0, byteArray.length);
@@ -238,6 +260,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void print(String str, String FORMAT) {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", str);
+			return;
+		}
 		if (this instanceof EMSBluetoothStarPrinter) {
 			try {
 				port.writePort(str.getBytes(FORMAT), 0, str.length());
@@ -282,7 +308,6 @@ public class EMSDeviceDriver {
 			StringBuilder sb = new StringBuilder();
 			int size = orders.size();
 			printImage(0);
-
 			if (printPref.contains(MyPreferences.print_header))
 				printHeader(lineWidth);
 
@@ -498,12 +523,12 @@ public class EMSDeviceDriver {
 						Global.formatDoubleToCurrency(0.00), lineWidth, 0));
 				;
 			} else {
-				tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
+				tempAmount += formatStrToDouble(payArrayList.get(0)[0]);
 				String _pay_type = payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
 				double tempTipAmount = formatStrToDouble(payArrayList.get(0)[2]);
 				StringBuilder tempSB = new StringBuilder();
 				tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
-						Global.formatDoubleStrToCurrency(payArrayList.get(0)[9]) + "[" + payArrayList.get(0)[1] + "]",
+						Global.formatDoubleStrToCurrency(payArrayList.get(0)[0]) + "[" + payArrayList.get(0)[1] + "]",
 						lineWidth, 1));
 				if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
 					tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + payArrayList.get(0)[4],
@@ -516,10 +541,10 @@ public class EMSDeviceDriver {
 
 				for (int i = 1; i < size; i++) {
 					_pay_type = payArrayList.get(i)[1].toUpperCase(Locale.getDefault()).trim();
-					tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[9]);
+					tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[0]);
 					tempTipAmount = tempTipAmount + formatStrToDouble(payArrayList.get(i)[2]);
 					tempSB.append(textHandler
-							.oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(payArrayList.get(i)[9])
+							.oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(payArrayList.get(i)[0])
 									+ "[" + payArrayList.get(i)[1] + "]", lineWidth, 1));
 					if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
 						tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + payArrayList.get(i)[4],
@@ -547,7 +572,7 @@ public class EMSDeviceDriver {
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
 							Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
 
-					tempAmount = formatStrToDouble(granTotal) - tempAmount;
+					tempAmount = Math.abs(formatStrToDouble(granTotal)) - tempAmount;
 					if (tempAmount > 0)
 						tempAmount = 0.00;
 					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
@@ -558,13 +583,13 @@ public class EMSDeviceDriver {
 			}
 			print(sb.toString(), FORMAT);
 
-			print(textHandler.newLines(2), FORMAT);
+			print(textHandler.newLines(1), FORMAT);
 			if (type != 1)
 				printYouSave(String.valueOf(saveAmount), lineWidth);
 			if (printPref.contains(MyPreferences.print_footer))
 				printFooter(lineWidth);
 
-			print(textHandler.newLines(2), FORMAT);
+			print(textHandler.newLines(1), FORMAT);
 			receiptSignature = anOrder.ord_signature;
 			if (!receiptSignature.isEmpty()) {
 				encodedSignature = receiptSignature;
@@ -572,7 +597,7 @@ public class EMSDeviceDriver {
 				// print(enableCenter); // center
 				sb.setLength(0);
 				sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
-				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
+				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 				print(sb.toString(), FORMAT);
 				// print(disableCenter); // disable
 				// center
@@ -582,7 +607,7 @@ public class EMSDeviceDriver {
 				sb.setLength(0);
 				sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
 				print(sb.toString());
-				print(textHandler.newLines(4));
+				print(textHandler.newLines(1));
 			}
 
 			cutPaper();
@@ -621,6 +646,12 @@ public class EMSDeviceDriver {
 
 	public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable, int lineWidth)
 			throws StarIOPortException {
+
+		if (PRINT_TO_LOG) {
+			Log.d("Print", "*******Image Print***********");
+			return;
+		}
+
 		ArrayList<Byte> commands = new ArrayList<Byte>();
 		Byte[] tempList;
 
@@ -658,6 +689,10 @@ public class EMSDeviceDriver {
 	}
 
 	protected void printImage(int type) throws StarIOPortException, JAException {
+		if (PRINT_TO_LOG) {
+			Log.d("Print", "*******Image Print***********");
+			return;
+		}
 		Bitmap myBitmap = null;
 		switch (type) {
 		case 0: // Logo
@@ -686,19 +721,31 @@ public class EMSDeviceDriver {
 		}
 
 		if (myBitmap != null) {
-
+			// myBitmap = BitmapFactory.decodeResource(activity.getResources(),
+			// R.drawable.companylogo);
 			if (this instanceof EMSBluetoothStarPrinter) {
-				// if (!isPOSPrinter) {
+				float diff = PAPER_WIDTH - myBitmap.getWidth();
+				float percentage = diff / myBitmap.getWidth();
+				int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
+				int h = myBitmap.getHeight();
+				Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+				Canvas canvas = new Canvas(canvasBmp);
+				int centreX = (w - myBitmap.getWidth()) / 2;
+				canvas.drawColor(Color.WHITE);
+				canvas.drawBitmap(myBitmap, centreX, 0, null);
+				myBitmap = canvasBmp;
 				byte[] data;
-				if (isPOSPrinter)
-					data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH,
-							SCBBitmapConverter.Rotation.Normal, myBitmap);
-				else {
-					util.StarBitmap starbitmap = new util.StarBitmap(myBitmap, false, 350, PAPER_WIDTH);
-					data = starbitmap.getImageEscPosDataForPrinting();
+				if (isPOSPrinter) {
+
+					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
+							PAPER_WIDTH, false);
+
+				} else {
+
+					MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
+							myBitmap, PAPER_WIDTH, false, false);
+
 				}
-				Communication.Result result;
-				result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
 
 			} else if (this instanceof EMSPAT100) {
 				printerApi.printImage(myBitmap, 0);
@@ -716,7 +763,7 @@ public class EMSDeviceDriver {
 
 					}
 					try {
-						Thread.sleep(800);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -766,7 +813,7 @@ public class EMSDeviceDriver {
 			}
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 			}
 		}
@@ -798,7 +845,7 @@ public class EMSDeviceDriver {
 			sb.append(textHandler.centeredString(header[2], lineWidth));
 
 		if (!sb.toString().isEmpty()) {
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			print(sb.toString());
 
 		}
@@ -810,12 +857,12 @@ public class EMSDeviceDriver {
 
 		print(textHandler.ivuLines(lineWidth), FORMAT);
 		sb.setLength(0);
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_youSave),
 				Global.formatDoubleStrToCurrency(saveAmount), lineWidth, 0));
 
-		sb.append(textHandler.newLines(2));
+		sb.append(textHandler.newLines(1));
 		print(sb.toString());
 		print(textHandler.ivuLines(lineWidth), FORMAT);
 
@@ -836,7 +883,7 @@ public class EMSDeviceDriver {
 			sb.append(textHandler.centeredString(footer[2], lineWidth));
 
 		if (!sb.toString().isEmpty()) {
-			sb.append(textHandler.newLines(2));
+			sb.append(textHandler.newLines(1));
 			print(sb.toString());
 
 		}

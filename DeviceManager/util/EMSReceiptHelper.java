@@ -1,10 +1,7 @@
 package util;
 
 import java.math.BigDecimal;
-import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;

@@ -4,6 +4,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.android.database.InvoicePaymentsHandler;
+import com.android.database.InvoicesHandler;
+import com.android.emobilepos.history.details.HistoryOpenInvoicesDetails_FA;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -21,30 +29,22 @@ import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-
-import com.android.database.InvoicePaymentsHandler;
-import com.android.database.InvoicesHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.history.details.HistoryOpenInvoicesDetails_FA;
-import com.android.emobilepos.payment.SelectPayMethod_FA;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class HistoryOpenInvoices_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 

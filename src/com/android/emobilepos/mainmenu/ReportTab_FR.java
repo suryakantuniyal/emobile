@@ -1,17 +1,17 @@
 package com.android.emobilepos.mainmenu;
 
+import com.android.emobilepos.report.ViewEndOfDayReport_FA;
+import com.android.emobilepos.report.ViewReport_FA;
+import com.emobilepos.app.R;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.report.ViewEndOfDayReport_FA;
-import com.android.emobilepos.report.ViewReport_FA;
 
 public class ReportTab_FR extends Fragment implements OnClickListener
 {

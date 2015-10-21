@@ -1,19 +1,16 @@
 package drivers;
 
-import protocols.EMSCallBack;
+import com.android.support.CardParser;
+import com.android.support.CreditCardInfo;
+import com.android.support.Encrypt;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
-
-import com.android.support.CardParser;
-import com.android.support.CreditCardInfo;
-import com.android.support.Encrypt;
-import com.android.support.Global;
-
 import net.homeatm.rover.RoverController;
 import net.homeatm.rover.RoverController.RoverStateChangedListener;
 import net.homeatm.rover.RoverController.TransactionType;
+import protocols.EMSCallBack;
 
 
 public class EMSRover implements RoverStateChangedListener {

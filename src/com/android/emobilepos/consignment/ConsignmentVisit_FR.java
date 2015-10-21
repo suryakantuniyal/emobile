@@ -7,6 +7,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.android.database.ConsignmentSignaturesDBHandler;
+import com.android.database.ConsignmentTransactionHandler;
+import com.android.database.CustomerInventoryHandler;
+import com.android.database.OrderProductsHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.ProductsHandler;
+import com.android.database.TaxesHandler;
+import com.android.emobilepos.DrawReceiptActivity;
+import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
+import com.android.support.ConsignmentTransaction;
+import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -26,23 +44,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.ConsignmentSignaturesDBHandler;
-import com.android.database.ConsignmentTransactionHandler;
-import com.android.database.CustomerInventoryHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.ProductsHandler;
-import com.android.database.TaxesHandler;
-import com.android.emobilepos.DrawReceiptActivity;
-import com.emobilepos.app.R;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
-import com.android.emobilepos.payment.SelectPayMethod_FA;
-import com.android.support.ConsignmentTransaction;
-import com.android.support.GenerateNewID;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class ConsignmentVisit_FR  extends Fragment implements OnClickListener
 {
@@ -131,9 +132,9 @@ public class ConsignmentVisit_FR  extends Fragment implements OnClickListener
 			//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
 			
 			if(Global.lastOrdID.isEmpty())
-				Global.lastOrdID = generator.getNextID();
+				Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 			else
-				Global.lastOrdID = generator.getNextID();
+				Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 			
 //			if (Global.lastOrdID.isEmpty()&&ordersHandler.getDBSize() == 0)
 //				Global.lastOrdID = generator.generate("",0);
@@ -161,7 +162,7 @@ public class ConsignmentVisit_FR  extends Fragment implements OnClickListener
 //			else if(!myPref.getLastConsTransID().isEmpty())
 //				consTransID = myPref.getLastConsTransID();
 			//myPref.setLastConsTransID(generator.getNextID(myPref.getLastConsTransID()));
-			consTransID = generator.getNextID();
+			consTransID = generator.getNextID(IdType.ORDER_ID);
 			
 			
 			//consTransID = generator.generate(consTransID, 3);

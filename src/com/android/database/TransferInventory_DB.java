@@ -5,16 +5,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
-import android.util.Log;
-
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.support.DBManager;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
+
+import android.app.Activity;
+import android.database.Cursor;
+import android.util.Log;
+import net.sqlcipher.database.SQLiteStatement;
 
 public class TransferInventory_DB {
 	public static final String trans_id = "trans_id";
@@ -82,7 +82,7 @@ public class TransferInventory_DB {
 				insert.execute();
 				insert.clearBindings();
 			}
-			
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 
 		} catch (Exception e) {

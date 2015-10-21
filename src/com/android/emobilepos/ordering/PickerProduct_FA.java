@@ -8,6 +8,26 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import com.android.database.OrdProdAttrList_DB;
+import com.android.database.OrdersHandler;
+import com.android.database.PriceLevelHandler;
+import com.android.database.ProductsAttrHandler;
+import com.android.database.ProductsHandler;
+import com.android.database.TaxesHandler;
+import com.android.database.UOMHandler;
+import com.android.database.VolumePricesHandler;
+import com.android.emobilepos.ShowProductImageActivity2;
+import com.android.emobilepos.models.OrderProducts;
+import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.zzzapi.uart.uart;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -19,47 +39,25 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.FrameLayout.LayoutParams;
-
-import com.android.database.OrdProdAttrList_DB;
-import com.android.database.OrdersHandler;
-import com.android.database.PriceLevelHandler;
-import com.android.database.PriceLevelItemsHandler;
-import com.android.database.ProductsAttrHandler;
-import com.android.database.ProductsHandler;
-import com.android.database.TaxesHandler;
-import com.android.database.UOMHandler;
-import com.android.database.VolumePricesHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.ShowProductImageActivity2;
-import com.android.emobilepos.models.OrderProducts;
-import com.android.support.GenerateNewID;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.zzzapi.uart.uart;
-
 import drivers.EMSPAT100;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener,OnItemClickListener{
@@ -1087,7 +1085,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 		if(!Global.isFromOnHold&&Global.lastOrdID.isEmpty())
 		{
 			//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-			Global.lastOrdID = generator.getNextID();
+			Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 //			if (handler.getDBSize() == 0)
 //				Global.lastOrdID = generator.generate("",0);
 //			else

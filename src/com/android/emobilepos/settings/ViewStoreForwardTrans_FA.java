@@ -16,20 +16,19 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.DBManager;
 import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -421,7 +420,7 @@ public class ViewStoreForwardTrans_FA extends FragmentActivity implements OnItem
 		GenerateNewID generator = new GenerateNewID(this);
 		MyPreferences myPref = new MyPreferences(this);
 		
-		newPayment.pay_id =generator.getNextID();
+		newPayment.pay_id =generator.getNextID(IdType.PAYMENT_ID);
 		
 		newPayment.emp_id = myCursor.getString(myCursor.getColumnIndex("emp_id"));
 		

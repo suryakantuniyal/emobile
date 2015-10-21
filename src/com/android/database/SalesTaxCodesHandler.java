@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-
-
 import com.android.support.DBManager;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
@@ -14,7 +12,7 @@ import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteStatement;
+import net.sqlcipher.database.SQLiteStatement;
 
 
 public class SalesTaxCodesHandler {
@@ -99,6 +97,7 @@ public class SalesTaxCodesHandler {
 				insert.clearBindings();
 
 			}
+			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();

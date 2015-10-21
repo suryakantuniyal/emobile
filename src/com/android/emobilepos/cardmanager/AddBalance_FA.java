@@ -13,7 +13,20 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import protocols.EMSCallBack;
+import com.android.database.OrderProductsHandler;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.CreditCardInfo;
+import com.android.support.Encrypt;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -25,31 +38,17 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.android.database.OrderProductsHandler;
-import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.CreditCardInfo;
-import com.android.support.Encrypt;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
-
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import protocols.EMSCallBack;
 
 public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnClickListener {
 
@@ -200,11 +199,11 @@ public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnCli
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.printerType(true, -2);
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(msrCallBack);
+				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
 			} else if (_printer_type != -1
 					&& (_printer_type == Global.STAR || _printer_type == Global.BAMBOO || _printer_type == Global.ZEBRA)) {
 				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null && !cardReaderConnected)
-					Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack);
+					Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
 			}
 		}
 		// }
@@ -467,7 +466,7 @@ public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnCli
 			uniMagReader.startReading();
 		}
 		else if(magtekReader==null&&Global.btSwiper==null&&Global.mainPrinterManager!=null)
-			Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack);
+			Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
 	}
 	@Override
 	public void readerConnectedSuccessfully(boolean didConnect) {

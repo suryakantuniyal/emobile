@@ -1,11 +1,9 @@
 package com.android.emobilepos.holders;
 
-import java.util.UUID;
-
-import android.app.Activity;
-
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+
+import android.app.Activity;
 
 public class TransferLocations_Holder {
 	private String empStr = "";

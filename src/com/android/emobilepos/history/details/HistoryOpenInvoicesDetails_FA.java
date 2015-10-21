@@ -3,6 +3,17 @@ package com.android.emobilepos.history.details;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.android.database.InvProdHandler;
+import com.android.database.InvoicesHandler;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,17 +30,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.InvProdHandler;
-import com.android.database.InvoicesHandler;
-import com.emobilepos.app.R;
-import com.android.emobilepos.payment.SelectPayMethod_FA;
-import com.android.support.Global;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class HistoryOpenInvoicesDetails_FA extends FragmentActivity 
 {

@@ -3,15 +3,14 @@ package com.android.emobilepos.history.details;
 import java.io.File;
 import java.util.HashMap;
 
-import com.emobilepos.app.R;
 import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import android.app.Activity;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -20,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 public class ConsignmentDetailsLV_Adapter extends BaseAdapter implements StickyListHeadersAdapter {
 	private LayoutInflater inflater;

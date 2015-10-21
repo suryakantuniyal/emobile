@@ -2,16 +2,16 @@ package com.android.emobilepos.locations;
 
 import java.util.List;
 
+import com.android.database.Locations_DB;
+import com.android.emobilepos.holders.Locations_Holder;
+import com.emobilepos.app.R;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import com.android.database.Locations_DB;
-import com.emobilepos.app.R;
-import com.android.emobilepos.holders.Locations_Holder;
 
 public class LocationsLV_Adapter extends BaseAdapter {
 

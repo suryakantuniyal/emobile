@@ -149,6 +149,7 @@ public class EmployeesHandler {
 			Tracker myTracker = EasyTracker.getTracker(); // Get a reference to tracker.
 			myTracker.sendException(sb.toString(), false); // false indicates non-fatal exception.
 		} finally {
+			insert.close();
 			db.setTransactionSuccessful();
 			db.endTransaction();
 

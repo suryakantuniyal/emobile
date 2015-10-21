@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import main.EMSDeviceManager;
-
 import com.android.database.CategoriesHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PrintersHandler;
 import com.android.database.ShiftPeriodsDBHandler;
-import com.emobilepos.app.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
@@ -22,6 +19,7 @@ import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
+import com.emobilepos.app.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.MapBuilder;
 import com.google.analytics.tracking.android.Tracker;
@@ -35,16 +33,15 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -63,6 +60,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends FragmentActivity {
 	private static int settingsType = 0;
@@ -502,7 +500,7 @@ public class SettingsManager_FA extends FragmentActivity {
 						break;
 					case R.string.config_backup_data:
 						DBManager manag = new DBManager(activity);
-						manag.dbBackupDB();
+						manag.exportDBFile();
 						break;
 					}
 				}
@@ -797,6 +795,15 @@ public class SettingsManager_FA extends FragmentActivity {
 								EMSDeviceManager edm = new EMSDeviceManager();
 								Global.mainPrinterManager = edm.getManager();
 								Global.mainPrinterManager.loadDrivers(activity, Global.BAMBOO, false);
+
+							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
+									|| val[pos].toUpperCase(Locale.getDefault()).contains("ICM")) {
+								myPref.sledType(false, Global.ISMP);
+
+								EMSDeviceManager edm = new EMSDeviceManager();
+
+								Global.btSled = edm.getManager();
+								Global.btSled.loadDrivers(activity, Global.ISMP, false);
 							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
 							{
 								myPref.printerType(false, Global.ZEBRA);

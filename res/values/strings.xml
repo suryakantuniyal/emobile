@@ -1033,6 +1033,7 @@
 	<string name = "label_sub_total">Subtotal</string>
 	
 	<string name = "activate">Activate</string>
+	<string name = "deactivate">Deactivate</string>
 	<string name = "add_balance">Add Balance</string>
 	<string name = "balance_inquiry">Balance Inquiry</string>
 	<string name = "manually_add_balance">Manually Add Balance</string>

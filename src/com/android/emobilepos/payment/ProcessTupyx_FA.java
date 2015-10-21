@@ -9,6 +9,18 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import com.android.database.PaymentsHandler;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -23,22 +35,10 @@ import android.os.Parcelable;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-
-import com.android.database.PaymentsHandler;
-import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener{
 	

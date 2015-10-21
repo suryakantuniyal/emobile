@@ -1,8 +1,20 @@
-package drivers.mpop;
+package drivers.star.utils;
 
-import android.content.res.Resources;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.starmicronics.stario.StarIOPort;
+import com.starmicronics.stario.StarIOPortException;
+import com.starmicronics.stario.StarPrinterStatus;
+import com.starmicronics.starioextension.commandbuilder.ISCBBuilder;
+import com.starmicronics.starioextension.commandbuilder.SCBFactory;
+import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
+
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,16 +23,22 @@ import android.graphics.Typeface;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-
-import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
-import com.emobilepos.app.R;
-import com.starmicronics.starioextension.commandbuilder.ISCBBuilder;
-import com.starmicronics.starioextension.commandbuilder.SCBFactory;
-
-import java.util.List;
+import drivers.star.utils.RasterDocument.RasPageEndMode;
+import drivers.star.utils.RasterDocument.RasTopMargin;
 
 public class PrinterFunctions {
 
+	public enum NarrowWide {_2_6, _3_9, _4_12, _2_5, _3_8, _4_10, _2_4, _3_6, _4_8};
+	public enum BarCodeOption {No_Added_Characters_With_Line_Feed, Adds_Characters_With_Line_Feed, No_Added_Characters_Without_Line_Feed, Adds_Characters_Without_Line_Feed}
+	public enum Min_Mod_Size {_2_dots, _3_dots, _4_dots};
+	public enum NarrowWideV2 {_2_5, _4_10, _6_15, _2_4, _4_8, _6_12, _2_6, _3_9, _4_12};
+	public enum CorrectionLevelOption {Low, Middle, Q, High};
+	public enum Model {Model1, Model2};
+	public enum Limit {USE_LIMITS, USE_FIXED};
+	public enum CutType {FULL_CUT, PARTIAL_CUT, FULL_CUT_FEED, PARTIAL_CUT_FEED};
+	public enum Alignment {Left, Center, Right};
+
+	private static int printableArea = 576;    // for raster data
 	public static byte[] createCommandsEnglish2inchLineModeReceipt() {
 		CommandDataList commands = new CommandDataList();
 
@@ -160,7 +178,7 @@ public class PrinterFunctions {
 			commands.add(buf);
 		}
 
-		//commands.add(0x1b, 0x64, 0x03); // Cut Paper
+		// commands.add(0x1b, 0x64, 0x03); // Cut Paper
 
 		return commands.getByteArray();
 	}
@@ -202,5 +220,139 @@ public class PrinterFunctions {
 		staticLayout.draw(canvas);
 
 		return bitmap;
+	}
+
+	/**
+	 * This function is used to print a Java bitmap directly to the printer.
+	 * There are 2 ways a printer can print images: through raster commands or
+	 * line mode commands This function uses raster commands to print an image.
+	 * Raster is supported on the TSP100 and all Star Thermal POS printers. Line
+	 * mode printing is not supported by the TSP100. There is no example of
+	 * using this method in this sample.
+	 * 
+	 * @param context
+	 *            - Activity for displaying messages to the user
+	 * @param portName
+	 *            - Port name to use for communication. This should be (TCP:
+	 *            <IPAddress>)
+	 * @param portSettings
+	 *            - Should be blank
+	 * @param source
+	 *            - The bitmap to convert to Star Raster data
+	 * @param maxWidth
+	 *            - The maximum width of the image to print. This is usually the
+	 *            page width of the printer. If the image exceeds the maximum
+	 *            width then the image is scaled down. The ratio is maintained.
+	 */
+	public static void PrintBitmap(Context context, String portName, String portSettings, Bitmap source, int maxWidth,
+			boolean compressionEnable) {
+		ArrayList<Byte> commands = new ArrayList<Byte>();
+		Byte[] tempList;
+
+		RasterDocument rasterDoc = new RasterDocument(drivers.star.utils.RasterDocument.RasSpeed.Medium,
+				RasPageEndMode.FeedToCutter, RasPageEndMode.FeedToCutter, RasTopMargin.Default, 0,
+				0, 0);
+		StarBitmap starbitmap = new StarBitmap(source, false, maxWidth);
+
+		byte[] command = rasterDoc.BeginDocumentCommandData();
+		tempList = new Byte[command.length];
+		CopyArray(command, tempList);
+		commands.addAll(Arrays.asList(tempList));
+
+		command = starbitmap.getImageRasterDataForPrinting(compressionEnable);
+		tempList = new Byte[command.length];
+		CopyArray(command, tempList);
+		commands.addAll(Arrays.asList(tempList));
+
+		command = rasterDoc.EndDocumentCommandData();
+		tempList = new Byte[command.length];
+		CopyArray(command, tempList);
+		commands.addAll(Arrays.asList(tempList));
+
+		sendCommand(context, portName, portSettings, commands);
+	}
+
+	private static void CopyArray(byte[] srcArray, Byte[] cpyArray) {
+		for (int index = 0; index < cpyArray.length; index++) {
+			cpyArray[index] = srcArray[index];
+		}
+	}
+
+	private static void sendCommand(Context context, String portName, String portSettings, ArrayList<Byte> byteList) {
+		StarIOPort port = null;
+		try {
+			/*
+			 * using StarIOPort3.1.jar (support USB Port) Android OS Version:
+			 * upper 2.2
+			 */
+			port = StarIOPort.getPort(portName, portSettings, 10000, context);
+			/*
+			 * using StarIOPort.jar Android OS Version: under 2.1 port =
+			 * StarIOPort.getPort(portName, portSettings, 10000);
+			 */
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+
+			/*
+			 * Using Begin / End Checked Block method When sending large amounts
+			 * of raster data, adjust the value in the timeout in the
+			 * "StarIOPort.getPort" in order to prevent "timeout" of the
+			 * "endCheckedBlock method" while a printing.
+			 * 
+			 * If receipt print is success but timeout error occurs(Show message
+			 * which is
+			 * "There was no response of the printer within the timeout period."
+			 * ), need to change value of timeout more longer in
+			 * "StarIOPort.getPort" method. (e.g.) 10000 -> 30000
+			 */
+			StarPrinterStatus status = port.beginCheckedBlock();
+
+			if (true == status.offline) {
+				throw new StarIOPortException("A printer is offline");
+			}
+
+			byte[] commandToSendToPrinter = convertFromListByteArrayTobyteArray(byteList);
+			port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+
+			port.setEndCheckedBlockTimeoutMillis(30000);// Change the timeout
+														// time of
+														// endCheckedBlock
+														// method.
+			status = port.endCheckedBlock();
+
+			if (true == status.coverOpen) {
+				throw new StarIOPortException("Printer cover is open");
+			} else if (true == status.receiptPaperEmpty) {
+				throw new StarIOPortException("Receipt paper is empty");
+			} else if (true == status.offline) {
+				throw new StarIOPortException("Printer is offline");
+			}
+		} catch (StarIOPortException e) {
+			Builder dialog = new AlertDialog.Builder(context);
+			dialog.setNegativeButton("Ok", null);
+			AlertDialog alert = dialog.create();
+			alert.setTitle("Failure");
+			alert.setMessage(e.getMessage());
+			alert.setCancelable(false);
+			alert.show();
+		} finally {
+			if (port != null) {
+				try {
+					StarIOPort.releasePort(port);
+				} catch (StarIOPortException e) {
+				}
+			}
+		}
+	}
+
+	private static byte[] convertFromListByteArrayTobyteArray(List<Byte> ByteArray) {
+		byte[] byteArray = new byte[ByteArray.size()];
+		for (int index = 0; index < byteArray.length; index++) {
+			byteArray[index] = ByteArray.get(index);
+		}
+
+		return byteArray;
 	}
 }

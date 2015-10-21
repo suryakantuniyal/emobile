@@ -13,6 +13,20 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import com.android.database.PaymentsHandler;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXBoloroManual;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.BoloroCarrier;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import IDTech.MSR.uniMag.Common;
 import android.app.Activity;
 import android.app.Dialog;
@@ -31,9 +45,9 @@ import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -41,20 +55,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.android.database.PaymentsHandler;
-import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXBoloroManual;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.BoloroCarrier;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 public class ProcessBoloro_FA extends FragmentActivity implements OnClickListener,OnItemSelectedListener{
 	

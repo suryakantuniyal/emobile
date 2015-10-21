@@ -4,12 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import main.EMSDeviceManager;
-
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
-
-
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
@@ -20,20 +14,21 @@ import com.android.support.MyPreferences;
 import com.magtek.mobile.android.scra.MTSCRAException;
 import com.magtek.mobile.android.scra.MagTekSCRA;
 
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Message;
 import android.os.Handler.Callback;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
+import main.EMSDeviceManager;
+import protocols.EMSCallBack;
+import protocols.EMSDeviceManagerPrinterDelegate;
 
 
 
@@ -571,7 +566,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
 
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 		callBack = _callBack;
 		if(handler==null)

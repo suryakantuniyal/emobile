@@ -1,5 +1,7 @@
 package com.android.emobilepos.adapters;
 
+import com.emobilepos.app.R;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +10,6 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
-
-import com.emobilepos.app.R;
 
 public class HistoryMenuAdapter extends BaseAdapter implements Filterable {
 	private LayoutInflater mInflater;

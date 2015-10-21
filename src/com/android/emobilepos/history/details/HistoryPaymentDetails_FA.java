@@ -18,6 +18,20 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
+import com.android.database.InvoicePaymentsHandler;
+import com.android.database.PaymentsHandler;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.payments.EMSPayGate_Default.EAction;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -38,8 +52,8 @@ import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -49,19 +63,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.InvoicePaymentsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClickListener{
 
@@ -379,12 +380,12 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 		{
 			
 			EMSPayGate_Default payGate = new EMSPayGate_Default(activity,paymentToBeRefunded);
-			new processCardVoidAsync().execute(payGate.paymentWithAction("VoidCreditCardAction",false,paymentToBeRefunded.card_type,null));
+			new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidCreditCardAction.name(),false,paymentToBeRefunded.card_type,null));
 		}
-		else if(paymethod_name.equals("GiftCard"))
+		else if(paymethod_name.equals("GiftCard") || paymethod_name.equals("LoyaltyCard"))
 		{
 			EMSPayGate_Default payGate = new EMSPayGate_Default(activity,paymentToBeRefunded);
-			new processCardVoidAsync().execute(payGate.paymentWithAction("VoidGiftCardAction",false,paymentToBeRefunded.card_type,null));
+			new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidGiftCardAction.name(),false,paymentToBeRefunded.card_type,null));
 		}
 		else if(paymethod_name.equals("Check"))
 		{
@@ -396,7 +397,7 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 			else
 			{
 				EMSPayGate_Default payGate = new EMSPayGate_Default(activity,paymentToBeRefunded);
-				new processCardVoidAsync().execute(payGate.paymentWithAction("VoidCheckAction",false,paymentToBeRefunded.card_type,null));
+				new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidCheckAction.name(),false,paymentToBeRefunded.card_type,null));
 			}
 		}
 		else

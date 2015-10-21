@@ -21,7 +21,23 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import protocols.EMSCallBack;
+import com.android.database.CustomersHandler;
+import com.android.database.InvoicePaymentsHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.PaymentsHandler;
+import com.android.database.PaymentsXML_DB;
+import com.android.database.StoredPayments_DB;
+import com.android.emobilepos.DrawReceiptActivity;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.CreditCardInfo;
+import com.android.support.Encrypt;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -34,17 +50,16 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
@@ -55,32 +70,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.database.CustomersHandler;
-import com.android.database.InvoicePaymentsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.PaymentsXML_DB;
-import com.android.database.StoredPayments_DB;
-import com.android.emobilepos.DrawReceiptActivity;
-import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.CreditCardInfo;
-import com.android.support.Encrypt;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
-
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import protocols.EMSCallBack;
 
 public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
 
@@ -189,7 +183,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			requestCode = Global.FROM_JOB_SALES_RECEIPT;
 		} else if (extras.getBoolean("salesrefund")) {
 			isRefund = true;
-			isFromMainMenu = true;
+			isFromMainMenu = TextUtils.isEmpty(extras.getString("amount"))
+					|| Double.parseDouble(extras.getString("amount")) == 0;
 			headerTitle.setText(getString(R.string.card_refund_title));
 		} else if (extras.getBoolean("histinvoices")) {
 			headerTitle.setText(getString(R.string.card_payment_title));
@@ -470,30 +465,31 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.printerType(true, -2);
+			int _sled_type = myPref.sledType(true, -2);
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
 					&& !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(callBack);
+				Global.btSwiper.currentDevice.loadCardReader(callBack, isDebit);
+			} else if (_sled_type != -1 && Global.btSled != null && Global.btSled.currentDevice != null
+					&& !cardReaderConnected) {
+				Global.btSled.currentDevice.loadCardReader(callBack, isDebit);
 			} else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
 				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
 						&& !cardReaderConnected)
-					Global.mainPrinterManager.currentDevice.loadCardReader(callBack);
+					Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
 			}
 		}
 
-		if(myPref.isET1(true, false)||myPref.isMC40(true, false))
-			{
-				ourIntentAction = getString(R.string.intentAction3);
-				Intent i = getIntent();
-				handleDecodeData(i);
-				cardSwipe.setChecked(true);
-			}
-			else if(myPref.isSam4s(true, false)||myPref.isPAT100(true, false))
-			{
-				cardSwipe.setChecked(true);
-				_msrUsbSams = new EMSIDTechUSB(activity,callBack);
-				if(_msrUsbSams.OpenDevice())
-					_msrUsbSams.StartReadingThread();
-			}
+		if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
+			ourIntentAction = getString(R.string.intentAction3);
+			Intent i = getIntent();
+			handleDecodeData(i);
+			cardSwipe.setChecked(true);
+		} else if (myPref.isSam4s(true, false) || myPref.isPAT100(true, false)) {
+			cardSwipe.setChecked(true);
+			_msrUsbSams = new EMSIDTechUSB(activity, callBack);
+			if (_msrUsbSams.OpenDevice())
+				_msrUsbSams.StartReadingThread();
+		}
 	}
 
 	private void populateCardInfo() {
@@ -545,11 +541,12 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 		Global.amountPaid = Double.toString(amountToBePaid);
 
-		if ((amountToBePaid - actualAmount) > 0) {
-			payment.pay_dueamount = Double.toString(actualAmount);
-		} else {
-			payment.pay_dueamount = Double.toString(amountToBePaid);
-		}
+		// if (amountToBePaid < actualAmount) {
+		// payment.pay_dueamount = Double.toString(actualAmount);
+		// } else {
+		// payment.pay_dueamount = Double.toString(amountToBePaid);
+		// }
+		payment.pay_dueamount = Double.toString(actualAmount - amountToBePaid);
 
 		payment.pay_amount = Double.toString(amountToBePaid);
 		payment.pay_name = cardInfoManager.getCardOwnerName();
@@ -1473,6 +1470,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 						xr.setContentHandler(handler);
 						xr.parse(inSource);
 						parsedMap = handler.getData();
+						parsedMap = handler.getData();
 
 						if (parsedMap != null && parsedMap.size() > 0
 								&& parsedMap.get("epayStatusCode").equals("APPROVED"))
@@ -1738,14 +1736,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			} else
 				finishPaymentTransaction();
 
-			// if(myPref.getPreferences(MyPreferences.pref_handwritten_signature))
-			// new printAsync().execute(false);
-			// else
-			// if(myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-			// showPrintDlg(true,false);
-			// else
-			// finishPaymentTransaction();
-
 		}
 	}
 
@@ -1897,7 +1887,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			uniMagReader.startReading();
 		} else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
 				&& Global.mainPrinterManager != null)
-			Global.mainPrinterManager.currentDevice.loadCardReader(callBack);
+			Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
 	}
 
 	@Override
@@ -1972,6 +1962,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 	private void validateProcessPayment() {
 		errorMsg = getString(R.string.card_validation_error);
+		year.setBackgroundResource(android.R.drawable.edit_text);
+		cardNum.setBackgroundResource(android.R.drawable.edit_text);
+		month.setBackgroundResource(android.R.drawable.edit_text);
+		amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
 		boolean error = false;
 		if (cardNum.getText().toString().isEmpty()
 				|| (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
@@ -2022,8 +2016,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 			if (enteredAmount > actualAmount) {
 				errorMsg = getString(R.string.card_overpaid_error);
+				amountPaidField.setBackgroundResource(R.drawable.edittext_wrong_input);
 				error = true;
 			} else if (enteredAmount <= 0) {
+				amountPaidField.setBackgroundResource(R.drawable.edittext_wrong_input);
 				errorMsg = getString(R.string.error_wrong_amount);
 				error = true;
 			}

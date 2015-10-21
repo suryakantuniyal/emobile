@@ -1,20 +1,15 @@
 package com.android.emobilepos.locations;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Currency;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import org.json.JSONObject;
+import com.android.database.Locations_DB;
+import com.android.emobilepos.holders.Locations_Holder;
+import com.emobilepos.app.R;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
@@ -22,21 +17,11 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.TextView;
-
-import com.android.database.Locations_DB;
-import com.emobilepos.app.R;
-import com.android.emobilepos.country.Country;
-import com.android.emobilepos.country.CountryListAdapter;
-import com.android.emobilepos.country.CountryPicker;
-import com.android.emobilepos.country.CountryPickerListener;
-import com.android.emobilepos.holders.Locations_Holder;
 
 public class LocationsPickerDlog_FR extends DialogFragment implements Comparator<Locations_Holder> {
 	/**

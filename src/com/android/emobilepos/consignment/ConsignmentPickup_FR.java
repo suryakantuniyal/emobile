@@ -5,6 +5,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.android.database.ConsignmentSignaturesDBHandler;
+import com.android.database.ConsignmentTransactionHandler;
+import com.android.database.CustomerInventoryHandler;
+import com.android.database.OrderProductsHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.ProductsHandler;
+import com.android.emobilepos.DrawReceiptActivity;
+import com.android.support.ConsignmentTransaction;
+import com.android.support.GenerateNewID;
+import com.android.support.GenerateNewID.IdType;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -25,19 +38,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.android.database.ConsignmentSignaturesDBHandler;
-import com.android.database.ConsignmentTransactionHandler;
-import com.android.database.CustomerInventoryHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.ProductsHandler;
-import com.android.emobilepos.DrawReceiptActivity;
-import com.emobilepos.app.R;
-import com.android.support.ConsignmentTransaction;
-import com.android.support.GenerateNewID;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 public class ConsignmentPickup_FR extends Fragment implements OnClickListener
 {
@@ -140,7 +140,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener
 //				consTransID = cih.getLastConsTransID();
 //			else if(!myPref.getLastConsTransID().isEmpty())
 //				consTransID = myPref.getLastConsTransID();
-			consTransID = generator.getNextID();
+			consTransID = generator.getNextID(IdType.ORDER_ID);
 			
 			//consTransID = generator.generate(consTransID, 3);
 			signatureData.put("ConsTrans_ID", consTransID);

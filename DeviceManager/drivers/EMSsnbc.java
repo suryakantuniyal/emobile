@@ -1,13 +1,10 @@
 package drivers;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +12,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import main.EMSDeviceManager;
+import com.android.database.InvProdHandler;
+import com.android.database.InvoicesHandler;
+import com.android.database.MemoTextHandler;
+import com.android.database.OrderProductsHandler;
+import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
+import com.android.database.PaymentsHandler;
+import com.android.database.ProductsHandler;
+import com.android.database.StoredPayments_DB;
+import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.Orders;
+import com.android.support.ConsignmentTransaction;
+import com.android.support.DBManager;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.emobilepos.app.R;
+
 import POSAPI.POSInterfaceAPI;
 import POSAPI.POSUSBAPI;
 import POSSDK.POSSDK;
@@ -23,53 +36,17 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Base64;
-import android.widget.Toast;
-
-import com.android.database.ClerksHandler;
-import com.android.database.InvProdHandler;
-import com.android.database.InvoicesHandler;
-import com.android.database.MemoTextHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrderTaxes_DB;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
-import com.android.database.StoredPayments_DB;
-import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Orders;
-import com.emobilepos.app.R;
-import com.android.support.ConsignmentTransaction;
-import com.android.support.CreditCardInfo;
-import com.android.support.DBManager;
-import com.android.support.Encrypt;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.starmicronics.stario.StarIOPort;
-import com.starmicronics.stario.StarIOPortException;
-import com.starmicronics.stario.StarPrinterStatus;
-
-import drivers.EMSBluetoothStarPrinter.ReceiveThread;
-import drivers.EMSBluetoothStarPrinter.StartCardReaderThread;
-import drivers.EMSBluetoothStarPrinter.processConnectionAsync;
+import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
 import util.EMSReceiptHelper;
-import util.RasterDocument;
-import util.StarBitmap;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate{
 	private final int LINE_WIDTH = 42;
@@ -1083,7 +1060,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 	}
 	
 	@Override
-	public void loadCardReader(EMSCallBack _callBack) {
+	public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 		// TODO Auto-generated method stub
 	}
 	

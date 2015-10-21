@@ -13,7 +13,20 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import protocols.EMSCallBack;
+import com.android.database.OrderProductsHandler;
+import com.android.emobilepos.models.Payment;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.CreditCardInfo;
+import com.android.support.Encrypt;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
+import com.android.support.Post;
+import com.emobilepos.app.R;
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.MapBuilder;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -25,37 +38,23 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.android.database.OrderProductsHandler;
-import com.android.emobilepos.models.Payment;
-import com.emobilepos.app.R;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
-import com.android.support.CreditCardInfo;
-import com.android.support.Encrypt;
-import com.android.support.Global;
-import com.android.support.MyPreferences;
-import com.android.support.Post;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
-
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import protocols.EMSCallBack;
 
-public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnClickListener {
+public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
 
-	public static final int CASE_GIFT = 0 , CASE_LOYALTY = 1, CASE_REWARD = 2;
+	public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
 	private int typeCase;
-	
+
 	private EMSCallBack msrCallBack;
 	private Global global;
 	private boolean hasBeenCreated = false;
@@ -73,140 +72,131 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 	private EMSRover roverReader;
 	private ProgressDialog myProgressDialog;
 	private OrderProductsHandler ordProdDB;
-	private HashMap<String,String> giftCardMap = new HashMap<String,String>();
-	
+	private HashMap<String, String> giftCardMap = new HashMap<String, String>();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+
 		Bundle extras = getIntent().getExtras();
 		typeCase = extras.getInt("case");
-		
+
 		ordProdDB = new OrderProductsHandler(this);
 		activity = this;
-		msrCallBack = (EMSCallBack)this;
-		global = (Global)getApplication();
+		msrCallBack = (EMSCallBack) this;
+		global = (Global) getApplication();
 		myPref = new MyPreferences(this);
 		Global.isEncryptSwipe = false;
-		
+
 		setContentView(R.layout.activate_card_layout);
-		
-		Button btnProcess = (Button)findViewById(R.id.processButton);
+
+		Button btnProcess = (Button) findViewById(R.id.processButton);
 		btnProcess.setOnClickListener(this);
-		fieldCardNum = (EditText)findViewById(R.id.fieldCardNumber);
-		cardSwipe = (CheckBox)findViewById(R.id.checkboxCardSwipe);
-		
-		
-		TextView headerTitle = (TextView)findViewById(R.id.HeaderTitle);
+		fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
+		cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
+
+		TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
 		headerTitle.setText(getString(R.string.activate));
-		LinearLayout ll = (LinearLayout)findViewById(R.id.placeHolderInfo);
-		
-		if(typeCase == CASE_GIFT)
+		LinearLayout ll = (LinearLayout) findViewById(R.id.placeHolderInfo);
+
+		if (typeCase == CASE_GIFT)
 			ll.setVisibility(View.VISIBLE);
-		
-		
+
 		setUpCardReader();
 		hasBeenCreated = true;
 	}
-	
-	
+
 	@Override
 	public void onResume() {
 
-		if(global.isApplicationSentToBackground(this))
+		if (global.isApplicationSentToBackground(this))
 			global.loggedIn = false;
 		global.stopActivityTransitionTimer();
-		
-		if(hasBeenCreated&&!global.loggedIn)
-		{
-			if(global.getGlobalDlog()!=null)
+
+		if (hasBeenCreated && !global.loggedIn) {
+			if (global.getGlobalDlog() != null)
 				global.getGlobalDlog().dismiss();
 			global.promptForMandatoryLogin(this);
 		}
 		super.onResume();
 	}
-	
+
 	@Override
-	public void onPause()
-	{
+	public void onPause() {
 		super.onPause();
-		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
+		PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
 		boolean isScreenOn = powerManager.isScreenOn();
-		if(!isScreenOn)
+		if (!isScreenOn)
 			global.loggedIn = false;
 		global.startActivityTransitionTimer();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		cardReaderConnected = false;
 
-		if(uniMagReader!=null)
+		if (uniMagReader != null)
 			uniMagReader.release();
-		else if(magtekReader!=null)
+		else if (magtekReader != null)
 			magtekReader.closeDevice();
-		else if(Global.btSwiper!=null&&Global.btSwiper.currentDevice!=null)
+		else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
 			Global.btSwiper.currentDevice.releaseCardReader();
-		else if (Global.mainPrinterManager != null&&Global.mainPrinterManager.currentDevice!=null)
+		else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
 			Global.mainPrinterManager.currentDevice.releaseCardReader();
-				
+
 		super.onDestroy();
 	}
-	
-	
+
 	@SuppressWarnings("deprecation")
 	private void setUpCardReader() {
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		if (audioManager.isWiredHeadsetOn()) {
 			String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
-			if(_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1"))
-			{
-				if(_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG))
-				{
+			if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
+				if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
 					uniMagReader = new EMSUniMagDriver();
 					uniMagReader.initializeReader(activity);
-				}
-				else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK))
-				{
+				} else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK)) {
 					magtekReader = new EMSMagtekAudioCardReader(activity);
-					new Thread(new Runnable(){
-						public void run()
-						{
-							magtekReader.connectMagtek(true,msrCallBack);
+					new Thread(new Runnable() {
+						public void run() {
+							magtekReader.connectMagtek(true, msrCallBack);
 						}
 					}).start();
-				}
-				else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER))
-				{
+				} else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
 					roverReader = new EMSRover();
 					roverReader.initializeReader(activity, false);
 				}
 			}
-//			if (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader)) {
-//				uniMagReader = new EMSUniMagDriver();
-//				uniMagReader.initializeReader(this);
-//			} else {
-//				magtekReader = new EMSMagtekAudioCardReader(this);
-//				new Thread(new Runnable() {
-//					public void run() {
-//						magtekReader.connectMagtek(true,msrCallBack);
-//					}
-//				}).start();
-//			}
+			// if
+			// (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
+			// {
+			// uniMagReader = new EMSUniMagDriver();
+			// uniMagReader.initializeReader(this);
+			// } else {
+			// magtekReader = new EMSMagtekAudioCardReader(this);
+			// new Thread(new Runnable() {
+			// public void run() {
+			// magtekReader.connectMagtek(true,msrCallBack);
+			// }
+			// }).start();
+			// }
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.printerType(true, -2);
-			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
-				Global.btSwiper.currentDevice.loadCardReader(msrCallBack);
-			} else if (_printer_type != -1
-					&& (_printer_type == Global.STAR || _printer_type == Global.BAMBOO || _printer_type == Global.ZEBRA)) {
-				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null && !cardReaderConnected)
-					Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack);
+			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
+					&& !cardReaderConnected) {
+				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
+			} else if (_printer_type != -1 && (_printer_type == Global.STAR || _printer_type == Global.BAMBOO
+					|| _printer_type == Global.ZEBRA)) {
+				if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
+						&& !cardReaderConnected)
+					Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
 			}
 		}
 		// }
-		if (myPref.isET1(true, false)||myPref.isMC40(true, false)) {
+		if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
 			ourIntentAction = getString(R.string.intentAction2);
 			Intent i = getIntent();
 			handleDecodeData(i);
@@ -215,13 +205,11 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 			cardSwipe.setChecked(true);
 		}
 	}
-	
-	
+
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		switch(v.getId())
-		{
+		switch (v.getId()) {
 		case R.id.processButton:
 			processInquiry();
 			break;
@@ -229,12 +217,11 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 	}
 
 	@Override
-	public void onNewIntent(Intent i) 
-	{
+	public void onNewIntent(Intent i) {
 		super.onNewIntent(i);
 		handleDecodeData(i);
 	}
-	
+
 	private void handleDecodeData(Intent i) {
 		// check the intent action is for us
 		if (i.getAction() != null && i.getAction().contentEquals(ourIntentAction)) {
@@ -245,9 +232,7 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 			updateViewAfterSwipe();
 		}
 	}
-	
-	
-	
+
 	private boolean populateCardInfo() {
 		if (!wasReadFromReader) {
 			Encrypt encrypt = new Encrypt(activity);
@@ -270,14 +255,12 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 				labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
 				return true;
 			}
-		}
-		else if(giftCardMap.isEmpty())
+		} else if (giftCardMap.isEmpty())
 			return false;
 		return true;
 	}
 
-	private void processInquiry() 
-	{
+	private void processInquiry() {
 		if (populateCardInfo()) {
 			Payment payment = new Payment(this);
 
@@ -305,7 +288,8 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 
 			payment.pay_type = "0";
 			if (typeCase == CASE_GIFT)
-				generatedURL = payGate.paymentWithAction("ActivateGiftCardAction", wasReadFromReader, cardType, cardInfoManager);
+				generatedURL = payGate.paymentWithAction("ActivateGiftCardAction", wasReadFromReader, cardType,
+						cardInfoManager);
 
 			new processAsync().execute(generatedURL);
 		} else {
@@ -383,11 +367,13 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 			if (wasProcessed) // payment processing succeeded
 			{
 				StringBuilder sb = new StringBuilder();
-				//sb.append("Status: ").append(parsedMap.get("epayStatusCode")).append("\n");
-				// sb.append("Auth. Amount: ").append(parsedMap.get("AuthorizedAmount")==null?
+				// sb.append("Status:
+				// ").append(parsedMap.get("epayStatusCode")).append("\n");
+				// sb.append("Auth. Amount:
+				// ").append(parsedMap.get("AuthorizedAmount")==null?
 				// "0.00":parsedMap.get("AuthorizedAmount")).append("\n");
 				ordProdDB.updateOrdProdCardActivated(giftCardMap.get("ordprod_id"));
-				String temp = (parsedMap.get("CardBalance")==null?"0.0":parsedMap.get("CardBalance"));
+				String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
 				sb.append("Card Balance: ").append(Global.getCurrencyFrmt(temp));
 
 				showBalancePrompt(sb.toString());
@@ -398,7 +384,7 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 			}
 		}
 	}
-	
+
 	public void showBalancePrompt(String msg) {
 		final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
 		dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -422,79 +408,63 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack,OnC
 		dlog.show();
 	}
 
-	
-	
-	
-	private void updateViewAfterSwipe()
-	{
-		//month.setText(cardInfoManager.getCardExpMonth());
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy",Locale.getDefault());
-		SimpleDateFormat dt2 = new SimpleDateFormat("yy",Locale.getDefault());
+	private void updateViewAfterSwipe() {
+		// month.setText(cardInfoManager.getCardExpMonth());
+		SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
+		SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
 		String formatedYear = new String();
-		try 
-		{
+		try {
 			Date date = dt2.parse(cardInfoManager.getCardExpYear());
 			formatedYear = dt.format(date);
-		} 
-		catch (ParseException e) 
-		{
+		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			Tracker tracker = EasyTracker.getInstance(activity);
 			tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 		}
-		
+
 		cardInfoManager.setCardExpYear(formatedYear);
 		fieldCardNum.setText(cardInfoManager.getCardNumUnencrypted());
-		
+
 		giftCardMap = ordProdDB.getOrdProdGiftCard(cardInfoManager.getCardNumUnencrypted());
-		
-		TextView labelAmount = (TextView)findViewById(R.id.labelAmount);
-		String temp = giftCardMap.get("overwrite_price") == null?"-1":giftCardMap.get("overwrite_price");
+
+		TextView labelAmount = (TextView) findViewById(R.id.labelAmount);
+		String temp = giftCardMap.get("overwrite_price") == null ? "-1" : giftCardMap.get("overwrite_price");
 		giftCardMap.put("overwrite_price", temp);
 		labelAmount.setText(Global.formatDoubleStrToCurrency(temp));
-		
+
 		wasReadFromReader = true;
 	}
-	
-	
-	
-	
-	
-	
+
 	@Override
 	public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
 		// TODO Auto-generated method stub
 		this.cardInfoManager = cardManager;
 		updateViewAfterSwipe();
-		if(uniMagReader!=null&&uniMagReader.readerIsConnected())
-		{
+		if (uniMagReader != null && uniMagReader.readerIsConnected()) {
 			uniMagReader.startReading();
-		}
-		else if(magtekReader==null&&Global.btSwiper==null&&Global.mainPrinterManager!=null)
-			Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack);
+		} else if (magtekReader == null && Global.btSwiper == null && Global.mainPrinterManager != null)
+			Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
 	}
+
 	@Override
 	public void readerConnectedSuccessfully(boolean didConnect) {
 		// TODO Auto-generated method stub
-		if(didConnect)
-		{
+		if (didConnect) {
 			cardReaderConnected = true;
-			if(uniMagReader!=null&&uniMagReader.readerIsConnected())
+			if (uniMagReader != null && uniMagReader.readerIsConnected())
 				uniMagReader.startReading();
-			if(!cardSwipe.isChecked())
+			if (!cardSwipe.isChecked())
 				cardSwipe.setChecked(true);
-		}
-		else
-		{
+		} else {
 			cardReaderConnected = false;
-			if(cardSwipe.isChecked())
+			if (cardSwipe.isChecked())
 				cardSwipe.setChecked(false);
 		}
 	}
-	
+
 	@Override
 	public void scannerWasRead(String data) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

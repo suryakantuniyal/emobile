@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.android.emobilepos.models.Orders;
 import com.android.support.ConsignmentTransaction;
+
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
@@ -37,7 +38,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
 	public void unregisterPrinter();
 
-	public void loadCardReader(EMSCallBack callBack);
+	public void loadCardReader(EMSCallBack callBack, boolean isDebitCard);
 	
 	public void loadScanner(EMSCallBack _callBack);
 

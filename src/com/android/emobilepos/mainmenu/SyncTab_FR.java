@@ -1,14 +1,14 @@
 package com.android.emobilepos.mainmenu;
 
+import com.android.emobilepos.adapters.SynchMenuAdapter;
+import com.emobilepos.app.R;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.adapters.SynchMenuAdapter;
 
 public class SyncTab_FR extends Fragment {
 	private SynchMenuAdapter myAdapter;

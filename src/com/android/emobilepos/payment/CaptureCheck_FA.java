@@ -1,5 +1,9 @@
 package com.android.emobilepos.payment;
 
+import com.android.support.Global;
+import com.emobilepos.app.R;
+import com.iparse.checkcapture.CheckCaptureActivity;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,11 +15,6 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-
-import com.emobilepos.app.R;
-import com.android.support.Global;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.iparse.checkcapture.CheckCaptureActivity;
 
 public class CaptureCheck_FA extends FragmentActivity implements OnClickListener{
 	

@@ -3,21 +3,16 @@ package com.android.support;
 import java.security.AccessControlException;
 import java.security.Guard;
 import java.security.GuardedObject;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
-import java.util.StringTokenizer;
-
-import com.android.database.OrdersHandler;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
@@ -344,7 +339,6 @@ public class MyPreferences {
 		prefEditor.putString(MSCardProcessor, getData(MSCardProcessor, 0, emp_data));
 		prefEditor.putString(GatewayURL, getData(GatewayURL, 0, emp_data));
 		prefEditor.putString(approveCode, getData(approveCode, 0, emp_data));
-
 		prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), getData(MSLastOrderID, 0, emp_data)));
 		prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), getData(MSLastTransferID, 0, emp_data)));
 
@@ -423,85 +417,83 @@ public class MyPreferences {
 	public String getLastOrdID() {
 		return (prefs.getString(MSLastOrderID, empstr));
 	}
-	
-	private String getValidID(String curr_id, String new_id)
-	{
-		if(new_id.length()>4)
-		{
+
+	private String getValidID(String curr_id, String new_id) {
+		if (new_id.length() > 4) {
 			String delims = "[\\-]";
 			String[] tokens = new_id.split(delims);
 			int new_seq = Integer.parseInt(tokens[1]);
 			int new_year = Integer.parseInt(tokens[2]);
-			
-			if(curr_id!=null&&!curr_id.isEmpty()&&curr_id.length()>4)
-			{
+
+			if (curr_id != null && !curr_id.isEmpty() && curr_id.length() > 4) {
 				String[] curr_tokens = curr_id.split(delims);
 				int curr_seq = Integer.parseInt(curr_tokens[1]);
 				int curr_year = Integer.parseInt(curr_tokens[2]);
-				
-				// Validate the emp id and the year between the last saved id and the one received from the service
-				// If year returned by the service is greater than the one locally stored, replace the stored id.
+
+				// Validate the emp id and the year between the last saved id
+				// and the one received from the service
+				// If year returned by the service is greater than the one
+				// locally stored, replace the stored id.
 				// if the year is the same then validate the sequence number
-				if(!tokens[0].equals(curr_tokens[0]))
+				if (!tokens[0].equals(curr_tokens[0]))
 					return curr_id;
-				if(new_year>curr_year)
+				if (new_year > curr_year)
 					return new_id;
-				else if(new_seq>curr_seq)
+				else if (new_seq > curr_seq)
 					return new_id;
-			}
-			else if(tokens[0].equals(getEmpID()))
-			{
+			} else if (tokens[0].equals(getEmpID())) {
 				return new_id;
 			}
 		}
-		
+
 		return curr_id;
 	}
 
-//	private String getValidID(String curr_id, String new_id) {
-//		if (new_id.length() > 4) {
-//			String delims = "[\\-]";
-//			String[] tokens = new_id.split(delims);
-//			int new_seq = Integer.parseInt(tokens[1]);
-//			int new_year = Integer.parseInt(tokens[2]);
-//
-//			if (curr_id != null && !curr_id.isEmpty() && curr_id.length() > 4) {
-//				String[] curr_tokens = curr_id.split(delims);
-//				int curr_seq = Integer.parseInt(curr_tokens[1]);
-//				int curr_year = Integer.parseInt(curr_tokens[2]);
-//
-//				// Validate the emp id and the year between the last saved id
-//				// and the one received from the service
-//				// If year returned by the service is greater than the one
-//				// locally stored, replace the stored id.
-//				// if the year is the same then validate the sequence number
-//				// if (!tokens[0].equals(curr_tokens[0]))
-//				// return curr_id;
-//				// if (new_year > curr_year)
-//				// return new_id;
-//				// if (new_year <= curr_year) {
-//				String lastOrderId = OrdersHandler.getLastOrderId(Integer.parseInt(tokens[0]), new_year);
-//				tokens = lastOrderId.split(delims);
-//				int seq = Integer.parseInt(tokens[1]);
-////				seq++;
-//				tokens[1] = String.format("%05d", seq);
-//				StringBuffer sb = new StringBuffer();
-//				sb.append(tokens[0]);
-//				sb.append("-");
-//				sb.append(tokens[1]);
-//				sb.append("-");
-//				sb.append(tokens[2]);
-//				return sb.toString();
-//				// } else if (new_seq > curr_seq)
-//				// return new_id;
-//
-//			} else if (tokens[0].equals(getEmpID())) {
-//				return new_id;
-//			}
-//		}
-//
-//		return curr_id;
-//	}
+	// private String getValidID(String curr_id, String new_id) {
+	// if (new_id.length() > 4) {
+	// String delims = "[\\-]";
+	// String[] tokens = new_id.split(delims);
+	// int new_seq = Integer.parseInt(tokens[1]);
+	// int new_year = Integer.parseInt(tokens[2]);
+	//
+	// if (curr_id != null && !curr_id.isEmpty() && curr_id.length() > 4) {
+	// String[] curr_tokens = curr_id.split(delims);
+	// int curr_seq = Integer.parseInt(curr_tokens[1]);
+	// int curr_year = Integer.parseInt(curr_tokens[2]);
+	//
+	// // Validate the emp id and the year between the last saved id
+	// // and the one received from the service
+	// // If year returned by the service is greater than the one
+	// // locally stored, replace the stored id.
+	// // if the year is the same then validate the sequence number
+	// // if (!tokens[0].equals(curr_tokens[0]))
+	// // return curr_id;
+	// // if (new_year > curr_year)
+	// // return new_id;
+	// // if (new_year <= curr_year) {
+	// String lastOrderId =
+	// OrdersHandler.getLastOrderId(Integer.parseInt(tokens[0]), new_year);
+	// tokens = lastOrderId.split(delims);
+	// int seq = Integer.parseInt(tokens[1]);
+	//// seq++;
+	// tokens[1] = String.format("%05d", seq);
+	// StringBuffer sb = new StringBuffer();
+	// sb.append(tokens[0]);
+	// sb.append("-");
+	// sb.append(tokens[1]);
+	// sb.append("-");
+	// sb.append(tokens[2]);
+	// return sb.toString();
+	// // } else if (new_seq > curr_seq)
+	// // return new_id;
+	//
+	// } else if (tokens[0].equals(getEmpID())) {
+	// return new_id;
+	// }
+	// }
+	//
+	// return curr_id;
+	// }
 
 	public void setLogIn(boolean val) {
 		prefEditor.putBoolean(isLoggedIn, val);

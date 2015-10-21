@@ -1,14 +1,14 @@
 package com.android.emobilepos.shifts;
 
+import com.android.emobilepos.adapters.ShiftDetailsAdapter;
+import com.android.support.Global;
+import com.emobilepos.app.R;
+
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.widget.ListView;
-
-import com.emobilepos.app.R;
-import com.android.emobilepos.adapters.ShiftDetailsAdapter;
-import com.android.support.Global;
 
 public class ShiftReportDetails_FA extends FragmentActivity{
 	
