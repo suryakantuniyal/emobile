@@ -194,7 +194,10 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
 		try {
 			printImage(0);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException  e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -275,7 +278,10 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 				encodedSignature = payArray[7];
 				try {
 					this.printImage(1);
-				} catch (StarIOPortException | JAException e) {
+				} catch (StarIOPortException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JAException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -306,7 +312,10 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
 				try {
 					this.printImage(2);
-				} catch (StarIOPortException | JAException e) {
+				} catch (StarIOPortException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JAException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

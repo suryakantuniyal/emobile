@@ -357,7 +357,13 @@ public class EMSPayGate_Default {
 			Order order = handler.getOrder(orderId);
 			if (order != null && !TextUtils.isEmpty(order.ord_id))
 				xmlGen.buildOrder(serializer, false, order);
-		} catch (IllegalArgumentException | IllegalStateException | IOException e) {
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
