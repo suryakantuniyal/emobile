@@ -12,9 +12,6 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -139,8 +136,8 @@ public class TemplateHandler {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.OrdersHandler (at Class.insert)]");
 
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 			DBManager._db.endTransaction();
 		}
@@ -188,8 +185,8 @@ public class TemplateHandler {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductsHandler (at Class.insert)]");
 
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 			DBManager._db.endTransaction();
 		}

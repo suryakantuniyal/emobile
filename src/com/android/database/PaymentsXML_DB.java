@@ -5,13 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.android.support.DBManager;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.util.Log;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -74,8 +70,8 @@ public class PaymentsXML_DB {
 			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
 			DBManager._db.endTransaction();
 		}

@@ -34,9 +34,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -1226,8 +1223,8 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 			}
 
 			return null;
@@ -1344,6 +1341,12 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 			for (OrdProdAttrHolder val : global.ordProdAttr)
 				dbOrdAttr.deleteOrderProduct(val.ordprod_id);
 		}
+	}
+
+	@Override
+	public void startSignature() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

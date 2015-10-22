@@ -11,9 +11,6 @@ import com.android.support.DrawView;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.content.Context;
@@ -197,15 +194,15 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
 				StringBuilder sb = new StringBuilder();
 				sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.onClick)]");
 				
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				StringBuilder sb = new StringBuilder();
 				sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.onClick)]");
 				
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 			}
 			finish();
 			break;

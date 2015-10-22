@@ -44,10 +44,6 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.GenerateNewID.IdType;
 import com.emobilepos.app.R;
-//import com.android.emobilepos.RefundMenuActivity.printAsync;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -55,7 +51,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.zzzapi.uart.uart;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -70,6 +65,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.support.multidex.MultiDexApplication;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
@@ -85,7 +81,7 @@ import android.widget.TextView;
 import drivers.EMSPAT100;
 import main.EMSDeviceManager;
 
-public class Global extends Application {
+public class Global extends MultiDexApplication {
 
 	@Override
 	public void onCreate() {
@@ -122,6 +118,8 @@ public class Global extends Application {
 	public static final String AUDIO_MSR_UNIMAG = "0";
 	public static final String AUDIO_MSR_MAGTEK = "1";
 	public static final String AUDIO_MSR_ROVER = "2";
+	public static final String AUDIO_MSR_WALKER = "3";
+
 
 	public final static String IS_ORDER = "0";
 	public final static String IS_RETURN = "1";
@@ -719,8 +717,8 @@ public class Global extends Application {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [")
 					.append("com.android.support.Global (at Class.formatToDisplayDate) ]");
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		}
 		return formatedDate;
 	}

@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.android.support.DBManager;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import net.sqlcipher.database.SQLiteStatement;
@@ -90,8 +87,8 @@ public class ProductAliases_DB {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductAliases (at Class.insert)]");
 
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 			DBManager._db.endTransaction();
 		}

@@ -32,9 +32,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -818,8 +815,8 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				sb.append(e.getMessage())
 						.append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 			}
 
 			return null;
@@ -1149,8 +1146,8 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 			}
 			return null;
 		}
@@ -1228,8 +1225,8 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 			}
 			return null;
 		}
