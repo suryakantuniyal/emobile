@@ -5,7 +5,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -17,8 +17,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.NFC" />
@@ -35,10 +35,6 @@
 
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
 
-
-
-
-
     <uses-feature
         android:name="android.hardware.usb.accessory"
         android:required="true" />
@@ -46,7 +42,7 @@
     <application
         android:name="com.android.support.Global"
         android:allowBackup="false"
-        android:icon="@drawable/emobile_icon"        
+        android:icon="@drawable/emobile_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <meta-data
@@ -77,6 +73,14 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
                 android:resource="@xml/accessory_filter" />
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
         <activity
             android:name="com.android.emobilepos.initialization.SelectEmployee_FA"
@@ -110,19 +114,19 @@
             android:name="com.android.emobilepos.history.HistoryConsignment_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"  >
+            android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         <activity
             android:name="com.android.emobilepos.history.HistoryGiftRewardLoyalty_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"  >
+            android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         <activity
             android:name="com.android.emobilepos.history.HistoryInventoryTransfer_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"  >
+            android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         <activity
             android:name="com.android.emobilepos.history.details.HistoryTransactionDetails_FA"
@@ -144,7 +148,7 @@
             android:configChanges="orientation|screenSize"
             android:exported="false" >
         </activity>
-                <activity
+        <activity
             android:name="com.android.emobilepos.history.details.HistoryInventoryTransferDetails_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false" >
@@ -157,8 +161,8 @@
         <activity
             android:name="com.android.emobilepos.payment.SelectPayMethod_FA"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTop"
-            android:exported="false" >
+            android:exported="false"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name="com.android.emobilepos.payment.ProcessCreditCard_FA"
@@ -180,6 +184,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize" >
             <intent-filter>
                 <action android:name="com.android.emobilepos.RECVR2" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -301,7 +306,6 @@
         </activity>
         <activity
             android:name="com.android.emobilepos.ordering.PickerAddon_FA"
-           
             android:exported="false"
             android:theme="@style/Theme.TransparentTest" >
         </activity>
@@ -311,6 +315,7 @@
             android:windowSoftInputMode="stateAlwaysHidden" >
             <intent-filter>
                 <action android:name="com.android.emobilepos.RECVR" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -396,11 +401,20 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
                 android:resource="@xml/accessory_filter" />
+            
+               <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+            
         </activity>
-        <activity 
+        <activity
             android:name="com.android.emobilepos.settings.ViewStoreForwardTrans_FA"
-            android:exported="false"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:exported="false" >
         </activity>
         <activity
             android:name="com.android.emobilepos.cardmanager.GiftCard_FA"
@@ -463,6 +477,10 @@
 
         <!-- Crash Activity that will appears when app crashes -->
         <activity android:name="com.android.crashreport.CrashActivity" />
+
+        <service
+            android:name="com.mpowa.android.sdk.powapos.common.communication.usbsocket.PowaUsbService"
+            android:enabled="true" />
     </application>
 
 </manifest>
