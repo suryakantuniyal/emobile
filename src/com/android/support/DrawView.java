@@ -1,6 +1,5 @@
 package com.android.support;
 
-
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import android.graphics.Path;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import drivers.EMSWalker;
 
 public class DrawView extends View implements OnTouchListener {
 	private Canvas mCanvas;
@@ -27,13 +27,12 @@ public class DrawView extends View implements OnTouchListener {
 
 	FileOutputStream fos = null;
 
-	public DrawView(Context context,int width,int height) {
+	public DrawView(Context context, int width, int height) {
 		super(context);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		setDrawingCacheEnabled(true);
 		this.setOnTouchListener(this);
-
 
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
@@ -79,6 +78,8 @@ public class DrawView extends View implements OnTouchListener {
 	private static final float TOUCH_TOLERANCE = 4;
 
 	private void touch_start(float x, float y) {
+		if (EMSWalker.signature != null)
+			EMSWalker.signature.startTouch(x, y);
 		mPath.reset();
 		mPath.moveTo(x, y);
 		mX = x;
@@ -86,6 +87,8 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
 	private void touch_move(float x, float y) {
+		if (EMSWalker.signature != null)
+			EMSWalker.signature.moveTouch(x, y);
 		float dx = Math.abs(x - mX);
 		float dy = Math.abs(y - mY);
 		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
@@ -100,6 +103,8 @@ public class DrawView extends View implements OnTouchListener {
 		// commit the path to our offscreen
 
 		// moved = false;
+		if (EMSWalker.signature != null)
+			EMSWalker.signature.upTouch();
 		if (moved) {
 			mPath.lineTo(mX, mY);
 			mCanvas.drawPath(mPath, mPaint);
@@ -128,7 +133,7 @@ public class DrawView extends View implements OnTouchListener {
 	public boolean onTouch(View arg0, MotionEvent event) {
 		float x = event.getX();
 		float y = event.getY();
-		
+
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			touch_start(x, y);
@@ -148,15 +153,15 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
 	public Bitmap getCanvasBitmap() {
-		
-		//Saving transparent background to white
-		Bitmap newBitmap = Bitmap.createBitmap(380, 100,Bitmap.Config.ARGB_8888);
+
+		// Saving transparent background to white
+		Bitmap newBitmap = Bitmap.createBitmap(380, 100, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(newBitmap);
 		canvas.drawColor(Color.WHITE);
 		canvas.drawBitmap(Bitmap.createScaledBitmap(canvasBitmap, 380, 100, false), 0, 0, null);
-		
+
 		return newBitmap;
-		//return Bitmap.createScaledBitmap(canvasBitmap, 380, 100, false);
+		// return Bitmap.createScaledBitmap(canvasBitmap, 380, 100, false);
 	}
 
 }

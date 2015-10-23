@@ -54,9 +54,6 @@ import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -280,8 +277,8 @@ public class SynchMethods
 				StringBuilder sb = new StringBuilder();
 				sb.append(e.getMessage()).append(" [com.android.menuadapters.SynchMenuAdapter (at Class.resyncAsynch)]");
 				
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 			}
 			return null;
 		}
@@ -464,8 +461,8 @@ public class SynchMethods
 					StringBuilder sb = new StringBuilder();
 					sb.append(synchStage).append(e.getMessage()).append(" [com.android.menuadapters.SynchMenuAdapter (at Class.sendAsync)]");
 
-					Tracker tracker = EasyTracker.getInstance(activity);
-					tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//					Tracker tracker = EasyTracker.getInstance(activity);
+//					tracker.send(MapBuilder.createException(sb.toString(), false).build());
 				}
 			} else
 				xml = activity.getString(R.string.dlog_msg_no_internet_access);
@@ -688,8 +685,8 @@ public class SynchMethods
 					StringBuilder sb = new StringBuilder();
 					sb.append(e.getMessage()).append(" [com.android.menuadapters.SynchMenuAdapter (at Class.resyncAsynch)]");
 					
-					Tracker tracker = EasyTracker.getInstance(activity);
-					tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//					Tracker tracker = EasyTracker.getInstance(activity);
+//					tracker.send(MapBuilder.createException(sb.toString(), false).build());
 				}
 			}
 			return null;
@@ -795,8 +792,8 @@ public class SynchMethods
 				StringBuilder sb = new StringBuilder();
 				sb.append(e.getMessage()).append(" [com.android.menuadapters.SynchMenuAdapter (at Class.resyncAsynch)]");
 				
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 			}
 			return null;
 		}
@@ -899,8 +896,8 @@ public class SynchMethods
 				StringBuilder sb = new StringBuilder();
 				sb.append(e.getMessage()).append(" [com.android.menuadapters.SynchMenuAdapter (at Class.resyncAsynch)]");
 				
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 				isError = true;
 				err_msg = "Unhandled Exception";
 			}
@@ -1057,9 +1054,9 @@ public class SynchMethods
 			} while (c.moveToNext());
 			c.close();
 		} catch (Exception e) {
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(
-					e.getStackTrace().toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(
+//					e.getStackTrace().toString(), false).build());
 		}
 	}
 	
@@ -1948,7 +1945,7 @@ public class SynchMethods
 	
 	private void handleGoogleAnalytic (String stack)
 	{
-		Tracker tracker = EasyTracker.getInstance(activity);
-		tracker.send(MapBuilder.createException(stack, false).build());
+//		Tracker tracker = EasyTracker.getInstance(activity);
+//		tracker.send(MapBuilder.createException(stack, false).build());
 	}
 }

@@ -1,5 +1,6 @@
 package com.android.support;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -33,7 +34,9 @@ public class CreditCardInfo
 	private String originalTotalAmount = "0";
 	private String debitPinBlock = empStr;
 	private String debitPinSerialNum = empStr;
-	
+	public String authcode;
+	public String transid;
+	public BigDecimal dueAmount = new BigDecimal("0");
 	private boolean wasSwiped = false;
 	
 	

@@ -28,9 +28,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -506,8 +503,8 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 				StringBuilder sb = new StringBuilder();
 				sb.append(e.getMessage()).append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 				
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 			}
 			return null;
 		}
@@ -542,15 +539,15 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.createDrawableFromURL)]");
 			
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} catch (IOException e) {
 			image = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.createDrawableFromURL)]");
 			
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		}
 		return image;
 	}

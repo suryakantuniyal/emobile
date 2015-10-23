@@ -28,13 +28,9 @@ import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.shifts.ClockInOut_FA;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
@@ -2036,7 +2032,13 @@ public class GenerateXML {
 			serializer.setOutput(writer);
 			serializer.startDocument("UTF-8", true);
 			serializer.startTag(empstr, "ASXML");
-		} catch (IllegalArgumentException | IllegalStateException | IOException e) {
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -2830,8 +2832,8 @@ public class GenerateXML {
 	}
 
 	private void handleGoogleAnalytic(String stack) {
-		Tracker tracker = EasyTracker.getInstance(thisActivity);
-		tracker.send(MapBuilder.createException(stack, false).build());
+//		Tracker tracker = EasyTracker.getInstance(thisActivity);
+//		tracker.send(MapBuilder.createException(stack, false).build());
 	}
 
 }

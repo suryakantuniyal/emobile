@@ -43,6 +43,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -70,10 +71,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
+import drivers.EMSWalker;
 import protocols.EMSCallBack;
 
 public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
@@ -132,6 +135,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 	private EMSMagtekAudioCardReader magtekReader;
 	private EMSRover roverReader;
 	private String custidkey = "";
+	public static TextView tvStatusMSR;
 
 	private HashMap<String, String> customerInfo;
 
@@ -154,6 +158,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 	private EMSIDTechUSB _msrUsbSams;
 	private String paymentMethodType;
 
+	private EMSWalker walkerReader;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -169,6 +175,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		scrollView = (ScrollView) findViewById(R.id.scrollView);
 		reference = (EditText) findViewById(R.id.referenceNumber);
 		TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
+		tvStatusMSR = (TextView)findViewById(R.id.tvStatusMSR);
 		cardSwipe = (CheckBox) findViewById(R.id.checkBox1);
 		extras = this.getIntent().getExtras();
 		paymentMethodType = extras.getString("paymentmethod_type");
@@ -429,8 +436,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 	@SuppressWarnings("deprecation")
 	private void setUpCardReader() {
 		AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
 		if (audioManager.isWiredHeadsetOn()) {
-			String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
 			if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
 				if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
 					uniMagReader = new EMSUniMagDriver();
@@ -445,23 +452,26 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 				} else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
 					roverReader = new EMSRover();
 					roverReader.initializeReader(activity, isDebit);
+				} else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
+					walkerReader = new EMSWalker(activity, true);
+					// new Thread(new Runnable(){
+					// public void run()
+					// {
+					// walkerReader = new EMSWalker(activity);
+					// }
+					// }).start();
+					// new connectWalkerAsync().execute();
 				}
 			}
-			// if(!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
-			// {
-			// uniMagReader = new EMSUniMagDriver();
-			// uniMagReader.initializeReader(activity);
-			// }
-			// else
-			// {
-			// magtekReader = new EMSMagtekAudioCardReader(activity);
+
+		} else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
+			walkerReader = new EMSWalker(activity, false);
 			// new Thread(new Runnable(){
 			// public void run()
 			// {
-			// magtekReader.connectMagtek(true,callBack);
+			// walkerReader = new EMSWalker(activity);
 			// }
 			// }).start();
-			// }
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.printerType(true, -2);
@@ -511,8 +521,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 	}
 
 	private void processPayment() {
-
-		populateCardInfo();
+		if (walkerReader == null)
+			populateCardInfo();
 
 		payHandler = new PaymentsHandler(activity);
 
@@ -600,42 +610,45 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 				payment.Tax2_name = "Municipal";
 			}
 		}
+		if (walkerReader == null) {
+			EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
+			String generatedURL = new String();
 
-		EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-		String generatedURL = new String();
+			if (!isRefund) {
+				payment.pay_type = "0";
 
-		if (!isRefund) {
-			payment.pay_type = "0";
+				if (isDebit)
+					generatedURL = payGate.paymentWithAction("ChargeDebitAction", wasReadFromReader, creditCardType,
+							cardInfoManager);
+				else
+					generatedURL = payGate.paymentWithAction("ChargeCreditCardAction", wasReadFromReader,
+							creditCardType, cardInfoManager);
 
-			if (isDebit)
-				generatedURL = payGate.paymentWithAction("ChargeDebitAction", wasReadFromReader, creditCardType,
-						cardInfoManager);
+			} else {
+				payment.is_refund = "1";
+				payment.pay_type = "2";
+				payment.pay_transid = transIDField.getText().toString();
+				payment.authcode = authIDField.getText().toString();
+
+				if (isDebit)
+					generatedURL = payGate.paymentWithAction("ReturnDebitAction", wasReadFromReader, creditCardType,
+							cardInfoManager);
+				else
+					generatedURL = payGate.paymentWithAction("ReturnCreditCardAction", wasReadFromReader,
+							creditCardType, cardInfoManager);
+			}
+
+			if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) // Perform
+																					// store
+																					// and
+																					// forward
+																					// procedure
+				processStoreForward(generatedURL);
 			else
-				generatedURL = payGate.paymentWithAction("ChargeCreditCardAction", wasReadFromReader, creditCardType,
-						cardInfoManager);
-
+				new processLivePaymentAsync().execute(generatedURL);
 		} else {
-			payment.is_refund = "1";
-			payment.pay_type = "2";
-			payment.pay_transid = transIDField.getText().toString();
-			payment.authcode = authIDField.getText().toString();
-
-			if (isDebit)
-				generatedURL = payGate.paymentWithAction("ReturnDebitAction", wasReadFromReader, creditCardType,
-						cardInfoManager);
-			else
-				generatedURL = payGate.paymentWithAction("ReturnCreditCardAction", wasReadFromReader, creditCardType,
-						cardInfoManager);
+			saveApprovedPayment(null);
 		}
-
-		if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) // Perform
-																				// store
-																				// and
-																				// forward
-																				// procedure
-			processStoreForward(generatedURL);
-		else
-			new processLivePaymentAsync().execute(generatedURL);
 	}
 
 	private void processMultiInvoicePayment() {
@@ -1620,12 +1633,17 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 	}
 
 	private void saveApprovedPayment(HashMap<String, String> parsedMap) {
-		payment.pay_resultcode = parsedMap.get("pay_resultcode");
-		payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
-		payment.pay_transid = parsedMap.get("CreditCardTransID");
-		payment.authcode = parsedMap.get("AuthorizationCode");
-		payment.processed = "9";
-
+		if (walkerReader == null) {
+			payment.pay_resultcode = parsedMap.get("pay_resultcode");
+			payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
+			payment.pay_transid = parsedMap.get("CreditCardTransID");
+			payment.authcode = parsedMap.get("AuthorizationCode");
+			payment.processed = "9";
+		} else {
+			payment.pay_transid = cardInfoManager.transid;
+			payment.authcode = cardInfoManager.authcode;
+			payment.processed = "9";
+		}
 		orientation = getResources().getConfiguration().orientation;
 		global.orientation = orientation;
 
@@ -1636,15 +1654,35 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			}
 		}
 		payHandler.insert(payment);
-
-		if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-			new printAsync().execute(false);
-		} else if (!isDebit) {
-			Intent intent = new Intent(activity, DrawReceiptActivity.class);
-			intent.putExtra("isFromPayment", true);
-			startActivityForResult(intent, requestCode);
+		if (walkerReader == null) {
+			if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
+				new printAsync().execute(false);
+			} else if (!isDebit) {
+				Intent intent = new Intent(activity, DrawReceiptActivity.class);
+				intent.putExtra("isFromPayment", true);
+				startActivityForResult(intent, requestCode);
+			} else {
+				finishPaymentTransaction();
+			}
 		} else {
-			finishPaymentTransaction();
+			if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+				StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+				Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.pay_uuid);
+
+				OrdersHandler dbOrders = new OrdersHandler(this);
+				dbOrders.updateOrderStoredFwd(payment.job_id, "1");
+			} else {
+				PaymentsHandler payHandler = new PaymentsHandler(this);
+				Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+			}
+
+			if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+				if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
+					new printAsync().execute(false);
+				else
+					showPrintDlg(false, false);
+			} else
+				finishPaymentTransaction();
 		}
 	}
 
@@ -1716,26 +1754,30 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		}
 
 		if (resultCode == -1) {
+			if (walkerReader == null) {
+				if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+					StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+					Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.pay_uuid);
 
-			if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-				StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
-				Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.pay_uuid);
+					OrdersHandler dbOrders = new OrdersHandler(this);
+					dbOrders.updateOrderStoredFwd(payment.job_id, "1");
+				} else {
+					PaymentsHandler payHandler = new PaymentsHandler(this);
+					Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+				}
 
-				OrdersHandler dbOrders = new OrdersHandler(this);
-				dbOrders.updateOrderStoredFwd(payment.job_id, "1");
+				if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+					if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
+						new printAsync().execute(false);
+					else
+						showPrintDlg(false, false);
+				} else
+					finishPaymentTransaction();
 			} else {
 				PaymentsHandler payHandler = new PaymentsHandler(this);
 				Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+				walkerReader.submitSignature();
 			}
-
-			if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
-				if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
-					new printAsync().execute(false);
-				else
-					showPrintDlg(false, false);
-			} else
-				finishPaymentTransaction();
-
 		}
 	}
 
@@ -1885,6 +1927,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		updateViewAfterSwipe();
 		if (uniMagReader != null && uniMagReader.readerIsConnected()) {
 			uniMagReader.startReading();
+		} else if (walkerReader != null) {
+			processPayment();
 		} else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
 				&& Global.mainPrinterManager != null)
 			Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
@@ -1893,6 +1937,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 	@Override
 	public void readerConnectedSuccessfully(boolean didConnect) {
 		// TODO Auto-generated method stub
+		tvStatusMSR.setText("Connected");
 		if (didConnect) {
 			cardReaderConnected = true;
 			if (uniMagReader != null && uniMagReader.readerIsConnected())
@@ -1952,7 +1997,18 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			amountPaidField.setText(amountField.getText().toString());
 			break;
 		case R.id.processButton:
-			validateProcessPayment();
+			if (walkerReader == null)
+				validateProcessPayment();
+			else {
+				// double enteredAmount =
+				// Global.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]",
+				// "").trim());
+				// cardInfoManager.dueAmount =
+				// BigDecimal.valueOf(enteredAmount);
+				// walkerReader.startReading(cardInfoManager);
+
+				new processWalkerAsync().execute();
+			}
 			break;
 		case R.id.tipAmountBut:
 			promptTipConfirmation();
@@ -2065,4 +2121,61 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 		}
 	}
+
+	private class processWalkerAsync extends AsyncTask<Void, Void, Void> {
+		private processWalkerAsync myTask;
+
+		@Override
+		protected void onPreExecute() {
+			myTask = this;
+
+			myProgressDialog = new ProgressDialog(activity);
+			if (walkerReader.deviceConnected())
+				myProgressDialog.setMessage("Swipe/Insert Card...");
+			else
+				myProgressDialog.setMessage("Please Wait...");
+			myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			myProgressDialog.setCancelable(false);
+			if (myProgressDialog.isShowing())
+				myProgressDialog.dismiss();
+
+			myProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, activity.getString(R.string.button_cancel),
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							myTask.cancel(true);
+							walkerReader.isReadingCard = false;
+							myProgressDialog.dismiss();
+						}
+					});
+
+			myProgressDialog.show();
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			double enteredAmount = Global
+					.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+			cardInfoManager.dueAmount = BigDecimal.valueOf(enteredAmount);
+			walkerReader.startReading(cardInfoManager);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void unused) {
+			myProgressDialog.dismiss();
+			if (walkerReader.failedProcessing)
+				Toast.makeText(activity, "Error", Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void startSignature() {
+		// TODO Auto-generated method stub
+		Intent intent = new Intent(activity,DrawReceiptActivity.class);
+		intent.putExtra("isFromPayment", true);
+		startActivityForResult(intent,requestCode);
+	}
+
 }

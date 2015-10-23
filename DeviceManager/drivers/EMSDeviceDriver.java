@@ -267,7 +267,10 @@ public class EMSDeviceDriver {
 		if (this instanceof EMSBluetoothStarPrinter) {
 			try {
 				port.writePort(str.getBytes(FORMAT), 0, str.length());
-			} catch (UnsupportedEncodingException | StarIOPortException e) {
+			} catch (UnsupportedEncodingException  e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (StarIOPortException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

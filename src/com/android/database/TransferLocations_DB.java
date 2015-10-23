@@ -10,14 +10,10 @@ import java.util.Locale;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.support.DBManager;
 import com.android.support.MyPreferences;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.util.Log;
 import net.sqlcipher.database.SQLiteStatement;
 
 public class TransferLocations_DB {
@@ -87,8 +83,8 @@ public class TransferLocations_DB {
 			DBManager._db.setTransactionSuccessful();
 
 		} catch (Exception e) {
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
 			myPref.setLastTransferID(location.get(trans_id));
 			DBManager._db.endTransaction();
