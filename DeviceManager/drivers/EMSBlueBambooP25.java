@@ -678,9 +678,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (JAException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 		this.printHeader();
