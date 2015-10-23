@@ -729,16 +729,16 @@ public class EMSDeviceDriver {
 			// myBitmap = BitmapFactory.decodeResource(activity.getResources(),
 			// R.drawable.companylogo);
 			if (this instanceof EMSBluetoothStarPrinter) {
-//				float diff = PAPER_WIDTH - myBitmap.getWidth();
-//				float percentage = diff / myBitmap.getWidth();
-//				int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
-//				int h = myBitmap.getHeight();
-//				Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-//				Canvas canvas = new Canvas(canvasBmp);
-//				int centreX = (w - myBitmap.getWidth()) / 2;
-//				canvas.drawColor(Color.WHITE);
-//				canvas.drawBitmap(myBitmap, centreX, 0, null);
-//				myBitmap = canvasBmp;
+				float diff = PAPER_WIDTH - myBitmap.getWidth();
+				float percentage = diff / myBitmap.getWidth();
+				int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
+				int h = myBitmap.getHeight();
+				Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+				Canvas canvas = new Canvas(canvasBmp);
+				int centreX = (w - myBitmap.getWidth()) / 2;
+				canvas.drawColor(Color.WHITE);
+				canvas.drawBitmap(myBitmap, centreX, 0, null);
+				myBitmap = canvasBmp;
 				byte[] data;
 				
 				if (isPOSPrinter) {
