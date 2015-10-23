@@ -51,6 +51,8 @@ import util.RasterDocument;
 import util.RasterDocument.RasPageEndMode;
 import util.RasterDocument.RasSpeed;
 import util.RasterDocument.RasTopMargin;
+import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
+
 
 public class EMSDeviceDriver {
 	public static final boolean PRINT_TO_LOG = false;
@@ -727,27 +729,29 @@ public class EMSDeviceDriver {
 			// myBitmap = BitmapFactory.decodeResource(activity.getResources(),
 			// R.drawable.companylogo);
 			if (this instanceof EMSBluetoothStarPrinter) {
-				float diff = PAPER_WIDTH - myBitmap.getWidth();
-				float percentage = diff / myBitmap.getWidth();
-				int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
-				int h = myBitmap.getHeight();
-				Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-				Canvas canvas = new Canvas(canvasBmp);
-				int centreX = (w - myBitmap.getWidth()) / 2;
-				canvas.drawColor(Color.WHITE);
-				canvas.drawBitmap(myBitmap, centreX, 0, null);
-				myBitmap = canvasBmp;
+//				float diff = PAPER_WIDTH - myBitmap.getWidth();
+//				float percentage = diff / myBitmap.getWidth();
+//				int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
+//				int h = myBitmap.getHeight();
+//				Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+//				Canvas canvas = new Canvas(canvasBmp);
+//				int centreX = (w - myBitmap.getWidth()) / 2;
+//				canvas.drawColor(Color.WHITE);
+//				canvas.drawBitmap(myBitmap, centreX, 0, null);
+//				myBitmap = canvasBmp;
 				byte[] data;
+				
 				if (isPOSPrinter) {
-
-					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
-							PAPER_WIDTH, false);
-
+					data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
+							myBitmap);
+					Communication.Result result;
+					result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
+					
+//					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
+//							PAPER_WIDTH, false);
 				} else {
-
 					MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
 							myBitmap, PAPER_WIDTH, false, false);
-
 				}
 
 			} else if (this instanceof EMSPAT100) {
