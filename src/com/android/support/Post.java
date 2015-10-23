@@ -29,9 +29,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.util.Log;
@@ -228,7 +225,7 @@ public class Post {
 					response = getRequestUnsecure(new URI(url.toString()));
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace(); 
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -418,7 +415,7 @@ public class Post {
 	}
 
 	private void handleGoogleAnalytic(String stack) {
-		Tracker tracker = EasyTracker.getInstance(activity);
-		tracker.send(MapBuilder.createException(stack, false).build());
+//		Tracker tracker = EasyTracker.getInstance(activity);
+//		tracker.send(MapBuilder.createException(stack, false).build());
 	}
 }

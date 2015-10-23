@@ -28,13 +28,9 @@ import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.shifts.ClockInOut_FA;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
@@ -2836,8 +2832,8 @@ public class GenerateXML {
 	}
 
 	private void handleGoogleAnalytic(String stack) {
-		Tracker tracker = EasyTracker.getInstance(thisActivity);
-		tracker.send(MapBuilder.createException(stack, false).build());
+//		Tracker tracker = EasyTracker.getInstance(thisActivity);
+//		tracker.send(MapBuilder.createException(stack, false).build());
 	}
 
 }

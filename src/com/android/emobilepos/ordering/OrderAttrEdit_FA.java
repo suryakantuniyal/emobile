@@ -606,4 +606,10 @@ public class OrderAttrEdit_FA extends FragmentActivity
 			break;
 		}
 	}
+
+	@Override
+	public void startSignature() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -25,9 +25,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -238,8 +235,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					Tracker tracker = EasyTracker.getInstance(activity);
-					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+//					Tracker tracker = EasyTracker.getInstance(activity);
+//					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 				}
 
 			}
@@ -382,8 +379,8 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					Tracker tracker = EasyTracker.getInstance(activity);
-					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+//					Tracker tracker = EasyTracker.getInstance(activity);
+//					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 				}
 			} else {
 				listTC = timeClockHandler.getEmployeeTimeClock(mClerkID);

@@ -672,9 +672,9 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
 		try {
 			printImage(0);
-		} catch (StarIOPortException  e1) {
+		} catch (StarIOPortException e) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			e.printStackTrace();
 		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -748,7 +748,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 				encodedSignature = payArray[7];
 				try {
 					printImage(1);
-				} catch (StarIOPortException  e) {
+				} catch (StarIOPortException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (JAException e) {
@@ -778,7 +778,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
 				try {
 					printImage(2);
-				} catch (StarIOPortException  e) {
+				} catch (StarIOPortException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (JAException e) {
@@ -1323,7 +1323,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
 		try {
 			printImage(0);
-		} catch (StarIOPortException  e1) {
+		} catch (StarIOPortException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (JAException e) {

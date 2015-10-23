@@ -21,9 +21,6 @@ import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -568,8 +565,8 @@ public class CreateCustomer_FA extends FragmentActivity implements OnCheckedChan
 				// TODO Auto-generated catch block
 				StringBuilder sb2 = new StringBuilder();
 				sb2.append(e.getMessage()).append(" [").append("com.android.support.ReportsMenuActivity (at Class.DateDialog) ]");
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb2.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb2.toString(), false).build());
 				// throw new RuntimeException(e);
 			}
 			field[DOB].setText(Global.formatToDisplayDate(dobDate, activity, 1));

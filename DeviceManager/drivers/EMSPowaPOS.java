@@ -1,5 +1,6 @@
 package drivers;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,14 +28,17 @@ import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.emobilepos.app.R;
-import com.mpowa.android.sdk.common.dataobjects.PowaDeviceObject;
+import com.mpowa.android.powapos.accessory.abstraction.PowaHidKeyDecoder;
+import com.mpowa.android.powapos.accessory.hid.PowaHidScanner;
 import com.mpowa.android.sdk.powapos.PowaPOS;
+import com.mpowa.android.sdk.powapos.common.base.PowaEnums;
+import com.mpowa.android.sdk.powapos.common.base.PowaLog;
+import com.mpowa.android.sdk.powapos.common.dataobjects.PowaDeviceObject;
+import com.mpowa.android.sdk.powapos.common.utils.ByteUtils;
 import com.mpowa.android.sdk.powapos.core.PowaPOSEnums;
 import com.mpowa.android.sdk.powapos.core.PowaPOSEnums.BootloaderUpdateError;
 import com.mpowa.android.sdk.powapos.core.PowaPOSEnums.PowaUSBCOMPort;
 import com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallback;
-import com.mpowa.android.sdk.powapos.drivers.s10.PowaS10Scanner;
-import com.mpowa.android.sdk.powapos.drivers.tseries.PowaTSeries;
 import com.starmicronics.stario.StarIOPortException;
 
 import android.app.Activity;
@@ -47,25 +51,27 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
 
+//com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallbackBas
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 	private int LINE_WIDTH = 48;
-
-
 
 	private Handler handler;
 	private ProgressDialog myProgressDialog;
 	private EMSDeviceDriver thisInstance;
 	private EMSDeviceManager edm;
-	private EMSCallBack callBack, _scannerCallBack;
+	private EMSCallBack callBack, scannerCallBack;
 
 	private boolean isAutoConnect = false;
 	private Global global;
+
+	private PowaHidScanner powaHidDecoderScanner;
 
 	@Override
 	public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -83,18 +89,70 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			myProgressDialog.show();
 			try {
 
-				powaPOS = new PowaPOS(this.activity, peripheralCallback);
+				// powaPOS = new PowaPOS(this.activity, peripheralCallback);
 
-				PowaTSeries mcu = new PowaTSeries(this.activity);
-				powaPOS.addPeripheral(mcu);
+				// PowaTSeries mcu = new PowaTSeries(this.activity);
+				// powaPOS.addPeripheral(mcu);
+				//
+				// PowaS10Scanner scanner = new PowaS10Scanner(activity);
+				// powaPOS.addPeripheral(scanner);
 
-				PowaS10Scanner scanner = new PowaS10Scanner(activity);
-				powaPOS.addPeripheral(scanner);
+				powaPOS = new PowaPOS(this.activity, mPowaPOSCallback);
+				powaPOS.initializeMCU(true);
+				powaPOS.initializeScanner();
+				powaHidDecoderScanner = new PowaHidScanner(hidScannerCB);
 
 			} catch (Exception e) {
 			}
 		}
 	}
+
+	// ===================================== SCANNER CALLBACK
+	// =======================================
+	// PowaHidScanner.Callback hidScannerCB = new PowaHidScanner.Callback() {
+	// @Override
+	// public void onScannerReady() {
+	// Log.d("", "onScannerReady()");
+	// }
+	//
+	// @Override
+	// public void onScannerDetached() {
+	// Log.d("", "onScannerDetached()");
+	// }
+	//
+	// @Override
+	// public void onControlKeyScanned(PowaHidKeyDecoder.CONTROL_KEY controlKey)
+	// {
+	// Toast.makeText(EMSPowaPOS.this.activity, controlKey.name() + " has been
+	// received", Toast.LENGTH_SHORT)
+	// .show();
+	// // Some scanners send CONTROL KEYS at the start/end of the data,
+	// // this way users may identify
+	// // different events happening. Check if your scanner brand send any
+	// // of them by overriding this
+	// // method.
+	// }
+	//
+	// @Override
+	// public void onScanStartDecoding() {
+	// // This event is only useful for providing animation while the
+	// // decoding is in process.
+	// // Usually this process take about 1.5 second, so developers can
+	// // start playing a nice animation
+	// // at this point.
+	// }
+	//
+	// @Override
+	// public void onScanFinishedDecoding(byte[] data) {
+	// try {
+	// Toast.makeText(activity, new String(data, "UTF-8"),
+	// Toast.LENGTH_LONG).show();
+	// } catch (UnsupportedEncodingException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// };
 
 	@Override
 	public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -122,11 +180,24 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 					@Override
 					public void run() {
 						Looper.prepare();
-						powaPOS = new PowaPOS(EMSPowaPOS.this.activity, peripheralCallback);
-						PowaTSeries mcu = new PowaTSeries(EMSPowaPOS.this.activity);
-						powaPOS.addPeripheral(mcu);
-						PowaS10Scanner scanner = new PowaS10Scanner(EMSPowaPOS.this.activity);
-						powaPOS.addPeripheral(scanner);
+						// powaPOS = new PowaPOS(EMSPowaPOS.this.activity,
+						// peripheralCallback);
+						// powaPOS.initializeMCU();
+						// powaPOS.initializeScanner();
+
+						powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);
+						powaPOS.initializeMCU(true);
+						powaPOS.initializeScanner();
+						powaHidDecoderScanner = new PowaHidScanner(hidScannerCB);
+
+						// powaPOS = new PowaPOS(EMSPowaPOS.this.activity,
+						// peripheralCallback);
+						// PowaTSeries mcu = new
+						// PowaTSeries(EMSPowaPOS.this.activity);
+						// powaPOS.addPeripheral(mcu);
+						// PowaS10Scanner scanner = new
+						// PowaS10Scanner(EMSPowaPOS.this.activity);
+						// powaPOS.addPeripheral(scanner);
 						myProgressDialog.dismiss();
 						Looper.loop();
 					}
@@ -183,11 +254,15 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 			try {
 
-				powaPOS = new PowaPOS(activity, peripheralCallback);
+				// powaPOS = new PowaPOS(activity, peripheralCallback);
+				//
+				// PowaTSeries mcu = new PowaTSeries(activity);
+				// powaPOS.addPeripheral(mcu);
 
-				PowaTSeries mcu = new PowaTSeries(activity);
-				powaPOS.addPeripheral(mcu);
-
+				powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);
+				powaPOS.initializeMCU(true);
+				powaPOS.initializeScanner();
+				powaHidDecoderScanner = new PowaHidScanner(hidScannerCB);
 				// PowaS10Scanner scanner = new PowaS10Scanner(activity);
 				// powaPOS.addPeripheral(scanner);
 
@@ -224,389 +299,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 	@Override
 	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
-		// TODO Auto-generated method stub
 
-		// port = StarIOPort.getPort(portName, portSettings, 1000,
-		// this.activity);
 		printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
-		// printPref = myPref.getPrintingPreferences();
-		// EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-		//
-		// OrderProductsHandler handler = new OrderProductsHandler(activity);
-		// OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
-		//
-		// List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-		// List<Orders> orders = handler.getPrintOrderedProducts(ordID);
-		//
-		// OrdersHandler orderHandler = new OrdersHandler(activity);
-		// Order anOrder = orderHandler.getPrintedOrder(ordID);
-		// ClerksHandler clerkHandler = new ClerksHandler(activity);
-		//
-		// StringBuilder sb = new StringBuilder();
-		// int size = orders.size();
-		//
-		// try {
-		// this.printImage(0);
-		// } catch (StarIOPortException | JAException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// powaPOS.printText("\n\n");
-		//
-		// if (printPref.contains(MyPreferences.print_header))
-		// this.printHeader();
-		//
-		// if (anOrder.isVoid.equals("1"))
-		// sb.append(textHandler.centeredString("*** VOID ***", LINE_WIDTH));
-		//
-		// if (fromOnHold) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText("[" +
-		// getString(R.string.on_hold) + "]",
-		// anOrder.ord_HoldName, LINE_WIDTH, 0));
-		// }
-		//
-		// switch (type) {
-		// case 0: // Order
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.order)
-		// + ":", ordID, LINE_WIDTH,
-		// 0));
-		// break;
-		// case 1: // Return
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.return_tag)
-		// + ":", ordID,
-		// LINE_WIDTH, 0));
-		// break;
-		// case 2: // Invoice
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice)
-		// + ":", ordID, LINE_WIDTH,
-		// 0));
-		// break;
-		// case 3: // Estimate
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.estimate)
-		// + ":", ordID,
-		// LINE_WIDTH, 0));
-		// break;
-		// case 5: // Sales Receipt
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt)
-		// + ":", ordID,
-		// LINE_WIDTH, 0));
-		// break;
-		// }
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-		// Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 3),
-		// LINE_WIDTH, 0));
-		//
-		// if (!myPref.getShiftIsOpen() ||
-		// myPref.getPreferences(MyPreferences.pref_use_clerks)) {
-		// String clerk_id = anOrder.clerk_id;
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
-		// clerkHandler.getClerkName(clerk_id) + "(" + clerk_id + ")",
-		// LINE_WIDTH, 0));
-		// }
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-		// myPref.getEmpName() + "(" + myPref.getEmpID() + ")", LINE_WIDTH, 0));
-		//
-		// String custName = anOrder.cust_name;
-		// if (custName != null && !custName.isEmpty())
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
-		// custName,
-		// LINE_WIDTH, 0));
-		//
-		// custName = anOrder.cust_id;
-		// if (printPref.contains(MyPreferences.print_customer_id) && custName
-		// != null && !custName.isEmpty())
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id),
-		// custName,
-		// LINE_WIDTH, 0));
-		//
-		// String ordComment = anOrder.ord_comment;
-		// if (ordComment != null && !ordComment.isEmpty()) {
-		// sb.append("\n\n");
-		// sb.append("Comments:\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment,
-		// LINE_WIDTH, 3)).append("\n");
-		// }
-		//
-		// sb.append("\n\n");
-		//
-		// // port.writePort(sb.toString().getBytes(), 0,
-		// sb.toString().length());
-		// powaPOS.printText(sb.toString());
-		//
-		// sb.setLength(0);
-		//
-		// if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
-		// boolean isRestMode =
-		// myPref.getPreferences(MyPreferences.pref_restaurant_mode);
-		//
-		// int m = 0;
-		// for (int i = 0; i < size; i++) {
-		//
-		// if (isRestMode) {
-		// if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
-		// m = i;
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// orders.get(m).getQty() + "x " + orders.get(m).getName(), LINE_WIDTH,
-		// 1));
-		// for (int j = i + 1; j < size; j++) {
-		// if (orders.get(j).getIsAdded().equals("1"))
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText("- " +
-		// orders.get(j).getName(),
-		// Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
-		// LINE_WIDTH, 2));
-		// else
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-		// "- NO " + orders.get(j).getName(),
-		// Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
-		// LINE_WIDTH, 2));
-		//
-		// if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j
-		// + 1 >= size)) {
-		// i = j;
-		// break;
-		// }
-		//
-		// }
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-		// Global.getCurrencyFormat(orders.get(m).getOverwritePrice()),
-		// LINE_WIDTH, 3))
-		// .append("\n");
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-		// Global.getCurrencyFormat(orders.get(m).getTotal()), LINE_WIDTH,
-		// 3)).append("\n");
-		//
-		// if (printPref.contains(MyPreferences.print_descriptions)) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-		// getString(R.string.receipt_description), "", LINE_WIDTH,
-		// 3)).append("\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getProdDescription(),
-		// LINE_WIDTH, 5)).append("\n");
-		// }
-		//
-		// } else {
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH,
-		// 1));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-		// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// LINE_WIDTH, 3))
-		// .append("\n");
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-		// Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH,
-		// 3)).append("\n");
-		//
-		// if (printPref.contains(MyPreferences.print_descriptions)) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-		// getString(R.string.receipt_description), "", LINE_WIDTH,
-		// 3)).append("\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
-		// LINE_WIDTH, 5)).append("\n");
-		// }
-		// }
-		// } else {
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH,
-		// 1));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-		// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// LINE_WIDTH, 3)).append("\n");
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-		// Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH,
-		// 3)).append("\n");
-		//
-		// if (printPref.contains(MyPreferences.print_descriptions)) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description),
-		// "", LINE_WIDTH, 3)).append("\n");
-		// sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
-		// LINE_WIDTH, 5)).append("\n");
-		// }
-		//
-		// }
-		//
-		// }
-		// } else {
-		// int padding = LINE_WIDTH / 4;
-		// String tempor = Integer.toString(padding);
-		// StringBuilder tempSB = new StringBuilder();
-		// tempSB.append("%").append(tempor).append("s").append("%").append(tempor).append("s").append("%")
-		// .append(tempor).append("s").append("%").append(tempor).append("s");
-		//
-		// sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price",
-		// "Total")).append("\n\n");
-		//
-		// for (int i = 0; i < size; i++) {
-		//
-		// sb.append(orders.get(i).getName()).append("-").append(orders.get(i).getProdDescription()).append("\n");
-		// // sb.append(textHandler.fourColumnLineWithLeftAlignedText(" ",
-		// // orders.get(i).getQty(),
-		// // Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// // Global.getCurrencyFormat(orders.get(i).getTotal()),
-		// // LINE_WIDTH, 3)).append("\n\n");
-		// sb.append(String.format(tempSB.toString(), " ",
-		// orders.get(i).getQty(),
-		// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-		// Global.getCurrencyFormat(orders.get(i).getTotal()))).append("\n\n");
-		//
-		// // this.printString(sb.toString());
-		// powaPOS.printText(sb.toString());
-		// sb.setLength(0);
-		//
-		// }
-		// }
-		// powaPOS.printText(sb.toString());
-		// sb.setLength(0);
-		// powaPOS.printText(textHandler.lines(LINE_WIDTH));
-		//
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
-		// Global.formatDoubleStrToCurrency(anOrder.ord_subtotal), LINE_WIDTH,
-		// 0));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
-		// Global.formatDoubleStrToCurrency(anOrder.ord_discount), LINE_WIDTH,
-		// 0));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tax),
-		// Global.formatDoubleStrToCurrency(anOrder.ord_taxamount), LINE_WIDTH,
-		// 0));
-		//
-		// addTaxesLine(listOrdTaxes, OrderTaxes_DB.tax_amount, LINE_WIDTH, sb);
-		//
-		// sb.append("\n\n");
-		//
-		// String granTotal = anOrder.gran_total;
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
-		// Global.formatDoubleStrToCurrency(granTotal), LINE_WIDTH, 0));
-		//
-		// PaymentsHandler payHandler = new PaymentsHandler(activity);
-		// List<String[]> payArrayList =
-		// payHandler.getPaymentForPrintingTransactions(ordID);
-		// String receiptSignature = new String();
-		// size = payArrayList.size();
-		//
-		// double tempGrandTotal = Double.parseDouble(granTotal);
-		// double tempAmount = 0;
-		// if (size == 0) {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-		// Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0));
-		// if (type == 2) // Invoice
-		// {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
-		// Global.formatDoubleToCurrency(tempGrandTotal - tempAmount),
-		// LINE_WIDTH, 0));
-		// }
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-		// Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0));
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
-		// Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0));
-		// } else {
-		// tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
-		// String _pay_type =
-		// payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
-		// double tempTipAmount = formatStrToDouble(payArrayList.get(0)[2]);
-		// StringBuilder tempSB = new StringBuilder();
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// Global.formatDoubleStrToCurrency(payArrayList.get(0)[9]) + "[" +
-		// payArrayList.get(0)[1] + "]",
-		// LINE_WIDTH, 1));
-		// if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID:
-		// " + payArrayList.get(0)[4],
-		// LINE_WIDTH, 1));
-		// tempSB.append(
-		// textHandler.oneColumnLineWithLeftAlignedText("CC#: *" +
-		// payArrayList.get(0)[5], LINE_WIDTH, 1));
-		// }
-		// if (!payArrayList.get(0)[3].isEmpty())
-		// receiptSignature = payArrayList.get(0)[3];
-		//
-		// for (int i = 1; i < size; i++) {
-		// _pay_type =
-		// payArrayList.get(i)[1].toUpperCase(Locale.getDefault()).trim();
-		// tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[9]);
-		// tempTipAmount = tempTipAmount +
-		// formatStrToDouble(payArrayList.get(i)[2]);
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
-		// Global.formatDoubleStrToCurrency(payArrayList.get(i)[9]) + "[" +
-		// payArrayList.get(i)[1] + "]",
-		// LINE_WIDTH, 1));
-		// if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID:
-		// " + payArrayList.get(i)[4],
-		// LINE_WIDTH, 1));
-		// tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("CC#: *" +
-		// payArrayList.get(i)[5],
-		// LINE_WIDTH, 1));
-		// }
-		// if (!payArrayList.get(i)[3].isEmpty())
-		// receiptSignature = payArrayList.get(i)[3];
-		// }
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-		// Global.formatDoubleStrToCurrency(Double.toString(tempAmount)),
-		// LINE_WIDTH, 0));
-		//
-		// sb.append(tempSB.toString());
-		// if (type == 2) // Invoice
-		// {
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
-		// Global.formatDoubleToCurrency(tempGrandTotal - tempAmount),
-		// LINE_WIDTH, 0));
-		// }
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-		// Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)),
-		// LINE_WIDTH, 0));
-		//
-		// tempAmount = formatStrToDouble(granTotal) - tempAmount;
-		// if (tempAmount > 0)
-		// tempAmount = 0.00;
-		// sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
-		// Global.formatDoubleStrToCurrency(Double.toString(tempAmount)),
-		// LINE_WIDTH, 0)).append("\n\n");
-		// }
-		//
-		// powaPOS.printText(sb.toString());
-		// powaPOS.printText(textHandler.newLines(2));
-		//
-		// if (printPref.contains(MyPreferences.print_footer))
-		// this.printFooter();
-		//
-		// powaPOS.printText(textHandler.newLines(2));
-		//
-		// receiptSignature = anOrder.ord_signature;
-		// if (!receiptSignature.isEmpty()) {
-		// this.encodedSignature = receiptSignature;
-		// try {
-		// this.printImage(1);
-		// } catch (StarIOPortException | JAException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// sb.setLength(0);
-		// String line1 = textHandler.centeredString("x" +
-		// textHandler.lines(LINE_WIDTH / 2) + "\n", LINE_WIDTH);
-		// String line2 =
-		// textHandler.centeredString(getString(R.string.receipt_signature) +
-		// textHandler.newLines(4),
-		// LINE_WIDTH);
-		// sb.append(line1).append(line2);
-		// powaPOS.printText(sb.toString());
-		// }
-		//
-		// if (isFromHistory) {
-		// powaPOS.printText(textHandler.centeredString("*** Copy ***",
-		// LINE_WIDTH));
-		// powaPOS.printText(textHandler.newLines(4));
-		// }
 
 		return true;
 	}
-
-	// private double formatStrToDouble(String val) {
-	// if (val == null || val.isEmpty())
-	// return 0.00;
-	// return Double.parseDouble(val);
-	// }
 
 	@Override
 	public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
@@ -775,54 +472,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		return true;
 	}
 
-	// protected void printImage(int type) {
-	// Bitmap myBitmap = null;
-	// switch (type) {
-	// case 0: // Logo
-	// {
-	// File imgFile = new File(myPref.getAccountLogoPath());
-	// if (imgFile.exists()) {
-	// myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-	//
-	// }
-	// break;
-	// }
-	// case 1: // signature
-	// {
-	// if (!encodedSignature.isEmpty()) {
-	// byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
-	// myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-	// }
-	// break;
-	// }
-	// case 2: {
-	// if (!encodedQRCode.isEmpty()) {
-	// byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
-	// myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-	// }
-	// break;
-	// }
-	// }
-	//
-	// if (myBitmap != null) {
-	//
-	// powaPOS.printImage(scaleDown(myBitmap, 300, false));
-	//
-	// }
-	// }
-
-	// public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
-	// boolean filter) {
-	// float ratio = Math.min((float) maxImageSize / realImage.getWidth(),
-	// (float) maxImageSize / realImage.getHeight());
-	// int width = Math.round((float) ratio * realImage.getWidth());
-	// int height = Math.round((float) ratio * realImage.getHeight());
-	//
-	// Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width, height,
-	// filter);
-	// return newBitmap;
-	// }
-
 	@Override
 	public boolean printOnHold(Object onHold) {
 		// TODO Auto-generated method stub
@@ -919,49 +568,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		// TODO Auto-generated method stub
 		edm.currentDevice = null;
 	}
-
-	// public void printHeader() {
-	//
-	// EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-	// StringBuilder sb = new StringBuilder();
-	//
-	// MemoTextHandler handler = new MemoTextHandler(activity);
-	// String[] header = handler.getHeader();
-	//
-	// if (header[0] != null && !header[0].isEmpty())
-	// sb.append(textHandler.centeredString(header[0], LINE_WIDTH));
-	// if (header[1] != null && !header[1].isEmpty())
-	// sb.append(textHandler.centeredString(header[1], LINE_WIDTH));
-	// if (header[2] != null && !header[2].isEmpty())
-	// sb.append(textHandler.centeredString(header[2], LINE_WIDTH));
-	//
-	// if (!sb.toString().isEmpty()) {
-	// sb.append(textHandler.newLines(2));
-	//
-	// powaPOS.printText(sb.toString());
-	// }
-	// }
-	//
-	// public void printFooter() {
-	//
-	// EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-	// StringBuilder sb = new StringBuilder();
-	// MemoTextHandler handler = new MemoTextHandler(activity);
-	// String[] footer = handler.getFooter();
-	//
-	// if (footer[0] != null && !footer[0].isEmpty())
-	// sb.append(textHandler.centeredString(footer[0], LINE_WIDTH));
-	// if (footer[1] != null && !footer[1].isEmpty())
-	// sb.append(textHandler.centeredString(footer[1], LINE_WIDTH));
-	// if (footer[2] != null && !footer[2].isEmpty())
-	// sb.append(textHandler.centeredString(footer[2], LINE_WIDTH));
-	//
-	// if (!sb.toString().isEmpty()) {
-	// sb.append(textHandler.newLines(2));
-	// powaPOS.printText(sb.toString());
-	// }
-	//
-	// }
 
 	@Override
 	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
@@ -1526,6 +1132,23 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		}
 
 		@Override
+		public void onScannerConnectionStateChanged(PowaEnums.ConnectionState newState) {
+			if (newState.equals(PowaEnums.ConnectionState.CONNECTED)) {
+				powaPOS.getScanner().scannerBeep(PowaPOSEnums.PowaScannerBeep.SHORT_2_BEEP_HIGH);
+			}
+		}
+
+		@Override
+		public void onScannerInitialized(final PowaPOSEnums.InitializedResult result) {
+			if (result.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL)) {
+
+			} else {
+				// scannerReconnect();
+			}
+
+		}
+
+		@Override
 		public void onMCUFirmwareUpdateProgress(int progress) {
 			// if(mcuFragment != null){
 			// mcuFragment.updateBarDialog(progress);
@@ -1561,26 +1184,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			// Toast.LENGTH_LONG).show();
 		}
 
-		@Override
-		public void onScannerInitialized(PowaPOSEnums.InitializedResult result) {
-			// if(loginFragment != null){
-			// if(result.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL)) {
-			// loginFragment.showOption("scanner");
-			// }else{
-			// Toast.makeText(Main.this, "The app could not connect to
-			// Scanner.", Toast.LENGTH_LONG).show();
-			// }
-			// }
-			// Toast.makeText(activity, "scanner init",
-			// Toast.LENGTH_LONG).show();
-
-		}
-
-		@Override
-		public void onPrintJobCompleted(PowaPOSEnums.PrintJobResult result) {
-			// Toast.makeText(activity, "print job completed",
-			// Toast.LENGTH_LONG).show();
-		}
+		// @Override
+		// public void onPrintJobCompleted(PowaPOSEnums.PrintJobResult result) {
+		// // Toast.makeText(activity, "print job completed",
+		// // Toast.LENGTH_LONG).show();
+		// }
 
 		@Override
 		public void onScannerRead(String data) {
@@ -1674,19 +1282,36 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			// TODO Auto-generated method stub
 
 		}
+
+		@Override
+		public void onHIDDeviceAttached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
+			// Not used in this sample.
+		}
+
+		@Override
+		public void onHIDDeviceDetached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
+			// Not used in this sample.
+		}
+
+		@Override
+		public void onHIDReceivedData(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type, byte[] data) {
+			powaHidDecoderScanner.decode(port, type, data);
+		}
+
 	};
 
 	@Override
 	public void loadScanner(EMSCallBack _callBack) {
 		// TODO Auto-generated method stub
-		_scannerCallBack = _callBack;
+		scannerCallBack = _callBack;
 		if (handler == null)
 			handler = new Handler();
 		if (_callBack != null) {
 
 			List<PowaDeviceObject> availScanners = powaPOS.getAvailableScanners();
 			if (availScanners.size() > 0) {
-				powaPOS.selectScanner(availScanners.get(0));
+				powaPOS.getScanner().selectScanner(availScanners.get(0));
+				// powaPOS.selectScanner(availScanners.get(0));
 			}
 		}
 	}
@@ -1696,8 +1321,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 	private Runnable runnableScannedData = new Runnable() {
 		public void run() {
 			try {
-				if (_scannerCallBack != null)
-					_scannerCallBack.scannerWasRead(scannedData);
+				if (scannerCallBack != null)
+					scannerCallBack.scannerWasRead(scannedData);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -1715,4 +1340,91 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		super.printFooter(LINE_WIDTH);
 	}
 
+	PowaPOSCallback mPowaPOSCallback = new PowaPOSCallback() {
+		@Override
+		public void onMCUInitialized(PowaPOSEnums.InitializedResult initializedResult) {
+
+			if (myProgressDialog != null)
+				myProgressDialog.dismiss();
+
+			if (isAutoConnect && !global.loggedIn) {
+				if (global.getGlobalDlog() != null)
+					global.getGlobalDlog().dismiss();
+				global.promptForMandatoryLogin(activity);
+				SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+			}
+
+			if (initializedResult.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
+				edm.driverDidConnectToDevice(thisInstance, !isAutoConnect);
+			else
+				edm.driverDidNotConnectToDevice(thisInstance, "Failed to connect to MCU", !isAutoConnect);
+		}
+
+		@Override
+		public void onScannerInitialized(PowaPOSEnums.InitializedResult initializedResult) {
+
+		}
+
+		@Override
+		public void onHIDDeviceAttached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
+			// Not used in this sample.
+		}
+
+		@Override
+		public void onHIDDeviceDetached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
+			// Not used in this sample.
+		}
+
+		@Override
+		public void onHIDReceivedData(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type, byte[] data) {
+			PowaLog.getInstance().logInternal("TAG", ByteUtils.byteArrayToHexStringPretty(data));
+			powaHidDecoderScanner.decode(port, type, data);
+
+		}
+
+	};
+
+	// ===================================== SCANNER CALLBACK
+	// =======================================
+	PowaHidScanner.Callback hidScannerCB = new PowaHidScanner.Callback() {
+		@Override
+		public void onScannerReady() {
+			Log.d("", "onScannerReady()");
+		}
+
+		@Override
+		public void onScannerDetached() {
+			Log.d("", "onScannerDetached()");
+		}
+
+		@Override
+		public void onControlKeyScanned(PowaHidKeyDecoder.CONTROL_KEY controlKey) {
+			Toast.makeText(EMSPowaPOS.this.activity, controlKey.name() + " has been received", Toast.LENGTH_SHORT)
+					.show();
+			// Some scanners send CONTROL KEYS at the start/end of the data,
+			// this way users may identify
+			// different events happening. Check if your scanner brand send any
+			// of them by overriding this
+			// method.
+		}
+
+		@Override
+		public void onScanStartDecoding() {
+			// This event is only useful for providing animation while the
+			// decoding is in process.
+			// Usually this process take about 1.5 second, so developers can
+			// start playing a nice animation
+			// at this point.
+		}
+
+		@Override
+		public void onScanFinishedDecoding(byte[] data) {
+			try {
+				scannedData = new String(data, "UTF-8");
+				handler.post(runnableScannedData);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+	};
 }

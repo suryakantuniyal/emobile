@@ -20,9 +20,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -885,8 +882,8 @@ public class SettingsManager_FA extends FragmentActivity {
 				sb.append(e.getMessage())
 						.append(" [com.android.emobilepos.SettingsMenuActiv (at Class.getPairedDevices)]");
 
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 			}
 			return null;
 		}

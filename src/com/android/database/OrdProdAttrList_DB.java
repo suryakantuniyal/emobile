@@ -8,9 +8,6 @@ import java.util.List;
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.support.DBManager;
 import com.android.support.Global;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -101,8 +98,8 @@ public class OrdProdAttrList_DB {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.OrdProdAttrList_DB (at Class.insert)]");
 
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 			DBManager._db.endTransaction();
 		}

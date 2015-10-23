@@ -23,9 +23,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -353,8 +350,8 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, On
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				Tracker tracker = EasyTracker.getInstance(activity);
-				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+//				Tracker tracker = EasyTracker.getInstance(activity);
+//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 			}
 
 			return null;
@@ -418,8 +415,8 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, On
 			formatedYear = dt.format(date);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
-			Tracker tracker = EasyTracker.getInstance(activity);
-			tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+//			Tracker tracker = EasyTracker.getInstance(activity);
+//			tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
 		}
 
 		cardInfoManager.setCardExpYear(formatedYear);
@@ -466,5 +463,11 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, On
 	public void scannerWasRead(String data) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void startSignature() {
+		// TODO Auto-generated method stub
+		
 	}
 }

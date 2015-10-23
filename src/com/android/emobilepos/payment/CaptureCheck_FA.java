@@ -2,11 +2,7 @@ package com.android.emobilepos.payment;
 
 import com.android.support.Global;
 import com.emobilepos.app.R;
-import com.iparse.checkcapture.CheckCaptureActivity;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
@@ -88,14 +84,14 @@ public class CaptureCheck_FA extends FragmentActivity implements OnClickListener
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.btnCaptureFront:
-			Intent intent_1 = setupIntent();
-			intent_1.putExtra(CheckCaptureActivity.kResultFaceKey, "FrontFace");
-			startActivityForResult(intent_1, CAPTURE_CHECK_FRONT);
+//			Intent intent_1 = setupIntent();
+//			intent_1.putExtra(CheckCaptureActivity.kResultFaceKey, "FrontFace");
+//			startActivityForResult(intent_1, CAPTURE_CHECK_FRONT);
 			break;
 		case R.id.btnCaptureBack:
-			Intent intent_2 = setupIntent();
-			intent_2.putExtra(CheckCaptureActivity.kResultFaceKey, "BackFace");
-			startActivityForResult(intent_2, CAPTURE_CHECK_BACK);
+//			Intent intent_2 = setupIntent();
+//			intent_2.putExtra(CheckCaptureActivity.kResultFaceKey, "BackFace");
+//			startActivityForResult(intent_2, CAPTURE_CHECK_BACK);
 			break;
 		case R.id.btnSave:
 			if(validCheckCapture())
@@ -111,26 +107,26 @@ public class CaptureCheck_FA extends FragmentActivity implements OnClickListener
 	
 	
 	
-	private Intent setupIntent()
-	{
-		Intent intent = new Intent(this, CheckCaptureActivity.class);
-
-		// Specify if we are capturing the front or back of the document
-
-		// Specify the color model of the returned document image
-		intent.putExtra(CheckCaptureActivity.kResultImageColor, "BW");
-		// Specify if the device's torch should be used or automatic
-		intent.putExtra(CheckCaptureActivity.kTorchKey, "OFF");
-		// It's possible to add a border for use with Mitek or other backends
-		// that don't expect the image to already be deskewed. 10% is good in
-		// those cases.
-		intent.putExtra(CheckCaptureActivity.kResultPercentBorder, "0");
-		// Specify the width of the stored capture image. The height will be
-		// scaled to maintain the aspect ratio
-		intent.putExtra(CheckCaptureActivity.kDocumentSizeWidth, 900);
-		intent.putExtra(CheckCaptureActivity.kResultImageFormat, CheckCaptureActivity.kImageFormatPNG);
-		return intent;
-	}
+//	private Intent setupIntent()
+//	{
+//		Intent intent = new Intent(this, CheckCaptureActivity.class);
+//
+//		// Specify if we are capturing the front or back of the document
+//
+//		// Specify the color model of the returned document image
+//		intent.putExtra(CheckCaptureActivity.kResultImageColor, "BW");
+//		// Specify if the device's torch should be used or automatic
+//		intent.putExtra(CheckCaptureActivity.kTorchKey, "OFF");
+//		// It's possible to add a border for use with Mitek or other backends
+//		// that don't expect the image to already be deskewed. 10% is good in
+//		// those cases.
+//		intent.putExtra(CheckCaptureActivity.kResultPercentBorder, "0");
+//		// Specify the width of the stored capture image. The height will be
+//		// scaled to maintain the aspect ratio
+//		intent.putExtra(CheckCaptureActivity.kDocumentSizeWidth, 900);
+//		intent.putExtra(CheckCaptureActivity.kResultImageFormat, CheckCaptureActivity.kImageFormatPNG);
+//		return intent;
+//	}
 	
 	
 	
@@ -143,25 +139,25 @@ public class CaptureCheck_FA extends FragmentActivity implements OnClickListener
 	
 	
 	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// Check which request we're responding to
-		if (requestCode == CAPTURE_CHECK_FRONT && resultCode == RESULT_OK) {
-			// Make sure the request was successful
-			// The Intent's extra fields define the result
-			
-			String imagePath = data.getStringExtra(CheckCaptureActivity.kResultImageKey);
-			Bitmap tempBmp = BitmapFactory.decodeFile(imagePath);
-			Global.imgFrontCheck = Global.encodeBitmapToBase64(tempBmp);
-			imgFront.setImageBitmap(tempBmp);
-			// TODO: read the image from path and display or submit to modbile
-			// deposit service.
-		} else if (requestCode == CAPTURE_CHECK_BACK && resultCode == RESULT_OK) {
-			String imagePath = data.getStringExtra(CheckCaptureActivity.kResultImageKey);
-			Bitmap tempBmp = BitmapFactory.decodeFile(imagePath);
-			Global.imgBackCheck = Global.encodeBitmapToBase64(tempBmp);
-			imgBack.setImageBitmap(tempBmp);
-		}
-	}
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		// Check which request we're responding to
+//		if (requestCode == CAPTURE_CHECK_FRONT && resultCode == RESULT_OK) {
+//			// Make sure the request was successful
+//			// The Intent's extra fields define the result
+//			
+//			String imagePath = data.getStringExtra(CheckCaptureActivity.kResultImageKey);
+//			Bitmap tempBmp = BitmapFactory.decodeFile(imagePath);
+//			Global.imgFrontCheck = Global.encodeBitmapToBase64(tempBmp);
+//			imgFront.setImageBitmap(tempBmp);
+//			// TODO: read the image from path and display or submit to modbile
+//			// deposit service.
+//		} else if (requestCode == CAPTURE_CHECK_BACK && resultCode == RESULT_OK) {
+//			String imagePath = data.getStringExtra(CheckCaptureActivity.kResultImageKey);
+//			Bitmap tempBmp = BitmapFactory.decodeFile(imagePath);
+//			Global.imgBackCheck = Global.encodeBitmapToBase64(tempBmp);
+//			imgBack.setImageBitmap(tempBmp);
+//		}
+//	}
 	
 }

@@ -18,7 +18,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import android.app.Activity;
-import android.renderscript.Program.TextureType;
 import android.text.TextUtils;
 import android.util.Xml;
 

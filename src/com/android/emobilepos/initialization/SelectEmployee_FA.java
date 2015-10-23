@@ -17,9 +17,6 @@ import com.android.saxhandler.SaxSelectedEmpHandler;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.emobilepos.app.R;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.MapBuilder;
-import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -428,8 +425,8 @@ public class SelectEmployee_FA extends FragmentActivity {
 	
 	private void handleGoogleAnalytic (String stack)
 	{
-		Tracker tracker = EasyTracker.getInstance(activity);
-		tracker.send(MapBuilder.createException(stack, false).build());
+//		Tracker tracker = EasyTracker.getInstance(activity);
+//		tracker.send(MapBuilder.createException(stack, false).build());
 	}
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
