@@ -634,7 +634,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		try {
 			this.printImage(0);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -707,7 +710,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 				encodedSignature = payArray[7];
 				try {
 					this.printImage(1);
-				} catch (StarIOPortException | JAException e) {
+				} catch (StarIOPortException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JAException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -734,7 +740,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 				try {
 					this.printImage(2);
-				} catch (StarIOPortException | JAException e) {
+				} catch (StarIOPortException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JAException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -973,7 +982,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		try {
 			this.printImage(0);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1065,7 +1077,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		try {
 			this.printImage(1);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1105,7 +1120,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		try {
 			this.printImage(0);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1154,7 +1172,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			this.encodedSignature = encodedSig;
 			try {
 				this.printImage(1);
-			} catch (StarIOPortException | JAException e) {
+			} catch (StarIOPortException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JAException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -1192,7 +1213,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		try {
 			this.printImage(0);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1359,7 +1383,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		int size = c.getCount();
 		try {
 			this.printImage(0);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1460,7 +1487,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		try {
 			this.printImage(1);
-		} catch (StarIOPortException | JAException e) {
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
