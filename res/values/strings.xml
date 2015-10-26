@@ -1054,7 +1054,7 @@
 	<string name = "scan_boloro_tag_now">Scan Boloro tag now</string>
 	<string name = "processing_loyalty_card">Processing loyalty card\u002E\u002E\u002E</string>
 	<string name = "processing_reward">Processing reward\u002E\u002E\u002E</string>
-	
+	<string name = "processing_credit_card">Processing credit card\u002E\u002E\u002E</string>
 	<string name = "failed_genius_connectivity">There appears to be no connectivity with the genius device</string>
 	<string name = "employee_could_not_be_processed">This employee selection could not be processed. Please try again.</string>
 	<string name = "enter_cash_close_amount">Enter cash close amount</string>
