@@ -1,10 +1,13 @@
 package drivers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.CreditCardInfo;
+import com.android.support.Global;
+import com.emobilepos.app.R;
 import com.payments.core.AndroidTerminal;
 import com.payments.core.CoreAPIListener;
 import com.payments.core.CoreDeviceError;
@@ -19,7 +22,9 @@ import com.payments.core.CoreTransactions;
 import com.payments.core.DeviceEnum;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 import protocols.EMSCallBack;
@@ -35,13 +40,14 @@ public class EMSWalker implements CoreAPIListener {
 	private boolean devicePlugged = false;
 	public boolean isReadingCard = false;
 	public boolean failedProcessing = false;
+	private ProgressDialog dialog;
 
 	public EMSWalker(Activity activity, boolean _devicePlugged) {
 		this.activity = activity;
 		devicePlugged = _devicePlugged;
 		// Looper.prepare();
 		terminal = new AndroidTerminal(this);
-
+		//
 		ProcessCreditCard_FA.tvStatusMSR.setVisibility(View.VISIBLE);
 		ProcessCreditCard_FA.tvStatusMSR.setText("Connecting...");
 		new connectWalkerAsync().execute();
@@ -75,8 +81,8 @@ public class EMSWalker implements CoreAPIListener {
 		@Override
 		protected Void doInBackground(Void... params) {
 			// TODO Auto-generated method stub
-//			terminal.init(activity, TERMINAL_ID, SECRET, Currency.EUR);
-
+			// terminal.init(activity, TERMINAL_ID, SECRET, Currency.EUR);
+			terminal.initWithConfiguration(EMSWalker.this.activity, TERMINAL_ID, SECRET);
 			terminal.initDevice(DeviceEnum.WALKER);
 
 			return null;
@@ -84,20 +90,21 @@ public class EMSWalker implements CoreAPIListener {
 
 		@Override
 		protected void onPostExecute(Void unused) {
-			// if (terminal.getDevice().equals(DeviceEnum.WALKER)) {
-			// try {
-			// EMSCallBack callBack = (EMSCallBack) activity;
-			// callBack.readerConnectedSuccessfully(true);
-			//
-			// } catch (Exception ex) {
-			// ex.printStackTrace();
-			// }
-			// }
+			if (terminal.getDevice().equals(DeviceEnum.WALKER)) {
+				try {
+					EMSCallBack callBack = (EMSCallBack) activity;
+					callBack.readerConnectedSuccessfully(true);
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
 		}
 	}
 
-	public void startReading(CreditCardInfo cardInfo) {
+	public void startReading(CreditCardInfo cardInfo, ProgressDialog dialog) {
 		isReadingCard = true;
+		this.dialog = dialog;
 		if (terminal.getDevice().equals(DeviceEnum.NODEVICE)) {
 			CoreSale sale = new CoreSale(cardInfo.dueAmount);
 			sale.setCardHolderName(cardInfo.getCardOwnerName());
@@ -114,6 +121,12 @@ public class EMSWalker implements CoreAPIListener {
 		}
 
 		while (isReadingCard) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		;
 	}
@@ -125,6 +138,7 @@ public class EMSWalker implements CoreAPIListener {
 	}
 
 	public void submitSignature() {
+		dialog.setMessage(EMSWalker.this.activity.getString(R.string.processing_credit_card));
 		if (signature.checkSignature()) {
 			// signature.signatureText();
 			signature.submitSignature();
@@ -154,6 +168,10 @@ public class EMSWalker implements CoreAPIListener {
 	public void onError(CoreError coreError, String s) {
 		// TODO Auto-generated method stub
 		System.out.print(s.toString());
+		failedProcessing = true;
+		isReadingCard = false;
+		if (!TextUtils.isEmpty(s))
+			Global.showPrompt(EMSWalker.this.activity, R.string.card_credit_card, s);
 	}
 
 	@Override
@@ -163,16 +181,17 @@ public class EMSWalker implements CoreAPIListener {
 	}
 
 	@Override
-	public void onMessage(CoreMessage msj) {
+	public void onMessage(CoreMessage msg) {
 		// TODO Auto-generated method stub
-		System.out.print(msj.toString());
+		System.out.print(msg.toString());
 
 		if (isReadingCard) {
-			if (msj.equals(CoreMessage.DEVICE_NOT_CONNECTED)) {
+			if (msg.equals(CoreMessage.DEVICE_NOT_CONNECTED)) {
 				failedProcessing = true;
 				isReadingCard = false;
-			} else if (msj.equals(CoreMessage.CARD_ERROR))
+			} else if (msg.equals(CoreMessage.CARD_ERROR))
 				isReadingCard = false;
+
 		}
 		// if(msj.equals(CoreMessage.CARD_ERROR))
 		// isReadingCard = false;
@@ -242,26 +261,25 @@ public class EMSWalker implements CoreAPIListener {
 	@Override
 	public void onDeviceConnected(DeviceEnum deviceEnum, HashMap<String, String> arg1) {
 		Toast.makeText(this.activity, deviceEnum.name() + " connected", Toast.LENGTH_SHORT).show();
-		
+
 	}
 
 	@Override
 	public void onDeviceDisconnected(DeviceEnum deviceEnum) {
 		Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
-		
+
 	}
 
 	@Override
 	public void onDeviceError(CoreDeviceError arg0, String arg1) {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void onSelectApplication(ArrayList<String> arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

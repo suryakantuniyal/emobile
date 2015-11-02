@@ -2006,7 +2006,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 				// cardInfoManager.dueAmount =
 				// BigDecimal.valueOf(enteredAmount);
 				// walkerReader.startReading(cardInfoManager);
-
+			
 				new processWalkerAsync().execute();
 			}
 			break;
@@ -2158,7 +2158,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			double enteredAmount = Global
 					.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 			cardInfoManager.dueAmount = BigDecimal.valueOf(enteredAmount);
-			walkerReader.startReading(cardInfoManager);
+			walkerReader.startReading(cardInfoManager, myProgressDialog);
 			return null;
 		}
 
