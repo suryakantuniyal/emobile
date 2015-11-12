@@ -1,0 +1,258 @@
+-injars 'C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\multi-dex\debug\allclasses.jar'
+-outjars 'C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\multi-dex\debug\componentClasses.jar'
+
+-libraryjars 'C:\Eclipse SDK\sdk\build-tools\23.0.0\lib\shrinkedAndroid.jar'
+
+-forceprocessing
+-dontoptimize
+-dontobfuscate
+-dontpreverify
+-dontwarn
+-printconfiguration 'C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\multi-dex\debug\components.flags'
+
+
+-keep class com.android.support.Global {
+    <init>();
+    void attachBaseContext(android.content.Context);
+}
+
+-keep class com.android.emobilepos.initialization.SelectAccount_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.mainmenu.MainMenu_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.initialization.SelectEmployee_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.initialization.SelectPassword_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.HistoryTransactions_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.HistoryPayments_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.HistoryOpenInvoices_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.HistoryConsignment_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.HistoryGiftRewardLoyalty_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.HistoryInventoryTransfer_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.details.HistoryTransactionDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.details.HistoryOpenInvoicesDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.details.HistoryConsignmentDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.details.HistoryPaymentDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.history.details.HistoryInventoryTransferDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.OrderDetailsActivity {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.SelectPayMethod_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.ProcessCreditCard_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.ProcessGiftCard_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.ProcessCash_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.ProcessCheck_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.CaptureCheck_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.ProcessGenius_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.TupyxCamera_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.ProcessTupyx_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.payment.ProcessBoloro_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.OnHoldActivity {
+    <init>();
+}
+
+-keep class com.android.emobilepos.customer.ViewCustomers_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.customer.CreateCustomer_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.customer.ViewCustomerDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.ShowProductImageActivity {
+    <init>();
+}
+
+-keep class com.android.emobilepos.DrawReceiptActivity {
+    <init>();
+}
+
+-keep class com.android.emobilepos.ordering.ViewProductDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.ordering.PickerProduct_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.ordering.PickerAddon_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.ordering.OrderingMain_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.ordering.OrderAttributes_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.ordering.OrderAttrEdit_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.consignment.ConsignmentMain_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.consignment.ConsignmentCheckout_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.consignment.ConsignmentHistory_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.report.ViewReport_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.report.ViewEndOfDayReport_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.shifts.ClockInOut_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.shifts.OpenShift_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.shifts.ShiftReportDetails_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.settings.SettingsManager_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.settings.ViewStoreForwardTrans_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.GiftCard_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.LoyaltyCard_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.RewardCard_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.CardManager_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.ActivateCard_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.AddBalance_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.BalanceInquiry_FA {
+    <init>();
+}
+
+-keep class com.android.emobilepos.cardmanager.ManualAddBalance_FA {
+    <init>();
+}
+
+-keep class com.android.crashreport.CrashActivity {
+    <init>();
+}
+
+-keep class com.mpowa.android.sdk.powapos.common.communication.usbsocket.PowaUsbService {
+    <init>();
+}
+
+-keep public class * extends android.app.backup.BackupAgent {
+    <init>();
+}
+
+-keep public class * extends java.lang.annotation.Annotation {
+    <fields>;
+    <methods>;
+}

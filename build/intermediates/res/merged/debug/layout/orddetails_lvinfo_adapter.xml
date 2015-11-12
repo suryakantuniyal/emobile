@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:gravity="center"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/ordInfoLeft"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="infoLeft" 
+        android:layout_marginLeft="10dp"
+        android:textAppearance="@style/black_text_appearance_unbold"
+        style="@style/text_shadow"
+        android:textSize="@dimen/listview_text_size"/>
+
+    <TextView
+        android:id="@+id/ordInfoRight"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="Not Specified" 
+        android:gravity="right"
+        android:layout_marginRight="10dp"
+        android:textAppearance="@style/blue_text_appearance"
+        style="@style/text_shadow"
+        android:textSize="@dimen/listview_text_size"/>
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/orddetails_lvinfo_adapter.xml -->

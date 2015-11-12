@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+            <dimen name = "txt_receipt_small">10sp</dimen>
+    <dimen name = "txt_receipt_medium">12sp</dimen>
+    <dimen name = "txt_receipt_large">14sp</dimen>
+</resources>

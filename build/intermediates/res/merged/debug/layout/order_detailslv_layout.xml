@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/ordDetailsHeaderTitle"
+            style="@style/text_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text=""
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_bar_text_size" />
+
+        <Button
+            android:id="@+id/printButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/blue_button_selector"
+            android:text="@string/button_print"
+            android:textAppearance="@style/white_text_appearance_unbold"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+    </RelativeLayout>
+
+    <!--
+        <TextView
+            android:id="@+id/ordDetailsHeaderTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/header_bar_glossy"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Medium"
+            android:textSize="@dimen/header_bar_text_size"
+        	android:textAppearance="@style/white_text_appearance"
+        	style="@style/text_shadow" />
+
+        <Button
+            android:id="@+id/printButton"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/blue_button_selector"
+            android:layout_below="@+id/ordDetailsHeaderTitle"
+            android:text="@string/button_print"
+            android:textColor="#FFFFFF"
+           	android:textAppearance="@style/white_text_appearance_unbold"
+            android:textSize="@dimen/large_button_text_size"/> -->
+
+    <ListView
+        android:id="@+id/orderDetailsLV"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="10dp" >
+    </ListView>
+<RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:orientation="horizontal" >
+        <Button
+            android:id="@+id/btnVoid"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_centerInParent="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/blue_button_selector"
+            android:text="@string/button_void"
+            android:textAppearance="@style/white_text_appearance_unbold"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+    </RelativeLayout>
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/order_detailslv_layout.xml -->

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical" >
+
+    		<TextView
+		    android:id="@+id/HeaderTitle"
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:padding="10dp"
+		    android:text="@string/cust_detail_title"
+		    android:background="#000000"
+		    android:gravity="center" 
+		    android:textSize="@dimen/header_bar_text_size"
+        	android:textAppearance="@style/white_text_appearance"
+        	style="@style/text_shadow"
+		    android:layout_marginBottom="8dp"/>
+
+    <ListView
+        android:id="@+id/custMoreInfoLV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </ListView>
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/customer_moreinfo_layout.xml -->

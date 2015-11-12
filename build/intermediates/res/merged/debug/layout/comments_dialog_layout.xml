@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:minWidth="300dp" >
+    
+       <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dlog"
+        android:gravity="center"
+        android:orientation="vertical" >
+        
+           <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/dark_blue_text_appearance"
+            android:textSize="@dimen/dlog_title_size"
+        android:text="Comments" />
+
+    <com.android.support.MyEditText
+        android:id="@+id/commentEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:ems="12"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:scrollHorizontally="false"
+        android:scrollbars="vertical" >
+    </com.android.support.MyEditText>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center" >
+
+        <Button
+            android:id="@+id/doneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:background="@drawable/white_btn_selector"
+             android:ems="5"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/dlog_btn_size"
+            android:text="@string/button_done" />
+
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:background="@drawable/white_btn_selector"
+             android:ems="5"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/dlog_btn_size"
+            android:text="@string/button_clear" />
+    </LinearLayout>
+        </LinearLayout>
+
+    
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/comments_dialog_layout.xml -->

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/headerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#66858585"
+        android:textSize="@dimen/listview_text_size"
+        android:textAppearance="@style/white_text_appearance"
+        android:paddingLeft="10dp"
+        android:text="TextView" />
+
+</LinearLayout>
+<!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/consignment_details_lv_header.xml -->

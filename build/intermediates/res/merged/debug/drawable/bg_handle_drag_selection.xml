@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<clip  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@color/blue_light"
+    android:clipOrientation="horizontal"
+    android:gravity="left|fill_vertical">
+
+</clip>
+<!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/drawable/bg_handle_drag_selection.xml -->

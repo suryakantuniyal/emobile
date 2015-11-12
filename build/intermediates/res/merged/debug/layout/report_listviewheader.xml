@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/reportHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:singleLine="false"
+        android:gravity="center"
+        android:padding="15dp"
+       style="@style/text_shadow"
+     	android:textAppearance="@style/black_text_appearance_unbold"
+       	android:textSize="@dimen/listview_text_size"/>
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/report_listviewheader.xml -->

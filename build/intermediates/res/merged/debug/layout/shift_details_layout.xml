@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/shift_details"
+            android:gravity="center"
+            android:background="#000000"
+            android:padding="10dp"
+            android:textSize="@dimen/header_bar_text_size"
+       		android:textAppearance="@style/white_text_appearance"
+       		style="@style/text_shadow"/>
+    
+    
+            <ListView
+            android:id="@+id/shiftDetailsListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:cacheColorHint="#FFFFFF"
+            android:divider="@color/listview_divider"
+       	android:dividerHeight="0.1dp"
+            android:padding="5dp" >
+        </ListView>
+
+</LinearLayout>
+<!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/shift_details_layout.xml -->

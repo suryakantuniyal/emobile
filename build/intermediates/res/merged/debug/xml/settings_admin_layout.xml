@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_account_settings" >
+        <Preference
+            android:key="pref_change_password"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_change_password" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_cash_drawer" >
+        <Preference
+            android:key="pref_open_cash_drawer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_open_cash_drawer" />
+        <Preference
+            android:key="pref_configure_cash_drawer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_cash_drawer" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_general_settings" >
+        <CheckBoxPreference
+            android:key="pref_restaurant_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_restaurant_mode" />
+        <CheckBoxPreference
+            android:key="pref_automatic_sync"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_automatic_sync" />
+
+        <Preference
+            android:key="pref_transaction_num_prefix"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_transaction_num_prefix" />
+
+        <CheckBoxPreference
+            android:key="pref_fast_scanning_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_fast_scanning_mode" />
+        <CheckBoxPreference
+            android:key="pref_signature_required_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_signature_required_mode" />
+        <CheckBoxPreference
+            android:key="pref_qr_code_reading"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_qr_code_reading" />
+        <CheckBoxPreference
+            android:key="pref_enable_multi_category"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_multi_category" />
+        <CheckBoxPreference
+            android:key="pref_show_only_group_taxes"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_show_only_group_taxes" />
+        <CheckBoxPreference
+            android:key="pref_retail_taxes"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_retail_taxes" />
+        <CheckBoxPreference
+            android:key="pref_require_customer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_customer" />
+        <CheckBoxPreference
+            android:key="pref_show_confirmation_screen"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_show_confirmation_screen" />
+        <CheckBoxPreference
+            android:key="pref_direct_customer_selection"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_direct_customer_selection" />
+        <CheckBoxPreference
+            android:key="pref_display_customer_account_number"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_display_customer_account_number" />
+        <CheckBoxPreference
+            android:key="pref_skip_email_phone"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_skip_email_phone" />
+        <CheckBoxPreference
+            android:key="pref_skip_want_add_more_products"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_skip_want_add_more_products" />
+        <CheckBoxPreference
+            android:key="pref_require_shift_transactions"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_shift_transactions" />
+        <CheckBoxPreference
+            android:key="pref_allow_customer_creation"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_allow_customer_creation" />
+        <CheckBoxPreference
+            android:key="pref_scope_bar_in_restaurant_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_scope_bar_in_restaurant_mode" />
+        <CheckBoxPreference
+            android:key="pref_use_clerks"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_clerks" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_gift_card_settings" >
+        <CheckBoxPreference
+            android:key="pref_display_also_redeem"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_display_also_redeem" />
+        <CheckBoxPreference
+            android:key="pref_display_redeem_all"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_display_redeem_all" />
+        <CheckBoxPreference
+            android:key="pref_use_loyal_patron"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_loyal_patron" />
+    </PreferenceCategory>
+    <PreferenceCategory 
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_kiosk_configuration">
+        <Preference
+            android:key="pref_customer_display"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_customer_display" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_other_settings" >
+        <MultiSelectListPreference
+            android:key="pref_configure_home_menu"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_home_menu" 
+            android:entries="@array/mainMenuArray"
+            android:defaultValue="@array/mainMenuDefaultKey"
+            android:entryValues="@array/mainMenuKey"/>
+
+        <ListPreference
+            android:key="pref_default_transaction"
+            android:entries="@array/defaultTransEntries"
+            android:defaultValue="-1"
+            android:entryValues="@array/defaultTransKey"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_transaction" />
+        
+        <CheckBoxPreference
+            android:key="pref_block_price_level_change"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_block_price_level_change" />
+        <CheckBoxPreference
+            android:key="pref_require_address"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_address" />
+        <CheckBoxPreference
+            android:key="pref_require_po"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_po" />
+
+        <Preference
+            android:key="pref_clear_images_cache"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clear_images_cache" />
+
+        <CheckBoxPreference
+            android:key="pref_skip_manager_price_override"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_skip_manager_price_override" />
+        <CheckBoxPreference
+            android:key="pref_require_password_to_clockout"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_password_to_clockout" />
+        <CheckBoxPreference
+            android:key="pref_maps_inside_app"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_maps_inside_app" />
+        <CheckBoxPreference
+            android:key="pref_enable_location_inventory"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_location_inventory" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="payment_section"
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_hard_code_payments" >
+        <CheckBoxPreference
+            android:key="pref_pay_with_tupyx"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_pay_with_tupyx" />
+        <CheckBoxPreference
+            android:key="pref_mw_with_genius"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_mw_with_genius" />
+        <Preference 
+            android:key="pref_config_genius_peripheral"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_genius_peripheral"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="payment_section"
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_payment_processing" >
+         <CheckBoxPreference
+            android:key="pref_allow_manual_credit_card"
+            android:layout="@layout/settings_custom_layout"
+            android:defaultValue="true"
+            android:title="@string/config_allow_manual_credit_card" />
+        <CheckBoxPreference
+            android:key="pref_process_check_online"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_process_check_online" />
+        <CheckBoxPreference
+            android:key="pref_show_tips_for_cash"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_show_tips_for_cash" />
+        <ListPreference
+            android:key="pref_audio_card_reader"
+            android:entries="@array/audioCardReaderEntries"
+            android:defaultValue="-1"
+            android:entryValues="@array/audioCardReaderValues"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_audio_card_reader" />
+
+        <ListPreference
+            android:key="pref_default_payment_method"
+            android:defaultValue="0"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_payment_method" />
+
+        <CheckBoxPreference
+            android:key="pref_return_require_refund"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_return_require_refund" />
+        <CheckBoxPreference
+            android:key="pref_convert_to_reward"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_convert_to_reward" />
+        <CheckBoxPreference
+            android:key="pref_invoice_require_payment"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_invoice_require_payment" />
+        <CheckBoxPreference
+            android:key="pref_invoice_require_full_payment"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_invoice_require_full_payment" />
+        <CheckBoxPreference
+            android:key="pref_prefill_total_amount"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_prefill_total_amount" />
+        <CheckBoxPreference 
+            android:key = "pref_use_store_and_forward"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_store_and_forward"/>
+        <Preference 
+            android:key="pref_store_and_forward_transactions"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_store_and_forward_transactions"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_printing_settings" >
+        <CheckBoxPreference
+            android:key="pref_enable_printing"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_printing" />
+        <CheckBoxPreference
+            android:key="pref_automatic_printing"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_automatic_printing" />
+        <CheckBoxPreference
+            android:key="pref_wholesale_printout"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_wholesale_printout" />
+        <CheckBoxPreference
+            android:key="pref_handwritten_signature"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_handwritten_signature" />
+        <CheckBoxPreference 
+            android:key="pref_prompt_customer_copy"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_prompt_customer_copy"/>
+        <CheckBoxPreference 
+            android:key="pref_print_receipt_transaction_payment"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_print_receipt_transaction_payments"/>
+        <Preference
+            android:key="pref_printek_info"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_printek_info" />
+        <Preference
+            android:key="pref_star_info"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_star_info" />
+        
+        <Preference 
+            android:key = "pref_snbc_setup"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_snbc_setup"/>
+
+        <MultiSelectListPreference
+            android:key="pref_set_printing_preferences"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_set_printing_preferences" 
+            android:entries="@array/printPrefArray"
+            android:entryValues="@array/printPrefValues"
+            android:defaultValue="@array/printPrefValues"/>
+
+        <Preference
+            android:key="pref_configure_ingenico_settings"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_ingenico_settings" />
+        
+        <Preference 
+            android:key = "pref_connect_to_bluetooth_peripheral"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_connect_to_bluetooth_peripheral"/>
+        
+        <Preference 
+            android:key = "pref_connect_to_usb_peripheral"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_connect_to_usb_peripheral"/>
+        
+        <Preference
+            android:key="pref_redetect_peripherals"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_redetect_peripherals" />
+        <Preference
+            android:key="pref_delete_saved_peripherals"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_delete_saved_peripherals" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_product_settings" >
+        <CheckBoxPreference
+            android:key="pref_allow_decimal_quantities"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_allow_decimal_quantities" />
+        <CheckBoxPreference
+            android:key="pref_group_receipt_by_sku"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_group_receipt_by_sku" />
+        <CheckBoxPreference
+            android:key="pref_require_password_to_remove_void"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_password_to_remove_void" />
+        <CheckBoxPreference
+            android:key="pref_show_removed_void_items_in_printout"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_show_removed_void_items_in_printout" />
+
+        <ListPreference
+            android:key="pref_default_category"
+            android:defaultValue="0"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_category" />
+        
+        
+        <ListPreference
+            android:key="pref_attribute_to_display"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_attribute_to_display"
+             android:entries="@array/attributeToDisplayArray"
+            android:entryValues="@array/attributeToDisplayValues"
+            android:defaultValue="prod_name"/>
+
+        <CheckBoxPreference
+            android:key="pref_group_in_catalog_by_name"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_group_in_catalog_by_name" />
+        <CheckBoxPreference
+            android:key="pref_filter_products_by_customer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_filter_products_by_customer" />
+        <CheckBoxPreference
+            android:key="pref_limit_products_on_hand"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_limit_products_on_hand" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_shifts" >
+        <Preference
+            android:key="pref_open_shift"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_open_shift" />
+        <Preference
+            android:key="pref_expenses"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_expenses" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_shipping_calculation" >
+        <CheckBoxPreference
+            android:key="pref_use_nexternal"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_nexternal" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_transaction_settings" >
+        <CheckBoxPreference
+            android:key="pref_require_manager_pass_to_void_trans"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_manager_pass_to_void_trans" />
+
+        <Preference
+            android:key="pref_default_country"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_country" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_support_troubleshooting" >
+        <Preference
+            android:key="pref_force_upload"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_force_upload" />
+        <Preference
+            android:key="pref_backup_data"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_backup_data" />
+    </PreferenceCategory>
+
+</PreferenceScreen><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/xml/settings_admin_layout.xml -->

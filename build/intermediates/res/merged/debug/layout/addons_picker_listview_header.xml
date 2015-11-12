@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" 
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/section_header_image"
+        android:layout_width="@dimen/section_item_image_size"
+        android:layout_height="@dimen/section_item_image_size"
+        android:layout_gravity="left"
+        android:src="@drawable/catalog_image_selector" />
+
+    <TextView
+        android:id="@+id/section_header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text=""
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:textSize="@dimen/section_item_text_view_size"
+        android:typeface="sans" >
+    </TextView>
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/addons_picker_listview_header.xml -->

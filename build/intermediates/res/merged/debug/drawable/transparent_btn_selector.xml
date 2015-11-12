@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+ <item android:drawable="@drawable/transparent_btn_gradient" android:state_pressed="true"/>
+    <item android:drawable="@android:color/transparent"/>
+</selector>
+<!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/drawable/transparent_btn_selector.xml -->

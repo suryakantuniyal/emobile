@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+            <item>
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" >
+            <gradient
+                android:angle="90"
+                android:endColor="#CC000000"
+                android:startColor="#CC000000"  />
+        </shape>
+    </item>
+
+</layer-list>
+<!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/drawable/transparent_btn_gradient.xml -->

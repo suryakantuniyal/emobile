@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_dlog"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/dlogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:ems="15"
+        android:textAppearance="@style/dark_blue_text_appearance"
+        android:textSize="@dimen/dlog_title_size" />
+
+    <TextView
+        android:id="@+id/dlogMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:textAppearance="@style/black_text_appearance_unbold"
+        android:textSize="@dimen/dlog_msg_size" />
+
+    <Button
+        android:id="@+id/btnDlogSingle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/white_btn_selector"
+        android:ems="6"
+        android:textAppearance="@style/black_text_appearance_unbold"
+        android:textColor="#000000"
+        android:textSize="@dimen/dlog_btn_size" />
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/dlog_btn_single_layout.xml -->

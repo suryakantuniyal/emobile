@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingRight="20dp"
+    android:paddingTop="10dp" >
+
+    <TextView
+        android:id="@+id/custSelecName"
+        style="@style/text_shadow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="false"
+        android:text=""
+        android:textAppearance="@style/black_text_appearance"
+        android:textSize="@dimen/lview_cust_name" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/custSelecCompanyName"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text=""
+                android:textAppearance="@style/grey_text_appearance_unbold"
+                android:textSize="@dimen/lview_cust_company_name" />
+
+            <TextView
+                android:id="@+id/custSelecID"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:text=""
+                android:textAppearance="@style/grey_text_appearance_unbold"
+                android:textSize="@dimen/lview_cust_id" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/custSelecPhone"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:layout_gravity="right"
+                android:text=""
+                android:textAppearance="@style/grey_text_appearance_unbold"
+                android:textSize="@dimen/lview_cust_phone" />
+
+            <TextView
+                android:id="@+id/custSelecPriceLevel"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:layout_gravity="right"
+                android:text=""
+                android:textAppearance="@style/grey_text_appearance_unbold"
+                android:textSize="@dimen/lview_cust_pricelevel" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/custSelecIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0"
+            android:padding="5dp"
+            android:src="@drawable/add_blue" />
+    </LinearLayout>
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/custselec_lvadapter.xml -->

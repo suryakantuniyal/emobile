@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/paidAmount"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:padding="15dp"
+        android:layout_weight="1"
+        android:text="No payments made" 
+        style="@style/text_shadow"
+		android:textAppearance="@style/black_text_appearance"
+        android:textSize="@dimen/listview_text_size"/>
+
+    <ImageView
+        android:id="@+id/paymentMoreDetailsIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/add_blue" />
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/orddetails_lvpayment_adapter.xml -->

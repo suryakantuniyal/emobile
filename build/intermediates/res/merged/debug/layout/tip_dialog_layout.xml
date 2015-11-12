@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true" 
+         >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:shadowColor="#FFFFFF"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="0.6"
+            android:text="@string/add_gratuity"
+            android:textColor="#000000"
+            android:textSize="@dimen/tip_confirmation_header"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/totalAmountView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="0.6"
+                android:text="@string/total_plus_tip"
+                android:textColor="#322EB8"
+                android:textSize="@dimen/tip_confirmation_total_plus_tip"
+                android:textStyle="bold" 
+                android:paddingRight="3dp"/>
+
+            <TextView
+                android:id="@+id/grandTotalView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shadowColor="#FFFFFF"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="0.6"
+                android:text=""
+                android:textColor="#322EB8"
+                android:textSize="@dimen/tip_confirmation_total_plus_tip"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center" >
+
+            <Button
+                android:id="@+id/tenPercent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/blue_button_selector"
+                android:textSize="@dimen/button_text_size"
+                android:text="10%"
+                
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/fifteenPercent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/blue_button_selector"
+                android:text="15%"
+                android:textSize="@dimen/button_text_size"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/twentyPercent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/blue_button_selector"
+                android:text="20%"
+                android:textSize="@dimen/button_text_size"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/noneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/blue_button_selector"
+            android:text="@string/button_none"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/button_text_size"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:text="Other:"
+                android:textColor="#000000"
+                android:textStyle="bold" 
+                android:textSize="@dimen/field_label_text_size"/>
+
+            <com.android.support.MyEditText
+                android:id="@+id/otherTipAmountField"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/text_field_selector"
+                android:ems="10"
+                android:gravity="right"
+                android:inputType="numberDecimal"
+                android:textColor="#000000"
+                android:textSize="@dimen/field_text_size" >
+            </com.android.support.MyEditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="40dp" >
+
+            <Button
+                android:id="@+id/cancelTipButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/blue_button_selector"
+                android:text="@string/button_cancel"
+                android:textColor="#FFFFFF" 
+                android:textSize="@dimen/button_text_size"/>
+
+            <Button
+                android:id="@+id/acceptTipButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/blue_button_selector"
+                android:text="@string/button_accept"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/button_text_size" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/tip_dialog_layout.xml -->

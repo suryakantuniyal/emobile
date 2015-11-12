@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/label1"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/loyalty_points_balance"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/add_orders_loyalty_label_txt_size" />
+
+            <EditText
+                android:id="@+id/fieldPointsBalance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/text_field_selector"
+                android:ellipsize="start"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="right|center_vertical"
+                android:inputType="textNoSuggestions"
+                android:text="0"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/add_orders_loyalty_field_txt_size" >
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/label2"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/loyalty_points_sub_total"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/add_orders_loyalty_label_txt_size" />
+
+            <EditText
+                android:id="@+id/fieldPointsSubTotal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/text_field_selector"
+                android:ellipsize="start"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="right|center_vertical"
+                android:inputType="textNoSuggestions"
+                android:text="0"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/add_orders_loyalty_field_txt_size" >
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/label3"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/loyalty_points_in_use"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/add_orders_loyalty_label_txt_size" />
+
+            <EditText
+                android:id="@+id/fieldPointsInUse"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/text_field_selector"
+                android:ellipsize="start"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="right|center_vertical"
+                android:inputType="textNoSuggestions"
+                android:text="0"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/add_orders_loyalty_field_txt_size" >
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/label4"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/loyalty_points_available"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/add_orders_loyalty_label_txt_size" />
+
+            <EditText
+                android:id="@+id/fieldPointsAvailable"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/text_field_selector"
+                android:ellipsize="start"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="right|center_vertical"
+                android:inputType="textNoSuggestions"
+                android:text="0"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/add_orders_loyalty_field_txt_size" >
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/label5"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/loyalty_acumulable_points"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/add_orders_loyalty_label_txt_size" />
+
+            <EditText
+                android:id="@+id/fieldPointsAcumulable"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/text_field_selector"
+                android:ellipsize="start"
+                android:ems="10"
+                android:enabled="false"
+                android:gravity="right|center_vertical"
+                android:inputType="textNoSuggestions"
+                android:text="0"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/add_orders_loyalty_field_txt_size" >
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/grandTotalTitle"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:text="@string/button_grand_total"
+                android:textAppearance="@style/grey_text_appearance_bold"
+                android:textSize="@dimen/add_orders_loyalty_label_txt_size" />
+
+            <TextView
+                android:id="@+id/grandTotalValue"
+                style="@style/text_shadow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right"
+                android:textAppearance="@style/grey_text_appearance_bold"
+                android:textSize="@dimen/add_orders_loyalty_label_txt_size" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnTapLoyalty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/transparent_btn_selector"
+        android:scaleType="fitXY"
+        android:src="@drawable/gridview_title_bar" />
+
+    <TextView
+        android:id="@+id/tapLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/tap_to_enter_loyalty"
+        android:textSize="@dimen/add_orders_total_label_txt_size" />
+
+</FrameLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/order_loyalty_layout.xml -->

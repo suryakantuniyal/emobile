@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dlog"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/dlogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/dark_blue_text_appearance"
+            android:textSize="@dimen/dlog_title_size" />
+
+        <TextView
+            android:id="@+id/dlogMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/dlog_msg_size" />
+
+        <Button
+            android:id="@+id/btnDlogTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/white_btn_selector"
+            android:ems="9"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textColor="#000000"
+            android:textSize="@dimen/dlog_btn_size" />
+
+        <Button
+            android:id="@+id/btnDlogBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_btn_selector"
+            android:ems="9"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textColor="#000000"
+            android:textSize="@dimen/dlog_btn_size" />
+    </LinearLayout>
+
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/dlog_btn_top_bottom_layout.xml -->

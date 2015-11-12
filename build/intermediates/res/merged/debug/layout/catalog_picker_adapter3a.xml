@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:gravity="center_vertical"
+        android:paddingLeft="@dimen/picker_lmargin"
+    android:paddingRight="@dimen/picker_rmargin"
+        android:paddingTop="9dp"
+    android:paddingBottom="9dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp" 
+        android:layout_weight="0.4"
+        style="@style/text_shadow"
+		android:textAppearance="@style/blue_text_appearance"
+        android:textSize="@dimen/listview_text_size"
+        android:text="@string/cat_picker_comments"/>
+    <TextView
+        android:id="@+id/commentsTxt"
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" 
+        style="@style/text_shadow"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textSize="@dimen/listview_text_size"
+        android:text=""/>
+    
+</LinearLayout><!-- From: file:/C:/AndroidSrc/GITRepo/Studio/eMobilePOSAndroid/src/main/res/layout/catalog_picker_adapter3a.xml -->

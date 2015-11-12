@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:enabled="false">
+
+    <TextView
+        android:id="@+android:id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="@android:color/transparent"
+        android:textColor="#00A6E8"
+        android:textStyle="bold"
+        android:layout_marginTop="5dp"
+        android:text=""
+        android:textAllCaps="true"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:textSize="15sp" />
+    
+    <View style="@style/bottom_bar" 
+        android:layout_below="@+android:id/title"/>
+
+</RelativeLayout>
