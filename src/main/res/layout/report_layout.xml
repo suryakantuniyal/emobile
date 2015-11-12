@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   android:background="@drawable/bg_white_page"
+    android:id="@+id/report_fragment_container"
+    android:tag="Reports Fragment">
+
+    <TextView
+            android:id="@+id/headerTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="#000000"
+            android:padding="10dp"
+            android:textSize="@dimen/header_bar_text_size"
+       		android:textAppearance="@style/white_text_appearance"
+       		style="@style/text_shadow"/>
+    
+    
+    <LinearLayout 
+        android:id="@+id/tabMenuContainer"
+        android:layout_below="@+id/headerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        >
+
+            <Button
+        android:id="@+id/changeDateButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/tab_button_selector"
+        android:layout_weight="1"
+        android:text="Date" 
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"/>
+    <Button
+        android:id="@+id/reportPrintButton"
+        android:layout_width="0dip"
+        android:layout_height="match_parent"
+        android:background="@drawable/tab_button_selector"
+        android:layout_weight="1"
+        android:text="@string/button_print" 
+                android:textColor="#FFFFFF"
+        android:textStyle="bold"/>
+
+
+        
+    </LinearLayout>
+    
+
+    <TableRow
+        android:id="@+id/reportLV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tabMenuContainer" >
+
+        <ListView
+            android:id="@+id/reportListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/listview_divider"
+       	android:dividerHeight="0.1dp"
+            android:padding="10dp" >
+        </ListView>
+    </TableRow>
+
+</RelativeLayout>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/header_layout_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/picker_lmargin"
+    android:paddingRight="@dimen/picker_rmargin" 
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:id="@+id/row1"
+            android:orientation="horizontal" 
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/itemHeaderImg"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.4"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/emobile_icon" />
+
+            <Button
+                android:id="@+id/pickerHeaderButton"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="3"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="30dp"
+                android:paddingBottom="30dp"
+                android:background="@drawable/blue_button_selector"
+                android:text="@string/cat_picker_add_but" 
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/sales_tab_lv_text_size"
+       			 android:textAppearance="@style/white_text_appearance"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:id="@+id/row3"
+            android:layout_below="@+id/row1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="2dp"
+                style="@style/text_shadow"
+        		android:textAppearance="@style/black_text_appearance_unbold"
+            	android:textSize="@dimen/listview_text_size"
+                android:text="ID:" />
+
+            <TextView
+                android:id="@+id/pickerHeaderID"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                style="@style/text_shadow"
+        		android:textAppearance="@style/blue_text_appearance_unbold"
+            	android:textSize="@dimen/listview_text_size"
+                android:singleLine="false"
+                android:text="TextView" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/row4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/row3"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="2dp"
+                style="@style/text_shadow"
+        		android:textAppearance="@style/black_text_appearance_unbold"
+            	android:textSize="@dimen/listview_text_size"
+                android:text="@string/cat_picker_onhand" />
+
+            
+
+            <TextView
+                android:id="@+id/pickerHeaderQty"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                style="@style/text_shadow"
+        		android:textAppearance="@style/blue_text_appearance_unbold"
+           		 android:textSize="@dimen/listview_text_size"
+                android:text="TextView" />
+            
+            
+        </LinearLayout>
+        
+                <TextView
+            android:id="@+id/attributesLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/row4"
+            style="@style/text_shadow"
+        android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/listview_text_size"
+            android:text="@string/cat_picker_attributes" />
+        
+        
+        <LinearLayout
+            android:id="@+id/catalog_picker_attributes_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/attributesLabel"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical" >
+            
+        </LinearLayout>
+    </RelativeLayout>
+    
+</FrameLayout>

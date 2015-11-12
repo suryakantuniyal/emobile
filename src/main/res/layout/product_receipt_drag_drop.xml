@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingBottom="2dp"
+    android:paddingLeft="10dp"
+    android:paddingTop="10dp" >
+    
+ 
+    
+    
+    <LinearLayout 
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp">
+
+            <TextView
+                android:id="@+id/itemQty"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#000000"
+                android:textSize="@dimen/txt_receipt_medium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
+                android:text="x"
+                android:textColor="#000000"
+                android:textSize="@dimen/txt_receipt_medium" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/itemName"
+            style="@style/text_shadow"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="2.8"
+            android:text=""
+            android:singleLine="true"
+            android:textSize="@dimen/txt_receipt_medium"
+            android:textColor="#000000"/>
+
+        <TextView
+            android:id="@+id/itemAmount"
+            style="@style/text_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="@dimen/txt_receipt_medium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/distQty"
+            style="@style/text_shadow"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:text="0"
+            android:textColor="#000000"
+            android:textSize="@dimen/txt_receipt_small" />
+
+        <TextView
+            android:id="@+id/textView6"
+            style="@style/text_shadow"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="discount"
+            android:textColor="#000000"
+            android:textSize="@dimen/txt_receipt_small" />
+
+        <TextView
+            android:id="@+id/distAmount"
+            style="@style/text_shadow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:gravity="right"
+            android:text="0.00"
+            android:textColor="#000000"
+            android:textSize="@dimen/txt_receipt_small" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp" 
+        android:layout_marginTop="2dp">
+
+        <Button
+            android:id="@+id/addonButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/grey_button_selector"
+            android:padding="5dp"
+            android:text="Addon"
+            android:textColor="#1971FF" />
+
+        <TextView
+            android:id="@+id/granTotal"
+            style="@style/text_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text=""
+            android:textColor="#000000"
+            android:textSize="@dimen/txt_receipt_large"
+            android:textStyle="bold" />
+    </RelativeLayout>
+        
+    </LinearLayout>
+    
+        <ImageView 
+         android:id="@+id/dragDropIcon"
+         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:src="@drawable/ic_drag_drop"/>
+   
+
+    
+
+</LinearLayout>
