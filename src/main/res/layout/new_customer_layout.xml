@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="@dimen/header_txt_padding"
+            android:text="@string/cust_add_title"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_txt_size" />
+
+        <Button
+            android:id="@+id/newCustSaveBut"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/blue_btn_selector"
+            android:ems="1"
+            android:text="@string/button_save"
+            android:textAppearance="@style/white_text_appearance"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/input_field_holder_top_margin"
+                android:layout_marginLeft="@dimen/input_field_holder_lr_margin"
+                android:layout_marginRight="@dimen/input_field_holder_lr_margin"
+                android:background="@drawable/light_grey_background"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/cust_add_info"
+                    android:textAppearance="@style/blue_txt_appearance_bold"
+                    android:textSize="@dimen/list_view_header_txt_size" />
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustAlias"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_alias"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/newCustfName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:hint="@string/cust_add_first_name"
+                        android:imeOptions="flagNoExtractUi|actionNext"
+                        android:inputType="textCapWords"
+                        android:textAppearance="@style/black_text_appearance_unbold"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/field_general_txt_size" >
+                    </com.android.support.MyEditText>
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/newCustlName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:hint="@string/cust_add_last_name"
+                        android:imeOptions="flagNoExtractUi|actionNext"
+                        android:inputType="textCapWords"
+                        android:textAppearance="@style/black_text_appearance_unbold"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/field_general_txt_size" >
+                    </com.android.support.MyEditText>
+                </LinearLayout>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustCompany"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_company"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_email"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textEmailAddress"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:digits="0123456789"
+                    android:hint="@string/cust_add_phone"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="phone"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustDOB"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:digits="0123456789"
+                    android:hint="@string/cust_add_date_of_birth"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustContact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_contact"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cust_add_price_lev" />
+
+                    <Spinner
+                        android:id="@+id/newCustList1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="3"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textAppearance="@style/black_text_appearance_unbold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cust_add_tax" />
+
+                    <Spinner
+                        android:id="@+id/newCustList2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="3"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textAppearance="@style/black_text_appearance_unbold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Billing Address -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                 android:layout_marginTop="@dimen/input_field_holder_top_margin"
+                android:layout_marginLeft="@dimen/input_field_holder_lr_margin"
+                android:layout_marginRight="@dimen/input_field_holder_lr_margin"
+                android:background="@drawable/light_grey_background"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cust_add_bill_addr"
+                    android:textAppearance="@style/blue_txt_appearance_bold"
+                    android:textSize="@dimen/list_view_header_txt_size" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroupBillingAddressType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/radioBillingResidential"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/cust_add_address_residential" />
+
+                    <RadioButton
+                        android:id="@+id/radioBillingBusiness"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_add_address_business" />
+                </RadioGroup>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustBillStr1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_street1"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustBillStr2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_street2"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/newCustBillCity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:hint="@string/cust_add_city"
+                        android:imeOptions="flagNoExtractUi|actionNext"
+                        android:inputType="textCapWords"
+                        android:textAppearance="@style/black_text_appearance_unbold"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/field_general_txt_size" >
+                    </com.android.support.MyEditText>
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/newCustBillState"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:hint="@string/cust_add_state"
+                        android:imeOptions="flagNoExtractUi|actionNext"
+                        android:inputType="textCapWords"
+                        android:textAppearance="@style/black_text_appearance_unbold"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/field_general_txt_size" >
+                    </com.android.support.MyEditText>
+                </LinearLayout>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustBillZip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:digits="0123456789"
+                    android:hint="@string/cust_add_zcode"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cust_add_country" />
+
+                    <Spinner
+                        android:id="@+id/newCustBillCountry"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/spinner_holo_light_selector"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textAppearance="@style/black_text_appearance_unbold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Shipping Address -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                 android:layout_marginTop="@dimen/input_field_holder_top_margin"
+                android:layout_marginLeft="@dimen/input_field_holder_lr_margin"
+                android:layout_marginRight="@dimen/input_field_holder_lr_margin"
+                android:layout_marginBottom="@dimen/input_field_holder_top_margin"
+                android:background="@drawable/light_grey_background"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cust_add_ship_addr"
+                    android:textAppearance="@style/blue_txt_appearance_bold"
+                    android:textSize="@dimen/list_view_header_txt_size" />
+
+                <CheckBox
+                    android:id="@+id/newCustCheckBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cust_add_same_as_bill"
+                    android:textSize="13sp" />
+
+                <RadioGroup
+                    android:id="@+id/radioGroupShippingAddressType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/radioShippingResidential"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/cust_add_address_residential" />
+
+                    <RadioButton
+                        android:id="@+id/radioShippingBusiness"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/cust_add_address_business" />
+                </RadioGroup>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustShipStr1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_street1"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustShipStr2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:hint="@string/cust_add_street2"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/newCustShipCity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:hint="@string/cust_add_city"
+                        android:imeOptions="flagNoExtractUi|actionNext"
+                        android:inputType="textCapWords"
+                        android:textAppearance="@style/black_text_appearance_unbold"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/field_general_txt_size" >
+                    </com.android.support.MyEditText>
+
+                    <com.android.support.MyEditText
+                        android:id="@+id/newCustShipState"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="start"
+                        android:enabled="true"
+                        android:hint="@string/cust_add_state"
+                        android:imeOptions="flagNoExtractUi|actionNext"
+                        android:inputType="textCapWords"
+                        android:textAppearance="@style/black_text_appearance_unbold"
+                        android:textColor="#000000"
+                        android:textSize="@dimen/field_general_txt_size" >
+                    </com.android.support.MyEditText>
+                </LinearLayout>
+
+                <com.android.support.MyEditText
+                    android:id="@+id/newCustShipZip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:digits="0123456789"
+                    android:hint="@string/cust_add_zcode"
+                    android:imeOptions="flagNoExtractUi|actionNext"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/black_text_appearance_unbold"
+                    android:textColor="#000000"
+                    android:textSize="@dimen/field_general_txt_size" >
+                </com.android.support.MyEditText>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/cust_add_country" />
+
+                    <Spinner
+                        android:id="@+id/newCustShipCountry"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="3"
+                        android:background="@drawable/spinner_holo_light_selector"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textAppearance="@style/black_text_appearance_unbold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

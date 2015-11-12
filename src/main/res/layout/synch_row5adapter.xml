@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    android:paddingTop="20dp" >
+
+    <LinearLayout
+        android:layout_width="@dimen/sync_adapter_1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/sync_tab_grey_holder"
+        android:clickable="false"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/synchLastsynch"
+            android:layout_width="wrap_content"
+            android:layout_height="0dip"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="@string/sync_last_sync"
+            android:textAppearance="@style/dark_blue_text_appearance"
+            android:textSize="@dimen/sync_date_text_size" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/synchSend"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sync_last_sent"
+                android:textAppearance="@style/dark_blue_text_appearance_unbold"
+            android:textSize="@dimen/sync_date_text_size" />
+
+            <TextView
+                android:id="@+id/synchSendDate"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="right"
+                android:text="Jul 16, 2012 9:22AM"
+                android:textAppearance="@style/dark_blue_text_appearance"
+            android:textSize="@dimen/sync_date_text_size" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="12dp" >
+
+            <TextView
+                android:id="@+id/synchReceive"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sync_last_received"
+                android:textAppearance="@style/dark_blue_text_appearance_unbold"
+            android:textSize="@dimen/sync_date_text_size"/>
+
+            <TextView
+                android:id="@+id/synchReceiveDate"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="right"
+                android:text="Jul 16, 2012 9:22AM"
+                android:textAppearance="@style/dark_blue_text_appearance"
+            android:textSize="@dimen/sync_date_text_size"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
