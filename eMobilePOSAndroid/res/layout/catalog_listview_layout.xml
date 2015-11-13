@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical" 
+    android:background="@drawable/bg_white_page"
+    android:id="@+id/catalog_portrait">
+
+    <ListView
+        android:id="@+id/catalogListview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollingCache="true"
+        android:paddingTop="5dp" 
+        android:layout_above="@+id/categoriesButtonLayoutHolder"
+        android:divider="@color/listview_divider"
+       	android:dividerHeight="0.1dp"
+        android:fastScrollEnabled="true">
+    </ListView>
+    
+    <LinearLayout
+        android:id="@+id/categoriesButtonLayoutHolder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:layout_alignParentBottom="true"
+        android:background="#262526">
+
+        <Button
+            android:id="@+id/buttonAllCategories"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:text="All"
+            android:layout_gravity="center_vertical"/>
+    </LinearLayout>
+
+</RelativeLayout>

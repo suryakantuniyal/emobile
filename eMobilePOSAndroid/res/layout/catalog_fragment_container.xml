@@ -1,0 +1,140 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/catalog_landscape_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical" 
+    android:background="#000000">
+
+    <RelativeLayout
+        android:id="@+id/catalogHeaderTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#000000"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp" >
+
+        <TextView
+            android:id="@+id/HeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/header_bar_button_height"
+            android:layout_centerInParent="true"
+            android:text="@string/catalog_title"
+            android:textSize="@dimen/add_orders_header_text_size"
+        	android:textAppearance="@style/white_text_appearance"
+        	android:gravity="center_vertical"
+        	style="@style/text_shadow" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/HeaderTitle"
+            android:gravity="right" >
+
+            <Button
+                android:id="@+id/categoryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/header_bar_button_height"
+                android:background="@drawable/blue_button_selector"
+                android:text="@string/button_category"
+                android:layout_margin="5dp"
+                android:textColor="#FFFFFF"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal" 
+        android:gravity="center_vertical">
+
+        <Spinner
+            android:id="@+id/filterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_centerVertical="true"
+            android:textAppearance="@style/white_text_appearance"
+            android:background="@drawable/blue_button_selector" />
+
+        <com.android.support.MyEditText
+                android:id="@+id/catalogSearchField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/filterButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+                android:background="@drawable/text_field_selector"
+                android:ellipsize="start"
+                android:enabled="true"
+                android:imeOptions="actionSearch"
+                android:inputType="textNoSuggestions"
+                android:textColor="#000000"
+                android:drawableLeft="@drawable/search_icon"
+                android:layout_gravity="center_vertical"
+               	android:textSize="@dimen/field_general_txt_size" 
+             	android:textAppearance="@style/black_text_appearance_unbold">
+            </com.android.support.MyEditText>
+        
+        <!-- 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/searchButton"
+            android:layout_toRightOf="@+id/filterButton"
+            android:orientation="horizontal" 
+            >
+
+            <EditText
+                android:id="@+id/catalogSearchField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_field_selector"
+                android:ellipsize="start"
+                android:enabled="true"
+                android:imeOptions="actionSearch"
+                android:inputType="textNoSuggestions"
+                android:textColor="#000000"
+                android:layout_gravity="center_vertical"
+               	android:textSize="@dimen/field_text_size" 
+             	android:textAppearance="@style/black_text_appearance_unbold">
+            </EditText>
+
+            <ImageView
+                android:id="@+id/clearSearchField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:clickable="true"
+                android:src="@android:drawable/ic_menu_close_clear_cancel" /> 
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="2dp"
+            android:padding="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+            android:src="@android:drawable/ic_menu_search" />-->
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/fragment_catalog_container"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="0dip"
+        android:layout_weight="5" >
+    </LinearLayout>
+
+</LinearLayout>

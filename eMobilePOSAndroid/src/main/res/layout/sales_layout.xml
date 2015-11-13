@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/salesCustomerBut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:background="@drawable/grey_button_selector"
+        android:gravity="center" >
+
+        <ImageButton
+            android:id="@+id/clearCustomerBut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/image_button_selector"
+            android:padding="10dp"
+            android:src="@drawable/ic_action_clear" />
+
+        <TextView
+            android:id="@+id/salesCustomerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="@string/no_customer"
+            android:textAppearance="@style/blue_txt_appearance_unbold"
+            android:textColor="#0071E3"
+            android:textSize="@dimen/small_button_text_size" >
+        </TextView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/invoiceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/blue_btn_selector"
+        android:text="@string/invoices"
+        android:textAppearance="@style/white_text_appearance"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/small_button_text_size" />
+
+    <ListView
+        android:id="@+id/salesListview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/sales_tab_lv_padding"
+        android:layout_marginRight="@dimen/sales_tab_lv_padding"
+        android:layout_margin="10dp" 
+        android:scrollbars="vertical" >
+    </ListView>
+
+    <EditText
+        android:id="@+id/hiddenField"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="#000000" >
+
+        <requestFocus />
+    </EditText>
+
+</LinearLayout>

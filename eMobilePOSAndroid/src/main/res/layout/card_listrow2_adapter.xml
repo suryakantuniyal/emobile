@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:gravity="center"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp">
+
+    <ImageView
+        android:id="@+id/ivCardIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/amex" />
+
+    <TextView
+        android:id="@+id/cardsListname"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="" 
+        android:layout_weight="1"
+        android:textAppearance="@style/black_text_appearance"
+      	style="@style/text_shadow"
+      	android:textSize="@dimen/listview_text_size"
+        android:gravity="right|center_vertical"/>
+
+</LinearLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!-- 
+    <usb-accessory model="DemoKit" manufacturer="Google" version="1.0"/>
+     -->
+     
+    <usb-accessory model="mcu" manufacturer="Powa" version="1.0"/>
+    <usb-device vendor-id="7306" product-id="515" />
+
+</resources>
