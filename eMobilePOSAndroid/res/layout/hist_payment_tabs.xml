@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+   android:background="@drawable/bg_white_page" >
+
+    <TextView
+        android:id="@+id/pmtHeaderTitle"
+        style="@style/text_shadow"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="#000000"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Medium Text"
+        android:textAppearance="@style/white_text_appearance"
+        android:textSize="@dimen/header_bar_text_size" />
+
+    <TabHost
+        android:id="@android:id/tabhost"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/pmtHeaderTitle">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <HorizontalScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fillViewport="true"
+                android:scrollbars="none" >
+
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal" />
+            </HorizontalScrollView>
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" >
+
+                <FrameLayout
+                    android:id="@+id/cash_tab"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+
+                <FrameLayout
+                    android:id="@+id/check_tab"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+
+                <FrameLayout
+                    android:id="@+id/card_tab"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+
+                    <FrameLayout
+                    android:id="@+id/giftcard_tab"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+                
+                
+                <FrameLayout
+                    android:id="@+id/other_tab"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+
+</RelativeLayout>

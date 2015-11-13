@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="IDTuniMagSDKAndroid">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/IDTuniMagSDKAndroid.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#000000"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/HeaderTitle"
+                style="@style/text_shadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center_vertical"
+                android:padding="10dp"
+                android:text="@string/header_pay_with_tupyx"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/header_bar_text_size" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="7dp"
+                android:layout_toRightOf="@+id/HeaderTitle"
+                android:gravity="right" >
+
+                <Button
+                    android:id="@+id/processButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/header_bar_button_height"
+                    android:background="@drawable/blue_button_selector"
+                    android:text="@string/button_process"
+                    android:textAppearance="@style/white_text_appearance"
+                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/large_button_text_size" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/logo_login" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/paymethod_due_amount_label"
+                android:textSize="@dimen/field_section_text_size"
+                android:textAppearance="@style/black_text_appearance_unbold" />
+
+            <com.android.support.MyEditText
+                android:id="@+id/fieldAmountToPay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:digits="0123456789"
+                android:ellipsize="start"
+                android:ems="10"
+                android:enabled="true"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:gravity="right"
+                android:textSize="@dimen/field_text_size" >
+            </com.android.support.MyEditText>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trans_details_amount_paid"
+                android:textSize="@dimen/field_section_text_size"
+                android:textAppearance="@style/black_text_appearance_unbold" />
+            
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal" >
+                    <Button
+                        android:id="@+id/btnExact"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/ordering_checkout_btn_height_size"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/blue_btn_selector"
+                        android:nextFocusDown="@+id/fieldTipAmount"
+                        android:singleLine="true"
+                        android:text="@string/cash_exact"
+                        android:textAppearance="@style/white_text_appearance"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+
+                    <com.android.support.MyEditText
+                android:id="@+id/fieldTotalAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:digits="0123456789"
+                android:ellipsize="start"
+                android:ems="8"
+                android:enabled="true"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="numberDecimal"
+                android:singleLine="true"
+                android:gravity="right"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/field_text_size" >
+            </com.android.support.MyEditText>
+
+                </LinearLayout>
+
+            
+            <Button
+                android:id="@+id/readQRButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/blue_button_selector"
+                android:ems="5"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:text="@string/tupyx_read_qr"
+                android:textAppearance="@style/white_text_appearance"
+                android:textColor="#FFFFFF"
+                android:textSize="@dimen/large_button_text_size" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

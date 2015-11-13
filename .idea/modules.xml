@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/dragSortLibrary/dragSortLibrary.iml" filepath="$PROJECT_DIR$/dragSortLibrary/dragSortLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eMobilePOS-Studio.iml" filepath="$PROJECT_DIR$/eMobilePOS-Studio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" filepath="$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gridHeaderLibrary/gridHeaderLibrary.iml" filepath="$PROJECT_DIR$/gridHeaderLibrary/gridHeaderLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/honeywell/honeywell.iml" filepath="$PROJECT_DIR$/honeywell/honeywell.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mDOpenCV/mDOpenCV.iml" filepath="$PROJECT_DIR$/mDOpenCV/mDOpenCV.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nostraLoader/nostraLoader.iml" filepath="$PROJECT_DIR$/nostraLoader/nostraLoader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/stickyListHeaders/stickyListHeaders.iml" filepath="$PROJECT_DIR$/stickyListHeaders/stickyListHeaders.iml" />
+      <module fileurl="file://$PROJECT_DIR$/viewPagerIndicator/viewPagerIndicator.iml" filepath="$PROJECT_DIR$/viewPagerIndicator/viewPagerIndicator.iml" />
+    </modules>
+  </component>
+</project>
