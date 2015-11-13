@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Studio.iml" filepath="$PROJECT_DIR$/Studio.iml" />
       <module fileurl="file://$PROJECT_DIR$/dragSortLibrary/dragSortLibrary.iml" filepath="$PROJECT_DIR$/dragSortLibrary/dragSortLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eMobilePOS-Studio.iml" filepath="$PROJECT_DIR$/eMobilePOS-Studio.iml" />
       <module fileurl="file://$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" filepath="$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/gridHeaderLibrary/gridHeaderLibrary.iml" filepath="$PROJECT_DIR$/gridHeaderLibrary/gridHeaderLibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/honeywell/honeywell.iml" filepath="$PROJECT_DIR$/honeywell/honeywell.iml" />
