@@ -89,7 +89,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 	private AddProductBtnCallback callBackAddProd;
 
 	public interface AddProductBtnCallback {
-		public void addProductServices();
+		void addProductServices();
 	}
 
 	private final int REMOVE_ITEM = 0, OVERWRITE_PRICE = 1,
@@ -103,7 +103,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 	public static ListView myListView;
 	// private DragSortListView myListView;
 
-	private final String empstr = "";
 	private int caseSelected;
 	private boolean custSelected;
 	private int consignmentType;

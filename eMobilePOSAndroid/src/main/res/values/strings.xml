@@ -1087,5 +1087,6 @@
 	<string name="paymentmethod_subtotal_amount">Subtotal</string>
 	<string name="privu_state">PR IVU 10.5</string>
 	<string name="privu_city">PR IVU 1</string>
+	<string name="digits">0123456789.</string>
 
 </resources>

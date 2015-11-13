@@ -3,6 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
+import com.android.emobilepos.models.GroupTaxRate;
 import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 
@@ -169,12 +170,12 @@ public class TaxesHandler {
 	
 	
 	
-	public List<String[]> getGroupTaxRate(String taxGroupId)
+	public List<GroupTaxRate> getGroupTaxRate(String taxGroupId)
 	{
 		//SQLiteDatabase db = dbManager.openReadableDB();
 
-		List<String[]> list = new ArrayList<String[]>();
-		String[] data = new String[3];
+		List<GroupTaxRate> list = new ArrayList<GroupTaxRate>();
+		GroupTaxRate data = new GroupTaxRate();
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId WHERE tg.taxGroupId ='");
@@ -184,12 +185,11 @@ public class TaxesHandler {
 
 		if (cursor.moveToFirst()) {
 			do {
-
-				data[0] = cursor.getString(cursor.getColumnIndex(tax_name));
-				data[1] = cursor.getString(cursor.getColumnIndex(tax_rate));
-				data[2] = cursor.getString(cursor.getColumnIndex(prTax));
+				data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
+				data.setTaxRate(cursor.getString(cursor.getColumnIndex(tax_rate)));
+				data.setPrTax( cursor.getString(cursor.getColumnIndex(prTax)));
 				list.add(data);
-				data = new String[3];
+				data = new GroupTaxRate();
 			} while (cursor.moveToNext());
 		}
 		cursor.close();

@@ -37,6 +37,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.GroupTaxRate;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.ivu.MersenneTwisterFast;
@@ -352,30 +353,30 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				String taxID = extras.getString("ord_taxID");
 
 				TaxesHandler taxHandler = new TaxesHandler(activity);
-				List<String[]> groupTax = taxHandler.getGroupTaxRate(taxID);
+				List<GroupTaxRate> groupTax = taxHandler.getGroupTaxRate(taxID);
 
 				if (groupTax.size() > 0) {
 					BigDecimal tempRate;
-					if (groupTax.get(0)[2].equals("Tax1")) {
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0)[1])).setScale(2,
+					if (groupTax.get(0).getPrTax().equals("Tax1")) {
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax1_amount", tempRate.toPlainString());
-						intent.putExtra("Tax1_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax1_name", groupTax.get(0).getTaxName());
 
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1)[1])).setScale(2,
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax2_amount", tempRate.toPlainString());
-						intent.putExtra("Tax2_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax2_name", groupTax.get(0).getTaxName());
 					} else {
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0)[1])).setScale(2,
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax2_amount", tempRate.toPlainString());
-						intent.putExtra("Tax2_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax2_name", groupTax.get(0).getTaxName());
 
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1)[1])).setScale(2,
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax1_amount", tempRate.toPlainString());
-						intent.putExtra("Tax1_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax1_name", groupTax.get(0).getTaxName());
 					}
 				} else {
 					BigDecimal tempRate;
