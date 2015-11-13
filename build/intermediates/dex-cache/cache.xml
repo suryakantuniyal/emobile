@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\libuart.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="9eee687466890b3d0046735917abb5759ea2ab2f">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\libuart-8056627cc83652d1c7572130526dc568ce36ad89.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\Studio\honeywell\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="af9f97bb34defe6963b090a68e6dfd52761fb40f">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-6a4df9cf0bbaf2573d091b689ed9355d0bf24724.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\Studio\viewPagerIndicator\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="5140d5d577113e2f186889d792c13f36530830d6">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-9ed834ae9dbf65379f2e29a7f8404998537ba7f0.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\Studio\stickyListHeaders\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="95559a6da228fcb4b3d98bc51b997149827da370">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-60c28ea1c62fdca15ca648a44a284007b5426cc9.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\Studio\mDOpenCV\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="895a1cd8d22e1fd029ad358858ad9104fd80d71f">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-5ab15d5f395a4c9c3225d4c4d4926fa7a7007ead.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\powapos-sdk-android-accessory-1.3.7.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="d31175c8a557a5755d2b725da4ac52e2d489d81f">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\powapos-sdk-android-accessory-1.3.7-2f8cee73cfeec6a1ac62bec30fdec7d0272f534f.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\core-sdk.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="a352cc3ff45ecf8c36b53b964a68c387a237548c">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\core-sdk-c174a373e1dcb1cbaa1406ad7f7ec189c2ae499b.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\powapos-sdk-android-2.0.2.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="ae528d6921efac56e5fb7ad1be881e0d67943ce8">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\powapos-sdk-android-2.0.2-87dc4bd815efe51a5cf0e018133f295a35ddb4c2.jar" />
+    </item>
+    <item
+        jar="C:\Users\Guarionex\.gradle\caches\modules-2\files-2.1\com.google.guava\guava\18.0\cce0823396aa693798f8882e64213b1772032b09\guava-18.0.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="cce0823396aa693798f8882e64213b1772032b09">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\guava-18.0-b06530072cf7212f4cad5390e56960ba0007948a.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\StarIOPort3.1.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="4f06b0af9295200e61e50b4cb7dedf730fc06b41">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\StarIOPort3.1-62ddce923b3b7c18359bd223d5ac76dbc8968ed8.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\bouncycastle.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="960dea7c9181ba0b17e8bab0c06a43f0a5f04e65">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\bouncycastle-370ebc9038433f6cedb1ccdd1279f0283ea513f8.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\spring-android-core-1.0.1.RELEASE.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="e68f0e8e4b636ee30c4de58953be38d9b72a5e3b">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\spring-android-core-1.0.1.RELEASE-caf86cd62d4f95df1a9c036adcf0332c2a98fc97.jar" />
+    </item>
+    <item
+        jar="C:\Eclipse SDK\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.0\support-annotations-23.0.0.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="990e7f98a7bad86a40b1f0bcfeb039023afd0839">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\support-annotations-23.0.0-cb87ccdaa503a12f9162f30cbe80f9d369ec9088.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\sqlcipher.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="42d88faf28b689a3cb01d123ca71628be98e5520">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\sqlcipher-817cb5d63dd373a2339b2302c7b81504f01c9a05.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\libs\internal_impl-23.0.0.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="8bd336eeae661e8311330284897ee07f8ebaa297">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-9ae1523f493b4a6f8c9ab962b9664a08e43655bf.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\POSSDKForAndroid.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="30e654604dbd9b85438a7deed7cd09bffcd20c25">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\POSSDKForAndroid-da128548f867d3a2ff67d331a09b2b4005c0fb9c.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\IDTuniMagSDKAndroid.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="c585f3e923bb661ba6df8f17a166539fee43b818">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\IDTuniMagSDKAndroid-92b606d174da58c69c35514250f99cfdc6f76696.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\pat100Cashdrawer1.1.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="c49ef08c455b25c88c5cab21a56bf11c078f5faf">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\pat100Cashdrawer1.1-9fe46652e09bbf796c1053f453e6824fdbe6ee1a.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\JAsura_Android.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="e49617581e0a8b25e6540784df064a732f0e12c6">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\JAsura_Android-3c67b11eac912b2762c9f7926238145af960025c.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\zxing.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="69ab751723c7f7c8a01fddb1d169a93160fadca7">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\zxing-155b9890ba063a769efe958921c498f3e76001ea.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\zbar.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="0a7b88ba1496a0b4af76069ad40dacd3897149e0">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\zbar-0edbac1f554a6f94cbf7031b2c3579347f9d12a8.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\MobilePrinter.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="c60d41aebac170916844a28feb7fbec1b380a82d">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\MobilePrinter-3f25f2c3bc7ed909fa97470c309f28c2110595f5.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\commons-io-1.3.2.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="b6dde38349ba9bb5e6ea6320531eae969985dae5">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\commons-io-1.3.2-e5d13eaff094e1cc8f3f9d09333c5b8b17a4d1b3.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\commons-lang3-3.4.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="5fe28b9518e58819180a43a850fbc0dd24b7c050">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\commons-lang3-3.4-032aec51b0494768dc170b6e6c7b07e2b0e45a7d.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\Studio\dragSortLibrary\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="497de47be755d25ae8cb12593269b7f288766234">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-f51c714dffebbe94323a3b6114e730598f57a86a.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\Studio\nostraLoader\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="cb205f9cab3a080d2e8126174b4772df5be05983">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-9ded05c443c5fdb95ab161f4c79cd9cc79aa017d.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\do_androidsdk.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="224e9ce05af0a99239688683a981f53f04b4be55">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\do_androidsdk-cfb416fd0447c52fddea1d7b2df6dbd1e85a5a9a.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\magtek-scra.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="5ac4417c9737abd8f038547291268f5f9360be99">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\magtek-scra-884161d818b426c5d2769e36774a646061af9e67.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\ksoap2-android-assembly-2.6.5-jar-with-dependencies.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="4e18c032c01420871b8734937029be5543107ae3">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\ksoap2-android-assembly-2.6.5-jar-with-dependencies-526a0d1a8d105835e8033bd7b3364c41731a1ea2.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\roverapi-android-2.4.0.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="5f5a34d183a4c6e0955cd8b413e10d63ee0d73b7">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\roverapi-android-2.4.0-0cc2f242c6c838bea20c15d13581a5b6cc35f6a7.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\pat100PrinterAndDisplay1.1.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="61528735aafa0290928b7fa116dc73f3eb46701a">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\pat100PrinterAndDisplay1.1-dd8557e38d8c4648e6c3c39c09ca46533e6f9764.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\Android_Platform_Adapter.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="865aa874d4f7fb8192007dc2a1cda5c50f5ed45f">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\Android_Platform_Adapter-450107143704a240a45a362016f1e220a7b48b81.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\Studio\gridHeaderLibrary\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="2c9cc32644fcf668b74b0e1ce7f7ae8de0b16952">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-72dec3d1e5936c618400e5adeb9ea009bd2e2ad2.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="8413c27b45b7fe61dca4a98159f65e2cee215f5a">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\classes-bb88d2a4486d18fd5b9f4d8aeba7c61201d0b92d.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\commons-codec-1.4.0.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="4bcf8ae089aaffe16761a97e8eda1d81f07f483f">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\commons-codec-1.4.0-08874aeca333793c1ae944ac3850212f774e235d.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\StarIO_Extension.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="ba834b50b0d6b9ecd4d6c52ad50524dcda3b1202">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\StarIO_Extension-487838faa140560d6b7fd18c9924e44b962d8a25.jar" />
+    </item>
+    <item
+        jar="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\libs\RBA_SDK.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="37ca6ff0c4e7d710499992816fabd513e0b5ef1b">
+        <dex dex="C:\AndroidSrc\GITRepo\Studio\eMobilePOSAndroid\build\intermediates\pre-dexed\debug\RBA_SDK-f872ce54d1be366ca226a319161526e98c5f4df4.jar" />
+    </item>
+
+</items>

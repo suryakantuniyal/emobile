@@ -1,0 +1,8 @@
+include ':dragSortLibrary'
+include ':gridHeaderLibrary'
+include ':honeywell'
+include ':mDOpenCV'
+include ':nostraLoader'
+include ':stickyListHeaders'
+include ':viewPagerIndicator'
+include ':eMobilePOSAndroid'

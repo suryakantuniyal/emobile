@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="magtek-scra">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/magtek-scra.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

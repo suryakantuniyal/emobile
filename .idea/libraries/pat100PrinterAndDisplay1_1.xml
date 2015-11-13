@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="pat100PrinterAndDisplay1.1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/pat100PrinterAndDisplay1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
