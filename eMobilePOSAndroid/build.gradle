@@ -10,7 +10,7 @@ android {
     packagingOptions {
     }
     defaultConfig {
-        applicationId "com.emobilepos.ivupos.app"
+        applicationId "com.emobilepos.app"
         minSdkVersion 14
         targetSdkVersion 23
         multiDexEnabled=true
