@@ -92,7 +92,6 @@ public void writeState(DataOutputStream stream) throws IOException
  */
 public MersenneTwisterFast()
     {
-
 	long time = System.currentTimeMillis();
 	String t = Long.toString(time);
 	t = t.substring(4, t.length());

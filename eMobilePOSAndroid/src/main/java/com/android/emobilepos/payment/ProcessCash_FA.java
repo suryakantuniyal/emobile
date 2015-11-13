@@ -89,11 +89,9 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener{
 		{
 			showTipField = false;
 			LinearLayout layout = (LinearLayout)findViewById(R.id.tipFieldMainHolder);
-			layout.setVisibility(View.GONE);
+			layout.removeAllViews();
 		}
-		if (Global.isIvuLoto) {
-			findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
-		}
+		
 		TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
 		extras = this.getIntent().getExtras();
 

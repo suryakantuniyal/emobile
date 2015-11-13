@@ -88,10 +88,9 @@ public class Global extends MultiDexApplication {
 	public void onCreate() {
 		super.onCreate();
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
-		isIvuLoto=getPackageName().contains(getString(R.string.ivupos_packageid));
 	}
 
-	public static boolean isIvuLoto = false;
+	public final static boolean isIvuLoto = false;
 	public static boolean isForceUpload = false;
 	public static boolean isEncryptSwipe = true;
 

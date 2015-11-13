@@ -1083,9 +1083,5 @@
 	
 	<string name = "loyalty">Loyalty</string>
 	<string name = "rewards">Rewards</string>
-	<string name="ivupos_packageid">ivupos</string>
-	<string name="paymentmethod_subtotal_amount">Subtotal</string>
-	<string name="privu_state">PR IVU 10.5</string>
-	<string name="privu_city">PR IVU 1</string>
-
+	
 </resources>
