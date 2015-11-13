@@ -6,3 +6,10 @@
 /nostraLoader/build
 /stickyListHeaders/build
 /viewPagerIndicator/build
+.gradle/2.4/taskArtifacts/cache.properties.lock
+.gradle/2.4/taskArtifacts/fileHashes.bin
+.gradle/2.4/taskArtifacts/fileSnapshots.bin
+.gradle/2.4/taskArtifacts/taskArtifacts.bin
+.idea/libraries/support_v4_23_0_0.xml
+.idea/misc.xml
+.idea/workspace.xml
