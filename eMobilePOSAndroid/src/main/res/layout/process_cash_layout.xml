@@ -52,177 +52,288 @@
                 android:background="@drawable/light_grey_background"
                 android:orientation="vertical" >
 
-                <LinearLayout
+                <TableLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/paymethod_due_amount_label"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textSize="@dimen/list_view_general_txt_size" />
-
-                    <com.android.support.MyEditText
-                        android:id="@+id/amountCashEdit"
+                    android:layout_height="wrap_content">
+                    <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:digits="0123456789"
-                        android:ellipsize="start"
-                        android:enabled="true"
-                        android:imeOptions="flagNoExtractUi|actionNext"
-                        android:inputType="numberDecimal"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
-                    </com.android.support.MyEditText>
-                </LinearLayout>
+                        android:baselineAligned="false"
+                        android:id="@+id/ivuposRow1">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/paymentmethod_subtotal_amount"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|left" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/cash_amount_paid"
-                    android:textAppearance="@style/black_text_appearance_unbold"
-                    android:textSize="@dimen/list_view_general_txt_size" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <Button
-                        android:id="@+id/exactAmountBut"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/ordering_checkout_btn_height_size"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/blue_btn_selector"
-                        android:text="@string/cash_exact"
-                        android:textAppearance="@style/white_text_appearance"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/ordering_checkout_btn_txt_size" />
-
-                    <com.android.support.MyEditText
-                        android:id="@+id/paidCashEdit"
+                        <com.android.support.MyEditText
+                            android:id="@+id/subtotalCashEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:ellipsize="start"
+                            android:enabled="true"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="3dp"
+                            android:layout_span="3">
+                            <requestFocus />
+                        </com.android.support.MyEditText>
+                    </TableRow>
+                    <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:digits="0123456789"
-                        android:ellipsize="start"
-                        android:enabled="true"
-                        android:imeOptions="flagNoExtractUi|actionNext"
-                        android:inputType="numberDecimal"
-                        android:singleLine="true"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
+                        android:id="@+id/ivuposRow2">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/privu_state"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|left" />
 
-                        <requestFocus />
-                    </com.android.support.MyEditText>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal" >
-
-                    <Button
-                        android:id="@+id/btnFive"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="2dp"
-                        android:ems="3"
-                        android:text="$5" />
-
-                    <Button
-                        android:id="@+id/btnTen"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="2dp"
-                        android:ems="3"
-                        android:text="$10" />
-
-                    <Button
-                        android:id="@+id/btnTwenty"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="2dp"
-                        android:ems="3"
-                        android:text="$20" />
-
-                    <Button
-                        android:id="@+id/btnFifty"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ems="3"
-                        android:text="$50" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tipFieldMainHolder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <Button
-                        android:id="@+id/tipAmountBut"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/ordering_checkout_btn_height_size"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/blue_btn_selector"
-                        android:text="@string/cash_tip"
-                        android:textAppearance="@style/white_text_appearance"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/ordering_checkout_btn_txt_size" />
-
-                    <com.android.support.MyEditText
-                        android:id="@+id/tipAmountField"
+                        <com.android.support.MyEditText
+                            android:id="@+id/tax1CashEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:ellipsize="start"
+                            android:enabled="true"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="3dp">
+                        </com.android.support.MyEditText>
+                    </TableRow>
+                    <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:digits="0123456789"
-                        android:ellipsize="start"
-                        android:enabled="true"
-                        android:imeOptions="flagNoExtractUi|actionNext"
-                        android:inputType="numberDecimal"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
-                    </com.android.support.MyEditText>
-                </LinearLayout>
+                        android:baselineAligned="false"
+                        android:id="@+id/ivuposRow3">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/privu_city"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|left"
+                            android:layout_weight="0" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        style="@style/text_shadow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:text="@string/receipt_change"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textSize="@dimen/txt_size_change_label" />
-
-                    <TextView
-                        android:id="@+id/changeCashText"
-                        style="@style/text_shadow"
+                        <com.android.support.MyEditText
+                            android:id="@+id/tax2CashEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:ellipsize="start"
+                            android:enabled="true"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="3dp">
+                        </com.android.support.MyEditText>
+                    </TableRow>
+                    <TableRow
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/prosscash_lmargin"
-                        android:gravity="right"
-                        android:text="$0.00"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textSize="@dimen/txt_size_change_label" />
-                </LinearLayout>
+                        >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/paymethod_due_amount_label"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+
+                            />
+                        <com.android.support.MyEditText
+                            android:id="@+id/amountCashEdit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:digits="0123456789"
+                            android:ellipsize="start"
+                            android:enabled="true"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="3dp">
+                        </com.android.support.MyEditText>
+                    </TableRow>
+
+
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_span="2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/cash_amount_paid"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            />
+
+
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <Button
+                            android:id="@+id/exactAmountBut"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+                            android:background="@drawable/blue_btn_selector"
+                            android:text="@string/cash_exact"
+                            android:textAppearance="@style/white_text_appearance"
+                            android:textColor="#FFFFFF"
+                            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                            android:layout_gravity="center" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/paidCashEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:ellipsize="start"
+                            android:enabled="true"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="3dp">
+
+
+                        </com.android.support.MyEditText>
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <Button
+                            android:id="@+id/btnFive"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:text="$5"
+                            android:layout_weight="1" />
+
+                        <Button
+                            android:id="@+id/btnTen"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:text="$10"
+                            android:layout_weight="1" />
+
+                        <Button
+                            android:id="@+id/btnTwenty"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:text="$20"
+                            android:layout_weight="1" />
+
+                        <Button
+                            android:id="@+id/btnFifty"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:ems="3"
+                            android:text="$50"
+                            android:layout_weight="1" />
+                    </TableRow>
+
+                    <TableRow
+                        android:id="@+id/tipFieldMainHolder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <Button
+                            android:id="@+id/tipAmountBut"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+                            android:background="@drawable/blue_btn_selector"
+                            android:text="@string/cash_tip"
+                            android:textAppearance="@style/white_text_appearance"
+                            android:textColor="#FFFFFF"
+                            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                            android:layout_gravity="center" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/tipAmountField"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:ellipsize="start"
+                            android:enabled="true"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="3dp">
+                        </com.android.support.MyEditText>
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            style="@style/text_shadow"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"
+                            android:text="@string/receipt_change"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/txt_size_change_label"
+                            android:layout_span="2"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/changeCashText"
+                            style="@style/text_shadow"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/prosscash_lmargin"
+                            android:gravity="right"
+                            android:text="$0.00"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/txt_size_change_label"
+                            android:layout_weight="1"
+                            />
+                    </TableRow>
+
+                </TableLayout>
+
 
                 <TextView
                     android:layout_width="wrap_content"

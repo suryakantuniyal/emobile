@@ -88,9 +88,10 @@ public class Global extends MultiDexApplication {
 	public void onCreate() {
 		super.onCreate();
 		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+		isIvuLoto=getPackageName().contains(getString(R.string.ivupos_packageid));
 	}
 
-	public final static boolean isIvuLoto = false;
+	public static boolean isIvuLoto = false;
 	public static boolean isForceUpload = false;
 	public static boolean isEncryptSwipe = true;
 
@@ -393,33 +394,33 @@ public class Global extends MultiDexApplication {
 	public static String getPeripheralName(int type) {
 		String _name = "Unknown";
 		switch (type) {
-		case STAR:
-			_name = "Star Micronics";
-			break;
-		case MAGTEK:
-			_name = "MAGTEK";
-			break;
-		case BAMBOO:
-			_name = "Blue Bamboo";
-			break;
-		case ZEBRA:
-			_name = "Zebra";
-			break;
-		case ONEIL:
-			_name = "Oneil";
-			break;
-		case SNBC:
-			_name = "SNBC";
-			break;
-		case ASURA:
-			_name = "ASURA";
-			break;
-		case PAT100:
-			_name = "PAT100";
-			break;
-		case ISMP:
-			_name = "iSMP";
-			break;
+			case STAR:
+				_name = "Star Micronics";
+				break;
+			case MAGTEK:
+				_name = "MAGTEK";
+				break;
+			case BAMBOO:
+				_name = "Blue Bamboo";
+				break;
+			case ZEBRA:
+				_name = "Zebra";
+				break;
+			case ONEIL:
+				_name = "Oneil";
+				break;
+			case SNBC:
+				_name = "SNBC";
+				break;
+			case ASURA:
+				_name = "ASURA";
+				break;
+			case PAT100:
+				_name = "PAT100";
+				break;
+			case ISMP:
+				_name = "iSMP";
+				break;
 		}
 		return _name;
 
@@ -792,7 +793,7 @@ public class Global extends MultiDexApplication {
 	}
 
 	public static double formatNumFromLocale(String val)// received as #,##
-														// instead of #.##
+	// instead of #.##
 	{
 		double frmt = 0.0;
 		try {
@@ -991,7 +992,7 @@ public class Global extends MultiDexApplication {
 			sum = Integer.parseInt(newPickedOrders);
 
 		String prLevTotal = data[2];// orderedProducts.getSetData("overwrite_price",
-									// true, null);
+		// true, null);
 
 		double total = 0;// = sum*Double.parseDouble(prLevTotal);
 
@@ -1060,8 +1061,8 @@ public class Global extends MultiDexApplication {
 				cardManager.setCardOwnerName(name_on_card);
 
 				if (tracks[1] == null || tracks[1].isEmpty()) // track 2 N/A
-																// retrieve PAN
-																// from track 1
+				// retrieve PAN
+				// from track 1
 				{
 
 					card_number = tracks[0].replace("B", "").substring(1, startIndex - 2);
@@ -1084,7 +1085,7 @@ public class Global extends MultiDexApplication {
 
 				String[] track2Split = tracks[1].split("=");
 				card_number = track2Split[0].replace("?", "");// contains card
-																// number
+				// number
 				tracks[1] = new StringBuilder().append(";").append(tracks[1]).toString();
 				if (track2Split.length > 1 && track2Split[1].length() > 4) {
 					if (track2Split[1].length() > 0) {
@@ -1331,7 +1332,7 @@ public class Global extends MultiDexApplication {
 
 					sb.append("<br/>");
 					if (global.orderProductsAddons.get(i).isAdded.equals("0")) // Not
-																				// added
+						// added
 						sb.append("[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
 					else
 						sb.append("[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
@@ -1431,25 +1432,25 @@ public class Global extends MultiDexApplication {
 			public boolean onTouch(View v, MotionEvent event) {
 
 				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN: {
-					ImageView view = (ImageView) v;
-					// overlay is black with transparency of 0x77 (119)
-					if (view.getDrawable() != null) {
-						view.getDrawable().setColorFilter(0x77000000, Mode.SRC_ATOP);
-						view.invalidate();
+					case MotionEvent.ACTION_DOWN: {
+						ImageView view = (ImageView) v;
+						// overlay is black with transparency of 0x77 (119)
+						if (view.getDrawable() != null) {
+							view.getDrawable().setColorFilter(0x77000000, Mode.SRC_ATOP);
+							view.invalidate();
+						}
+						break;
 					}
-					break;
-				}
-				case MotionEvent.ACTION_UP:
-				case MotionEvent.ACTION_CANCEL: {
-					ImageView view = (ImageView) v;
-					// clear the overlay
-					if (view.getDrawable() != null) {
-						view.getDrawable().clearColorFilter();
-						view.invalidate();
+					case MotionEvent.ACTION_UP:
+					case MotionEvent.ACTION_CANCEL: {
+						ImageView view = (ImageView) v;
+						// clear the overlay
+						if (view.getDrawable() != null) {
+							view.getDrawable().clearColorFilter();
+							view.invalidate();
+						}
+						break;
 					}
-					break;
-				}
 				}
 
 				return false;
@@ -1545,10 +1546,10 @@ public class Global extends MultiDexApplication {
 		int ot = context.getResources().getConfiguration().orientation;
 		switch (ot) {
 
-		case Configuration.ORIENTATION_LANDSCAPE:
-			return false;
-		case Configuration.ORIENTATION_PORTRAIT:
-			return true;
+			case Configuration.ORIENTATION_LANDSCAPE:
+				return false;
+			case Configuration.ORIENTATION_PORTRAIT:
+				return true;
 
 		}
 		return false;
