@@ -203,111 +203,209 @@
                     android:textAppearance="@style/blue_txt_appearance_bold"
                     android:textSize="@dimen/list_view_header_txt_size" />
 
-                <LinearLayout
+                <TableLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                    android:layout_height="match_parent">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:text="@string/paymethod_due_amount_label"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textSize="@dimen/list_view_general_txt_size" />
-
-                    <com.android.support.MyEditText
-                        android:id="@+id/processCardAmount"
+                    <TableRow
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:digits="0123456789"
-                        android:imeOptions="flagNoExtractUi|actionNext"
-                        android:inputType="numberDecimal"
-                        android:nextFocusDown="@+id/fieldPaidAmount"
-                        android:singleLine="true"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
-                    </com.android.support.MyEditText>
-                </LinearLayout>
+                        android:layout_height="match_parent">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/trans_details_amount_paid"
-                    android:textAppearance="@style/black_text_appearance_unbold"
-                    android:textSize="@dimen/list_view_general_txt_size" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/paymethod_subtotal_amount_label"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|left" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                        <com.android.support.MyEditText
+                            android:id="@+id/subtotalCardAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:nextFocusDown="@+id/fieldPaidAmount"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                    </TableRow>
 
-                    <Button
-                        android:id="@+id/exactAmountBut"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/ordering_checkout_btn_height_size"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/blue_btn_selector"
-                        android:nextFocusDown="@+id/fieldTipAmount"
-                        android:singleLine="true"
-                        android:text="@string/cash_exact"
-                        android:textAppearance="@style/white_text_appearance"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/ordering_checkout_btn_txt_size" />
-
-                    <com.android.support.MyEditText
-                        android:id="@+id/processCardAmountPaid"
+                    <TableRow
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:digits="0123456789"
-                        android:imeOptions="flagNoExtractUi|actionNext"
-                        android:inputType="numberDecimal"
-                        android:nextFocusDown="@+id/fieldTipAmount"
-                        android:singleLine="true"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
-                    </com.android.support.MyEditText>
-                </LinearLayout>
+                        android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/paymethod_tax1_amount_label"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|left"
+                            android:id="@+id/tax1CreditCardLbl" />
 
-                    <Button
-                        android:id="@+id/tipAmountBut"
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/ordering_checkout_btn_height_size"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/blue_btn_selector"
-                        android:text="@string/cash_tip"
-                        android:textAppearance="@style/white_text_appearance"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+                        <com.android.support.MyEditText
+                            android:id="@+id/tax1CardAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:nextFocusDown="@+id/fieldPaidAmount"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                    </TableRow>
 
-                    <com.android.support.MyEditText
-                        android:id="@+id/processCardTip"
+                    <TableRow
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:digits="0123456789."
-                        android:imeOptions="flagNoExtractUi|actionNext"
-                        android:inputType="numberDecimal"
-                        android:nextFocusDown="@+id/fieldName"
-                        android:singleLine="true"
-                        android:textAppearance="@style/black_text_appearance_unbold"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
-                    </com.android.support.MyEditText>
-                </LinearLayout>
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/paymethod_tax2_amount_label"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|left"
+                            android:id="@+id/tax2CreditCardLbl" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/tax2CardAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:nextFocusDown="@+id/fieldPaidAmount"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/paymethod_due_amount_label"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_gravity="center|left" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/processCardAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:nextFocusDown="@+id/fieldPaidAmount"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:text="@string/trans_details_amount_paid"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textSize="@dimen/list_view_general_txt_size"
+                            android:layout_span="2" />
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <Button
+                            android:id="@+id/exactAmountBut"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+                            android:background="@drawable/blue_btn_selector"
+                            android:nextFocusDown="@+id/fieldTipAmount"
+                            android:singleLine="true"
+                            android:text="@string/cash_exact"
+                            android:textAppearance="@style/white_text_appearance"
+                            android:textColor="#FFFFFF"
+                            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                            android:layout_gravity="center" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/processCardAmountPaid"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789"
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:nextFocusDown="@+id/fieldTipAmount"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                    </TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <Button
+                            android:id="@+id/tipAmountBut"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+                            android:background="@drawable/blue_btn_selector"
+                            android:text="@string/cash_tip"
+                            android:textAppearance="@style/white_text_appearance"
+                            android:textColor="#FFFFFF"
+                            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                            android:layout_gravity="center" />
+
+                        <com.android.support.MyEditText
+                            android:id="@+id/processCardTip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:digits="0123456789."
+                            android:imeOptions="flagNoExtractUi|actionNext"
+                            android:inputType="numberDecimal"
+                            android:nextFocusDown="@+id/fieldName"
+                            android:singleLine="true"
+                            android:textAppearance="@style/black_text_appearance_unbold"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp"></com.android.support.MyEditText>
+                    </TableRow>
+
+                </TableLayout>
 
                 <com.android.support.MyEditText
                     android:id="@+id/nameOnCardEdit"

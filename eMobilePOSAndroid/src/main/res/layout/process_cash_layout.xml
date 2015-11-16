@@ -98,7 +98,8 @@
                             android:text="@string/privu_state"
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textSize="@dimen/list_view_general_txt_size"
-                            android:layout_gravity="center|left" />
+                            android:layout_gravity="center|left"
+                            android:id="@+id/tax1CashLbl" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tax1CashEdit"
@@ -130,7 +131,8 @@
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textSize="@dimen/list_view_general_txt_size"
                             android:layout_gravity="center|left"
-                            android:layout_weight="0" />
+                            android:layout_weight="0"
+                            android:id="@+id/tax2CashLbl" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tax2CashEdit"
