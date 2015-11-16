@@ -41,8 +41,10 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
 import com.android.database.StoredPayments_DB;
+import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -92,7 +94,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
     private String creditCardType = "";
 
-    private AlertDialog.Builder dialog;
+
     private static CheckBox cardSwipe = null;
     private static boolean cardReaderConnected = false;
 
@@ -121,7 +123,9 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private EditText amountPaidField;
     private EditText phoneNumberField, customerEmailField;
     private EditText authIDField, transIDField;
-
+    private TextView  tax1Lbl, tax2Lbl;
+    private EditText subtotal, tax1, tax2;
+    private List<GroupTax> groupTaxRate;
     // private boolean timedOut = false;
 
     private boolean isMultiInvoice = false, isOpenInvoice = false;
@@ -161,6 +165,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         activity = this;
         global = (Global) getApplication();
         myPref = new MyPreferences(activity);
+        groupTaxRate = TaxesHandler.getGroupTaxRate(myPref.getEmployeeDefaultTax());
+
         Global.isEncryptSwipe = true;
         cardInfoManager = new CreditCardInfo();
         scrollView = (ScrollView) findViewById(R.id.scrollView);
@@ -209,6 +215,17 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         authIDField = (EditText) findViewById(R.id.cardAuthIDField);
         transIDField = (EditText) findViewById(R.id.cardTransIDField);
+        subtotal = (EditText) findViewById(R.id.subtotalCardAmount);
+        tax1 = (EditText) findViewById(R.id.tax1CardAmount);
+        tax2 = (EditText) findViewById(R.id.tax2CardAmount);
+        tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
+        tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
+
+        if(!Global.isIvuLoto){
+            findViewById(R.id.row1Credit).setVisibility(View.GONE);
+            findViewById(R.id.row2Credit).setVisibility(View.GONE);
+            findViewById(R.id.row3Credit).setVisibility(View.GONE);
+        }
 
         this.amountField = (EditText) findViewById(R.id.processCardAmount);
         this.amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -219,14 +236,28 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         amountField.addTextChangedListener(getTextWatcher(R.id.processCardAmount));
         this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
-
-        if (!isFromMainMenu) {
+        subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
+        tax1.setOnFocusChangeListener(getFocusListener(tax1));
+        tax2.setOnFocusChangeListener(getFocusListener(tax2));
+        subtotal.setText(
+                Global.formatDoubleToCurrency(0.00));
+        tax1.setText(
+                Global.formatDoubleToCurrency(0.00));
+        tax2.setText(
+                Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
+        subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        tax1.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        tax2.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        if (!isFromMainMenu || Global.isIvuLoto) {
             amountField.setEnabled(false);
         }
 
         this.amountPaidField = (EditText) findViewById(R.id.processCardAmountPaid);
         this.amountPaidField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.amountPaidField.addTextChangedListener(getTextWatcher(R.id.processCardAmountPaid));
+        subtotal.addTextChangedListener(getTextWatcher(R.id.subtotalCardAmount));
+        tax1.addTextChangedListener(getTextWatcher(R.id.tax1CardAmount));
+        tax2.addTextChangedListener(getTextWatcher(R.id.tax2CardAmount));
         this.amountPaidField.setOnFocusChangeListener(getFocusListener(this.amountPaidField));
         if (myPref.getPreferences(MyPreferences.pref_prefill_total_amount))
             this.amountPaidField.setText(
@@ -262,8 +293,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         secCode.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (isDebit) {
-            // month.setVisibility(View.GONE);
-            // year.setVisibility(View.GONE);
             zipCode.setVisibility(View.GONE);
             secCode.setVisibility(View.GONE);
 
@@ -642,14 +671,13 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private void processMultiInvoicePayment() {
         populateCardInfo();
         invPayHandler = new InvoicePaymentsHandler(activity);
-        List<Double> appliedAmount = new ArrayList<Double>();
         invPaymentList = new ArrayList<String[]>();
         String[] content = new String[4];
 
         int size = inv_id_array.length;
         String payID = extras.getString("pay_id");
 
-        double value = 0;
+        double value;
 
         for (int i = 0; i < size; i++) {
             value = invPayHandler.getTotalPaidAmount(inv_id_array[i]);
@@ -669,7 +697,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             if (balance_array[i] > 0) {
                 if (tempPaid >= balance_array[i]) {
                     content[2] = Double.toString(balance_array[i]);
-                    appliedAmount.add(balance_array[i]);
                     tempPaid -= balance_array[i];
                 } else {
                     content[2] = Double.toString(tempPaid);
@@ -839,9 +866,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             view.clearFocus();
         }
         cardReaderConnected = false;
-
-        if (dialog != null)
-            dialog.create().dismiss();
 
         if (uniMagReader != null)
             uniMagReader.release();
@@ -1189,7 +1213,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     public static String cardType(String number) {
         String ccType = "";
         long cardNumber;
-        cardNumber = 0;
         try {
             cardNumber = Long.parseLong(number);
         } catch (NumberFormatException e) {
@@ -1436,7 +1459,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Please wait...");
+            myProgressDialog.setMessage(getString(R.string.please_wait_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -1528,7 +1551,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Please wait...");
+            myProgressDialog.setMessage(getString(R.string.please_wait_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -2121,7 +2144,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             if (walkerReader.deviceConnected())
                 myProgressDialog.setMessage(getString(R.string.swipe_insert_card));
             else
-                myProgressDialog.setMessage(getString(R.string.please_wait));
+                myProgressDialog.setMessage(getString(R.string.please_wait_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())

@@ -277,14 +277,14 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         this.amount.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 recalculateChange();
-
             }
+
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.amountCashEdit);
+                parseInputedCurrency(s, amount);
             }
         });
         subtotal.addTextChangedListener(new TextWatcher() {
@@ -299,7 +299,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.subtotalCashEdit);
+                parseInputedCurrency(s, subtotal);
             }
         });
         tax1.addTextChangedListener(new TextWatcher() {
@@ -312,7 +312,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.tax1CashEdit);
+                parseInputedCurrency(s, tax1);
             }
         });
         tax2.addTextChangedListener(new TextWatcher() {
@@ -326,7 +326,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.tax2CashEdit);
+                parseInputedCurrency(s, tax2);
             }
         });
         this.paid.addTextChangedListener(new TextWatcher() {
@@ -339,7 +339,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.paidCashEdit);
+                parseInputedCurrency(s, paid);
             }
         });
 
@@ -549,7 +549,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     }
 
 
-    private void parseInputedCurrency(CharSequence s, int id) {
+    private void parseInputedCurrency(CharSequence s, EditText editText) {
         DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
         DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
         StringBuilder sb = new StringBuilder();
@@ -569,59 +569,60 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
             cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
             cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-            switch (id) {
-                case R.id.subtotalCashEdit:
-                    subtotal.setText(cashAmountBuilder.toString());
-                    break;
-                case R.id.tax1CashEdit:
-                    tax1.setText(cashAmountBuilder.toString());
-                    break;
-                case R.id.tax2CashEdit:
-                    tax2.setText(cashAmountBuilder.toString());
-                    break;
-                case R.id.paidCashEdit:
-                    this.paid.setText(cashAmountBuilder.toString());
-                    amountToBePaid = Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim());
-                    grandTotalAmount = amountToBePaid + amountToTip;
-                    break;
-                case R.id.amountCashEdit:
-                    this.amount.setText(cashAmountBuilder.toString());
-                    actualAmount = Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim());
-                    //amountToBePaid = (float)(Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
-                    //grandTotalAmount = amountToBePaid + amountToTip;
-                    break;
-                case R.id.tipAmountField:
-                    this.promptTipField.setText(cashAmountBuilder);
-                    double amountToTipFromField = Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim());
-                    if (amountToTipFromField > 0) {
-                        amountToTip = amountToTipFromField;
-                        grandTotalAmount = amountToBePaid + amountToTip;
-                        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-                    }
-                    break;
-            }
+            editText.setText(cashAmountBuilder.toString());
+//            switch (id) {
+//                case R.id.subtotalCashEdit:
+//                    subtotal.setText(cashAmountBuilder.toString());
+//                    break;
+//                case R.id.tax1CashEdit:
+//                    tax1.setText(cashAmountBuilder.toString());
+//                    break;
+//                case R.id.tax2CashEdit:
+//                    tax2.setText(cashAmountBuilder.toString());
+//                    break;
+//                case R.id.paidCashEdit:
+//                    this.paid.setText(cashAmountBuilder.toString());
+////                    amountToBePaid = Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim());
+////                    grandTotalAmount = amountToBePaid + amountToTip;
+//                    break;
+//                case R.id.amountCashEdit:
+//                    this.amount.setText(cashAmountBuilder.toString());
+////                    actualAmount = Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim());
+//                    //amountToBePaid = (float)(Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+//                    //grandTotalAmount = amountToBePaid + amountToTip;
+//                    break;
+//                case R.id.tipAmountField:
+//                    this.promptTipField.setText(cashAmountBuilder);
+////                    double amountToTipFromField = Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim());
+////                    if (amountToTipFromField > 0) {
+////                        amountToTip = amountToTipFromField;
+////                        grandTotalAmount = amountToBePaid + amountToTip;
+////                        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+////                    }
+//                    break;
+//            }
         }
-
-        switch (id) {
-            case R.id.subtotalCashEdit:
-                Selection.setSelection(subtotal.getText(), subtotal.getText().length());
-                break;
-            case R.id.tax1CashEdit:
-                Selection.setSelection(tax1.getText(), tax1.getText().length());
-                break;
-            case R.id.tax2CashEdit:
-                Selection.setSelection(tax2.getText(), tax2.getText().length());
-                break;
-            case R.id.paidCashEdit:
-                Selection.setSelection(paid.getText(), this.paid.getText().length());
-                break;
-            case R.id.amountCashEdit:
-                Selection.setSelection(this.amount.getText(), this.amount.getText().length());
-                break;
-            case R.id.tipAmountField:
-                Selection.setSelection(this.promptTipField.getText(), this.promptTipField.getText().length());
-                break;
-        }
+        Selection.setSelection(editText.getText(), editText.getText().length());
+//        switch (id) {
+//            case R.id.subtotalCashEdit:
+//                Selection.setSelection(subtotal.getText(), subtotal.getText().length());
+//                break;
+//            case R.id.tax1CashEdit:
+//                Selection.setSelection(tax1.getText(), tax1.getText().length());
+//                break;
+//            case R.id.tax2CashEdit:
+//                Selection.setSelection(tax2.getText(), tax2.getText().length());
+//                break;
+//            case R.id.paidCashEdit:
+//                Selection.setSelection(paid.getText(), this.paid.getText().length());
+//                break;
+//            case R.id.amountCashEdit:
+//                Selection.setSelection(this.amount.getText(), this.amount.getText().length());
+//                break;
+//            case R.id.tipAmountField:
+//                Selection.setSelection(this.promptTipField.getText(), this.promptTipField.getText().length());
+//                break;
+//        }
     }
 
     private void calculateTaxes() {
@@ -923,7 +924,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.printing_msg));
+            myProgressDialog.setMessage(getString(R.string.printing_message));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())
