@@ -73,7 +73,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:digits="@string/digits"
+                            android:digits="0123456789"
                             android:ellipsize="start"
                             android:enabled="true"
                             android:imeOptions="flagNoExtractUi|actionNext"
@@ -99,14 +99,14 @@
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textSize="@dimen/list_view_general_txt_size"
                             android:layout_gravity="center|left"
-                            android:id="@+id/tax1Lbl" />
+                            android:id="@+id/tax1CashLbl" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tax1CashEdit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:digits="@string/digits"
+                            android:digits="0123456789"
                             android:ellipsize="start"
                             android:enabled="true"
                             android:imeOptions="flagNoExtractUi|actionNext"
@@ -132,14 +132,14 @@
                             android:textSize="@dimen/list_view_general_txt_size"
                             android:layout_gravity="center|left"
                             android:layout_weight="0"
-                            android:id="@+id/tax2Lbl" />
+                            android:id="@+id/tax2CashLbl" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tax2CashEdit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:digits="@string/digits"
+                            android:digits="0123456789"
                             android:ellipsize="start"
                             android:enabled="true"
                             android:imeOptions="flagNoExtractUi|actionNext"
@@ -168,7 +168,7 @@
                             android:id="@+id/amountCashEdit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:digits="@string/digits"
+                            android:digits="0123456789"
                             android:ellipsize="start"
                             android:enabled="true"
                             android:imeOptions="flagNoExtractUi|actionNext"
@@ -218,7 +218,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:digits="@string/digits"
+                            android:digits="0123456789"
                             android:ellipsize="start"
                             android:enabled="true"
                             android:imeOptions="flagNoExtractUi|actionNext"
@@ -292,7 +292,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:digits="@string/digits"
+                            android:digits="0123456789"
                             android:ellipsize="start"
                             android:enabled="true"
                             android:imeOptions="flagNoExtractUi|actionNext"
@@ -396,7 +396,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:digits="0123456789-()"
+                    android:digits="0123456789"
                     android:ellipsize="start"
                     android:enabled="true"
                     android:hint="@string/cash_phone"
