@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Android_Platform_Adapter">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/Android_Platform_Adapter.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -637,6 +637,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 		@Override
 		protected void onPreExecute() {
+			Global.mainPrinterManager.currentDevice.loadScanner(null);
 			myProgressDialog = new ProgressDialog(activity);
 			myProgressDialog.setMessage("Printing...");
 			myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -648,7 +649,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		@Override
 		protected String doInBackground(Boolean... params) {
 			// TODO Auto-generated method stub
-			Global.mainPrinterManager.currentDevice.loadScanner(null);
+
 			wasReprint = params[0];
 			if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
 				if (isFromMainMenu || extras.getBoolean("histinvoices"))

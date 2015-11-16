@@ -31,6 +31,7 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.GroupTaxRate;
 import com.android.emobilepos.models.Payment;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
@@ -289,8 +290,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                calculateTaxes();
-                calculateAmountDue();
+                calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
+                calculateAmountDue(subtotal,tax1,tax2,amount);
                 recalculateChange();
 
             }
@@ -304,7 +305,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         });
         tax1.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                calculateAmountDue();
+                calculateAmountDue(subtotal,tax1,tax2,amount);
                 recalculateChange();
             }
 
@@ -317,7 +318,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         });
         tax2.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                calculateAmountDue();
+                calculateAmountDue(subtotal,tax1,tax2,amount);
                 recalculateChange();
 
             }
@@ -378,10 +379,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         hasBeenCreated = true;
     }
 
-    private void calculateAmountDue() {
+    public static void calculateAmountDue(EditText subtotal, EditText tax1, EditText tax2, EditText amount) {
         double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-//        double tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
-//        double tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
         double tax1Dbl = Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         double tax2Dbl = Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         double amountDueDbl = subtotalDbl + tax1Dbl + tax2Dbl;
@@ -455,7 +454,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.tipAmountField);
+                parseInputedCurrency(s, promptTipField);
             }
         });
 
@@ -549,7 +548,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     }
 
 
-    private void parseInputedCurrency(CharSequence s, EditText editText) {
+    public static void parseInputedCurrency(CharSequence s, EditText editText) {
         DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
         DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
         StringBuilder sb = new StringBuilder();
@@ -625,7 +624,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 //        }
     }
 
-    private void calculateTaxes() {
+    public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
         double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         double tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
         double tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
@@ -702,14 +701,9 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
                 payment.Tax2_amount = extras.getString("Tax2_amount");
                 payment.Tax2_name = extras.getString("Tax2_name");
             } else {
-//                BigDecimal tempRate;
-//                double tempPayAmount = Global.formatNumFromLocale(this.paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-//                tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
                 payment.Tax1_amount = tax1.getText().toString();
                 if (groupTaxRate.size() > 0)
                     payment.Tax1_name = groupTaxRate.get(0).getTaxName();
-//
-//                tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
                 payment.Tax2_amount = tax2.getText().toString();
                 if (groupTaxRate.size() > 1)
                     payment.Tax2_name = groupTaxRate.get(1).getTaxName();

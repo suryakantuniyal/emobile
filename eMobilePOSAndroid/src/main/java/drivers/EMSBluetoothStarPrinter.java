@@ -1,14 +1,15 @@
 package drivers;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.text.TextUtils;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.InvProdHandler;
@@ -35,17 +36,15 @@ import com.starmicronics.stario.StarPrinterStatus;
 import com.starmicronics.starioextension.starioextmanager.StarIoExtManager;
 import com.starmicronics.starioextension.starioextmanager.StarIoExtManagerListener;
 
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.text.TextUtils;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
@@ -90,15 +89,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 		LINE_WIDTH = paperSize;
 
 		switch (LINE_WIDTH) {
-		case 32:
-			PAPER_WIDTH = 408;
-			break;
-		case 48:
-			PAPER_WIDTH = 576;
-			break;
-		case 69:
-			PAPER_WIDTH = 832;// 5400
-			break;
+			case 32:
+				PAPER_WIDTH = 408;
+				break;
+			case 48:
+				PAPER_WIDTH = 576;
+				break;
+			case 69:
+				PAPER_WIDTH = 832;// 5400
+				break;
 		}
 
 		portName = myPref.printerMACAddress(true, null);
@@ -109,7 +108,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 	@Override
 	public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
-			String _portName, String _portNumber) {
+							   String _portName, String _portNumber) {
 		boolean didConnect = false;
 		this.activity = activity;
 		myPref = new MyPreferences(this.activity);
@@ -121,15 +120,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 		LINE_WIDTH = paperSize;
 
 		switch (LINE_WIDTH) {
-		case 32:
-			PAPER_WIDTH = 420;
-			break;
-		case 48:
-			PAPER_WIDTH = 1600;
-			break;
-		case 69:
-			PAPER_WIDTH = 300;// 5400
-			break;
+			case 32:
+				PAPER_WIDTH = 420;
+				break;
+			case 48:
+				PAPER_WIDTH = 1600;
+				break;
+			case 69:
+				PAPER_WIDTH = 300;// 5400
+				break;
 		}
 
 		if (_portName != null || _portNumber != null) {
@@ -285,7 +284,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 			releasePrinter();
 			Thread.sleep(500);
 			port = null;// StarIOPort.getPort(portName, portSettings, 30000,
-						// this.activity);
+			// this.activity);
 			verifyConnectivity();
 		}
 	}
@@ -295,23 +294,19 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 		// TODO Auto-generated method stub
 		try {
 
-			// port = StarIOPort.getPort(portName, portSettings, 1000,
-			// this.activity);
+			verifyConnectivity();
 
-			// verifyConnectivity();
-			port = getStarIOPort();
-			Thread.sleep(500);
+			Thread.sleep(1000);
 
 			if (!isPOSPrinter) {
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
-				port.writePort(new byte[] { 0x1b, 0x1d, 0x74, 0x20 }, 0, 4);
-				port.writePort(disableCenter, 0, disableCenter.length); // disable
-																		// center
+				// port.writePort(new byte[]{0x1b, 0x40}, 0,2);
 			}
+
 			printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
 
 		} catch (StarIOPortException e) {
@@ -345,7 +340,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
 				// port.writePort(new byte[]{0x1b, 0x40}, 0,2);
 			}
@@ -385,7 +380,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				this.printHeader();
 
 			port.writePort(enableCenter, 0, enableCenter.length); // enable
-																	// center
+			// center
 
 			sb.append("* ").append(payArray[0]);
 			if (payArray[11].equals("1"))
@@ -395,7 +390,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.length());
 			port.writePort(disableCenter, 0, disableCenter.length); // disable
-																	// center
+			// center
 			sb.setLength(0);
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 					getString(R.string.receipt_time), LINE_WIDTH, 0));
@@ -464,7 +459,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 			if (Global.isIvuLoto) {
 				sb = new StringBuilder();
 				port.writePort(enableCenter, 0, enableCenter.length); // enable
-																		// center
+				// center
 
 				if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
 					sb.append("\n");
@@ -650,7 +645,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
 				// port.writePort(new byte[]{0x1b,0x1d,0x74,0x20}, 0,2);
 			}
@@ -858,7 +853,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
 				// port.writePort(new byte[]{0x1b, 0x40}, 0,2);
 			}
@@ -1258,7 +1253,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
 				// port.writePort(new byte[]{0x1b, 0x40}, 0,2);
 			}
@@ -1324,7 +1319,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
 				port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
 				port.writePort(disableCenter, 0, disableCenter.length); // disable
-																		// center
+				// center
 			}
 
 			if (isPOSPrinter) {
@@ -1367,7 +1362,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
 				// port.writePort(new byte[]{0x1b, 0x40}, 0,2);
 			}
@@ -1497,7 +1492,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
 				port.writePort(new byte[] { 0x1b, 0x1d, 0x74, 0x20 }, 0, 4);
 				byte[] characterExpansion = new byte[] { 0x1b, 0x69, 0x00, 0x00 };
@@ -1506,7 +1501,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
 				port.writePort(characterExpansion, 0, characterExpansion.length);
 				port.writePort(disableCenter, 0, disableCenter.length); // disable
-																		// center
+				// center
 			}
 
 			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -1634,7 +1629,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				try {
 
 					if (isPOSPrinter) {
-						port.writePort(new byte[] { 0x07 }, 0, 1); // Kick cash
+						getStarIOPort().writePort(new byte[]{0x07}, 0, 1); // Kick cash
+//						port.writePort(new byte[] { 0x07 }, 0, 1); // Kick cash
 						releasePrinter(); // drawer
 					}
 
@@ -1663,7 +1659,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
 				port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
 				port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
-																		// windows-1252
+				// windows-1252
 			} else {
 				// port.writePort(new byte[]{0x1b, 0x40}, 0,2);
 			}
@@ -1912,9 +1908,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				int port=80;
 				try {
 					port = TextUtils.isEmpty(portSettings) ? 80 : Integer.parseInt(portSettings);
-				} catch (NumberFormatException e) {					
+				} catch (NumberFormatException e) {
 					e.printStackTrace();
-					
+
 				}
 				if (!Global.isIpAvailable(ip, port)) {
 					throw new StarIOPortException("Host not reachable.");

@@ -29,11 +29,16 @@ android {
         }
     }
 }
-
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 dependencies {
-    compile project(':mDOpenCV')
-    compile project(':honeywell')
-    compile project(':stickyListHeaders')
+    compile(name:'dragSortLibrary-release', ext:'aar')
+    compile(name:'mDOpenCV-release', ext:'aar')
+    compile(name:'honeywell-release', ext:'aar')
+    compile(name:'stickyListHeaders-release', ext:'aar')
     compile project(':gridHeaderLibrary')
     compile project(':dragSortLibrary')
     compile project(':nostraLoader')

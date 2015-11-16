@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.database.CustomersHandler;
+import com.android.database.DrawInfoHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
@@ -46,6 +47,7 @@ import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Payment;
+import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -123,7 +125,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private EditText amountPaidField;
     private EditText phoneNumberField, customerEmailField;
     private EditText authIDField, transIDField;
-    private TextView  tax1Lbl, tax2Lbl;
+    private TextView tax1Lbl, tax2Lbl;
     private EditText subtotal, tax1, tax2;
     private List<GroupTax> groupTaxRate;
     // private boolean timedOut = false;
@@ -221,7 +223,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
         tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
 
-        if(!Global.isIvuLoto){
+        if (!Global.isIvuLoto) {
             findViewById(R.id.row1Credit).setVisibility(View.GONE);
             findViewById(R.id.row2Credit).setVisibility(View.GONE);
             findViewById(R.id.row3Credit).setVisibility(View.GONE);
@@ -234,7 +236,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         actualAmount = Global
                 .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
-        amountField.addTextChangedListener(getTextWatcher(R.id.processCardAmount));
+        amountField.addTextChangedListener(getTextWatcher(amountField));
         this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
         subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
         tax1.setOnFocusChangeListener(getFocusListener(tax1));
@@ -254,10 +256,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         this.amountPaidField = (EditText) findViewById(R.id.processCardAmountPaid);
         this.amountPaidField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        this.amountPaidField.addTextChangedListener(getTextWatcher(R.id.processCardAmountPaid));
-        subtotal.addTextChangedListener(getTextWatcher(R.id.subtotalCardAmount));
-        tax1.addTextChangedListener(getTextWatcher(R.id.tax1CardAmount));
-        tax2.addTextChangedListener(getTextWatcher(R.id.tax2CardAmount));
+        this.amountPaidField.addTextChangedListener(getTextWatcher(amountPaidField));
+        subtotal.addTextChangedListener(getTextWatcher(subtotal));
+        tax1.addTextChangedListener(getTextWatcher(tax1));
+        tax2.addTextChangedListener(getTextWatcher(tax2));
         this.amountPaidField.setOnFocusChangeListener(getFocusListener(this.amountPaidField));
         if (myPref.getPreferences(MyPreferences.pref_prefill_total_amount))
             this.amountPaidField.setText(
@@ -311,7 +313,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         } else {
             this.tipAmount.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             this.tipAmount.setText(Global.formatDoubleToCurrency(0.00));
-            this.tipAmount.addTextChangedListener(getTextWatcher(R.id.processCardTip));
+            this.tipAmount.addTextChangedListener(getTextWatcher(tipAmount
+            ));
             this.tipAmount.setOnFocusChangeListener(getFocusListener(this.tipAmount));
         }
 
@@ -380,17 +383,30 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
     }
 
-    private TextWatcher getTextWatcher(final int type_id) {
+    private TextWatcher getTextWatcher(final EditText editText) {
 
         return new TextWatcher() {
             public void afterTextChanged(Editable s) {
+                switch (editText.getId()) {
+                    case R.id.subtotalCardAmount: {
+                        ProcessCash_FA.calculateTaxes(groupTaxRate, editText, tax1, tax2);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        break;
+                    }
+                    case R.id.tax2CardAmount:
+                    case R.id.tax1CardAmount:{
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        break;
+                    }
+                }
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, type_id);
+                ProcessCash_FA.parseInputedCurrency(s, editText);
+                //parseInputedCurrency(s, type_id);
             }
         };
     }
@@ -604,10 +620,15 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         payment.card_type = creditCardType;
 
         if (Global.isIvuLoto) {
-            payment.IvuLottoNumber = extras.getString("IvuLottoNumber");
-            payment.IvuLottoDrawDate = extras.getString("IvuLottoDrawDate");
-            payment.IvuLottoQR = Global.base64QRCode(extras.getString("IvuLottoNumber"),
-                    extras.getString("IvuLottoDrawDate"));
+            DrawInfoHandler drawDateInfo = new DrawInfoHandler(activity);
+            MersenneTwisterFast mersenneTwister = new MersenneTwisterFast();
+            String drawDate = drawDateInfo.getDrawDate();
+            String ivuLottoNum = mersenneTwister.generateIVULoto();
+
+            payment.IvuLottoNumber = ivuLottoNum;
+            payment.IvuLottoDrawDate = drawDate;
+            payment.IvuLottoQR =
+                    Global.base64QRCode(ivuLottoNum, drawDate);
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
                 payment.Tax1_amount = extras.getString("Tax1_amount");
@@ -616,17 +637,15 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 payment.Tax2_amount = extras.getString("Tax2_amount");
                 payment.Tax2_name = extras.getString("Tax2_name");
             } else {
-                BigDecimal tempRate;
-                double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
-                tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax1_amount = tempRate.toPlainString();
-                payment.Tax1_name = "Estatal";
-
-                tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax2_amount = tempRate.toPlainString();
-                payment.Tax2_name = "Municipal";
+                payment.Tax1_amount = tax1.getText().toString();
+                if (groupTaxRate.size() > 0)
+                    payment.Tax1_name = groupTaxRate.get(0).getTaxName();
+                payment.Tax2_amount = tax2.getText().toString();
+                if (groupTaxRate.size() > 1)
+                    payment.Tax2_name = groupTaxRate.get(1).getTaxName();
             }
         }
+
         if (walkerReader == null) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
@@ -896,8 +915,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         dialog.setInverseBackgroundForced(true);
         dialog.setCancelable(false);
         // *****Method that works only with gingerbread and removes background
-		/*
-		 * final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
+        /*
+         * final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
 		 * dialog.setContentView(dialogLayout);
 		 */
 

@@ -1,12 +1,16 @@
 package drivers;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.util.Base64;
-import android.util.Log;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
@@ -26,21 +30,16 @@ import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
-import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 import POSSDK.POSSDK;
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.util.Base64;
+import android.util.Log;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.star.utils.Communication;
@@ -52,6 +51,7 @@ import util.RasterDocument;
 import util.RasterDocument.RasPageEndMode;
 import util.RasterDocument.RasSpeed;
 import util.RasterDocument.RasTopMargin;
+import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
 
 
 public class EMSDeviceDriver {
@@ -82,7 +82,7 @@ public class EMSDeviceDriver {
 	}
 
 	public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
-			String portName, String portNumber) {
+							   String portName, String portNumber) {
 		return false;
 	}
 
@@ -95,27 +95,27 @@ public class EMSDeviceDriver {
 	public void setPaperWidth(int lineWidth) {
 		if (this instanceof EMSBluetoothStarPrinter) {
 			switch (lineWidth) {
-			case 32:
-				PAPER_WIDTH = 408;
-				break;
-			case 48:
-				PAPER_WIDTH = 576;
-				break;
-			case 69:
-				PAPER_WIDTH = 832;// 5400
-				break;
+				case 32:
+					PAPER_WIDTH = 408;
+					break;
+				case 48:
+					PAPER_WIDTH = 576;
+					break;
+				case 69:
+					PAPER_WIDTH = 832;// 5400
+					break;
 			}
 		} else {
 			switch (lineWidth) {
-			case 32:
-				PAPER_WIDTH = 420;
-				break;
-			case 48:
-				PAPER_WIDTH = 1600;
-				break;
-			case 69:
-				PAPER_WIDTH = 300;// 5400
-				break;
+				case 32:
+					PAPER_WIDTH = 420;
+					break;
+				case 48:
+					PAPER_WIDTH = 1600;
+					break;
+				case 69:
+					PAPER_WIDTH = 300;// 5400
+					break;
 			}
 		}
 	}
@@ -325,27 +325,27 @@ public class EMSDeviceDriver {
 			}
 
 			switch (type) {
-			case 0: // Order
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.order) + ":", ordID,
-						lineWidth, 0));
-				break;
-			case 1: // Return
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.return_tag) + ":", ordID,
-						lineWidth, 0));
-				break;
-			case 2: // Invoice
-			case 7:// Consignment Invoice
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
-						lineWidth, 0));
-				break;
-			case 3: // Estimate
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.estimate) + ":", ordID,
-						lineWidth, 0));
-				break;
-			case 5: // Sales Receipt
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", ordID,
-						lineWidth, 0));
-				break;
+				case 0: // Order
+					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.order) + ":", ordID,
+							lineWidth, 0));
+					break;
+				case 1: // Return
+					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.return_tag) + ":", ordID,
+							lineWidth, 0));
+					break;
+				case 2: // Invoice
+				case 7:// Consignment Invoice
+					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
+							lineWidth, 0));
+					break;
+				case 3: // Estimate
+					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.estimate) + ":", ordID,
+							lineWidth, 0));
+					break;
+				case 5: // Sales Receipt
+					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", ordID,
+							lineWidth, 0));
+					break;
 			}
 
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
@@ -623,7 +623,7 @@ public class EMSDeviceDriver {
 			e.printStackTrace();
 		} finally {
 
-			releasePrinter();
+//			releasePrinter();
 		}
 
 	}
@@ -700,29 +700,29 @@ public class EMSDeviceDriver {
 		}
 		Bitmap myBitmap = null;
 		switch (type) {
-		case 0: // Logo
-		{
-			File imgFile = new File(myPref.getAccountLogoPath());
-			if (imgFile.exists()) {
-				myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+			case 0: // Logo
+			{
+				File imgFile = new File(myPref.getAccountLogoPath());
+				if (imgFile.exists()) {
+					myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+				}
+				break;
 			}
-			break;
-		}
-		case 1: // signature
-		{
-			if (!encodedSignature.isEmpty()) {
-				byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
-				myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+			case 1: // signature
+			{
+				if (!encodedSignature.isEmpty()) {
+					byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
+					myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+				}
+				break;
 			}
-			break;
-		}
-		case 2: {
-			if (!encodedQRCode.isEmpty()) {
-				byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
-				myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+			case 2: {
+				if (!encodedQRCode.isEmpty()) {
+					byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
+					myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+				}
+				break;
 			}
-			break;
-		}
 		}
 
 		if (myBitmap != null) {
@@ -740,13 +740,13 @@ public class EMSDeviceDriver {
 //				canvas.drawBitmap(myBitmap, centreX, 0, null);
 //				myBitmap = canvasBmp;
 				byte[] data;
-				
+
 				if (isPOSPrinter) {
 					data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
 							myBitmap);
 					Communication.Result result;
 					result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
-					
+
 //					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
 //							PAPER_WIDTH, false);
 				} else {
