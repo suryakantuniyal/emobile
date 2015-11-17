@@ -701,10 +701,10 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
                 payment.Tax2_amount = extras.getString("Tax2_amount");
                 payment.Tax2_name = extras.getString("Tax2_name");
             } else {
-                payment.Tax1_amount = tax1.getText().toString();
+                payment.Tax1_amount = String.valueOf(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 0)
                     payment.Tax1_name = groupTaxRate.get(0).getTaxName();
-                payment.Tax2_amount = tax2.getText().toString();
+                payment.Tax2_amount = String.valueOf(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 1)
                     payment.Tax2_name = groupTaxRate.get(1).getTaxName();
             }

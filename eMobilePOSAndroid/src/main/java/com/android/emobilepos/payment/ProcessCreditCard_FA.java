@@ -394,7 +394,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                         break;
                     }
                     case R.id.tax2CardAmount:
-                    case R.id.tax1CardAmount:{
+                    case R.id.tax1CardAmount: {
                         ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
                         break;
                     }
@@ -637,10 +637,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 payment.Tax2_amount = extras.getString("Tax2_amount");
                 payment.Tax2_name = extras.getString("Tax2_name");
             } else {
-                payment.Tax1_amount = tax1.getText().toString();
+                payment.Tax1_amount = String.valueOf(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 0)
                     payment.Tax1_name = groupTaxRate.get(0).getTaxName();
-                payment.Tax2_amount = tax2.getText().toString();
+                payment.Tax2_amount = String.valueOf(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 1)
                     payment.Tax2_name = groupTaxRate.get(1).getTaxName();
             }
@@ -1061,8 +1061,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         dialog.setInverseBackgroundForced(true);
         dialog.setCancelable(false);
         // *****Method that works only with gingerbread and removes background
-		/*
-		 * final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
+        /*
+         * final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
 		 * dialog.setContentView(dialogLayout);
 		 */
 
