@@ -46,6 +46,7 @@ import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Payment;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -228,7 +229,14 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             findViewById(R.id.row2Credit).setVisibility(View.GONE);
             findViewById(R.id.row3Credit).setVisibility(View.GONE);
         }
-
+        tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
+        tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
+        List<OrderProducts> orderProducts = global.orderProducts;
+        double subtotalDbl = 0;
+        for (OrderProducts products : orderProducts) {
+            subtotalDbl += Double.parseDouble(products.itemSubtotal);
+        }
+        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         this.amountField = (EditText) findViewById(R.id.processCardAmount);
         this.amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.amountField.setText(
@@ -241,12 +249,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
         tax1.setOnFocusChangeListener(getFocusListener(tax1));
         tax2.setOnFocusChangeListener(getFocusListener(tax2));
-        subtotal.setText(
-                Global.formatDoubleToCurrency(0.00));
-        tax1.setText(
-                Global.formatDoubleToCurrency(0.00));
-        tax2.setText(
-                Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
+      
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax1.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax2.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);

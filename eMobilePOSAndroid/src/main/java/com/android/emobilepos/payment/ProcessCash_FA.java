@@ -12,6 +12,7 @@ import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.GroupTaxRate;
+import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Payment;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
@@ -140,6 +142,17 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             this.tipAmount.setText(Global.formatDoubleToCurrency(0.00));
 
         amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+        tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
+        tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
+        List<OrderProducts> orderProducts = global.orderProducts;
+        double subtotalDbl = 0;
+        for (OrderProducts products : orderProducts) {
+            subtotalDbl += Double.parseDouble(products.itemSubtotal);
+        }
+//        double tax1Dbl = TextUtils.isEmpty(extras.getString("Tax1_amount")) ? 0 : Double.parseDouble(extras.getString("Tax1_amount"));
+//        double tax2Dbl = TextUtils.isEmpty(extras.getString("Tax2_amount")) ? 0 : Double.parseDouble(extras.getString("Tax2_amount"));
+//        double amountDbl = TextUtils.isEmpty(extras.getString("amount")) ? 0 : Double.parseDouble(extras.getString("amount"));
+        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
 
 
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
@@ -154,9 +167,19 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
         this.paid = (EditText) findViewById(R.id.paidCashEdit);
 
-        subtotal.setText(Global.formatDoubleToCurrency(0.00));
-        tax1.setText(Global.formatDoubleToCurrency(0.00));
-        tax2.setText(Global.formatDoubleToCurrency(0.00));
+//        subtotal.setText(Global.formatDoubleToCurrency(0.00));
+//        Tax1_amount=0.42, Tax1_name=PR IVU 1, Tax2_name=PR IVU 1,
+//        if(TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
+//            tax1.setText(Global.formatDoubleToCurrency(0.00));
+//        }else{
+//            tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
+//        }
+//        if(TextUtils.isEmpty(extras.getString("Tax2_amount"))) {
+//            tax2.setText(Global.formatDoubleToCurrency(0.00));
+//        }else{
+//            tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
+//        }
+//        tax2.setText(Global.formatDoubleToCurrency(0.00));
         this.paid.setText(Global.formatDoubleToCurrency(0.00));
         this.paid.setSelection(5);
         this.paid.setOnFocusChangeListener(new View.OnFocusChangeListener() {

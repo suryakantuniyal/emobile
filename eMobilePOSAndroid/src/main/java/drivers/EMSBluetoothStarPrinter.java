@@ -468,7 +468,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 				if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
 					sb.append("\n");
 					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-					sb.append(textHandler.centeredString("IVULOTO: " + payArray[13], LINE_WIDTH));
+					sb.append(textHandler.centeredString("CONTROL: " + payArray[13], LINE_WIDTH));
 					sb.append(textHandler.centeredString(payArray[12], LINE_WIDTH));
 					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
 					sb.append("\n");

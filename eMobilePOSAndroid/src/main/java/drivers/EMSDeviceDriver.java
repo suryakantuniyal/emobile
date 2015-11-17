@@ -591,6 +591,36 @@ public class EMSDeviceDriver {
 			print(textHandler.newLines(1), FORMAT);
 			if (type != 1)
 				printYouSave(String.valueOf(saveAmount), lineWidth);
+
+			if (Global.isIvuLoto) {
+				sb = new StringBuilder();
+				port.writePort(enableCenter, 0, enableCenter.length); // enable
+				// center
+
+				if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
+					sb.append("\n");
+					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+					sb.append(textHandler.centeredString("CONTROL: " + payArrayList.get(0)[7], lineWidth));
+					sb.append(textHandler.centeredString(payArrayList.get(0)[6], lineWidth));
+					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+					sb.append("\n");
+
+					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+				} else {
+					encodedQRCode = payArrayList.get(0)[8];
+
+					this.printImage(2);
+
+					sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+					sb.append("\t").append("CONTROL: ").append(payArrayList.get(0)[7]).append("\n");
+					sb.append(payArrayList.get(0)[6]).append("\n");
+					sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+
+					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+				}
+				sb.setLength(0);
+			}
+
 			if (printPref.contains(MyPreferences.print_footer))
 				printFooter(lineWidth);
 
