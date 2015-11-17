@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="MobilePrinter">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/MobilePrinter.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

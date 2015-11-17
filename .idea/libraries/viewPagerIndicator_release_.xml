@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="viewPagerIndicator-release-">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/eMobilePOSAndroid/build/intermediates/exploded-aar/viewPagerIndicator-release/res" />
+      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/build/intermediates/exploded-aar/viewPagerIndicator-release/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
