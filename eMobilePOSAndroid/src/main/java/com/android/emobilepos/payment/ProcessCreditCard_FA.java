@@ -222,7 +222,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         tax2 = (EditText) findViewById(R.id.tax2CardAmount);
         tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
         tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
-
+        ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         if (!Global.isIvuLoto) {
             findViewById(R.id.row1Credit).setVisibility(View.GONE);
             findViewById(R.id.row2Credit).setVisibility(View.GONE);
@@ -554,6 +554,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     }
 
     private void processPayment() {
+
         if (walkerReader == null)
             populateCardInfo();
 
@@ -583,12 +584,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         payment.paymethod_id = extras.getString("paymethod_id");
 
         Global.amountPaid = Double.toString(amountToBePaid);
-
-        // if (amountToBePaid < actualAmount) {
-        // payment.pay_dueamount = Double.toString(actualAmount);
-        // } else {
-        // payment.pay_dueamount = Double.toString(amountToBePaid);
-        // }
         payment.pay_dueamount = Double.toString(actualAmount - amountToBePaid);
 
         payment.pay_amount = Double.toString(amountToBePaid);
@@ -637,10 +632,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 payment.Tax2_amount = extras.getString("Tax2_amount");
                 payment.Tax2_name = extras.getString("Tax2_name");
             } else {
-                payment.Tax1_amount = String.valueOf(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                payment.Tax1_amount = Double.toString(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 0)
                     payment.Tax1_name = groupTaxRate.get(0).getTaxName();
-                payment.Tax2_amount = String.valueOf(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                payment.Tax2_amount = Double.toString(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 1)
                     payment.Tax2_name = groupTaxRate.get(1).getTaxName();
             }
@@ -948,7 +943,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.otherTipAmountField);
+                ProcessCash_FA.parseInputedCurrency(s, promptTipField);
             }
         });
 
@@ -1103,76 +1098,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             }
         });
         dialog.show();
-    }
-
-    private void parseInputedCurrency(CharSequence s, int type) {
-        DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-        DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-        StringBuilder sb = new StringBuilder();
-        sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator())
-                .append("\\d{3})*|(\\d+))(");
-        sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
-
-        if (!s.toString().matches(sb.toString())) {
-            String userInput = "" + s.toString().replaceAll("[^\\d]", "");
-            StringBuilder cashAmountBuilder = new StringBuilder(userInput);
-
-            while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
-                cashAmountBuilder.deleteCharAt(0);
-            }
-            while (cashAmountBuilder.length() < 3) {
-                cashAmountBuilder.insert(0, '0');
-            }
-
-            cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
-            cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-            switch (type) {
-
-                case R.id.processCardAmount:
-                    this.amountField.setText(cashAmountBuilder.toString());
-                    break;
-                case R.id.processCardAmountPaid:
-                    amountPaidField.setText(cashAmountBuilder);
-                    amountToBePaid = (float) (Global
-                            .formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
-                    grandTotalAmount = amountToBePaid + amountToTip;
-                    break;
-                case R.id.processCardTip:
-                    this.tipAmount.setText(cashAmountBuilder.toString());
-                    amountToTip = (float) (Global
-                            .formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
-                    grandTotalAmount = amountToBePaid + amountToTip;
-                    break;
-                case R.id.otherTipAmountField:
-                    this.promptTipField.setText(cashAmountBuilder);
-                    float amountToTipFromField = (float) (Global
-                            .formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
-                    if (amountToTipFromField > 0) {
-                        amountToTip = amountToTipFromField;
-                        grandTotalAmount = amountToBePaid + amountToTip;
-                        dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
-                    }
-                    break;
-
-            }
-        }
-
-        // keeps the cursor always to the right
-        switch (type) {
-
-            case R.id.processCardAmount:
-                Selection.setSelection(this.amountField.getText(), this.amountField.getText().length());
-                break;
-            case R.id.processCardAmountPaid:
-                Selection.setSelection(this.amountPaidField.getText(), this.amountPaidField.getText().length());
-                break;
-            case R.id.processCardTip:
-                Selection.setSelection(this.tipAmount.getText(), this.tipAmount.getText().length());
-                break;
-            case R.id.otherTipAmountField: // Add gratuity prompt
-                Selection.setSelection(this.promptTipField.getText(), this.promptTipField.getText().length());
-                break;
-        }
     }
 
     public void listener(int cases, final EditText x) {

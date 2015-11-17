@@ -344,9 +344,7 @@ public class EMSPayGate_Default {
 			e.printStackTrace();
 		}
 
-		String test = writer.toString();
-
-		return test;
+		return writer.toString();
 	}
 
 	public void generateOrderBlock(String orderId) {

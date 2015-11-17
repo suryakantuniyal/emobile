@@ -130,7 +130,8 @@
 
                     <TableRow
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:id="@+id/row1Gift">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -159,7 +160,8 @@
 
                     <TableRow
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:id="@+id/row2Gift">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -189,7 +191,8 @@
 
                     <TableRow
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:id="@+id/row3Gift">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -230,7 +233,7 @@
                             android:layout_gravity="center|left" />
 
                         <com.android.support.MyEditText
-                            android:id="@+id/processCardAmount"
+                            android:id="@+id/amountDueGiftCard"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -279,7 +282,7 @@
                             android:layout_gravity="center" />
 
                         <com.android.support.MyEditText
-                            android:id="@+id/processCardAmountPaid"
+                            android:id="@+id/amountTendered"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"

@@ -160,24 +160,22 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			setResult(-1);
 
 			if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-				showPaymentSuccessDlog(true, true, "0");
+				showPaymentSuccessDlog(true);
 			} else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-				showPaymentSuccessDlog(true, true, "0");
+				showPaymentSuccessDlog(true);
 			}
 		}
 
 		if (myPref.isSam4s(true, true)) {
-			StringBuilder sb = new StringBuilder();
 			String row1 = "Grand Total";
-			String row2 = sb.append(Global.formatDoubleStrToCurrency(total)).toString();
+			String row2 = Global.formatDoubleStrToCurrency(total);
 			uart uart_tool = new uart();
 			uart_tool.config(3, 9600, 8, 1);
 			uart_tool.write(3, Global.emptySpaces(40, 0, false));
 			uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
 		} else if (myPref.isPAT100(true, true)) {
-			StringBuilder sb = new StringBuilder();
 			String row1 = "Grand Total";
-			String row2 = sb.append(Global.formatDoubleStrToCurrency(total)).toString();
+			String row2 = Global.formatDoubleStrToCurrency(total);
 			EMSPAT100.getTerminalDisp().clearText();
 			EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
 		}
@@ -356,7 +354,6 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				double subtotal = Double.parseDouble(extras.getString("ord_subtotal"));
 				String taxID = extras.getString("ord_taxID");
 
-				TaxesHandler taxHandler = new TaxesHandler(activity);
 				List<GroupTax> groupTax = TaxesHandler.getGroupTaxRate(taxID);
 
 				if (groupTax.size() > 0) {
@@ -750,10 +747,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
 
 		// private String[]returnedPost;
-		boolean wasProcessed = false;
 		HashMap<String, String> parsedMap = new HashMap<String, String>();
-		private String errorMsg = "Could not process the payment.";
-		private int errCount = 0;
 
 		@Override
 		protected void onPreExecute() {
@@ -775,7 +769,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			Post post = new Post();
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-			String xml = "";
+			String xml;
 			InputSource inSource;
 			SAXParser sp;
 			XMLReader xr;
@@ -783,7 +777,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			try {
 				sp = spf.newSAXParser();
 				xr = sp.getXMLReader();
-				String paymentType = "";
+				String paymentType;
 				for (int i = 0; i < size; i++) {
 					paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
 					if (paymentType.equals("GIFTCARD")) {
@@ -799,8 +793,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						if (parsedMap != null && parsedMap.size() > 0
 								&& parsedMap.get("epayStatusCode").equals("APPROVED"))
 							payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-						else
-							errCount++;
+
 						parsedMap.clear();
 					} else if (paymentType.equals("CASH")) {
 
@@ -819,17 +812,15 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						if (parsedMap != null && parsedMap.size() > 0
 								&& parsedMap.get("epayStatusCode").equals("APPROVED"))
 							payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-						else
-							errCount++;
 
 						parsedMap.clear();
 					}
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage())
-						.append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
+//				StringBuilder sb = new StringBuilder();
+//				sb.append(e.getMessage())
+//						.append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
 //				Tracker tracker = EasyTracker.getInstance(activity);
 //				tracker.send(MapBuilder.createException(sb.toString(), false).build());
@@ -859,7 +850,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				setResult(Global.FROM_PAYMENT);
 			else
 				setResult(-1);
-			showPaymentSuccessDlog(true, false, null);
+			showPaymentSuccessDlog(true);
 		} else if (resultCode == -2) {
 			totalPayCount++;
 			OrdersHandler handler = new OrdersHandler(activity);
@@ -893,9 +884,9 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				String temp = Global.formatDoubleStrToCurrency("0.00");
 
 				if (isFromMainMenu || extras.getBoolean("histinvoices"))
-					showPaymentSuccessDlog(true, true, temp);
+					showPaymentSuccessDlog(true);
 				else
-					showPaymentSuccessDlog(false, true, temp);
+					showPaymentSuccessDlog(false);
 
 			} else {
 				if (job_id != null && !job_id.isEmpty()) {
@@ -905,7 +896,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 				String temp = Global.formatDoubleStrToCurrency(Double.toString(overAllRemainingBalance));
 				previous_pay_id = pay_id;
-				showPaymentSuccessDlog(true, true, temp);
+				showPaymentSuccessDlog(true);
 			}
 		}
 	}
@@ -933,7 +924,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		dlog.show();
 	}
 
-	private void showPaymentSuccessDlog(final boolean withPrintRequest, boolean showRefund, String amount) {
+	private void showPaymentSuccessDlog(final boolean withPrintRequest) {
 
 		dlog = new Dialog(activity, R.style.Theme_TransparentTest);
 		dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1069,7 +1060,6 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			new processLoyaltyAsync().execute();
 		} else {
-			BigDecimal bdTotal = new BigDecimal(total);
 			BigDecimal bdOrigAmount = new BigDecimal(cardInfoManager.getOriginalTotalAmount());
 
 			if (Global.rewardChargeAmount.compareTo(new BigDecimal("0")) == 1)

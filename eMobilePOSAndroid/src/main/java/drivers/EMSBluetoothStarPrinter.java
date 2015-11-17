@@ -30,6 +30,7 @@ import com.android.support.DBManager;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.stario.StarPrinterStatus;
@@ -45,6 +46,9 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
+import drivers.star.utils.Communication;
+import drivers.star.utils.PrinterFunctions;
+import drivers.star.utils.PrinterSetting;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
@@ -1623,26 +1627,42 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 	@Override
 	public void openCashDrawer() {
 
-		new Thread(new Runnable() {
-			public void run() {
+		byte[] data;
+//	     releasePrinter();
+		data = PrinterFunctions.createCommandsOpenCashDrawer();
 
-				try {
+		PrinterSetting setting = new PrinterSetting(this.activity);
 
-					if (isPOSPrinter) {
-						getStarIOPort().writePort(new byte[]{0x07}, 0, 1); // Kick cash
-//						port.writePort(new byte[] { 0x07 }, 0, 1); // Kick cash
-						releasePrinter(); // drawer
-					}
+		Communication.Result result;
 
-				} catch (StarIOPortException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+		try {
+			result = Communication.sendCommands(data, getStarIOPort(),this.activity);
+		} catch (StarIOPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}   // 10000mS!!!
 
-				} finally {
-
-				}
-			}
-		}).start();
+//
+////		new Thread(new Runnable() {
+////			public void run() {
+//
+//				try {
+//
+//					if (isPOSPrinter) {					
+//						getStarIOPort().writePort(new byte[] { 0x07 }, 0, 1); // Kick cash
+////						port.writePort(new byte[] { 0x07 }, 0, 1); // Kick cash
+//						//releasePrinter(); // drawer
+//					}
+//
+//				} catch (StarIOPortException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//
+//				} finally {
+//
+//				}
+////			}
+////		}).start();
 
 	}
 
@@ -1910,7 +1930,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					port = TextUtils.isEmpty(portSettings) ? 80 : Integer.parseInt(portSettings);
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
-
 				}
 				if (!Global.isIpAvailable(ip, port)) {
 					throw new StarIOPortException("Host not reachable.");

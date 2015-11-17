@@ -231,9 +231,9 @@ public class Post {
 				e.printStackTrace();
 			}
 		} else {
-			Log.d("Request XMKL:", entity.toString());
+			Log.d("Request XMKL: ", entity.toString());
 			response = this.postRequest(postLink, entity.toString());
-			Log.d("Request XMKL:", response.toString());
+			Log.d("Request XMKL: ", response.toString());
 			
 		}
 

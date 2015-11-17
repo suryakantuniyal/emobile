@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -23,6 +25,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.payment.ProcessCash_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -226,7 +229,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 			LOADING_MSG = "Adding Balance...";
 			fieldAmountToAdd = (EditText) findViewById(R.id.fieldAmountToAdd);
 			fieldAmountToAdd.setVisibility(View.VISIBLE);
-			fieldAmountToAdd.addTextChangedListener(Global.amountTextWatcher(fieldAmountToAdd));
+			fieldAmountToAdd.addTextChangedListener(getTextWatcher(fieldAmountToAdd));
 
 			break;
 		}
@@ -380,6 +383,20 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 		return false;
 	}
 
+	private TextWatcher getTextWatcher(final EditText editText) {
+
+		return new TextWatcher() {
+			public void afterTextChanged(Editable s) {
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				ProcessCash_FA.parseInputedCurrency(s, editText);
+			}
+		};
+	}
 	private boolean populateCardInfo() {
 		if (!wasReadFromReader) {
 			Encrypt encrypt = new Encrypt(activity);

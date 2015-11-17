@@ -13,6 +13,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -107,13 +109,26 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
 
 		invJobView.setText(inv_id);
 		amountView.setText(extras.getString("amount"));
-		amountView.addTextChangedListener(Global.amountTextWatcher(amountView));
+		amountView.addTextChangedListener(getTextWatcher(amountView));
 		
 				
 		hasBeenCreated = true;
 
 	}
+	private TextWatcher getTextWatcher(final EditText editText) {
 
+		return new TextWatcher() {
+			public void afterTextChanged(Editable s) {
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				ProcessCash_FA.parseInputedCurrency(s, editText);
+			}
+		};
+	}
 	
 	 @Override
 	    protected void onResume() {

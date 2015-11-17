@@ -66,6 +66,7 @@ public class Communication {
             e.printStackTrace();
         }
 
+
         return result;
     }
 
@@ -85,13 +86,13 @@ public class Communication {
 
             StarPrinterStatus status;
 
-            result = Result.ErrorBeginCheckedBlock;
+//            result = Result.ErrorBeginCheckedBlock;
 
-            status = port.beginCheckedBlock();
+//            status = port.beginCheckedBlock();
 
-            if (status.offline) {
-                throw new StarIOPortException("A printer is offline");
-            }
+//            if (status.offline) {
+//                throw new StarIOPortException("A printer is offline");
+//            }
 
             result = Result.ErrorWritePort;
 
@@ -99,35 +100,35 @@ public class Communication {
 
             result = Result.ErrorEndCheckedBlock;
 
-            port.setEndCheckedBlockTimeoutMillis(30000);     // 30000mS!!!
+//            port.setEndCheckedBlockTimeoutMillis(30000);     // 30000mS!!!
 
-            status = port.endCheckedBlock();
+//            status = port.endCheckedBlock();
 
-            if (status.coverOpen) {
-                throw new StarIOPortException("Printer cover is open");
-            }
-            else if (status.receiptPaperEmpty) {
-                throw new StarIOPortException("Receipt paper is empty");
-            }
-            else if (status.offline) {
-                throw new StarIOPortException("Printer is offline");
-            }
+//            if (status.coverOpen) {
+//                throw new StarIOPortException("Printer cover is open");
+//            }
+//            else if (status.receiptPaperEmpty) {
+//                throw new StarIOPortException("Receipt paper is empty");
+//            }
+//            else if (status.offline) {
+//                throw new StarIOPortException("Printer is offline");
+//            }
 
             result = Result.Success;
         }
         catch (StarIOPortException e) {
         }
-        finally {
-            if (port != null) {
-                try {
-                    StarIOPort.releasePort(port);
-
-                    port = null;
-                }
-                catch (StarIOPortException e) {
-                }
-            }
-        }
+//        finally {
+//            if (port != null) {
+//                try {
+//                    StarIOPort.releasePort(port);
+//
+//                    port = null;
+//                }
+//                catch (StarIOPortException e) {
+//                }
+//            }
+//        }
 
         return result;
     }

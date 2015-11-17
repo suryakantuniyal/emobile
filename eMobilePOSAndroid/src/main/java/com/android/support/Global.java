@@ -41,6 +41,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.emobilepos.payment.ProcessCash_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.GenerateNewID.IdType;
 import com.google.zxing.BarcodeFormat;
@@ -1458,61 +1459,56 @@ public class Global extends MultiDexApplication {
 		});
 	}
 
-	public static TextWatcher amountTextWatcher(final EditText et) {
-		TextWatcher tw = new TextWatcher() {
-			@Override
-			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
+//	public static TextWatcher amountTextWatcher(final EditText editText) {
+//
+//		return new TextWatcher() {
+//			@Override
+//			public void afterTextChanged(Editable s) {
+//
+//			}
+//
+//			@Override
+//			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//			}
+//
+//			@Override
+//			public void onTextChanged(CharSequence s, int start, int before, int count) {
+//				ProcessCash_FA.parseInputedCurrency(s, editText);
+//			}
+//		};
+//	}
 
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// TODO Auto-generated method stub
-				parseInputedCurrency(et, s);
-			}
-		};
-
-		return tw;
-	}
-
-	private static void parseInputedCurrency(EditText field, CharSequence s) {
-		DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-		DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-		StringBuilder sb = new StringBuilder();
-		// sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator())
-		// .append("\\d{3})*|(\\d+))(");
-		// sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
-
-		sb.append("^(\\d{1,3}(\\").append(sym.getGroupingSeparator()).append("\\d{3})*|(\\d+))(");
-		sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
-
-		if (!s.toString().matches(sb.toString())
-				|| !s.toString().contains(Character.toString(sym.getDecimalSeparator()))) {
-			String userInput = "" + s.toString().replaceAll("[^\\d]", "");
-			StringBuilder cashAmountBuilder = new StringBuilder(userInput);
-
-			while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
-				cashAmountBuilder.deleteCharAt(0);
-			}
-			while (cashAmountBuilder.length() < 3) {
-				cashAmountBuilder.insert(0, '0');
-			}
-
-			cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
-			// cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-
-			field.setText(cashAmountBuilder.toString());
-		}
-
-		Selection.setSelection(field.getText(), field.getText().length());
-	}
+//	public static void parseInputedCurrency(EditText field, CharSequence s) {
+//		DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
+//		DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
+//		StringBuilder sb = new StringBuilder();
+//		// sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator())
+//		// .append("\\d{3})*|(\\d+))(");
+//		// sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
+//
+//		sb.append("^(\\d{1,3}(\\").append(sym.getGroupingSeparator()).append("\\d{3})*|(\\d+))(");
+//		sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
+//
+//		if (!s.toString().matches(sb.toString())
+//				|| !s.toString().contains(Character.toString(sym.getDecimalSeparator()))) {
+//			String userInput = "" + s.toString().replaceAll("[^\\d]", "");
+//			StringBuilder cashAmountBuilder = new StringBuilder(userInput);
+//
+//			while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
+//				cashAmountBuilder.deleteCharAt(0);
+//			}
+//			while (cashAmountBuilder.length() < 3) {
+//				cashAmountBuilder.insert(0, '0');
+//			}
+//
+//			cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
+//			// cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
+//
+//			field.setText(cashAmountBuilder.toString());
+//		}
+//
+//		Selection.setSelection(field.getText(), field.getText().length());
+//	}
 
 	public static BigDecimal getBigDecimalNum(String val) {
 		if (val == null || val.isEmpty())
