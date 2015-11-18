@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="do_androidsdk">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/do_androidsdk.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

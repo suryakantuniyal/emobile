@@ -1,0 +1,386 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Manifest Merging:
+-----------------
+Your project uses libraries that provide manifests, and your Eclipse
+project did not explicitly turn on manifest merging. In Android Gradle
+projects, manifests are always merged (meaning that contents from your
+libraries' manifests will be merged into the app manifest. If you had
+manually copied contents from library manifests into your app manifest
+you may need to remove these for the app to build correctly.
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+From DragSortLibrary:
+* .gitignore
+* ant.properties
+* build.xml
+* pom.xml
+* proguard-project.txt
+From GridHeaderLibrary:
+* pom.xml
+From Honeywell:
+* proguard-project.txt
+From MD-OpenCV:
+* .DS_Store
+* build.gradle
+* build.xml
+* cls\
+* cls\org\
+* cls\org\opencv\
+* cls\org\opencv\engine\
+* cls\org\opencv\engine\OpenCVEngineInterface.aidl
+* javadoc\
+* javadoc\allclasses-frame.html
+* javadoc\allclasses-noframe.html
+* javadoc\constant-values.html
+* javadoc\help-doc.html
+* javadoc\index-all.html
+* javadoc\index.html
+* javadoc\org\
+* javadoc\org\opencv\
+* javadoc\org\opencv\android\
+* javadoc\org\opencv\android\BaseLoaderCallback.html
+* javadoc\org\opencv\android\CameraBridgeViewBase.CvCameraViewFrame.html
+* javadoc\org\opencv\android\CameraBridgeViewBase.CvCameraViewListener.html
+* javadoc\org\opencv\android\CameraBridgeViewBase.CvCameraViewListener2.html
+* javadoc\org\opencv\android\CameraBridgeViewBase.ListItemAccessor.html
+* javadoc\org\opencv\android\CameraBridgeViewBase.html
+* javadoc\org\opencv\android\FpsMeter.html
+* javadoc\org\opencv\android\InstallCallbackInterface.html
+* javadoc\org\opencv\android\JavaCameraView.JavaCameraSizeAccessor.html
+* javadoc\org\opencv\android\JavaCameraView.html
+* javadoc\org\opencv\android\LoaderCallbackInterface.html
+* javadoc\org\opencv\android\NativeCameraView.OpenCvSizeAccessor.html
+* javadoc\org\opencv\android\NativeCameraView.html
+* javadoc\org\opencv\android\OpenCVLoader.html
+* javadoc\org\opencv\android\Utils.html
+* javadoc\org\opencv\android\package-frame.html
+* javadoc\org\opencv\android\package-summary.html
+* javadoc\org\opencv\android\package-tree.html
+* javadoc\org\opencv\calib3d\
+* javadoc\org\opencv\calib3d\Calib3d.html
+* javadoc\org\opencv\calib3d\StereoBM.html
+* javadoc\org\opencv\calib3d\StereoSGBM.html
+* javadoc\org\opencv\calib3d\package-frame.html
+* javadoc\org\opencv\calib3d\package-summary.html
+* javadoc\org\opencv\calib3d\package-tree.html
+* javadoc\org\opencv\core\
+* javadoc\org\opencv\core\Algorithm.html
+* javadoc\org\opencv\core\Core.MinMaxLocResult.html
+* javadoc\org\opencv\core\Core.html
+* javadoc\org\opencv\core\CvException.html
+* javadoc\org\opencv\core\CvType.html
+* javadoc\org\opencv\core\Mat.html
+* javadoc\org\opencv\core\MatOfByte.html
+* javadoc\org\opencv\core\MatOfDMatch.html
+* javadoc\org\opencv\core\MatOfDouble.html
+* javadoc\org\opencv\core\MatOfFloat.html
+* javadoc\org\opencv\core\MatOfFloat4.html
+* javadoc\org\opencv\core\MatOfFloat6.html
+* javadoc\org\opencv\core\MatOfInt.html
+* javadoc\org\opencv\core\MatOfInt4.html
+* javadoc\org\opencv\core\MatOfKeyPoint.html
+* javadoc\org\opencv\core\MatOfPoint.html
+* javadoc\org\opencv\core\MatOfPoint2f.html
+* javadoc\org\opencv\core\MatOfPoint3.html
+* javadoc\org\opencv\core\MatOfPoint3f.html
+* javadoc\org\opencv\core\MatOfRect.html
+* javadoc\org\opencv\core\Point.html
+* javadoc\org\opencv\core\Point3.html
+* javadoc\org\opencv\core\Range.html
+* javadoc\org\opencv\core\Rect.html
+* javadoc\org\opencv\core\RotatedRect.html
+* javadoc\org\opencv\core\Scalar.html
+* javadoc\org\opencv\core\Size.html
+* javadoc\org\opencv\core\TermCriteria.html
+* javadoc\org\opencv\core\package-frame.html
+* javadoc\org\opencv\core\package-summary.html
+* javadoc\org\opencv\core\package-tree.html
+* javadoc\org\opencv\features2d\
+* javadoc\org\opencv\features2d\DMatch.html
+* javadoc\org\opencv\features2d\DescriptorExtractor.html
+* javadoc\org\opencv\features2d\DescriptorMatcher.html
+* javadoc\org\opencv\features2d\FeatureDetector.html
+* javadoc\org\opencv\features2d\Features2d.html
+* javadoc\org\opencv\features2d\GenericDescriptorMatcher.html
+* javadoc\org\opencv\features2d\KeyPoint.html
+* javadoc\org\opencv\features2d\package-frame.html
+* javadoc\org\opencv\features2d\package-summary.html
+* javadoc\org\opencv\features2d\package-tree.html
+* javadoc\org\opencv\highgui\
+* javadoc\org\opencv\highgui\Highgui.html
+* javadoc\org\opencv\highgui\VideoCapture.html
+* javadoc\org\opencv\highgui\package-frame.html
+* javadoc\org\opencv\highgui\package-summary.html
+* javadoc\org\opencv\highgui\package-tree.html
+* javadoc\org\opencv\imgproc\
+* javadoc\org\opencv\imgproc\CLAHE.html
+* javadoc\org\opencv\imgproc\Imgproc.html
+* javadoc\org\opencv\imgproc\Moments.html
+* javadoc\org\opencv\imgproc\Subdiv2D.html
+* javadoc\org\opencv\imgproc\package-frame.html
+* javadoc\org\opencv\imgproc\package-summary.html
+* javadoc\org\opencv\imgproc\package-tree.html
+* javadoc\org\opencv\ml\
+* javadoc\org\opencv\ml\CvANN_MLP.html
+* javadoc\org\opencv\ml\CvANN_MLP_TrainParams.html
+* javadoc\org\opencv\ml\CvBoost.html
+* javadoc\org\opencv\ml\CvBoostParams.html
+* javadoc\org\opencv\ml\CvDTree.html
+* javadoc\org\opencv\ml\CvDTreeParams.html
+* javadoc\org\opencv\ml\CvERTrees.html
+* javadoc\org\opencv\ml\CvGBTrees.html
+* javadoc\org\opencv\ml\CvGBTreesParams.html
+* javadoc\org\opencv\ml\CvKNearest.html
+* javadoc\org\opencv\ml\CvNormalBayesClassifier.html
+* javadoc\org\opencv\ml\CvParamGrid.html
+* javadoc\org\opencv\ml\CvRTParams.html
+* javadoc\org\opencv\ml\CvRTrees.html
+* javadoc\org\opencv\ml\CvSVM.html
+* javadoc\org\opencv\ml\CvSVMParams.html
+* javadoc\org\opencv\ml\CvStatModel.html
+* javadoc\org\opencv\ml\EM.html
+* javadoc\org\opencv\ml\Ml.html
+* javadoc\org\opencv\ml\package-frame.html
+* javadoc\org\opencv\ml\package-summary.html
+* javadoc\org\opencv\ml\package-tree.html
+* javadoc\org\opencv\objdetect\
+* javadoc\org\opencv\objdetect\CascadeClassifier.html
+* javadoc\org\opencv\objdetect\HOGDescriptor.html
+* javadoc\org\opencv\objdetect\Objdetect.html
+* javadoc\org\opencv\objdetect\package-frame.html
+* javadoc\org\opencv\objdetect\package-summary.html
+* javadoc\org\opencv\objdetect\package-tree.html
+* javadoc\org\opencv\photo\
+* javadoc\org\opencv\photo\Photo.html
+* javadoc\org\opencv\photo\package-frame.html
+* javadoc\org\opencv\photo\package-summary.html
+* javadoc\org\opencv\photo\package-tree.html
+* javadoc\org\opencv\utils\
+* javadoc\org\opencv\utils\Converters.html
+* javadoc\org\opencv\utils\package-frame.html
+* javadoc\org\opencv\utils\package-summary.html
+* javadoc\org\opencv\utils\package-tree.html
+* javadoc\org\opencv\video\
+* javadoc\org\opencv\video\BackgroundSubtractor.html
+* javadoc\org\opencv\video\BackgroundSubtractorMOG.html
+* javadoc\org\opencv\video\BackgroundSubtractorMOG2.html
+* javadoc\org\opencv\video\KalmanFilter.html
+* javadoc\org\opencv\video\Video.html
+* javadoc\org\opencv\video\package-frame.html
+* javadoc\org\opencv\video\package-summary.html
+* javadoc\org\opencv\video\package-tree.html
+* javadoc\overview-frame.html
+* javadoc\overview-summary.html
+* javadoc\overview-tree.html
+* javadoc\package-list
+* javadoc\resources\
+* javadoc\resources\inherit.gif
+* javadoc\serialized-form.html
+* javadoc\stylesheet.css
+* proguard-project.txt
+From NostraLoader:
+* pom.xml
+* test-gen\
+* test-gen\com\
+* test-gen\com\nostra13\
+* test-gen\com\nostra13\universalimageloader\
+* test-gen\com\nostra13\universalimageloader\R.java
+* test\
+* test\com\
+* test\com\nostra13\
+* test\com\nostra13\universalimageloader\
+* test\com\nostra13\universalimageloader\core\
+* test\com\nostra13\universalimageloader\core\assist\
+* test\com\nostra13\universalimageloader\core\assist\ImageSizeTest.java
+* test\com\nostra13\universalimageloader\core\download\
+* test\com\nostra13\universalimageloader\core\download\BaseImageDownloaderTest.java
+From StickyListHeaders:
+* .gitignore
+* build.gradle
+* build.xml
+* gradle.properties
+* proguard-project.txt
+From ViewPagerIndicator:
+* pom.xml
+From eMobilePOSAndroid:
+* .gitignore
+* ic_launcher-web.png
+* proguard-project.txt
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:18.0.0
+guava-r09.jar => com.google.guava:guava:18.0
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+In DragSortLibrary:
+* AndroidManifest.xml => dragSortLibrary\src\main\AndroidManifest.xml
+* assets\ => dragSortLibrary\src\main\assets
+* lint.xml => dragSortLibrary\lint.xml
+* res\ => dragSortLibrary\src\main\res\
+* src\ => dragSortLibrary\src\main\java\
+In GridHeaderLibrary:
+* AndroidManifest.xml => gridHeaderLibrary\src\main\AndroidManifest.xml
+* assets\ => gridHeaderLibrary\src\main\assets
+* res\ => gridHeaderLibrary\src\main\res\
+* src\ => gridHeaderLibrary\src\main\java\
+In Honeywell:
+* AndroidManifest.xml => honeywell\src\main\AndroidManifest.xml
+* assets\ => honeywell\src\main\assets
+* res\ => honeywell\src\main\res\
+* src\ => honeywell\src\main\java\
+In MD-OpenCV:
+* AndroidManifest.xml => mDOpenCV\src\main\AndroidManifest.xml
+* assets\ => mDOpenCV\src\main\assets
+* libs\armeabi-v7a\libnative_camera_r2.2.0.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r2.2.0.so
+* libs\armeabi-v7a\libnative_camera_r2.3.3.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r2.3.3.so
+* libs\armeabi-v7a\libnative_camera_r3.0.1.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r3.0.1.so
+* libs\armeabi-v7a\libnative_camera_r4.0.0.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r4.0.0.so
+* libs\armeabi-v7a\libnative_camera_r4.0.3.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r4.0.3.so
+* libs\armeabi-v7a\libnative_camera_r4.1.1.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r4.1.1.so
+* libs\armeabi-v7a\libnative_camera_r4.2.0.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r4.2.0.so
+* libs\armeabi-v7a\libnative_camera_r4.3.0.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r4.3.0.so
+* libs\armeabi-v7a\libnative_camera_r4.4.0.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libnative_camera_r4.4.0.so
+* libs\armeabi-v7a\libopencv_info.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libopencv_info.so
+* libs\armeabi-v7a\libopencv_java.so => mDOpenCV\src\main\jniLibs\armeabi-v7a\libopencv_java.so
+* libs\armeabi\libnative_camera_r2.2.0.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r2.2.0.so
+* libs\armeabi\libnative_camera_r2.3.3.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r2.3.3.so
+* libs\armeabi\libnative_camera_r3.0.1.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r3.0.1.so
+* libs\armeabi\libnative_camera_r4.0.0.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r4.0.0.so
+* libs\armeabi\libnative_camera_r4.0.3.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r4.0.3.so
+* libs\armeabi\libnative_camera_r4.1.1.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r4.1.1.so
+* libs\armeabi\libnative_camera_r4.2.0.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r4.2.0.so
+* libs\armeabi\libnative_camera_r4.3.0.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r4.3.0.so
+* libs\armeabi\libnative_camera_r4.4.0.so => mDOpenCV\src\main\jniLibs\armeabi\libnative_camera_r4.4.0.so
+* libs\armeabi\libopencv_info.so => mDOpenCV\src\main\jniLibs\armeabi\libopencv_info.so
+* libs\armeabi\libopencv_java.so => mDOpenCV\src\main\jniLibs\armeabi\libopencv_java.so
+* libs\mips\libnative_camera_r4.0.3.so => mDOpenCV\src\main\jniLibs\mips\libnative_camera_r4.0.3.so
+* libs\mips\libnative_camera_r4.1.1.so => mDOpenCV\src\main\jniLibs\mips\libnative_camera_r4.1.1.so
+* libs\mips\libnative_camera_r4.2.0.so => mDOpenCV\src\main\jniLibs\mips\libnative_camera_r4.2.0.so
+* libs\mips\libnative_camera_r4.3.0.so => mDOpenCV\src\main\jniLibs\mips\libnative_camera_r4.3.0.so
+* libs\mips\libnative_camera_r4.4.0.so => mDOpenCV\src\main\jniLibs\mips\libnative_camera_r4.4.0.so
+* libs\mips\libopencv_info.so => mDOpenCV\src\main\jniLibs\mips\libopencv_info.so
+* libs\mips\libopencv_java.so => mDOpenCV\src\main\jniLibs\mips\libopencv_java.so
+* libs\x86\libnative_camera_r2.3.3.so => mDOpenCV\src\main\jniLibs\x86\libnative_camera_r2.3.3.so
+* libs\x86\libnative_camera_r3.0.1.so => mDOpenCV\src\main\jniLibs\x86\libnative_camera_r3.0.1.so
+* libs\x86\libnative_camera_r4.0.3.so => mDOpenCV\src\main\jniLibs\x86\libnative_camera_r4.0.3.so
+* libs\x86\libnative_camera_r4.1.1.so => mDOpenCV\src\main\jniLibs\x86\libnative_camera_r4.1.1.so
+* libs\x86\libnative_camera_r4.2.0.so => mDOpenCV\src\main\jniLibs\x86\libnative_camera_r4.2.0.so
+* libs\x86\libnative_camera_r4.3.0.so => mDOpenCV\src\main\jniLibs\x86\libnative_camera_r4.3.0.so
+* libs\x86\libnative_camera_r4.4.0.so => mDOpenCV\src\main\jniLibs\x86\libnative_camera_r4.4.0.so
+* libs\x86\libopencv_info.so => mDOpenCV\src\main\jniLibs\x86\libopencv_info.so
+* libs\x86\libopencv_java.so => mDOpenCV\src\main\jniLibs\x86\libopencv_java.so
+* lint.xml => mDOpenCV\lint.xml
+* res\ => mDOpenCV\src\main\res\
+* src\ => mDOpenCV\src\main\java\
+* src\org\opencv\engine\OpenCVEngineInterface.aidl => mDOpenCV\src\main\aidl\org\opencv\engine\OpenCVEngineInterface.aidl
+In NostraLoader:
+* AndroidManifest.xml => nostraLoader\src\main\AndroidManifest.xml
+* assets\ => nostraLoader\src\main\assets
+* res\ => nostraLoader\src\main\res
+* src\ => nostraLoader\src\main\java\
+In StickyListHeaders:
+* AndroidManifest.xml => stickyListHeaders\src\main\AndroidManifest.xml
+* assets\ => stickyListHeaders\src\main\assets
+* res\ => stickyListHeaders\src\main\res\
+* src\ => stickyListHeaders\src\main\java\
+In ViewPagerIndicator:
+* AndroidManifest.xml => viewPagerIndicator\src\main\AndroidManifest.xml
+* assets\ => viewPagerIndicator\src\main\assets
+* lint.xml => viewPagerIndicator\lint.xml
+* res\ => viewPagerIndicator\src\main\res\
+* src\ => viewPagerIndicator\src\main\java\
+In eMobilePOSAndroid:
+* AndroidManifest.xml => eMobilePOSAndroid\src\main\AndroidManifest.xml
+* assets\ => eMobilePOSAndroid\src\main\assets\
+* DeviceManager\ => eMobilePOSAndroid\src\main\java\
+* libs\android-support-multidex.jar => eMobilePOSAndroid\libs\android-support-multidex.jar
+* libs\Android_Platform_Adapter.jar => eMobilePOSAndroid\libs\Android_Platform_Adapter.jar
+* libs\armeabi-v7a\libdatabase_sqlcipher.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libdatabase_sqlcipher.so
+* libs\armeabi-v7a\libgnustl_shared.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libgnustl_shared.so
+* libs\armeabi-v7a\libiconv.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libiconv.so
+* libs\armeabi-v7a\libRBA_SDK.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libRBA_SDK.so
+* libs\armeabi-v7a\libserial_port.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libserial_port.so
+* libs\armeabi-v7a\libsqlcipher_android.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libsqlcipher_android.so
+* libs\armeabi-v7a\libstlport_shared.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libstlport_shared.so
+* libs\armeabi-v7a\libzbarjni.so => eMobilePOSAndroid\src\main\jniLibs\armeabi-v7a\libzbarjni.so
+* libs\armeabi\libdatabase_sqlcipher.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libdatabase_sqlcipher.so
+* libs\armeabi\libgnustl_shared.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libgnustl_shared.so
+* libs\armeabi\libiconv.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libiconv.so
+* libs\armeabi\libRBA_SDK.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libRBA_SDK.so
+* libs\armeabi\libserial_port.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libserial_port.so
+* libs\armeabi\libsqlcipher_android.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libsqlcipher_android.so
+* libs\armeabi\libstlport_shared.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libstlport_shared.so
+* libs\armeabi\libzbarjni.so => eMobilePOSAndroid\src\main\jniLibs\armeabi\libzbarjni.so
+* libs\bouncycastle.jar => eMobilePOSAndroid\libs\bouncycastle.jar
+* libs\commons-codec-1.4.0.jar => eMobilePOSAndroid\libs\commons-codec-1.4.0.jar
+* libs\commons-io-1.3.2.jar => eMobilePOSAndroid\libs\commons-io-1.3.2.jar
+* libs\commons-lang3-3.4.jar => eMobilePOSAndroid\libs\commons-lang3-3.4.jar
+* libs\core-sdk.jar => eMobilePOSAndroid\libs\core-sdk.jar
+* libs\do_androidsdk.jar => eMobilePOSAndroid\libs\do_androidsdk.jar
+* libs\IDTuniMagSDKAndroid.jar => eMobilePOSAndroid\libs\IDTuniMagSDKAndroid.jar
+* libs\JAsura_Android.jar => eMobilePOSAndroid\libs\JAsura_Android.jar
+* libs\ksoap2-android-assembly-2.6.5-jar-with-dependencies.jar => eMobilePOSAndroid\libs\ksoap2-android-assembly-2.6.5-jar-with-dependencies.jar
+* libs\libuart.jar => eMobilePOSAndroid\libs\libuart.jar
+* libs\magtek-scra.jar => eMobilePOSAndroid\libs\magtek-scra.jar
+* libs\mips\libgnustl_shared.so => eMobilePOSAndroid\src\main\jniLibs\mips\libgnustl_shared.so
+* libs\mips\libRBA_SDK.so => eMobilePOSAndroid\src\main\jniLibs\mips\libRBA_SDK.so
+* libs\MobilePrinter.jar => eMobilePOSAndroid\libs\MobilePrinter.jar
+* libs\pat100Cashdrawer1.1.jar => eMobilePOSAndroid\libs\pat100Cashdrawer1.1.jar
+* libs\pat100PrinterAndDisplay1.1.jar => eMobilePOSAndroid\libs\pat100PrinterAndDisplay1.1.jar
+* libs\POSSDKForAndroid.jar => eMobilePOSAndroid\libs\POSSDKForAndroid.jar
+* libs\powapos-sdk-android-2.0.2.jar => eMobilePOSAndroid\libs\powapos-sdk-android-2.0.2.jar
+* libs\powapos-sdk-android-accessory-1.3.7.jar => eMobilePOSAndroid\libs\powapos-sdk-android-accessory-1.3.7.jar
+* libs\RBA_SDK.jar => eMobilePOSAndroid\libs\RBA_SDK.jar
+* libs\roverapi-android-2.4.0.jar => eMobilePOSAndroid\libs\roverapi-android-2.4.0.jar
+* libs\spring-android-core-1.0.1.RELEASE.jar => eMobilePOSAndroid\libs\spring-android-core-1.0.1.RELEASE.jar
+* libs\sqlcipher.jar => eMobilePOSAndroid\libs\sqlcipher.jar
+* libs\StarIO_Extension.jar => eMobilePOSAndroid\libs\StarIO_Extension.jar
+* libs\StarIOPort3.1.jar => eMobilePOSAndroid\libs\StarIOPort3.1.jar
+* libs\x86\libdatabase_sqlcipher.so => eMobilePOSAndroid\src\main\jniLibs\x86\libdatabase_sqlcipher.so
+* libs\x86\libgnustl_shared.so => eMobilePOSAndroid\src\main\jniLibs\x86\libgnustl_shared.so
+* libs\x86\libiconv.so => eMobilePOSAndroid\src\main\jniLibs\x86\libiconv.so
+* libs\x86\libRBA_SDK.so => eMobilePOSAndroid\src\main\jniLibs\x86\libRBA_SDK.so
+* libs\x86\libserial_port.so => eMobilePOSAndroid\src\main\jniLibs\x86\libserial_port.so
+* libs\x86\libsqlcipher_android.so => eMobilePOSAndroid\src\main\jniLibs\x86\libsqlcipher_android.so
+* libs\x86\libstlport_shared.so => eMobilePOSAndroid\src\main\jniLibs\x86\libstlport_shared.so
+* libs\x86\libzbarjni.so => eMobilePOSAndroid\src\main\jniLibs\x86\libzbarjni.so
+* libs\zbar.jar => eMobilePOSAndroid\libs\zbar.jar
+* libs\zxing.jar => eMobilePOSAndroid\libs\zxing.jar
+* lint.xml => eMobilePOSAndroid\lint.xml
+* res\ => eMobilePOSAndroid\src\main\res\
+* src\ => eMobilePOSAndroid\src\main\java\
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)
