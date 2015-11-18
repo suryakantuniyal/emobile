@@ -22,9 +22,20 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
     }
+    productFlavors {
+        ems {
+            applicationId = 'com.emobilepos.app'
+            versionName "1.0.81.12"
+
+        }
+        ivupos {
+            applicationId = 'com.emobilepos.ivupos.app'
+            versionName "1.0.81.12"
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
