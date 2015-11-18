@@ -40,6 +40,8 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -601,8 +603,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         double tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
         double tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
-        double tax1Dbl = new BigDecimal(subtotalDbl * tax1Rate).setScale(2, BigDecimal.ROUND_UP).doubleValue();
-        double tax2Dbl = new BigDecimal(subtotalDbl * tax2Rate).setScale(2, BigDecimal.ROUND_UP).doubleValue();
+        double tax1Dbl = new BigDecimal(subtotalDbl * tax1Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
+        double tax2Dbl = new BigDecimal(subtotalDbl * tax2Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
         tax1.setText(Global.formatDoubleToCurrency(tax1Dbl));
         tax2.setText(Global.formatDoubleToCurrency(tax2Dbl));
     }

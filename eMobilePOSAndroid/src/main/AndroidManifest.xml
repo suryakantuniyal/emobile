@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.emobilepos"
     android:versionCode="95"
-    android:versionName="1.0.81.7">
+    android:versionName="1.0.81.12">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -41,7 +41,7 @@
 
     <application
         android:name="com.android.support.Global"
-        android:icon="@drawable/emobile_icon"
+        android:icon="@drawable/ivupos_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <meta-data

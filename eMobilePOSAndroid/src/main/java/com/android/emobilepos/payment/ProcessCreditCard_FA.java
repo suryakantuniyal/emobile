@@ -126,7 +126,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private EditText amountPaidField;
     private EditText phoneNumberField, customerEmailField;
     private EditText authIDField, transIDField;
-    private TextView tax1Lbl, tax2Lbl;
+    private TextView tax2Lbl;
     private EditText subtotal, tax1, tax2;
     private List<GroupTax> groupTaxRate;
     // private boolean timedOut = false;
@@ -221,7 +221,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         subtotal = (EditText) findViewById(R.id.subtotalCardAmount);
         tax1 = (EditText) findViewById(R.id.tax1CardAmount);
         tax2 = (EditText) findViewById(R.id.tax2CardAmount);
-        tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
+        TextView tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
         tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
         ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         if (!Global.isIvuLoto) {
@@ -249,7 +249,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
         tax1.setOnFocusChangeListener(getFocusListener(tax1));
         tax2.setOnFocusChangeListener(getFocusListener(tax2));
-      
+
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax1.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax2.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);

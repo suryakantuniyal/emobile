@@ -429,26 +429,26 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 			if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
 				powaPOS.printText("\n");
 				powaPOS.printText(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-				powaPOS.printText(textHandler.centeredString("IVULOTO: " + payArray[13], LINE_WIDTH));
-				powaPOS.printText(textHandler.centeredString(payArray[12], LINE_WIDTH));
+				powaPOS.printText(textHandler.centeredString("CONTROL: " + payArray[13], LINE_WIDTH));
+//				powaPOS.printText(textHandler.centeredString(payArray[12], LINE_WIDTH));
 				powaPOS.printText(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
 				powaPOS.printText("\n");
 			} else {
-				encodedQRCode = payArray[14];
+//				encodedQRCode = payArray[14];
 
-				try {
-					this.printImage(2);
-				} catch (StarIOPortException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JAException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+////					this.printImage(2);
+//				} catch (StarIOPortException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (JAException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 
 				sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
-				sb.append("\t").append("IVULOTO: ").append(payArray[13]).append("\n");
-				sb.append(payArray[12]).append("\n");
+				sb.append("\t").append("CONTROL: ").append(payArray[13]).append("\n");
+//				sb.append(payArray[12]).append("\n");
 				sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
 
 				powaPOS.printText(sb.toString());

@@ -594,29 +594,28 @@ public class EMSDeviceDriver {
 
 			if (Global.isIvuLoto) {
 				sb = new StringBuilder();
-				port.writePort(enableCenter, 0, enableCenter.length); // enable
+//				port.writePort(enableCenter, 0, enableCenter.length); // enable
 				// center
 
 				if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
 					sb.append("\n");
 					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
 					sb.append(textHandler.centeredString("CONTROL: " + payArrayList.get(0)[7], lineWidth));
-					sb.append(textHandler.centeredString(payArrayList.get(0)[6], lineWidth));
+//					sb.append(textHandler.centeredString(payArrayList.get(0)[6], lineWidth));
 					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
 					sb.append("\n");
-
-					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+                    print(sb.toString().getBytes());
+//					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
 				} else {
-					encodedQRCode = payArrayList.get(0)[8];
-
+//					encodedQRCode = payArrayList.get(0)[8];
 					this.printImage(2);
-
 					sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
 					sb.append("\t").append("CONTROL: ").append(payArrayList.get(0)[7]).append("\n");
-					sb.append(payArrayList.get(0)[6]).append("\n");
+//                    sb.append(payArrayList.get(0)[6]).append("\n");
+//					sb.append(payArrayList.get(0)[6]).append("\n");
 					sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-
-					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+                    print(sb.toString().getBytes());
+//					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
 				}
 				sb.setLength(0);
 			}
@@ -936,4 +935,201 @@ public class EMSDeviceDriver {
 		return (activity.getResources().getString(id));
 	}
 
+//    public boolean printPaymentDetails(String payID, int type, boolean isReprint, int lineWidth) {
+//        // TODO Auto-generated method stub
+//
+//        try {
+//            Thread.sleep(1000);
+//
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0, 4);
+//                port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
+//                port.writePort(new byte[] { 0x1b, 0x74, 0x11 }, 0, 3); // set to
+//            }
+//
+//            EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+//            printPref = myPref.getPrintingPreferences();
+//
+//            PaymentsHandler payHandler = new PaymentsHandler(activity);
+//            String[] payArray = null;
+//            boolean isStoredFwd = false;
+//            long pay_count = payHandler.paymentExist(payID);
+//            if (pay_count == 0) {
+//                isStoredFwd = true;
+//                StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
+//                payArray = dbStoredPay.getPrintingForPaymentDetails(payID, type);
+//            } else {
+//                payArray = payHandler.getPrintingForPaymentDetails(payID, type);
+//            }
+//            StringBuilder sb = new StringBuilder();
+//            boolean isCashPayment = false;
+//            boolean isCheckPayment = false;
+//            String constantValue = null;
+//            String creditCardFooting = "";
+//
+//            if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CASH"))
+//                isCashPayment = true;
+//            else if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
+//                isCheckPayment = true;
+//            else {
+//                constantValue = getString(R.string.receipt_included_tip);
+//                creditCardFooting = getString(R.string.receipt_creditcard_terms);
+//            }
+//
+//            this.printImage(0);
+//
+//            if (printPref.contains(MyPreferences.print_header))
+//                printHeader(lineWidth);
+//
+//
+//            sb.append("* ").append(payArray[0]);
+//            if (payArray[11].equals("1"))
+//                sb.append(" Refund *\n\n\n");
+//            else
+//                sb.append(" Sale *\n\n\n");
+//            print(sb.toString());
+////            port.writePort(sb.toString().getBytes(FORMAT), 0, sb.length());
+////            port.writePort(disableCenter, 0, disableCenter.length); // disable
+////            // center
+//            sb.setLength(0);
+//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+//                    getString(R.string.receipt_time), lineWidth, 0));
+//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray[1], payArray[2], lineWidth, 0))
+//                    .append("\n\n");
+//
+//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray[3],
+//                    lineWidth, 0));
+//
+//            if (payArray[17] != null && !payArray[17].isEmpty())
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
+//                        payArray[17], lineWidth, 0));
+//            else if (payArray[16] != null && !payArray[16].isEmpty()) // invoice
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
+//                        payArray[16], lineWidth, 0));
+//
+//            if (!isStoredFwd)
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
+//                        lineWidth, 0));
+//
+//            if (!isCashPayment && !isCheckPayment) {
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
+//                        "*" + payArray[9], lineWidth, 0));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray[8], lineWidth, 0));
+//            } else if (isCheckPayment) {
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
+//                        payArray[10], lineWidth, 0));
+//            }
+//
+//            sb.append(textHandler.newLines(1));
+//
+//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+//                    Global.formatDoubleStrToCurrency(payArray[4]), lineWidth, 0));
+//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
+//                    Global.formatDoubleStrToCurrency(payArray[15]), lineWidth, 0));
+//
+//            String change = payArray[6];
+//
+//            if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
+//                    && Double.parseDouble(change) > 0)
+//                change = "";
+//
+//            if (constantValue != null)
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
+//                        Global.formatDoubleStrToCurrency(change), lineWidth, 0));
+//            print(sb.toString(), FORMAT);
+////            port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
+//
+//            sb.setLength(0);
+//            print(textHandler.newLines(1), FORMAT);
+////            port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
+//
+//            if (!isCashPayment && !isCheckPayment) {
+//                if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
+//                    sb.append(textHandler.newLines(1));
+//                } else if (!payArray[7].isEmpty()) {
+//                    encodedSignature = payArray[7];
+//                    this.printImage(1);
+//                }
+////                port.writePort(enableCenter, 0, enableCenter.length); // center
+//                sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
+//                sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
+//                print(sb.toString().getBytes(FORMAT));
+////                port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
+//                sb.setLength(0);
+//            }
+//
+//            if (Global.isIvuLoto) {
+//                sb = new StringBuilder();
+//                port.writePort(enableCenter, 0, enableCenter.length); // enable
+//                // center
+//
+//                if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
+//                    sb.append("\n");
+//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+//                    sb.append(textHandler.centeredString("CONTROL: " + payArray[13], lineWidth));
+//                    sb.append(textHandler.centeredString(payArray[12], lineWidth));
+//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+//                    sb.append("\n");
+//
+//                    print(sb.toString());
+////                    port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+//                } else {
+//                    encodedQRCode = payArray[14];
+//
+//                    this.printImage(2);
+//
+//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+//                    sb.append("\t").append("IVULOTO: ").append(payArray[13]).append("\n");
+//                    sb.append(payArray[12]).append("\n");
+//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+//                    print(sb.toString());
+////                    port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+//                }
+//                sb.setLength(0);
+//            }
+//
+//            printFooter(lineWidth);
+//            port.writePort(enableCenter, 0, enableCenter.length); // center
+//            String temp;
+//            if (!isCashPayment && !isCheckPayment) {
+//                print(creditCardFooting.getBytes(FORMAT));
+////                port.writePort(creditCardFooting.getBytes(FORMAT), 0, creditCardFooting.length());
+//                temp = textHandler.newLines(1);
+//                print(temp.getBytes(FORMAT));
+////                port.writePort(temp.getBytes(FORMAT), 0, temp.length());
+//            }
+//
+//            sb.setLength(0);
+//            if (isReprint) {
+//                sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
+//                print(sb.toString().getBytes(FORMAT));
+////                port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
+//            }
+//
+//            if (isPOSPrinter) {
+//                cutPaper();
+////                port.writePort(new byte[] { 0x1b, 0x64, 0x02 }, 0, 3); // Cut
+//            }
+//
+//        } catch (StarIOPortException e) {
+//            return false;
+//        } catch (UnsupportedEncodingException e) {
+//            return false;
+//            // TODO Auto-generated catch block
+//        } catch (InterruptedException e) {
+//            return false;
+//            // TODO Auto-generated catch block
+//        } catch (JAException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } finally {
+//            // if (port != null) {
+//            // try {
+//            // StarIOPort.releasePort(port);
+//            // } catch (StarIOPortException e) {
+//            // }
+//            // }
+//        }
+//        return true;
+//    }
 }

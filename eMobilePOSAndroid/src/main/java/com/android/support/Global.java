@@ -472,7 +472,7 @@ public class Global extends MultiDexApplication {
 	}
 
 	public static String base64QRCode(String ivuLottoNumber, String ivuLottoDrawDate) {
-		String finaldata = "IVULOTTO: " + ivuLottoNumber + ivuLottoDrawDate;
+		String finaldata = "CONTROL: " + ivuLottoNumber + ivuLottoDrawDate;
 		com.google.zxing.Writer writer = new QRCodeWriter();
 		try {
 			int width = 200, height = 200;

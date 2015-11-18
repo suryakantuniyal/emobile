@@ -469,19 +469,19 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 					sb.append("\n");
 					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
 					sb.append(textHandler.centeredString("CONTROL: " + payArray[13], LINE_WIDTH));
-					sb.append(textHandler.centeredString(payArray[12], LINE_WIDTH));
+//					sb.append(textHandler.centeredString(payArray[12], LINE_WIDTH));
 					sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
 					sb.append("\n");
 
 					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
 				} else {
-					encodedQRCode = payArray[14];
+//					encodedQRCode = payArray[14];
 
-					this.printImage(2);
+//					this.printImage(2);
 
 					sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
-					sb.append("\t").append("IVULOTO: ").append(payArray[13]).append("\n");
-					sb.append(payArray[12]).append("\n");
+					sb.append("\t").append("CONTROL: ").append(payArray[13]).append("\n");
+//					sb.append(payArray[12]).append("\n");
 					sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
 
 					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());

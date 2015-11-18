@@ -1098,5 +1098,6 @@
 	<string name="swipe_insert_card">Swipe/Insert Card...</string>
 	<string name="printing_message">Printing...</string>
 	<string name="please_wait_message">Please wait...</string>
+	<string name="ivu_control">"CONTROL: "</string>
 
 </resources>

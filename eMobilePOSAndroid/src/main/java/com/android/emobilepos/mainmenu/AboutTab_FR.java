@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.support.DBManager;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 public class AboutTab_FR extends Fragment implements OnClickListener {
@@ -42,6 +43,10 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
 		acctNumber.setText(myPref.getAcctNumber());
 		employee.setText(sb.toString());
 		version.setText(myPref.getBundleVersion());
+		ImageView logo = (ImageView) view.findViewById(R.id.aboutMainLogo);
+		if(Global.isIvuLoto){
+			logo.setImageResource(R.drawable.ivupos);
+		}
 		return view;
 	}
 	
