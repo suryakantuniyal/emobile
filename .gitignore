@@ -6,3 +6,6 @@
 /nostraLoader/build
 /stickyListHeaders/build
 /viewPagerIndicator/build
+*.lock
+*.bin
+*.log
