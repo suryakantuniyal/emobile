@@ -572,7 +572,17 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 	@Override
 	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-		// TODO Auto-generated method stub
+
+		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+
+		return true;
+	}
+
+	/*
+	@Override
+	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+
 
 		this.encodedSignature = encodedSig;
 		printPref = myPref.getPrintingPreferences();
@@ -590,10 +600,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		try {
 			this.printImage(0);
 		} catch (StarIOPortException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (JAException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -685,10 +695,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		try {
 			this.printImage(1);
 		} catch (StarIOPortException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} catch (JAException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 
@@ -698,6 +708,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
 		return true;
 	}
+
+*/
 
 	@Override
 	public void releaseCardReader() {

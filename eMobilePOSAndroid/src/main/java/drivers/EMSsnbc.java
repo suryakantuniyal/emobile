@@ -955,6 +955,17 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 		error_code = pos_sdk.pageModeClearBuffer();
 	}
 
+
+	@Override
+	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+
+		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+
+		return true;
+	}
+
+	/*
 	@Override
 	public boolean printConsignment(List<ConsignmentTransaction> myConsignment,String encodedSig) 
 	{
@@ -1052,7 +1063,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 		
 		return true;
 	}
-
+*/
 	
 	
 	@Override

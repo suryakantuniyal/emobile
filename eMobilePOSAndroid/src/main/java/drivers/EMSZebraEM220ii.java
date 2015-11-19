@@ -506,8 +506,18 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 	}
 
 	@Override
+	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+
+		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+
+		return true;
+	}
+
+/*
+	@Override
 	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-		// TODO Auto-generated method stub
+
 		
 		StringBuilder sb = new StringBuilder();
 		printPref = myPref.getPrintingPreferences();
@@ -588,6 +598,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 		return true;
 	}
 
+*/
 	@Override
 	public boolean printOnHold(Object onHold) {
 		// TODO Auto-generated method stub
