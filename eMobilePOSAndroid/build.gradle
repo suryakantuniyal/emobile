@@ -3,17 +3,17 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 14
     buildToolsVersion "23.0.0"
-    dexOptions{
+    dexOptions {
         incremental true
         javaMaxHeapSize "4g"
     }
     packagingOptions {
     }
     defaultConfig {
-        applicationId "com.emobilepos.ivupos.app"
+        applicationId "com.logo.ivupos.app"
         minSdkVersion 14
         targetSdkVersion 23
-        multiDexEnabled=true
+        multiDexEnabled = true
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
@@ -24,13 +24,16 @@ android {
     }
     productFlavors {
         ems {
+            minSdkVersion 14
             applicationId = 'com.emobilepos.app'
             versionName "1.0.81.12"
-
+            targetSdkVersion 23
         }
         ivupos {
+            minSdkVersion 14
             applicationId = 'com.emobilepos.ivupos.app'
             versionName "1.0.81.12"
+            targetSdkVersion 23
         }
     }
     buildTypes {
@@ -47,13 +50,13 @@ repositories {
     }
 }
 dependencies {
-    compile(name:'dragSortLibrary-release', ext:'aar')
-    compile(name:'mDOpenCV-release', ext:'aar')
-    compile(name:'honeywell-release', ext:'aar')
-    compile(name:'stickyListHeaders-release', ext:'aar')
-    compile(name:'gridHeaderLibrary-release', ext:'aar')
-    compile(name:'nostraLoader-release', ext:'aar')
-    compile(name:'viewPagerIndicator-release', ext:'aar')
+    compile(name: 'dragSortLibrary-release', ext: 'aar')
+    compile(name: 'mDOpenCV-release', ext: 'aar')
+    compile(name: 'honeywell-release', ext: 'aar')
+    compile(name: 'stickyListHeaders-release', ext: 'aar')
+    compile(name: 'gridHeaderLibrary-release', ext: 'aar')
+    compile(name: 'nostraLoader-release', ext: 'aar')
+    compile(name: 'viewPagerIndicator-release', ext: 'aar')
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.google.guava:guava:18.0'
     compile files('libs/Android_Platform_Adapter.jar')

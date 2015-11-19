@@ -35,7 +35,7 @@ android:background="@drawable/bg_white_page">
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:src="@drawable/emobilepos"  />
+                android:src="@drawable/logo"  />
 
             <com.android.support.MyEditText
                 android:id="@+id/initAccountNumber"

@@ -41,7 +41,7 @@
 
     <application
         android:name="com.android.support.Global"
-        android:icon="@drawable/ivupos_icon"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <meta-data
@@ -315,7 +315,7 @@
             </intent-filter>
         </activity>
         <!--<activity-->
-            <!--android:name="com.android.emobilepos.ordering.Receipt_FR"-->
+            <!--android:name="com.android.logo.ordering.Receipt_FR"-->
             <!--android:configChanges="orientation|screenSize"-->
             <!--android:windowSoftInputMode="stateAlwaysHidden" >-->
         <!--</activity>-->
@@ -379,7 +379,7 @@
             android:exported="false" >
         </activity>
         <!--<activity-->
-            <!--android:name="com.android.emobilepos.settings.SettingsCategory_FA"-->
+            <!--android:name="com.android.logo.settings.SettingsCategory_FA"-->
             <!--android:exported="false" >-->
         <!--</activity>-->
         <activity

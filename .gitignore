@@ -18,3 +18,5 @@
 .gradle/2.2.1/taskArtifacts/fileHashes.bin
 .gradle/2.2.1/taskArtifacts/outputFileStates.bin
 .gradle/2.2.1/taskArtifacts/taskArtifacts.bin
+*.log
+build/intermediates/dex-cache/cache.xml
