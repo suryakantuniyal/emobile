@@ -61,7 +61,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 
 	// public static final int CASE_ACTIVATE = 0,CASE_ADD_BALANCE =
 	// 1,CASE_BALANCE_INQUIRY = 2,CASE_MANUAL_ADD = 3;
-	public static enum GiftCardActions {
+	public enum GiftCardActions {
 		CASE_ACTIVATE(0), CASE_ADD_BALANCE(1), CASE_BALANCE_INQUIRY(2), CASE_MANUAL_ADD(3), CASE_DEACTIVATE(4);
 
 		private int code;
@@ -118,7 +118,6 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 	private CreditCardInfo cardInfoManager;
 	private EMSUniMagDriver uniMagReader;
 	private EMSMagtekAudioCardReader magtekReader;
-	private EMSRover roverReader;
 	private static boolean cardReaderConnected = false;
 	private MyPreferences myPref;
 	private EditText fieldCardNum, fieldAmountToAdd;
@@ -144,7 +143,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 		paymentHandlerDB = new PaymentsHandler(this);
 		ordProdDB = new OrderProductsHandler(this);
 		activity = this;
-		msrCallBack = (EMSCallBack) this;
+		msrCallBack = this;
 		global = (Global) getApplication();
 		myPref = new MyPreferences(this);
 		Global.isEncryptSwipe = false;
@@ -226,7 +225,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 				break;
 			}
 
-			LOADING_MSG = "Adding Balance...";
+			LOADING_MSG = getString(R.string.adding_balance_message);
 			fieldAmountToAdd = (EditText) findViewById(R.id.fieldAmountToAdd);
 			fieldAmountToAdd.setVisibility(View.VISIBLE);
 			fieldAmountToAdd.addTextChangedListener(getTextWatcher(fieldAmountToAdd));
@@ -299,7 +298,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 						}
 					}).start();
 				} else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-					roverReader = new EMSRover();
+					EMSRover roverReader = new EMSRover();
 					roverReader.initializeReader(activity, false);
 				}
 			}
@@ -377,10 +376,8 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 	}
 
 	private boolean isValidAmount() {
-		BigDecimal bd = Global.getBigDecimalNum(fieldAmountToAdd.getText().toString());
-		if (bd.compareTo(Global.getBigDecimalNum("0")) == 1)
-			return true;
-		return false;
+		BigDecimal bd = Global.getBigDecimalNum(fieldAmountToAdd.getText().toString().trim());
+		return bd.compareTo(Global.getBigDecimalNum("0")) == 1;
 	}
 
 	private TextWatcher getTextWatcher(final EditText editText) {
@@ -491,7 +488,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 			}
 
 			EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
-			String generatedURL = new String();
+			String generatedURL;
 
 			generatedURL = payGate.paymentWithAction(PAYMENT_ACTION, wasReadFromReader, cardType, cardInfoManager);
 
@@ -551,10 +548,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 					if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
 						wasProcessed = true;
 					else if (parsedMap != null && parsedMap.size() > 0) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("statusCode = ").append(parsedMap.get("statusCode")).append("\n");
-						sb.append(parsedMap.get("statusMessage"));
-						errorMsg = sb.toString();
+						errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
 					} else
 						errorMsg = xml;
 				}
@@ -634,7 +628,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 		// month.setText(cardInfoManager.getCardExpMonth());
 		SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
 		SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
-		String formatedYear = new String();
+		String formatedYear = "";
 		try {
 			Date date = dt2.parse(cardInfoManager.getCardExpYear());
 			formatedYear = dt.format(date);

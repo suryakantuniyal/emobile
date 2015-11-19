@@ -1514,11 +1514,12 @@ public class Global extends MultiDexApplication {
 		if (val == null || val.isEmpty())
 			val = "0";
 		try {
+			double valDbl = Global.formatNumFromLocale(val.toString().replaceAll("[^\\d\\,\\.]", "").trim());
 			DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
 			df.setParseBigDecimal(true);
 			df.setMaximumFractionDigits(4);
 			df.setMinimumFractionDigits(2);
-			return (BigDecimal) df.parseObject(val);
+			return (BigDecimal) df.parseObject(String.valueOf(valDbl));
 		} catch (ParseException e) {
 			return new BigDecimal("0");
 		}

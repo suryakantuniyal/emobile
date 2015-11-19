@@ -1099,5 +1099,6 @@
 	<string name="printing_message">Printing...</string>
 	<string name="please_wait_message">Please wait...</string>
 	<string name="ivu_control">"CONTROL: "</string>
+	<string name="adding_balance_message">Adding Balance...</string>
 
 </resources>

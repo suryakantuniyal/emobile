@@ -119,6 +119,14 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
         tax2 = (EditText) findViewById(R.id.tax2GiftAmount);
         tax1Lbl = (TextView) findViewById(R.id.tax1GiftCardLbl);
         tax2Lbl = (TextView) findViewById(R.id.tax2GiftCardLbl);
+
+        if (!Global.isIvuLoto) {
+            findViewById(R.id.row1Gift).setVisibility(View.GONE);
+            findViewById(R.id.row2Gift).setVisibility(View.GONE);
+            findViewById(R.id.row3Gift).setVisibility(View.GONE);
+        }
+
+
         ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         subtotal.addTextChangedListener(getTextWatcher(subtotal));
         tax1.addTextChangedListener(getTextWatcher(tax1));
