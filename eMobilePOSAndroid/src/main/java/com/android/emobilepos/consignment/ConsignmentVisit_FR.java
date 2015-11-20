@@ -440,7 +440,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         }
 
         encodedImage = global.encodedImage;
-        global.encodedImage = new String();
+        global.encodedImage = "";
         signatureMap.put("encoded_signature", encodedImage);
 
         if (ifInvoice)

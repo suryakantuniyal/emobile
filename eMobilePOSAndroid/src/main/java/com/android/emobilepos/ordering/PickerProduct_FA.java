@@ -612,7 +612,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
             if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !prod_type.equals("Service")
-                    && ((Global.ord_type == Global.OrderType.SALES_RECEIPT.getCodeString() || Global.ord_type == Global.OrderType.INVOICE.getCodeString()) &&
+                    && ((Global.ord_type == Global.OrderType.SALES_RECEIPT || Global.ord_type == Global.OrderType.INVOICE) &&
                     ((!isModify && (selectedQty > onHandQty || newQty > onHandQty)) || (isModify && selectedQty > onHandQty))
             )) || (Global.isConsignment && !prod_type.equals("Service") && !validConsignment(selectedQty, onHandQty)))
 
@@ -834,14 +834,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 selectedQty += val;
             }
 
-            if (Global.consignmentType == Global.IS_CONS_FILLUP && (onHandQty <= 0 || selectedQty > onHandQty))
+            if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP && (onHandQty <= 0 || selectedQty > onHandQty))
                 return false;
-            else if (Global.consignmentType != Global.IS_CONS_FILLUP && !Global.custInventoryMap.containsKey(prodID))
+            else if (Global.consignmentType != Global.OrderType.CONSIGNMENT_FILLUP && !Global.custInventoryMap.containsKey(prodID))
                 return false;
-            else if (Global.consignmentType != Global.IS_CONS_FILLUP) {
-                if (Global.consignmentType == Global.IS_CONS_RACK && selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
+            else if (Global.consignmentType != Global.OrderType.CONSIGNMENT_FILLUP) {
+                if (Global.consignmentType == Global.OrderType.ORDER && selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
                     return false;
-                else if (Global.consignmentType == Global.IS_CONS_RETURN) {
+                else if (Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) {
                     if (Global.consignment_qtyCounter != null && Global.consignment_qtyCounter.containsKey(prodID))//verify rack
                     {
                         double rackQty = Double.parseDouble(Global.consignment_qtyCounter.get(prodID));
@@ -849,7 +849,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                         if (rackQty == origQty || (rackQty + selectedQty > origQty))
                             return false;
                     }
-                } else if (Global.consignmentType == Global.IS_CONS_PICKUP && selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
+                } else if (Global.consignmentType == Global.OrderType.CONSIGNMENT_PICKUP && selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
                     return false;
 
             }

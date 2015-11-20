@@ -269,13 +269,13 @@ public class Global extends MultiDexApplication {
 
     public static String APP_ID;
 
-    public final static int IS_CONS_RACK = 0;
-    public final static int IS_CONS_RETURN = 1;
-    public final static int IS_CONS_FILLUP = 2;
-    public final static int IS_CONS_PICKUP = 3;
+//    public final static int IS_CONS_RACK = 0;
+//    public final static int IS_CONS_RETURN = 1;
+//    public final static int IS_CONS_FILLUP = 2;
+//    public final static int IS_CONS_PICKUP = 3;
 
-    public static int consignmentType = 0;
-    public static String ord_type;
+    public static OrderType consignmentType = OrderType.ORDER;
+    public static OrderType ord_type;
     private static String empStr = "";
     public static String amountPaid = "";
     public static String tipPaid = "0";
@@ -402,7 +402,7 @@ public class Global extends MultiDexApplication {
         taxID = empStr;
         taxPosition = 0;
 
-        ord_type = "";
+        ord_type = null;
         cat_id = "0";
         Catalog_FR._typeCase = -1;
         Catalog_FR.btnListID.clear();
@@ -412,7 +412,7 @@ public class Global extends MultiDexApplication {
         Global.isFromOnHold = false;
         isConsignment = false;
         isInventoryTransfer = false;
-        consignmentType = 0;
+        consignmentType = OrderType.ORDER;
         if (productParentAddons != null)
             productParentAddons.clear();
         if (productParentAddonsDictionary != null)

@@ -229,35 +229,35 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     // title.setText("Sales Receipt");
                     custName.setText(myPref.getCustName());
                     caseSelected = 0;
-                    Global.ord_type = Global.OrderType.SALES_RECEIPT.getCodeString();
+                    Global.ord_type = Global.OrderType.SALES_RECEIPT;
                     break;
                 }
                 case 1: {
                     // title.setText("Order");
                     custName.setText(myPref.getCustName());
                     caseSelected = 1;
-                    Global.ord_type = Global.OrderType.ORDER.getCodeString();
+                    Global.ord_type = Global.OrderType.ORDER;
                     break;
                 }
                 case 2: {
                     // title.setText("Return");
                     custName.setText(myPref.getCustName());
                     caseSelected = 2;
-                    Global.ord_type = Global.OrderType.RETURN.getCodeString();
+                    Global.ord_type = Global.OrderType.RETURN;
                     break;
                 }
                 case 3: {
                     // title.setText("Invoice");
                     custName.setText(myPref.getCustName());
                     caseSelected = 3;
-                    Global.ord_type = Global.OrderType.INVOICE.getCodeString();
+                    Global.ord_type = Global.OrderType.INVOICE;
                     break;
                 }
                 case 4: {
                     // title.setText("Estimate");
                     custName.setText(myPref.getCustName());
                     caseSelected = 4;
-                    Global.ord_type = Global.OrderType.ESTIMATE.getCodeString();
+                    Global.ord_type = Global.OrderType.ESTIMATE;
                     break;
                 }
                 case 9: {
@@ -272,21 +272,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     btnSign.setOnClickListener(null);
 
                     caseSelected = 9;
-                    consignmentType = Global.OrderType.getByCode(Global.consignmentType);
-                    switch (consignmentType) {
+                    consignmentType = Global.consignmentType;
+                    switch (Global.consignmentType) {
                         case ORDER:
                             // title.setText("Rack");
                             break;
                         case CONSIGNMENT_RETURN:
                             // title.setText("Return");
-                            Global.ord_type = Global.OrderType.RETURN.getCodeString();
+                            Global.ord_type = Global.OrderType.RETURN;
                             break;
                         case CONSIGNMENT_FILLUP:
                             // title.setText("Fill-up");
-                            Global.ord_type = Global.OrderType.CONSIGNMENT_FILLUP.getCodeString();
+                            Global.ord_type = Global.OrderType.CONSIGNMENT_FILLUP;
                             break;
                         case CONSIGNMENT_PICKUP:
-                            Global.ord_type = Global.OrderType.CONSIGNMENT_PICKUP.getCodeString();
+                            Global.ord_type = Global.OrderType.CONSIGNMENT_PICKUP;
                             // title.setText("Pick-up");
                             break;
                     }
@@ -297,18 +297,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             switch (extras.getInt("option_number")) {
                 case 0: {
                     caseSelected = 0;
-                    Global.ord_type = Global.OrderType.SALES_RECEIPT.getCodeString();
+                    Global.ord_type = Global.OrderType.SALES_RECEIPT;
                     break;
                 }
                 case 1: {
                     caseSelected = 1;
-                    Global.ord_type = Global.OrderType.RETURN.getCodeString();
+                    Global.ord_type = Global.OrderType.RETURN;
                     break;
                 }
                 case 2: {
                     caseSelected = 0;
                     getActivity().setResult(2);
-                    Global.ord_type = Global.OrderType.SALES_RECEIPT.getCodeString();
+                    Global.ord_type = Global.OrderType.SALES_RECEIPT;
                     break;
                 }
             }
@@ -1121,7 +1121,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.cust_id = myPref.getCustID();
         order.custidkey = myPref.getCustIDKey();
 
-        order.ord_type = Global.ord_type;
+        order.ord_type = Global.ord_type.getCodeString();
 
         order.tax_id = OrderTotalDetails_FR.taxID;
         order.ord_discount_id = OrderTotalDetails_FR.discountID;
@@ -1477,28 +1477,28 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (shouldProcess)
             processConsignment();
 
-        consignmentType = Global.OrderType.getByCode(consignmentType.getCode()+1);
+        consignmentType = Global.OrderType.getByCode(consignmentType.getCode() + 1);
 
-        Global.consignmentType = consignmentType.getCode();
+        Global.consignmentType = consignmentType;
         String title = "";
-        switch (consignmentType){
+        switch (consignmentType) {
             case ORDER:
                 // title.setText("Rack");
                 title = activity.getString(R.string.consignment_stacked);
                 break;
             case CONSIGNMENT_RETURN:
                 // title.setText("Return");
-                Global.ord_type = Global.OrderType.RETURN.getCodeString();
+                Global.ord_type = Global.OrderType.RETURN;
                 title = activity.getString(R.string.consignment_returned);
                 break;
             case CONSIGNMENT_FILLUP:
                 // title.setText("Fill-up");
-                Global.ord_type = Global.OrderType.CONSIGNMENT_FILLUP.getCodeString();
+                Global.ord_type = Global.OrderType.CONSIGNMENT_FILLUP;
                 title = activity.getString(R.string.consignment_filledup);
                 break;
             case CONSIGNMENT_PICKUP:
                 // title.setText("Pick-up");
-                Global.ord_type = Global.OrderType.CONSIGNMENT_PICKUP.getCodeString();
+                Global.ord_type = Global.OrderType.CONSIGNMENT_PICKUP;
                 title = activity.getString(R.string.consignment_pickup);
                 break;
         }
@@ -1780,7 +1780,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             isPrintStationPrinter = params[0];
             if (!isPrintStationPrinter) {
                 publishProgress();
-                Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(Global.ord_type));
+                Global.OrderType type = Global.ord_type;
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.currentDevice != null) {
                     printSuccessful = Global.mainPrinterManager.currentDevice
