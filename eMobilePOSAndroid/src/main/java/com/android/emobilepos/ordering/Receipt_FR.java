@@ -106,7 +106,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private final String empstr = "";
     private int caseSelected;
     private boolean custSelected;
-    private int consignmentType;
+    private Global.OrderType consignmentType;
     private Global global;
     private int typeOfProcedure = 0;
     private MyPreferences myPref;
@@ -229,35 +229,35 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     // title.setText("Sales Receipt");
                     custName.setText(myPref.getCustName());
                     caseSelected = 0;
-                    Global.ord_type = Global.IS_SALES_RECEIPT;
+                    Global.ord_type = Global.OrderType.SALES_RECEIPT.getCodeString();
                     break;
                 }
                 case 1: {
                     // title.setText("Order");
                     custName.setText(myPref.getCustName());
                     caseSelected = 1;
-                    Global.ord_type = Global.IS_ORDER;
+                    Global.ord_type = Global.OrderType.ORDER.getCodeString();
                     break;
                 }
                 case 2: {
                     // title.setText("Return");
                     custName.setText(myPref.getCustName());
                     caseSelected = 2;
-                    Global.ord_type = Global.IS_RETURN;
+                    Global.ord_type = Global.OrderType.RETURN.getCodeString();
                     break;
                 }
                 case 3: {
                     // title.setText("Invoice");
                     custName.setText(myPref.getCustName());
                     caseSelected = 3;
-                    Global.ord_type = Global.IS_INVOICE;
+                    Global.ord_type = Global.OrderType.INVOICE.getCodeString();
                     break;
                 }
                 case 4: {
                     // title.setText("Estimate");
                     custName.setText(myPref.getCustName());
                     caseSelected = 4;
-                    Global.ord_type = Global.IS_ESTIMATE;
+                    Global.ord_type = Global.OrderType.ESTIMATE.getCodeString();
                     break;
                 }
                 case 9: {
@@ -272,21 +272,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     btnSign.setOnClickListener(null);
 
                     caseSelected = 9;
-                    consignmentType = Global.consignmentType;
+                    consignmentType = Global.OrderType.getByCode(Global.consignmentType);
                     switch (consignmentType) {
-                        case 0:
+                        case ORDER:
                             // title.setText("Rack");
                             break;
-                        case 1:
+                        case CONSIGNMENT_RETURN:
                             // title.setText("Return");
-                            Global.ord_type = Global.IS_RETURN;
+                            Global.ord_type = Global.OrderType.RETURN.getCodeString();
                             break;
-                        case 2:
+                        case CONSIGNMENT_FILLUP:
                             // title.setText("Fill-up");
-                            Global.ord_type = Global.IS_CONSIGNMENT_FILLUP;
+                            Global.ord_type = Global.OrderType.CONSIGNMENT_FILLUP.getCodeString();
                             break;
-                        case 3:
-                            Global.ord_type = Global.IS_CONSIGNMENT_PICKUP;
+                        case CONSIGNMENT_PICKUP:
+                            Global.ord_type = Global.OrderType.CONSIGNMENT_PICKUP.getCodeString();
                             // title.setText("Pick-up");
                             break;
                     }
@@ -297,18 +297,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             switch (extras.getInt("option_number")) {
                 case 0: {
                     caseSelected = 0;
-                    Global.ord_type = Global.IS_SALES_RECEIPT;
+                    Global.ord_type = Global.OrderType.SALES_RECEIPT.getCodeString();
                     break;
                 }
                 case 1: {
                     caseSelected = 1;
-                    Global.ord_type = Global.IS_RETURN;
+                    Global.ord_type = Global.OrderType.RETURN.getCodeString();
                     break;
                 }
                 case 2: {
                     caseSelected = 0;
                     getActivity().setResult(2);
-                    Global.ord_type = Global.IS_SALES_RECEIPT;
+                    Global.ord_type = Global.OrderType.SALES_RECEIPT.getCodeString();
                     break;
                 }
             }
@@ -1083,13 +1083,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case 9: // Consignment
                 {
 
-                    if (consignmentType == 3 || consignmentType == 2) {
-                        processConsignment(consignmentType);
+                    if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
+                        processConsignment();
                         Intent intent = new Intent(activity,
                                 ConsignmentCheckout_FA.class);
                         intent.putExtra("consignmentType", consignmentType);
                         intent.putExtra("ord_signature", global.encodedImage);
-                        global.encodedImage = new String();
+                        global.encodedImage = "";
                         startActivity(intent);
                         activity.finish();
                     } else {
@@ -1203,7 +1203,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         reloadDefaultTransaction();
     }
 
-    private void processConsignment(int type) {
+    private void processConsignment() {
         GenerateNewID idGenerator = new GenerateNewID(activity);
         HashMap<String, HashMap<String, String>> summaryMap = new HashMap<String, HashMap<String, String>>();
         HashMap<String, String> tempMap = new HashMap<String, String>();
@@ -1213,7 +1213,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         switch (consignmentType) {
 
-            case 0:// Rack
+            case ORDER:// Rack
                 Global.consignment_order = global.order;
                 Global.consignment_products = global.orderProducts;
                 Global.consignment_qtyCounter = new HashMap<String, String>(
@@ -1288,7 +1288,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 break;
 
-            case 1:// Returns
+            case CONSIGNMENT_RETURN:// Returns
                 Global.cons_return_order = global.order;
                 Global.cons_return_products = global.orderProducts;
                 Global.cons_return_qtyCounter = global.qtyCounter;
@@ -1335,7 +1335,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 break;
 
-            case 2:// Fill-up
+            case CONSIGNMENT_FILLUP:// Fill-up
                 Global.cons_fillup_order = global.order;
                 Global.cons_fillup_products = global.orderProducts;
                 Global.cons_fillup_qtyCounter = global.qtyCounter;
@@ -1424,7 +1424,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
                 break;
 
-            case 3:// pickup
+            case CONSIGNMENT_PICKUP:// pickup
                 Global.consignment_order = global.order;
                 Global.consignment_products = global.orderProducts;
                 Global.consignment_qtyCounter = global.qtyCounter;
@@ -1475,30 +1475,30 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private void updateConsignmentType(boolean shouldProcess) {
         if (shouldProcess)
-            processConsignment(consignmentType);
+            processConsignment();
 
-        consignmentType += 1;
+        consignmentType = Global.OrderType.getByCode(consignmentType.getCode()+1);
 
-        Global.consignmentType = consignmentType;
+        Global.consignmentType = consignmentType.getCode();
         String title = "";
-        switch (consignmentType) {
-            case 0:
+        switch (consignmentType){
+            case ORDER:
                 // title.setText("Rack");
                 title = activity.getString(R.string.consignment_stacked);
                 break;
-            case 1:
+            case CONSIGNMENT_RETURN:
                 // title.setText("Return");
-                Global.ord_type = Global.IS_RETURN;
+                Global.ord_type = Global.OrderType.RETURN.getCodeString();
                 title = activity.getString(R.string.consignment_returned);
                 break;
-            case 2:
+            case CONSIGNMENT_FILLUP:
                 // title.setText("Fill-up");
-                Global.ord_type = Global.IS_CONSIGNMENT_FILLUP;
+                Global.ord_type = Global.OrderType.CONSIGNMENT_FILLUP.getCodeString();
                 title = activity.getString(R.string.consignment_filledup);
                 break;
-            case 3:
+            case CONSIGNMENT_PICKUP:
                 // title.setText("Pick-up");
-                Global.ord_type = Global.IS_CONSIGNMENT_PICKUP;
+                Global.ord_type = Global.OrderType.CONSIGNMENT_PICKUP.getCodeString();
                 title = activity.getString(R.string.consignment_pickup);
                 break;
         }
@@ -1780,7 +1780,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             isPrintStationPrinter = params[0];
             if (!isPrintStationPrinter) {
                 publishProgress();
-                int type = Integer.parseInt(Global.ord_type);
+                Global.OrderType type = Global.OrderType.getByCode(Integer.parseInt(Global.ord_type));
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.currentDevice != null) {
                     printSuccessful = Global.mainPrinterManager.currentDevice

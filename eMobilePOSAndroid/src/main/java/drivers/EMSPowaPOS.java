@@ -299,7 +299,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 	// }
 
 	@Override
-	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
+	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
 
 		printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
 

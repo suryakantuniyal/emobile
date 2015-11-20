@@ -58,15 +58,15 @@ public class SalesTab_FR extends Fragment {
     private Button salesInvoices;
     public static Activity activity;
     private EditText hiddenField;
-    public enum SaleTypes {
+    private enum TransactionType {
         SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
         PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
         ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13);
 
-        SaleTypes(int code) {
+        TransactionType(int code) {
         }
 
-        public static SaleTypes getByCode(int code) {
+        public static TransactionType getByCode(int code) {
             switch (code) {
                 case 0:
                     return SALE_RECEIPT;
@@ -296,14 +296,14 @@ public class SalesTab_FR extends Fragment {
         if (isSelected) // customer is currently selected
         {
             //EasyTracker.getInstance().setContext(activity);
-            switch (SaleTypes.getByCode(pos)) {
+            switch (TransactionType.getByCode(pos)) {
                 case SALE_RECEIPT: // Sales Receipt
                 {
                     //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Sales Receipt", null);
 
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", 0);
+                            intent.putExtra("option_number", TransactionType.SALE_RECEIPT);
                         startActivityForResult(intent, 0);
                     } else {
                         promptWithCustomer();
@@ -315,7 +315,7 @@ public class SalesTab_FR extends Fragment {
                     //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Orders", null);
                     intent = new Intent(activity, OrderingMain_FA.class);
                     //intent = new Intent(activity, SalesReceiptSplitActivity.class);
-                    intent.putExtra("option_number", 1);
+                    intent.putExtra("option_number", TransactionType.ORDERS);
                     startActivityForResult(intent, 0);
 
                     break;
@@ -324,7 +324,7 @@ public class SalesTab_FR extends Fragment {
                 {
                     //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Return", null);
                     intent = new Intent(activity, OrderingMain_FA.class);
-                    intent.putExtra("option_number", 2);
+                    intent.putExtra("option_number", TransactionType.RETURN);
                     startActivityForResult(intent, 0);
                     break;
                 }
@@ -334,7 +334,7 @@ public class SalesTab_FR extends Fragment {
                     intent = new Intent(activity, OrderingMain_FA.class);
                     //intent = new Intent(activity, SalesReceiptSplitActivity.class);
 
-                    intent.putExtra("option_number", 3);
+                    intent.putExtra("option_number", TransactionType.INVOICE);
                     startActivityForResult(intent, 0);
                     break;
                 }
@@ -343,7 +343,7 @@ public class SalesTab_FR extends Fragment {
                     //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Estimate", null);
                     intent = new Intent(activity, OrderingMain_FA.class);
                     //intent = new Intent(activity, SalesReceiptSplitActivity.class);
-                    intent.putExtra("option_number", 4);
+                    intent.putExtra("option_number", TransactionType.ESTIMATE);
                     startActivityForResult(intent, 0);
                     break;
                 }

@@ -234,7 +234,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			// setResult(50);
 			finish();
 		} else {
-			if (typeOfProcedure == Integer.parseInt(Global.IS_SALES_RECEIPT)) {
+			if (typeOfProcedure == Integer.parseInt(Global.OrderType.SALES_RECEIPT.getCodeString())) {
 				final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
 				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dialog.setCancelable(true);
@@ -274,7 +274,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				}
 
 				if ((typeOfProcedure == Global.FROM_JOB_INVOICE
-						|| typeOfProcedure == Integer.parseInt(Global.IS_INVOICE))
+						|| typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))
 						&& myPref.getPreferences(MyPreferences.pref_enable_printing)) {
 					if (Global.overallPaidAmount == 0)
 						setResult(-1);
@@ -621,7 +621,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				// TODO Auto-generated method stub
 				dlog.dismiss();
 				if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
-						|| typeOfProcedure == Integer.parseInt(Global.IS_INVOICE))))
+						|| typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))))
 					activity.finish();
 			}
 		});
@@ -653,7 +653,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 					printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
 							wasReprint);
 				else
-					printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, typeOfProcedure,
+					printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, Global.OrderType.getByCode(typeOfProcedure),
 							wasReprint, false);
 			}
 			return null;
@@ -664,7 +664,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			myProgressDialog.dismiss();
 			if (printSuccessful) {
 				if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
-						|| typeOfProcedure == Integer.parseInt(Global.IS_INVOICE)))
+						|| typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
 					activity.finish();
 			} else {
 				showPrintDlg(wasReprint, true);

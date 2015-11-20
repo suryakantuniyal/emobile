@@ -862,7 +862,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 		double newQty = Double.parseDouble(addedQty) + 1;
 		double onHandQty = Double.parseDouble(listData[4]);
 		if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !listData[7].equals("Service")
-				&& (((Global.ord_type == Global.IS_SALES_RECEIPT || Global.ord_type == Global.IS_INVOICE)
+				&& (((Global.ord_type == Global.OrderType.SALES_RECEIPT.getCodeString() || Global.ord_type == Global.OrderType.INVOICE.getCodeString())
 						&& (newQty > onHandQty))))
 				|| (Global.isConsignment && !listData[7].equals("Service")
 						&& !validConsignment(newQty, onHandQty, listData[0]))) {

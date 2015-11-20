@@ -819,7 +819,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
         if (!myPref.getShiftIsOpen()) {
             boolean isReturn = false;
-            if (Global.ord_type.equals(Global.IS_RETURN) || isRefund)
+            if (Global.ord_type.equals(Global.OrderType.RETURN.getCodeString()) || isRefund)
                 isReturn = true;
             ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             if (amountToBePaid <= actualAmount) {

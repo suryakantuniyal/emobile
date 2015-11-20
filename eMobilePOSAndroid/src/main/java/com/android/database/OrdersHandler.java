@@ -718,7 +718,7 @@ public class OrdersHandler {
 
 		ContentValues args = new ContentValues();
 
-		args.put(ord_type, Global.IS_INVOICE);
+		args.put(ord_type, Global.OrderType.INVOICE.getCodeString());
 
 		DBManager._db.update(table_name, args, sb.toString(), new String[] { orderID });
 	}

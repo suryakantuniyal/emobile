@@ -384,16 +384,16 @@ public class HistoryTransactionDetails_FA extends FragmentActivity implements On
 			int type = Integer.parseInt(trans_type);
 			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
 			{
-				if(Integer.parseInt(trans_type) == Global.INT_CONSIGNMENT_FILLUP)
+				if(Global.OrderType.getByCode(Integer.parseInt(trans_type)) == Global.OrderType.CONSIGNMENT_FILLUP)
 				{
 					
 				}
-				else if(Integer.parseInt(trans_type) == Global.INT_CONSIGNMENT_PICKUP)
+				else if(Global.OrderType.getByCode(Integer.parseInt(trans_type)) == Global.OrderType.CONSIGNMENT_PICKUP)
 				{
 					
 				}
 				else
-					printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(order_id,type,true,false);
+					printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)),true,false);
 			}
 			
 			return null;

@@ -61,374 +61,343 @@ import java.util.UUID;
 
 import drivers.EMSPAT100;
 
-public class PickerProduct_FA extends FragmentActivity implements OnClickListener,OnItemClickListener{
+public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
-	private boolean hasBeenCreated = false;
-	private Activity activity;
-	private Global global;
-	
-	
-	
-	private final int SEC_QTY = 3,SEC_CMT = 5,SEC_UOM = 4,SEC_PRICE_LEV = 6, SEC_DISCOUNT = 7,SEC_OTHER_TYPES = 9, SEC_ADDITIONAL_INFO = 10;
-	private String[] leftTitle,leftTitle2;
-	private String[] rightTitle = new String[]{"ONE (Default)","", "", "0.00 <No Discount>"};
-	private final int INDEX_UOM = 0,INDEX_CMT = 1, INDEX_PRICE_LEVEL=2,INDEX_DISCOUNT = 3,OFFSET = 4,MAIN_OFFSET = 3;
-	private List<String[]> listData_LV = new ArrayList<String[]>();
-	
-	
-	private ListViewAdapter lv_adapter;
-	private Bundle extras;
-	
-	//Loading image library
-	private ImageLoader imageLoader;
-	private DisplayImageOptions options;
+    private boolean hasBeenCreated = false;
+    private Activity activity;
+    private Global global;
 
-	
-	private String qty_picked = "1";
 
-	private String defaultVal = "0.00";
-	private String defVal = "0";
-	private String _ordprod_comment = "";
-	private String taxTotal = defaultVal,prod_taxId;
-	private String prLevTotal;
-	private String taxAmount = defVal,disAmount = defVal, disTotal = defaultVal,discount_id;
-	private String uomName="",uomID="";
-	private boolean isFixed = true;
-	private String prodID;
-	private boolean isModify;
-	private int modifyOrderPosition = 0;
-	private String imgURL;
+    private final int SEC_QTY = 3, SEC_CMT = 5, SEC_UOM = 4, SEC_PRICE_LEV = 6, SEC_DISCOUNT = 7, SEC_OTHER_TYPES = 9, SEC_ADDITIONAL_INFO = 10;
+    private String[] leftTitle, leftTitle2;
+    private String[] rightTitle = new String[]{"ONE (Default)", "", "", "0.00 <No Discount>"};
+    private final int INDEX_UOM = 0, INDEX_CMT = 1, INDEX_PRICE_LEVEL = 2, INDEX_DISCOUNT = 3, OFFSET = 4, MAIN_OFFSET = 3;
+    private List<String[]> listData_LV = new ArrayList<String[]>();
 
-	private MyPreferences myPref;
-	
-	private BigDecimal uomMultiplier = new BigDecimal("1.0");
-	private boolean discountIsTaxable =false,discountWasSelected = false;
-	private String basePrice;
-	private ListView lView;
-	private String priceLevelID = "",priceLevelName = "";
-	private int pricelevel_position = 0 ,discount_position = 0,tax_position = 0,uom_position;
-	private String prod_type = "";
-	
-	private VolumePricesHandler volPriceHandler;
-	private ProductsAttrHandler prodAttrHandler;
-	private AlertDialog promptDialog;
-	private AlertDialog.Builder dialogBuilder;
-	
-	private LinkedHashMap<String,List<String>>attributesMap;
-	private String[] attributesKey;
-	private LinkedHashMap<String,String>attributesSelected;
-	
-	
-	private TextView headerProductID,headerOnHand;
-	private ImageView headerImage;
 
-	
-	private String ordProdAttr = new String();
-	private boolean isFromAddon = false;
-	private HashMap<String,String>extrasMap = new HashMap<String,String>();
-	public static PickerProduct_FA instance;
-	
-	
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		
-		myPref = new MyPreferences(this);
-		if(!myPref.getIsTablet())						//reset to default layout (not as dialog)
-			super.setTheme(R.style.AppTheme);
-		
-		
-		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		instance = this;
+    private ListViewAdapter lv_adapter;
+    private Bundle extras;
 
-		
-		
-		setContentView(R.layout.catalog_picker_layout);
-		
-		if(myPref.getIsTablet())
-		{
+    //Loading image library
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
+
+
+    private String qty_picked = "1";
+
+    private String defaultVal = "0.00";
+    private String defVal = "0";
+    private String _ordprod_comment = "";
+    private String taxTotal = defaultVal, prod_taxId;
+    private String prLevTotal;
+    private String taxAmount = defVal, disAmount = defVal, disTotal = defaultVal, discount_id;
+    private String uomName = "", uomID = "";
+    private boolean isFixed = true;
+    private String prodID;
+    private boolean isModify;
+    private int modifyOrderPosition = 0;
+    private String imgURL;
+
+    private MyPreferences myPref;
+
+    private BigDecimal uomMultiplier = new BigDecimal("1.0");
+    private boolean discountIsTaxable = false, discountWasSelected = false;
+    private String basePrice;
+    private ListView lView;
+    private String priceLevelID = "", priceLevelName = "";
+    private int pricelevel_position = 0, discount_position = 0, tax_position = 0, uom_position;
+    private String prod_type = "";
+
+    private VolumePricesHandler volPriceHandler;
+    private ProductsAttrHandler prodAttrHandler;
+    private AlertDialog promptDialog;
+    private AlertDialog.Builder dialogBuilder;
+
+    private LinkedHashMap<String, List<String>> attributesMap;
+    private String[] attributesKey;
+    private LinkedHashMap<String, String> attributesSelected;
+
+
+    private TextView headerProductID, headerOnHand;
+    private ImageView headerImage;
+
+
+    private String ordProdAttr = new String();
+    private boolean isFromAddon = false;
+    private HashMap<String, String> extrasMap = new HashMap<String, String>();
+    public static PickerProduct_FA instance;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+
+        myPref = new MyPreferences(this);
+        if (!myPref.getIsTablet())                        //reset to default layout (not as dialog)
+            super.setTheme(R.style.AppTheme);
+
+
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        instance = this;
+
+
+        setContentView(R.layout.catalog_picker_layout);
+
+        if (myPref.getIsTablet()) {
 //			DisplayMetrics metrics = getResources().getDisplayMetrics();
 //	        int screenWidth = (int) (metrics.widthPixels * 0.80);
 //	        int screenHeight = (int) (metrics.heightPixels*0.80);
 //	        getWindow().setLayout(screenWidth, screenHeight);
-		}
-		
-		if(OrderingMain_FA.returnItem)
-		{
-			TextView tvHeaderTitle = (TextView)findViewById(R.id.HeaderTitle);
-			tvHeaderTitle.setText("Return");
-			tvHeaderTitle.setBackgroundColor(Color.RED);
-		}
-		
-		
-		activity = this;
-		global = (Global)getApplication();
-		
+        }
+
+        if (OrderingMain_FA.returnItem) {
+            TextView tvHeaderTitle = (TextView) findViewById(R.id.HeaderTitle);
+            tvHeaderTitle.setText("Return");
+            tvHeaderTitle.setBackgroundColor(Color.RED);
+        }
 
 
-		myPref = new MyPreferences(activity);
-		extras = activity.getIntent().getExtras();
-		
-		LayoutInflater inflater = LayoutInflater.from(this);
-		View header = inflater.inflate(R.layout.catalog_picker_header, (ViewGroup) activity.findViewById(R.id.header_layout_root));
-		lView = (ListView) findViewById(R.id.pickerLV);
-		headerProductID = (TextView) header.findViewById(R.id.pickerHeaderID);
-		headerOnHand = (TextView) header.findViewById(R.id.pickerHeaderQty);
-		headerImage = (ImageView) header.findViewById(R.id.itemHeaderImg);
-		headerImage.setOnClickListener(this);
-		
-		Button headerAddButton = (Button) header.findViewById(R.id.pickerHeaderButton);
-		headerAddButton.setOnClickListener(this);
-		
-		
-		volPriceHandler = new VolumePricesHandler(activity);
-		
-		leftTitle = new String[]{getString(R.string.cat_picker_uom),getString(R.string.cat_picker_comments),getString(R.string.cat_picker_price_level),
-				getString(R.string.cat_picker_discount)};
-		
-		
-		leftTitle2 = new String[]{getString(R.string.cat_picker_attributes)
-				,getString(R.string.cat_picker_view_other_types),getString(R.string.additional_info)};
-		
-		
-		imageLoader = ImageLoader.getInstance();
-		imageLoader.init(ImageLoaderConfiguration.createDefault(activity));
-		options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loading_image).cacheInMemory(false).cacheOnDisc(true)
-				.showImageForEmptyUri(R.drawable.no_image).build();
-
-		
-		
-		isModify = extras.getBoolean("isModify", false);
-		isFromAddon = extras.getBoolean("isFromAddon",false);
-		setExtrasMapValues();
-		verifyIfModify(headerAddButton,header);
-
-		headerProductID.setText(prodID);
-		imageLoader.displayImage(imgURL, headerImage, options);
-		
-		OrdProdAttrList_DB ordProdAttrDB = new OrdProdAttrList_DB(activity);
-		ordProdAttr = ordProdAttrDB.getRequiredOrdAttr(prodID);
-		
-		setupTax();	
-		
-		lView.addHeaderView(header);
-
-	
-		
-		lv_adapter = new ListViewAdapter(activity);
-		lView.setAdapter(lv_adapter);
-		lView.setOnItemClickListener(this);
-		
-		hasBeenCreated = true;
-	}
-	
-	
-	@Override
-	public void onResume() {
-
-		if(global.isApplicationSentToBackground(activity))
-			global.loggedIn = false;
-		global.stopActivityTransitionTimer();
-		
-		if(hasBeenCreated&&!global.loggedIn)
-		{
-			if(global.getGlobalDlog()!=null)
-				global.getGlobalDlog().dismiss();
-			global.promptForMandatoryLogin(activity);
-		}
-		super.onResume();
-	}
-	
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
-		boolean isScreenOn = powerManager.isScreenOn();
-		if(!isScreenOn)
-			global.loggedIn = false;
-		global.startActivityTransitionTimer();
-	}
-	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		instance = null;
-	}
+        activity = this;
+        global = (Global) getApplication();
 
 
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		switch(v.getId())
-		{
-		case R.id.itemHeaderImg: //View item image
-			Intent intent = new Intent(activity, ShowProductImageActivity.class);
-			intent.putExtra("url", imgURL);
-			startActivity(intent);
-			break;
-		case R.id.pickerHeaderButton: //Add product
-			addProductToOrder();
-			break;
-		}
-	}
-	
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		// TODO Auto-generated method stub
-		switch(position)
-		{
-		case SEC_QTY:
-			showQtyDlog(view);
-			break;
-		case SEC_CMT:
-			showCMTDlog(view);
-			break;
-		case SEC_UOM:
-		case SEC_PRICE_LEV:
-		case SEC_DISCOUNT:
-			showListViewDlog(position);
-			break;
-		case SEC_OTHER_TYPES:
-			Intent results = new Intent();
-			results.putExtra("prod_name", extras.getString("prod_name"));
-			activity.setResult(9,results);
-			
-			activity.finish();
-			break;
-		case SEC_ADDITIONAL_INFO:
-			Intent intent = new Intent(activity,OrderAttributes_FA.class);
-			intent.putExtra("prod_id", prodID);
-			if(isModify)
-			{
-				intent.putExtra("isModify", isModify);
-				intent.putExtra("ordprod_id", global.orderProducts.get(modifyOrderPosition).ordprod_id);
-			}
-			startActivity(intent);
-			break;
-		
-		}
-	}
-	
-	private void setExtrasMapValues()
-	{
-		extrasMap.put("prod_id", extras.getString("prod_id"));
-		extrasMap.put("prod_name",extras.getString("prod_name"));
-		extrasMap.put("prod_price",extras.getString("prod_price"));
-		extrasMap.put("prod_img_url",extras.getString("url"));
-		extrasMap.put("prod_type",extras.getString("prod_type"));
-		extrasMap.put("prod_on_hand", extras.getString("prod_on_hand"));
-		extrasMap.put("prod_is_taxable", extras.getString("prod_istaxable"));
-		extrasMap.put("prod_desc", extras.getString("prod_desc"));
-		extrasMap.put("prod_taxcode", extras.getString("prod_taxcode"));
-		extrasMap.put("prod_taxtype", extras.getString("prod_taxtype"));
-		extrasMap.put("cat_id", extras.getString("cat_id"));
-		
-		extrasMap.put("prod_price_points", extras.getString("prod_price_points")==null?"0":extras.getString("prod_price_points"));
-		extrasMap.put("prod_value_points", extras.getString("prod_value_points")==null?"0":extras.getString("prod_value_points"));
-		if(Global.isConsignment)
-			extrasMap.put("consignment_qty", extras.getString("consignment_qty"));
-	}
-	
-	private void verifyIfModify(Button headerAddButton,View header)
-	{
-		if(isModify)
-		{
-			headerAddButton.setText("Modify");
-			modifyOrderPosition = extras.getInt("modify_position");
-			imgURL = global.orderProducts.get(modifyOrderPosition).imgURL;
-			prodID = global.orderProducts.get(modifyOrderPosition).prod_id;
-			headerOnHand.setText(global.orderProducts.get(modifyOrderPosition).onHand);
-			basePrice = global.orderProducts.get(modifyOrderPosition).overwrite_price;
-			prod_type = global.orderProducts.get(modifyOrderPosition).prod_type;
-			
-			updateSavedDetails();
-			
-			_ordprod_comment = global.orderProducts.get(modifyOrderPosition).ordprod_comment;
-			rightTitle[INDEX_CMT] = _ordprod_comment;
-		}
-		else
-		{
-			imgURL = extrasMap.get("prod_img_url");	
-			headerOnHand.setText(extrasMap.get("prod_on_hand"));
-			prodID = extrasMap.get("prod_id");
-			prod_type = extrasMap.get("prod_type");
-			basePrice = extrasMap.get("prod_price");
-			if(basePrice == null ||basePrice.isEmpty())
-				basePrice = "0.0";
-			prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
-			
-			prodAttrHandler = new ProductsAttrHandler(activity);
-			attributesMap = prodAttrHandler.getAttributesMap(extrasMap.get("prod_name"));
-			attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
-			attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
-			int attributesSize = attributesMap.size();
-			for(int i = 0 ; i < attributesSize; i++)
-			{
-				addAttributeButton(header,attributesKey[i]);
-			}
-			
-			
-			if (myPref.isCustSelected()) {
-				PriceLevelHandler plHandler = new PriceLevelHandler(activity);
-				List<String[]>_listPriceLevel = plHandler.getFixedPriceLevel(prodID);
+        myPref = new MyPreferences(activity);
+        extras = activity.getIntent().getExtras();
 
-				int i = 0;
-				for (String[] arr:_listPriceLevel) {
-					if(arr[1].equals(myPref.getCustPriceLevel()))
-					{
-						pricelevel_position = i;
-						priceLevelName = arr[0];
-						priceLevelID = arr[1];
-					}
-					i++;
-				}
-			}
-		}
-	}
-	
-	
-	private void setupTax()
-	{
-		TaxesHandler taxHandler = new TaxesHandler(activity);
-		if(myPref.getPreferences(MyPreferences.pref_retail_taxes))
-		{
-			if(!Global.taxID.isEmpty())
-			{		
-				taxAmount = taxHandler.getTaxRate(Global.taxID, extrasMap.get("prod_taxtype"),Double.parseDouble(basePrice));
-				prod_taxId = extrasMap.get("prod_taxtype");
-			}
-			else
-			{
-				taxAmount = taxHandler.getTaxRate(extrasMap.get("prod_taxcode"), extrasMap.get("prod_taxtype"),Double.parseDouble(basePrice));
-				prod_taxId = extrasMap.get("prod_taxcode");
-			}
-		}
-		else
-		{
-			if(!Global.taxID.isEmpty())
-			{		
-				taxAmount = taxHandler.getTaxRate(Global.taxID, "",Double.parseDouble(basePrice));
-				prod_taxId = Global.taxID;
-			}
-			else
-			{		
-				taxAmount = taxHandler.getTaxRate(extrasMap.get("prod_taxcode"), "",Double.parseDouble(basePrice));
-				prod_taxId = extrasMap.get("prod_taxcode");
-			}
-		}
-	}
-	
-	
-	private void updateSavedDetails()
-	{
-		PriceLevelHandler plHandler = new PriceLevelHandler(activity);
-		ProductsHandler prodHandler = new ProductsHandler(activity);
-		UOMHandler uomHandler = new UOMHandler(activity);
-		
-		List<String[]>_listPriceLevel = plHandler.getFixedPriceLevel(prodID);
-		/*if (myPref.isCustSelected()) {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View header = inflater.inflate(R.layout.catalog_picker_header, (ViewGroup) activity.findViewById(R.id.header_layout_root));
+        lView = (ListView) findViewById(R.id.pickerLV);
+        headerProductID = (TextView) header.findViewById(R.id.pickerHeaderID);
+        headerOnHand = (TextView) header.findViewById(R.id.pickerHeaderQty);
+        headerImage = (ImageView) header.findViewById(R.id.itemHeaderImg);
+        headerImage.setOnClickListener(this);
+
+        Button headerAddButton = (Button) header.findViewById(R.id.pickerHeaderButton);
+        headerAddButton.setOnClickListener(this);
+
+
+        volPriceHandler = new VolumePricesHandler(activity);
+
+        leftTitle = new String[]{getString(R.string.cat_picker_uom), getString(R.string.cat_picker_comments), getString(R.string.cat_picker_price_level),
+                getString(R.string.cat_picker_discount)};
+
+
+        leftTitle2 = new String[]{getString(R.string.cat_picker_attributes)
+                , getString(R.string.cat_picker_view_other_types), getString(R.string.additional_info)};
+
+
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration.createDefault(activity));
+        options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loading_image).cacheInMemory(false).cacheOnDisc(true)
+                .showImageForEmptyUri(R.drawable.no_image).build();
+
+
+        isModify = extras.getBoolean("isModify", false);
+        isFromAddon = extras.getBoolean("isFromAddon", false);
+        setExtrasMapValues();
+        verifyIfModify(headerAddButton, header);
+
+        headerProductID.setText(prodID);
+        imageLoader.displayImage(imgURL, headerImage, options);
+
+        OrdProdAttrList_DB ordProdAttrDB = new OrdProdAttrList_DB(activity);
+        ordProdAttr = ordProdAttrDB.getRequiredOrdAttr(prodID);
+
+        setupTax();
+
+        lView.addHeaderView(header);
+
+
+        lv_adapter = new ListViewAdapter(activity);
+        lView.setAdapter(lv_adapter);
+        lView.setOnItemClickListener(this);
+
+        hasBeenCreated = true;
+    }
+
+
+    @Override
+    public void onResume() {
+
+        if (global.isApplicationSentToBackground(activity))
+            global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (hasBeenCreated && !global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(activity);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            global.loggedIn = false;
+        global.startActivityTransitionTimer();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        instance = null;
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        switch (v.getId()) {
+            case R.id.itemHeaderImg: //View item image
+                Intent intent = new Intent(activity, ShowProductImageActivity.class);
+                intent.putExtra("url", imgURL);
+                startActivity(intent);
+                break;
+            case R.id.pickerHeaderButton: //Add product
+                addProductToOrder();
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // TODO Auto-generated method stub
+        switch (position) {
+            case SEC_QTY:
+                showQtyDlog(view);
+                break;
+            case SEC_CMT:
+                showCMTDlog(view);
+                break;
+            case SEC_UOM:
+            case SEC_PRICE_LEV:
+            case SEC_DISCOUNT:
+                showListViewDlog(position);
+                break;
+            case SEC_OTHER_TYPES:
+                Intent results = new Intent();
+                results.putExtra("prod_name", extras.getString("prod_name"));
+                activity.setResult(9, results);
+
+                activity.finish();
+                break;
+            case SEC_ADDITIONAL_INFO:
+                Intent intent = new Intent(activity, OrderAttributes_FA.class);
+                intent.putExtra("prod_id", prodID);
+                if (isModify) {
+                    intent.putExtra("isModify", isModify);
+                    intent.putExtra("ordprod_id", global.orderProducts.get(modifyOrderPosition).ordprod_id);
+                }
+                startActivity(intent);
+                break;
+
+        }
+    }
+
+    private void setExtrasMapValues() {
+        extrasMap.put("prod_id", extras.getString("prod_id"));
+        extrasMap.put("prod_name", extras.getString("prod_name"));
+        extrasMap.put("prod_price", extras.getString("prod_price"));
+        extrasMap.put("prod_img_url", extras.getString("url"));
+        extrasMap.put("prod_type", extras.getString("prod_type"));
+        extrasMap.put("prod_on_hand", extras.getString("prod_on_hand"));
+        extrasMap.put("prod_is_taxable", extras.getString("prod_istaxable"));
+        extrasMap.put("prod_desc", extras.getString("prod_desc"));
+        extrasMap.put("prod_taxcode", extras.getString("prod_taxcode"));
+        extrasMap.put("prod_taxtype", extras.getString("prod_taxtype"));
+        extrasMap.put("cat_id", extras.getString("cat_id"));
+
+        extrasMap.put("prod_price_points", extras.getString("prod_price_points") == null ? "0" : extras.getString("prod_price_points"));
+        extrasMap.put("prod_value_points", extras.getString("prod_value_points") == null ? "0" : extras.getString("prod_value_points"));
+        if (Global.isConsignment)
+            extrasMap.put("consignment_qty", extras.getString("consignment_qty"));
+    }
+
+    private void verifyIfModify(Button headerAddButton, View header) {
+        if (isModify) {
+            headerAddButton.setText("Modify");
+            modifyOrderPosition = extras.getInt("modify_position");
+            imgURL = global.orderProducts.get(modifyOrderPosition).imgURL;
+            prodID = global.orderProducts.get(modifyOrderPosition).prod_id;
+            headerOnHand.setText(global.orderProducts.get(modifyOrderPosition).onHand);
+            basePrice = global.orderProducts.get(modifyOrderPosition).overwrite_price;
+            prod_type = global.orderProducts.get(modifyOrderPosition).prod_type;
+
+            updateSavedDetails();
+
+            _ordprod_comment = global.orderProducts.get(modifyOrderPosition).ordprod_comment;
+            rightTitle[INDEX_CMT] = _ordprod_comment;
+        } else {
+            imgURL = extrasMap.get("prod_img_url");
+            headerOnHand.setText(extrasMap.get("prod_on_hand"));
+            prodID = extrasMap.get("prod_id");
+            prod_type = extrasMap.get("prod_type");
+            basePrice = extrasMap.get("prod_price");
+            if (basePrice == null || basePrice.isEmpty())
+                basePrice = "0.0";
+            prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
+
+            prodAttrHandler = new ProductsAttrHandler(activity);
+            attributesMap = prodAttrHandler.getAttributesMap(extrasMap.get("prod_name"));
+            attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
+            attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
+            int attributesSize = attributesMap.size();
+            for (int i = 0; i < attributesSize; i++) {
+                addAttributeButton(header, attributesKey[i]);
+            }
+
+
+            if (myPref.isCustSelected()) {
+                PriceLevelHandler plHandler = new PriceLevelHandler(activity);
+                List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
+
+                int i = 0;
+                for (String[] arr : _listPriceLevel) {
+                    if (arr[1].equals(myPref.getCustPriceLevel())) {
+                        pricelevel_position = i;
+                        priceLevelName = arr[0];
+                        priceLevelID = arr[1];
+                    }
+                    i++;
+                }
+            }
+        }
+    }
+
+
+    private void setupTax() {
+        TaxesHandler taxHandler = new TaxesHandler(activity);
+        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+            if (!Global.taxID.isEmpty()) {
+                taxAmount = taxHandler.getTaxRate(Global.taxID, extrasMap.get("prod_taxtype"), Double.parseDouble(basePrice));
+                prod_taxId = extrasMap.get("prod_taxtype");
+            } else {
+                taxAmount = taxHandler.getTaxRate(extrasMap.get("prod_taxcode"), extrasMap.get("prod_taxtype"), Double.parseDouble(basePrice));
+                prod_taxId = extrasMap.get("prod_taxcode");
+            }
+        } else {
+            if (!Global.taxID.isEmpty()) {
+                taxAmount = taxHandler.getTaxRate(Global.taxID, "", Double.parseDouble(basePrice));
+                prod_taxId = Global.taxID;
+            } else {
+                taxAmount = taxHandler.getTaxRate(extrasMap.get("prod_taxcode"), "", Double.parseDouble(basePrice));
+                prod_taxId = extrasMap.get("prod_taxcode");
+            }
+        }
+    }
+
+
+    private void updateSavedDetails() {
+        PriceLevelHandler plHandler = new PriceLevelHandler(activity);
+        ProductsHandler prodHandler = new ProductsHandler(activity);
+        UOMHandler uomHandler = new UOMHandler(activity);
+
+        List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
+        /*if (myPref.isCustSelected()) {
 			PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
 			List<String[]> tempList = handler.getPriceLevel(prodID);
 			int size = tempList.size();
@@ -436,378 +405,354 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 				_listPriceLevel.add(tempList.get(i));
 			}
 		}*/
-		
-		List<String[]>_listDiscounts = prodHandler.getDiscounts();
-		List<String[]> _listUOM = uomHandler.getUOMList(prodID);
-		
-		int plSize = _listPriceLevel.size();
-		int disSize = _listDiscounts.size();
-		int uomSize = _listUOM.size();
-		
-		int maxSize = plSize;
-		if(maxSize<disSize)
-			maxSize = disSize;
-		if(maxSize < uomSize)
-			maxSize = uomSize;
-		
-		int _plIndex = 0,_disIndex = 0,_uomIndex = 0;
-		for(int i = 0 ; i < maxSize;i++)
-		{
-			if(i<plSize&&_listPriceLevel.get(i)[1].equals(global.orderProducts.get(modifyOrderPosition).pricelevel_id))
-			{
-				_plIndex = i+1;
-			}
-			if(i<disSize&&_listDiscounts.get(i)[4].equals(global.orderProducts.get(modifyOrderPosition).discount_id))
-			{
-				_disIndex = i+1;
-			}
-			if(i<uomSize &&_listUOM.get(i)[1].equals(global.orderProducts.get(modifyOrderPosition).uom_id)
-					)
-			{
-				_uomIndex = i+1;
-			}
-		}
-		
-		listData_LV = _listPriceLevel;
-		setTextView(_plIndex,INDEX_PRICE_LEVEL+OFFSET);
-		listData_LV = _listDiscounts;
-		setTextView(_disIndex,INDEX_DISCOUNT+OFFSET);
-		listData_LV = _listUOM;
-		setTextView(_uomIndex,INDEX_UOM+OFFSET);
-	}
 
-	private void addAttributeButton(View header,String tag)
-	{
+        List<String[]> _listDiscounts = prodHandler.getDiscounts();
+        List<String[]> _listUOM = uomHandler.getUOMList(prodID);
 
-		LinearLayout test = (LinearLayout)header.findViewById(R.id.catalog_picker_attributes_holder);
-		LayoutInflater inf = LayoutInflater.from(activity);
-		
+        int plSize = _listPriceLevel.size();
+        int disSize = _listDiscounts.size();
+        int uomSize = _listUOM.size();
+
+        int maxSize = plSize;
+        if (maxSize < disSize)
+            maxSize = disSize;
+        if (maxSize < uomSize)
+            maxSize = uomSize;
+
+        int _plIndex = 0, _disIndex = 0, _uomIndex = 0;
+        for (int i = 0; i < maxSize; i++) {
+            if (i < plSize && _listPriceLevel.get(i)[1].equals(global.orderProducts.get(modifyOrderPosition).pricelevel_id)) {
+                _plIndex = i + 1;
+            }
+            if (i < disSize && _listDiscounts.get(i)[4].equals(global.orderProducts.get(modifyOrderPosition).discount_id)) {
+                _disIndex = i + 1;
+            }
+            if (i < uomSize && _listUOM.get(i)[1].equals(global.orderProducts.get(modifyOrderPosition).uom_id)
+                    ) {
+                _uomIndex = i + 1;
+            }
+        }
+
+        listData_LV = _listPriceLevel;
+        setTextView(_plIndex, INDEX_PRICE_LEVEL + OFFSET);
+        listData_LV = _listDiscounts;
+        setTextView(_disIndex, INDEX_DISCOUNT + OFFSET);
+        listData_LV = _listUOM;
+        setTextView(_uomIndex, INDEX_UOM + OFFSET);
+    }
+
+    private void addAttributeButton(View header, String tag) {
+
+        LinearLayout test = (LinearLayout) header.findViewById(R.id.catalog_picker_attributes_holder);
+        LayoutInflater inf = LayoutInflater.from(activity);
+
         View vw = inf.inflate(R.layout.catalog_picker_attributes_adapter, null);
         vw.setTag(tag);
         vw.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
-        
-        
-        TextView attributeTitle = (TextView)vw.findViewById(R.id.attribute_title);
-        TextView attributeValue = (TextView)vw.findViewById(R.id.attribute_value);
-        
+
+
+        TextView attributeTitle = (TextView) vw.findViewById(R.id.attribute_title);
+        TextView attributeValue = (TextView) vw.findViewById(R.id.attribute_value);
+
         attributeTitle.setText(tag);
         attributeValue.setText(attributesSelected.get(tag));
-        
-        test.addView(vw);
-		
-        vw.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				generateAttributePrompt(v);
-			}
-		});
-	}
-	
-	
-	private void generateAttributePrompt(View view)
-	{
-		final String key = (String)view.getTag();
-		
-        final TextView attributeValue = (TextView)view.findViewById(R.id.attribute_value);
-		
-		ListView listView = new ListView(activity);
-		dialogBuilder = new AlertDialog.Builder(activity);
 
-		final String[] val = attributesMap.get(key).toArray(new String[attributesMap.get(key).size()]);		
-		
-		listView.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, val) {
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				View row = super.getView(position, convertView, parent);
+        test.addView(vw);
+
+        vw.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                generateAttributePrompt(v);
+            }
+        });
+    }
+
+
+    private void generateAttributePrompt(View view) {
+        final String key = (String) view.getTag();
+
+        final TextView attributeValue = (TextView) view.findViewById(R.id.attribute_value);
+
+        ListView listView = new ListView(activity);
+        dialogBuilder = new AlertDialog.Builder(activity);
+
+        final String[] val = attributesMap.get(key).toArray(new String[attributesMap.get(key).size()]);
+
+        listView.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, val) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View row = super.getView(position, convertView, parent);
                 // Here we get the textview and set the color
                 TextView tv = (TextView) row.findViewById(android.R.id.text1);
                 tv.setTextColor(Color.BLACK);
-				return row;
-			}
-		});
-		
-		listView.setBackgroundColor(Color.WHITE);
-		listView.setCacheColorHint(Color.WHITE);
+                return row;
+            }
+        });
 
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setBackgroundColor(Color.WHITE);
+        listView.setCacheColorHint(Color.WHITE);
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-					long arg3) {
-				// TODO Auto-generated method stub
-				
-				attributeValue.setText(val[position]);
-				attributesSelected.put(key, val[position]);
-				refreshAttributeProduct(prodAttrHandler.getNewAttributeProduct(extrasMap.get("prod_name"), attributesKey, attributesSelected));
-				promptDialog.dismiss();
-			}
-		});
-		
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-		dialogBuilder.setView(listView);
-		
-		dialogBuilder.setInverseBackgroundForced(true);
-		promptDialog = dialogBuilder.create();
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+                                    long arg3) {
+                // TODO Auto-generated method stub
 
-		promptDialog.show();
-	}
-	
-	private void refreshAttributeProduct(Cursor myCursor)
-	{
-		
-		String[] data = new String[10];
-		data[0] = myCursor.getString(myCursor.getColumnIndex("_id"));
-		data[1] = myCursor.getString(myCursor.getColumnIndex("prod_name"));
-		
-		String tempPrice = myCursor.getString(myCursor.getColumnIndex("volume_price"));
-		if(tempPrice == null||tempPrice.isEmpty())
-		{
-			tempPrice = myCursor.getString(myCursor.getColumnIndex("pricelevel_price"));
-			if(tempPrice == null||tempPrice.isEmpty())
-			{
-				tempPrice = myCursor.getString(myCursor.getColumnIndex("chain_price"));
-				
-				if(tempPrice == null || tempPrice.isEmpty())
-					tempPrice = myCursor.getString(myCursor.getColumnIndex("master_price"));
-			}
-		}
-
-		data[2] = tempPrice;
-		data[3] = myCursor.getString(myCursor.getColumnIndex("prod_desc"));
-		
-		tempPrice = new String();
-		tempPrice = myCursor.getString(myCursor.getColumnIndex("local_prod_onhand"));
-		if(tempPrice == null || tempPrice.isEmpty())
-			tempPrice = myCursor.getString(myCursor.getColumnIndex("master_prod_onhand"));
-		if(tempPrice.isEmpty())
-			tempPrice = "0";
-		data[4] = tempPrice;
-		
-		data[5] = myCursor.getString(myCursor.getColumnIndex("prod_img_name"));
-		data[6] = myCursor.getString(myCursor.getColumnIndex("prod_istaxable"));
-		data[7] = myCursor.getString(myCursor.getColumnIndex("prod_type"));
-		
-		data[8] = myCursor.getString(myCursor.getColumnIndex("prod_price_points"));
-		if(data[8]==null||data[8].isEmpty())
-			data[8] = "0";
-		data[9] = myCursor.getString(myCursor.getColumnIndex("prod_value_points"));
-		if(data[9]==null||data[9].isEmpty())
-			data[9] = "0";
-		
-		
-		extrasMap.clear();
-		
-		extrasMap.put("prod_id", data[0]);
-		extrasMap.put("prod_name",data[1]);
-		extrasMap.put("prod_price",data[2]);
-		extrasMap.put("prod_img_url",data[5]);
-		extrasMap.put("prod_type",data[7]);
-		extrasMap.put("prod_on_hand", data[4]);
-		extrasMap.put("prod_is_taxable", data[6]);
-		extrasMap.put("prod_desc", data[3]);
-		//extrasMap.put("cat_id", myCursor.getString(myCursor.getColumnIndex("cat_id")));
-		extrasMap.put("prod_price_points", data[8]);
-		extrasMap.put("prod_value_points", data[9]);
-		
-		
-		
-		imgURL = extrasMap.get("prod_img_url");	
-		headerOnHand.setText(extrasMap.get("prod_on_hand"));
-		prodID = extrasMap.get("prod_id");
-		prod_type = extrasMap.get("prod_type");
-		basePrice = extrasMap.get("prod_price");
-		if(basePrice == null ||basePrice.isEmpty())
-			basePrice = "0.0";
-		
-		prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
-		
-
-		headerProductID.setText(prodID);
-		imageLoader.displayImage(imgURL, headerImage, options);
-		lv_adapter = new ListViewAdapter(activity);
-		lView.setAdapter(lv_adapter);
-	}
-	
-	private void addProductToOrder()
-	{
-		if(global.ordProdAttrPending.size()>0)
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.append(activity.getString(R.string.dlog_msg_required_attributes)).append("\n\n").append(ordProdAttr);
-			Global.showPrompt(activity,R.string.dlog_title_error,sb.toString());
-		}
-		else
-		{
-			double onHandQty = 0;
-			if(!headerOnHand.getText().toString().isEmpty())
-				onHandQty = Double.parseDouble(headerOnHand.getText().toString());
-				
-			
-			if(OrderingMain_FA.returnItem||(isModify&&global.orderProducts.get(modifyOrderPosition).isReturned))
-				qty_picked = new BigDecimal(qty_picked).negate().toString();
-			double selectedQty = Double.parseDouble(qty_picked);
-			double newQty = 0;
-			String addedQty = global.qtyCounter.get(prodID); 
-			
-			
-			if(addedQty!=null&&!addedQty.isEmpty())
-				newQty = Double.parseDouble(addedQty)+selectedQty;
-			
-
-			if((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand)&&!prod_type.equals("Service")
-					&&((Global.ord_type==Global.IS_SALES_RECEIPT||Global.ord_type==Global.IS_INVOICE)&&
-							((!isModify&&(selectedQty>onHandQty||newQty>onHandQty))||(isModify&&selectedQty>onHandQty))
-							))||(Global.isConsignment&&!prod_type.equals("Service")&&!validConsignment(selectedQty,onHandQty)))
-			
-			{
-				Global.showPrompt(activity,R.string.dlog_title_error,activity.getString(R.string.limit_onhand));
-			}
-			else
-			{
-				if(!isModify)
-					preValidateSettings();
-				else
-					modifyProduct(modifyOrderPosition);
-				
-				activity.setResult(2);
-				activity.finish();
-			}
-		}
-	}
+                attributeValue.setText(val[position]);
+                attributesSelected.put(key, val[position]);
+                refreshAttributeProduct(prodAttrHandler.getNewAttributeProduct(extrasMap.get("prod_name"), attributesKey, attributesSelected));
+                promptDialog.dismiss();
+            }
+        });
 
 
+        dialogBuilder.setView(listView);
 
-	private void modifyProduct(int position)
-	{
-		OrderProducts orderedProducts = global.orderProducts.get(position);
-		
-		String val = qty_picked;
-		BigDecimal sum = Global.getBigDecimalNum(val);
-		
-		if(myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-			global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
-		else
-			global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
-		extrasMap.put("prod_is_taxable", orderedProducts.prod_istaxable);
-		BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal).multiply(uomMultiplier)).setScale(2,RoundingMode.HALF_UP);
-		calculateTaxDiscount(total);
-		
-		BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
-		orderedProducts.ordprod_qty = val;
-		orderedProducts.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier)).toString();
-		
-		orderedProducts.prod_taxValue = taxTotal;
-		orderedProducts.discount_value = disTotal;
+        dialogBuilder.setInverseBackgroundForced(true);
+        promptDialog = dialogBuilder.create();
 
-		
-		orderedProducts.pricelevel_id = priceLevelID;
-		orderedProducts.priceLevelName = priceLevelName;
-		
-		
-		// for calculating taxes and discount at receipt
-		orderedProducts.discount_id = discount_id;
-		orderedProducts.taxAmount = taxAmount;
-		orderedProducts.taxTotal = taxTotal;
-		orderedProducts.disAmount = disAmount;
-		orderedProducts.disTotal = disTotal;
-		
-		orderedProducts.tax_position = Integer.toString(tax_position);
-		orderedProducts.discount_position = Integer.toString(discount_position);
-		orderedProducts.pricelevel_position = Integer.toString(pricelevel_position);
-		orderedProducts.uom_position = Integer.toString(uom_position);
-		orderedProducts.ordprod_comment = _ordprod_comment;
-		orderedProducts.prod_price_updated = "0";
-		
-		BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
-	
-		
-		if(discountIsTaxable)
-		{
-			orderedProducts.discount_is_taxable = "1";
-		}
-		else
-			orderedProducts.discount_is_taxable = "0";
-		
-		
-		if(isFixed)
-			orderedProducts.discount_is_fixed = "1";
-		else
-			orderedProducts.discount_is_fixed = "0";
-		
-		orderedProducts.itemTotal = itemTotal.toString();
-		orderedProducts.itemSubtotal = total.toString();
-		
-		if(OrderingMain_FA.returnItem)
-		{
-			OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-			OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem,"Return");
-		}
-		
-	}
-	
-	private void showQtyDlog(View v)
-	{
-		final Dialog dlog = new Dialog(activity,R.style.Theme_TransparentTest);
-		dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		dlog.setCancelable(true);
-		dlog.setContentView(R.layout.dlog_field_single_layout);
-		
-		final EditText viewField = (EditText)dlog.findViewById(R.id.dlogFieldSingle);
-		
-		if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-			viewField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-		else
-			viewField.setInputType(InputType.TYPE_CLASS_NUMBER);
-		final TextView qty = (TextView) v.findViewById(R.id.pickerQty);
-		viewField.setText(qty.getText().toString());
-		viewField.setSelection(qty.getText().toString().length());
-		
-		TextView viewTitle = (TextView)dlog.findViewById(R.id.dlogTitle);
-		TextView viewMsg = (TextView)dlog.findViewById(R.id.dlogMessage);
-		viewTitle.setText(R.string.dlog_title_confirm);
-		viewMsg.setText(R.string.dlog_msg_enter_qty);
-		
-		Button btnOk = (Button)dlog.findViewById(R.id.btnDlogSingle);
-		btnOk.setText(R.string.button_ok);
-		btnOk.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				String txt = viewField.getText().toString();
-				if (!txt.isEmpty() && Double.parseDouble(txt) > 0) {
-					qty.setText(txt);
-					qty_picked = txt;
-				}
-				dlog.dismiss();
-			}
-		});
-		dlog.show();
-	}
-	
-	private void showListViewDlog(final int type)
-	{
-		final Dialog dlg = new Dialog(activity);
-		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		View view = inflater.inflate(R.layout.dialog_listview_layout, null, false);
-		dlg.setContentView(view);
-		ListView dlgListView = (ListView) dlg.findViewById(R.id.dlgListView);
-		switch (type) {
-		case SEC_UOM://UoM
-		{
-			UOMHandler uomHandler = new UOMHandler(activity);
-			listData_LV = uomHandler.getUOMList(prodID);
-			break;
-		}
-		case SEC_PRICE_LEV: // Price Level
-		{
-			if(!myPref.getPreferences(MyPreferences.pref_block_price_level_change))
-			{
-				PriceLevelHandler handler1 = new PriceLevelHandler(activity);
-				listData_LV = handler1.getFixedPriceLevel(prodID);
+        promptDialog.show();
+    }
+
+    private void refreshAttributeProduct(Cursor myCursor) {
+
+        String[] data = new String[10];
+        data[0] = myCursor.getString(myCursor.getColumnIndex("_id"));
+        data[1] = myCursor.getString(myCursor.getColumnIndex("prod_name"));
+
+        String tempPrice = myCursor.getString(myCursor.getColumnIndex("volume_price"));
+        if (tempPrice == null || tempPrice.isEmpty()) {
+            tempPrice = myCursor.getString(myCursor.getColumnIndex("pricelevel_price"));
+            if (tempPrice == null || tempPrice.isEmpty()) {
+                tempPrice = myCursor.getString(myCursor.getColumnIndex("chain_price"));
+
+                if (tempPrice == null || tempPrice.isEmpty())
+                    tempPrice = myCursor.getString(myCursor.getColumnIndex("master_price"));
+            }
+        }
+
+        data[2] = tempPrice;
+        data[3] = myCursor.getString(myCursor.getColumnIndex("prod_desc"));
+
+        tempPrice = new String();
+        tempPrice = myCursor.getString(myCursor.getColumnIndex("local_prod_onhand"));
+        if (tempPrice == null || tempPrice.isEmpty())
+            tempPrice = myCursor.getString(myCursor.getColumnIndex("master_prod_onhand"));
+        if (tempPrice.isEmpty())
+            tempPrice = "0";
+        data[4] = tempPrice;
+
+        data[5] = myCursor.getString(myCursor.getColumnIndex("prod_img_name"));
+        data[6] = myCursor.getString(myCursor.getColumnIndex("prod_istaxable"));
+        data[7] = myCursor.getString(myCursor.getColumnIndex("prod_type"));
+
+        data[8] = myCursor.getString(myCursor.getColumnIndex("prod_price_points"));
+        if (data[8] == null || data[8].isEmpty())
+            data[8] = "0";
+        data[9] = myCursor.getString(myCursor.getColumnIndex("prod_value_points"));
+        if (data[9] == null || data[9].isEmpty())
+            data[9] = "0";
+
+
+        extrasMap.clear();
+
+        extrasMap.put("prod_id", data[0]);
+        extrasMap.put("prod_name", data[1]);
+        extrasMap.put("prod_price", data[2]);
+        extrasMap.put("prod_img_url", data[5]);
+        extrasMap.put("prod_type", data[7]);
+        extrasMap.put("prod_on_hand", data[4]);
+        extrasMap.put("prod_is_taxable", data[6]);
+        extrasMap.put("prod_desc", data[3]);
+        //extrasMap.put("cat_id", myCursor.getString(myCursor.getColumnIndex("cat_id")));
+        extrasMap.put("prod_price_points", data[8]);
+        extrasMap.put("prod_value_points", data[9]);
+
+
+        imgURL = extrasMap.get("prod_img_url");
+        headerOnHand.setText(extrasMap.get("prod_on_hand"));
+        prodID = extrasMap.get("prod_id");
+        prod_type = extrasMap.get("prod_type");
+        basePrice = extrasMap.get("prod_price");
+        if (basePrice == null || basePrice.isEmpty())
+            basePrice = "0.0";
+
+        prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
+
+
+        headerProductID.setText(prodID);
+        imageLoader.displayImage(imgURL, headerImage, options);
+        lv_adapter = new ListViewAdapter(activity);
+        lView.setAdapter(lv_adapter);
+    }
+
+    private void addProductToOrder() {
+        if (global.ordProdAttrPending.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(activity.getString(R.string.dlog_msg_required_attributes)).append("\n\n").append(ordProdAttr);
+            Global.showPrompt(activity, R.string.dlog_title_error, sb.toString());
+        } else {
+            double onHandQty = 0;
+            if (!headerOnHand.getText().toString().isEmpty())
+                onHandQty = Double.parseDouble(headerOnHand.getText().toString());
+
+
+            if (OrderingMain_FA.returnItem || (isModify && global.orderProducts.get(modifyOrderPosition).isReturned))
+                qty_picked = new BigDecimal(qty_picked).negate().toString();
+            double selectedQty = Double.parseDouble(qty_picked);
+            double newQty = 0;
+            String addedQty = global.qtyCounter.get(prodID);
+
+
+            if (addedQty != null && !addedQty.isEmpty())
+                newQty = Double.parseDouble(addedQty) + selectedQty;
+
+
+            if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !prod_type.equals("Service")
+                    && ((Global.ord_type == Global.OrderType.SALES_RECEIPT.getCodeString() || Global.ord_type == Global.OrderType.INVOICE.getCodeString()) &&
+                    ((!isModify && (selectedQty > onHandQty || newQty > onHandQty)) || (isModify && selectedQty > onHandQty))
+            )) || (Global.isConsignment && !prod_type.equals("Service") && !validConsignment(selectedQty, onHandQty)))
+
+            {
+                Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.limit_onhand));
+            } else {
+                if (!isModify)
+                    preValidateSettings();
+                else
+                    modifyProduct(modifyOrderPosition);
+
+                activity.setResult(2);
+                activity.finish();
+            }
+        }
+    }
+
+
+    private void modifyProduct(int position) {
+        OrderProducts orderedProducts = global.orderProducts.get(position);
+
+        String val = qty_picked;
+        BigDecimal sum = Global.getBigDecimalNum(val);
+
+        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
+            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
+        else
+            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
+        extrasMap.put("prod_is_taxable", orderedProducts.prod_istaxable);
+        BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal).multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
+        calculateTaxDiscount(total);
+
+        BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
+        orderedProducts.ordprod_qty = val;
+        orderedProducts.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier)).toString();
+
+        orderedProducts.prod_taxValue = taxTotal;
+        orderedProducts.discount_value = disTotal;
+
+
+        orderedProducts.pricelevel_id = priceLevelID;
+        orderedProducts.priceLevelName = priceLevelName;
+
+
+        // for calculating taxes and discount at receipt
+        orderedProducts.discount_id = discount_id;
+        orderedProducts.taxAmount = taxAmount;
+        orderedProducts.taxTotal = taxTotal;
+        orderedProducts.disAmount = disAmount;
+        orderedProducts.disTotal = disTotal;
+
+        orderedProducts.tax_position = Integer.toString(tax_position);
+        orderedProducts.discount_position = Integer.toString(discount_position);
+        orderedProducts.pricelevel_position = Integer.toString(pricelevel_position);
+        orderedProducts.uom_position = Integer.toString(uom_position);
+        orderedProducts.ordprod_comment = _ordprod_comment;
+        orderedProducts.prod_price_updated = "0";
+
+        BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
+
+
+        if (discountIsTaxable) {
+            orderedProducts.discount_is_taxable = "1";
+        } else
+            orderedProducts.discount_is_taxable = "0";
+
+
+        if (isFixed)
+            orderedProducts.discount_is_fixed = "1";
+        else
+            orderedProducts.discount_is_fixed = "0";
+
+        orderedProducts.itemTotal = itemTotal.toString();
+        orderedProducts.itemSubtotal = total.toString();
+
+        if (OrderingMain_FA.returnItem) {
+            OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+            OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
+        }
+
+    }
+
+    private void showQtyDlog(View v) {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(true);
+        dlog.setContentView(R.layout.dlog_field_single_layout);
+
+        final EditText viewField = (EditText) dlog.findViewById(R.id.dlogFieldSingle);
+
+        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
+            viewField.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        else
+            viewField.setInputType(InputType.TYPE_CLASS_NUMBER);
+        final TextView qty = (TextView) v.findViewById(R.id.pickerQty);
+        viewField.setText(qty.getText().toString());
+        viewField.setSelection(qty.getText().toString().length());
+
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+        viewMsg.setText(R.string.dlog_msg_enter_qty);
+
+        Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                String txt = viewField.getText().toString();
+                if (!txt.isEmpty() && Double.parseDouble(txt) > 0) {
+                    qty.setText(txt);
+                    qty_picked = txt;
+                }
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
+    }
+
+    private void showListViewDlog(final int type) {
+        final Dialog dlg = new Dialog(activity);
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        View view = inflater.inflate(R.layout.dialog_listview_layout, null, false);
+        dlg.setContentView(view);
+        ListView dlgListView = (ListView) dlg.findViewById(R.id.dlgListView);
+        switch (type) {
+            case SEC_UOM://UoM
+            {
+                UOMHandler uomHandler = new UOMHandler(activity);
+                listData_LV = uomHandler.getUOMList(prodID);
+                break;
+            }
+            case SEC_PRICE_LEV: // Price Level
+            {
+                if (!myPref.getPreferences(MyPreferences.pref_block_price_level_change)) {
+                    PriceLevelHandler handler1 = new PriceLevelHandler(activity);
+                    listData_LV = handler1.getFixedPriceLevel(prodID);
 				/*if (myPref.isCustSelected()) {
 					PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
 					List<String[]> temp = handler.getPriceLevel(prodID);
@@ -816,1000 +761,928 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 						listData_LV.add(temp.get(i));
 					}
 				}*/
-			}
-			else
-			{
-				listData_LV.clear();
-				Toast.makeText(activity, "Changing the Price Level is currently not allowed.", Toast.LENGTH_LONG).show();
-			}
-			break;
-		}
-		case SEC_DISCOUNT: // Discount
-		{
-			ProductsHandler handler = new ProductsHandler(activity);
-			listData_LV = handler.getDiscounts();
-			break;
-		}
-		}
-		DialogLVAdapter dlgAdapter = new DialogLVAdapter(activity, type);
-		dlgListView.setAdapter(dlgAdapter);
-		dlg.show();
-		dlgListView.setOnItemClickListener(new OnItemClickListener() {
+                } else {
+                    listData_LV.clear();
+                    Toast.makeText(activity, "Changing the Price Level is currently not allowed.", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+            case SEC_DISCOUNT: // Discount
+            {
+                ProductsHandler handler = new ProductsHandler(activity);
+                listData_LV = handler.getDiscounts();
+                break;
+            }
+        }
+        DialogLVAdapter dlgAdapter = new DialogLVAdapter(activity, type);
+        dlgListView.setAdapter(dlgAdapter);
+        dlg.show();
+        dlgListView.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				// TODO Auto-generated method stub
-				setTextView(position, type);
-				lView.invalidateViews();
-				dlg.dismiss();
-			}
-		});
-	}
-	
-	private void showCMTDlog(View v)
-	{
-		final Dialog dialog = new Dialog(activity,R.style.Theme_TransparentTest);
-		dialog.setContentView(R.layout.comments_dialog_layout);
-		dialog.setCancelable(true);
-		EditText cmt = (EditText) dialog.findViewById(R.id.commentEditText);
-		final TextView txt = (TextView) v.findViewWithTag(leftTitle[INDEX_CMT]);
-		Button done = (Button) dialog.findViewById(R.id.doneButton);
-		Button clear = (Button) dialog.findViewById(R.id.clearButton);
-		cmt.setText(txt.getText().toString());
-		cmt.setSelection(txt.getText().toString().length());
-		done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                // TODO Auto-generated method stub
+                setTextView(position, type);
+                lView.invalidateViews();
+                dlg.dismiss();
+            }
+        });
+    }
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
-				rightTitle[INDEX_CMT] = curComment.getText().toString();
-				_ordprod_comment = curComment.getText().toString().trim();
-				txt.setText(rightTitle[INDEX_CMT]);
-				dialog.dismiss();
-			}
-		});
-		clear.setOnClickListener(new View.OnClickListener() {
+    private void showCMTDlog(View v) {
+        final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dialog.setContentView(R.layout.comments_dialog_layout);
+        dialog.setCancelable(true);
+        EditText cmt = (EditText) dialog.findViewById(R.id.commentEditText);
+        final TextView txt = (TextView) v.findViewWithTag(leftTitle[INDEX_CMT]);
+        Button done = (Button) dialog.findViewById(R.id.doneButton);
+        Button clear = (Button) dialog.findViewById(R.id.clearButton);
+        cmt.setText(txt.getText().toString());
+        cmt.setSelection(txt.getText().toString().length());
+        done.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
-				curComment.setText("");
-				rightTitle[INDEX_CMT] = curComment.getText().toString();
-				txt.setText(rightTitle[INDEX_CMT]);
-				_ordprod_comment = "";
-			}
-		});
-		dialog.show();
-	}
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
+                rightTitle[INDEX_CMT] = curComment.getText().toString();
+                _ordprod_comment = curComment.getText().toString().trim();
+                txt.setText(rightTitle[INDEX_CMT]);
+                dialog.dismiss();
+            }
+        });
+        clear.setOnClickListener(new View.OnClickListener() {
 
-	private boolean validConsignment(double selectedQty,double onHandQty)
-	{
-		if(Global.isConsignment)
-		{
-			String temp = global.qtyCounter.get(prodID);
-			if(temp!=null&&!isModify)
-			{
-				double val = Double.parseDouble(temp);
-				selectedQty+=val;
-			}
-			
-			if(Global.consignmentType==Global.IS_CONS_FILLUP&&(onHandQty<=0||selectedQty>onHandQty))
-				return false;
-			else if(Global.consignmentType!=Global.IS_CONS_FILLUP&&!Global.custInventoryMap.containsKey(prodID))
-				return false;
-			else if(Global.consignmentType!=Global.IS_CONS_FILLUP)
-			{
-				if(Global.consignmentType == Global.IS_CONS_RACK&&selectedQty>Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
-					return false;
-				else if(Global.consignmentType == Global.IS_CONS_RETURN)
-				{
-					if(Global.consignment_qtyCounter!=null&&Global.consignment_qtyCounter.containsKey(prodID))//verify rack
-					{
-						double rackQty = Double.parseDouble(Global.consignment_qtyCounter.get(prodID));
-						double origQty = Double.parseDouble(Global.custInventoryMap.get(prodID)[2]);
-						if(rackQty==origQty||(rackQty+selectedQty>origQty))
-							return false;
-					}
-				}
-				else if(Global.consignmentType == Global.IS_CONS_PICKUP&&selectedQty>Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
-					return false;
-				
-			}
-				
-		}
-		return true;
-	}
-	
-	private void preValidateSettings()
-	{		
-		MyPreferences myPref = new MyPreferences(activity);
-		
-		if(myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku))
-		{
-			int size = global.orderProducts.size();
-			int index = 0;
-			boolean found = false;
-			
-			for(int i = 0 ; i < size; i++)
-			{
-				if(global.orderProducts.get(i).prod_id.equals(prodID))
-				{
-					index = i;
-					found = true;
-					break;
-				}
-			}
-			
-			if(found)
-			{
-				String value = global.qtyCounter.get(prodID);
-				double previousQty = 0.0;
-				if(value!=null&&!value.isEmpty())
-					previousQty = Double.parseDouble(value);
-				double sum = Global.formatNumFromLocale(qty_picked)+previousQty;
-				value = new String();
-				if(myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-				{
-					value = Global.formatNumber(true, sum);
-					global.orderProducts.get(index).ordprod_qty = value;
-					global.qtyCounter.put(prodID, Double.toString(sum));
-				}
-				else
-				{
-					value = Global.formatNumber(false, sum);
-					global.orderProducts.get(index).ordprod_qty = value;
-					global.qtyCounter.put(prodID, Integer.toString((int)sum));
-				}
-				updateSKUProduct(index);
-			}
-			else
-			{
-				generateNewProduct();
-			}
-		}
-		else
-		{
-			generateNewProduct();
-		}
-	}
-	
-	private void generateNewProduct()
-	{
-		OrderProducts ord = new OrderProducts();
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
+                curComment.setText("");
+                rightTitle[INDEX_CMT] = curComment.getText().toString();
+                txt.setText(rightTitle[INDEX_CMT]);
+                _ordprod_comment = "";
+            }
+        });
+        dialog.show();
+    }
 
-		String val = qty_picked;
-		BigDecimal num = Global.getBigDecimalNum(val);
-		BigDecimal sum = num.add(getQty(prodID)).setScale(4,RoundingMode.HALF_EVEN);
-		BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
-		
-		if(OrderingMain_FA.returnItem)
-			ord.isReturned = true;
-		
-		if(isFromAddon)
-		{
-			productPriceLevelTotal = productPriceLevelTotal.add(new BigDecimal(Double.toString(Global.addonTotalAmount)));
-		}
-		
-		BigDecimal total = num.multiply(productPriceLevelTotal.multiply(uomMultiplier)).setScale(2,RoundingMode.HALF_UP);
+    private boolean validConsignment(double selectedQty, double onHandQty) {
+        if (Global.isConsignment) {
+            String temp = global.qtyCounter.get(prodID);
+            if (temp != null && !isModify) {
+                double val = Double.parseDouble(temp);
+                selectedQty += val;
+            }
 
-		calculateTaxDiscount(total); 					// calculate taxes and discount
-		
-		
-		ord.prod_istaxable = extrasMap.get("prod_is_taxable");
-		
-		
-		if(!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-		{
-			val = Integer.toString((int)Double.parseDouble(val));
-			global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
-		}
-		else
-		{
-			global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
-		}
-				
-		
-		// add order to db
-		ord.ordprod_qty = val;
-		ord.ordprod_name = extrasMap.get("prod_name");
-		ord.ordprod_desc = extrasMap.get("prod_desc");
-		ord.prod_id = prodID;
-		ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier)).toString();
-		ord.onHand = extrasMap.get("prod_on_hand");
-		ord.imgURL = extrasMap.get("prod_img_url");
-		ord.cat_id = extrasMap.get("cat_id");
-		
-		
-		BigDecimal pricePoints = new BigDecimal(extrasMap.get("prod_price_points"));
-		BigDecimal valuePoints = new BigDecimal(extrasMap.get("prod_value_points"));
-		
-		pricePoints = pricePoints.multiply(num);
-		valuePoints = valuePoints.multiply(num);
-		
-		ord.prod_price_points = pricePoints.toString();
-		ord.prod_value_points = valuePoints.toString();
-		
-		// Still need to do add the appropriate tax/discount value
-		ord.prod_taxValue = taxTotal;
-		ord.discount_value = disTotal;
-		ord.prod_taxtype = extrasMap.get("prod_taxtype");
+            if (Global.consignmentType == Global.IS_CONS_FILLUP && (onHandQty <= 0 || selectedQty > onHandQty))
+                return false;
+            else if (Global.consignmentType != Global.IS_CONS_FILLUP && !Global.custInventoryMap.containsKey(prodID))
+                return false;
+            else if (Global.consignmentType != Global.IS_CONS_FILLUP) {
+                if (Global.consignmentType == Global.IS_CONS_RACK && selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
+                    return false;
+                else if (Global.consignmentType == Global.IS_CONS_RETURN) {
+                    if (Global.consignment_qtyCounter != null && Global.consignment_qtyCounter.containsKey(prodID))//verify rack
+                    {
+                        double rackQty = Double.parseDouble(Global.consignment_qtyCounter.get(prodID));
+                        double origQty = Double.parseDouble(Global.custInventoryMap.get(prodID)[2]);
+                        if (rackQty == origQty || (rackQty + selectedQty > origQty))
+                            return false;
+                    }
+                } else if (Global.consignmentType == Global.IS_CONS_PICKUP && selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
+                    return false;
 
-		
-		// for calculating taxes and discount at receipt
-		ord.prod_taxId = prod_taxId;
-		ord.discount_id = discount_id;
-		ord.taxAmount = taxAmount;
-		ord.taxTotal = taxTotal;
-		ord.disAmount = disAmount;
-		ord.disTotal = disTotal;
-		
-		ord.pricelevel_id=  priceLevelID;
-		ord.priceLevelName = priceLevelName;
-		
-		ord.prod_price = productPriceLevelTotal.toString();
-		ord.tax_position = Integer.toString(tax_position);
-		ord.discount_position = Integer.toString(discount_position);
-		ord.pricelevel_position = Integer.toString(pricelevel_position);
-		ord.uom_position = Integer.toString(uom_position);
-		ord.ordprod_comment = _ordprod_comment;
-		
-		ord.prod_type = prod_type;
-		
-		//Add UOM attributes to the order
-		ord.uom_name = uomName;
-		ord.uom_id = uomID;
-		ord.uom_conversion = uomMultiplier.toString();
-		
-		if(discountIsTaxable)
-		{
-			ord.discount_is_taxable = "1";
-		}
-		if(isFixed)
-			ord.discount_is_fixed = "1";
-		else
-			ord.discount_is_fixed = "0";
-		
-		
+            }
 
-		BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
-		//double itemTotal = total - toDouble(disTotal);
-		
-		ord.itemTotal = itemTotal.toString();
-		ord.itemSubtotal = total.toString();
+        }
+        return true;
+    }
 
-		OrdersHandler handler = new OrdersHandler(activity);
+    private void preValidateSettings() {
+        MyPreferences myPref = new MyPreferences(activity);
 
-		GenerateNewID generator = new GenerateNewID(activity);
+        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+            int size = global.orderProducts.size();
+            int index = 0;
+            boolean found = false;
 
-		if(!Global.isFromOnHold&&Global.lastOrdID.isEmpty())
-		{
-			//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-			Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
+            for (int i = 0; i < size; i++) {
+                if (global.orderProducts.get(i).prod_id.equals(prodID)) {
+                    index = i;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                String value = global.qtyCounter.get(prodID);
+                double previousQty = 0.0;
+                if (value != null && !value.isEmpty())
+                    previousQty = Double.parseDouble(value);
+                double sum = Global.formatNumFromLocale(qty_picked) + previousQty;
+                value = new String();
+                if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
+                    value = Global.formatNumber(true, sum);
+                    global.orderProducts.get(index).ordprod_qty = value;
+                    global.qtyCounter.put(prodID, Double.toString(sum));
+                } else {
+                    value = Global.formatNumber(false, sum);
+                    global.orderProducts.get(index).ordprod_qty = value;
+                    global.qtyCounter.put(prodID, Integer.toString((int) sum));
+                }
+                updateSKUProduct(index);
+            } else {
+                generateNewProduct();
+            }
+        } else {
+            generateNewProduct();
+        }
+    }
+
+    private void generateNewProduct() {
+        OrderProducts ord = new OrderProducts();
+
+        String val = qty_picked;
+        BigDecimal num = Global.getBigDecimalNum(val);
+        BigDecimal sum = num.add(getQty(prodID)).setScale(4, RoundingMode.HALF_EVEN);
+        BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
+
+        if (OrderingMain_FA.returnItem)
+            ord.isReturned = true;
+
+        if (isFromAddon) {
+            productPriceLevelTotal = productPriceLevelTotal.add(new BigDecimal(Double.toString(Global.addonTotalAmount)));
+        }
+
+        BigDecimal total = num.multiply(productPriceLevelTotal.multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
+
+        calculateTaxDiscount(total);                    // calculate taxes and discount
+
+
+        ord.prod_istaxable = extrasMap.get("prod_is_taxable");
+
+
+        if (!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
+            val = Integer.toString((int) Double.parseDouble(val));
+            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
+        } else {
+            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
+        }
+
+
+        // add order to db
+        ord.ordprod_qty = val;
+        ord.ordprod_name = extrasMap.get("prod_name");
+        ord.ordprod_desc = extrasMap.get("prod_desc");
+        ord.prod_id = prodID;
+        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier)).toString();
+        ord.onHand = extrasMap.get("prod_on_hand");
+        ord.imgURL = extrasMap.get("prod_img_url");
+        ord.cat_id = extrasMap.get("cat_id");
+
+
+        BigDecimal pricePoints = new BigDecimal(extrasMap.get("prod_price_points"));
+        BigDecimal valuePoints = new BigDecimal(extrasMap.get("prod_value_points"));
+
+        pricePoints = pricePoints.multiply(num);
+        valuePoints = valuePoints.multiply(num);
+
+        ord.prod_price_points = pricePoints.toString();
+        ord.prod_value_points = valuePoints.toString();
+
+        // Still need to do add the appropriate tax/discount value
+        ord.prod_taxValue = taxTotal;
+        ord.discount_value = disTotal;
+        ord.prod_taxtype = extrasMap.get("prod_taxtype");
+
+
+        // for calculating taxes and discount at receipt
+        ord.prod_taxId = prod_taxId;
+        ord.discount_id = discount_id;
+        ord.taxAmount = taxAmount;
+        ord.taxTotal = taxTotal;
+        ord.disAmount = disAmount;
+        ord.disTotal = disTotal;
+
+        ord.pricelevel_id = priceLevelID;
+        ord.priceLevelName = priceLevelName;
+
+        ord.prod_price = productPriceLevelTotal.toString();
+        ord.tax_position = Integer.toString(tax_position);
+        ord.discount_position = Integer.toString(discount_position);
+        ord.pricelevel_position = Integer.toString(pricelevel_position);
+        ord.uom_position = Integer.toString(uom_position);
+        ord.ordprod_comment = _ordprod_comment;
+
+        ord.prod_type = prod_type;
+
+        //Add UOM attributes to the order
+        ord.uom_name = uomName;
+        ord.uom_id = uomID;
+        ord.uom_conversion = uomMultiplier.toString();
+
+        if (discountIsTaxable) {
+            ord.discount_is_taxable = "1";
+        }
+        if (isFixed)
+            ord.discount_is_fixed = "1";
+        else
+            ord.discount_is_fixed = "0";
+
+
+        BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
+        //double itemTotal = total - toDouble(disTotal);
+
+        ord.itemTotal = itemTotal.toString();
+        ord.itemSubtotal = total.toString();
+
+        OrdersHandler handler = new OrdersHandler(activity);
+
+        GenerateNewID generator = new GenerateNewID(activity);
+
+        if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
+            //myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
+            Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 //			if (handler.getDBSize() == 0)
 //				Global.lastOrdID = generator.generate("",0);
 //			else
 //				Global.lastOrdID = generator.generate(handler.getLastOrdID(),0);
-		}
-		ord.ord_id = Global.lastOrdID;
+        }
+        ord.ord_id = Global.lastOrdID;
 
 
-		if (global.orderProducts == null) {
-			global.orderProducts = new ArrayList<OrderProducts>();
-		}
+        if (global.orderProducts == null) {
+            global.orderProducts = new ArrayList<OrderProducts>();
+        }
 
-		UUID uuid = UUID.randomUUID();
-		String randomUUIDString = uuid.toString();
+        UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString();
 
-		
-		ord.ordprod_id = randomUUIDString;
-		
-		
-		int size = global.ordProdAttr.size();
-		for(int i = 0;i<size;i++)
-		{
-			if(global.ordProdAttr.get(i).ordprod_id==null||global.ordProdAttr.get(i).ordprod_id.isEmpty())
-				global.ordProdAttr.get(i).ordprod_id = randomUUIDString;
-		}
-		
 
-		if(isFromAddon)
-		{
-			Global.addonTotalAmount = 0;
-			
-			if(Global.addonSelectionMap==null)
-				Global.addonSelectionMap = new HashMap<String,HashMap<String,String[]>>();
-			if(Global.orderProductAddonsMap==null)
-				Global.orderProductAddonsMap = new HashMap<String,List<OrderProducts>>();
-			
-			if(global.addonSelectionType.size()>0)
-			{
-				StringBuilder sb = new StringBuilder();
-				Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-				Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductsAddons);
-				
-				
-				sb.append(ord.ordprod_desc);
-				int tempSize = global.orderProductsAddons.size();
-				for(int i = 0; i < tempSize;i++)
-				{
-					
-					sb.append("<br/>");
-					if(global.orderProductsAddons.get(i).isAdded.equals("0"))//Not added
-						sb.append("[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
-					else
-						sb.append("[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
-					
-				}
-				ord.ordprod_desc = sb.toString();
-				ord.hasAddons = "1";
-				
-				global.orderProductsAddons = new ArrayList<OrderProducts>();
-				
-			}
-		}
-		global.orderProducts.add(ord);
-		
-		
-		if(myPref.isSam4s(true, true))
-		{
-			StringBuilder sb = new StringBuilder();
-			String row1 = ord.ordprod_name;
-			String row2 = sb.append(Global.formatDoubleStrToCurrency(ord.overwrite_price)).toString();
-			uart uart_tool = new uart();
-			uart_tool.config(3, 9600, 8, 1);
-			uart_tool.write(3, Global.emptySpaces(40,0,false));
-			uart_tool.write(3,Global.formatSam4sCDT(row1,row2));		
-		}else if(myPref.isPAT100(true, true))
-		{
-			StringBuilder sb = new StringBuilder();
-			String row1 = ord.ordprod_name;
-			String row2 = sb.append(Global.formatDoubleStrToCurrency(ord.overwrite_price)).toString();
-			EMSPAT100.getTerminalDisp().clearText();
-			EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1,row2));
-		}
-		
-		if(OrderingMain_FA.returnItem)
-		{
-			OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-			OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem,"Return");
-		}
-	}
-	
-	private void calculateTaxDiscount(BigDecimal total) {
-		if (!isFixed) {
-			BigDecimal val = total.multiply(Global.getBigDecimalNum(disAmount)).setScale(4, RoundingMode.HALF_UP);
-			val = val.divide(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
-			disTotal = val.toString();
-		} else {
-			disTotal = Double.toString(Global.formatNumFromLocale(disAmount));
-		}
+        ord.ordprod_id = randomUUIDString;
 
-		BigDecimal tempSubTotal = total, tempTaxTotal = new BigDecimal("0");
 
-		if (extrasMap.get("prod_is_taxable").equals("1")) {
-			if (discountWasSelected) // discount has been selected verify if it
-										// is taxable or not
-			{
-				if (discountIsTaxable) {
-					BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
-					BigDecimal tax1 = tempSubTotal.subtract(new BigDecimal(disTotal)).multiply(temp).setScale(2, RoundingMode.HALF_UP);
-					tempTaxTotal = tax1;
-					taxTotal = tax1.toString();
+        int size = global.ordProdAttr.size();
+        for (int i = 0; i < size; i++) {
+            if (global.ordProdAttr.get(i).ordprod_id == null || global.ordProdAttr.get(i).ordprod_id.isEmpty())
+                global.ordProdAttr.get(i).ordprod_id = randomUUIDString;
+        }
 
-				} else {
-					BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
-					BigDecimal tax1 = tempSubTotal.multiply(temp).setScale(2, RoundingMode.HALF_UP);
-					tempTaxTotal = tax1;
-					taxTotal = tax1.toString();
 
-				}
-			} else {
-				BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
-				BigDecimal tax1 = tempSubTotal.multiply(temp).setScale(2, RoundingMode.HALF_UP);
-				taxTotal = tax1.toString();
-			}
-		}
-		if (tempTaxTotal.compareTo(new BigDecimal("0")) < -1)
-			taxTotal = Double.toString(0.0);
-	}
+        if (isFromAddon) {
+            Global.addonTotalAmount = 0;
 
-	
-	public void setTextView(int position, int type) {
-		switch (type) {
-		case INDEX_UOM + OFFSET: {
-			uom_position = position;
-			StringBuilder sb = new StringBuilder();
-			if (position == 0) {
-				sb.append("ONE (Default)");
-				uomMultiplier = new BigDecimal("1");
-				uomName = "";
-				uomID = "";
-			} else {
-				sb.append(listData_LV.get(position - 1)[0]).append(" <").append(listData_LV.get(position - 1)[2]).append(">");
-				uomMultiplier = Global.getBigDecimalNum(listData_LV.get(position - 1)[2]);
-				uomName = listData_LV.get(position - 1)[0];
-				uomID = listData_LV.get(position - 1)[1];
-			}
+            if (Global.addonSelectionMap == null)
+                Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
+            if (Global.orderProductAddonsMap == null)
+                Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
 
-			rightTitle[INDEX_UOM] = sb.toString();
-			break;
-		}
-		case INDEX_PRICE_LEVEL + OFFSET: // Price Level
-		{
-			pricelevel_position = position;
-			StringBuilder sb = new StringBuilder();
-			if (position == 0) {
-				priceLevelID = "";
-				priceLevelName = "";
-				sb.append(Global.formatDoubleToCurrency(Double.parseDouble(basePrice))).append(" <Base Price>");
-				rightTitle[INDEX_PRICE_LEVEL] = sb.toString();
-				prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
+            if (global.addonSelectionType.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
+                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductsAddons);
 
-			} else {
-				priceLevelName = listData_LV.get(position - 1)[0];
-				priceLevelID = listData_LV.get(position - 1)[1];
-				sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]));
-				sb.append(" <").append(listData_LV.get(position - 1)[0]).append(">");
-				rightTitle[INDEX_PRICE_LEVEL] = sb.toString();
-				prLevTotal = Global.formatNumToLocale(Double.parseDouble(listData_LV.get(position - 1)[2]));
-			}
-			break;
-		}
-		case INDEX_DISCOUNT + OFFSET: // Discount
-		{
-			discount_position = position;
-			StringBuilder sb = new StringBuilder();
-			if (position == 0) {
-				rightTitle[INDEX_DISCOUNT] = "$0.00 <No Discount>";
-				disAmount = "0";
-				disTotal = "0.00";
-				isFixed = true;
-				discountWasSelected = false;
-				discount_id = "";
-			} else if (listData_LV.get(position - 1)[1].equals("Fixed")) {
 
-				discount_id = listData_LV.get(position - 1)[4];
-				sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2])).append(" <")
-						.append(listData_LV.get(position - 1)[0]).append(">");
-				rightTitle[INDEX_DISCOUNT] = sb.toString();
+                sb.append(ord.ordprod_desc);
+                int tempSize = global.orderProductsAddons.size();
+                for (int i = 0; i < tempSize; i++) {
 
-				disAmount = Global.formatNumToLocale(Double.parseDouble(listData_LV.get(position - 1)[2]));
-				isFixed = true;
-				discountWasSelected = true;
-				if (listData_LV.get(position - 1)[3].equals("1"))
-					discountIsTaxable = true;
-				else
-					discountIsTaxable = false;
-			} else {
-				discount_id = listData_LV.get(position - 1)[4];
-				sb.append(listData_LV.get(position - 1)[2]).append("%").append(" <").append(listData_LV.get(position - 1)[0]).append(">");
-				rightTitle[INDEX_DISCOUNT] = sb.toString();
+                    sb.append("<br/>");
+                    if (global.orderProductsAddons.get(i).isAdded.equals("0"))//Not added
+                        sb.append("[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
+                    else
+                        sb.append("[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
 
-				disAmount = Global.formatNumToLocale(Double.parseDouble(listData_LV.get(position - 1)[2]));
-				isFixed = false;
-				discountWasSelected = true;
-				if (listData_LV.get(position - 1)[3].equals("1"))
-					discountIsTaxable = true;
-				else
-					discountIsTaxable = false;
-			}
-			break;
-		}
-		}
-	}
-	
-	private void updateSKUProduct(int position)
-	{
-		OrderProducts orderedProducts = global.orderProducts.get(position);
-		
-		String newPickedOrders = orderedProducts.ordprod_qty;
-		BigDecimal sum = new BigDecimal("1");
-		if(myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-			sum = Global.getBigDecimalNum(newPickedOrders);
-		else
-			sum = Global.getBigDecimalNum(newPickedOrders);
-		
-		if(global.orderProducts.get(position).isReturned)
-			sum = sum.negate();
-		
-		BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal)).setScale(2, RoundingMode.HALF_UP);
-		calculateTaxDiscount(total);
-		
-		orderedProducts.overwrite_price = prLevTotal;
-		orderedProducts.prod_taxValue = taxTotal;
-		orderedProducts.discount_value = disTotal;
+                }
+                ord.ordprod_desc = sb.toString();
+                ord.hasAddons = "1";
 
-		
-		// for calculating taxes and discount at receipt
-		orderedProducts.taxAmount = taxAmount;
-		orderedProducts.taxTotal = taxTotal;
-		orderedProducts.disAmount = disAmount;
-		orderedProducts.disTotal =  disTotal;
-		
-		BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
-		
-		
-		if(discountIsTaxable)
-		{
-			orderedProducts.discount_is_taxable = "1";
-		}
-		else
-			orderedProducts.discount_is_taxable = "0";
-		
-		
-		if(isFixed)
-			orderedProducts.discount_is_fixed = "1";
-		else
-			orderedProducts.discount_is_fixed = "0";
-		
-		orderedProducts.prod_price_updated = "0";
-		
-		orderedProducts.itemTotal = itemTotal.toString();
-		orderedProducts.itemSubtotal = total.toString();
-		
-		if(OrderingMain_FA.returnItem)
-		{
-			OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-			OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem,"Return");
-		}
-	}
-	
-	public BigDecimal getQty(String id) {
-		Global global = (Global) activity.getApplication();
-		String value = global.qtyCounter.get(id);
-		return Global.getBigDecimalNum(value);
-	}
-	
-	
-	
-	
-	
-	//------------------------Custom adapter for Dialog and ListView------------------------
-	private class DialogLVAdapter extends BaseAdapter {
+                global.orderProductsAddons = new ArrayList<OrderProducts>();
 
-		private LayoutInflater myInflater;
-		private int listType;
+            }
+        }
+        global.orderProducts.add(ord);
 
-		public DialogLVAdapter(Activity activity, int pos) {
-			myInflater = LayoutInflater.from(activity);
-			listType = pos;
-		}
 
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return listData_LV.size() + 1;
-		}
+        if (myPref.isSam4s(true, true)) {
+            StringBuilder sb = new StringBuilder();
+            String row1 = ord.ordprod_name;
+            String row2 = sb.append(Global.formatDoubleStrToCurrency(ord.overwrite_price)).toString();
+            uart uart_tool = new uart();
+            uart_tool.config(3, 9600, 8, 1);
+            uart_tool.write(3, Global.emptySpaces(40, 0, false));
+            uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
+        } else if (myPref.isPAT100(true, true)) {
+            StringBuilder sb = new StringBuilder();
+            String row1 = ord.ordprod_name;
+            String row2 = sb.append(Global.formatDoubleStrToCurrency(ord.overwrite_price)).toString();
+            EMSPAT100.getTerminalDisp().clearText();
+            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
+        }
 
-		@Override
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        if (OrderingMain_FA.returnItem) {
+            OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+            OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
+        }
+    }
 
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
+    private void calculateTaxDiscount(BigDecimal total) {
+        if (!isFixed) {
+            BigDecimal val = total.multiply(Global.getBigDecimalNum(disAmount)).setScale(4, RoundingMode.HALF_UP);
+            val = val.divide(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
+            disTotal = val.toString();
+        } else {
+            disTotal = Double.toString(Global.formatNumFromLocale(disAmount));
+        }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			final ViewHolder holder;
-			int type = getItemViewType(position);
+        BigDecimal tempSubTotal = total, tempTaxTotal = new BigDecimal("0");
 
-			if (convertView == null) {
-				holder = new ViewHolder();
-				convertView = myInflater.inflate(R.layout.dialog_listview_adapter, null);
+        if (extrasMap.get("prod_is_taxable").equals("1")) {
+            if (discountWasSelected) // discount has been selected verify if it
+            // is taxable or not
+            {
+                if (discountIsTaxable) {
+                    BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
+                    BigDecimal tax1 = tempSubTotal.subtract(new BigDecimal(disTotal)).multiply(temp).setScale(2, RoundingMode.HALF_UP);
+                    tempTaxTotal = tax1;
+                    taxTotal = tax1.toString();
 
-				holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
-				holder.rightText = (TextView) convertView.findViewById(R.id.rightText);
+                } else {
+                    BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
+                    BigDecimal tax1 = tempSubTotal.multiply(temp).setScale(2, RoundingMode.HALF_UP);
+                    tempTaxTotal = tax1;
+                    taxTotal = tax1.toString();
 
-				setValues(holder, position, type);
+                }
+            } else {
+                BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
+                BigDecimal tax1 = tempSubTotal.multiply(temp).setScale(2, RoundingMode.HALF_UP);
+                taxTotal = tax1.toString();
+            }
+        }
+        if (tempTaxTotal.compareTo(new BigDecimal("0")) < -1)
+            taxTotal = Double.toString(0.0);
+    }
 
-				convertView.setTag(holder);
-			} else {
-				holder = (ViewHolder) convertView.getTag();
-				setValues(holder, position, type);
-			}
-			return convertView;
-		}
 
-		public void setValues(ViewHolder holder, int position, int type) {
-			switch (type) {
-			case 0: 
-			{
-				if (listType == INDEX_PRICE_LEVEL+OFFSET) // Price Level
-				{
-					holder.leftText.setText("Base Price");
-					holder.rightText.setText(Global.formatDoubleStrToCurrency(basePrice));
+    public void setTextView(int position, int type) {
+        switch (type) {
+            case INDEX_UOM + OFFSET: {
+                uom_position = position;
+                StringBuilder sb = new StringBuilder();
+                if (position == 0) {
+                    sb.append("ONE (Default)");
+                    uomMultiplier = new BigDecimal("1");
+                    uomName = "";
+                    uomID = "";
+                } else {
+                    sb.append(listData_LV.get(position - 1)[0]).append(" <").append(listData_LV.get(position - 1)[2]).append(">");
+                    uomMultiplier = Global.getBigDecimalNum(listData_LV.get(position - 1)[2]);
+                    uomName = listData_LV.get(position - 1)[0];
+                    uomID = listData_LV.get(position - 1)[1];
+                }
 
-				} else if (listType == INDEX_DISCOUNT+OFFSET) // Discount
-				{
-					holder.leftText.setText("No Discount");
+                rightTitle[INDEX_UOM] = sb.toString();
+                break;
+            }
+            case INDEX_PRICE_LEVEL + OFFSET: // Price Level
+            {
+                pricelevel_position = position;
+                StringBuilder sb = new StringBuilder();
+                if (position == 0) {
+                    priceLevelID = "";
+                    priceLevelName = "";
+                    sb.append(Global.formatDoubleToCurrency(Double.parseDouble(basePrice))).append(" <Base Price>");
+                    rightTitle[INDEX_PRICE_LEVEL] = sb.toString();
+                    prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
 
-					holder.rightText.setText("0.00");
-				} 
-				else if(listType == INDEX_UOM+OFFSET)
-				{
-					holder.leftText.setText("NONE");
-					holder.rightText.setText("1");
-					uomMultiplier = new BigDecimal("1");
-					uomName = "";
-					uomID = "";
-				}
-				break;
-			}
-			case 1: {
-				holder.leftText.setText(listData_LV.get(position - 1)[0]);
+                } else {
+                    priceLevelName = listData_LV.get(position - 1)[0];
+                    priceLevelID = listData_LV.get(position - 1)[1];
+                    sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]));
+                    sb.append(" <").append(listData_LV.get(position - 1)[0]).append(">");
+                    rightTitle[INDEX_PRICE_LEVEL] = sb.toString();
+                    prLevTotal = Global.formatNumToLocale(Double.parseDouble(listData_LV.get(position - 1)[2]));
+                }
+                break;
+            }
+            case INDEX_DISCOUNT + OFFSET: // Discount
+            {
+                discount_position = position;
+                StringBuilder sb = new StringBuilder();
+                if (position == 0) {
+                    rightTitle[INDEX_DISCOUNT] = "$0.00 <No Discount>";
+                    disAmount = "0";
+                    disTotal = "0.00";
+                    isFixed = true;
+                    discountWasSelected = false;
+                    discount_id = "";
+                } else if (listData_LV.get(position - 1)[1].equals("Fixed")) {
 
-				if (listType == INDEX_PRICE_LEVEL+OFFSET) // Price Level
-				{
-					String total = Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]);
-					holder.rightText.setText(total);
-				}
+                    discount_id = listData_LV.get(position - 1)[4];
+                    sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2])).append(" <")
+                            .append(listData_LV.get(position - 1)[0]).append(">");
+                    rightTitle[INDEX_DISCOUNT] = sb.toString();
 
-				else if (listType == INDEX_DISCOUNT+OFFSET) // discount
-				{
-					if (listData_LV.get(position - 1)[1].equals("Fixed")) {
-						StringBuilder sb = new StringBuilder();
-						sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position-1)[2]));
-						holder.rightText.setText(sb.toString());
+                    disAmount = Global.formatNumToLocale(Double.parseDouble(listData_LV.get(position - 1)[2]));
+                    isFixed = true;
+                    discountWasSelected = true;
+                    if (listData_LV.get(position - 1)[3].equals("1"))
+                        discountIsTaxable = true;
+                    else
+                        discountIsTaxable = false;
+                } else {
+                    discount_id = listData_LV.get(position - 1)[4];
+                    sb.append(listData_LV.get(position - 1)[2]).append("%").append(" <").append(listData_LV.get(position - 1)[0]).append(">");
+                    rightTitle[INDEX_DISCOUNT] = sb.toString();
 
-					} else {
-						StringBuilder sb = new StringBuilder();
-						sb.append(listData_LV.get(position - 1)[2]).append("%");
-						holder.rightText.setText(sb.toString());
-					}
-					
-				} /*else if(listType == TAX_IND+OFFSET) // tax
+                    disAmount = Global.formatNumToLocale(Double.parseDouble(listData_LV.get(position - 1)[2]));
+                    isFixed = false;
+                    discountWasSelected = true;
+                    if (listData_LV.get(position - 1)[3].equals("1"))
+                        discountIsTaxable = true;
+                    else
+                        discountIsTaxable = false;
+                }
+                break;
+            }
+        }
+    }
+
+    private void updateSKUProduct(int position) {
+        OrderProducts orderedProducts = global.orderProducts.get(position);
+
+        String newPickedOrders = orderedProducts.ordprod_qty;
+        BigDecimal sum = new BigDecimal("1");
+        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
+            sum = Global.getBigDecimalNum(newPickedOrders);
+        else
+            sum = Global.getBigDecimalNum(newPickedOrders);
+
+        if (global.orderProducts.get(position).isReturned)
+            sum = sum.negate();
+
+        BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal)).setScale(2, RoundingMode.HALF_UP);
+        calculateTaxDiscount(total);
+
+        orderedProducts.overwrite_price = prLevTotal;
+        orderedProducts.prod_taxValue = taxTotal;
+        orderedProducts.discount_value = disTotal;
+
+
+        // for calculating taxes and discount at receipt
+        orderedProducts.taxAmount = taxAmount;
+        orderedProducts.taxTotal = taxTotal;
+        orderedProducts.disAmount = disAmount;
+        orderedProducts.disTotal = disTotal;
+
+        BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
+
+
+        if (discountIsTaxable) {
+            orderedProducts.discount_is_taxable = "1";
+        } else
+            orderedProducts.discount_is_taxable = "0";
+
+
+        if (isFixed)
+            orderedProducts.discount_is_fixed = "1";
+        else
+            orderedProducts.discount_is_fixed = "0";
+
+        orderedProducts.prod_price_updated = "0";
+
+        orderedProducts.itemTotal = itemTotal.toString();
+        orderedProducts.itemSubtotal = total.toString();
+
+        if (OrderingMain_FA.returnItem) {
+            OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+            OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
+        }
+    }
+
+    public BigDecimal getQty(String id) {
+        Global global = (Global) activity.getApplication();
+        String value = global.qtyCounter.get(id);
+        return Global.getBigDecimalNum(value);
+    }
+
+
+    //------------------------Custom adapter for Dialog and ListView------------------------
+    private class DialogLVAdapter extends BaseAdapter {
+
+        private LayoutInflater myInflater;
+        private int listType;
+
+        public DialogLVAdapter(Activity activity, int pos) {
+            myInflater = LayoutInflater.from(activity);
+            listType = pos;
+        }
+
+        @Override
+        public int getCount() {
+            // TODO Auto-generated method stub
+            return listData_LV.size() + 1;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // TODO Auto-generated method stub
+            final ViewHolder holder;
+            int type = getItemViewType(position);
+
+            if (convertView == null) {
+                holder = new ViewHolder();
+                convertView = myInflater.inflate(R.layout.dialog_listview_adapter, null);
+
+                holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
+                holder.rightText = (TextView) convertView.findViewById(R.id.rightText);
+
+                setValues(holder, position, type);
+
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+                setValues(holder, position, type);
+            }
+            return convertView;
+        }
+
+        public void setValues(ViewHolder holder, int position, int type) {
+            switch (type) {
+                case 0: {
+                    if (listType == INDEX_PRICE_LEVEL + OFFSET) // Price Level
+                    {
+                        holder.leftText.setText("Base Price");
+                        holder.rightText.setText(Global.formatDoubleStrToCurrency(basePrice));
+
+                    } else if (listType == INDEX_DISCOUNT + OFFSET) // Discount
+                    {
+                        holder.leftText.setText("No Discount");
+
+                        holder.rightText.setText("0.00");
+                    } else if (listType == INDEX_UOM + OFFSET) {
+                        holder.leftText.setText("NONE");
+                        holder.rightText.setText("1");
+                        uomMultiplier = new BigDecimal("1");
+                        uomName = "";
+                        uomID = "";
+                    }
+                    break;
+                }
+                case 1: {
+                    holder.leftText.setText(listData_LV.get(position - 1)[0]);
+
+                    if (listType == INDEX_PRICE_LEVEL + OFFSET) // Price Level
+                    {
+                        String total = Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]);
+                        holder.rightText.setText(total);
+                    } else if (listType == INDEX_DISCOUNT + OFFSET) // discount
+                    {
+                        if (listData_LV.get(position - 1)[1].equals("Fixed")) {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(Global.formatDoubleStrToCurrency(listData_LV.get(position - 1)[2]));
+                            holder.rightText.setText(sb.toString());
+
+                        } else {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(listData_LV.get(position - 1)[2]).append("%");
+                            holder.rightText.setText(sb.toString());
+                        }
+
+                    } /*else if(listType == TAX_IND+OFFSET) // tax
 				{
 					StringBuilder sb = new StringBuilder();
 					sb.append(dialogText.get(position - 1)[2]).append("%");
 					holder.rightText.setText(sb.toString());
-				}*/
-				else if(listType == INDEX_UOM+OFFSET)
-				{
-					String multiplier = listData_LV.get(position-1)[2];
-					
-					uomName = listData_LV.get(position-1)[0];
-					uomID = listData_LV.get(position-1)[1];
-					holder.rightText.setText(multiplier);
-				}
-				break;
-			}
-			}
-		}
+				}*/ else if (listType == INDEX_UOM + OFFSET) {
+                        String multiplier = listData_LV.get(position - 1)[2];
 
-		@Override
-		public int getViewTypeCount() {
-			return 2;
-		}
+                        uomName = listData_LV.get(position - 1)[0];
+                        uomID = listData_LV.get(position - 1)[1];
+                        holder.rightText.setText(multiplier);
+                    }
+                    break;
+                }
+            }
+        }
 
-		@Override
-		public int getItemViewType(int position) {
-			if (position == 0) {
-				return 0;
-			}
-			return 1;
-		}
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
 
-		public class ViewHolder {
-			TextView leftText;
-			TextView rightText;
-		}
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return 0;
+            }
+            return 1;
+        }
 
-	}
-	
-	
-	
-	public class ListViewAdapter extends BaseAdapter implements Filterable {
-		private String itemName;
-		private String itemConsignmentQty;
-		private LayoutInflater myInflater;
+        public class ViewHolder {
+            TextView leftText;
+            TextView rightText;
+        }
 
-		public ListViewAdapter(Context context) {
-			myInflater = LayoutInflater.from(context);
-			if(!isModify)
-			{
-				itemName = extrasMap.get("prod_name");
-				itemConsignmentQty = extrasMap.containsKey("consignment_qty")?"Orig. Qty: "+extrasMap.get("consignment_qty"):"Orig. Qty: "+"0";
-				rightTitle[INDEX_PRICE_LEVEL] =Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
-			}
-			else
-			{
-				int pos = modifyOrderPosition;
-				itemName = global.orderProducts.get(pos).ordprod_name;
-				
-				rightTitle[INDEX_PRICE_LEVEL] = global.orderProducts.get(pos).overwrite_price;
-				taxTotal = global.orderProducts.get(pos).taxTotal;
-				disTotal = global.orderProducts.get(pos).disTotal;
-				
-				disAmount = global.orderProducts.get(pos).disAmount;
-				taxAmount = global.orderProducts.get(pos).taxAmount;
-				rightTitle[INDEX_DISCOUNT] = disAmount;
-				//rightTitle[TAX_IND] = taxAmount;
-			}
-		}
+    }
 
-		@Override
-		public int getViewTypeCount() {
-			return 4;
-		}
 
-		@Override
-		public int getItemViewType(int position) 
-		{
-			if (position == 0||position==1) 								//Product name field,consignment
-			{
-				return 0;
-			} 
-			else if (position == 2) 						// +/- quantity
-			{
-				return 1;
-			} 
-			else if (position > 2 && position < (leftTitle.length + MAIN_OFFSET)) 		//comments-price level - discount - special tax
-			{
-				return 2;
-			} 
-			else if ((position >= (leftTitle.length + MAIN_OFFSET)) && (position <= (leftTitle.length + leftTitle2.length + MAIN_OFFSET))) // Attributes - View types
-			{
-				return 3;
-			}
-			return 4;
-		}
+    public class ListViewAdapter extends BaseAdapter implements Filterable {
+        private String itemName;
+        private String itemConsignmentQty;
+        private LayoutInflater myInflater;
 
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return leftTitle.length + leftTitle2.length + MAIN_OFFSET;
-		}
+        public ListViewAdapter(Context context) {
+            myInflater = LayoutInflater.from(context);
+            if (!isModify) {
+                itemName = extrasMap.get("prod_name");
+                itemConsignmentQty = extrasMap.containsKey("consignment_qty") ? "Orig. Qty: " + extrasMap.get("consignment_qty") : "Orig. Qty: " + "0";
+                rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
+            } else {
+                int pos = modifyOrderPosition;
+                itemName = global.orderProducts.get(pos).ordprod_name;
 
-		@Override
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+                rightTitle[INDEX_PRICE_LEVEL] = global.orderProducts.get(pos).overwrite_price;
+                taxTotal = global.orderProducts.get(pos).taxTotal;
+                disTotal = global.orderProducts.get(pos).disTotal;
 
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
+                disAmount = global.orderProducts.get(pos).disAmount;
+                taxAmount = global.orderProducts.get(pos).taxAmount;
+                rightTitle[INDEX_DISCOUNT] = disAmount;
+                //rightTitle[TAX_IND] = taxAmount;
+            }
+        }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			final ViewHolder holder;
-			int type = getItemViewType(position);
-			if (convertView == null) {
-				holder = new ViewHolder();
-				switch (type) {
-				case 0: {
-					convertView = myInflater.inflate(R.layout.catalog_picker_adapter1, null);
-					holder.leftText = (TextView)convertView.findViewById(R.id.itemNameLabel);
-					holder.leftSubtitle = (TextView) convertView.findViewById(R.id.itemName);
+        @Override
+        public int getViewTypeCount() {
+            return 4;
+        }
 
-					if(position==0)
-					{
-						holder.leftText.setText(R.string.catalog_name);
-						holder.leftSubtitle.setText(itemName);	
-						holder.leftText.setVisibility(View.VISIBLE);
-						holder.leftSubtitle.setVisibility(View.VISIBLE);
-					}
-					else if(Global.isConsignment)
-					{
-						holder.leftText.setText(R.string.consignment);
-						holder.leftSubtitle.setText(itemConsignmentQty);
-					}
-					else
-					{
-						holder.leftText.setVisibility(View.GONE);
-						holder.leftSubtitle.setVisibility(View.GONE);
-					}
-					
-					break;
-				}
-				case 1: {
-					convertView = myInflater.inflate(R.layout.catalog_picker_adapter2, null);
-					
-					holder.rightText = (TextView) convertView.findViewById(R.id.pickerQty);
-					holder.add = (Button) convertView.findViewById(R.id.addItemQty);
-					holder.delete = (Button) convertView.findViewById(R.id.deleteItemQty);
+        @Override
+        public int getItemViewType(int position) {
+            if (position == 0 || position == 1)                                //Product name field,consignment
+            {
+                return 0;
+            } else if (position == 2)                        // +/- quantity
+            {
+                return 1;
+            } else if (position > 2 && position < (leftTitle.length + MAIN_OFFSET))        //comments-price level - discount - special tax
+            {
+                return 2;
+            } else if ((position >= (leftTitle.length + MAIN_OFFSET)) && (position <= (leftTitle.length + leftTitle2.length + MAIN_OFFSET))) // Attributes - View types
+            {
+                return 3;
+            }
+            return 4;
+        }
 
-					holder.add.setFocusable(false);
-					holder.delete.setFocusable(false);
-					updateVolumePrice(holder);
-					if(isModify)
-					{
-						if(global.orderProducts.get(modifyOrderPosition).isReturned)
-							qty_picked = new BigDecimal(global.orderProducts.get(modifyOrderPosition).ordprod_qty).negate().toString();
-						else
-							qty_picked = global.orderProducts.get(modifyOrderPosition).ordprod_qty;
-						holder.rightText.setText(qty_picked);
-					}
+        @Override
+        public int getCount() {
+            // TODO Auto-generated method stub
+            return leftTitle.length + leftTitle2.length + MAIN_OFFSET;
+        }
 
-					holder.add.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public Object getItem(int position) {
+            // TODO Auto-generated method stub
+            return null;
+        }
 
-						@Override
-						public void onClick(View v) {
-							// TODO Auto-generated method stub
-							String val = holder.rightText.getText().toString();
-							int qty = Integer.parseInt(val);
-							qty += 1;
-							qty_picked = Integer.toString(qty);
-							holder.rightText.setText(Integer.toString(qty));
-							
-							updateVolumePrice(holder);
-							notifyDataSetChanged();
-						}
-					});
-					holder.delete.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public long getItemId(int position) {
+            // TODO Auto-generated method stub
+            return 0;
+        }
 
-						@Override
-						public void onClick(View v) {
-							// TODO Auto-generated method stub
-							String val = holder.rightText.getText().toString();
-							int qty = Integer.parseInt(val);
-							qty -= 1;
-							if (qty >= 1) {
-								qty_picked = Integer.toString(qty);
-								holder.rightText.setText(Integer.toString(qty));
-								
-								updateVolumePrice(holder);
-								notifyDataSetChanged();
-							}
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // TODO Auto-generated method stub
+            final ViewHolder holder;
+            int type = getItemViewType(position);
+            if (convertView == null) {
+                holder = new ViewHolder();
+                switch (type) {
+                    case 0: {
+                        convertView = myInflater.inflate(R.layout.catalog_picker_adapter1, null);
+                        holder.leftText = (TextView) convertView.findViewById(R.id.itemNameLabel);
+                        holder.leftSubtitle = (TextView) convertView.findViewById(R.id.itemName);
 
-						}
-					});
-					break;
-				}
-				case 2: {
-					convertView = myInflater.inflate(R.layout.catalog_picker_adapter3, null);
-					holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
-					holder.rightText = (TextView) convertView.findViewById(R.id.rightText);
+                        if (position == 0) {
+                            holder.leftText.setText(R.string.catalog_name);
+                            holder.leftSubtitle.setText(itemName);
+                            holder.leftText.setVisibility(View.VISIBLE);
+                            holder.leftSubtitle.setVisibility(View.VISIBLE);
+                        } else if (Global.isConsignment) {
+                            holder.leftText.setText(R.string.consignment);
+                            holder.leftSubtitle.setText(itemConsignmentQty);
+                        } else {
+                            holder.leftText.setVisibility(View.GONE);
+                            holder.leftSubtitle.setVisibility(View.GONE);
+                        }
 
-					holder.rightText.setTag(leftTitle[position - MAIN_OFFSET]);
-					
-					holder.leftText.setText(leftTitle[position - MAIN_OFFSET]);
-					holder.rightText.setText(rightTitle[position - MAIN_OFFSET]);
-					break;
-				}
-				case 3: {
-					convertView = myInflater.inflate(R.layout.catalog_picker_adapter4, null);
-					holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
-					
-					
-					holder.leftText.setText(leftTitle2[position - (leftTitle.length + MAIN_OFFSET)]);
-					break;
-				}
-				}
-				convertView.setTag(holder);
-			} else {
-				holder = (ViewHolder) convertView.getTag();
-				switch (type) {
-				case 0: {
-					if(position==0)
-					{
-						holder.leftText.setText(R.string.catalog_name);
-						holder.leftSubtitle.setText(itemName);	
-						holder.leftText.setVisibility(View.VISIBLE);
-						holder.leftSubtitle.setVisibility(View.VISIBLE);
-					}
-					else if(Global.isConsignment)
-					{
-						holder.leftText.setText(R.string.consignment);
-						holder.leftSubtitle.setText(itemConsignmentQty);
-					}
-					else
-					{
-						holder.leftText.setVisibility(View.GONE);
-						holder.leftSubtitle.setVisibility(View.GONE);
-					}
-					break;
-				}
-				case 1: // quantity
-				{
-					holder.add.setOnClickListener(new View.OnClickListener() {
+                        break;
+                    }
+                    case 1: {
+                        convertView = myInflater.inflate(R.layout.catalog_picker_adapter2, null);
 
-						@Override
-						public void onClick(View v) {
-							// TODO Auto-generated method stub
-							String val = holder.rightText.getText().toString();
-							int qty = Integer.parseInt(val);
-							qty += 1;
-							qty_picked = Integer.toString(qty);
-							holder.rightText.setText(Integer.toString(qty));
-							
-							updateVolumePrice(holder);
-							notifyDataSetChanged();				
-						}
-					});
-					holder.delete.setOnClickListener(new View.OnClickListener() {
+                        holder.rightText = (TextView) convertView.findViewById(R.id.pickerQty);
+                        holder.add = (Button) convertView.findViewById(R.id.addItemQty);
+                        holder.delete = (Button) convertView.findViewById(R.id.deleteItemQty);
 
-						@Override
-						public void onClick(View v) {
-							// TODO Auto-generated method stub
-							String val = holder.rightText.getText().toString();
-							int qty = Integer.parseInt(val);
-							qty -= 1;
-							if (qty >= 1) {
-								qty_picked = Integer.toString(qty);
-								holder.rightText.setText(Integer.toString(qty));
-								updateVolumePrice(holder);
-								notifyDataSetChanged();
-							}
-						}
-					});
-					break;
-				}
-				case 2: {
-					holder.rightText.setTag(leftTitle[position - MAIN_OFFSET]);
-					
-					holder.leftText.setText(leftTitle[position - MAIN_OFFSET]);
-					holder.rightText.setText(rightTitle[position - MAIN_OFFSET]);
-					break;
-				}
-				case 3: {
-					holder.leftText.setText(leftTitle2[position - (leftTitle.length + MAIN_OFFSET)]);
-					break;
-				}
-				}
-			}
+                        holder.add.setFocusable(false);
+                        holder.delete.setFocusable(false);
+                        updateVolumePrice(holder);
+                        if (isModify) {
+                            if (global.orderProducts.get(modifyOrderPosition).isReturned)
+                                qty_picked = new BigDecimal(global.orderProducts.get(modifyOrderPosition).ordprod_qty).negate().toString();
+                            else
+                                qty_picked = global.orderProducts.get(modifyOrderPosition).ordprod_qty;
+                            holder.rightText.setText(qty_picked);
+                        }
 
-			return convertView;
-		}
+                        holder.add.setOnClickListener(new View.OnClickListener() {
 
-		@Override
-		public Filter getFilter() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+                            @Override
+                            public void onClick(View v) {
+                                // TODO Auto-generated method stub
+                                String val = holder.rightText.getText().toString();
+                                int qty = Integer.parseInt(val);
+                                qty += 1;
+                                qty_picked = Integer.toString(qty);
+                                holder.rightText.setText(Integer.toString(qty));
 
-		public class ViewHolder {
-			TextView leftText;
-			TextView leftSubtitle;
-			TextView rightText;
-			Button add;
-			Button delete;
-		}
-		
-		
-		private void updateVolumePrice(ViewHolder holder) {
+                                updateVolumePrice(holder);
+                                notifyDataSetChanged();
+                            }
+                        });
+                        holder.delete.setOnClickListener(new View.OnClickListener() {
 
-			String[] temp;
-			if(global.qtyCounter!=null&&global.qtyCounter.containsKey(prodID))
-			{
-				BigDecimal origQty = new BigDecimal(global.qtyCounter.get(prodID));
-				BigDecimal newQty = origQty.add(Global.getBigDecimalNum(holder.rightText.getText().toString()));
-				temp = volPriceHandler.getVolumePrice(newQty.toString(), prodID);
-			}
-			else
-				temp = volPriceHandler.getVolumePrice(holder.rightText.getText().toString(), prodID);
-			if (temp[1] != null && !temp[1].isEmpty()) {
+                            @Override
+                            public void onClick(View v) {
+                                // TODO Auto-generated method stub
+                                String val = holder.rightText.getText().toString();
+                                int qty = Integer.parseInt(val);
+                                qty -= 1;
+                                if (qty >= 1) {
+                                    qty_picked = Integer.toString(qty);
+                                    holder.rightText.setText(Integer.toString(qty));
 
-				basePrice = temp[1];
+                                    updateVolumePrice(holder);
+                                    notifyDataSetChanged();
+                                }
 
-				rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
-				prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
-			} else if (pricelevel_position == 0) {
-				if (!isModify)
-					basePrice = extrasMap.get("prod_price");
-				else
-					basePrice = global.orderProducts.get(modifyOrderPosition).prod_price;
+                            }
+                        });
+                        break;
+                    }
+                    case 2: {
+                        convertView = myInflater.inflate(R.layout.catalog_picker_adapter3, null);
+                        holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
+                        holder.rightText = (TextView) convertView.findViewById(R.id.rightText);
 
-				if (basePrice == null || basePrice.isEmpty())
-					basePrice = "0.0";
+                        holder.rightText.setTag(leftTitle[position - MAIN_OFFSET]);
 
-				rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
-				prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
-			}
-		}
-	}
-	
-	
-	
+                        holder.leftText.setText(leftTitle[position - MAIN_OFFSET]);
+                        holder.rightText.setText(rightTitle[position - MAIN_OFFSET]);
+                        break;
+                    }
+                    case 3: {
+                        convertView = myInflater.inflate(R.layout.catalog_picker_adapter4, null);
+                        holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
+
+
+                        holder.leftText.setText(leftTitle2[position - (leftTitle.length + MAIN_OFFSET)]);
+                        break;
+                    }
+                }
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+                switch (type) {
+                    case 0: {
+                        if (position == 0) {
+                            holder.leftText.setText(R.string.catalog_name);
+                            holder.leftSubtitle.setText(itemName);
+                            holder.leftText.setVisibility(View.VISIBLE);
+                            holder.leftSubtitle.setVisibility(View.VISIBLE);
+                        } else if (Global.isConsignment) {
+                            holder.leftText.setText(R.string.consignment);
+                            holder.leftSubtitle.setText(itemConsignmentQty);
+                        } else {
+                            holder.leftText.setVisibility(View.GONE);
+                            holder.leftSubtitle.setVisibility(View.GONE);
+                        }
+                        break;
+                    }
+                    case 1: // quantity
+                    {
+                        holder.add.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                // TODO Auto-generated method stub
+                                String val = holder.rightText.getText().toString();
+                                int qty = Integer.parseInt(val);
+                                qty += 1;
+                                qty_picked = Integer.toString(qty);
+                                holder.rightText.setText(Integer.toString(qty));
+
+                                updateVolumePrice(holder);
+                                notifyDataSetChanged();
+                            }
+                        });
+                        holder.delete.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View v) {
+                                // TODO Auto-generated method stub
+                                String val = holder.rightText.getText().toString();
+                                int qty = Integer.parseInt(val);
+                                qty -= 1;
+                                if (qty >= 1) {
+                                    qty_picked = Integer.toString(qty);
+                                    holder.rightText.setText(Integer.toString(qty));
+                                    updateVolumePrice(holder);
+                                    notifyDataSetChanged();
+                                }
+                            }
+                        });
+                        break;
+                    }
+                    case 2: {
+                        holder.rightText.setTag(leftTitle[position - MAIN_OFFSET]);
+
+                        holder.leftText.setText(leftTitle[position - MAIN_OFFSET]);
+                        holder.rightText.setText(rightTitle[position - MAIN_OFFSET]);
+                        break;
+                    }
+                    case 3: {
+                        holder.leftText.setText(leftTitle2[position - (leftTitle.length + MAIN_OFFSET)]);
+                        break;
+                    }
+                }
+            }
+
+            return convertView;
+        }
+
+        @Override
+        public Filter getFilter() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public class ViewHolder {
+            TextView leftText;
+            TextView leftSubtitle;
+            TextView rightText;
+            Button add;
+            Button delete;
+        }
+
+
+        private void updateVolumePrice(ViewHolder holder) {
+
+            String[] temp;
+            if (global.qtyCounter != null && global.qtyCounter.containsKey(prodID)) {
+                BigDecimal origQty = new BigDecimal(global.qtyCounter.get(prodID));
+                BigDecimal newQty = origQty.add(Global.getBigDecimalNum(holder.rightText.getText().toString()));
+                temp = volPriceHandler.getVolumePrice(newQty.toString(), prodID);
+            } else
+                temp = volPriceHandler.getVolumePrice(holder.rightText.getText().toString(), prodID);
+            if (temp[1] != null && !temp[1].isEmpty()) {
+
+                basePrice = temp[1];
+
+                rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
+                prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
+            } else if (pricelevel_position == 0) {
+                if (!isModify)
+                    basePrice = extrasMap.get("prod_price");
+                else
+                    basePrice = global.orderProducts.get(modifyOrderPosition).prod_price;
+
+                if (basePrice == null || basePrice.isEmpty())
+                    basePrice = "0.0";
+
+                rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
+                prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
+            }
+        }
+    }
+
+
 }
