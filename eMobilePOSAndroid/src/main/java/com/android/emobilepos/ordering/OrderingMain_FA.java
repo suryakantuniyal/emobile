@@ -421,9 +421,9 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 		// else if (keyCode == 4)
 		// {
 		// Receipt_FR.mainLVAdapter.notifyDataSetChanged();
-		// Receipt_FR.myListView.setSelection(0);
-		// Receipt_FR.myListView.setSelected(false);
-		// Receipt_FR.myListView.invalidateViews();
+		// Receipt_FR.receiptListView.setSelection(0);
+		// Receipt_FR.receiptListView.setSelected(false);
+		// Receipt_FR.receiptListView.invalidateViews();
 		// }
 		return super.onKeyUp(keyCode, event);
 	}
@@ -663,7 +663,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 					msrWasLoaded = false;
 					cardReaderConnected = false;
 					Receipt_FR.mainLVAdapter.notifyDataSetChanged();
-					Receipt_FR.myListView.invalidateViews();
+					Receipt_FR.receiptListView.invalidateViews();
 					finish();
 				}
 			}
