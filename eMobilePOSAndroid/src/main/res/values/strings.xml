@@ -1100,5 +1100,10 @@
 	<string name="please_wait_message">Please wait...</string>
 	<string name="ivu_control">"CONTROL: "</string>
 	<string name="adding_balance_message">Adding Balance...</string>
+	<string name="return_title">Return</string>
+	<string name="base_price_lbl">Base Price</string>
+	<string name="no_discount_lbl">No Discount</string>
+	<string name="amount_zero_lbl">0.00</string>
+	<string name="none_uppercase_lbl">NONE</string>
 
 </resources>

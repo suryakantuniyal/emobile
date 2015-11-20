@@ -523,44 +523,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         lastClickTime = SystemClock.elapsedRealtime();
         switch (v.getId()) {
-            // case R.id.checkoutButton:
-            // if (receiptListView.getCount() == 0 && caseSelected!=9)
-            // {
-            // Toast.makeText(activity, getString(R.string.warning_empty_products),
-            // Toast.LENGTH_SHORT).show();
-            // }
-            // else if(Global.isInventoryTransfer)
-            // {
-            // processInventoryTransfer();
-            // }
-            // else
-            // if(myPref.getPreferences(MyPreferences.pref_signature_required_mode)&&global.encodedImage.isEmpty())
-            // {
-            // Toast.makeText(activity, R.string.warning_signature_required,
-            // Toast.LENGTH_LONG).show();
-            // }
-            // else
-            // if(myPref.getPreferences(MyPreferences.pref_require_address)&&global.getSelectedAddressString().isEmpty())
-            // {
-            // Toast.makeText(activity, R.string.warning_ship_address_required,
-            // Toast.LENGTH_LONG).show();
-            // }
-            // else
-            // {
-            // if(myPref.getPreferences(MyPreferences.pref_skip_want_add_more_products))
-            // {
-            // if(myPref.getPreferences(MyPreferences.pref_skip_email_phone))
-            // processOrder("","",false);
-            // else
-            // showEmailDlog();
-            // }
-            // else
-            // {
-            // showAddMoreProductsDlg();
-            // }
-            // }
-            //
-            // break;
+
             case R.id.plusButton:
                 intent = new Intent(getActivity(), ViewCustomers_FA.class);
                 startActivityForResult(intent, 0);
