@@ -51,6 +51,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 
+import com.android.support.TerminalDisplay;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -169,15 +170,11 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		if (myPref.isSam4s(true, true)) {
 			String row1 = "Grand Total";
 			String row2 = Global.formatDoubleStrToCurrency(total);
-			uart uart_tool = new uart();
-			uart_tool.config(3, 9600, 8, 1);
-			uart_tool.write(3, Global.emptySpaces(40, 0, false));
-			uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
+			TerminalDisplay.setTerminalDisplay(myPref,row1,row2);
 		} else if (myPref.isPAT100(true, true)) {
 			String row1 = "Grand Total";
 			String row2 = Global.formatDoubleStrToCurrency(total);
-			EMSPAT100.getTerminalDisp().clearText();
-			EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
+			TerminalDisplay.setTerminalDisplay(myPref,row1,row2);
 		}
 
 		if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()

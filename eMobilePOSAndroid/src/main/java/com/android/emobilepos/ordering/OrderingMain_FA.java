@@ -119,7 +119,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
     private ProgressDialog myProgressDialog;
     private CreditCardInfo cardInfoManager;
     private Button btnCheckout;
-    private int mTransType = -1;
+    private Global.TransactionType mTransType = null;
     public static boolean returnItem = false;
 
     @Override
@@ -187,32 +187,32 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
     private void setupTitle() {
         Bundle extras = getIntent().getExtras();
         headerTitle = (TextView) findViewById(R.id.headerTitle);
-        mTransType = extras.getInt("option_number");
+        mTransType = (Global.TransactionType) extras.get("option_number");
         headerContainer = (RelativeLayout) findViewById(R.id.headerTitleContainer);
         if (myPref.isCustSelected()) {
 
             switch (mTransType) {
-                case 0: {
+                case SALE_RECEIPT: {
                     headerTitle.setText(R.string.sales_receipt);
                     break;
                 }
-                case 1: {
+                case ORDERS: {
                     headerTitle.setText(R.string.order);
                     break;
                 }
-                case 2: {
+                case RETURN: {
                     headerTitle.setText(R.string.return_tag);
                     break;
                 }
-                case 3: {
+                case INVOICE: {
                     headerTitle.setText(R.string.invoice);
                     break;
                 }
-                case 4: {
+                case ESTIMATE: {
                     headerTitle.setText(R.string.estimate);
                     break;
                 }
-                case 9: {
+                case REFUND: {
                     if (!Global.isConsignment) {
                         custInventoryHandler = new CustomerInventoryHandler(this);
                         custInventoryHandler.getCustomerInventory();
@@ -246,25 +246,25 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 
                     break;
                 }
-                case 13:// Inventory Transfer
+                case LOCATION:// Inventory Transfer
                     headerTitle.setText(R.string.inventory_transfer);
                     break;
             }
         } else {
             switch (mTransType) {
-                case 0: {
+                case SALE_RECEIPT: {
                     headerTitle.setText(R.string.sales_receipt);
                     break;
                 }
-                case 1: {
+                case ORDERS: {
                     headerTitle.setText(R.string.return_tag);
                     break;
                 }
-                case 2: {
+                case RETURN: {
                     headerTitle.setText(R.string.sales_receipt);
                     break;
                 }
-                case 13:// Inventory Transfer
+                case LOCATION:// Inventory Transfer
                     headerTitle.setText(R.string.inventory_transfer);
                     break;
             }
@@ -654,7 +654,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
                     leftFragment.voidCancelOnHold(1);
                 else {
 
-                    if (mTransType == 0) // is sales receipt
+                    if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
                         voidTransaction();
                     else
                         deleteTransaction();

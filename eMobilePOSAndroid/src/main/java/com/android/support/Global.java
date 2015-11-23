@@ -120,7 +120,7 @@ public class Global extends MultiDexApplication {
     public static final String AUDIO_MSR_WALKER = "3";
 
 
-//    public final static String IS_ORDER = "0";
+    //    public final static String IS_ORDER = "0";
 //    public final static String IS_RETURN = "1";
 //    public final static String IS_INVOICE = "2";
 //    public final static String IS_ESTIMATE = "3";
@@ -129,6 +129,49 @@ public class Global extends MultiDexApplication {
 //    public final static String IS_CONSIGNMENT_PICKUP = "6";
 //    public final static String IS_CONSIGNMENT_INVOICE = "7";
 //    public final static String IS_CONSIGNMENT_RETURN = "8";
+    public enum TransactionType {
+        SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
+        PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
+        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13);
+
+        TransactionType(int code) {
+        }
+
+        public static TransactionType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return SALE_RECEIPT;
+                case 1:
+                    return ORDERS;
+                case 2:
+                    return RETURN;
+                case 3:
+                    return INVOICE;
+                case 4:
+                    return ESTIMATE;
+                case 5:
+                    return PAYMENT;
+                case 6:
+                    return GIFT_CARD;
+                case 7:
+                    return LOYALTY_CARD;
+                case 8:
+                    return REWARD_CARD;
+                case 9:
+                    return REFUND;
+                case 10:
+                    return ROUTE;
+                case 11:
+                    return ON_HOLD;
+                case 12:
+                    return SALE_RECEIPT;
+                case 13:
+                    return LOCATION;
+                default:
+                    return null;
+            }
+        }
+    }
 
     public enum OrderType {
         ORDER(0), RETURN(1), INVOICE(2), ESTIMATE(3), CONSIGNMENT_FILLUP(4), SALES_RECEIPT(5), CONSIGNMENT_PICKUP(6),
@@ -275,7 +318,7 @@ public class Global extends MultiDexApplication {
 //    public final static int IS_CONS_PICKUP = 3;
 
     public static OrderType consignmentType = OrderType.ORDER;
-    public static OrderType ord_type;
+    public static OrderType ord_type = OrderType.ORDER;
     private static String empStr = "";
     public static String amountPaid = "";
     public static String tipPaid = "0";
@@ -1385,6 +1428,9 @@ public class Global extends MultiDexApplication {
 
             }
         }
+        String row1 = ord.ordprod_name;
+        String row2 = Global.formatDoubleStrToCurrency(data[2]);
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         global.orderProducts.add(ord);
     }
 

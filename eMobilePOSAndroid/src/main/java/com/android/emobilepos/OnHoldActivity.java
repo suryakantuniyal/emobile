@@ -332,19 +332,19 @@ public class OnHoldActivity extends Activity {
 
                 switch (orderType) {
                     case SALES_RECEIPT:
-                        intent.putExtra("option_number", 0);
+                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                         break;
                     case RETURN:
-                        intent.putExtra("option_number", 2);
+                        intent.putExtra("option_number", Global.TransactionType.RETURN);
                         break;
                     case ORDER:
-                        intent.putExtra("option_number", 1);
+                        intent.putExtra("option_number", Global.TransactionType.ORDERS);
                         break;
                     case INVOICE:
-                        intent.putExtra("option_number", 3);
+                        intent.putExtra("option_number", Global.TransactionType.INVOICE);
                         break;
                     case ESTIMATE:
-                        intent.putExtra("option_number", 4);
+                        intent.putExtra("option_number", Global.TransactionType.ESTIMATE);
                         break;
                 }
 

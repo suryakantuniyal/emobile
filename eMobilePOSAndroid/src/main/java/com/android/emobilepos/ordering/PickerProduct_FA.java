@@ -46,6 +46,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TerminalDisplay;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -1064,15 +1065,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (myPref.isSam4s(true, true)) {
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            uart uart_tool = new uart();
-            uart_tool.config(3, 9600, 8, 1);
-            uart_tool.write(3, Global.emptySpaces(40, 0, false));
-            uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
+            TerminalDisplay.setTerminalDisplay(myPref,row1,row2);
+
         } else if (myPref.isPAT100(true, true)) {
+
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            EMSPAT100.getTerminalDisp().clearText();
-            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         }
 
         if (OrderingMain_FA.returnItem) {

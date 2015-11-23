@@ -691,14 +691,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
             granTotal.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(gran_total)));
         } else {
-            discountable_sub_total = new BigDecimal("0");
-            sub_total = new BigDecimal("0.00");
-            gran_total = new BigDecimal("0.00");
-            this.subTotal.setText("0.00");
-            globalTax.setText("0.00");
+            discountable_sub_total = new BigDecimal(getString(R.string.amount_zero_lbl));
+            sub_total = new BigDecimal(getString(R.string.amount_zero_lbl));
+            gran_total = new BigDecimal(getString(R.string.amount_zero_lbl));
+            this.subTotal.setText(getString(R.string.amount_zero_lbl));
+            globalTax.setText(getString(R.string.amount_zero_lbl));
 
             setDiscountValue(discountSelected);
-            granTotal.setText("0.00");
+            granTotal.setText(getString(R.string.amount_zero_lbl));
             OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
         }
     }
