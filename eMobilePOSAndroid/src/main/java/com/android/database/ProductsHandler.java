@@ -219,14 +219,14 @@ public class ProductsHandler {
 					sb.append(",ci.qty AS 'consignment_qty' ");
 
 					sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-					if (Global.consignmentType == Global.IS_CONS_FILLUP)
+					if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 						sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 								.append("' WHERE p.prod_type != 'Discount' ");
 					else
 						sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 								.append("' AND p.prod_type != 'Discount' ");
 
-					if (Global.consignmentType == Global.IS_CONS_RACK)
+					if (Global.consignmentType == Global.OrderType.ORDER)
 						sb2.append("AND ci.qty>0 ");
 				} else if (Global.isInventoryTransfer) {
 					sb.append(",li.prod_onhand AS 'location_qty' ");
@@ -245,13 +245,13 @@ public class ProductsHandler {
 					sb.append(",ci.qty AS 'consignment_qty' ");
 
 					sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-					if (Global.consignmentType == Global.IS_CONS_FILLUP)
+					if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 						sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 								.append("' WHERE p.prod_type != 'Discount' ");
 					else
 						sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 								.append("' AND p.prod_type != 'Discount' ");
-					if (Global.consignmentType == Global.IS_CONS_RACK)
+					if (Global.consignmentType == Global.OrderType.ORDER)
 						sb2.append("AND ci.qty>0 ");
 				} else if (Global.isInventoryTransfer) {
 					sb.append(",li.prod_onhand AS 'location_qty' ");
@@ -298,13 +298,13 @@ public class ProductsHandler {
 					sb.append(",ci.qty AS 'consignment_qty' ");
 
 					sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-					if (Global.consignmentType == Global.IS_CONS_FILLUP)
+					if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 						sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 								.append("' WHERE p.prod_type != 'Discount' ");
 					else
 						sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 								.append("' AND p.prod_type != 'Discount' ");
-					if (Global.consignmentType == Global.IS_CONS_RACK)
+					if (Global.consignmentType == Global.OrderType.ORDER)
 						sb.append("AND ci.qty>0 ");
 				} else if (Global.isInventoryTransfer) {
 					sb.append(",li.prod_onhand AS 'location_qty' ");
@@ -322,13 +322,13 @@ public class ProductsHandler {
 					sb.append(",ci.qty AS 'consignment_qty' ");
 
 					sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-					if (Global.consignmentType == Global.IS_CONS_FILLUP)
+					if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 						sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 								.append("' WHERE p.prod_type != 'Discount' ");
 					else
 						sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 								.append("' AND p.prod_type != 'Discount' ");
-					if (Global.consignmentType == Global.IS_CONS_RACK)
+					if (Global.consignmentType == Global.OrderType.ORDER)
 						sb2.append("AND ci.qty>0 ");
 				} else if (Global.isInventoryTransfer) {
 					sb.append(",li.prod_onhand AS 'location_qty' ");
@@ -411,13 +411,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb.append("AND ci.qty>0 ");
 			} else
 				sb.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? ");// .append("'
@@ -432,13 +432,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb2.append("AND ci.qty>0 ");
 			} else
 				sb2.append("WHERE p.prod_type != 'Discount' ");// ORDER BY
@@ -489,10 +489,10 @@ public class ProductsHandler {
 		// SQLiteDatabase db = dbManager.openReadableDB();
 		StringBuilder sb = new StringBuilder();
 		StringBuilder sb2 = new StringBuilder();
-		String query = new String();
+		String query;
 		String[] data = new String[13];
 
-		String priceLevelID = new String();
+		String priceLevelID;
 		if (myPref.isCustSelected())
 			priceLevelID = myPref.getCustPriceLevel();
 		else
@@ -513,13 +513,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb.append("AND ci.qty>0 ");
 				sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ?)");
 			} else
@@ -536,13 +536,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb2.append("AND ci.qty>0 ");
 				sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ?) ");
 			} else
@@ -634,10 +634,10 @@ public class ProductsHandler {
 		// SQLiteDatabase db = dbManager.openReadableDB();
 		StringBuilder sb = new StringBuilder();
 		StringBuilder sb2 = new StringBuilder();
-		String query = new String();
+		String query;
 		String[] data = new String[13];
 
-		String priceLevelID = new String();
+		String priceLevelID;
 		if (myPref.isCustSelected())
 			priceLevelID = myPref.getCustPriceLevel();
 		else
@@ -658,13 +658,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb.append("AND ci.qty>0 ");
 				sb2.append("AND p.prod_id = ?");
 			} else
@@ -680,13 +680,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb2.append("AND ci.qty>0 ");
 				sb2.append("AND p.prod_id = ? ");
 			} else
@@ -982,13 +982,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb.append("AND ci.qty>0 ");
 				sb2.append("AND p.");
 			} else
@@ -1004,13 +1004,13 @@ public class ProductsHandler {
 				sb.append(",ci.qty AS 'consignment_qty' ");
 
 				sb2.append("LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id ");
-				if (Global.consignmentType == Global.IS_CONS_FILLUP)
+				if (Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
 					sb2.append("AND ci.cust_id = '").append(myPref.getCustID())
 							.append("' WHERE p.prod_type != 'Discount' ");
 				else
 					sb2.append("WHERE ci.cust_id = '").append(myPref.getCustID())
 							.append("' AND p.prod_type != 'Discount' ");
-				if (Global.consignmentType == Global.IS_CONS_RACK)
+				if (Global.consignmentType == Global.OrderType.ORDER)
 					sb2.append("AND ci.qty>0 ");
 				sb2.append("AND p.");
 			} else

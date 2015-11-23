@@ -155,7 +155,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 	}
 
 	@Override
-	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
+	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
 		// TODO Auto-generated method stub
 		printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
 	

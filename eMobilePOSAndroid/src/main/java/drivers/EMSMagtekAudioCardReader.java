@@ -474,7 +474,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 	
 
 	@Override
-	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
+	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
 		// TODO Auto-generated method stub
 		return true;
 	}

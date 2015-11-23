@@ -203,7 +203,7 @@ public class ViewStoreForwardTrans_FA extends FragmentActivity implements OnItem
 							sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
 							
 							dbStoredPay.deleteStoredPaymentRow(_pay_uuid);
-							if(dbOrdHandler.getColumnValue("ord_type", _job_id).equals(Global.IS_SALES_RECEIPT))
+							if(dbOrdHandler.getColumnValue("ord_type", _job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
 								dbOrdHandler.updateOrderTypeToInvoice(_job_id);
 							dbOrdHandler.updateOrderComment(_job_id, sb.toString());
 							
@@ -285,7 +285,7 @@ public class ViewStoreForwardTrans_FA extends FragmentActivity implements OnItem
 							
 							
 							dbStoredPay.deleteStoredPaymentRow(_pay_uuid);
-							if(dbOrdHandler.getColumnValue("ord_type", _job_id).equals(Global.IS_SALES_RECEIPT))
+							if(dbOrdHandler.getColumnValue("ord_type", _job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
 								dbOrdHandler.updateOrderTypeToInvoice(_job_id);
 							dbOrdHandler.updateOrderComment(_job_id, sb.toString());
 							
