@@ -315,6 +315,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
+                parseInputedCurrency(s, subtotal);
                 calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                 calculateAmountDue(subtotal, tax1, tax2, amount);
                 recalculateChange();
