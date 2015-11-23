@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'emobilepos'
+            keyPassword '1Enabler1'
+            storeFile file('C:/AndroidAPKCerts/eMobileKeystore')
+            storePassword '1Enabler1'
+        }
+    }
     compileSdkVersion 14
     buildToolsVersion "23.0.0"
     dexOptions {
@@ -10,7 +18,7 @@ android {
     packagingOptions {
     }
     defaultConfig {
-        applicationId "com.logo.ivupos.app"
+        applicationId "com.emobilepos.app"
         minSdkVersion 14
         targetSdkVersion 23
         multiDexEnabled = true
@@ -26,20 +34,23 @@ android {
         ems {
             minSdkVersion 14
             applicationId = 'com.emobilepos.app'
-            versionName "1.0.81.12"
+            versionName "1.0.82.1"
             targetSdkVersion 23
+            multiDexEnabled = true
         }
         ivupos {
             minSdkVersion 14
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.0.81.12"
+            versionName "1.0.82.1"
             targetSdkVersion 23
+            multiDexEnabled = true
         }
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.config
         }
     }
 }

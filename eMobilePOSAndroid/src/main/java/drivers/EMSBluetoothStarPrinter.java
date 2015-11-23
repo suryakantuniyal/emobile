@@ -267,16 +267,21 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public void registerAll() {
         this.registerPrinter();
     }
-
+    int connectionRetries = 0;
     private void verifyConnectivity() throws StarIOPortException, InterruptedException {
         try {
+            connectionRetries++;
             if (port == null || port.retreiveStatus() == null && port.retreiveStatus().offline)
                 port = getStarIOPort();
         } catch (StarIOPortException e) {
             releasePrinter();
             Thread.sleep(500);
-            port = null;// StarIOPort.getPort(portName, portSettings, 30000,
-            // this.activity);
+            port = null;
+            if (connectionRetries <= 3) {
+                verifyConnectivity();
+            }else{
+                throw e;
+            }
             verifyConnectivity();
         }
     }
