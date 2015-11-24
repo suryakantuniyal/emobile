@@ -23,6 +23,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -362,15 +363,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             printPref = myPref.getPrintingPreferences();
 
             PaymentsHandler payHandler = new PaymentsHandler(activity);
-            String[] payArray = null;
+            PaymentDetails payDetail;
             boolean isStoredFwd = false;
             long pay_count = payHandler.paymentExist(payID);
             if (pay_count == 0) {
                 isStoredFwd = true;
                 StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
-                payArray = dbStoredPay.getPrintingForPaymentDetails(payID, type);
+                payDetail = dbStoredPay.getPrintingForPaymentDetails(payID, type);
             } else {
-                payArray = payHandler.getPrintingForPaymentDetails(payID, type);
+                payDetail = payHandler.getPrintingForPaymentDetails(payID, type);
             }
             StringBuilder sb = new StringBuilder();
             boolean isCashPayment = false;
@@ -378,9 +379,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             String constantValue = null;
             String creditCardFooting = "";
 
-            if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CASH"))
+            if (payDetail.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
                 isCashPayment = true;
-            else if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
+            else if (payDetail.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
                 isCheckPayment = true;
             else {
                 constantValue = getString(R.string.receipt_included_tip);
@@ -395,8 +396,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             port.writePort(enableCenter, 0, enableCenter.length); // enable
             // center
 
-            sb.append("* ").append(payArray[0]);
-            if (payArray[11].equals("1"))
+            sb.append("* ").append(payDetail.getPaymethod_name());
+            if (payDetail.getIs_refund().equals("1"))
                 sb.append(" Refund *\n\n\n");
             else
                 sb.append(" Sale *\n\n\n");
@@ -407,18 +408,18 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             sb.setLength(0);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     getString(R.string.receipt_time), LINE_WIDTH, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray[1], payArray[2], LINE_WIDTH, 0))
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(payDetail.getPay_date(), payDetail.getPay_timecreated(), LINE_WIDTH, 0))
                     .append("\n\n");
 
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray[3],
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payDetail.getCust_name(),
                     LINE_WIDTH, 0));
 
-            if (payArray[17] != null && !payArray[17].isEmpty())
+            if (payDetail.getJob_id() != null && !payDetail.getJob_id().isEmpty())
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
-                        payArray[17], LINE_WIDTH, 0));
-            else if (payArray[16] != null && !payArray[16].isEmpty()) // invoice
+                        payDetail.getJob_id(), LINE_WIDTH, 0));
+            else if (payDetail.getInv_id() != null && !payDetail.getInv_id().isEmpty()) // invoice
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
-                        payArray[16], LINE_WIDTH, 0));
+                        payDetail.getInv_id(), LINE_WIDTH, 0));
 
             if (!isStoredFwd)
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
@@ -426,21 +427,21 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             if (!isCashPayment && !isCheckPayment) {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
-                        "*" + payArray[9], LINE_WIDTH, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray[8], LINE_WIDTH, 0));
+                        "*" + payDetail.getCcnum_last4(), LINE_WIDTH, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payDetail.getPay_transid(), LINE_WIDTH, 0));
             } else if (isCheckPayment) {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
-                        payArray[10], LINE_WIDTH, 0));
+                        payDetail.getPay_check(), LINE_WIDTH, 0));
             }
 
             sb.append(textHandler.newLines(1));
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                    Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0));
+                    Global.formatDoubleStrToCurrency(payDetail.getOrd_total()), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-                    Global.formatDoubleStrToCurrency(payArray[15]), LINE_WIDTH, 0));
+                    Global.formatDoubleStrToCurrency(payDetail.getPay_amount()), LINE_WIDTH, 0));
 
-            String change = payArray[6];
+            String change = payDetail.getChange();
 
             if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
                     && Double.parseDouble(change) > 0)
@@ -458,8 +459,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                     sb.append(textHandler.newLines(1));
-                } else if (!payArray[7].isEmpty()) {
-                    encodedSignature = payArray[7];
+                } else if (!payDetail.getPay_signature().isEmpty()) {
+                    encodedSignature = payDetail.getPay_signature();
                     this.printImage(1);
                 }
                 port.writePort(enableCenter, 0, enableCenter.length); // center
@@ -477,7 +478,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
                     sb.append("\n");
                     sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-                    sb.append(textHandler.centeredString("CONTROL: " + payArray[13], LINE_WIDTH));
+                    sb.append(textHandler.centeredString("CONTROL: " + payDetail.getIvuLottoNumber(), LINE_WIDTH));
 //					sb.append(textHandler.centeredString(payArray[12], LINE_WIDTH));
                     sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
                     sb.append("\n");
@@ -489,7 +490,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 //					this.printImage(2);
 
                     sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
-                    sb.append("\t").append("CONTROL: ").append(payArray[13]).append("\n");
+                    sb.append("\t").append("CONTROL: ").append(payDetail.getIvuLottoNumber()).append("\n");
 //					sb.append(payArray[12]).append("\n");
                     sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
 

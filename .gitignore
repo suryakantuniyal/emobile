@@ -20,3 +20,4 @@
 .gradle/2.2.1/taskArtifacts/taskArtifacts.bin
 *.log
 build/intermediates/dex-cache/cache.xml
+eMobilePOSAndroid/eMobilePOSAndroid.iml

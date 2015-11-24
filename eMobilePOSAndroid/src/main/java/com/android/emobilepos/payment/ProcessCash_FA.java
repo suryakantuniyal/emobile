@@ -629,10 +629,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
         payment.custidkey = custidkey;
 
-        // String tempPaid = Double.toString(grandTotalAmount);
-
         payment.paymethod_id = extras.getString("paymethod_id");
-
 
         payment.pay_dueamount = Double.toString(amountToBePaid);
 

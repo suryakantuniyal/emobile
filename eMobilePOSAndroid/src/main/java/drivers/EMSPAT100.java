@@ -169,7 +169,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 		printPref = myPref.getPrintingPreferences();
 
 		PaymentsHandler payHandler = new PaymentsHandler(activity);
-		String[] payArray = null;
+		String[] payArray;
 		boolean isStoredFwd = false;
 		long pay_count = payHandler.paymentExist(payID);
 		if (pay_count == 0) {

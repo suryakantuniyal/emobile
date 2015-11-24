@@ -39,6 +39,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -804,16 +805,16 @@ public class EMSAsura extends EMSDeviceDriver
 			printPref = myPref.getPrintingPreferences();
 
 			PaymentsHandler payHandler = new PaymentsHandler(activity);
-			String[] payArray = payHandler.getPrintingForPaymentDetails(payID, type);
+			PaymentDetails paymentDetails = payHandler.getPrintingForPaymentDetails(payID, type);
 			StringBuilder sb = new StringBuilder();
 			boolean isCashPayment = false;
 			boolean isCheckPayment = false;
 			String constantValue = null;
 			String creditCardFooting = "";
 
-			if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CASH"))
+			if (paymentDetails.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
 				isCashPayment = true;
-			else if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
+			else if (paymentDetails.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
 				isCheckPayment = true;
 			else {
 				constantValue = getString(R.string.receipt_included_tip);
@@ -825,8 +826,8 @@ public class EMSAsura extends EMSDeviceDriver
 			if (printPref.contains(MyPreferences.print_header))
 				this.printHeader();
 
-			sb.append("* ").append(payArray[0]);
-			if (payArray[11].equals("1"))
+			sb.append("* ").append(paymentDetails.getPaymethod_name());
+			if (paymentDetails.getIs_refund().equals("1"))
 				sb.append(" Refund *");
 			else
 				sb.append(" Sale *");
@@ -840,12 +841,12 @@ public class EMSAsura extends EMSDeviceDriver
 							getString(R.string.receipt_time), LINE_WIDTH, 0),
 					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 			textBitmap = addLineTextImage(textBitmap,
-					textHandler.twoColumnLineWithLeftAlignedText(payArray[1], payArray[2], LINE_WIDTH, 0),
+					textHandler.twoColumnLineWithLeftAlignedText(paymentDetails.getPay_date(), paymentDetails.getPay_timecreated(), LINE_WIDTH, 0),
 					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 			textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
 
 			textBitmap = addLineTextImage(textBitmap, textHandler
-					.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray[3], LINE_WIDTH, 0),
+					.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), paymentDetails.getCust_name(), LINE_WIDTH, 0),
 					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 			textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
 					getString(R.string.receipt_idnum), payID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
@@ -853,14 +854,14 @@ public class EMSAsura extends EMSDeviceDriver
 			if (!isCashPayment && !isCheckPayment) {
 				textBitmap = addLineTextImage(textBitmap,
 						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
-								"*" + payArray[9], LINE_WIDTH, 0),
+								"*" + paymentDetails.getCcnum_last4(), LINE_WIDTH, 0),
 						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray[8], LINE_WIDTH, 0),
+						textHandler.twoColumnLineWithLeftAlignedText("TransID:", paymentDetails.getPay_transid(), LINE_WIDTH, 0),
 						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 			} else if (isCheckPayment) {
 				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum), payArray[10],
+						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum), paymentDetails.getPay_check(),
 								LINE_WIDTH, 0),
 						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 			}
@@ -869,14 +870,14 @@ public class EMSAsura extends EMSDeviceDriver
 
 			textBitmap = addLineTextImage(textBitmap,
 					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-							Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0),
+							Global.formatDoubleStrToCurrency(paymentDetails.getOrd_total()), LINE_WIDTH, 0),
 					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 			textBitmap = addLineTextImage(textBitmap,
 					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-							Global.formatDoubleStrToCurrency(payArray[15]), LINE_WIDTH, 0),
+							Global.formatDoubleStrToCurrency(paymentDetails.getPay_amount()), LINE_WIDTH, 0),
 					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 
-			String change = payArray[6];
+			String change = paymentDetails.getChange();
 
 			if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
 					&& Double.parseDouble(change) > 0)
@@ -898,8 +899,8 @@ public class EMSAsura extends EMSDeviceDriver
 			if (!isCashPayment && !isCheckPayment) {
 				if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
 					textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-				} else if (!payArray[7].isEmpty()) {
-					encodedSignature = payArray[7];
+				} else if (!paymentDetails.getPay_signature().isEmpty()) {
+					encodedSignature = paymentDetails.getPay_signature();
 					this.printImage(1);
 				}
 
@@ -921,10 +922,10 @@ public class EMSAsura extends EMSDeviceDriver
 							textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH),
 							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 					textBitmap = addLineTextImage(textBitmap,
-							textHandler.centeredString("IVULOTO: " + payArray[13], LINE_WIDTH), PRINT_TXT_SIZE,
+							textHandler.centeredString("CONTROL: " + paymentDetails.getIvuLottoNumber(), LINE_WIDTH), PRINT_TXT_SIZE,
 							Align.ALIGN_LEFT);
-					textBitmap = addLineTextImage(textBitmap, textHandler.centeredString(payArray[12], LINE_WIDTH),
-							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//					textBitmap = addLineTextImage(textBitmap, textHandler.centeredString(payArray[12], LINE_WIDTH),
+//							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
 					textBitmap = addLineTextImage(textBitmap,
 							textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH),
 							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
@@ -932,14 +933,14 @@ public class EMSAsura extends EMSDeviceDriver
 
 					// printer.printBitmapImage(addLineTextImage(null,sb.toString(),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
 				} else {
-					encodedQRCode = payArray[14];
+//					encodedQRCode = payArray[14];
 
-					this.printImage(2);
+//					this.printImage(2);
 					textBitmap = addLineTextImage(textBitmap, textHandler.ivuLines(2 * LINE_WIDTH / 3), PRINT_TXT_SIZE,
 							Align.ALIGN_CENTER);
-					textBitmap = addLineTextImage(textBitmap, "IVULOTO: " + payArray[13], PRINT_TXT_SIZE,
+					textBitmap = addLineTextImage(textBitmap, "CONTROL: " + paymentDetails.getIvuLottoNumber(), PRINT_TXT_SIZE,
 							Align.ALIGN_CENTER);
-					textBitmap = addLineTextImage(textBitmap, payArray[12], PRINT_TXT_SIZE, Align.ALIGN_CENTER);
+//					textBitmap = addLineTextImage(textBitmap, payArray[12], PRINT_TXT_SIZE, Align.ALIGN_CENTER);
 					textBitmap = addLineTextImage(textBitmap, textHandler.ivuLines(2 * LINE_WIDTH / 3), PRINT_TXT_SIZE,
 							Align.ALIGN_CENTER);
 
