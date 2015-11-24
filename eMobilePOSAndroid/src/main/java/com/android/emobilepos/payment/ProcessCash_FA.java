@@ -146,16 +146,6 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
-        List<OrderProducts> orderProducts = global.orderProducts;
-        double subtotalDbl = 0;
-        for (OrderProducts products : orderProducts) {
-            subtotalDbl += Double.parseDouble(products.itemSubtotal);
-        }
-//        double tax1Dbl = TextUtils.isEmpty(extras.getString("Tax1_amount")) ? 0 : Double.parseDouble(extras.getString("Tax1_amount"));
-//        double tax2Dbl = TextUtils.isEmpty(extras.getString("Tax2_amount")) ? 0 : Double.parseDouble(extras.getString("Tax2_amount"));
-//        double amountDbl = TextUtils.isEmpty(extras.getString("amount")) ? 0 : Double.parseDouble(extras.getString("amount"));
-        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
-
 
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
         isFromMainMenu = extras.getBoolean("isFromMainMenu");
@@ -370,7 +360,12 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
         });
 
-
+        List<OrderProducts> orderProducts = global.orderProducts;
+        double subtotalDbl = 0;
+        for (OrderProducts products : orderProducts) {
+            subtotalDbl += Double.parseDouble(products.itemSubtotal);
+        }
+        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         if (showTipField) {
             Button tipButton = (Button) findViewById(R.id.tipAmountBut);
             tipButton.setOnClickListener(new View.OnClickListener() {
