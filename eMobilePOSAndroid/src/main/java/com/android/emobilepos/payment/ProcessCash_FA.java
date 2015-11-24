@@ -608,7 +608,9 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     private void processPayment() {
         PaymentsHandler payHandler = new PaymentsHandler(activity);
         actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-
+        if (Global.isIvuLoto) {
+            Global.subtotalAmount = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        }
 
         payment = new Payment(activity);
 
@@ -631,7 +633,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
         payment.paymethod_id = extras.getString("paymethod_id");
 
-        payment.pay_dueamount = Double.toString(amountToBePaid);
+        payment.pay_dueamount = Double.toString(actualAmount - amountToBePaid);
 
         if (amountToBePaid > actualAmount)
             payment.pay_amount = Double.toString(actualAmount);

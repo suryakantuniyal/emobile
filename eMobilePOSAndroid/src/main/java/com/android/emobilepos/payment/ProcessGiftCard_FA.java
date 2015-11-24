@@ -346,7 +346,9 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
     private void processPayment() {
         amountTendered = Global.formatNumFromLocale(fieldAmountTendered.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         totalAmount = Global.formatNumFromLocale(fieldAmountDue.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-
+        if (Global.isIvuLoto) {
+            Global.subtotalAmount = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        }
         populateCardInfo();
 
         String cardType = "GiftCard";

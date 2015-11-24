@@ -312,479 +312,481 @@ public class EMSAsura extends EMSDeviceDriver
 
 	@Override
 	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
-		// TODO Auto-generated method stub
-		try {
-
-			// port = StarIOPort.getPort(portName, portSettings, 1000,
-			// this.activity);
-
-			Bitmap textBitmap = null;
-
-			printPref = myPref.getPrintingPreferences();
-			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-
-			OrderProductsHandler handler = new OrderProductsHandler(activity);
-			OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
-
-			List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-			List<Orders> orders = handler.getPrintOrderedProducts(ordID);
-
-			OrdersHandler orderHandler = new OrdersHandler(activity);
-			Order anOrder = orderHandler.getPrintedOrder(ordID);
-			ClerksHandler clerkHandler = new ClerksHandler(activity);
-
-			StringBuilder sb = new StringBuilder();
-			int size = orders.size();
-
-			this.printImage(0);
-
-			if (printPref.contains(MyPreferences.print_header))
-				this.printHeader();
-
-			if (fromOnHold) {
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText("[" + getString(R.string.on_hold) + "]",
-								anOrder.ord_HoldName, LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-			}
-
-			switch (type) {
-			case 0: // Order
-				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
-						getString(R.string.order) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				break;
-			case 1: // Return
-				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
-						getString(R.string.order) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				break;
-			case 2: // Invoice
-				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
-						getString(R.string.invoice) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				break;
-			case 3: // Estimate
-				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
-						getString(R.string.estimate) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				break;
-			case 5: // Sales Receipt
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", ordID,
-								LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				break;
-			}
-
-			textBitmap = addLineTextImage(textBitmap,
-					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-							Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 3), LINE_WIDTH, 0),
-					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-			if (!myPref.getShiftIsOpen() || myPref.getPreferences(MyPreferences.pref_use_clerks)) {
-				String clerk_id = anOrder.clerk_id;
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
-								clerkHandler.getClerkName(clerk_id) + "(" + clerk_id + ")", LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-			}
-
-			textBitmap = addLineTextImage(textBitmap,
-					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-							myPref.getEmpName() + "(" + myPref.getEmpID() + ")", LINE_WIDTH, 0),
-					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-			String custName = anOrder.cust_name;
-			if (custName != null && !custName.isEmpty()) {
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
-								LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-			}
-
-			custName = anOrder.cust_id;
-			if (printPref.contains(MyPreferences.print_customer_id) && custName != null && !custName.isEmpty())
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id), custName,
-								LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-			String ordComment = anOrder.ord_comment;
-			if (ordComment != null && !ordComment.isEmpty()) {
-				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-				textBitmap = addLineTextImage(textBitmap, "Comments", PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.oneColumnLineWithLeftAlignedText(ordComment, LINE_WIDTH, 3), PRINT_TXT_SIZE + 4,
-						Align.ALIGN_LEFT);
-				// textBitmap =
-				// addLineTextImage(textBitmap,"",PRINT_TXT_SIZE,Align.ALIGN_LEFT);
-			}
-
-			textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-
-			// printer.printBitmapImage(textBitmap);
-			// port.writePort(sb.toString().getBytes(), 0,
-			// sb.toString().length());
-
-			// sb.setLength(0);
-
-			printer.printBitmapImage(textBitmap);
-			textBitmap.recycle();
-			textBitmap = null;
-
-			if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
-				boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
-
-				int m = 0;
-				for (int i = 0; i < size; i++) {
-
-					if (isRestMode) {
-						if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
-							m = i;
-							textBitmap = addLineTextImage(textBitmap,
-									textHandler.oneColumnLineWithLeftAlignedText(
-											orders.get(m).getQty() + "x " + orders.get(m).getName(), LINE_WIDTH, 1),
-									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-							for (int j = i + 1; j < size; j++) {
-								if (orders.get(j).getIsAdded().equals("1"))
-									textBitmap = addLineTextImage(textBitmap,
-											textHandler.twoColumnLineWithLeftAlignedText("- " + orders.get(j).getName(),
-													Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
-													LINE_WIDTH, 2),
-											PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-								else
-									textBitmap = addLineTextImage(textBitmap,
-											textHandler.twoColumnLineWithLeftAlignedText(
-													"- NO " + orders.get(j).getName(),
-													Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
-													LINE_WIDTH, 2),
-											PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-								if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-									i = j;
-									break;
-								}
-
-							}
-
-							textBitmap = addLineTextImage(textBitmap,
-									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-											Global.getCurrencyFormat(orders.get(m).getOverwritePrice()), LINE_WIDTH, 3),
-									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-							textBitmap = addLineTextImage(textBitmap,
-									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-											Global.getCurrencyFormat(orders.get(m).getTotal()), LINE_WIDTH, 3),
-									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-							if (printPref.contains(MyPreferences.print_descriptions)) {
-								textBitmap = addLineTextImage(textBitmap,
-										textHandler.twoColumnLineWithLeftAlignedText(
-												getString(R.string.receipt_description), "", LINE_WIDTH, 3),
-										PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-								String[] temp = textHandler.oneColumnLineWithLeftAlignedText(
-										orders.get(m).getProdDescription(), LINE_WIDTH, 5).split("\n");
-								for (String value : temp) {
-									if (!value.equals("\n"))
-										textBitmap = addLineTextImage(textBitmap, value, PRINT_TXT_SIZE,
-												Align.ALIGN_LEFT);
-								}
-								textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-							}
-
-						} else {
-							textBitmap = addLineTextImage(textBitmap,
-									textHandler.oneColumnLineWithLeftAlignedText(
-											orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH, 1),
-									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-							textBitmap = addLineTextImage(textBitmap,
-									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-											Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), LINE_WIDTH, 3),
-									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-							textBitmap = addLineTextImage(textBitmap,
-									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-											Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH, 3),
-									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-							if (printPref.contains(MyPreferences.print_descriptions)) {
-								textBitmap = addLineTextImage(textBitmap,
-										textHandler.twoColumnLineWithLeftAlignedText(
-												getString(R.string.receipt_description), "", LINE_WIDTH, 3),
-										PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-								// textBitmap =
-								// addLineTextImage(textBitmap,textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
-								// LINE_WIDTH,
-								// 5),PRINT_TXT_SIZE,Align.ALIGN_LEFT);
-
-								String[] temp = textHandler.oneColumnLineWithLeftAlignedText(
-										orders.get(i).getProdDescription(), LINE_WIDTH, 5).split("\n");
-								for (String value : temp) {
-									if (!value.equals("\n"))
-										textBitmap = addLineTextImage(textBitmap, value, PRINT_TXT_SIZE,
-												Align.ALIGN_LEFT);
-								}
-								textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-							}
-						}
-					} else {
-						textBitmap = addLineTextImage(textBitmap,
-								textHandler.oneColumnLineWithLeftAlignedText(
-										orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH, 1),
-								PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-						textBitmap = addLineTextImage(textBitmap,
-								textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-										Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), LINE_WIDTH, 3),
-								PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-						textBitmap = addLineTextImage(textBitmap,
-								textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-										Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH, 3),
-								PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-						if (printPref.contains(MyPreferences.print_descriptions)) {
-							textBitmap = addLineTextImage(textBitmap,
-									textHandler.twoColumnLineWithLeftAlignedText(
-											getString(R.string.receipt_description), "", LINE_WIDTH, 3),
-									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-							// textBitmap =
-							// addLineTextImage(textBitmap,textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
-							// LINE_WIDTH, 5),PRINT_TXT_SIZE,Align.ALIGN_LEFT);
-
-							String[] temp = textHandler
-									.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(), LINE_WIDTH, 5)
-									.split("\n");
-							for (String value : temp) {
-								if (!value.equals("\n"))
-									textBitmap = addLineTextImage(textBitmap, value, PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-							}
-							textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-						}
-					}
-
-					printer.printBitmapImage(textBitmap);
-					textBitmap.recycle();
-					textBitmap = null;
-				}
-			} else {
-				int padding = LINE_WIDTH / 4;
-				String tempor = Integer.toString(padding);
-				StringBuilder tempSB = new StringBuilder();
-				tempSB.append("%").append(tempor).append("s").append("%").append(tempor).append("s").append("%")
-						.append(tempor).append("s").append("%").append(tempor).append("s");
-
-				textBitmap = addLineTextImage(textBitmap,
-						String.format(tempSB.toString(), "Item", "Qty", "Price", "Total"), PRINT_TXT_SIZE,
-						Align.ALIGN_LEFT);
-				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-
-				for (int i = 0; i < size; i++) {
-
-					textBitmap = addLineTextImage(textBitmap,
-							orders.get(i).getName() + "-" + orders.get(i).getProdDescription(), PRINT_TXT_SIZE,
-							Align.ALIGN_LEFT);
-					textBitmap = addLineTextImage(textBitmap,
-							String.format(tempSB.toString(), "   ", orders.get(i).getQty(),
-									Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-									Global.getCurrencyFormat(orders.get(i).getTotal())),
-							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-					textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-					// sb.append(textHandler.fourColumnLineWithLeftAlignedText("
-					// ", orders.get(i).getQty(),
-					// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
-					// Global.getCurrencyFormat(orders.get(i).getTotal()),
-					// LINE_WIDTH, 3)).append("\n\n");
-
-					// printer.printBitmapImage(addLineTextImage(null,sb.toString(),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
-					// sb.setLength(0);
-
-					printer.printBitmapImage(textBitmap);
-					textBitmap.recycle();
-					textBitmap = null;
-				}
-			}
-			// printer.printBitmapImage(addLineTextImage(null,sb.toString(),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
-			// sb.setLength(0);
-			// printer.printBitmapImage(addLineTextImage(null,textHandler.lines(LINE_WIDTH),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
-
-			textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_CENTER);
-			textBitmap = addLineTextImage(textBitmap, textHandler.lines(LINE_WIDTH), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-			textBitmap = addLineTextImage(textBitmap,
-					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
-							Global.formatDoubleStrToCurrency(anOrder.ord_subtotal), LINE_WIDTH, 0),
-					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-			textBitmap = addLineTextImage(textBitmap,
-					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
-							Global.formatDoubleStrToCurrency(anOrder.ord_discount), LINE_WIDTH, 0),
-					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-			textBitmap = addLineTextImage(textBitmap,
-					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tax),
-							Global.formatDoubleStrToCurrency(anOrder.ord_taxamount), LINE_WIDTH, 0),
-					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-			int num_taxes = listOrdTaxes.size();
-			if (num_taxes > 0) {
-				for (int i = 0; i < num_taxes; i++) {
-					textBitmap = addLineTextImage(textBitmap,
-							textHandler.twoColumnLineWithLeftAlignedText(
-									listOrdTaxes.get(i).get(OrderTaxes_DB.tax_name),
-									listOrdTaxes.get(i).get(OrderTaxes_DB.tax_amount), LINE_WIDTH, 2),
-							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				}
-			}
-
-			textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-
-			String granTotal = anOrder.gran_total;
-
-			textBitmap = addLineTextImage(textBitmap,
-					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
-							Global.formatDoubleStrToCurrency(granTotal), LINE_WIDTH, 0),
-					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-			PaymentsHandler payHandler = new PaymentsHandler(activity);
-			List<String[]> payArrayList = payHandler.getPaymentForPrintingTransactions(ordID);
-			String receiptSignature = new String();
-			size = payArrayList.size();
-
-			double tempGrandTotal = Double.parseDouble(granTotal);
-			double tempAmount = 0;
-			if (size == 0) {
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-								Global.formatDoubleToCurrency(tempAmount), LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				if (type == 2) // Invoice
-				{
-					textBitmap = addLineTextImage(textBitmap,
-							textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
-									Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), LINE_WIDTH, 0),
-							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				}
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-								Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
-								Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-				printer.printBitmapImage(textBitmap);
-			} else {
-				Bitmap textBitmap2 = null;
-
-				tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
-				String _pay_type = payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
-				double tempTipAmount = formatStrToDouble(payArrayList.get(0)[2]);
-				StringBuilder tempSB = new StringBuilder();
-				textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
-						Global.formatDoubleStrToCurrency(payArrayList.get(0)[9]) + "[" + payArrayList.get(0)[1] + "]",
-						LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-				if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-					textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
-							"TransID: " + payArrayList.get(0)[4], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-					textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
-							"CC#: *" + payArrayList.get(0)[5], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				}
-				if (!payArrayList.get(0)[3].isEmpty())
-					receiptSignature = payArrayList.get(0)[3];
-
-				for (int i = 1; i < size; i++) {
-					_pay_type = payArrayList.get(i)[1].toUpperCase(Locale.getDefault()).trim();
-					tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[9]);
-					tempTipAmount = tempTipAmount + formatStrToDouble(payArrayList.get(i)[2]);
-					textBitmap2 = addLineTextImage(textBitmap2,
-							textHandler.oneColumnLineWithLeftAlignedText(
-									Global.formatDoubleStrToCurrency(payArrayList.get(i)[9]) + "["
-											+ payArrayList.get(i)[1] + "]",
-									LINE_WIDTH, 1),
-							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-					if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-						textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
-								"TransID: " + payArrayList.get(i)[4], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-						textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
-								"CC#: *" + payArrayList.get(i)[5], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-					}
-					if (!payArrayList.get(i)[3].isEmpty())
-						receiptSignature = payArrayList.get(i)[3];
-				}
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-								Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-				printer.printBitmapImage(textBitmap);
-				printer.printBitmapImage(textBitmap2);
-				textBitmap = null;
-
-				if (type == 2) // Invoice
-				{
-					textBitmap = addLineTextImage(textBitmap,
-							textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
-									Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), LINE_WIDTH, 0),
-							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-				}
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-								Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-				tempAmount = formatStrToDouble(granTotal) - tempAmount;
-				if (tempAmount > 0)
-					tempAmount = 0.00;
-
-				textBitmap = addLineTextImage(textBitmap,
-						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
-								Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), LINE_WIDTH, 0),
-						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
-
-				// printer.printBitmapImage(addLineTextImage(null,"",PRINT_TXT_SIZE+4,Align.ALIGN_LEFT));
-				// port.writePort(sb.toString().getBytes(FORMAT), 0,
-				// sb.toString().length());
-				printer.printBitmapImage(textBitmap);
-			}
-
-			// printer.printBitmapImage(addLineTextImage(null,sb.toString(),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
-
-			printer.printBitmapImage(addLineTextImage(null, " ", PRINT_TXT_SIZE + 8, Align.ALIGN_LEFT));
-
-			if (printPref.contains(MyPreferences.print_footer))
-				this.printFooter();
-
-			// printer.printBitmapImage(addLineTextImage(null,"",PRINT_TXT_SIZE+4,Align.ALIGN_LEFT));
-			// printer.printBitmapImage(addLineTextImage(null,textHandler.newLines(2),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
-			// port.writePort(textHandler.newLines(2).getBytes(FORMAT), 0,
-			// textHandler.newLines(2).length());
-
-			textBitmap = null;
-			receiptSignature = anOrder.ord_signature;
-			if (!receiptSignature.isEmpty()) {
-				this.encodedSignature = receiptSignature;
-				this.printImage(1);
-
-				textBitmap = addLineTextImage(textBitmap, "x" + textHandler.lines(LINE_WIDTH / 2), PRINT_TXT_SIZE,
-						Align.ALIGN_CENTER);
-				textBitmap = addLineTextImage(textBitmap, getString(R.string.receipt_signature), PRINT_TXT_SIZE,
-						Align.ALIGN_CENTER);
-				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
-				printer.printBitmapImage(textBitmap);
-			}
-
-			if (isFromHistory) {
-				sb.setLength(0);
-
-				textBitmap = null;
-				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_CENTER);
-				textBitmap = addLineTextImage(textBitmap, "*** Copy ***", PRINT_TXT_SIZE, Align.ALIGN_CENTER);
-				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_CENTER);
-				printer.printBitmapImage(textBitmap);
-			}
-
-			printer.feedMM(5);
-			printer.cut(true);
-
-		} catch (JAException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
 		return true;
+//		// TODO Auto-generated method stub
+//		try {
+//
+//			// port = StarIOPort.getPort(portName, portSettings, 1000,
+//			// this.activity);
+//
+//			Bitmap textBitmap = null;
+//
+//			printPref = myPref.getPrintingPreferences();
+//			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+//
+//			OrderProductsHandler handler = new OrderProductsHandler(activity);
+//			OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+//
+//			List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
+//			List<Orders> orders = handler.getPrintOrderedProducts(ordID);
+//
+//			OrdersHandler orderHandler = new OrdersHandler(activity);
+//			Order anOrder = orderHandler.getPrintedOrder(ordID);
+//			ClerksHandler clerkHandler = new ClerksHandler(activity);
+//
+//			StringBuilder sb = new StringBuilder();
+//			int size = orders.size();
+//
+//			this.printImage(0);
+//
+//			if (printPref.contains(MyPreferences.print_header))
+//				this.printHeader();
+//
+//			if (fromOnHold) {
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText("[" + getString(R.string.on_hold) + "]",
+//								anOrder.ord_HoldName, LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//			}
+//
+//			switch (type) {
+//			case 0: // Order
+//				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
+//						getString(R.string.order) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				break;
+//			case 1: // Return
+//				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
+//						getString(R.string.order) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				break;
+//			case 2: // Invoice
+//				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
+//						getString(R.string.invoice) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				break;
+//			case 3: // Estimate
+//				textBitmap = addLineTextImage(textBitmap, textHandler.twoColumnLineWithLeftAlignedText(
+//						getString(R.string.estimate) + ":", ordID, LINE_WIDTH, 0), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				break;
+//			case 5: // Sales Receipt
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", ordID,
+//								LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				break;
+//			}
+//
+//			textBitmap = addLineTextImage(textBitmap,
+//					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+//							Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 3), LINE_WIDTH, 0),
+//					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//			if (!myPref.getShiftIsOpen() || myPref.getPreferences(MyPreferences.pref_use_clerks)) {
+//				String clerk_id = anOrder.clerk_id;
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
+//								clerkHandler.getClerkName(clerk_id) + "(" + clerk_id + ")", LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//			}
+//
+//			textBitmap = addLineTextImage(textBitmap,
+//					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
+//							myPref.getEmpName() + "(" + myPref.getEmpID() + ")", LINE_WIDTH, 0),
+//					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//			String custName = anOrder.cust_name;
+//			if (custName != null && !custName.isEmpty()) {
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), custName,
+//								LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//			}
+//
+//			custName = anOrder.cust_id;
+//			if (printPref.contains(MyPreferences.print_customer_id) && custName != null && !custName.isEmpty())
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer_id), custName,
+//								LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//			String ordComment = anOrder.ord_comment;
+//			if (ordComment != null && !ordComment.isEmpty()) {
+//				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//				textBitmap = addLineTextImage(textBitmap, "Comments", PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.oneColumnLineWithLeftAlignedText(ordComment, LINE_WIDTH, 3), PRINT_TXT_SIZE + 4,
+//						Align.ALIGN_LEFT);
+//				// textBitmap =
+//				// addLineTextImage(textBitmap,"",PRINT_TXT_SIZE,Align.ALIGN_LEFT);
+//			}
+//
+//			textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//
+//			// printer.printBitmapImage(textBitmap);
+//			// port.writePort(sb.toString().getBytes(), 0,
+//			// sb.toString().length());
+//
+//			// sb.setLength(0);
+//
+//			printer.printBitmapImage(textBitmap);
+//			textBitmap.recycle();
+//			textBitmap = null;
+//
+//			if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
+//				boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
+//
+//				int m = 0;
+//				for (int i = 0; i < size; i++) {
+//
+//					if (isRestMode) {
+//						if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
+//							m = i;
+//							textBitmap = addLineTextImage(textBitmap,
+//									textHandler.oneColumnLineWithLeftAlignedText(
+//											orders.get(m).getQty() + "x " + orders.get(m).getName(), LINE_WIDTH, 1),
+//									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//							for (int j = i + 1; j < size; j++) {
+//								if (orders.get(j).getIsAdded().equals("1"))
+//									textBitmap = addLineTextImage(textBitmap,
+//											textHandler.twoColumnLineWithLeftAlignedText("- " + orders.get(j).getName(),
+//													Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
+//													LINE_WIDTH, 2),
+//											PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//								else
+//									textBitmap = addLineTextImage(textBitmap,
+//											textHandler.twoColumnLineWithLeftAlignedText(
+//													"- NO " + orders.get(j).getName(),
+//													Global.getCurrencyFormat(orders.get(j).getOverwritePrice()),
+//													LINE_WIDTH, 2),
+//											PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//								if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
+//									i = j;
+//									break;
+//								}
+//
+//							}
+//
+//							textBitmap = addLineTextImage(textBitmap,
+//									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+//											Global.getCurrencyFormat(orders.get(m).getOverwritePrice()), LINE_WIDTH, 3),
+//									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//							textBitmap = addLineTextImage(textBitmap,
+//									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+//											Global.getCurrencyFormat(orders.get(m).getTotal()), LINE_WIDTH, 3),
+//									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//							if (printPref.contains(MyPreferences.print_descriptions)) {
+//								textBitmap = addLineTextImage(textBitmap,
+//										textHandler.twoColumnLineWithLeftAlignedText(
+//												getString(R.string.receipt_description), "", LINE_WIDTH, 3),
+//										PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//								String[] temp = textHandler.oneColumnLineWithLeftAlignedText(
+//										orders.get(m).getProdDescription(), LINE_WIDTH, 5).split("\n");
+//								for (String value : temp) {
+//									if (!value.equals("\n"))
+//										textBitmap = addLineTextImage(textBitmap, value, PRINT_TXT_SIZE,
+//												Align.ALIGN_LEFT);
+//								}
+//								textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//							}
+//
+//						} else {
+//							textBitmap = addLineTextImage(textBitmap,
+//									textHandler.oneColumnLineWithLeftAlignedText(
+//											orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH, 1),
+//									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//							textBitmap = addLineTextImage(textBitmap,
+//									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+//											Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), LINE_WIDTH, 3),
+//									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//							textBitmap = addLineTextImage(textBitmap,
+//									textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+//											Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH, 3),
+//									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//							if (printPref.contains(MyPreferences.print_descriptions)) {
+//								textBitmap = addLineTextImage(textBitmap,
+//										textHandler.twoColumnLineWithLeftAlignedText(
+//												getString(R.string.receipt_description), "", LINE_WIDTH, 3),
+//										PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//								// textBitmap =
+//								// addLineTextImage(textBitmap,textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
+//								// LINE_WIDTH,
+//								// 5),PRINT_TXT_SIZE,Align.ALIGN_LEFT);
+//
+//								String[] temp = textHandler.oneColumnLineWithLeftAlignedText(
+//										orders.get(i).getProdDescription(), LINE_WIDTH, 5).split("\n");
+//								for (String value : temp) {
+//									if (!value.equals("\n"))
+//										textBitmap = addLineTextImage(textBitmap, value, PRINT_TXT_SIZE,
+//												Align.ALIGN_LEFT);
+//								}
+//								textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//							}
+//						}
+//					} else {
+//						textBitmap = addLineTextImage(textBitmap,
+//								textHandler.oneColumnLineWithLeftAlignedText(
+//										orders.get(i).getQty() + "x " + orders.get(i).getName(), LINE_WIDTH, 1),
+//								PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//						textBitmap = addLineTextImage(textBitmap,
+//								textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+//										Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), LINE_WIDTH, 3),
+//								PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//						textBitmap = addLineTextImage(textBitmap,
+//								textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+//										Global.getCurrencyFormat(orders.get(i).getTotal()), LINE_WIDTH, 3),
+//								PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//						if (printPref.contains(MyPreferences.print_descriptions)) {
+//							textBitmap = addLineTextImage(textBitmap,
+//									textHandler.twoColumnLineWithLeftAlignedText(
+//											getString(R.string.receipt_description), "", LINE_WIDTH, 3),
+//									PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//							// textBitmap =
+//							// addLineTextImage(textBitmap,textHandler.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(),
+//							// LINE_WIDTH, 5),PRINT_TXT_SIZE,Align.ALIGN_LEFT);
+//
+//							String[] temp = textHandler
+//									.oneColumnLineWithLeftAlignedText(orders.get(i).getProdDescription(), LINE_WIDTH, 5)
+//									.split("\n");
+//							for (String value : temp) {
+//								if (!value.equals("\n"))
+//									textBitmap = addLineTextImage(textBitmap, value, PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//							}
+//							textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//						}
+//					}
+//
+//					printer.printBitmapImage(textBitmap);
+//					textBitmap.recycle();
+//					textBitmap = null;
+//				}
+//			} else {
+//				int padding = LINE_WIDTH / 4;
+//				String tempor = Integer.toString(padding);
+//				StringBuilder tempSB = new StringBuilder();
+//				tempSB.append("%").append(tempor).append("s").append("%").append(tempor).append("s").append("%")
+//						.append(tempor).append("s").append("%").append(tempor).append("s");
+//
+//				textBitmap = addLineTextImage(textBitmap,
+//						String.format(tempSB.toString(), "Item", "Qty", "Price", "Total"), PRINT_TXT_SIZE,
+//						Align.ALIGN_LEFT);
+//				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//
+//				for (int i = 0; i < size; i++) {
+//
+//					textBitmap = addLineTextImage(textBitmap,
+//							orders.get(i).getName() + "-" + orders.get(i).getProdDescription(), PRINT_TXT_SIZE,
+//							Align.ALIGN_LEFT);
+//					textBitmap = addLineTextImage(textBitmap,
+//							String.format(tempSB.toString(), "   ", orders.get(i).getQty(),
+//									Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
+//									Global.getCurrencyFormat(orders.get(i).getTotal())),
+//							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//					textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//					// sb.append(textHandler.fourColumnLineWithLeftAlignedText("
+//					// ", orders.get(i).getQty(),
+//					// Global.getCurrencyFormat(orders.get(i).getOverwritePrice()),
+//					// Global.getCurrencyFormat(orders.get(i).getTotal()),
+//					// LINE_WIDTH, 3)).append("\n\n");
+//
+//					// printer.printBitmapImage(addLineTextImage(null,sb.toString(),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
+//					// sb.setLength(0);
+//
+//					printer.printBitmapImage(textBitmap);
+//					textBitmap.recycle();
+//					textBitmap = null;
+//				}
+//			}
+//			// printer.printBitmapImage(addLineTextImage(null,sb.toString(),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
+//			// sb.setLength(0);
+//			// printer.printBitmapImage(addLineTextImage(null,textHandler.lines(LINE_WIDTH),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
+//
+//			textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_CENTER);
+//			textBitmap = addLineTextImage(textBitmap, textHandler.lines(LINE_WIDTH), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//			textBitmap = addLineTextImage(textBitmap,
+//					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
+//							Global.formatDoubleStrToCurrency(anOrder.ord_subtotal), LINE_WIDTH, 0),
+//					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//			textBitmap = addLineTextImage(textBitmap,
+//					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
+//							Global.formatDoubleStrToCurrency(anOrder.ord_discount), LINE_WIDTH, 0),
+//					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//			textBitmap = addLineTextImage(textBitmap,
+//					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tax),
+//							Global.formatDoubleStrToCurrency(anOrder.ord_taxamount), LINE_WIDTH, 0),
+//					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//			int num_taxes = listOrdTaxes.size();
+//			if (num_taxes > 0) {
+//				for (int i = 0; i < num_taxes; i++) {
+//					textBitmap = addLineTextImage(textBitmap,
+//							textHandler.twoColumnLineWithLeftAlignedText(
+//									listOrdTaxes.get(i).get(OrderTaxes_DB.tax_name),
+//									listOrdTaxes.get(i).get(OrderTaxes_DB.tax_amount), LINE_WIDTH, 2),
+//							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				}
+//			}
+//
+//			textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//
+//			String granTotal = anOrder.gran_total;
+//
+//			textBitmap = addLineTextImage(textBitmap,
+//					textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
+//							Global.formatDoubleStrToCurrency(granTotal), LINE_WIDTH, 0),
+//					PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//			PaymentsHandler payHandler = new PaymentsHandler(activity);
+//			List<String[]> payArrayList = payHandler.getPaymentForPrintingTransactions(ordID);
+//			String receiptSignature = new String();
+//			size = payArrayList.size();
+//
+//			double tempGrandTotal = Double.parseDouble(granTotal);
+//			double tempAmount = 0;
+//			if (size == 0) {
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
+//								Global.formatDoubleToCurrency(tempAmount), LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				if (type == 2) // Invoice
+//				{
+//					textBitmap = addLineTextImage(textBitmap,
+//							textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
+//									Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), LINE_WIDTH, 0),
+//							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				}
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+//								Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
+//								Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//				printer.printBitmapImage(textBitmap);
+//			} else {
+//				Bitmap textBitmap2 = null;
+//
+//				tempAmount = formatStrToDouble(payArrayList.get(0)[9]);
+//				String _pay_type = payArrayList.get(0)[1].toUpperCase(Locale.getDefault()).trim();
+//				double tempTipAmount = formatStrToDouble(payArrayList.get(0)[2]);
+//				StringBuilder tempSB = new StringBuilder();
+//				textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
+//						Global.formatDoubleStrToCurrency(payArrayList.get(0)[9]) + "[" + payArrayList.get(0)[1] + "]",
+//						LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//				if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
+//					textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
+//							"TransID: " + payArrayList.get(0)[4], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//					textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
+//							"CC#: *" + payArrayList.get(0)[5], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				}
+//				if (!payArrayList.get(0)[3].isEmpty())
+//					receiptSignature = payArrayList.get(0)[3];
+//
+//				for (int i = 1; i < size; i++) {
+//					_pay_type = payArrayList.get(i)[1].toUpperCase(Locale.getDefault()).trim();
+//					tempAmount = tempAmount + formatStrToDouble(payArrayList.get(i)[9]);
+//					tempTipAmount = tempTipAmount + formatStrToDouble(payArrayList.get(i)[2]);
+//					textBitmap2 = addLineTextImage(textBitmap2,
+//							textHandler.oneColumnLineWithLeftAlignedText(
+//									Global.formatDoubleStrToCurrency(payArrayList.get(i)[9]) + "["
+//											+ payArrayList.get(i)[1] + "]",
+//									LINE_WIDTH, 1),
+//							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//					if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
+//						textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
+//								"TransID: " + payArrayList.get(i)[4], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//						textBitmap2 = addLineTextImage(textBitmap2, textHandler.oneColumnLineWithLeftAlignedText(
+//								"CC#: *" + payArrayList.get(i)[5], LINE_WIDTH, 1), PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//					}
+//					if (!payArrayList.get(i)[3].isEmpty())
+//						receiptSignature = payArrayList.get(i)[3];
+//				}
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
+//								Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//				printer.printBitmapImage(textBitmap);
+//				printer.printBitmapImage(textBitmap2);
+//				textBitmap = null;
+//
+//				if (type == 2) // Invoice
+//				{
+//					textBitmap = addLineTextImage(textBitmap,
+//							textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
+//									Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), LINE_WIDTH, 0),
+//							PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//				}
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+//								Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//				tempAmount = formatStrToDouble(granTotal) - tempAmount;
+//				if (tempAmount > 0)
+//					tempAmount = 0.00;
+//
+//				textBitmap = addLineTextImage(textBitmap,
+//						textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
+//								Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), LINE_WIDTH, 0),
+//						PRINT_TXT_SIZE, Align.ALIGN_LEFT);
+//
+//				// printer.printBitmapImage(addLineTextImage(null,"",PRINT_TXT_SIZE+4,Align.ALIGN_LEFT));
+//				// port.writePort(sb.toString().getBytes(FORMAT), 0,
+//				// sb.toString().length());
+//				printer.printBitmapImage(textBitmap);
+//			}
+//
+//			// printer.printBitmapImage(addLineTextImage(null,sb.toString(),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
+//
+//			printer.printBitmapImage(addLineTextImage(null, " ", PRINT_TXT_SIZE + 8, Align.ALIGN_LEFT));
+//
+//			if (printPref.contains(MyPreferences.print_footer))
+//				this.printFooter();
+//
+//			// printer.printBitmapImage(addLineTextImage(null,"",PRINT_TXT_SIZE+4,Align.ALIGN_LEFT));
+//			// printer.printBitmapImage(addLineTextImage(null,textHandler.newLines(2),PRINT_TXT_SIZE,Align.ALIGN_LEFT));
+//			// port.writePort(textHandler.newLines(2).getBytes(FORMAT), 0,
+//			// textHandler.newLines(2).length());
+//
+//			textBitmap = null;
+//			receiptSignature = anOrder.ord_signature;
+//			if (!receiptSignature.isEmpty()) {
+//				this.encodedSignature = receiptSignature;
+//				this.printImage(1);
+//
+//				textBitmap = addLineTextImage(textBitmap, "x" + textHandler.lines(LINE_WIDTH / 2), PRINT_TXT_SIZE,
+//						Align.ALIGN_CENTER);
+//				textBitmap = addLineTextImage(textBitmap, getString(R.string.receipt_signature), PRINT_TXT_SIZE,
+//						Align.ALIGN_CENTER);
+//				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_LEFT);
+//				printer.printBitmapImage(textBitmap);
+//			}
+//
+//			if (isFromHistory) {
+//				sb.setLength(0);
+//
+//				textBitmap = null;
+//				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_CENTER);
+//				textBitmap = addLineTextImage(textBitmap, "*** Copy ***", PRINT_TXT_SIZE, Align.ALIGN_CENTER);
+//				textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + 4, Align.ALIGN_CENTER);
+//				printer.printBitmapImage(textBitmap);
+//			}
+//
+//			printer.feedMM(5);
+//			printer.cut(true);
+//
+//		} catch (JAException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return true;
 	}
 
 	// private double formatStrToDouble(String val)

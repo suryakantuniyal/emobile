@@ -358,7 +358,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 				if (groupTax.size() > 0) {
 					BigDecimal tempRate;
-					if (groupTax.get(0).getPrTax().equals("Tax1")) {
+					if (groupTax.get(0).getPrTax().equals("Tax1")||groupTax.get(0).getPrTax().equals("Tax2")) {
 						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax1_amount", tempRate.toPlainString());
@@ -367,7 +367,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax2_amount", tempRate.toPlainString());
-						intent.putExtra("Tax2_name", groupTax.get(0).getTaxName());
+						intent.putExtra("Tax2_name", groupTax.get(1).getTaxName());
 					} else {
 						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
@@ -377,7 +377,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax1_amount", tempRate.toPlainString());
-						intent.putExtra("Tax1_name", groupTax.get(0).getTaxName());
+						intent.putExtra("Tax1_name", groupTax.get(1).getTaxName());
 					}
 				} else {
 					BigDecimal tempRate;

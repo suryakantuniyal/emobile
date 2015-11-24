@@ -18,6 +18,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DBManager;
 import com.android.support.Global;
@@ -619,16 +620,16 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 			printPref = myPref.getPrintingPreferences();
 			PaymentsHandler payHandler = new PaymentsHandler(activity);
-			String[] payArray = payHandler.getPrintingForPaymentDetails(payID, type);
+			PaymentDetails paymentDetails = payHandler.getPrintingForPaymentDetails(payID, type);
 			StringBuilder sb = new StringBuilder();
 			boolean isCashPayment = false;
 			boolean isCheckPayment = false;
 			String constantValue = getString(R.string.receipt_change);
 			String creditCardFooting = "";
 
-			if (payArray[0].equals("Cash"))
+			if (paymentDetails.getPaymethod_name().equals("Cash"))
 				isCashPayment = true;
-			else if (payArray[0].equals("Check"))
+			else if (paymentDetails.getPaymethod_name().equals("Check"))
 				isCheckPayment = true;
 			else {
 				constantValue = getString(R.string.receipt_included_tip);
@@ -640,36 +641,36 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 			if (printPref.contains(MyPreferences.print_header))
 				this.printHeader();
 
-			sb.append("* ").append(payArray[0]).append(" Sale *\n\n\n");
+			sb.append("* ").append(paymentDetails.getPaymethod_name()).append(" Sale *\n\n\n");
 			device.write(sb.toString().getBytes(), 0, sb.toString().length());
 			sb.setLength(0);
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
 					getString(R.string.receipt_time), LINE_WIDTH, 0));
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray[1], payArray[2], LINE_WIDTH, 0))
+			sb.append(textHandler.twoColumnLineWithLeftAlignedText(paymentDetails.getPay_date(), paymentDetails.getPay_timecreated(), LINE_WIDTH, 0))
 					.append("\n\n");
 
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray[3],
+			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), paymentDetails.getCust_name(),
 					LINE_WIDTH, 0));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID, LINE_WIDTH,
 					0));
 
 			if (!isCashPayment && !isCheckPayment) {
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
-						"*" + payArray[9], LINE_WIDTH, 0));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray[8], LINE_WIDTH, 0));
+						"*" + paymentDetails.getCcnum_last4(), LINE_WIDTH, 0));
+				sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", paymentDetails.getPay_transid(), LINE_WIDTH, 0));
 			} else if (isCheckPayment) {
 				sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
-						payArray[10], LINE_WIDTH, 0));
+						paymentDetails.getPay_check(), LINE_WIDTH, 0));
 			}
 
 			sb.append(textHandler.newLines(2));
 
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-					Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0));
+					Global.formatDoubleStrToCurrency(paymentDetails.getOrd_total()), LINE_WIDTH, 0));
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-					Global.formatDoubleStrToCurrency(payArray[15]), LINE_WIDTH, 0));
+					Global.formatDoubleStrToCurrency(paymentDetails.getPay_amount()), LINE_WIDTH, 0));
 
-			String change = payArray[6];
+			String change = paymentDetails.getChange();
 
 			if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
 					&& Double.parseDouble(change) > 0)
@@ -684,8 +685,8 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 			device.write(textHandler.newLines(4).getBytes(), 0, textHandler.newLines(4).length());
 
 			if (!isCashPayment && !isCheckPayment) {
-				if (!payArray[7].isEmpty()) {
-					encodedSignature = payArray[7];
+				if (!paymentDetails.getPay_signature().isEmpty()) {
+					encodedSignature = paymentDetails.getPay_signature();
 					this.printImage(1);
 				}
 				sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");

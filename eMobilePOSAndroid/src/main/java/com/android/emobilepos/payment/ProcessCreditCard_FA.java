@@ -560,7 +560,9 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         if (walkerReader == null)
             populateCardInfo();
-
+        if (Global.isIvuLoto) {
+            Global.subtotalAmount = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        }
         payHandler = new PaymentsHandler(activity);
 
         payment = new Payment(activity);

@@ -26,6 +26,7 @@ public class PaymentDetails {
     private String Tax2_amount;
     private String Tax1_name;
     private String Tax2_name;
+    private String pay_tip;
 
     public String getPaymethod_name() {
         return paymethod_name;
@@ -201,5 +202,13 @@ public class PaymentDetails {
 
     public void setTax2_name(String tax2_name) {
         Tax2_name = tax2_name;
+    }
+
+    public String getPay_tip() {
+        return pay_tip;
+    }
+
+    public void setPay_tip(String pay_tip) {
+        this.pay_tip = pay_tip;
     }
 }

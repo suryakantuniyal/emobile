@@ -872,19 +872,11 @@ public class PaymentsHandler {
         return cursor;
     }
 
-    public List<String[]> getPaymentForPrintingTransactions(String jobID) {
+    public List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
         // SQLiteDatabase db = dbManager.openReadableDB();
 
         StringBuilder sb = new StringBuilder();
-        List<String[]> arrayList = new ArrayList<String[]>();
-
-        // sb.append("SELECT
-        // p.pay_amount,m.paymethod_name,p.pay_tip,p.pay_signature,p.pay_transid,p.ccnum_last4,p.IvuLottoDrawDate,p.IvuLottoNumber,p.IvuLottoQR
-        // FROM Payments p LEFT OUTER JOIN PayMethods m ON p.paymethod_id =
-        // m.paymethod_id " +
-        // "WHERE job_id = '");
-        //
-        // sb.append(jobID).append("'");
+        List<PaymentDetails> list = new ArrayList<PaymentDetails>();
 
         sb.append(
                 "SELECT p.pay_amount AS 'pay_amount',pm.paymethod_name AS 'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p,");
@@ -916,28 +908,28 @@ public class PaymentsHandler {
         sb.append("AND p.job_id = '").append(jobID).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-        String[] arrayVal = new String[10];
+       PaymentDetails details = new PaymentDetails();
         if (cursor.moveToFirst()) {
 
             do {
-                arrayVal[0] = cursor.getString(cursor.getColumnIndex(pay_amount));
-                arrayVal[1] = cursor.getString(cursor.getColumnIndex("paymethod_name"));
-                arrayVal[2] = cursor.getString(cursor.getColumnIndex(pay_tip));
-                arrayVal[3] = cursor.getString(cursor.getColumnIndex(pay_signature));
-                arrayVal[4] = cursor.getString(cursor.getColumnIndex(pay_transid));
-                arrayVal[5] = cursor.getString(cursor.getColumnIndex(ccnum_last4));
-                arrayVal[6] = cursor.getString(cursor.getColumnIndex(IvuLottoDrawDate));
-                arrayVal[7] = cursor.getString(cursor.getColumnIndex(IvuLottoNumber));
-                arrayVal[8] = cursor.getString(cursor.getColumnIndex(IvuLottoQR));
-                arrayVal[9] = cursor.getString(cursor.getColumnIndex(pay_dueamount));
+                details.setPay_amount(cursor.getString(cursor.getColumnIndex(pay_amount)));
+                details.setPaymethod_name(cursor.getString(cursor.getColumnIndex("paymethod_name")));
+                details.setPay_tip(cursor.getString(cursor.getColumnIndex(pay_tip)));
+                details.setPay_signature(cursor.getString(cursor.getColumnIndex(pay_signature)));
+                details.setPay_transid(cursor.getString(cursor.getColumnIndex(pay_transid)));
+                details.setCcnum_last4(cursor.getString(cursor.getColumnIndex(ccnum_last4)));
+                details.setIvuLottoDrawDate(cursor.getString(cursor.getColumnIndex(IvuLottoDrawDate)));
+                details.setIvuLottoNumber(cursor.getString(cursor.getColumnIndex(IvuLottoNumber)));
+                details.setIvuLottoQR(cursor.getString(cursor.getColumnIndex(IvuLottoQR)));
+                details.setPay_dueamount(cursor.getString(cursor.getColumnIndex(pay_dueamount)));
 
-                arrayList.add(arrayVal);
-                arrayVal = new String[10];
+                list.add(details);
+                details = new PaymentDetails();
             } while (cursor.moveToNext());
         }
         cursor.close();
         // db.close();
-        return arrayList;
+        return list;
     }
 
     public PaymentDetails getPrintingForPaymentDetails(String payID, int type) {
@@ -951,7 +943,8 @@ public class PaymentsHandler {
             sb.append(
                     "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
                             + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
-                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR' "
+                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                            + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
                             + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
                             + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
         } else if (type == 1) // Straight from main menu 'Payment'
@@ -959,7 +952,8 @@ public class PaymentsHandler {
             sb.append(
                     "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
                             + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
-                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR' "
+                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                            + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
                             + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                             + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
         }
