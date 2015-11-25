@@ -142,7 +142,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     public static TextView tvStatusMSR;
 
     private float amountToTip = 0;
-    private double amountToBePaid = 0, grandTotalAmount = 0, actualAmount = 0;
+    private double grandTotalAmount = 0, actualAmount = 0;
 
     private TextView dlogGrandTotal;
     private EMSCallBack callBack;
@@ -593,6 +593,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         payment.ref_num = reference.getText().toString();
         payment.paymethod_id = extras.getString("paymethod_id");
+        double amountToBePaid = Global
+                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         Global.amountPaid = Double.toString(amountToBePaid);
         payment.pay_dueamount = Double.toString(actualAmount - amountToBePaid);
@@ -763,6 +765,9 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         // String tempPaid =
         // Double.toString(Global.formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]",
         // "").trim()));
+        double amountToBePaid = Global
+                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+
         payment.pay_dueamount = extras.getString("amount");
         payment.pay_amount = Double.toString(amountToBePaid);
         payment.pay_name = cardInfoManager.getCardOwnerName();
@@ -926,8 +931,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		 * dialog.setContentView(dialogLayout);
 		 */
 
-        amountToBePaid = Global
-                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double amountToBePaid = Global
+                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         grandTotalAmount = amountToBePaid + amountToTip;
 
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
@@ -974,7 +979,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+                double amountToBePaid = Global
+                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = (float) (amountToBePaid * 0.1);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -986,7 +992,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+                double amountToBePaid = Global
+                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = (float) (amountToBePaid * 0.15);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -998,7 +1005,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+                double amountToBePaid = Global
+                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = (float) (amountToBePaid * 0.2);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -1010,7 +1018,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+                double amountToBePaid = Global
+                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -1022,7 +1031,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+                double amountToBePaid = Global
+                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dialog.dismiss();
@@ -1033,7 +1043,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
                     dialog.dismiss();
 
@@ -1076,6 +1085,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         TextView dlogCardType = (TextView) dialogLayout.findViewById(R.id.confirmCardType);
         TextView dlogCardExpDate = (TextView) dialogLayout.findViewById(R.id.confirmExpDate);
         TextView dlogCardNum = (TextView) dialogLayout.findViewById(R.id.confirmCardNumber);
+        double amountToBePaid = Global
+                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         grandTotalAmount = amountToBePaid;
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -1954,7 +1965,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.exactAmountBut:
-                amountToBePaid = Global
+                double amountToBePaid = Global
                         .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 grandTotalAmount = amountToBePaid + amountToTip;
                 amountPaidField.setText(amountField.getText().toString());
