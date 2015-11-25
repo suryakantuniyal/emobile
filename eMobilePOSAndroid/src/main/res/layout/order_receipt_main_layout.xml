@@ -108,14 +108,14 @@
 <!--         </ListView> -->
 
         <com.android.support.SemiClosedSlidingDrawer 
-             xmlns:android="http://schemas.android.com/apk/res/android" 
+             xmlns:android="http://schemas.android.com/apk/res/android"
     	xmlns:custom="http://schemas.android.com/apk/res-auto"
             android:id="@+id/slideDrawer"
             android:layout_width="match_parent"
             android:layout_height="@dimen/add_orders_sliding_drawer_size"
             android:layout_alignParentBottom="true"
             android:content="@+id/contentLayout"
-            android:handle="@+id/slideButton"
+            android:handle="@+id/slideButton" 
             custom:orientation="vertical"
             custom:handle="@+id/slideButton"
             custom:content="@+id/contentLayout"

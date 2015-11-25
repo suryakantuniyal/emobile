@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -74,8 +76,8 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
         fieldAmountToPay = (EditText)findViewById(R.id.fieldAmountToPay);
         fieldTotalAmount = (EditText)findViewById(R.id.fieldTotalAmount);
         
-        fieldAmountToPay.addTextChangedListener(Global.amountTextWatcher(fieldAmountToPay));
-        fieldTotalAmount.addTextChangedListener(Global.amountTextWatcher(fieldTotalAmount));
+        fieldAmountToPay.addTextChangedListener(getTextWatcher(fieldAmountToPay));
+        fieldTotalAmount.addTextChangedListener(getTextWatcher(fieldTotalAmount));
         fieldTotalAmount.setText(Global.formatDoubleToCurrency(0.00));
         fieldTotalAmount.setSelection(fieldTotalAmount.getText().toString().length());
         
@@ -96,8 +98,21 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         hasBeenCreated = true;
 	}
-	
-	
+
+	private TextWatcher getTextWatcher(final EditText editText) {
+
+		return new TextWatcher() {
+			public void afterTextChanged(Editable s) {
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				ProcessCash_FA.parseInputedCurrency(s, editText);
+			}
+		};
+	}
 	@Override
     protected void onResume() {
         

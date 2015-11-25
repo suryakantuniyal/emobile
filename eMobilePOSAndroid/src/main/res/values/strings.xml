@@ -1,10 +1,10 @@
 <resources>
 
-    <string name="app_name">eMobilePOS</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_main_menu">eMobilePOS</string>
-    <string name="main_menu_header">Sales</string>
+	<string name="app_name">eMobilePOS</string>
+	<string name="hello_world">Hello world!</string>
+	<string name="menu_settings">Settings</string>
+	<string name="title_activity_main_menu">eMobilePOS</string>
+	<string name="main_menu_header">Sales</string>
 	<string name="sales_button">No customer selected</string>
 	<string name="add_main_hint1">None</string>
 	<string name="add_main_hint2">$0.00</string>
@@ -19,9 +19,9 @@
 	<string name = "hint_search">Search</string>
 	<string name = "enter_name">Enter Name</string>
 	<string name = "last_saved">Last Saved</string>
-	
+
 	<string name = "inventory_transfer">Inventory Transfer</string>
-	
+
 	<string name = "header_title_addons">Addons</string>
 	<string name = "header_title_customers">Customers</string>
 	<string name = "header_title_method">Method</string>
@@ -31,13 +31,13 @@
 	<string name = "header_title_activate">Activate</string>
 	<string name = "header_title_balance_inquiry">Balance Inquiry</string>
 	<string name = "header_title_add_balance">Add Balance</string>
-	
-	
+
+
 	<string name = "enter_password">Enter Password</string>
 	<string name = "reenter_password">Re-enter Password</string>
 	<string name = "invalid_password">Invalid Password, Try again\u002E\u002E\u002E</string>
 	<string name = "cc_offline">CC Offline</string>
-	
+
 	<string name = "enter_price">Enter Price</string>
 	<string name = "ok">OK</string>
 	<string name = "warning_empty_products">No Products have been added, try again</string>
@@ -47,13 +47,13 @@
 	<string name = "warning_exit_now">Are you sure you want to exit?</string>
 	<string name = "warning_email_invalid">Invalid e-mail address, try again.</string>
 	<string name = "warning_ship_address_required">Shipping Address is Required\u002E\u002E\u002E</string>
-	
-	
-	
-	
+
+
+
+
 	<string name = "err_invalid_device">Device is not compatible</string>
-	
-	
+
+
 	<string name = "dlog_title_error">Error</string>
 	<string name = "dlog_msg_select_customer">Select a customer before proceeding</string>
 	<string name = "dlog_title_confirm">Confirm</string>
@@ -99,7 +99,7 @@
 	<string name = "connected">CONNECTED</string>
 	<string name = "disconnected">DISCONNECTED</string>
 	<string name = "loading">LOADING</string>
-	
+
 	<string name = "dlog_title_enter_number">Enter Number</string>
 	<string name = "dlog_title_enter_manager_password">Enter Manager Password</string>
 	<string name = "dlog_title_select_device_type">Select device type</string>
@@ -110,14 +110,14 @@
 	<string name = "dlog_title_select_destination_location">Select Destination Location</string>
 	<string name = "dlog_title_customer_display">Customer Display</string>
 	<string name = "dlog_msg_enter_data">Enter data for each line</string>
-	
+
 	<string name = "dlog_star_congifure">Configure STAR Printer</string>
 	<string name = "dlog_star_ip">IP Address</string>
 	<string name = "dlog_star_port">Port Number</string>
-	
+
 	<string name = "sales_receipt_title">Sales Receipt</string>
-	
-		<!-- Button -->
+
+	<!-- Button -->
 	<string name = "button_print">Print</string>
 	<string name = "button_pay">Pay</string>
 	<string name = "button_void">Void</string>
@@ -135,14 +135,14 @@
 	<string name = "button_ok">OK</string>
 	<string name = "button_process">Process</string>
 	<string name = "button_retry">Retry</string>
-	
-	
+
+
 	<!-- Switch on/off -->
 	<string name = "switch_on">ON</string>
 	<string name = "switch_off">OFF</string>
-	
+
 	<string name = "swipe">Swiper</string>
-	
+
 
 	<string name = "add_gratuity">Add Gratuity?</string>
 	<string name = "total_plus_tip">Total + Tip:</string>
@@ -150,15 +150,15 @@
 	<string name = "confirmation_total">Total</string>
 	<string name = "confirmation_card_number">Card #:</string>
 	<string name = "confirmation_exp_date">Exp:</string>
-	
-	
-	
-	
 
-	
-	
-	
-		<!-- Sales Main tab -->
+
+
+
+
+
+
+
+	<!-- Sales Main tab -->
 	<string name = "sales_title">Sales</string>
 	<string name = "invoices">Invoices</string>
 	<string name = "no_customer">No customer selected</string>
@@ -173,9 +173,9 @@
 	<string name = "on_hold">On Hold</string>
 	<string name = "master_counter">Master Counter</string>
 	<string name = "consignment">Consignment</string>
-	
-	
-	
+
+
+
 	<!-- Sync Main tab -->
 	<string name = "sync_title">Sync</string>
 	<string name = "sync_send">Send</string>
@@ -210,7 +210,7 @@
 	<string name = "sync_sending_wallet_order">Sending Wallet Orders\u002E\u002E\u002E</string>
 	<string name = "sync_sending_time_clock">Sending Time Clock\u002E\u002E\u002E</string>
 	<string name = "sync_sending_inventory_transfer">Sending Inventory Transfer\u002E\u002E\u002E</string>
-	
+
 	<string name = "sync_dload_address">Downloading Address\u002E\u002E\u002E</string>
 	<string name = "sync_dload_categories">Downloading Categories\u002E\u002E\u002E</string>
 	<string name = "sync_dload_cust">Downloading Customers\u002E\u002E\u002E</string>
@@ -250,7 +250,7 @@
 	<string name = "sync_dload_ordersonhold">Downloading OrdersOnHold\u002E\u002E\u002E</string>
 	<string name = "sync_dload_locations">Downloading Locations\u002E\u002E\u002E</string>
 	<string name = "sync_dload_locations_inventory">Downloading Locations Inventory\u002E\u002E\u002E</string>
-	
+
 	<string name = "sync_saving_locations_inventory">Saving Locations Inventory</string>
 	<string name = "sync_saving_locations">Saving Locations</string>
 	<string name = "sync_saving_address">Saving Address\u002E\u002E\u002E</string>
@@ -290,34 +290,34 @@
 	<string name = "sync_saving_clerks">Saving Clerks\u002E\u002E\u002E</string>
 	<string name = "sync_saving_termsandconditions">Saving TermsAndConditions\u002E\u002E\u002E</string>
 	<string name = "sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-		<!-- History Main tab -->
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- History Main tab -->
 	<string name = "hist_title">History</string>
 	<string name = "hist_transac">Transactions</string>
 	<string name = "hist_payments">Payments</string>
 	<string name = "hist_refunds">Refunds</string>
 	<string name = "hist_open_inv">Open Invoices</string>
 
-	
-	
+
+
 	<!-- Routes Main Tab -->
 	<string name = "routes_title">Routes</string>
 	<string name = "routes_but_subtitle">press to change</string>
-	
-	
-	
-	
+
+
+
+
 	<!-- Admin Main Tab -->
 	<string name = "admin_title">Settings</string>
 	<string name = "admin_gen_settings">General Settings</string>
@@ -334,11 +334,11 @@
 	<string name = "admin_quick_customer_selection">Quick Customer Selection</string>
 	<string name = "admin_require_customer">Require Customer</string>
 	<string name = "admin_use_clerks">Use Clerks</string>
-	
-	
+
+
 	<string name = "admin_acc_sett">Account Settings</string>
 	<string name = "admin_change_pass">Change Password</string>
-	
+
 	<string name = "admin_prod_set">Product Settings</string>
 	<string name = "admin_volume_pricing">Enable Volume Pricing</string>
 	<string name = "admin_allow_decimal">Allow Decimal Quantities</string>
@@ -349,7 +349,7 @@
 	<string name = "admin_default_cate">Default Category</string>
 	<string name = "admin_filter_by_cust">Filter Products by Customer</string>
 	<string name = "admin_limit_product_onhand">Limit Products On Hand</string>
-	
+
 	<string name = "admin_prit_settings">Printing Settings</string>
 	<string name = "admin_detect_periph">Redetect Peripherals</string>
 	<string name = "admin_forget_periph">Forget Peripherals</string>
@@ -358,7 +358,7 @@
 	<string name = "admin_star_info">Star Info</string>
 	<string name = "admin_print_pref">Printing Preference</string>
 	<string name = "admin_wholesale_printout">Wholesale Receipt Printout</string>
-	
+
 	<string name = "admin_other_setting">Other Settings</string>
 	<string name = "admin_map_inside">Maps Inside App</string>
 	<string name = "admin_clear_cache">Clear Images Cache</string>
@@ -370,34 +370,34 @@
 	<string name = "admin_req_pass_clockout">Require Password to Clock Out</string>
 	<string name = "admin_choose_audio_card_reader">Choose Audio Card Reader</string>
 	<string name = "admin_connect_bluetooth">Connect to Bluetooth Peripheral</string>
-	
+
 	<string name = "admin_shifts">Shifts</string>
 	<string name = "admin_close_shift">Close Shift</string>
 	<string name = "admin_open_shift">Open Shift</string>
 	<string name = "admin_expense">Expenses</string>
-	
+
 	<string name = "admin_cash_drawer">Cash Drawer</string>
 	<string name = "admin_config_drawer">Configure Cash Drawer</string>
-	
+
 	<string name = "admin_genius">Genius Settings</string>
 	<string name = "admin_config_genius">Configure Genius Peripheral</string>
-	
+
 	<string name = "admin_hardcoded_title">Hard-coded Payments Methods</string>
 	<string name = "admin_hardcoded_configure">Configure hard-coded payment methods</string>
 	<string name = "admin_paymethod_tupyx">Pay with Tupyx</string>
 	<string name = "admin_paymethod_genius">MW with Genius</string>
-	
+
 	<string name = "admin_process_payment">Process Payments</string>
 	<string name = "admin_process_live_cash">Process Cash Online</string>
 	<string name = "admin_process_live_check">Process Check Online</string>
 	<string name = "admin_process_show_tip">Show tip for Cash</string>
-	
-	
+
+
 	<!-- Audio Card Reader -->
 	<string name = "unimag_card_reader">Unimag Shuttle</string>
 	<string name = "magtek_udynamo_card_reader">Magtek uDynamo</string>
-	
-	
+
+
 	<!-- Printing Preferences menu -->
 	<string name = "PrintHeaderBlock">Header</string>
 	<string name = "PrintShipToInfoBlock">Ship To Info</string>
@@ -413,9 +413,9 @@
 	<string name = "PrintFooterBlock">Footer</string>
 	<string name = "PrintTermsAndCondBlock">Terms and Conditions</string>
 	<string name = "PrintIvuLottoQR">IvuLoto QR Code</string>
-	
-	
-	
+
+
+
 	<!-- Report Main Tab -->
 	<string name = "report_title">Report</string>
 	<string name = "report_but_title">Day Summary</string>
@@ -424,13 +424,13 @@
 	<string name = "report_methods">Method</string>
 	<string name = "report_transactions">Transactions</string>
 	<string name = "report_date_button">Date</string>
-	
-	
-	
+
+
+
 	<!-- Clocks Main Tab -->
 	<string name = "clock_title">Clock</string>
-	
-		<!-- About Main Tab -->
+
+	<!-- About Main Tab -->
 	<string name = "about_title">About</string>
 	<string name = "about_acct_num">Account Num.</string>
 	<string name = "about_employee">Employee</string>
@@ -441,13 +441,13 @@
 	<string name = "about_footer">WARNING: This program is protected by copyright law and international treaties\u002E Unauthorized reproduction 
 	    or distribution of this program may result in severe civil and criminal penalties, and will be prosecuted to the maximum 
 	    extent possible under law\u002E</string>
-	    
-	
-	
-	
-	
-	
-		<!-- Add items window -->
+
+
+
+
+
+
+	<!-- Add items window -->
 	<string name = "button_add_prod_serv">Add Products\u002FServices</string>
 	<string name = "button_none">None</string>
 	<string name = "button_grand_total">Grand Total:</string>
@@ -455,15 +455,15 @@
 	<string name = "text_tax">Tax</string>
 	<string name = "text_discount">Discount</string>
 	<string name = "button_global_tax">Global Tax</string>
-	
+
 	<string name = "button_load">Load</string>
 	<string name = "button_checkout">Checkout</string>
 	<string name = "button_template">Template</string>
 	<string name = "button_hold">Hold</string>
 	<string name = "button_details">Details</string>
 	<string name = "button_sign">Sign</string>
-	
-	
+
+
 	<!-- Catalog layout -->
 	<string name = "button_category">Category</string>
 	<string name = "catalog_title">Catalog</string>
@@ -472,8 +472,8 @@
 	<string name = "catalog_type">Type</string>
 	<string name = "catalog_upc">UPC</string>
 	<string name = "catalog_sku">SKU</string>
-	
-	
+
+
 	<!-- Catalog/Picker -->
 	<string name = "cat_picker_title">Picker</string>
 	<string name = "cat_picker_attributes">Attributes</string>
@@ -487,7 +487,7 @@
 	<string name = "cat_picker_special_tax">Special Tax</string>
 	<string name = "cat_picker_view_other_types">View Other Types</string>
 	<string name = "required_attributes_marked_red">Required attributes are in red</string>
-	
+
 	<!-- Catalog/More Product Details -->
 	<string name = "cat_details_title">Product Details</string>
 	<string name = "cat_details_info">Information</string>
@@ -501,10 +501,10 @@
 	<string name = "cat_details_sku">SKU</string>
 	<string name = "cat_details_cat_id">Category ID</string>
 	<string name = "cat_details_upc">UPC</string>
-	
-	
-	
-		<!-- History/Transaction -->
+
+
+
+	<!-- History/Transaction -->
 	<string name = "trans_tab_orders">Orders</string>
 	<string name = "trans_tab_returns">Returns</string>
 	<string name = "trans_tab_invoices">Invoices</string>
@@ -514,10 +514,10 @@
 	<string name = "trans_tab_pickup">Pick-Up</string>
 	<string name = "trans_tab_cons_invoice">Cons Invoice</string>
 	<string name = "trans_footer">Synchronized Items are Marked Green</string>
-	
-	
-	
-		<!-- History/Transaction/Details -->
+
+
+
+	<!-- History/Transaction/Details -->
 	<string name = "trans_details_title">Order Details</string>
 	<string name = "trans_details_total">Total</string>
 	<string name = "trans_details_amount_paid">Amount Paid</string>
@@ -534,18 +534,18 @@
 	<string name = "trans_details_destination">Destination</string>
 	<string name = "trans_details_date">Date</string>
 	<string name = "inventory_transfer_details">Transfer Details</string>
-	
-	
-	
+
+
+
 	<!-- History/Payments -->
 	<string name = "pay_tab_cash">Cash</string>
 	<string name = "pay_tab_check">Check</string>
 	<string name = "pay_tab_card">Card</string>
 	<string name = "pay_tab_giftcard">Gift Card</string>
 	<string name = "pay_tab_other">Other</string>
-	
-	
-		<!-- History/Payments/Details -->
+
+
+	<!-- History/Payments/Details -->
 	<string name = "pay_details_title">Payment Details</string>
 	<string name = "pay_details_infomation">Info</string>
 	<string name = "pay_details_map">Map</string>
@@ -559,20 +559,20 @@
 	<string name = "pay_details_auth_id">Auth ID</string>
 	<string name = "pay_details_trans_id">Trans ID</string>
 	<string name = "pay_details_clerk_id">Clerk ID</string>
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	<!-- History/Invoices -->
 	<string name = "open_inv_created">Created:</string>
 	<string name = "open_inv_due">Due:</string>
 	<string name = "open_inv_ship">Ship:</string>
 	<string name = "open_inv_paid">PAID</string>
-	
-	
+
+
 	<!-- History/Invoices/Details -->
 	<string name = "inv_details_title">Invoice Details</string>
 	<string name = "inv_details_info">Info</string>
@@ -586,8 +586,8 @@
 	<string name = "inv_details_shipdate">Ship Date</string>
 	<string name = "inv_details_paid">Paid</string>
 	<string name = "inv_details_items">Items</string>
-	
-	
+
+
 	<!-- Customer Selection -->
 	<string name = "cust_select_title">Customer Selection</string>
 	<string name = "cust_select_add">Add</string>
@@ -617,8 +617,8 @@
 	<string name = "cust_add_address_residential">Residential</string>
 	<string name = "cust_add_address_business">Business</string>
 	<string name = "cust_add_type">Type</string>
-	
-	
+
+
 	<!-- Process Card Payment -->
 	<string name = "card_payment_title">Card Payment</string>
 	<string name = "card_refund_title">Card Refund</string>
@@ -644,9 +644,9 @@
 	<string name = "card_information">Card Information</string>
 	<string name = "paymethod_due_amount_label">Amount Due</string>
 	<string name = "comments">Comments</string>
-	
-	
-	
+
+
+
 	<!-- Check Payment/Refund -->
 	<string name = "check_payment_title">Check Payment</string>
 	<string name = "check_refund_title">Check Refund</string>
@@ -677,10 +677,10 @@
 	<string name = "check_zipcode">Zip Code</string>
 	<string name = "check_address">Street Address</string>
 	<string name = "check_billing_information">Billing Information</string>
-	
-	
-	
-	
+
+
+
+
 	<!-- Cash Payment/Refund -->
 	<string name = "cash_payment_title">Cash Payment</string>
 	<string name = "cash_refund_title">Cash Refund</string>
@@ -695,10 +695,10 @@
 	<string name = "cash_tip_amount">Tip Amount</string>
 	<string name = "cash_exact">Exact</string>
 	<string name = "cash_tip">Tip</string>
-	
-	
-	
-	
+
+
+
+
 	<!-- Customer Choose Actions Dialog -->
 	<string name = "cust_dlog_choose_action">Choose Action</string>
 	<string name = "cust_dlog_select_cust">Select this Customer</string>
@@ -706,9 +706,9 @@
 	<string name = "cust_dlog_map">Map</string>
 	<string name = "cust_dlog_view_trans">View Transactions</string>
 	<string name = "cust_dlog_cancel">Cancel</string>
-	
-	
-	
+
+
+
 	<!-- Customer details -->
 	<string name = "cust_detail_title">Customer Info</string>
 	<string name = "cust_detail_info">Information</string>
@@ -725,12 +725,12 @@
 	<string name = "cust_detail_address">Address</string>
 	<string name = "cust_detail_bill">Billing:</string>
 	<string name = "cust_detail_ship">Shipping:</string>
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	<!-- Picker Item Dialog -->
 	<string name = "picked_dlog_modify">Modify</string>
 	<string name = "picked_dlog_remove">Remove</string>
@@ -738,9 +738,9 @@
 	<string name = "picked_dlog_override_price">Override Price</string>
 	<string name = "picked_dlog_cancel">Cancel</string>
 	<string name = "additional_info">Additional Info</string>
-	
-	
-	
+
+
+
 	<!-- Details View -->
 	<string name = "details_title">More Info</string>
 	<string name = "details_shipping">Shipping</string>
@@ -749,23 +749,23 @@
 	<string name = "details_address">Address</string>
 	<string name = "details_comments">Comments</string>
 	<string name = "details_po">PO</string>
-	
-	
+
+
 	<!-- Draw Receipt Layout -->
 	<string name = "draw_receipt_cancel">Cancel</string>
 	<string name = "draw_receipt_clear">Clear</string>
 	<string name = "draw_receipt_accept">Accept</string>
-	
-	
-	
+
+
+
 	<!-- Error Messages -->
 	<string name = "validation_failed">Validation Failed</string>
 	<string name = "card_validation_error">One or more fields are incomplete or contain invalid information\u002E\u002E\u002E</string>
 	<string name="card_overpaid_error">You can\'t over pay this transaction</string>
 	<string name = "limit_onhand">Could not add product, qty selected is invalid</string>
-	    
-	
-	
+
+
+
 	<!-- Receipt Values -->
 	<string name = "receipt_date">Date:</string>
 	<string name = "receipt_time">Time:</string>
@@ -819,20 +819,20 @@
 	<string name = "receipt_paid_previously">Paid Previously:</string>
 	<string name = "receipt_amount_collected">Amount Collected:</string>
 	<string name = "receipt_youSave">You Save :</string>
-	
-	
-	
-	
+
+
+
+
 	<string name = "payment_view_total">Total</string>
 	<string name = "payment_view_paid">Paid</string>
 	<string name = "payment_view_tip">Tip</string>
-    <string name = "payment_view_due">Due:\t\t</string>
-    
-    
-    <string name = "consignment_consign">Consign Inventory</string>
-    <string name = "consignment_pickup">Pick-up</string>
-    <string name = "consignment_history">View Inventory</string>
-    <string name = "consignment_title">Consignment</string>
+	<string name = "payment_view_due">Due:\t\t</string>
+
+
+	<string name = "consignment_consign">Consign Inventory</string>
+	<string name = "consignment_pickup">Pick-up</string>
+	<string name = "consignment_history">View Inventory</string>
+	<string name = "consignment_title">Consignment</string>
 	<string name = "consignment_summary">Summary</string>
 	<string name = "consignment_stacked">Rack</string>
 	<string name = "consignment_returned">Return</string>
@@ -844,21 +844,21 @@
 	<string name = "consignment_price">Price:</string>
 	<string name = "consignment_qty">Qty:</string>
 	<string name = "consignment_total">Total:</string>
-	
+
 	<string name = "login_select_this_employee">Select This Employee?</string>
-	
-	
-	
+
+
+
 	<string name = "clock_in_on">Clocked In On:</string>
 	<string name = "confirm_clock_out">Confirm Clock Out:</string>
 	<string name = "pick_date_time">Pick Date and Time</string>
-	
-	
+
+
 	<string name = "shift_close_shift">Close Shift</string>
 	<string name = "shift_open_shift">Open Shift</string>
 	<string name = "shift_expenses">Expenses</string>
 	<string name = "shift_title">Shift</string>
-	
+
 	<string name = "report_per_shift">Per-Shift</string>
 	<string name = "shift_details">Shift Details</string>
 	<string name = "sales_clerk">Sales Clerk</string>
@@ -868,9 +868,9 @@
 	<string name = "total_transactions_cash">Total Transactions Cash</string>
 	<string name = "total_ending_cash">Total Ending Cash</string>
 	<string name = "entered_close_amount">Entered Close Amount</string>
-	
-	
-	
+
+
+
 	<string name = "consign_details_total_sold">Total Sold</string>
 	<string name = "consign_details_total_returned">Total Returned</string>
 	<string name = "consign_details_total_dispatched">Total Dispatched</string>
@@ -887,14 +887,14 @@
 	<string name = "consign_details_credit_memo">Credit Memo</string>
 	<string name = "consign_details_total">Total</string>
 	<string name = "consign_details_id">Consignment ID</string>
-	
-	
-	
-	
+
+
+
+
 	<string name = "progress_connecting_printer">Connecting Printer\u002E\u002E\u002E</string>
-	
-	
-	
+
+
+
 	<string name = "config_administrator_settings">Admin Settings</string>
 	<string name = "config_manager_settings">Manager Settings</string>
 	<string name = "config_general_settings">General Settings</string>
@@ -912,7 +912,7 @@
 	<string name = "config_gift_card_settings">Gift Card Settings</string>
 	<string name = "config_open_cash_drawer">Open Cash Drawer</string>
 	<string name = "config_use_clerks">Use Clerks</string>
-	
+
 	<string name = "config_change_password">Change Password</string>
 	<string name = "config_configure_cash_drawer">Configure Cash Drawer</string>
 	<string name = "config_restaurant_mode">Restaurant Mode</string>
@@ -933,19 +933,19 @@
 	<string name = "config_require_shift_transactions">Require Shift For Transactions</string>
 	<string name = "config_allow_customer_creation">Allow Customer Creation</string>
 	<string name = "config_scope_bar_in_restaurant_mode">Show Scope Bar in Restaurant Mode</string>
-	
+
 	<string name = "config_display_also_redeem">Display Also Redeem</string>
 	<string name = "config_display_redeem_all">Display Redeem All</string>
 	<string name = "config_use_loyal_patron">Use Loyal Patron</string>
-	
-	
+
+
 	<string name = "config_pay_with_tupyx">Pay with Tupyx</string>
 	<string name = "config_mw_with_genius">MW with Genius</string>
 	<string name = "config_genius_peripheral">Configure Genius Peripheral</string>
 	<string name = "config_pay_with_boloro">Pay with Boloro</string>
-	
+
 	<string name = "config_customer_display">Customer Display Terminal</string>
-	
+
 	<string name = "config_default_transaction">Default Transaction</string>
 	<string name = "config_configure_home_menu">Configure Home Menu</string>
 	<string name = "config_block_price_level_change">Block Price Level Change</string>
@@ -956,7 +956,7 @@
 	<string name = "config_require_password_to_clockout">Require Password To Clock Out</string>
 	<string name = "config_maps_inside_app">Maps Inside App</string>
 	<string name = "config_enable_location_inventory">Use Location Inventory</string>
-	
+
 	<string name = "config_allow_manual_credit_card">Allow Manual Credit Card</string>
 	<string name = "config_process_check_online">Process Check Online</string>
 	<string name = "config_show_tips_for_cash">Show Tips For Cash</string>
@@ -969,7 +969,7 @@
 	<string name = "config_prefill_total_amount">Pre-fill Total Amount</string>
 	<string name = "config_use_store_and_forward">Use Store \u0026 Forward</string>
 	<string name = "config_store_and_forward_transactions">Store \u0026 Forward Transactions</string>
-	
+
 	<string name = "config_enable_printing">Enable Printing</string>
 	<string name = "config_printek_info">Printek Info</string>
 	<string name = "config_star_info">Star Info</string>
@@ -983,7 +983,7 @@
 	<string name = "config_prompt_customer_copy">Prompt print receipt copy for CC payments</string>
 	<string name = "config_print_receipt_transaction_payments">Print receipt of transaction payments</string>
 	<string name = "config_handwritten_signature">Handwritten signature</string>
-	
+
 	<string name = "config_allow_decimal_quantities">Allow Decimal Quantities</string>
 	<string name = "config_group_receipt_by_sku">Group Receipt By SKU</string>
 	<string name = "config_require_password_to_remove_void">Require Password To Remove/Void</string>
@@ -993,23 +993,23 @@
 	<string name = "config_group_in_catalog_by_name">Group In Catalog By Name</string>
 	<string name = "config_filter_products_by_customer">Filter Products By Customers</string>
 	<string name = "config_limit_products_on_hand">Limit Products On Hand</string>
-	
+
 	<string name = "config_open_shift">Open Shift</string>
 	<string name = "config_expenses">Expenses</string>
-	
+
 	<string name = "config_use_nexternal">Use Nexternal</string>
-	
+
 	<string name = "config_require_manager_pass_to_void_trans">Req. Manager Pass To Void Trans</string>
 	<string name = "config_default_country">Default Country</string>
 	<string name = "config_connect_to_bluetooth_peripheral">Connect to Bluetooth Peripheral</string>
 	<string name = "config_connect_to_usb_peripheral">Connect to USB Peripheral</string>
-	
+
 	<string name = "config_support_troubleshooting">Support Troubleshooting</string>
 	<string name = "config_force_upload">Force Upload</string>
 	<string name = "config_backup_data">Backup Data</string>
-	
-	
-	
+
+
+
 	<string name = "header_scanner">Scanner</string>
 	<string name = "header_tupyx">Tupyx</string>
 	<string name = "header_pay_with_tupyx">Pay with Tupyx</string>
@@ -1017,30 +1017,30 @@
 	<string name = "tupyx_amount_to_pay">Amount To Pay</string>
 	<string name = "tupyx_total_amount">Total Amount</string>
 	<string name = "tupyx_read_qr">Read QR</string>
-	
-	
-	
-	
+
+
+
+
 	<string name = "loyalty_points_balance">Points Balance</string>
 	<string name = "loyalty_points_sub_total">Points Subtotal</string>
 	<string name = "loyalty_points_in_use">Points in Use</string>
 	<string name = "loyalty_points_available">Points Available</string>
 	<string name = "loyalty_acumulable_points">Acumulable Points</string>
-	
+
 	<string name = "rewards_balance">Rewards Balance</string>
 	<string name = "button_pay_with_rewards">Pay With Rewards</string>
 	<string name = "label_sub_total">Subtotal</string>
-	
+
 	<string name = "activate">Activate</string>
 	<string name = "deactivate">Deactivate</string>
 	<string name = "add_balance">Add Balance</string>
 	<string name = "balance_inquiry">Balance Inquiry</string>
 	<string name = "manually_add_balance">Manually Add Balance</string>
-	
+
 	<string name = "amount">Amount</string>
 	<string name = "invoice_num">Invoice #</string>
 	<string name = "amount_to_add">Amount to Add</string>
-	
+
 	<string name = "boloro">Boloro</string>
 	<string name = "tap_and_pay">Tap and Pay</string>
 	<string name = "manual">Manual</string>
@@ -1066,26 +1066,39 @@
 	<string name = "sending_boloro_payment">Sending Payment Request\u002E\u002E\u002E</string>
 	<string name = "waiting_for_pin">Waiting for PIN from Customer\u002E\u002E\u002E</string>
 	<string name = "cancelling_transaction">Cancelling Transaction</string>
-	
-	
+
+
 	<string name = "tap_to_enter_loyalty">Tap to enter loyalty card</string>
 	<string name = "tap_to_enter_rewards">Tap to enter reward card</string>
 	<string name = "capture_front">Capture Front</string>
 	<string name = "capture_back">Capture Back</string>
 	<string name = "capture_check">Capture Check</string>
 	<string name = "dlog_msg_check_capture_invalid">Invalid Check Capture</string>
-	
-	
+
+
 	<string name = "redeem">Redeem</string>
 	<string name = "accumulable">Accumulable</string>
 	<string name = "btn_pay_with_loyalty">Pay with loyalty</string>
 	<string name = "btn_process_all">Process All</string>
-	
+
 	<string name = "loyalty">Loyalty</string>
 	<string name = "rewards">Rewards</string>
 	<string name="ivupos_packageid">ivupos</string>
 	<string name="paymentmethod_subtotal_amount">Subtotal</string>
 	<string name="privu_state">PR IVU 10.5</string>
 	<string name="privu_city">PR IVU 1</string>
+	<string name="paymethod_subtotal_amount_label">Subtotal</string>
+	<string name="paymethod_tax1_amount_label">Tax1</string>
+	<string name="paymethod_tax2_amount_label">Tax2</string>
+	<string name="processing_payment_msg">Processing Payment...</string>
+	<string name="changeLbl">Change:</string>
+	<string name="cash_invoice_lbl">Cash Invoice</string>
+	<string name="card_invoice">Card Invoice</string>
+	<string name="status_connected">Connected</string>
+	<string name="swipe_insert_card">Swipe/Insert Card...</string>
+	<string name="printing_message">Printing...</string>
+	<string name="please_wait_message">Please wait...</string>
+	<string name="ivu_control">"CONTROL: "</string>
+	<string name="adding_balance_message">Adding Balance...</string>
 
 </resources>

@@ -136,7 +136,7 @@
 
         <com.android.support.SemiClosedSlidingDrawer 
              xmlns:android="http://schemas.android.com/apk/res/android"
-    	     xmlns:custom="http://schemas.android.com/apk/res-auto"
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
             android:id="@+id/slideDrawer"
             android:layout_width="match_parent"
             android:layout_height="@dimen/add_orders_sliding_drawer_size"

@@ -1171,9 +1171,9 @@ public class GenerateXML {
 
 				serializer.startTag(empstr, "Attribute");
 
-				serializer.startTag(empstr, "ordprod_id");
-				serializer.text(value);
-				serializer.endTag(empstr, "ordprod_id");
+//				serializer.startTag(empstr, "ordprod_id");
+//				serializer.text(value);
+//				serializer.endTag(empstr, "ordprod_id");
 
 				serializer.startTag(empstr, "attribute_id");
 				serializer.text(c.getString(c.getColumnIndex("attribute_id")));

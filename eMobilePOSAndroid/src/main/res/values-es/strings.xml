@@ -538,8 +538,9 @@
 	<string name = "receipt_sale">Venta</string>
 	<string name = "receipt_change">Cambio:</string>
 	<string name = "receipt_included_tip">Prop\u002E Incl\u002E:</string>
-	<string name="paymentmethod_subtotal_amount">Subtotal</string>
-	<string name="privu_state">PR IVU 10.5</string>
-
-
+	
+	
+	
+	
+	
 </resources>

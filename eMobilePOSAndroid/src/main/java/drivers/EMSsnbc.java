@@ -23,6 +23,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DBManager;
 import com.android.support.Global;
@@ -582,18 +583,18 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 		printPref = myPref.getPrintingPreferences();
 
 		PaymentsHandler payHandler = new PaymentsHandler(activity);
-		String[] payArray = null;
+		PaymentDetails paymentDetails;
 		boolean isStoredFwd = false;
 		long pay_count = payHandler.paymentExist(payID);
 		if(pay_count == 0)
 		{
 			isStoredFwd = true;
 			StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
-			payArray = dbStoredPay.getPrintingForPaymentDetails(payID, type);
+			paymentDetails = dbStoredPay.getPrintingForPaymentDetails(payID, type);
 		}
 		else
 		{
-			payArray = payHandler.getPrintingForPaymentDetails(payID, type);
+			paymentDetails = payHandler.getPrintingForPaymentDetails(payID, type);
 		}
 		
 		StringBuilder sb = new StringBuilder();
@@ -602,9 +603,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 		String constantValue = null;
 		String creditCardFooting = "";
 
-		if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CASH"))
+		if (paymentDetails.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
 			isCashPayment = true;
-		else if (payArray[0].toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
+		else if (paymentDetails.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
 			isCheckPayment = true;
 		else {
 			constantValue = getString(R.string.receipt_included_tip);
@@ -616,8 +617,8 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 		if(printPref.contains(MyPreferences.print_header))
 			this.printHeader();
 		
-		sb.append("* ").append(payArray[0]);
-		if(payArray[11].equals("1"))
+		sb.append("* ").append(paymentDetails.getPaymethod_name());
+		if(paymentDetails.getIs_refund().equals("1"))
 			sb.append(" Refund *\n\n\n");
 		else
 			sb.append(" Sale *\n\n\n");
@@ -625,31 +626,31 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 		this.printString(textHandler.centeredString(sb.toString(), LINE_WIDTH));
 		sb.setLength(0);
 		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date), getString(R.string.receipt_time), LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray[1], payArray[2], LINE_WIDTH, 0)).append("\n\n");
+		sb.append(textHandler.twoColumnLineWithLeftAlignedText(paymentDetails.getPay_date(), paymentDetails.getPay_timecreated(), LINE_WIDTH, 0)).append("\n\n");
 
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray[3], LINE_WIDTH, 0));
+		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),paymentDetails.getCust_name(), LINE_WIDTH, 0));
 		
-		if(payArray[17]!=null&&!payArray[17].isEmpty())
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id), payArray[17], LINE_WIDTH, 0));
-		else if(payArray[16]!=null&&!payArray[16].isEmpty())
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref), payArray[16], LINE_WIDTH, 0));
+		if(paymentDetails.getJob_id()!=null&&!paymentDetails.getJob_id().isEmpty())
+			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id), paymentDetails.getJob_id(), LINE_WIDTH, 0));
+		else if(paymentDetails.getInv_id()!=null&&!paymentDetails.getInv_id().isEmpty())
+			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref), paymentDetails.getInv_id(), LINE_WIDTH, 0));
 		
 		if(!isStoredFwd)
 			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID, LINE_WIDTH, 0));
 
 		if (!isCashPayment && !isCheckPayment) {
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum), "*" + payArray[9], LINE_WIDTH, 0));
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray[8], LINE_WIDTH, 0));
+			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum), "*" + paymentDetails.getCcnum_last4(), LINE_WIDTH, 0));
+			sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", paymentDetails.getPay_transid(), LINE_WIDTH, 0));
 		} else if (isCheckPayment) {
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum), payArray[10], LINE_WIDTH, 0));
+			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum), paymentDetails.getPay_check(), LINE_WIDTH, 0));
 		}
 
 		sb.append(textHandler.newLines(2));
 
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total), Global.formatDoubleStrToCurrency(payArray[4]), LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid), Global.formatDoubleStrToCurrency(payArray[15]), LINE_WIDTH, 0));
+		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total), Global.formatDoubleStrToCurrency(paymentDetails.getOrd_total()), LINE_WIDTH, 0));
+		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid), Global.formatDoubleStrToCurrency(paymentDetails.getPay_amount()), LINE_WIDTH, 0));
 
-		String change = payArray[6];
+		String change = paymentDetails.getChange();
 		double tempChange = 0;
 		try
 		{
@@ -680,8 +681,8 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 			{
 				sb.append(textHandler.newLines(4));
 			}
-			else if (!payArray[7].isEmpty()) {
-				encodedSignature = payArray[7];
+			else if (!paymentDetails.getPay_signature().isEmpty()) {
+				encodedSignature = paymentDetails.getPay_signature();
 				this.printImage(1);
 			}
 			sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
@@ -699,18 +700,18 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 			if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
 				this.printString("\n");
 				this.printString(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-				this.printString(textHandler.centeredString("IVULOTO: " + payArray[13], LINE_WIDTH));
-				this.printString(textHandler.centeredString(payArray[12], LINE_WIDTH));
+				this.printString(textHandler.centeredString("CONTROL: " + paymentDetails.getIvuLottoNumber(), LINE_WIDTH));
+//				this.printString(textHandler.centeredString(payArray[12], LINE_WIDTH));
 				this.printString(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
 				this.printString("\n");
 			} else {
-				encodedQRCode = payArray[14];
+//				encodedQRCode = payArray[14];
 
-				this.printImage(2);
+//				this.printImage(2);
 
 				sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
-				sb.append("\t").append("IVULOTO: ").append(payArray[13]).append("\n");
-				sb.append(payArray[12]).append("\n");
+				sb.append("\t").append("CONTROL: ").append(paymentDetails.getIvuLottoNumber()).append("\n");
+//				sb.append(payArray[12]).append("\n");
 				sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
 
 				this.printString(sb.toString());

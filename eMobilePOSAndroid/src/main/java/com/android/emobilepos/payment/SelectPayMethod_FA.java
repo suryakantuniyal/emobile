@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap.CompressFormat;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +38,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.ivu.MersenneTwisterFast;
@@ -48,6 +50,7 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -86,7 +89,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	private Global global;
 	private boolean hasBeenCreated = false;
 	private boolean isFromMainMenu = false; // It was called from the main menu
-											// (display no Invoice#)
+	// (display no Invoice#)
 	private int typeOfProcedure = 0;
 
 	private double overAllRemainingBalance = 0.00;
@@ -101,6 +104,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	private DisplayImageOptions options;
 	private int totalPayCount = 0;
 	private String order_email = "";
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -156,26 +160,24 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			setResult(-1);
 
 			if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-				showPaymentSuccessDlog(true, true, "0");
+				showPaymentSuccessDlog(true);
 			} else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-				showPaymentSuccessDlog(true, true, "0");
+				showPaymentSuccessDlog(true);
 			}
 		}
 
 		if (myPref.isSam4s(true, true)) {
-			StringBuilder sb = new StringBuilder();
 			String row1 = "Grand Total";
-			String row2 = sb.append(Global.formatDoubleStrToCurrency(total)).toString();
+			String row2 = Global.formatDoubleStrToCurrency(total);
 			uart uart_tool = new uart();
 			uart_tool.config(3, 9600, 8, 1);
 			uart_tool.write(3, Global.emptySpaces(40, 0, false));
 			uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
 		} else if (myPref.isPAT100(true, true)) {
-			StringBuilder sb = new StringBuilder();
 			String row1 = "Grand Total";
-			String row2 = sb.append(Global.formatDoubleStrToCurrency(total)).toString();
+			String row2 = Global.formatDoubleStrToCurrency(total);
 			EMSPAT100.getTerminalDisp().clearText();
-			EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
+			EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
 		}
 
 		if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()
@@ -190,6 +192,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				i++;
 			}
 		}
+
 	}
 
 	@Override
@@ -239,7 +242,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				Button voidBut = (Button) dialog.findViewById(R.id.voidBut);
 				Button notVoid = (Button) dialog.findViewById(R.id.notVoidBut);
 
-				voidBut.setOnClickListener(new View.OnClickListener() {
+				voidBut.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
@@ -254,7 +257,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						}
 					}
 				});
-				notVoid.setOnClickListener(new View.OnClickListener() {
+				notVoid.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
@@ -295,8 +298,8 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		int requestCode = 0;
 		boolean isReceipt = false;
 
-		String drawDate = new String();
-		String ivuLottoNum = new String();
+		String drawDate = "";
+		String ivuLottoNum = "";
 
 		if (Global.isIvuLoto) {
 			DrawInfoHandler drawDateInfo = new DrawInfoHandler(activity);
@@ -351,31 +354,30 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				double subtotal = Double.parseDouble(extras.getString("ord_subtotal"));
 				String taxID = extras.getString("ord_taxID");
 
-				TaxesHandler taxHandler = new TaxesHandler(activity);
-				List<String[]> groupTax = taxHandler.getGroupTaxRate(taxID);
+				List<GroupTax> groupTax = TaxesHandler.getGroupTaxRate(taxID);
 
 				if (groupTax.size() > 0) {
 					BigDecimal tempRate;
-					if (groupTax.get(0)[2].equals("Tax1")) {
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0)[1])).setScale(2,
+					if (groupTax.get(0).getPrTax().equals("Tax1")||groupTax.get(0).getPrTax().equals("Tax2")) {
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax1_amount", tempRate.toPlainString());
-						intent.putExtra("Tax1_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax1_name", groupTax.get(0).getTaxName());
 
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1)[1])).setScale(2,
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax2_amount", tempRate.toPlainString());
-						intent.putExtra("Tax2_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax2_name", groupTax.get(1).getTaxName());
 					} else {
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0)[1])).setScale(2,
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(0).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax2_amount", tempRate.toPlainString());
-						intent.putExtra("Tax2_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax2_name", groupTax.get(0).getTaxName());
 
-						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1)[1])).setScale(2,
+						tempRate = new BigDecimal(subtotal * Double.parseDouble(groupTax.get(1).getTaxRate())).setScale(2,
 								BigDecimal.ROUND_UP);
 						intent.putExtra("Tax1_amount", tempRate.toPlainString());
-						intent.putExtra("Tax1_name", groupTax.get(0)[0]);
+						intent.putExtra("Tax1_name", groupTax.get(1).getTaxName());
 					}
 				} else {
 					BigDecimal tempRate;
@@ -416,6 +418,16 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		startActivityForResult(intent, requestCode);
 	}
 
+	@Override
+	public void onStart() {
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
+
 	private class CardsListAdapter extends BaseAdapter implements Filterable {
 		private Context context;
 		private LayoutInflater myInflater;
@@ -434,56 +446,58 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			ViewHolder holder;
 			int type = getItemViewType(position);
-			int iconId = 0;
+			int iconId;
 
 			if (convertView == null) {
 
 				holder = new ViewHolder();
 				switch (type) {
-				case 0:// dividers layout
-					convertView = myInflater.inflate(R.layout.card_listrow1_adapter, null);
+					case 0:// dividers layout
+						convertView = myInflater.inflate(R.layout.card_listrow1_adapter, null);
 
-					holder.totalView = (TextView) convertView.findViewById(R.id.totalValue);
-					holder.paidView = (TextView) convertView.findViewById(R.id.paidValue);
-					holder.tipView = (TextView) convertView.findViewById(R.id.tipValue);
-					holder.dueView = (TextView) convertView.findViewById(R.id.dueValue);
+						holder.totalView = (TextView) convertView.findViewById(R.id.totalValue);
+						holder.paidView = (TextView) convertView.findViewById(R.id.paidValue);
+						holder.tipView = (TextView) convertView.findViewById(R.id.tipValue);
+						holder.dueView = (TextView) convertView.findViewById(R.id.dueValue);
 
-					holder.totalView
-							.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(total))));
-					holder.paidView
-							.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(paid))));
-					holder.dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
-					holder.tipView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tipPaidAmount)));
+						holder.totalView
+								.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(total))));
+						holder.paidView
+								.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(paid))));
+						holder.dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
+						holder.tipView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tipPaidAmount)));
 
-					break;
-				case 1:
-					convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
+						break;
+					case 1:
+						convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
 
-					holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
-					holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
-					String key = payType.get(position - 1)[2];
-					String name = payType.get(position - 1)[1];
-					String img_url = payType.get(position - 1)[3];
+						holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
+						holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
+						String key = payType.get(position - 1)[2];
+						String name = payType.get(position - 1)[1];
+						String img_url = payType.get(position - 1)[3];
 
-					if (img_url.isEmpty()) {
-						String iconName = Global.paymentIconsMap.get(key);
-						if (iconName == null)
-							iconId = R.drawable.debit;// context.getResources().getIdentifier("debit", "drawable", context.getString(R.string.pkg_name));
-						else
-							iconId = context.getResources().getIdentifier(iconName, "drawable",
-									context.getPackageName());
+						if (img_url.isEmpty()) {
+							String iconName = Global.paymentIconsMap.get(key);
+							if (iconName == null)
+								iconId = R.drawable.debit;// context.getResources().getIdentifier("debit", "drawable", context.getString(R.string.pkg_name));
+							else
+								iconId = context.getResources().getIdentifier(iconName, "drawable",
+										context.getPackageName());
 
-						holder.ivPayIcon.setImageResource(iconId);
-					} else {
-						imageLoader.displayImage(img_url, holder.ivPayIcon, options);
-					}
-					holder.textLine2.setTag(name);
-					holder.textLine2.setText(name);
+							holder.ivPayIcon.setImageResource(iconId);
+						} else {
+							imageLoader.displayImage(img_url, holder.ivPayIcon, options);
+						}
+						holder.textLine2.setTag(name);
+						holder.textLine2.setText(name);
 
-					break;
+						break;
 				}
 
-				convertView.setTag(holder);
+				if (convertView != null) {
+					convertView.setTag(holder);
+				}
 
 			} else {
 				holder = (ViewHolder) convertView.getTag();
@@ -494,9 +508,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 							.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(paid))));
 					holder.dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
 					holder.tipView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tipPaidAmount)));
-				}
-
-				else {
+				} else {
 					String key = payType.get(position - 1)[2];
 					String name = payType.get(position - 1)[1];
 					String img_url = payType.get(position - 1)[3];
@@ -592,7 +604,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		btnYes.setText(R.string.button_yes);
 		btnNo.setText(R.string.button_no);
 
-		btnYes.setOnClickListener(new View.OnClickListener() {
+		btnYes.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -602,7 +614,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			}
 		});
-		btnNo.setOnClickListener(new View.OnClickListener() {
+		btnNo.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -622,6 +634,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 		@Override
 		protected void onPreExecute() {
+			Global.mainPrinterManager.currentDevice.loadScanner(null);
 			myProgressDialog = new ProgressDialog(activity);
 			myProgressDialog.setMessage("Printing...");
 			myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -633,7 +646,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		@Override
 		protected String doInBackground(Boolean... params) {
 			// TODO Auto-generated method stub
-			Global.mainPrinterManager.currentDevice.loadScanner(null);
+
 			wasReprint = params[0];
 			if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
 				if (isFromMainMenu || extras.getBoolean("histinvoices"))
@@ -675,7 +688,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 		Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
 		btnOk.setText(R.string.button_ok);
-		btnOk.setOnClickListener(new View.OnClickListener() {
+		btnOk.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -734,10 +747,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
 
 		// private String[]returnedPost;
-		boolean wasProcessed = false;
 		HashMap<String, String> parsedMap = new HashMap<String, String>();
-		private String errorMsg = "Could not process the payment.";
-		private int errCount = 0;
 
 		@Override
 		protected void onPreExecute() {
@@ -759,7 +769,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			Post post = new Post();
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-			String xml = "";
+			String xml;
 			InputSource inSource;
 			SAXParser sp;
 			XMLReader xr;
@@ -767,7 +777,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			try {
 				sp = spf.newSAXParser();
 				xr = sp.getXMLReader();
-				String paymentType = "";
+				String paymentType;
 				for (int i = 0; i < size; i++) {
 					paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
 					if (paymentType.equals("GIFTCARD")) {
@@ -783,8 +793,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						if (parsedMap != null && parsedMap.size() > 0
 								&& parsedMap.get("epayStatusCode").equals("APPROVED"))
 							payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-						else
-							errCount++;
+
 						parsedMap.clear();
 					} else if (paymentType.equals("CASH")) {
 
@@ -803,17 +812,15 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						if (parsedMap != null && parsedMap.size() > 0
 								&& parsedMap.get("epayStatusCode").equals("APPROVED"))
 							payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-						else
-							errCount++;
 
 						parsedMap.clear();
 					}
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage())
-						.append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
+//				StringBuilder sb = new StringBuilder();
+//				sb.append(e.getMessage())
+//						.append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
 //				Tracker tracker = EasyTracker.getInstance(activity);
 //				tracker.send(MapBuilder.createException(sb.toString(), false).build());
@@ -836,14 +843,14 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		super.onActivityResult(requestCode, resultCode, data);
 		myListview.setSelection(0);
 		myListview.setSelected(false);
-		
+
 		myAdapter.notifyDataSetChanged();
 		if (resultCode == -1) {
 			if (requestCode == Global.FROM_OPEN_INVOICES)
 				setResult(Global.FROM_PAYMENT);
 			else
 				setResult(-1);
-			showPaymentSuccessDlog(true, false, null);
+			showPaymentSuccessDlog(true);
 		} else if (resultCode == -2) {
 			totalPayCount++;
 			OrdersHandler handler = new OrdersHandler(activity);
@@ -877,13 +884,11 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				String temp = Global.formatDoubleStrToCurrency("0.00");
 
 				if (isFromMainMenu || extras.getBoolean("histinvoices"))
-					showPaymentSuccessDlog(true, true, temp);
+					showPaymentSuccessDlog(true);
 				else
-					showPaymentSuccessDlog(false, true, temp);
+					showPaymentSuccessDlog(false);
 
-			}
-
-			else {
+			} else {
 				if (job_id != null && !job_id.isEmpty()) {
 					// OrdersHandler handler = new OrdersHandler(activity);
 					handler.updateIsProcessed(job_id, "1");
@@ -891,7 +896,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 				String temp = Global.formatDoubleStrToCurrency(Double.toString(overAllRemainingBalance));
 				previous_pay_id = pay_id;
-				showPaymentSuccessDlog(true, true, temp);
+				showPaymentSuccessDlog(true);
 			}
 		}
 	}
@@ -919,7 +924,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		dlog.show();
 	}
 
-	private void showPaymentSuccessDlog(final boolean withPrintRequest, boolean showRefund, String amount) {
+	private void showPaymentSuccessDlog(final boolean withPrintRequest) {
 
 		dlog = new Dialog(activity, R.style.Theme_TransparentTest);
 		dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -933,7 +938,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 		Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
 		btnOk.setText(R.string.button_ok);
-		btnOk.setOnClickListener(new View.OnClickListener() {
+		btnOk.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -942,8 +947,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 				if (withPrintRequest) {
 					if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
 						processInquiry(true);
-					} else
-						if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
+					} else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
 						processInquiry(false);
 					} else {
 						if (myPref.getPreferences(MyPreferences.pref_enable_printing)
@@ -1056,7 +1060,6 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			new processLoyaltyAsync().execute();
 		} else {
-			BigDecimal bdTotal = new BigDecimal(total);
 			BigDecimal bdOrigAmount = new BigDecimal(cardInfoManager.getOriginalTotalAmount());
 
 			if (Global.rewardChargeAmount.compareTo(new BigDecimal("0")) == 1)
@@ -1136,10 +1139,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 						 */
 
 					} else if (parsedMap != null && parsedMap.size() > 0) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("statusCode = ").append(parsedMap.get("statusCode")).append("\n");
-						sb.append(parsedMap.get("statusMessage"));
-						errorMsg = sb.toString();
+						errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
 					} else
 						errorMsg = xml;
 				}
@@ -1158,11 +1158,9 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			if (wasProcessed) // payment processing succeeded
 			{
-				StringBuilder sb = new StringBuilder();
-				sb.append("Card was processed");
 				loyaltyRewardPayment.pay_issync = "1";
 				paymentHandlerDB.insert(loyaltyRewardPayment);
-				showBalancePrompt(sb.toString());
+				showBalancePrompt("Card was processed");
 			} else // payment processing failed
 			{
 				showBalancePrompt(errorMsg);
@@ -1215,10 +1213,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 							&& parsedMap.get("epayStatusCode").equals("APPROVED")) {
 						wasProcessed = true;
 					} else if (parsedMap != null && parsedMap.size() > 0) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("statusCode = ").append(parsedMap.get("statusCode")).append("\n");
-						sb.append(parsedMap.get("statusMessage"));
-						errorMsg = sb.toString();
+						errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
 					} else
 						errorMsg = xml;
 				}
@@ -1237,11 +1232,9 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 
 			if (wasProcessed) // payment processing succeeded
 			{
-				StringBuilder sb = new StringBuilder();
-				sb.append("Card was processed");
 				loyaltyRewardPayment.pay_issync = "1";
 				paymentHandlerDB.insert(loyaltyRewardPayment);
-				showBalancePrompt(sb.toString());
+				showBalancePrompt("Card was processed");
 			} else // payment processing failed
 			{
 				showBalancePrompt(errorMsg);
@@ -1260,7 +1253,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		viewMsg.setText(msg);
 		Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
 		btnOk.setText(R.string.button_ok);
-		btnOk.setOnClickListener(new View.OnClickListener() {
+		btnOk.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -1285,16 +1278,16 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 		Intent intent = new Intent(activity, ProcessBoloro_FA.class);
 		intent.putExtra("paymethod_id", payType.get(selectedPosition - 1)[0]);
 		switch (v.getId()) {
-		case R.id.btnDlogTop:
-			dlog.dismiss();
-			intent.putExtra("isNFC", true);
-			initIntents(extras, intent);
-			break;
-		case R.id.btnDlogBottom:
-			dlog.dismiss();
-			intent.putExtra("isNFC", false);
-			initIntents(extras, intent);
-			break;
+			case R.id.btnDlogTop:
+				dlog.dismiss();
+				intent.putExtra("isNFC", true);
+				initIntents(extras, intent);
+				break;
+			case R.id.btnDlogBottom:
+				dlog.dismiss();
+				intent.putExtra("isNFC", false);
+				initIntents(extras, intent);
+				break;
 		}
 	}
 

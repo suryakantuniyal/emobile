@@ -59,8 +59,7 @@ public class MyEditText extends EditText{
 //    	        // TODO: Hide your view as you do it in your activity
 //    	    }
 //    	    return false;
-    	    
-    	    
+
     	    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK &&isForSearching&&defaultReturnField!=null) {
     	        // Do your thing.
     	        // User has pressed Back key. So hide the keyboard
