@@ -124,13 +124,17 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
             findViewById(R.id.row1Gift).setVisibility(View.GONE);
             findViewById(R.id.row2Gift).setVisibility(View.GONE);
             findViewById(R.id.row3Gift).setVisibility(View.GONE);
+
+        }else{
+            subtotal.addTextChangedListener(getTextWatcher(subtotal));
+            tax1.addTextChangedListener(getTextWatcher(tax1));
+            tax2.addTextChangedListener(getTextWatcher(tax2));
+            ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
+
         }
 
 
-        ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
-        subtotal.addTextChangedListener(getTextWatcher(subtotal));
-        tax1.addTextChangedListener(getTextWatcher(tax1));
-        tax2.addTextChangedListener(getTextWatcher(tax2));
+
         subtotal.setText(
                 Global.formatDoubleToCurrency(0.00));
         tax1.setText(
@@ -643,7 +647,8 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
         updateViewAfterSwipe();
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
             uniMagReader.startReading();
-        } else if (magtekReader == null && Global.btSwiper == null && Global.mainPrinterManager != null)
+        } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
+                && Global.mainPrinterManager != null)
             Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
     }
 

@@ -223,12 +223,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         tax2 = (EditText) findViewById(R.id.tax2CardAmount);
         TextView tax1Lbl = (TextView) findViewById(R.id.tax1CreditCardLbl);
         tax2Lbl = (TextView) findViewById(R.id.tax2CreditCardLbl);
-        ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
-        if (!Global.isIvuLoto) {
-            findViewById(R.id.row1Credit).setVisibility(View.GONE);
-            findViewById(R.id.row2Credit).setVisibility(View.GONE);
-            findViewById(R.id.row3Credit).setVisibility(View.GONE);
-        }
+
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
         List<OrderProducts> orderProducts = global.orderProducts;
@@ -246,9 +241,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         amountField.addTextChangedListener(getTextWatcher(amountField));
         this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
-        subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
-        tax1.setOnFocusChangeListener(getFocusListener(tax1));
-        tax2.setOnFocusChangeListener(getFocusListener(tax2));
+
 
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax1.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -256,13 +249,24 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         if (!isFromMainMenu || Global.isIvuLoto) {
             amountField.setEnabled(false);
         }
+        if (!Global.isIvuLoto) {
+            findViewById(R.id.row1Credit).setVisibility(View.GONE);
+            findViewById(R.id.row2Credit).setVisibility(View.GONE);
+            findViewById(R.id.row3Credit).setVisibility(View.GONE);
 
+        }else{
+            subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
+            tax1.setOnFocusChangeListener(getFocusListener(tax1));
+            tax2.setOnFocusChangeListener(getFocusListener(tax2));
+            subtotal.addTextChangedListener(getTextWatcher(subtotal));
+            tax1.addTextChangedListener(getTextWatcher(tax1));
+            tax2.addTextChangedListener(getTextWatcher(tax2));
+            ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
+        }
         this.amountPaidField = (EditText) findViewById(R.id.processCardAmountPaid);
         this.amountPaidField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.amountPaidField.addTextChangedListener(getTextWatcher(amountPaidField));
-        subtotal.addTextChangedListener(getTextWatcher(subtotal));
-        tax1.addTextChangedListener(getTextWatcher(tax1));
-        tax2.addTextChangedListener(getTextWatcher(tax2));
+
         this.amountPaidField.setOnFocusChangeListener(getFocusListener(this.amountPaidField));
         if (myPref.getPreferences(MyPreferences.pref_prefill_total_amount))
             this.amountPaidField.setText(
