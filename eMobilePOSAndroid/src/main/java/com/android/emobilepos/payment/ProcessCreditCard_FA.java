@@ -364,6 +364,12 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             if (getCurrentFocus() != hiddenField) {
                 if (device_desc.equals("ID TECH TM3 Magstripe USB-HID Keyboard Reader"))
                     Global.isEncryptSwipe = true;
+                if (getCurrentFocus() instanceof EditText) {
+                    EditText text = (EditText) getCurrentFocus();
+                    String value = text.getText().toString();
+                    value = value.substring(0, value.length() - 1);
+                    text.setText(value);
+                }
                 hiddenField.setText("");
                 hiddenField.setFocusable(true);
                 hiddenField.requestFocus();

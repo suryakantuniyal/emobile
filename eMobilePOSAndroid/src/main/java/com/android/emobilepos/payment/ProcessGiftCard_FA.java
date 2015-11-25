@@ -323,6 +323,13 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
         String device_desc = event.getDevice().getName();
         if (device_desc.equals("Sam4s SPT-4000 USB MCR")) {
             if (getCurrentFocus() != fieldHidden) {
+
+                if (getCurrentFocus() instanceof EditText) {
+                    EditText text = (EditText) getCurrentFocus();
+                    String value = text.getText().toString();
+                    value = value.substring(0, value.length() - 1);
+                    text.setText(value);
+                }
                 fieldHidden.setText("");
                 fieldHidden.setFocusable(true);
                 fieldHidden.requestFocus();
