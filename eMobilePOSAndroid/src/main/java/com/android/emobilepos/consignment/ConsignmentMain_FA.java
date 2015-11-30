@@ -102,8 +102,8 @@ public class ConsignmentMain_FA extends FragmentActivity implements OnItemClickL
 		global.resetOrderDetailsValues();
 		global.clearListViewData();
 		Intent intent = new Intent(this,OrderingMain_FA.class);
-		intent.putExtra("option_number", 9);
-		intent.putExtra("consignmentType", 0);
+		intent.putExtra("option_number", Global.TransactionType.REFUND);
+		intent.putExtra("consignmentType", Global.OrderType.ORDER);
 		startActivity(intent);
 	}
 	
@@ -113,8 +113,8 @@ public class ConsignmentMain_FA extends FragmentActivity implements OnItemClickL
 		global.clearListViewData();
 		Intent intent = new Intent(this,OrderingMain_FA.class);
 		//Intent intent = new Intent(arg0.getContext(), SalesReceiptSplitActivity.class);
-		intent.putExtra("option_number", 9);
-		intent.putExtra("consignmentType", 3);
+		intent.putExtra("option_number", Global.TransactionType.REFUND);
+		intent.putExtra("consignmentType", Global.OrderType.CONSIGNMENT_PICKUP);
 		startActivity(intent);
 	}
 	

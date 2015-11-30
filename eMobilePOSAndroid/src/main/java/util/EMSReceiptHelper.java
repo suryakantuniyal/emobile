@@ -16,16 +16,14 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class EMSReceiptHelper {
-	private int LINE_WIDTH = 0;
-	private final String empStr = "";
-	private Activity activity;
+    private int LINE_WIDTH = 0;
+    private final String empStr = "";
+    private Activity activity;
 
-    public EMSReceiptHelper(Activity activity,int _line_width)
-    {
+    public EMSReceiptHelper(Activity activity, int _line_width) {
         LINE_WIDTH = _line_width;
         this.activity = activity;
     }
-
 
 
 //    public String getHeader(MemoText obj)
@@ -261,321 +259,281 @@ public class EMSReceiptHelper {
 //        //}
 //        return sb.toString();
 //    }
-    
-    
-    public String getEndOfDayReportReceipt(String clerk_id, String date)
-    {
-    	String mDate = Global.formatToDisplayDate(date, activity, 4);
-    	StringBuilder sb = new StringBuilder();
-    	StringBuilder sb_ord_types = new StringBuilder();
-    	
-    	OrdersHandler ordHandler = new OrdersHandler(activity);
-    	ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
-    	OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
-    	PaymentsHandler paymentHandler = new PaymentsHandler(activity);
-    	
-    	sb.append(centerText("End Of Day Report"));
-    	
-    	sb.append(twoColumn("Date",Global.formatToDisplayDate(date, activity, 1),0));
-    	sb.append(newLines(2));
-    	
-    	sb.append(centerText("Summary"));
-    	sb.append(newLines(1));
-    	
-    	BigDecimal returnAmount = new BigDecimal("0");
-    	BigDecimal salesAmount = new BigDecimal("0");
-    	BigDecimal invoiceAmount = new BigDecimal("0");
-    	
-    	sb_ord_types.append(centerText("Totals By Order Types"));
-    	List<Order> listOrder = ordHandler.getOrderDayReport(null,mDate);
-    	for(Order ord:listOrder)
-    	{
-    		switch(Integer.parseInt(ord.ord_type))
-    		{
-    		case Global.INT_RETURN:
-    			sb_ord_types.append(oneColumn("Return",0));
-    			returnAmount = new BigDecimal(ord.ord_total);
-    			break;
-    		case Global.INT_ESTIMATE:
-    			sb_ord_types.append(oneColumn("Estimate",0));
-    			break;
-    		case Global.INT_ORDER:
-    			sb_ord_types.append(oneColumn("Order",0));
-    			break;
-    		case Global.INT_SALES_RECEIPT:
-    			sb_ord_types.append(oneColumn("Sales Receipt",0));
-    			salesAmount = new BigDecimal(ord.ord_total);
-    			break;
-    		case Global.INT_INVOICE:
-    			sb_ord_types.append(oneColumn("Invoice",0));
-    			invoiceAmount = new BigDecimal(ord.ord_total);
-    			break;
-    		}
-    		
-    		sb_ord_types.append(twoColumn("SubTotal",Global.formatDoubleStrToCurrency(ord.ord_subtotal),2));
-			sb_ord_types.append(twoColumn("Discount Total",Global.formatDoubleStrToCurrency(ord.ord_discount),2));
-			sb_ord_types.append(twoColumn("Tax Total",Global.formatDoubleStrToCurrency(ord.ord_taxamount),2));
-			sb_ord_types.append(twoColumn("Net Total",Global.formatDoubleStrToCurrency(ord.ord_total),2));
-    	}
-    	
-    	listOrder.clear();
-    	
-    	
-    	sb.append(twoColumn("Return",Global.formatDoubleStrToCurrency(returnAmount.toString()),0));
-    	sb.append(twoColumn("Sales Receipt",Global.formatDoubleStrToCurrency(salesAmount.toString()),0));
-    	sb.append(twoColumn("Invoice",Global.formatDoubleStrToCurrency(invoiceAmount.toString()),0));
-    	sb.append(twoColumn("Total",Global.formatDoubleStrToCurrency(salesAmount.add(invoiceAmount).subtract(returnAmount).toString()),0));
-    	
-    	sb.append(newLines(2));
-    	
-    	List<ShiftPeriods>listShifts = shiftHandler.getShiftDayReport(null,mDate);
-    	if(listShifts.size()>0)
-    	{
-	    	sb.append(centerText("Totals By Shift"));
-	    	for(ShiftPeriods shift:listShifts)
-	    	{
-	    		sb.append(twoColumn("Sales Clerk",shift.assignee_name,0));
-	    		sb.append(twoColumn("From",Global.formatToDisplayDate(shift.startTime,activity,2),0));
-	    		sb.append(twoColumn("To",Global.formatToDisplayDate(shift.endTime,activity,2),0));
-	    		sb.append(twoColumn("Beginning Petty Cash",Global.formatDoubleStrToCurrency(shift.beginning_petty_cash),2));
-	    		sb.append(twoColumn("Total Expenses",Global.formatDoubleStrToCurrency(shift.total_expenses),2));
-	    		sb.append(twoColumn("Ending Petty Cash",Global.formatDoubleStrToCurrency(shift.ending_petty_cash),2));
-	    		sb.append(twoColumn("Total Transactions Cash",Global.formatDoubleStrToCurrency(shift.total_transaction_cash),2));
-	    		sb.append(twoColumn("Entered Close Amount",shift.entered_close_amount,2));
-	    	}
-	    	listShifts.clear();
-    	}
-    	
-    	sb.append(newLines(2));
-    	
-    	sb.append(sb_ord_types);
-    	
-    	sb.append(newLines(2));
-    	
-    	List<OrderProducts>listProd = ordProdHandler.getProductsDayReport(true, null,mDate);
-    	if(listProd.size()>0)
-    	{
-	    	sb.append(centerText("Items Sold"));
-	    	sb.append(fourColumn("Name","ID","Qty","Total",0));
-	    	
-	    	for(OrderProducts prod:listProd)
-	    	{
-	    		sb.append(fourColumn(prod.ordprod_name,prod.prod_id,prod.ordprod_qty,Global.formatDoubleStrToCurrency(prod.overwrite_price),0));
-	    	}
-	    	listProd.clear();
-    	}
-    	
-    	sb.append(newLines(2));
-    	
-    	listProd = ordProdHandler.getProductsDayReport(false, null,mDate);
-    	if(listProd.size()>0)
-    	{
-	    	sb.append(centerText("Items Returned"));
-	    	sb.append(fourColumn("Name","ID","Qty","Total",0));
-	    	for(OrderProducts prod:listProd)
-	    	{
-	    		sb.append(fourColumn(prod.ordprod_name,prod.prod_id,prod.ordprod_qty,Global.formatDoubleStrToCurrency(prod.overwrite_price),0));
-	    	}
-	    	listProd.clear();
-    	}
-    	
-    	sb.append(newLines(2));
-    	
-    	listProd = ordProdHandler.getDepartmentDayReport(true, null,mDate);
-    	if(listProd.size()>0)
-    	{
-	    	sb.append(centerText("Department Sales"));
-	    	sb.append(fourColumn("Name","ID","Qty","Total",0));
-	    	for(OrderProducts prod:listProd)
-	    	{
-	    		sb.append(fourColumn(prod.cat_name,prod.cat_id,prod.ordprod_qty,Global.formatDoubleStrToCurrency(prod.overwrite_price),0));
-	    	}
-	    	listProd.clear();
-    	}
-    	
-    	sb.append(newLines(2));
-    	
-    	listProd = ordProdHandler.getDepartmentDayReport(true, null,mDate);
-    	if(listProd.size()>0)
-    	{
-	    	sb.append(centerText("Department Returns"));
-	    	sb.append(fourColumn("Name","ID","Qty","Total",0));
-	    	for(OrderProducts prod:listProd)
-	    	{
-	    		sb.append(fourColumn(prod.cat_name,prod.cat_id,prod.ordprod_qty,Global.formatDoubleStrToCurrency(prod.overwrite_price),0));
-	    	}
-	    	listProd.clear();
-    	}
-    	
-    	sb.append(newLines(2));
-    	List<Payment>listPayments = paymentHandler.getPaymentsDayReport(0, null,mDate);
-    	if(listPayments.size()>0)
-    	{
-	    	sb.append(centerText("Payment"));
-	    	for(Payment payment:listPayments)
-	    	{
-	    		sb.append(oneColumn(payment.card_type,0));
-	    		sb.append(twoColumn("Amount",Global.formatDoubleStrToCurrency(payment.pay_amount),2));
-	    		sb.append(twoColumn("Tip",Global.formatDoubleStrToCurrency(payment.pay_tip),2));
-	    		
-	    		sb.append(oneColumn("Details",3));
-	    		sb.append(twoColumn("ID",payment.pay_id,4));
-	    		sb.append(twoColumn("Amount",Global.formatDoubleStrToCurrency(payment.pay_amount),4));
-	    		sb.append(twoColumn("Invoice",payment.job_id,4));
-	    		sb.append(newLines(1));
-	    	}
-	    	listPayments.clear();
-    	}
-    	
-    	sb.append(newLines(2));
-    	
-    	listPayments = paymentHandler.getPaymentsDayReport(1, null,mDate);
-    	if(listPayments.size()>0)
-    	{
-	    	sb.append(centerText("Void"));
-	    	for(Payment payment:listPayments)
-	    	{
-	    		sb.append(oneColumn(payment.card_type,0));
-	    		sb.append(twoColumn("Amount",Global.formatDoubleStrToCurrency(payment.pay_amount),2));
-	    		sb.append(twoColumn("Tip",Global.formatDoubleStrToCurrency(payment.pay_tip),2));
-	    		
-	    		sb.append(oneColumn("Details",3));
-	    		sb.append(twoColumn("ID",payment.pay_id,4));
-	    		sb.append(twoColumn("Amount",Global.formatDoubleStrToCurrency(payment.pay_amount),4));
-	    		sb.append(twoColumn("Invoice",payment.job_id,4));
-	    		sb.append(newLines(1));
-	    	}
-	    	listPayments.clear();
-    	}
-    	
-    	
-    	sb.append(newLines(2));
-    	
-    	listPayments = paymentHandler.getPaymentsDayReport(2, null,mDate);
-    	if(listPayments.size()>0)
-    	{
-	    	sb.append(centerText("Refund"));
-	    	for(Payment payment:listPayments)
-	    	{
-	    		sb.append(oneColumn(payment.card_type,0));
-	    		sb.append(twoColumn("Amount",Global.formatDoubleStrToCurrency(payment.pay_amount),2));
-	    		sb.append(twoColumn("Tip",Global.formatDoubleStrToCurrency(payment.pay_tip),2));
-	    		
-	    		sb.append(oneColumn("Details",3));
-	    		sb.append(twoColumn("ID",payment.pay_id,4));
-	    		sb.append(twoColumn("Amount",Global.formatDoubleStrToCurrency(payment.pay_amount),4));
-	    		sb.append(twoColumn("Invoice",payment.job_id,4));
-	    		sb.append(newLines(1));
-	    	}
-	    	listPayments.clear();
-    	}
-    	
-    	sb.append(newLines(2));
-    	
-    	listOrder = ordHandler.getARTransactionsDayReport(null,mDate);
-    	if(listOrder.size()>0)
-    	{
-	    	sb.append(centerText("A/R Transactions"));
-	    	sb.append(threeColumn("ID","Customer","Amount",0));
-	    	for(Order ord:listOrder)
-	    	{
-	    		if(ord.ord_id!=null)
-	    			sb.append(threeColumn(ord.ord_id,ord.cust_name,Global.formatDoubleStrToCurrency(ord.ord_total),0));
-	    	}
-	    	listOrder.clear();
-    	}
-    	
-    	return sb.toString();
+
+
+    public String getEndOfDayReportReceipt(String clerk_id, String date) {
+        String mDate = Global.formatToDisplayDate(date, activity, 4);
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sb_ord_types = new StringBuilder();
+
+        OrdersHandler ordHandler = new OrdersHandler(activity);
+        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
+        OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
+        PaymentsHandler paymentHandler = new PaymentsHandler(activity);
+
+        sb.append(centerText("End Of Day Report"));
+
+        sb.append(twoColumn("Date", Global.formatToDisplayDate(date, activity, 1), 0));
+        sb.append(newLines(2));
+
+        sb.append(centerText("Summary"));
+        sb.append(newLines(1));
+
+        BigDecimal returnAmount = new BigDecimal("0");
+        BigDecimal salesAmount = new BigDecimal("0");
+        BigDecimal invoiceAmount = new BigDecimal("0");
+
+        sb_ord_types.append(centerText("Totals By Order Types"));
+        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate);
+        for (Order ord : listOrder) {
+            switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
+                case RETURN:
+                    sb_ord_types.append(oneColumn("Return", 0));
+                    returnAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case ESTIMATE:
+                    sb_ord_types.append(oneColumn("Estimate", 0));
+                    break;
+                case ORDER:
+                    sb_ord_types.append(oneColumn("Order", 0));
+                    break;
+                case SALES_RECEIPT:
+                    sb_ord_types.append(oneColumn("Sales Receipt", 0));
+                    salesAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case INVOICE:
+                    sb_ord_types.append(oneColumn("Invoice", 0));
+                    invoiceAmount = new BigDecimal(ord.ord_total);
+                    break;
+            }
+
+            sb_ord_types.append(twoColumn("SubTotal", Global.formatDoubleStrToCurrency(ord.ord_subtotal), 2));
+            sb_ord_types.append(twoColumn("Discount Total", Global.formatDoubleStrToCurrency(ord.ord_discount), 2));
+            sb_ord_types.append(twoColumn("Tax Total", Global.formatDoubleStrToCurrency(ord.ord_taxamount), 2));
+            sb_ord_types.append(twoColumn("Net Total", Global.formatDoubleStrToCurrency(ord.ord_total), 2));
+        }
+
+        listOrder.clear();
+
+
+        sb.append(twoColumn("Return", Global.formatDoubleStrToCurrency(returnAmount.toString()), 0));
+        sb.append(twoColumn("Sales Receipt", Global.formatDoubleStrToCurrency(salesAmount.toString()), 0));
+        sb.append(twoColumn("Invoice", Global.formatDoubleStrToCurrency(invoiceAmount.toString()), 0));
+        sb.append(twoColumn("Total", Global.formatDoubleStrToCurrency(salesAmount.add(invoiceAmount).subtract(returnAmount).toString()), 0));
+
+        sb.append(newLines(2));
+
+        List<ShiftPeriods> listShifts = shiftHandler.getShiftDayReport(null, mDate);
+        if (listShifts.size() > 0) {
+            sb.append(centerText("Totals By Shift"));
+            for (ShiftPeriods shift : listShifts) {
+                sb.append(twoColumn("Sales Clerk", shift.assignee_name, 0));
+                sb.append(twoColumn("From", Global.formatToDisplayDate(shift.startTime, activity, 2), 0));
+                sb.append(twoColumn("To", Global.formatToDisplayDate(shift.endTime, activity, 2), 0));
+                sb.append(twoColumn("Beginning Petty Cash", Global.formatDoubleStrToCurrency(shift.beginning_petty_cash), 2));
+                sb.append(twoColumn("Total Expenses", Global.formatDoubleStrToCurrency(shift.total_expenses), 2));
+                sb.append(twoColumn("Ending Petty Cash", Global.formatDoubleStrToCurrency(shift.ending_petty_cash), 2));
+                sb.append(twoColumn("Total Transactions Cash", Global.formatDoubleStrToCurrency(shift.total_transaction_cash), 2));
+                sb.append(twoColumn("Entered Close Amount", shift.entered_close_amount, 2));
+            }
+            listShifts.clear();
+        }
+
+        sb.append(newLines(2));
+
+        sb.append(sb_ord_types);
+
+        sb.append(newLines(2));
+
+        List<OrderProducts> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
+        if (listProd.size() > 0) {
+            sb.append(centerText("Items Sold"));
+            sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
+
+            for (OrderProducts prod : listProd) {
+                sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+            }
+            listProd.clear();
+        }
+
+        sb.append(newLines(2));
+
+        listProd = ordProdHandler.getProductsDayReport(false, null, mDate);
+        if (listProd.size() > 0) {
+            sb.append(centerText("Items Returned"));
+            sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
+            for (OrderProducts prod : listProd) {
+                sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+            }
+            listProd.clear();
+        }
+
+        sb.append(newLines(2));
+
+        listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
+        if (listProd.size() > 0) {
+            sb.append(centerText("Department Sales"));
+            sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
+            for (OrderProducts prod : listProd) {
+                sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+            }
+            listProd.clear();
+        }
+
+        sb.append(newLines(2));
+
+        listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
+        if (listProd.size() > 0) {
+            sb.append(centerText("Department Returns"));
+            sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
+            for (OrderProducts prod : listProd) {
+                sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+            }
+            listProd.clear();
+        }
+
+        sb.append(newLines(2));
+        List<Payment> listPayments = paymentHandler.getPaymentsDayReport(0, null, mDate);
+        if (listPayments.size() > 0) {
+            sb.append(centerText("Payment"));
+            for (Payment payment : listPayments) {
+                sb.append(oneColumn(payment.card_type, 0));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 2));
+                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), 2));
+
+                sb.append(oneColumn("Details", 3));
+                sb.append(twoColumn("ID", payment.pay_id, 4));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 4));
+                sb.append(twoColumn("Invoice", payment.job_id, 4));
+                sb.append(newLines(1));
+            }
+            listPayments.clear();
+        }
+
+        sb.append(newLines(2));
+
+        listPayments = paymentHandler.getPaymentsDayReport(1, null, mDate);
+        if (listPayments.size() > 0) {
+            sb.append(centerText("Void"));
+            for (Payment payment : listPayments) {
+                sb.append(oneColumn(payment.card_type, 0));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 2));
+                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), 2));
+
+                sb.append(oneColumn("Details", 3));
+                sb.append(twoColumn("ID", payment.pay_id, 4));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 4));
+                sb.append(twoColumn("Invoice", payment.job_id, 4));
+                sb.append(newLines(1));
+            }
+            listPayments.clear();
+        }
+
+
+        sb.append(newLines(2));
+
+        listPayments = paymentHandler.getPaymentsDayReport(2, null, mDate);
+        if (listPayments.size() > 0) {
+            sb.append(centerText("Refund"));
+            for (Payment payment : listPayments) {
+                sb.append(oneColumn(payment.card_type, 0));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 2));
+                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), 2));
+
+                sb.append(oneColumn("Details", 3));
+                sb.append(twoColumn("ID", payment.pay_id, 4));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 4));
+                sb.append(twoColumn("Invoice", payment.job_id, 4));
+                sb.append(newLines(1));
+            }
+            listPayments.clear();
+        }
+
+        sb.append(newLines(2));
+
+        listOrder = ordHandler.getARTransactionsDayReport(null, mDate);
+        if (listOrder.size() > 0) {
+            sb.append(centerText("A/R Transactions"));
+            sb.append(threeColumn("ID", "Customer", "Amount", 0));
+            for (Order ord : listOrder) {
+                if (ord.ord_id != null)
+                    sb.append(threeColumn(ord.ord_id, ord.cust_name, Global.formatDoubleStrToCurrency(ord.ord_total), 0));
+            }
+            listOrder.clear();
+        }
+
+        return sb.toString();
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /*
      * The classes below are used to format the String for the receipt printout
-     */ 
-    public String centerText(String _data)
-    {
-    	if(_data==null)
-    		_data = empStr;
-		int theStringLength = _data.length();
-		StringBuilder sb = new StringBuilder();
+     */
+    public String centerText(String _data) {
+        if (_data == null)
+            _data = empStr;
+        int theStringLength = _data.length();
+        StringBuilder sb = new StringBuilder();
 
-		if (theStringLength < (LINE_WIDTH - 2)) {
-			try {
-				sb.append(this.spaces((LINE_WIDTH - theStringLength) / 2));
-				sb.append(_data);
-				sb.append(this.spaces((LINE_WIDTH - theStringLength) / 2));
-			} catch (Exception ex) {
-				sb.append("\n");
-			}
-		} else {
-			try {
+        if (theStringLength < (LINE_WIDTH - 2)) {
+            try {
+                sb.append(this.spaces((LINE_WIDTH - theStringLength) / 2));
+                sb.append(_data);
+                sb.append(this.spaces((LINE_WIDTH - theStringLength) / 2));
+            } catch (Exception ex) {
+                sb.append("\n");
+            }
+        } else {
+            try {
 
-				sb.append(_data.substring(0, LINE_WIDTH - 2));
-			} catch (Exception ex) {
-				sb.append("\n");
-			}
-		}
-		return sb.append("\n").toString();
+                sb.append(_data.substring(0, LINE_WIDTH - 2));
+            } catch (Exception ex) {
+                sb.append("\n");
+            }
+        }
+        return sb.append("\n").toString();
     }
 
-    private String spaces(int numSpaces)
-    {
+    private String spaces(int numSpaces) {
         StringBuilder sb = new StringBuilder();
-        if (numSpaces > 0)
-        {
-            for (int i = 0; i < numSpaces; i++)
-            {
+        if (numSpaces > 0) {
+            for (int i = 0; i < numSpaces; i++) {
                 sb.append(" ");
             }
         }
         return sb.toString();
     }
 
-    private String oneColumn(String columnText, int indent)
-    {
+    private String oneColumn(String columnText, int indent) {
 
-    	if(columnText==null)
-			columnText = empStr;
-		
-		int leftCharCount = columnText.length();
+        if (columnText == null)
+            columnText = empStr;
 
-		int numSpaces = LINE_WIDTH - leftCharCount;
-		StringBuilder sb = new StringBuilder();
+        int leftCharCount = columnText.length();
 
-		if (numSpaces > 0) {
-			sb.append(this.spaces(indent));
-			sb.append(columnText);
-		} else // line exceeds the theLineWidth
-		{
-			int maxCharCount = LINE_WIDTH - indent;
-			
-			int size = 0;
-			String [] tempArray;
-			tempArray = this.formatLongStringArray(columnText, maxCharCount);
-			size = tempArray.length;
-			for(int i = 0 ; i < size && i < 10; i++)
-			{
-				sb.append(this.spaces(indent)).append(tempArray[i]).append("\n");
-			}
-		}
+        int numSpaces = LINE_WIDTH - leftCharCount;
+        StringBuilder sb = new StringBuilder();
 
-		return sb.append("\n").toString();
+        if (numSpaces > 0) {
+            sb.append(this.spaces(indent));
+            sb.append(columnText);
+        } else // line exceeds the theLineWidth
+        {
+            int maxCharCount = LINE_WIDTH - indent;
+
+            int size = 0;
+            String[] tempArray;
+            tempArray = this.formatLongStringArray(columnText, maxCharCount);
+            size = tempArray.length;
+            for (int i = 0; i < size && i < 10; i++) {
+                sb.append(this.spaces(indent)).append(tempArray[i]).append("\n");
+            }
+        }
+
+        return sb.append("\n").toString();
     }
 
-    private String twoColumn(String first, String second, int theIndentation)
-    {
+    private String twoColumn(String first, String second, int theIndentation) {
 //    	int numSpaces = 0;
 //		
 //		if(leftText == null)
@@ -606,52 +564,42 @@ public class EMSReceiptHelper {
 //		}
 //
 //		return sb.append("\n").toString();
-    	int max_col_length = (LINE_WIDTH / 2);
-    	int length_1 = max_col_length;
-    	int length_2 = max_col_length-1;
-    	
-		if(first.length()+theIndentation>max_col_length)
-		{
-			
-			if(second.length()+theIndentation>max_col_length-1)
-			{
-				first = first.substring(0, max_col_length-3-theIndentation)+"...";
-			}
-			else
-			{
-				length_1 = first.length()+theIndentation;
-			}
-    		
-		}
-		else
-		{
-			length_1 = first.length()+theIndentation;
-		}
-		
-    	if(second.length()+theIndentation>max_col_length-1)
-    	{
-    		second = second.substring(0,max_col_length-4-theIndentation)+"...";
-    	}
-    	else
-    	{
-    		length_2 = LINE_WIDTH-length_1-1;
-    	}
-    	
-    	first = spaces(theIndentation)+first;
-    	second = spaces(theIndentation)+second;
-    	
-    	StringBuilder formater = new StringBuilder();
-    	String length1 = Integer.toString(length_1);
-    	String length2 = Integer.toString(length_2);
-    	formater.append("%-").append(length1).append("s");
-    	formater.append("%").append(length2).append("s");
-    	formater.append("%n");
-    	
-    	return String.format(formater.toString(), first,second);
+        int max_col_length = (LINE_WIDTH / 2);
+        int length_1 = max_col_length;
+        int length_2 = max_col_length - 1;
+
+        if (first.length() + theIndentation > max_col_length) {
+
+            if (second.length() + theIndentation > max_col_length - 1) {
+                first = first.substring(0, max_col_length - 3 - theIndentation) + "...";
+            } else {
+                length_1 = first.length() + theIndentation;
+            }
+
+        } else {
+            length_1 = first.length() + theIndentation;
+        }
+
+        if (second.length() + theIndentation > max_col_length - 1) {
+            second = second.substring(0, max_col_length - 4 - theIndentation) + "...";
+        } else {
+            length_2 = LINE_WIDTH - length_1 - 1;
+        }
+
+        first = spaces(theIndentation) + first;
+        second = spaces(theIndentation) + second;
+
+        StringBuilder formater = new StringBuilder();
+        String length1 = Integer.toString(length_1);
+        String length2 = Integer.toString(length_2);
+        formater.append("%-").append(length1).append("s");
+        formater.append("%").append(length2).append("s");
+        formater.append("%n");
+
+        return String.format(formater.toString(), first, second);
     }
 
-    private String threeColumn(String first, String second, String third, int theIndentation)
-    {
+    private String threeColumn(String first, String second, String third, int theIndentation) {
 //    	int numSpaces = 0;
 //		
 //		if(first == null)
@@ -687,27 +635,26 @@ public class EMSReceiptHelper {
 //		}
 //
 //		return sb.append("\n").toString();
-    	int max_col_length = (LINE_WIDTH / 3);
-		if(first.length()>max_col_length)
-    		first = first.substring(0, max_col_length-5)+"...";
-    	if(second.length()>max_col_length)
-    		second = second.substring(0,max_col_length-5)+"...";
-    	if(third.length()>max_col_length)
-    		third = third.substring(0, max_col_length-6)+"...";
-    	
-    	
-    	StringBuilder formater = new StringBuilder();
-    	String length = Integer.toString(max_col_length);
-    	String length3 = Integer.toString(max_col_length-1);
-    	formater.append("%-").append(length).append("s");
-    	formater.append("%").append(length).append("s");
-    	formater.append("%").append(length3).append("s");
-    	
-    	return String.format(formater.toString(), first,second,third)+"\n";
+        int max_col_length = (LINE_WIDTH / 3);
+        if (first.length() > max_col_length)
+            first = first.substring(0, max_col_length - 5) + "...";
+        if (second.length() > max_col_length)
+            second = second.substring(0, max_col_length - 5) + "...";
+        if (third.length() > max_col_length)
+            third = third.substring(0, max_col_length - 6) + "...";
+
+
+        StringBuilder formater = new StringBuilder();
+        String length = Integer.toString(max_col_length);
+        String length3 = Integer.toString(max_col_length - 1);
+        formater.append("%-").append(length).append("s");
+        formater.append("%").append(length).append("s");
+        formater.append("%").append(length3).append("s");
+
+        return String.format(formater.toString(), first, second, third) + "\n";
     }
 
-    private String fourColumn(String first, String second, String third, String fourth, int theIndentation)
-    {
+    private String fourColumn(String first, String second, String third, String fourth, int theIndentation) {
 //    	int numSpaces = 0;
 //		
 //		if(first == null)
@@ -813,30 +760,29 @@ public class EMSReceiptHelper {
 //		}
 //
 //		return sb.append("\n").toString();
-    	
-    	int max_col_length = LINE_WIDTH / 4;
-    	if(first.length()>max_col_length)
-    		first = first.substring(0, max_col_length-5)+"...";
-    	if(second.length()>max_col_length)
-    		second = second.substring(0,max_col_length-5)+"...";
-    	if(third.length()>max_col_length)
-    		third = third.substring(0, max_col_length-5)+"...";
-    	if(fourth.length()>max_col_length)
-    		fourth = fourth.substring(0,max_col_length-5)+"...";
-    	
-    	StringBuilder formater = new StringBuilder();
-    	
-    	String length = Integer.toString(max_col_length);
-    	formater.append("%-").append(length).append("s");
-    	formater.append("%").append(length).append("s");
-    	formater.append("%").append(length).append("s");
-    	formater.append("%").append(length).append("s");
-    	
-    	return String.format(formater.toString(), first,second,third,fourth)+"\n";
+
+        int max_col_length = LINE_WIDTH / 4;
+        if (first.length() > max_col_length)
+            first = first.substring(0, max_col_length - 5) + "...";
+        if (second.length() > max_col_length)
+            second = second.substring(0, max_col_length - 5) + "...";
+        if (third.length() > max_col_length)
+            third = third.substring(0, max_col_length - 5) + "...";
+        if (fourth.length() > max_col_length)
+            fourth = fourth.substring(0, max_col_length - 5) + "...";
+
+        StringBuilder formater = new StringBuilder();
+
+        String length = Integer.toString(max_col_length);
+        formater.append("%-").append(length).append("s");
+        formater.append("%").append(length).append("s");
+        formater.append("%").append(length).append("s");
+        formater.append("%").append(length).append("s");
+
+        return String.format(formater.toString(), first, second, third, fourth) + "\n";
     }
 
-    private String longStringFormatter(String input, int maxCharInLine)
-    {
+    private String longStringFormatter(String input, int maxCharInLine) {
         if (input == null)
             input = "";
 
@@ -844,18 +790,15 @@ public class EMSReceiptHelper {
         StringBuilder output = new StringBuilder(input.length());
         String[] words = input.split(" ");
         int lineLen = 0;
-        for (String word : words)
-        {
+        for (String word : words) {
             String temp_word = word;
-            while (word.length() > maxCharInLine)
-            {
+            while (word.length() > maxCharInLine) {
                 output.append(temp_word.substring(0, maxCharInLine - lineLen) + "\n");
                 temp_word = temp_word.substring(maxCharInLine - lineLen);
                 lineLen = 0;
             }
 
-            if (lineLen + temp_word.length() > maxCharInLine)
-            {
+            if (lineLen + temp_word.length() > maxCharInLine) {
                 output.append("\n");
                 lineLen = 0;
             }
@@ -867,37 +810,31 @@ public class EMSReceiptHelper {
         return output.toString();
     }
 
-    private String formatLongString(String input, int maxCharInLine)
-    {
+    private String formatLongString(String input, int maxCharInLine) {
         return longStringFormatter(input, maxCharInLine);
     }
 
-    private String[] formatLongStringArray(String input, int maxCharInLine)
-    {
-        return longStringFormatter(input,maxCharInLine).toString().split("\n");
+    private String[] formatLongStringArray(String input, int maxCharInLine) {
+        return longStringFormatter(input, maxCharInLine).toString().split("\n");
     }
 
-    public String lines(int numLines)
-    {
+    public String lines(int numLines) {
         StringBuilder sb = new StringBuilder();
 
-        if (numLines > 0)
-        {
+        if (numLines > 0) {
             for (int i = 0; i < numLines; i++)
                 sb.append("_");
         }
 
         return sb.toString();
     }
-    
-    
-    
-    public String newLines(int numNewLines)
-	{
-		StringBuilder sb = new StringBuilder();
-		if(numNewLines>0)
-			for(int i = 0 ; i < numNewLines; i++)
-				sb.append("\n");
-		return sb.toString();
-	}
+
+
+    public String newLines(int numNewLines) {
+        StringBuilder sb = new StringBuilder();
+        if (numNewLines > 0)
+            for (int i = 0; i < numNewLines; i++)
+                sb.append("\n");
+        return sb.toString();
+    }
 }

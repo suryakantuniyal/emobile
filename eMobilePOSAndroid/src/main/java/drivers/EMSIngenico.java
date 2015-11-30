@@ -175,7 +175,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	}
 
 	@Override
-	public boolean printTransaction(String ordID, int type, boolean isFromHistory, boolean fromOnHold) {
+	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
 		EMSDeviceManagerPrinterDelegate currentDevice = Global.mainPrinterManager.currentDevice;
 		currentDevice.printTransaction(ordID, type, isFromHistory, fromOnHold);
 		return false;

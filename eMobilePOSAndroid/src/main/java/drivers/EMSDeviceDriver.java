@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,7 +38,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Base64;
 import android.util.Log;
@@ -300,7 +298,7 @@ public class EMSDeviceDriver {
 
     }
 
-    protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, int type, boolean isFromHistory) {
+    protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory) {
         try {
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
@@ -330,24 +328,24 @@ public class EMSDeviceDriver {
             }
 
             switch (type) {
-                case 0: // Order
+                case ORDER: // Order
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.order) + ":", ordID,
                             lineWidth, 0));
                     break;
-                case 1: // Return
+                case RETURN: // Return
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.return_tag) + ":", ordID,
                             lineWidth, 0));
                     break;
-                case 2: // Invoice
-                case 7:// Consignment Invoice
+                case INVOICE: // Invoice
+                case CONSIGNMENT_INVOICE:// Consignment Invoice
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
                             lineWidth, 0));
                     break;
-                case 3: // Estimate
+                case ESTIMATE: // Estimate
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.estimate) + ":", ordID,
                             lineWidth, 0));
                     break;
-                case 5: // Sales Receipt
+                case SALES_RECEIPT: // Sales Receipt
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", ordID,
                             lineWidth, 0));
                     break;
@@ -522,7 +520,7 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
                         Global.formatDoubleToCurrency(tempAmount), lineWidth, 0));
 
-                if (type == 2) // Invoice
+                if (type == Global.OrderType.INVOICE) // Invoice
                 {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
                             Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), lineWidth, 0));
@@ -568,20 +566,20 @@ public class EMSDeviceDriver {
                     if (!detailsList.get(i).getPay_signature().isEmpty())
                         receiptSignature = detailsList.get(i).getPay_signature();
                 }
-                if (type == 1) {
+                if (type == Global.OrderType.ORDER) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountreturned),
                             Global.formatDoubleToCurrency(tempAmount), lineWidth, 0));
                 } else {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-                            Global.formatDoubleStrToCurrency(Global.amountPaid), lineWidth, 0));
+                            Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0));
                 }
                 sb.append(tempSB.toString());
-                if (type == 2) // Invoice
+                if (type == Global.OrderType.INVOICE) // Invoice
                 {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_balance_due),
                             Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), lineWidth, 0));
                 }
-                if (type != 1) {
+                if (type != Global.OrderType.ORDER) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
                             Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
 
@@ -598,7 +596,7 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
 
             print(textHandler.newLines(1), FORMAT);
-            if (type != 1)
+            if (type != Global.OrderType.ORDER)
                 printYouSave(String.valueOf(saveAmount), lineWidth);
             sb.setLength(0);
             if (Global.isIvuLoto && detailsList.size() > 0) {

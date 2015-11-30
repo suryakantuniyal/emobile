@@ -16,10 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.multidex.MultiDexApplication;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.Selection;
-import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -41,7 +38,6 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
-import com.android.emobilepos.payment.ProcessCash_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.GenerateNewID.IdType;
 import com.google.zxing.BarcodeFormat;
@@ -63,7 +59,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -124,24 +119,117 @@ public class Global extends MultiDexApplication {
     public static final String AUDIO_MSR_WALKER = "3";
 
 
-    public final static String IS_ORDER = "0";
-    public final static String IS_RETURN = "1";
-    public final static String IS_INVOICE = "2";
-    public final static String IS_ESTIMATE = "3";
-    public final static String IS_CONSIGNMENT_FILLUP = "4";
-    public final static String IS_SALES_RECEIPT = "5";
-    public final static String IS_CONSIGNMENT_PICKUP = "6";
-    public final static String IS_CONSIGNMENT_INVOICE = "7";
-    public final static String IS_CONSIGNMENT_RETURN = "8";
+    //    public final static String IS_ORDER = "0";
+//    public final static String IS_RETURN = "1";
+//    public final static String IS_INVOICE = "2";
+//    public final static String IS_ESTIMATE = "3";
+//    public final static String IS_CONSIGNMENT_FILLUP = "4";
+//    public final static String IS_SALES_RECEIPT = "5";
+//    public final static String IS_CONSIGNMENT_PICKUP = "6";
+//    public final static String IS_CONSIGNMENT_INVOICE = "7";
+//    public final static String IS_CONSIGNMENT_RETURN = "8";
+    public enum TransactionType {
+        SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
+        PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
+        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13);
+        private int code;
 
-    public final static int INT_ORDER = 0;
-    public final static int INT_RETURN = 1;
-    public final static int INT_INVOICE = 2;
-    public final static int INT_ESTIMATE = 3;
-    public final static int INT_CONSIGNMENT_FILLUP = 4;
-    public final static int INT_SALES_RECEIPT = 5;
-    public final static int INT_CONSIGNMENT_PICKUP = 6;
-    public final static int INT_CONSIGNMENT_INVOICE = 7;
+        TransactionType(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static TransactionType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return SALE_RECEIPT;
+                case 1:
+                    return ORDERS;
+                case 2:
+                    return RETURN;
+                case 3:
+                    return INVOICE;
+                case 4:
+                    return ESTIMATE;
+                case 5:
+                    return PAYMENT;
+                case 6:
+                    return GIFT_CARD;
+                case 7:
+                    return LOYALTY_CARD;
+                case 8:
+                    return REWARD_CARD;
+                case 9:
+                    return REFUND;
+                case 10:
+                    return ROUTE;
+                case 11:
+                    return ON_HOLD;
+                case 12:
+                    return SALE_RECEIPT;
+                case 13:
+                    return LOCATION;
+                default:
+                    return null;
+            }
+        }
+    }
+
+    public enum OrderType {
+        ORDER(0), RETURN(1), INVOICE(2), ESTIMATE(3), CONSIGNMENT_FILLUP(4), SALES_RECEIPT(5), CONSIGNMENT_PICKUP(6),
+        CONSIGNMENT_INVOICE(7), CONSIGNMENT_RETURN(8);
+        int code;
+
+        OrderType(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getCodeString() {
+            return String.valueOf(code);
+        }
+
+        public static OrderType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return ORDER;
+                case 1:
+                    return RETURN;
+                case 2:
+                    return INVOICE;
+                case 3:
+                    return ESTIMATE;
+                case 4:
+                    return CONSIGNMENT_FILLUP;
+                case 5:
+                    return SALES_RECEIPT;
+                case 6:
+                    return CONSIGNMENT_PICKUP;
+                case 7:
+                    return CONSIGNMENT_INVOICE;
+                case 8:
+                    return CONSIGNMENT_RETURN;
+                default:
+                    return ORDER;
+            }
+        }
+    }
+
+    ;
+//	public final static int INT_ORDER = 0;
+//	public final static int INT_RETURN = 1;
+//	public final static int INT_INVOICE = 2;
+//	public final static int INT_ESTIMATE = 3;
+//	public final static int INT_CONSIGNMENT_FILLUP = 4;
+//	public final static int INT_SALES_RECEIPT = 5;
+//	public final static int INT_CONSIGNMENT_PICKUP = 6;
+//	public final static int INT_CONSIGNMENT_INVOICE = 7;
 
     public final static int S_CUSTOMERS = 1;
     public final static int S_ADDRESS = 2;
@@ -230,13 +318,13 @@ public class Global extends MultiDexApplication {
 
     public static String APP_ID;
 
-    public final static int IS_CONS_RACK = 0;
-    public final static int IS_CONS_RETURN = 1;
-    public final static int IS_CONS_FILLUP = 2;
-    public final static int IS_CONS_PICKUP = 3;
+//    public final static int IS_CONS_RACK = 0;
+//    public final static int IS_CONS_RETURN = 1;
+//    public final static int IS_CONS_FILLUP = 2;
+//    public final static int IS_CONS_PICKUP = 3;
 
-    public static int consignmentType = 0;
-    public static String ord_type;
+    public static OrderType consignmentType = OrderType.ORDER;
+    public static OrderType ord_type = OrderType.ORDER;
     private static String empStr = "";
     public static String amountPaid = "";
     public static double subtotalAmount;
@@ -364,7 +452,7 @@ public class Global extends MultiDexApplication {
         taxID = empStr;
         taxPosition = 0;
 
-        ord_type = "";
+        ord_type = null;
         cat_id = "0";
         Catalog_FR._typeCase = -1;
         Catalog_FR.btnListID.clear();
@@ -374,7 +462,7 @@ public class Global extends MultiDexApplication {
         Global.isFromOnHold = false;
         isConsignment = false;
         isInventoryTransfer = false;
-        consignmentType = 0;
+        consignmentType = OrderType.ORDER;
         if (productParentAddons != null)
             productParentAddons.clear();
         if (productParentAddonsDictionary != null)
@@ -770,7 +858,7 @@ public class Global extends MultiDexApplication {
         if (value == null || value.isEmpty())
             return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(0.00);
         /*
-		 * else if(value.contains(".")) return
+         * else if(value.contains(".")) return
 		 * NumberFormat.getCurrencyInstance(Locale.US).format(Double.parseDouble
 		 * (value)); return
 		 * NumberFormat.getCurrencyInstance(Locale.US).format((double)Integer.
@@ -1347,6 +1435,9 @@ public class Global extends MultiDexApplication {
 
             }
         }
+        String row1 = ord.ordprod_name;
+        String row2 = Global.formatDoubleStrToCurrency(data[2]);
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         global.orderProducts.add(ord);
     }
 
