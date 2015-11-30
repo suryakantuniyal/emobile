@@ -111,7 +111,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private boolean hasBeenCreated = false;
     private ProgressDialog myProgressDialog;
 
-    private Payment payment;
     private PaymentsHandler payHandler;
     private InvoicePaymentsHandler invPayHandler;
     private String inv_id;
@@ -141,7 +140,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private String custidkey = "";
     public static TextView tvStatusMSR;
 
-    private float amountToTip = 0;
+    private double amountToTip = 0;
     private double grandTotalAmount = 0, actualAmount = 0;
 
     private TextView dlogGrandTotal;
@@ -254,7 +253,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             findViewById(R.id.row2Credit).setVisibility(View.GONE);
             findViewById(R.id.row3Credit).setVisibility(View.GONE);
 
-        }else{
+        } else {
             subtotal.setOnFocusChangeListener(getFocusListener(subtotal));
             tax1.setOnFocusChangeListener(getFocusListener(tax1));
             tax2.setOnFocusChangeListener(getFocusListener(tax2));
@@ -575,96 +574,73 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
         payHandler = new PaymentsHandler(activity);
 
-        payment = new Payment(activity);
 
-        payment.pay_id = extras.getString("pay_id");
-
-        payment.emp_id = myPref.getEmpID();
-
+        String jobId = null;
+        String invoiceId = null;
         if (!extras.getBoolean("histinvoices")) {
-            payment.job_id = inv_id;
+            jobId = inv_id;
         } else {
-            payment.inv_id = inv_id;
+            invoiceId = inv_id;
         }
 
+
+        String clerkId = null;
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            clerkId = myPref.getShiftClerkID();
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            clerkId = myPref.getClerkID();
 
-        payment.cust_id = extras.getString("cust_id");
-        payment.custidkey = custidkey;
 
-        payment.ref_num = reference.getText().toString();
-        payment.paymethod_id = extras.getString("paymethod_id");
         double amountToBePaid = Global
                 .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
+
         Global.amountPaid = Double.toString(amountToBePaid);
-        payment.pay_dueamount = Double.toString(actualAmount - amountToBePaid);
 
-        payment.pay_amount = Double.toString(amountToBePaid);
-        payment.pay_name = cardInfoManager.getCardOwnerName();
 
-        payment.pay_phone = phoneNumberField.getText().toString();
-        payment.pay_email = customerEmailField.getText().toString();
-
-        payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
-
-        payment.ccnum_last4 = cardInfoManager.getCardLast4();
-        payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        payment.pay_expyear = cardInfoManager.getCardExpYear();
-        payment.pay_poscode = zipCode.getText().toString();
-
-        payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
-
-        // String tempPaid =
-        // Double.toString(Global.formatNumFromLocale(tipAmount.getText().toString().replaceAll("[^\\d\\,\\.]",
-        // "").trim()));
-        Global.tipPaid = Double.toString(amountToTip);
-        payment.pay_tip = Global.tipPaid;
-        payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        payment.track_two = cardInfoManager.getEncryptedAESTrack2();
-
-        String[] location = Global.getCurrLocation(activity);
-        payment.pay_latitude = location[0];
-        payment.pay_longitude = location[1];
-        payment.card_type = creditCardType;
-
+        String taxAmnt1 = null;
+        String taxName1 = null;
+        String taxName2 = null;
+        String taxAmnt2 = null;
         if (Global.isIvuLoto) {
-            DrawInfoHandler drawDateInfo = new DrawInfoHandler(activity);
-            MersenneTwisterFast mersenneTwister = new MersenneTwisterFast();
-            String drawDate = drawDateInfo.getDrawDate();
-            String ivuLottoNum = mersenneTwister.generateIVULoto();
-
-            payment.IvuLottoNumber = ivuLottoNum;
-            payment.IvuLottoDrawDate = drawDate;
-            payment.IvuLottoQR =
-                    Global.base64QRCode(ivuLottoNum, drawDate);
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
-                payment.Tax1_amount = extras.getString("Tax1_amount");
-                payment.Tax1_name = extras.getString("Tax1_name");
+                taxAmnt1 = extras.getString("Tax1_amount");
+                taxName1 = extras.getString("Tax1_name");
 
-                payment.Tax2_amount = extras.getString("Tax2_amount");
-                payment.Tax2_name = extras.getString("Tax2_name");
+                taxAmnt2 = extras.getString("Tax2_amount");
+                taxName2 = extras.getString("Tax2_name");
             } else {
-                payment.Tax1_amount = Double.toString(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                taxAmnt1 = Double.toString(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 0)
-                    payment.Tax1_name = groupTaxRate.get(0).getTaxName();
-                payment.Tax2_amount = Double.toString(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                    taxName1 = groupTaxRate.get(0).getTaxName();
+                taxAmnt2 = Double.toString(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 if (groupTaxRate.size() > 1)
-                    payment.Tax2_name = groupTaxRate.get(1).getTaxName();
+                    taxName2 = groupTaxRate.get(1).getTaxName();
             }
         }
+
+        String isRef = null;
+        String paymentType = null;
+        String transactionId = null;
+        String authcode = null;
+        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
+                actualAmount, amountToBePaid,
+                cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
+                isRef, paymentType, creditCardType, cardInfoManager.getCardNumAESEncrypted(), cardInfoManager.getCardLast4(),
+                cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
+                zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
+                cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
+
 
         if (walkerReader == null) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
 
             if (!isRefund) {
-                payment.pay_type = "0";
-
+                paymentType = "0";
+                payment.pay_type = paymentType;
                 if (isDebit)
                     generatedURL = payGate.paymentWithAction("ChargeDebitAction", wasReadFromReader, creditCardType,
                             cardInfoManager);
@@ -672,26 +648,32 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                     generatedURL = payGate.paymentWithAction("ChargeCreditCardAction", wasReadFromReader,
                             creditCardType, cardInfoManager);
 
-            } else {
-                payment.is_refund = "1";
-                payment.pay_type = "2";
-                payment.pay_transid = transIDField.getText().toString();
-                payment.authcode = authIDField.getText().toString();
 
+            } else {
+                 isRef = "1";
+                paymentType = "2";
+                 transactionId = transIDField.getText().toString();
+                 authcode = authIDField.getText().toString();
+                payment.is_refund = isRef;
+                payment.pay_type = paymentType;
+                payment.pay_transid = transactionId;
+                payment.authcode = authcode;
                 if (isDebit)
                     generatedURL = payGate.paymentWithAction("ReturnDebitAction", wasReadFromReader, creditCardType,
                             cardInfoManager);
                 else
                     generatedURL = payGate.paymentWithAction("ReturnCreditCardAction", wasReadFromReader,
                             creditCardType, cardInfoManager);
-            }
 
+
+            }
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) // Perform
                 // store
                 // and
                 // forward
                 // procedure
-                processStoreForward(generatedURL);
+
+                processStoreForward(generatedURL, payment);
             else
                 new processLivePaymentAsync().execute(generatedURL);
         } else {
@@ -751,84 +733,61 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         payHandler = new PaymentsHandler(activity);
 
-        payment = new Payment(activity);
 
-        payment.pay_id = extras.getString("pay_id");
-        payment.cust_id = extras.getString("cust_id");
-        payment.custidkey = custidkey;
-        payment.emp_id = myPref.getEmpID();
-
+        String clerkId = null;
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            clerkId = myPref.getShiftClerkID();
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            clerkId = myPref.getClerkID();
 
-        payment.ref_num = reference.getText().toString();
-        payment.paymethod_id = extras.getString("paymethod_id");
 
-        // String tempPaid =
-        // Double.toString(Global.formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]",
-        // "").trim()));
         double amountToBePaid = Global
                 .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
-        payment.pay_dueamount = extras.getString("amount");
-        payment.pay_amount = Double.toString(amountToBePaid);
-        payment.pay_name = cardInfoManager.getCardOwnerName();
+        String pay_dueamount = extras.getString("amount");
 
-        payment.pay_phone = phoneNumberField.getText().toString();
-        payment.pay_email = customerEmailField.getText().toString();
-
-        payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
-
-        payment.ccnum_last4 = cardInfoManager.getCardLast4();
-        payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        payment.pay_expyear = cardInfoManager.getCardExpYear();
-        payment.pay_poscode = zipCode.getText().toString();
-
-		/*
-         * if(secCode.getText().toString().trim().isEmpty()) payment.pay_seccode
-		 * = ""); else payment.pay_seccode = );
-		 */
-        payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
-
-        // tempPaid =
-        // Global.formatNumFromLocale(tipAmount.getText().toString().replaceAll("[^\\d\\,\\.]",
-        // "").trim());
         Global.tipPaid = Double.toString(amountToTip);
-        payment.pay_tip = Global.tipPaid;
-        payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        payment.track_two = cardInfoManager.getEncryptedAESTrack2();
-        payment.card_type = creditCardType;
 
-        String[] location = Global.getCurrLocation(activity);
-        payment.pay_latitude = location[0];
-        payment.pay_longitude = location[1];
 
+        String taxName2 = null;
+        String taxAmnt2 = null;
+        String taxName1 = null;
+        String taxAmnt1 = null;
         if (Global.isIvuLoto) {
-            payment.IvuLottoNumber = extras.getString("IvuLottoNumber");
-            payment.IvuLottoDrawDate = extras.getString("IvuLottoDrawDate");
-            payment.IvuLottoQR = Global.base64QRCode(extras.getString("IvuLottoNumber"),
-                    extras.getString("IvuLottoDrawDate"));
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
-                payment.Tax1_amount = extras.getString("Tax1_amount");
-                payment.Tax1_name = extras.getString("Tax1_name");
+                taxAmnt1 = extras.getString("Tax1_amount");
+                taxName1 = extras.getString("Tax1_name");
 
-                payment.Tax2_amount = extras.getString("Tax2_amount");
-                payment.Tax2_name = extras.getString("Tax2_name");
+                taxAmnt2 = extras.getString("Tax2_amount");
+                taxName2 = extras.getString("Tax2_name");
             } else {
                 BigDecimal tempRate;
                 double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
                 tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax1_amount = tempRate.toPlainString();
-                payment.Tax1_name = "Estatal";
+                taxAmnt1 = tempRate.toPlainString();
+                taxName1 = "Estatal";
 
                 tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax2_amount = tempRate.toPlainString();
-                payment.Tax2_name = "Municipal";
+                taxAmnt2 = tempRate.toPlainString();
+                taxName2 = "Municipal";
             }
         }
+
+        String isRef = null;
+        String paymentType = null;
+        String transactionId = null;
+        String authcode = null;
+        String invoiceId = null;
+        String jobId = null;
+        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
+                actualAmount, amountToBePaid,
+                cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
+                isRef, paymentType, creditCardType, cardInfoManager.getCardNumAESEncrypted(), cardInfoManager.getCardLast4(),
+                cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
+                zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
+                cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
         String generatedURL;
@@ -1325,7 +1284,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         return ccType;
     }
 
-    private void processStoreForward(String payment_xml) {
+    private void processStoreForward(String payment_xml, Payment payment) {
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
         }
@@ -1610,7 +1569,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
     }
 
-    private void saveApprovedPayment(HashMap<String, String> parsedMap) {
+    private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
         if (walkerReader == null) {
             payment.pay_resultcode = parsedMap.get("pay_resultcode");
             payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
