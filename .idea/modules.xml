@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/eMobilePOS-Studio.iml" filepath="$PROJECT_DIR$/eMobilePOS-Studio.iml" />
       <module fileurl="file://$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" filepath="$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eMobilePOSAndroidGit.iml" filepath="$PROJECT_DIR$/eMobilePOSAndroidGit.iml" />
     </modules>
   </component>
 </project>

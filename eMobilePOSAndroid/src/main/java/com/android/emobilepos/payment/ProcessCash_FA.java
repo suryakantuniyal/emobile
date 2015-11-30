@@ -131,6 +131,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         customerEmailField = (EditText) findViewById(R.id.processCashEmail);
         phoneNumberField = (EditText) findViewById(R.id.processCashPhone);
 
+
         Button btnFive = (Button) findViewById(R.id.btnFive);
         Button btnTen = (Button) findViewById(R.id.btnTen);
         Button btnTwenty = (Button) findViewById(R.id.btnTwenty);
@@ -184,6 +185,13 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 //        tax2.setText(Global.formatDoubleToCurrency(0.00));
         this.paid.setText(Global.formatDoubleToCurrency(0.00));
         this.paid.setSelection(5);
+
+        //fix problem with cursor being on the left of the default value
+        //find default value length
+        int subTotalLength = subtotal.length();
+        //move cursor to that position
+        subtotal.setSelection(subTotalLength);
+
         this.paid.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
@@ -601,12 +609,24 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
     public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
         double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
-        double tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
-        double tax1Dbl = new BigDecimal(subtotalDbl * tax1Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
-        double tax2Dbl = new BigDecimal(subtotalDbl * tax2Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
-        tax1.setText(Global.formatDoubleToCurrency(tax1Dbl));
-        tax2.setText(Global.formatDoubleToCurrency(tax2Dbl));
+        //set default taxes values to zero
+        double tax1Rate = 0.00;
+        double tax2Rate = 0.00;
+        //if we have taxes then
+        if(groupTaxRate.size() > 0) {
+            tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
+            tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
+        }
+//        double tax1Dbl = new BigDecimal(subtotalDbl * tax1Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
+//        double tax2Dbl = new BigDecimal(subtotalDbl * tax2Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
+        double tax1Dbl = subtotalDbl * tax1Rate;
+        double tax2Dbl = subtotalDbl * tax2Rate;
+//        tax1.setText(Global.formatDoubleToCurrency(tax1Dbl));
+//        tax2.setText(Global.formatDoubleToCurrency(tax2Dbl));
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_EVEN);
+        tax1.setText(df.format(tax1Dbl));
+        tax2.setText(df.format(tax2Dbl));
     }
 
     private void processPayment() {
