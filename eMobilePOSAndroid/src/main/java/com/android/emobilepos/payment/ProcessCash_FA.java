@@ -661,11 +661,21 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         } else
             paymentType = "0";
 
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey,
-                extras.getString("paymethod_id"), actualAmount, amountToBePaid,
-                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(), customerEmailField.getText().toString(),
-                amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-                isRef, paymentType, "Cash");
+        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
+                actualAmount, amountToBePaid,
+                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
+                customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
+                isRef, paymentType, "Cash", null, null,
+                null, null,
+                null, null, null,
+                null, null, null);
+
+
+//        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey,
+//                extras.getString("paymethod_id"), actualAmount, amountToBePaid,
+//                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(), customerEmailField.getText().toString(),
+//                amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
+//                isRef, paymentType, "Cash");
 
 
         Global.amountPaid = Double.toString(amountToBePaid);
@@ -751,13 +761,22 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         String invoiceId = "";
 
         String paymentType = "0";
-
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, null, clerkId, custidkey,
-                extras.getString("paymethod_id"), actualAmount, amountToBePaid,
+        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, null,
+                clerkId, custidkey, extras.getString("paymethod_id"),
+                actualAmount, amountToBePaid,
                 customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
-                customerEmailField.getText().toString(),
-                amountToTip, null, null, null, null,
-                null, paymentType, "Cash");
+                customerEmailField.getText().toString(), amountToTip, null, null, null, null,
+                null, paymentType, "Cash", null, null,
+                null, null,
+                null, null, null,
+                null, null, null);
+
+//        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, null, clerkId,
+//                custidkey, extras.getString("paymethod_id"), actualAmount, amountToBePaid,
+//                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
+//                customerEmailField.getText().toString(),
+//                amountToTip, null, null, null, null,
+//                null, paymentType, "Cash");
 
 
         payHandler.insert(payment);

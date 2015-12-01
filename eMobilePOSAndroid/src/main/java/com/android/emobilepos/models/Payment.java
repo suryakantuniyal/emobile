@@ -1,6 +1,8 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.android.database.DrawInfoHandler;
@@ -8,7 +10,7 @@ import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-public class Payment {
+public class Payment implements Parcelable {
 
     /**
      *
@@ -132,10 +134,13 @@ public class Payment {
 
     }
 
-    public Payment(Activity activity, String paymentId, String customerId, String invoiceId, String jobId, String clerkId, String custidkey, String paymentMethod, Double actualAmount, Double amountToBePaid,
-                   String customerName, String referenceNumber, String phoneNumber, String email, Double tipAmount, String taxAmount1, String taxAmount2, String taxName1, String taxName2,
-                   String isRefund, String paymentType, String cardType, String cardNumberEnc, String cardNumberLast4, String cardExpMonth, String cardExpYear,
-                   String cardPostalCode, String cardSecurityCode, String trackOne, String trackTwo, String transactionId, String authcode) {
+    public Payment(Activity activity, String paymentId, String customerId, String invoiceId, String jobId, String clerkId,
+                   String custidkey, String paymentMethod, Double actualAmount, Double amountToBePaid,
+                   String customerName, String referenceNumber, String phoneNumber, String email, Double tipAmount,
+                   String taxAmount1, String taxAmount2, String taxName1, String taxName2,
+                   String isRefund, String paymentType, String creditCardType, String cardNumberEnc, String cardNumberLast4,
+                   String cardExpMonth, String cardExpYear, String cardPostalCode, String cardSecurityCode, String trackOne,
+                   String trackTwo, String transactionId, String authcode) {
 
         myPref = new MyPreferences(activity);
         pay_issync = "0";
@@ -150,9 +155,9 @@ public class Payment {
         pay_poscode = cardPostalCode;
         pay_seccode = cardSecurityCode;
 
-        this.card_type=creditCardType;
+        this.card_type = creditCardType;
         this.track_one = trackOne;
-        this.track_two=trackTwo;
+        this.track_two = trackTwo;
 
         String date = Global.getCurrentDate();
         pay_timecreated = date;
@@ -198,9 +203,18 @@ public class Payment {
         String[] location = Global.getCurrLocation(activity);
         pay_latitude = location[0];
         pay_longitude = location[1];
-        card_type = cardType;
         is_refund = isRefund;
         pay_type = paymentType;
+
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
 
     }
 }

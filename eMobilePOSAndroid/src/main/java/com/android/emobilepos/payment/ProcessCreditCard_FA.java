@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -36,7 +37,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.database.CustomersHandler;
-import com.android.database.DrawInfoHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
@@ -48,7 +48,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Payment;
-import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -67,13 +66,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -592,7 +588,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 
         double amountToBePaid = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
 
         Global.amountPaid = Double.toString(amountToBePaid);
@@ -650,10 +646,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 
             } else {
-                 isRef = "1";
+                isRef = "1";
                 paymentType = "2";
-                 transactionId = transIDField.getText().toString();
-                 authcode = authIDField.getText().toString();
+                transactionId = transIDField.getText().toString();
+                authcode = authIDField.getText().toString();
                 payment.is_refund = isRef;
                 payment.pay_type = paymentType;
                 payment.pay_transid = transactionId;
@@ -675,9 +671,9 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
                 processStoreForward(generatedURL, payment);
             else
-                new processLivePaymentAsync().execute(generatedURL);
+                new processLivePaymentAsync().execute(generatedURL, payment);
         } else {
-            saveApprovedPayment(null);
+            saveApprovedPayment(null, payment);
         }
     }
 
@@ -742,7 +738,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 
         double amountToBePaid = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         String pay_dueamount = extras.getString("amount");
 
@@ -813,7 +809,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                         cardInfoManager);
         }
 
-        new processLivePaymentAsync().execute(generatedURL);
+        new processLivePaymentAsync().execute(generatedURL, payment);
 
     }
 
@@ -895,7 +891,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		 */
 
         double amountToBePaid = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         grandTotalAmount = amountToBePaid + amountToTip;
 
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
@@ -943,7 +939,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = (float) (amountToBePaid * 0.1);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -956,7 +952,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = (float) (amountToBePaid * 0.15);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -969,7 +965,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = (float) (amountToBePaid * 0.2);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -982,7 +978,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -995,7 +991,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dialog.dismiss();
@@ -1049,7 +1045,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         TextView dlogCardExpDate = (TextView) dialogLayout.findViewById(R.id.confirmExpDate);
         TextView dlogCardNum = (TextView) dialogLayout.findViewById(R.id.confirmCardNumber);
         double amountToBePaid = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         grandTotalAmount = amountToBePaid;
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -1320,7 +1316,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 OrdersHandler dbOrders = new OrdersHandler(this);
                 dbOrders.updateOrderStoredFwd(payment.job_id, "1");
             }
-            new printAsync().execute(false);
+            new printAsync().execute(false, payment);
         } else if (!isDebit) {
             Intent intent = new Intent(activity, DrawReceiptActivity.class);
             intent.putExtra("isFromPayment", true);
@@ -1378,7 +1374,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private String _charge_xml;
     private boolean livePaymentRunning = false;
 
-    private class processLivePaymentAsync extends AsyncTask<String, String, String> {
+    private class processLivePaymentAsync extends AsyncTask<Object, String, Payment> {
 
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
         private boolean wasProcessed = false;
@@ -1398,7 +1394,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Payment doInBackground(Object... params) {
             // TODO Auto-generated method stub
 
             if (Global.isConnectedToInternet(activity) && !livePaymentRunning) {
@@ -1407,7 +1403,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 Post httpClient = new Post();
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-                _charge_xml = params[0];
+                _charge_xml = (String) params[0];
 
                 try {
                     String xml = httpClient.postData(13, activity, _charge_xml);
@@ -1443,17 +1439,17 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 }
             }
 
-            return null;
+            return (Payment) params[1];
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(Payment payment) {
             myProgressDialog.dismiss();
 
             livePaymentRunning = false;
             if (wasProcessed) // payment processing succeeded
             {
-                saveApprovedPayment(parsedMap);
+                saveApprovedPayment(parsedMap, payment);
             } else // payment processing failed
             {
                 if (connectionFailed) {
@@ -1461,14 +1457,14 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 }
 
                 btnProcess.setEnabled(true);
-                showErrorDlog(false, connectionFailed, errorMsg);
+                showErrorDlog(false, connectionFailed, errorMsg, payment);
             }
         }
     }
 
     private String _reverse_xml = "";
 
-    private class processReverseAsync extends AsyncTask<Void, Void, Void> {
+    private class processReverseAsync extends AsyncTask<Payment, Void, Payment> {
 
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
 
@@ -1487,7 +1483,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Payment doInBackground(Payment... params) {
             // TODO Auto-generated method stub
 
             if (Global.isConnectedToInternet(activity)) {
@@ -1545,20 +1541,20 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                     errorMsg = e.getMessage();
                 }
             }
-            return null;
+            return params[0];
         }
 
         @Override
-        protected void onPostExecute(Void unused) {
+        protected void onPostExecute(Payment payment) {
             myProgressDialog.dismiss();
             if (reverseWasProcessed) {
                 PaymentsXML_DB _paymentXml_DB = new PaymentsXML_DB(activity);
                 _paymentXml_DB.deleteRow(_xml_app_id);
                 if (paymentWasApproved) {
-                    saveApprovedPayment(parsedMap);
+                    saveApprovedPayment(parsedMap, payment);
                 } else {
                     if (paymentWasDecline) {
-                        showErrorDlog(false, false, errorMsg);
+                        showErrorDlog(false, false, errorMsg, payment);
                     } else {
                         finish();
                     }
@@ -1593,7 +1589,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         payHandler.insert(payment);
         if (walkerReader == null) {
             if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-                new printAsync().execute(false);
+                new printAsync().execute(false, payment);
             } else if (!isDebit) {
                 Intent intent = new Intent(activity, DrawReceiptActivity.class);
                 intent.putExtra("isFromPayment", true);
@@ -1615,9 +1611,9 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                 if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                    new printAsync().execute(false);
+                    new printAsync().execute(false, payment);
                 else
-                    showPrintDlg(false, false);
+                    showPrintDlg(false, false, payment);
             } else
                 finishPaymentTransaction();
         }
@@ -1694,10 +1690,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             if (walkerReader == null) {
                 if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
                     StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
-                    Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.pay_uuid);
+                    Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().pay_uuid);
 
                     OrdersHandler dbOrders = new OrdersHandler(this);
-                    dbOrders.updateOrderStoredFwd(payment.job_id, "1");
+                    dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().job_id, "1");
                 } else {
                     PaymentsHandler payHandler = new PaymentsHandler(this);
                     Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
@@ -1705,9 +1701,9 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                        new printAsync().execute(false);
+                        new printAsync().execute(false, PaymentsHandler.getLastPaymentInserted());
                     else
-                        showPrintDlg(false, false);
+                        showPrintDlg(false, false, PaymentsHandler.getLastPaymentInserted());
                 } else
                     finishPaymentTransaction();
             } else {
@@ -1728,6 +1724,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             setResult(-2);
         else {
             Intent result = new Intent();
+
             result.putExtra("total_amount", Double.toString(Global
                     .formatNumFromLocale(this.amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
             setResult(-2, result);
@@ -1736,7 +1733,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         finish();
     }
 
-    private class printAsync extends AsyncTask<Boolean, String, String> {
+    private class printAsync extends AsyncTask<Object, String, Payment> {
         private boolean wasReprint = false;
         private boolean printingSuccessful = true;
 
@@ -1752,34 +1749,33 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
 
         @Override
-        protected String doInBackground(Boolean... params) {
-            // TODO Auto-generated method stub
-
-            wasReprint = params[0];
+        protected Payment doInBackground(Object... params) {
+            Payment payment = (Payment) params[1];
+            wasReprint = (Boolean) params[0];
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printingSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1,
                         wasReprint);
             }
-            return null;
+            return payment;
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(Payment payment) {
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             if (printingSuccessful) {
                 if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-                    showPrintDlg(true, false);
+                    showPrintDlg(true, false, payment);
                 else {
                     finishPaymentTransaction();
                 }
             } else {
-                showPrintDlg(wasReprint, true);
+                showPrintDlg(wasReprint, true, payment);
             }
         }
     }
 
-    private void showPrintDlg(final boolean isReprint, boolean isRetry) {
+    private void showPrintDlg(final boolean isReprint, boolean isRetry, final Payment payment) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -1808,7 +1804,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 dlog.dismiss();
-                new printAsync().execute(isReprint);
+                new printAsync().execute(isReprint, payment);
 
             }
         });
@@ -1824,7 +1820,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         dlog.show();
     }
 
-    private void showErrorDlog(final boolean isFromReverse, final boolean _connectionFailed, String msg) {
+    private void showErrorDlog(final boolean isFromReverse, final boolean _connectionFailed, String msg, final Payment payment) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -1844,10 +1840,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (isFromReverse) {
-                    new processReverseAsync().execute();
+                    new processReverseAsync().execute(payment);
                 } else {
                     if (_connectionFailed)
-                        new processReverseAsync().execute();
+                        new processReverseAsync().execute(payment);
                     else
                         finish();
                 }
