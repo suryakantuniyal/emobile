@@ -87,7 +87,15 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         setContentView(R.layout.process_cash_layout);
         global = (Global) this.getApplication();
         myPref = new MyPreferences(activity);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(myPref.getEmployeeDefaultTax());
+        String custTaxCode;
+
+        if (myPref.isCustSelected()) {
+            custTaxCode = myPref.getCustTaxCode();
+        }
+        else {
+            custTaxCode = myPref.getEmployeeDefaultTax();
+        }
+        groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
         if (!myPref.getPreferences(MyPreferences.pref_show_tips_for_cash)) {
             showTipField = false;
             LinearLayout layout = (LinearLayout) findViewById(R.id.tipFieldMainHolder);
