@@ -63,7 +63,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     private boolean isFromMainMenu = false;
     private EditText paid, amount, reference, tipAmount, promptTipField, subtotal, tax1, tax2;//,tipAmount,promptTipField
     private EditText customerNameField, customerEmailField, phoneNumberField;
-    private TextView change, tax1Lbl, tax2Lbl;
+    private TextView change;
     private boolean isMultiInvoice = false;
 
 
@@ -124,8 +124,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         subtotal = (EditText) findViewById(R.id.subtotalCashEdit);
         tax1 = (EditText) findViewById(R.id.tax1CashEdit);
         tax2 = (EditText) findViewById(R.id.tax2CashEdit);
-        tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
-        tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
+        TextView tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
+        TextView tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
         setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
         customerNameField = (EditText) findViewById(R.id.processCashName);
         customerEmailField = (EditText) findViewById(R.id.processCashEmail);
@@ -152,9 +152,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         for (OrderProducts products : orderProducts) {
             subtotalDbl += Double.parseDouble(products.itemSubtotal);
         }
-//        double tax1Dbl = TextUtils.isEmpty(extras.getString("Tax1_amount")) ? 0 : Double.parseDouble(extras.getString("Tax1_amount"));
-//        double tax2Dbl = TextUtils.isEmpty(extras.getString("Tax2_amount")) ? 0 : Double.parseDouble(extras.getString("Tax2_amount"));
-//        double amountDbl = TextUtils.isEmpty(extras.getString("amount")) ? 0 : Double.parseDouble(extras.getString("amount"));
+
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
 
 
@@ -170,27 +168,9 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
         this.paid = (EditText) findViewById(R.id.paidCashEdit);
 
-//        subtotal.setText(Global.formatDoubleToCurrency(0.00));
-//        Tax1_amount=0.42, Tax1_name=PR IVU 1, Tax2_name=PR IVU 1,
-//        if(TextUtils.isEmpty(extras.getString("Tax1_amount"))) {
-//            tax1.setText(Global.formatDoubleToCurrency(0.00));
-//        }else{
-//            tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
-//        }
-//        if(TextUtils.isEmpty(extras.getString("Tax2_amount"))) {
-//            tax2.setText(Global.formatDoubleToCurrency(0.00));
-//        }else{
-//            tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
-//        }
-//        tax2.setText(Global.formatDoubleToCurrency(0.00));
         this.paid.setText(Global.formatDoubleToCurrency(0.00));
         this.paid.setSelection(5);
 
-        //fix problem with cursor being on the left of the default value
-        //find default value length
-        int subTotalLength = subtotal.length();
-        //move cursor to that position
-        subtotal.setSelection(subTotalLength);
 
         this.paid.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
@@ -617,12 +597,10 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
             tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
         }
-//        double tax1Dbl = new BigDecimal(subtotalDbl * tax1Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
-//        double tax2Dbl = new BigDecimal(subtotalDbl * tax2Rate).round(new MathContext(2, RoundingMode.UP)).doubleValue();
+
         double tax1Dbl = subtotalDbl * tax1Rate;
         double tax2Dbl = subtotalDbl * tax2Rate;
-//        tax1.setText(Global.formatDoubleToCurrency(tax1Dbl));
-//        tax2.setText(Global.formatDoubleToCurrency(tax2Dbl));
+
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_EVEN);
         tax1.setText(df.format(tax1Dbl));
@@ -810,7 +788,6 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             payment.pay_amount = Double.toString(actualAmount);
         else
             payment.pay_amount = Double.toString(amountToBePaid);
-        //payment.pay_amount =Double.toString(amountToBePaid));
         payment.pay_name = customerNameField.getText().toString();
         payment.pay_phone = phoneNumberField.getText().toString();
         payment.pay_email = customerEmailField.getText().toString();
@@ -844,10 +821,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             if (amountToBePaid <= actualAmount) {
                 handler.updateShiftAmounts(myPref.getShiftID(), amountToBePaid, isReturn);
-                //handler.updateShift(myPref.getShiftID(), "total_transaction_cash", Double.toString(amountToBePaid));
             } else {
                 handler.updateShiftAmounts(myPref.getShiftID(), actualAmount, isReturn);
-                //handler.updateShift(myPref.getShiftID(), "total_transaction_cash", Double.toString(actualAmount));
             }
         }
 
@@ -862,7 +837,6 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
-            // myProgressDialog.setMax(100);
             myProgressDialog.show();
         }
 
