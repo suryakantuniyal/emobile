@@ -93,13 +93,15 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             LinearLayout layout = (LinearLayout) findViewById(R.id.tipFieldMainHolder);
             layout.setVisibility(View.GONE);
         }
-        if (!Global.isIvuLoto) {
+        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
+        extras = this.getIntent().getExtras();
+        isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
+        isFromMainMenu = extras.getBoolean("isFromMainMenu");
+        if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
             findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
         }
-        TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
-        extras = this.getIntent().getExtras();
 
         if (extras.getBoolean("salespayment") || extras.getBoolean("salesreceipt")) {
             headerTitle.setText(getString(R.string.cash_payment_title));
@@ -143,8 +145,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
 
-        isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
-        isFromMainMenu = extras.getBoolean("isFromMainMenu");
+
         custidkey = extras.getString("custidkey");
         if (custidkey == null)
             custidkey = "";
@@ -291,8 +292,10 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 parseInputedCurrency(s, subtotal);
-                calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
-                calculateAmountDue(subtotal, tax1, tax2, amount);
+                if (!isFromSalesReceipt) {
+                    calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
+                    calculateAmountDue(subtotal, tax1, tax2, amount);
+                }
                 recalculateChange();
 
             }
@@ -588,7 +591,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         double tax1Rate = 0.00;
         double tax2Rate = 0.00;
         //if we have taxes then
-        if(groupTaxRate.size() > 0) {
+        if (groupTaxRate.size() > 0) {
             tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
             tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
         }

@@ -137,7 +137,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     public static TextView tvStatusMSR;
 
     private double amountToTip = 0;
-    private double grandTotalAmount = 0, actualAmount = 0;
+    private double grandTotalAmount = 0;
 
     private TextView dlogGrandTotal;
     private EMSCallBack callBack;
@@ -231,11 +231,11 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         this.amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         this.amountField.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
-        actualAmount = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         amountField.addTextChangedListener(getTextWatcher(amountField));
         this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
+
+
 
 
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -244,7 +244,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         if (!isFromMainMenu || Global.isIvuLoto) {
             amountField.setEnabled(false);
         }
-        if (!Global.isIvuLoto) {
+        if (!Global.isIvuLoto || !isFromMainMenu) {
             findViewById(R.id.row1Credit).setVisibility(View.GONE);
             findViewById(R.id.row2Credit).setVisibility(View.GONE);
             findViewById(R.id.row3Credit).setVisibility(View.GONE);
@@ -615,6 +615,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                     taxName2 = groupTaxRate.get(1).getTaxName();
             }
         }
+        double actualAmount = Global
+                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         String isRef = null;
         String paymentType = null;
@@ -739,6 +741,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         double amountToBePaid = Global
                 .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double actualAmount = Global
+                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         String pay_dueamount = extras.getString("amount");
 
