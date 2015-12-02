@@ -312,7 +312,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, subtotal);
+//                parseInputedCurrency(s, subtotal);
             }
         });
         tax1.addTextChangedListener(new TextWatcher() {
@@ -325,7 +325,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, tax1);
+//                parseInputedCurrency(s, tax1);
             }
         });
         tax2.addTextChangedListener(new TextWatcher() {
@@ -339,7 +339,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, tax2);
+//                parseInputedCurrency(s, tax2);
             }
         });
         this.paid.addTextChangedListener(new TextWatcher() {
@@ -598,6 +598,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         //set default taxes values to zero
         double tax1Rate = 0.00;
         double tax2Rate = 0.00;
+
         //if we have taxes then
         if (groupTaxRate.size() > 0) {
             tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
@@ -607,8 +608,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         double tax1Dbl = subtotalDbl * tax1Rate;
         double tax2Dbl = subtotalDbl * tax2Rate;
 
-        DecimalFormat df = new DecimalFormat("#.##");
-        df.setRoundingMode(RoundingMode.HALF_EVEN);
+        DecimalFormat df = new DecimalFormat("0.00");
+        df.setRoundingMode(RoundingMode.HALF_UP);
         tax1.setText(df.format(tax1Dbl));
         tax2.setText(df.format(tax2Dbl));
     }

@@ -10,7 +10,7 @@ import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-public class Payment implements Parcelable {
+public class Payment  {
 
     /**
      *
@@ -32,6 +32,7 @@ public class Payment implements Parcelable {
     public String pay_receipt = empstr;
     public String pay_amount = "0.00";
     public String pay_dueamount = "0.00";
+    public String originalTotalAmount = empstr;
     public String pay_comment = empstr;
     public String pay_timecreated = empstr;
     public String pay_timesync = empstr;
@@ -95,8 +96,6 @@ public class Payment implements Parcelable {
     public String check_name = empstr;
     public String check_city = empstr;
     public String check_state = empstr;
-
-    public String originalTotalAmount = empstr;
     public String dl_number = empstr;
     public String dl_state = empstr;
     public String dl_dob = empstr;
@@ -208,13 +207,4 @@ public class Payment implements Parcelable {
 
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-    }
 }
