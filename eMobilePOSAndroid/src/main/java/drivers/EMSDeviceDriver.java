@@ -509,7 +509,6 @@ public class EMSDeviceDriver {
             print(textHandler.lines(lineWidth), FORMAT);
             addTotalLines(this.activity, anOrder, orders, sb, lineWidth);
 
-            int num_taxes = listOrdTaxes.size();
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
             sb.append("\n\n");
@@ -1035,9 +1034,24 @@ public class EMSDeviceDriver {
             }
 
             sb.append(textHandler.newLines(1));
+            if (Global.isIvuLoto && Global.subtotalAmount > 0 && !payArray.getTax1_amount().isEmpty()
+                    && !payArray.getTax2_amount().isEmpty()) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
+                        Global.formatDoubleStrToCurrency(String.valueOf(Global.subtotalAmount)), lineWidth, 0));
+
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),
+                        Global.getCurrencyFormat(payArray.getTax1_amount()), lineWidth, 2));
+
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
+                        Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
+            }
+
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                     Global.formatDoubleStrToCurrency(payArray.getOrd_total()), lineWidth, 0));
+
+//            addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
+
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
                     Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
 
@@ -1144,7 +1158,7 @@ public class EMSDeviceDriver {
 //        } catch (StarIOPortException e) {
 //        }
 //    }
-}
+        }
 
     }
 
@@ -1268,7 +1282,7 @@ public class EMSDeviceDriver {
 
             // db.close();
         } catch (StarIOPortException e) {
-			/*
+            /*
 			 * Builder dialog = new AlertDialog.Builder(this.activity);
 			 * dialog.setNegativeButton("Ok", null); AlertDialog alert =
 			 * dialog.create(); alert.setTitle("Failure"); alert.setMessage(
