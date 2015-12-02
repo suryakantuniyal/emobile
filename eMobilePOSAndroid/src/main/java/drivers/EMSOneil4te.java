@@ -294,8 +294,20 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	}
 
 	@Override
+	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+
+		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+
+		return true;
+	}
+
+
+	/*
+
+	@Override
 	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-		// TODO Auto-generated method stub
+
 		try {
 
 			if (!device.getIsOpen())
@@ -412,7 +424,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 			// db.close();
 
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+
 		} catch (Exception e) {
 
 		} finally {
@@ -422,6 +434,8 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
 		return true;
 	}
+
+*/
 
 	@Override
 	public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {

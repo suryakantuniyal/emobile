@@ -1214,10 +1214,10 @@ public class EMSAsura extends EMSDeviceDriver
             e.printStackTrace();
         }
     }
-
+/*
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-        // TODO Auto-generated method stub
+
         try {
             // port = StarIOPort.getPort(portName, portSettings, 10000,
             // this.activity);
@@ -1331,11 +1331,20 @@ public class EMSAsura extends EMSDeviceDriver
             // db.close();
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
+
             return true;
         }
         return true;
     }
+*/
+	@Override
+	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+
+		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
+
+		return true;
+	}
 
     @Override
     public void releaseCardReader() {
