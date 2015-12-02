@@ -535,7 +535,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s(true, false) || myPref.isPAT100(true, false)) {
+        } else if (myPref.isSam4s(true, false) || myPref.isPAT100()) {
             cardSwipe.setChecked(true);
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())

@@ -401,7 +401,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
             global.resetOrderDetailsValues();
             global.clearListViewData();
 
-            if (myPref.isSam4s(true, true) || myPref.isPAT100(true, true)) {
+            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
                 Global.showCDTDefault(activity);
             }
 
