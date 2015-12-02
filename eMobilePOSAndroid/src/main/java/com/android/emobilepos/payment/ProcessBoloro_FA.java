@@ -293,7 +293,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
         @Override
         protected void onPostExecute(String result) {
         	if (result != null) {
-        		boloroTagID = "42F8CFE0";
+        		boloroTagID = result;
                 Global.showPrompt(activity, R.string.dlog_title_confirm, activity.getString(R.string.dlog_msg_nfc_scanned));
             }
         }
