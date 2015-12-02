@@ -75,8 +75,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 	private boolean hasBeenCreated = false;
     
     
-	public void onCreate(Bundle savedInstanceState) 
-	{
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -84,14 +83,12 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
         global = (Global)getApplication();
         if(extras.getBoolean("isNFC"))
         	setContentView(R.layout.boloro_nfc_layout);
-        else
-        {
+        else {
         	setContentView(R.layout.boloro_manual_layout);
         	isManual = true;
         }
         
       
-        
         Button processButton = (Button)findViewById(R.id.processButton);
         Button btnExact = (Button)findViewById(R.id.btnExact);
         processButton.setOnClickListener(this);
@@ -103,14 +100,11 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
         
         buildPayment();
         
-        if(!isManual)
-        {
+        if (!isManual) {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         mNfcPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        }
-        else
-        {
+        } else {
         	carrierSpinner = (Spinner)findViewById(R.id.spinnerBoloroCarrier);
         	carrierSpinner.setOnItemSelectedListener(this);
         	accountSpinner = (Spinner)findViewById(R.id.spinnerBoloroAccount);
@@ -128,8 +122,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 			global.loggedIn = false;
 		global.stopActivityTransitionTimer();
 		
-		if(hasBeenCreated&&!global.loggedIn)
-		{
+        if (hasBeenCreated && !global.loggedIn) {
 			if(global.getGlobalDlog()!=null)
 				global.getGlobalDlog().dismiss();
 			global.promptForMandatoryLogin(this);
@@ -159,20 +152,16 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
     }
     
     
-    private void buildPayment()
-    {
+    private void buildPayment() {
     	Bundle extras = activity.getIntent().getExtras();
     	payment = new Payment(activity);
     	MyPreferences myPref = new MyPreferences(activity);
     	payment.pay_id = extras.getString("pay_id");
 		payment.emp_id = myPref.getEmpID();
 		
-		if (!extras.getBoolean("histinvoices"))
-		{
+        if (!extras.getBoolean("histinvoices")) {
 			payment.job_id = extras.getString("job_id");
-		}
-		else
-		{
+        } else {
 			payment.inv_id = "";
 		}
 		
@@ -186,22 +175,18 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 		payment.custidkey = extras.getString("custidkey","");
 		
 		
-		
 		payment.paymethod_id = extras.getString("paymethod_id");
 		
 		Global.amountPaid= fieldAmountPaid.getText().toString();
-		if(!Global.amountPaid.isEmpty())
-		{
+        if (!Global.amountPaid.isEmpty()) {
 			payment.pay_amount = Global.amountPaid;
 			payment.pay_dueamount  = Global.amountPaid;
 		}
 		
-		if(isManual)
-		{
+        if (isManual) {
 			String val = fieldPhone.getText().toString().trim();
 			payment.pay_phone = val;
 		}
-		
 		
 		
 		String[] location = Global.getCurrLocation(activity);
@@ -209,24 +194,19 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 		payment.pay_longitude = location[1];
 		
 		
-		
-		if(Global.isIvuLoto)
-		{
+        if (Global.isIvuLoto) {
 			payment.IvuLottoNumber = extras.getString("IvuLottoNumber");
 			payment.IvuLottoDrawDate = extras.getString("IvuLottoDrawDate");
 			payment.IvuLottoQR = Global.base64QRCode(extras.getString("IvuLottoNumber"),extras.getString("IvuLottoDrawDate"));
 			
 			
-			if(!extras.getString("Tax1_amount").isEmpty())
-			{
+            if (!extras.getString("Tax1_amount").isEmpty()) {
 				payment.Tax1_amount = extras.getString("Tax1_amount");
 				payment.Tax1_name = extras.getString("Tax1_name");
 				
 				payment.Tax2_amount = extras.getString("Tax2_amount");
 				payment.Tax2_name = extras.getString("Tax2_name");
-			}
-			else
-			{
+            } else {
 				BigDecimal tempRate;
 				double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
 				tempRate = new BigDecimal(tempPayAmount*0.06).setScale(2, BigDecimal.ROUND_UP);
@@ -241,37 +221,29 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
     }
     
     
-    private void checkoutPayment()
-    {
-    	if(isManual)
-    	{
+    private void checkoutPayment() {
+        if (isManual) {
 	    	int telcoPos = carrierSpinner.getSelectedItemPosition();
 			int transmodePos = accountSpinner.getSelectedItemPosition();
 			payment.telcoid = manualBoloroData.get(telcoPos).getTelcoID();
 			payment.transmode = manualBoloroData.get(telcoPos).getCarrierAccounts().get(transmodePos).get("payment_mode_id");
 			 new ManualCheckoutAsync().execute();
-    	}
-    	else
-    	{
+        } else {
     		payment.tagid = boloroTagID;
     		new NFCCheckoutAsync().execute();
     	}
     }
     
-    private boolean areValidFields()
-    {
+    private boolean areValidFields() {
     	String val1 = fieldAmountDue.getText().toString();
     	String val2 = fieldAmountPaid.getText().toString();
     	
-    	if(!isManual)
-    	{
+        if (!isManual) {
     		if(val1.isEmpty()||val2.isEmpty())
     			Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
     		else
     			return true;
-    	}
-    	else
-    	{
+        } else {
     		String val = fieldPhone.getText().toString().trim();
         	if(val.isEmpty()||val1.isEmpty()||val2.isEmpty())
         		Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.card_validation_error));
@@ -290,18 +262,18 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
  	        String uid = Common.getHexStringFromBytes(tagFromIntent.getId());
  	        return uid;
         }
+
         @Override
         protected void onPostExecute(String result) {
         	if (result != null) {
-        		boloroTagID = result;
+                boloroTagID = result;
                 Global.showPrompt(activity, R.string.dlog_title_confirm, activity.getString(R.string.dlog_msg_nfc_scanned));
             }
         }
     }
     
     
-    private class LoadBoloroDataAsync extends AsyncTask<Void, Void, Void> 
-    {
+    private class LoadBoloroDataAsync extends AsyncTask<Void, Void, Void> {
     	private List<String> listAccounts;
     	private List<String>listCarriers = new ArrayList<String>();
     	private boolean failed = false;
@@ -338,14 +310,11 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 				xr.parse(inSource);
 				manualBoloroData = myParser.getData();
 				int size = manualBoloroData.size();
-				if(size>0)
-				{
+                if (size > 0) {
 					for (int i = 0; i < size; i++) {
 						listCarriers.add(manualBoloroData.get(i).getTelcoName());
 					}
-				}
-				else
-				{
+                } else {
 					failed = true;	
 				}
 				
@@ -357,20 +326,18 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
  	        
  	        return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
         	progressDlog.dismiss();
-        	if(!failed)
-        	{
+            if (!failed) {
 	        	SpinnerAdapter carrierAdapter = new SpinnerAdapter(activity, android.R.layout.simple_spinner_item,listCarriers.toArray(new String[listCarriers.size()]));
 	        	listAccounts = manualBoloroData.get(0).getCarrierAccountsName();
 	        	SpinnerAdapter accountAdapter = new SpinnerAdapter(activity, android.R.layout.simple_spinner_item,listAccounts.toArray(new String[listAccounts.size()]));
 	        	
 	        	carrierSpinner.setAdapter(carrierAdapter);
 	        	accountSpinner.setAdapter(accountAdapter);
-        	}
-        	else
-        	{
+            } else {
         		
         	}
         		
@@ -378,8 +345,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
     }
 
 	
-    private class ManualCheckoutAsync extends AsyncTask<Void, Void, Void> 
-    {
+    private class ManualCheckoutAsync extends AsyncTask<Void, Void, Void> {
     	HashMap<String,String> response;
     	private boolean failed = false;
     	
@@ -392,6 +358,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 			progressDlog.show();
 
 		}
+
         @Override
         protected Void doInBackground(Void... params) {
 
@@ -415,12 +382,9 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 				xr.parse(inSource);
 				response = myParser.getData();
 				
-				if(response!=null&&!response.isEmpty()&&Boolean.parseBoolean(response.get("success")))
-				{
+                if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
 					payment.pay_transid = response.get("transaction_id");
-				}
-				else
-				{
+                } else {
 				failed = true;	
 				}
 				
@@ -432,19 +396,15 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
  	        
  	        return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
         	progressDlog.dismiss();
-        	if(!failed)
-        	{
+            if (!failed) {
         		new  BoloroPollingAsync().execute();
-        	}
-        	else if(response.containsKey("error_message"))
-        	{
+            } else if (response.containsKey("error_message")) {
         		Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
-        	}
-        	else if(response.containsKey("epayStatusCode"))
-        	{
+            } else if (response.containsKey("epayStatusCode")) {
         		StringBuilder sb = new StringBuilder();
         		sb.append("Code:").append(response.get("statusCode")).append("\n");
         		sb.append("Msg:").append(response.get("statusMessage"));
@@ -454,8 +414,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
     }
     
     
-    private class NFCCheckoutAsync extends AsyncTask<Void, Void, Void>
-    {
+    private class NFCCheckoutAsync extends AsyncTask<Void, Void, Void> {
     	HashMap<String,String> response;
     	private boolean failed = false;
     	
@@ -468,6 +427,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 			progressDlog.show();
 
 		}
+
         @Override
         protected Void doInBackground(Void... params) {
 
@@ -491,12 +451,9 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 				xr.parse(inSource);
 				response = myParser.getData();
 				
-				if(response!=null&&!response.isEmpty()&&Boolean.parseBoolean(response.get("success")))
-				{
+                if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
 					payment.pay_transid = response.get("transaction_id");
-				}
-				else
-				{
+                } else {
 				failed = true;	
 				}
 				
@@ -508,20 +465,16 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
  	        
  	        return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
         	progressDlog.dismiss();
-        	if(!failed)
-        	{
+            if (!failed) {
         		new  BoloroPollingAsync().execute();
         		//Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("addnote"));
-        	}
-        	else if(response.containsKey("error_message"))
-        	{
+            } else if (response.containsKey("error_message")) {
         		Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
-        	}
-        	else if(response.containsKey("epayStatusCode"))
-        	{
+            } else if (response.containsKey("epayStatusCode")) {
         		StringBuilder sb = new StringBuilder();
         		sb.append("Code:").append(response.get("statusCode")).append("\n");
         		sb.append("Msg:").append(response.get("statusMessage"));
@@ -531,8 +484,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
     }
     
     
-    private class BoloroPollingAsync extends AsyncTask<Void, Void, Void>
-    {
+    private class BoloroPollingAsync extends AsyncTask<Void, Void, Void> {
     	HashMap<String,String> response;
     	private boolean failed = false;
     	private boolean transCompleted = false;
@@ -561,15 +513,14 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 					        		new  BoloroPollingAsync().execute();
 								}
 							});
-				}
-				else
-				{
+                } else {
 					progressDlog.setMessage(activity.getString(R.string.cancelling_transaction));
 				}
 				progressDlog.show();
 			}
 
 		}
+
         @Override
         protected Void doInBackground(Void... params) {
 
@@ -584,8 +535,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 				{
 					isPolling = true;
 					generatedURL = payGate.paymentWithAction("BoloroPolling", false,null,null);
-				}
-				else	//is Cancel
+                } else    //is Cancel
 				{
 					generatedURL = payGate.paymentWithAction("CancelBoloroTransaction", false,null,null);
 				}
@@ -606,16 +556,14 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 					xr.parse(inSource);
 					response = myParser.getData();
 					
-					if(response!=null&&!response.isEmpty()&&Boolean.parseBoolean(response.get("success")))
-					{
-						if(isPolling&&response.containsKey("next_action")&&response.get("next_action").equals("POLL"))
-						{
+                    if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
+                        if (isPolling && response.containsKey("next_action") && response.get("next_action").equals("POLL")) {
 							isPolling = true;
-							try{ Thread.sleep(POLLING_SLEEP_TIME);
-			        		}catch(InterruptedException e){ }
+                            try {
+                                Thread.sleep(POLLING_SLEEP_TIME);
+                            } catch (InterruptedException e) {
 						}
-						else if(response.containsKey("next_action")&&response.get("next_action").equals("SUCCESS"))
-						{
+                        } else if (response.containsKey("next_action") && response.get("next_action").equals("SUCCESS")) {
 							
 							PaymentsHandler payHandler = new PaymentsHandler(activity);
 							payment.processed = "1";
@@ -626,18 +574,14 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 		            		payHandler.insert(payment);
 		            		isPolling = false;
 							transCompleted  = true;
-						}
-						else if(response.containsKey("next_action")&&response.get("next_action").equals("FAILED"))
+                        } else if (response.containsKey("next_action") && response.get("next_action").equals("FAILED"))
 							failed = true;
-					}
-					else
-					{
+                    } else {
 						failed = true;	
 					}
 				}while(!failed&&isPolling&&!transCompleted);
 				
 
-				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 //				Tracker tracker = EasyTracker.getInstance(activity);
@@ -646,31 +590,22 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
  	        
  	        return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
 			progressDlog.dismiss();
-        	if(!failed)
-        	{
-        		if(transCompleted)
-            	{
+            if (!failed) {
+                if (transCompleted) {
 
             		showFinishDlog(response.get("short_message"));
-            	}
-            	else 
-            	{
+                } else {
             		Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("short_message"));
             	}
-        	}
-        	else if(response.containsKey("error_message")&&!response.get("error_message").isEmpty())
-        	{
+            } else if (response.containsKey("error_message") && !response.get("error_message").isEmpty()) {
         		Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
-        	}
-        	else if(response.containsKey("short_message"))
-        	{
+            } else if (response.containsKey("short_message")) {
         		Global.showPrompt(activity, R.string.dlog_title_error, response.get("short_message"));
-        	}
-        	else if(response.containsKey("epayStatusCode"))
-        	{
+            } else if (response.containsKey("epayStatusCode")) {
         		StringBuilder sb = new StringBuilder();
         		sb.append("Code:").append(response.get("statusCode")).append("\n");
         		sb.append("Msg:").append(response.get("statusMessage"));
@@ -691,8 +626,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 		switch (v.getId()) {
 		case R.id.processButton:
 			
-			if(areValidFields())
-			{
+                if (areValidFields()) {
 				 buildPayment();
 				isPolling = true;
 				checkoutPayment();
@@ -703,9 +637,6 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 			break;
 		}
 	}
-	
-	
-	
 	
 	
 	private class SpinnerAdapter extends ArrayAdapter<String> {

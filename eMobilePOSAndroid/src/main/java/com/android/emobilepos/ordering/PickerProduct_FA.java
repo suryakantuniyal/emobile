@@ -903,7 +903,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         OrderProducts ord = new OrderProducts();
 
         String val = qty_picked;
-        BigDecimal num = Global.getBigDecimalNum(val);
+        BigDecimal num = new BigDecimal(val);
         BigDecimal sum = num.add(getQty(prodID)).setScale(4, RoundingMode.HALF_EVEN);
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
 
