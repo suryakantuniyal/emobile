@@ -323,6 +323,7 @@ public class EMSDeviceDriver {
 
             OrdersHandler orderHandler = new OrdersHandler(activity);
             Order anOrder = orderHandler.getPrintedOrder(ordID);
+
             ClerksHandler clerkHandler = new ClerksHandler(activity);
 
             StringBuilder sb = new StringBuilder();
@@ -407,8 +408,8 @@ public class EMSDeviceDriver {
                     if (isRestMode) {
                         if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
                             m = i;
-                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                    orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
+                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
+//                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
                             for (int j = i + 1; j < size; j++) {
                                 if (orders.get(j).getIsAdded().equals("1"))
                                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
@@ -595,10 +596,10 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
                             Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
 
-                    if (tempGrandTotal >= Double.parseDouble(Global.amountPaid))
+                    if (tempGrandTotal >= paidAmount)
                         tempAmount = 0.00;
                     else
-                        tempAmount = Double.parseDouble(Global.amountPaid) - tempGrandTotal;
+                        tempAmount = paidAmount - tempGrandTotal;
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
                             Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
                             .append("\n\n");

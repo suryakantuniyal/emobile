@@ -604,7 +604,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             tax1Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(0).getTaxRate()));
             tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
         }
-        
+
         BigDecimal tax1Dbl = new BigDecimal(subtotalDbl).multiply(tax1Rate);
         BigDecimal tax2Dbl = new BigDecimal(subtotalDbl).multiply(tax2Rate);
 
