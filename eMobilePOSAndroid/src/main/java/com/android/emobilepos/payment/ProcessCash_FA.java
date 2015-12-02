@@ -596,23 +596,27 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
         double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         //set default taxes values to zero
-        double tax1Rate = 0.00;
-        double tax2Rate = 0.00;
+        BigDecimal tax1Rate = new BigDecimal(0.00);
+        BigDecimal tax2Rate = new BigDecimal(0.00);
 
         //if we have taxes then
         if (groupTaxRate.size() > 0) {
-            tax1Rate = Double.parseDouble(groupTaxRate.get(0).getTaxRate());
-            tax2Rate = Double.parseDouble(groupTaxRate.get(1).getTaxRate());
+            tax1Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(0).getTaxRate()));
+            tax2Rate = new BigDecimal(Double.parseDouble(groupTaxRate.get(1).getTaxRate()));
         }
 
-        double tax1Dbl = subtotalDbl * tax1Rate;
-        double tax2Dbl = subtotalDbl * tax2Rate;
+        BigDecimal tax1Dbl = new BigDecimal(subtotalDbl).multiply(tax1Rate);
+        BigDecimal tax2Dbl = new BigDecimal(subtotalDbl).multiply(tax2Rate);
+
+//        double tax1Dbl = subtotalDbl * tax1Rate;
+//        double tax2Dbl = subtotalDbl * tax2Rate;
 
         DecimalFormat df = new DecimalFormat("0.00");
         df.setRoundingMode(RoundingMode.HALF_UP);
-        tax1.setText(df.format(tax1Dbl));
-        tax2.setText(df.format(tax2Dbl));
+        tax1.setText(df.format(tax1Dbl.doubleValue()));
+        tax2.setText(df.format(tax2Dbl.doubleValue()));
     }
+
 
     private Payment processPayment() {
         PaymentsHandler payHandler = new PaymentsHandler(activity);
