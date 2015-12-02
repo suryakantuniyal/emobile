@@ -372,142 +372,25 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
         // TODO Auto-generated method stub
 
-        PaymentsHandler payHandler = new PaymentsHandler(activity);
-        printPref = myPref.getPrintingPreferences();
-		PaymentDetails paymentDetails = payHandler.getPrintingForPaymentDetails(payID, type);
-        StringBuilder sb = new StringBuilder();
-        boolean isCashPayment = false;
-        boolean isCheckPayment = false;
-        String constantValue = null;
-        String creditCardFooting = "";
+        printPaymentDetailsReceipt(payID,type, isReprint, LINE_WIDTH);
 
-		if (paymentDetails.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
-            isCashPayment = true;
-		else if (paymentDetails.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
-            isCheckPayment = true;
-        else {
-            constantValue = getString(R.string.receipt_included_tip);
-            creditCardFooting = getString(R.string.receipt_creditcard_terms);
-        }
+		return true;
+	}
 
-        this.printImage(0);
+	@Override
+	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
 
-        if (printPref.contains(MyPreferences.print_header))
-            this.printHeader();
+		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
-		sb.append("* ").append(paymentDetails.getPaymethod_name());
-		if(paymentDetails.getIs_refund().equals("1"))
-            sb.append(" Refund *\n\n\n");
-        else
-            sb.append(" Sale *\n\n\n");
-
-        myPrinter.printText(sb.toString(), ALIGN_CENTER, 0, TEXT_SIZE, false);
-
-        sb.setLength(0);
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date), getString(R.string.receipt_time),
-                LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(paymentDetails.getPay_date(), paymentDetails.getPay_timecreated(), LINE_WIDTH, 0)).append("\n\n");
-
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), paymentDetails.getCust_name(), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID, LINE_WIDTH, 0));
-
-        if (!isCashPayment && !isCheckPayment) {
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum), "*" + paymentDetails.getCcnum_last4(), LINE_WIDTH, 0));
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", paymentDetails.getPay_transid(), LINE_WIDTH, 0));
-        } else if (isCheckPayment) {
-			sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum), paymentDetails.getPay_check(), LINE_WIDTH, 0));
-        }
-
-        sb.append(textHandler.newLines(2));
-
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-				Global.formatDoubleStrToCurrency(paymentDetails.getOrd_total()), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-				Global.formatDoubleStrToCurrency(paymentDetails.getPay_amount()), LINE_WIDTH, 0));
-
-		String change = paymentDetails.getChange();
-
-        if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".") && Double.parseDouble(change) > 0)
-            change = "";
-
-        if (constantValue != null)
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue, Global.formatDoubleStrToCurrency(change), LINE_WIDTH, 0));
-
-        myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-
-        sb.setLength(0);
-        myPrinter.printText(textHandler.newLines(4), ALIGN_CENTER, 0, TEXT_SIZE, false);
-
-        if (!isCashPayment && !isCheckPayment) {
-			if(myPref.getPreferences(MyPreferences.pref_handwritten_signature))
-			{
-                sb.append(textHandler.newLines(4));
-			}
-			else if (!paymentDetails.getPay_signature().isEmpty()) {
-				encodedSignature = paymentDetails.getPay_signature();
-                this.printImage(1);
-            }
-            sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-            sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
-            myPrinter.printText(sb.toString(), ALIGN_CENTER, 0, TEXT_SIZE, false);
-            sb.setLength(0);
-        }
-
-
-
-		if (Global.isIvuLoto)
-		{
-            sb = new StringBuilder();
-
-            if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-                sb.append("\n");
-                sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-				sb.append(textHandler.centeredString("CONTROL: " + paymentDetails.getIvuLottoNumber(), LINE_WIDTH));
-//				sb.append(textHandler.centeredString(payArray[12], LINE_WIDTH));
-                sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
-                sb.append("\n");
-                myPrinter.printText(sb.toString(), ALIGN_CENTER, 0, TEXT_SIZE, false);
-
-            } else {
-//				encodedQRCode = payArray[14];
-//
-//				this.printImage(2);
-
-                sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
-				sb.append("\t").append("CONTROL: ").append(paymentDetails.getIvuLottoNumber()).append("\n");
-//				sb.append(payArray[12]).append("\n");
-                sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
-
-                myPrinter.printText(sb.toString(), ALIGN_CENTER, 0, TEXT_SIZE, false);
-
-            }
-            sb.setLength(0);
-        }
-
-
-        if (printPref.contains(MyPreferences.print_footer))
-            this.printFooter();
-
-        String temp = new String();
-        if (!isCashPayment && !isCheckPayment) {
-
-            myPrinter.printText(creditCardFooting, ALIGN_CENTER, 0, TEXT_SIZE, false);
-            temp = textHandler.newLines(4);
-            myPrinter.printText(temp, ALIGN_LEFT, 0, TEXT_SIZE, false);
-        }
-
-        if (isReprint) {
-            myPrinter.printText("*** Copy ***", ALIGN_CENTER, 0, TEXT_SIZE, false);
-            myPrinter.printText(textHandler.newLines(4), ALIGN_LEFT, 0, TEXT_SIZE, false);
-        }
 
         return true;
     }
 
+/*
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        // TODO Auto-generated method stub
 
+		
         StringBuilder sb = new StringBuilder();
         printPref = myPref.getPrintingPreferences();
         //SQLiteDatabase db = new DBManager(activity).openReadableDB();
@@ -587,6 +470,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         return true;
     }
 
+*/
     @Override
     public boolean printOnHold(Object onHold) {
         // TODO Auto-generated method stub
@@ -607,62 +491,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     @Override
     public boolean printReport(String curDate) {
         // TODO Auto-generated method stub
-        PaymentsHandler paymentHandler = new PaymentsHandler(activity);
-        PayMethodsHandler payMethodHandler = new PayMethodsHandler(activity);
-        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-        StringBuilder sb = new StringBuilder();
-        StringBuilder sb_refunds = new StringBuilder();
-
-
-        myPrinter.printText(textHandler.newLines(3), ALIGN_CENTER, 0, TEXT_SIZE, false);
-        sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
-        sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
-        sb.append(textHandler.newLines(2));
-        sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH, 0));
-        sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary), LINE_WIDTH, 0));
-
-        HashMap<String, String> paymentMap = paymentHandler.getPaymentsRefundsForReportPrinting(
-                Global.formatToDisplayDate(curDate, activity, 4), 0);
-        HashMap<String, String> refundMap = paymentHandler.getPaymentsRefundsForReportPrinting(
-                Global.formatToDisplayDate(curDate, activity, 4), 1);
-        List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
-        int size = payMethodsNames.size();
-        double payGranTotal = 0.00;
-        double refundGranTotal = 0.00;
-        myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-        sb.setLength(0);
-        for (int i = 0; i < size; i++) {
-            if (paymentMap.containsKey(payMethodsNames.get(i)[0])) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                        Global.formatDoubleStrToCurrency(paymentMap.get(payMethodsNames.get(i)[0])), LINE_WIDTH, 3));
-
-                payGranTotal += Double.parseDouble(paymentMap.get(payMethodsNames.get(i)[0]));
-            } else
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1], Global.formatDoubleToCurrency(0.00),
-                        LINE_WIDTH, 3));
-
-            if (refundMap.containsKey(payMethodsNames.get(i)[0])) {
-                sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                        Global.formatDoubleStrToCurrency(refundMap.get(payMethodsNames.get(i)[0])), LINE_WIDTH, 3));
-                refundGranTotal += Double.parseDouble(refundMap.get(payMethodsNames.get(i)[0]));
-            } else
-                sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(payMethodsNames.get(i)[1],
-                        Global.formatDoubleToCurrency(0.00), LINE_WIDTH, 3));
-
-        }
-        sb.append(textHandler.newLines(2));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                Global.formatDoubleStrToCurrency(Double.toString(payGranTotal)), LINE_WIDTH, 4));
-        sb.append(textHandler.newLines(3));
-
-        sb_refunds.append(textHandler.newLines(2));
-        sb_refunds.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                Global.formatDoubleStrToCurrency(Double.toString(refundGranTotal)), LINE_WIDTH, 4));
-
-        myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-        myPrinter.printText(sb_refunds.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-        myPrinter.printText(textHandler.newLines(5), ALIGN_LEFT, 0, TEXT_SIZE, false);
-        myPrinter.printText("", ALIGN_LEFT, 0, TEXT_SIZE, false);
+		printReportReceipt(curDate, LINE_WIDTH);
 
         return true;
     }
@@ -1015,20 +844,25 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     };
 
     @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+	public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         // TODO Auto-generated method stub
+
+		printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+
         return true;
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
         // TODO Auto-generated method stub\
+        printOpenInvoicesReceipt(invID, LINE_WIDTH);
         return true;
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+	public void printStationPrinter(List<Orders> orders, String ordID) {
         // TODO Auto-generated method stub
+        printStationPrinterReceipt(orders, ordID,LINE_WIDTH);
 
     }
 
@@ -1042,93 +876,8 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
         // TODO Auto-generated method stub
 
-        this.encodedSignature = map.get("encoded_signature");
-        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-        StringBuilder sb = new StringBuilder();
+		printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
-        printPref = myPref.getPrintingPreferences();
-        int size = c.getCount();
-        this.printImage(0);
-
-        if (printPref.contains(MyPreferences.print_header))
-            this.printHeader();
-
-        if (!isPickup)
-            sb.append(textHandler.centeredString(getString(R.string.consignment_summary), LINE_WIDTH)).append("\n\n");
-        else
-            sb.append(textHandler.centeredString(getString(R.string.consignment_pickup), LINE_WIDTH)).append("\n\n");
-
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), map.get("cust_name"), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee), myPref.getEmpName(), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id), map.get("ConsTrans_ID"), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-        sb.append(textHandler.newLines(3));
-
-        for (int i = 0; i < size; i++) {
-            c.moveToPosition(i);
-            if (!c.getString(c.getColumnIndex("ConsOriginal_Qty")).equals("0")) {
-
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(c.getString(c.getColumnIndex("prod_name")), LINE_WIDTH, 0));
-
-                if (printPref.contains(MyPreferences.print_descriptions)) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "", LINE_WIDTH, 3))
-                            .append("\n");
-                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(c.getString(c.getColumnIndex("prod_desc")), LINE_WIDTH, 5))
-                            .append("\n");
-                } else
-                    sb.append(textHandler.newLines(1));
-
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:", c.getString(c.getColumnIndex("ConsOriginal_Qty")),
-                        LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Rack Qty:", c.getString(c.getColumnIndex("ConsStock_Qty")),
-                        LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Returned Qty:", c.getString(c.getColumnIndex("ConsReturn_Qty")),
-                        LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sold Qty:", c.getString(c.getColumnIndex("ConsInvoice_Qty")),
-                        LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Dispatched Qty:",
-                        c.getString(c.getColumnIndex("ConsDispatch_Qty")), LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", c.getString(c.getColumnIndex("ConsNew_Qty")),
-                        LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Product Price:",
-                        Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("price"))), LINE_WIDTH, 5));
-
-                if (!isPickup)
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Subtotal:", Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("item_subtotal"))), LINE_WIDTH, 5));
-                else
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Subtotal:", Global.formatDoubleStrToCurrency("0"), LINE_WIDTH, 5));
-
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Credit Memo:",
-                        Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("credit_memo"))), LINE_WIDTH, 5));
-
-                if (!isPickup)
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:", Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("item_total"))), LINE_WIDTH, 5)).append(textHandler.newLines(2));
-                else
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:", Global.formatDoubleStrToCurrency("0"), LINE_WIDTH, 5)).append(textHandler.newLines(2));
-
-                myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-                sb.setLength(0);
-            }
-        }
-
-        sb.append(textHandler.lines(LINE_WIDTH));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Sold:", map.get("total_items_sold"), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Returned", map.get("total_items_returned"), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Dispatched", map.get("total_items_dispatched"), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Line Items", map.get("total_line_items"), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:",
-                Global.formatDoubleStrToCurrency(map.get("total_grand_total")), LINE_WIDTH, 0));
-        sb.append(textHandler.newLines(3));
-
-        myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-
-        if (printPref.contains(MyPreferences.print_footer))
-            this.printFooter();
-
-        this.printImage(1);
-
-        myPrinter.printText(textHandler.newLines(3), ALIGN_LEFT, 0, TEXT_SIZE, false);
 
         return true;
     }
