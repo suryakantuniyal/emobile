@@ -169,7 +169,7 @@ public class Global extends MultiDexApplication {
                 case 11:
                     return ON_HOLD;
                 case 12:
-                    return SALE_RECEIPT;
+                    return CONSIGNMENT;
                 case 13:
                     return LOCATION;
                 default:
