@@ -12,6 +12,7 @@ import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +33,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
+import com.android.support.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -184,7 +186,6 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 
         setContentView(R.layout.activate_card_layout);
         hiddenField = (EditText) findViewById(R.id.hiddenFieldGiftCardNumber);
-        hiddenField.addTextChangedListener(hiddenTxtWatcher(hiddenField));
         Button btnProcess = (Button) findViewById(R.id.processButton);
         btnProcess.setOnClickListener(this);
         fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
@@ -267,6 +268,8 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 
                 break;
         }
+        hiddenField.addTextChangedListener(new GiftCardTextWatcher(activity, hiddenField, fieldCardNum, cardInfoManager));
+
         setUpCardReader();
         hasBeenCreated = true;
     }
@@ -274,13 +277,11 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
     private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
 
         return new TextWatcher() {
-            boolean doneScanning = false;
-            String temp;
-
             @Override
             public void afterTextChanged(Editable s) {
-                if (doneScanning) {
-                    doneScanning = false;
+                String value = s.toString();
+                if (value.contains("\n") && value.split("\n").length >= 2
+                        && value.substring(value.length() - 1).contains("\n")) {
                     String data = hiddenField.getText().toString().replace("\n", "");
                     hiddenField.setText("");
                     // if(Global.isEncryptSwipe)
@@ -300,12 +301,6 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
-                temp = s.toString();
-                if (temp.contains("\n") && temp.split("\n").length >= 2
-                        && temp.substring(temp.length() - 1).contains("\n")) {
-                    doneScanning = true;
-                }
 
             }
         };
@@ -392,7 +387,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
             // }
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
-            int _printer_type = myPref.printerType(true, -2);
+            int _printer_type = myPref.getPrinterType();
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
                 Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
@@ -414,6 +409,8 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
             _msrUsbSams = new EMSIDTechUSB(activity, msrCallBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
+        } else if(myPref.isEM100()){
+            cardSwipe.setChecked(true);
         }
     }
 

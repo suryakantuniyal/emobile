@@ -3,8 +3,10 @@ package com.android.emobilepos.ordering;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -174,7 +176,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
         Intent i = getIntent();
         handleDecodeData(i);
 
-        if (Global.deviceHasBarcodeScanner(myPref.printerType(true, -2))
+        if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
                 || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
                 Global.mainPrinterManager.currentDevice.loadScanner(callBackMSR);
@@ -691,7 +693,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
                 if (doneScanning) {
                     doneScanning = false;
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
-
+                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
                     String[] listData = handler.getUPCProducts(upc);
                     if (listData[0] != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
@@ -737,7 +739,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
-                if (s.toString().contains("\n"))
+                if (s.toString().contains("\n") || s.toString().contains("\r"))
                     doneScanning = true;
             }
         };
@@ -955,7 +957,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
             // }
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
-            int _printer_type = myPref.printerType(true, -2);
+            int _printer_type = myPref.getPrinterType();
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
                 Global.btSwiper.currentDevice.loadCardReader(callBackMSR, false);

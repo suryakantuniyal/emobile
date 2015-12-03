@@ -1117,7 +1117,7 @@ public class Global extends MultiDexApplication {
 
     }
 
-    public static CreditCardInfo parseSimpleMSR(Activity activity, String data) {
+    public static CreditCardInfo parseSimpleMSR(Context activity, String data) {
         CreditCardInfo cardManager = new CreditCardInfo();
         Encrypt encrypt = new Encrypt(activity);
         String card_number;
@@ -1717,7 +1717,7 @@ public class Global extends MultiDexApplication {
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
-                || _device_type == Global.STAR);
+                || _device_type == Global.STAR || _device_type == Global.EM100);
     }
 
     // Handle application transition for background

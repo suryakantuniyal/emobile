@@ -18,6 +18,7 @@ import drivers.EMSAsura;
 import drivers.EMSBlueBambooP25;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
+import drivers.EMSEM100;
 import drivers.EMSIngenico;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSOneil4te;
@@ -109,7 +110,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice.connect(activity, -1, true, instance);
                 break;
             case Global.EM100:
-                aDevice = new EMSPAT100();
+                aDevice = new EMSEM100();
                 aDevice.connect(activity, -1, true, instance);
                 break;
             case Global.ISMP:

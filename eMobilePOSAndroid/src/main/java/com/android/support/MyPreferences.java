@@ -686,16 +686,27 @@ public class MyPreferences {
         return "eMobilePOS";
     }
 
-    public int printerType(boolean isGet, int value) {
+    public int getPrinterType(){
         String printer_type = "printer_type";
-        if (isGet)
-            return prefs.getInt(printer_type, -1);
-        else {
-            prefEditor.putInt(printer_type, value);
-            prefEditor.commit();
-        }
-        return -1;
+        return prefs.getInt(printer_type, -1);
     }
+
+    public void setPrinterType(int value){
+        String printer_type = "printer_type";
+        prefEditor.putInt(printer_type, value);
+        prefEditor.commit();
+    }
+
+//    public int printerType(boolean isGet, int value) {
+//        String printer_type = "printer_type";
+//        if (isGet)
+//            return prefs.getInt(printer_type, -1);
+//        else {
+//            prefEditor.putInt(printer_type, value);
+//            prefEditor.commit();
+//        }
+//        return -1;
+//    }
 
     public int sledType(boolean isGet, int value) {
         String sled_type = "sled_type";

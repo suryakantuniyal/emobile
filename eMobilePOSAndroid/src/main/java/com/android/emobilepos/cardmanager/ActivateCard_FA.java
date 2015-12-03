@@ -93,6 +93,7 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, On
 		btnProcess.setOnClickListener(this);
 		fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
 		cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
+		fieldCardNum = (EditText) findViewById(R.id.fieldCardNumber);
 
 		TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
 		headerTitle.setText(getString(R.string.activate));
@@ -167,22 +168,9 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, On
 					roverReader.initializeReader(activity, false);
 				}
 			}
-			// if
-			// (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
-			// {
-			// uniMagReader = new EMSUniMagDriver();
-			// uniMagReader.initializeReader(this);
-			// } else {
-			// magtekReader = new EMSMagtekAudioCardReader(this);
-			// new Thread(new Runnable() {
-			// public void run() {
-			// magtekReader.connectMagtek(true,msrCallBack);
-			// }
-			// }).start();
-			// }
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
-			int _printer_type = myPref.printerType(true, -2);
+			int _printer_type = myPref.getPrinterType();
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
 					&& !cardReaderConnected) {
 				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
@@ -199,7 +187,7 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, On
 			Intent i = getIntent();
 			handleDecodeData(i);
 			cardSwipe.setChecked(true);
-		} else if (myPref.isSam4s(true, false)) {
+		} else if (myPref.isSam4s(true, false) || myPref.isEM100()) {
 			cardSwipe.setChecked(true);
 		}
 	}

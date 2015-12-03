@@ -90,15 +90,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
             try {
-
-                // powaPOS = new PowaPOS(this.activity, peripheralCallback);
-
-                // PowaTSeries mcu = new PowaTSeries(this.activity);
-                // powaPOS.addPeripheral(mcu);
-                //
-                // PowaS10Scanner scanner = new PowaS10Scanner(activity);
-                // powaPOS.addPeripheral(scanner);
-
                 powaPOS = new PowaPOS(this.activity, mPowaPOSCallback);
                 powaPOS.initializeMCU(true);
                 powaPOS.initializeScanner();
@@ -109,52 +100,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         }
     }
 
-    // ===================================== SCANNER CALLBACK
-    // =======================================
-    // PowaHidScanner.Callback hidScannerCB = new PowaHidScanner.Callback() {
-    // @Override
-    // public void onScannerReady() {
-    // Log.d("", "onScannerReady()");
-    // }
-    //
-    // @Override
-    // public void onScannerDetached() {
-    // Log.d("", "onScannerDetached()");
-    // }
-    //
-    // @Override
-    // public void onControlKeyScanned(PowaHidKeyDecoder.CONTROL_KEY controlKey)
-    // {
-    // Toast.makeText(EMSPowaPOS.this.activity, controlKey.name() + " has been
-    // received", Toast.LENGTH_SHORT)
-    // .show();
-    // // Some scanners send CONTROL KEYS at the start/end of the data,
-    // // this way users may identify
-    // // different events happening. Check if your scanner brand send any
-    // // of them by overriding this
-    // // method.
-    // }
-    //
-    // @Override
-    // public void onScanStartDecoding() {
-    // // This event is only useful for providing animation while the
-    // // decoding is in process.
-    // // Usually this process take about 1.5 second, so developers can
-    // // start playing a nice animation
-    // // at this point.
-    // }
-    //
-    // @Override
-    // public void onScanFinishedDecoding(byte[] data) {
-    // try {
-    // Toast.makeText(activity, new String(data, "UTF-8"),
-    // Toast.LENGTH_LONG).show();
-    // } catch (UnsupportedEncodingException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // }
-    // };
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -182,24 +127,12 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
                     @Override
                     public void run() {
                         Looper.prepare();
-                        // powaPOS = new PowaPOS(EMSPowaPOS.this.activity,
-                        // peripheralCallback);
-                        // powaPOS.initializeMCU();
-                        // powaPOS.initializeScanner();
 
                         powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);
                         powaPOS.initializeMCU(true);
                         powaPOS.initializeScanner();
                         powaHidDecoderScanner = new PowaHidScanner(hidScannerCB);
 
-                        // powaPOS = new PowaPOS(EMSPowaPOS.this.activity,
-                        // peripheralCallback);
-                        // PowaTSeries mcu = new
-                        // PowaTSeries(EMSPowaPOS.this.activity);
-                        // powaPOS.addPeripheral(mcu);
-                        // PowaS10Scanner scanner = new
-                        // PowaS10Scanner(EMSPowaPOS.this.activity);
-                        // powaPOS.addPeripheral(scanner);
                         myProgressDialog.dismiss();
                         Looper.loop();
                     }
@@ -223,15 +156,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         if (!deviceList.isEmpty()) {
             return true;
         }
-        // while (deviceIterator.hasNext()) {
-        //
-        // /*UsbDevice device = deviceIterator.next();
-        // if((device.getVendorId()==1240&&device.getProductId()==516)||(device.getVendorId()==1155&&device.getProductId()==22321))
-        // return true;*/
-        //
-        // return true;
-        //
-        // }
+
         return false;
     }
 
@@ -255,19 +180,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             // TODO Auto-generated method stub
 
             try {
-
-                // powaPOS = new PowaPOS(activity, peripheralCallback);
-                //
-                // PowaTSeries mcu = new PowaTSeries(activity);
-                // powaPOS.addPeripheral(mcu);
-
                 powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);
                 powaPOS.initializeMCU(true);
                 powaPOS.initializeScanner();
                 powaHidDecoderScanner = new PowaHidScanner(hidScannerCB);
-                // PowaS10Scanner scanner = new PowaS10Scanner(activity);
-                // powaPOS.addPeripheral(scanner);
-
                 didConnect = true;
             } catch (Exception e) {
             }
@@ -280,13 +196,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             myProgressDialog.dismiss();
 
             Toast.makeText(activity, "finished connection", Toast.LENGTH_LONG).show();
-            // if (didConnect) {
-            // edm.driverDidConnectToDevice(thisInstance,true);
-            // } else {
-            //
-            // edm.driverDidNotConnectToDevice(thisInstance, msg,true);
-            // }
-
         }
     }
 
@@ -294,10 +203,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public void registerAll() {
         this.registerPrinter();
     }
-
-    // private String getString(int id) {
-    // return (activity.getResources().getString(id));
-    // }
 
 	@Override
 	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
@@ -443,8 +348,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         @Override
         public void onMCUFirmwareUpdateStarted() {
-            // Toast.makeText(activity, "mcu firmware update started",
-            // Toast.LENGTH_LONG).show();
+
         }
 
         @Override
@@ -466,20 +370,12 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         @Override
         public void onMCUFirmwareUpdateProgress(int progress) {
-            // if(mcuFragment != null){
-            // mcuFragment.updateBarDialog(progress);
-            // }
-            // Toast.makeText(activity, "mcu firmware update progress",
-            // Toast.LENGTH_LONG).show();
+
         }
 
         @Override
         public void onMCUFirmwareUpdateFinished() {
-            // if(mcuFragment != null){
-            // mcuFragment.closeBarDialog();
-            // }
-            // Toast.makeText(activity, "firmware update finished",
-            // Toast.LENGTH_LONG).show();
+
         }
 
         @Override

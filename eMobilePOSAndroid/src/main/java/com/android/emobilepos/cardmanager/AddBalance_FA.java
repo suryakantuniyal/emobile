@@ -195,7 +195,7 @@ public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnCli
 //			}
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
-			int _printer_type = myPref.printerType(true, -2);
+			int _printer_type = myPref.getPrinterType();
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
 				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
 			} else if (_printer_type != -1
