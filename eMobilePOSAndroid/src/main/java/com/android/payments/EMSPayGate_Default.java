@@ -770,7 +770,7 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "Amounts");
 
         serializer.startTag(empstr, "CCAmt");
-        String temp = payment.pay_amount;
+        String temp = payment.pay_amount.toString().replaceAll("[^\\d\\,\\.]", "").trim();
         try {
             temp = Global.getRoundBigDecimal(new BigDecimal(temp));
         } catch (Exception e) {
