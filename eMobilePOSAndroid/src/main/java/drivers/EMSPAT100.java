@@ -123,17 +123,17 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         @Override
         protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
-            printerApi = new PrinterManage();
-            printerApi.open();
-            int res = printerApi.initPrinter();
-            if (res == 0) {
-                didConnect = true;
+            if (myPref.isPAT100()) {
+                printerApi = new PrinterManage();
+                printerApi.open();
+                int res = printerApi.initPrinter();
+                if (res == 0) {
+                    didConnect = true;
+                }
+                terminalDisp = new DisplayManager();
+                terminalDisp.open();
+                terminalDisp.initialize();
             }
-
-            terminalDisp = new DisplayManager();
-            terminalDisp.open();
-            terminalDisp.initialize();
             return null;
         }
 
@@ -155,13 +155,13 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         this.registerPrinter();
     }
 
-	@Override
-	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
-		// TODO Auto-generated method stub
-		printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
-	
-		return true;
-	}
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        // TODO Auto-generated method stub
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
+
+        return true;
+    }
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
@@ -272,8 +272,8 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (constantValue != null)
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
                     Global.formatDoubleStrToCurrency(change), LINE_WIDTH, 0));
-        else if(Double.parseDouble(paymentDetails.getPay_dueamount())> Double.parseDouble(paymentDetails.getOrd_total())){
-            double chg = Double.parseDouble(paymentDetails.getPay_dueamount())-Double.parseDouble(paymentDetails.getOrd_total());
+        else if (Double.parseDouble(paymentDetails.getPay_dueamount()) > Double.parseDouble(paymentDetails.getOrd_total())) {
+            double chg = Double.parseDouble(paymentDetails.getPay_dueamount()) - Double.parseDouble(paymentDetails.getOrd_total());
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.changeLbl),
                     Global.formatDoubleToCurrency(chg), LINE_WIDTH, 0));
         }

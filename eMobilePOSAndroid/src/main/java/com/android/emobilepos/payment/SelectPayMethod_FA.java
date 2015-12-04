@@ -171,7 +171,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			String row1 = "Grand Total";
 			String row2 = Global.formatDoubleStrToCurrency(total);
 			TerminalDisplay.setTerminalDisplay(myPref,row1,row2);
-		} else if (myPref.isPAT100(true, true)) {
+		} else if (myPref.isPAT100()) {
 			String row1 = "Grand Total";
 			String row2 = Global.formatDoubleStrToCurrency(total);
 			TerminalDisplay.setTerminalDisplay(myPref,row1,row2);

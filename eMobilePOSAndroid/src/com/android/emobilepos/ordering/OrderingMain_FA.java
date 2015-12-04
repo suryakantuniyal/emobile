@@ -581,7 +581,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 			String data = i.getStringExtra(DATA_STRING_TAG);
 
 			if (dlogMSR != null && dlogMSR.isShowing()) {
-				this.cardInfoManager = Global.parseSimpleMSR(this, data);
+				this.cardInfoManager = Global.parseSimpleMSR(this, data, isEncryptSwipe);
 				wasReadFromReader = true;
 				cardInfoManager.setWasSwiped(true);
 				if (loyaltySwiped)
@@ -1051,7 +1051,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 					doneScanning = false;
 					String data = hiddenField.getText().toString().replace("\n", "");
 					hiddenField.setText("");
-					cardInfoManager = Global.parseSimpleMSR(activity, data);
+					cardInfoManager = Global.parseSimpleMSR(activity, data, isEncryptSwipe);
 					swiperField.setText(cardInfoManager.getCardNumUnencrypted());
 				}
 			}

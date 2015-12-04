@@ -15,6 +15,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +40,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.BoloroCarrier;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 
 import org.xml.sax.InputSource;
@@ -96,8 +100,9 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
         fieldPhone = (EditText)findViewById(R.id.fieldPhone);
         fieldAmountDue = (EditText)findViewById(R.id.fieldAmountDue);
         fieldAmountPaid = (EditText)findViewById(R.id.fieldAmountPaid);
-        fieldAmountDue.setText(extras.getString("amount"));
-        
+        fieldAmountDue.setText(extras.getString("amount")); //set to 0.00
+        fieldAmountPaid.setText(extras.getString("amount")); //set to 0.00
+
         buildPayment();
         
         if (!isManual) {
@@ -110,11 +115,32 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
         	accountSpinner = (Spinner)findViewById(R.id.spinnerBoloroAccount);
         	new LoadBoloroDataAsync().execute();
         }
-        
-        hasBeenCreated = true;
+
+        fieldAmountDue.addTextChangedListener(getTextWatcher(fieldAmountDue));
+        fieldAmountPaid.addTextChangedListener(getTextWatcher(fieldAmountPaid));
+//      move the amount cursor to the right of the default value
+        Selection.setSelection(fieldAmountDue.getText(), fieldAmountDue.getText().length());
+        Selection.setSelection(fieldAmountPaid.getText(), fieldAmountPaid.getText().length());
+
+		hasBeenCreated = true;
 	}
-	
-	
+
+	private TextWatcher getTextWatcher(final EditText editText) {
+
+		return new TextWatcher() {
+			public void afterTextChanged(Editable s) {
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				ProcessCash_FA.parseInputedCurrency(s, editText);
+			}
+		};
+	}
+
+
 	@Override
     protected void onResume() {
         super.onResume();
@@ -177,8 +203,10 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 		
 		payment.paymethod_id = extras.getString("paymethod_id");
 		
-		Global.amountPaid= fieldAmountPaid.getText().toString();
-        if (!Global.amountPaid.isEmpty()) {
+
+		Global.amountPaid= NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid.getText().toString());
+		if(!Global.amountPaid.isEmpty())
+		{
 			payment.pay_amount = Global.amountPaid;
 			payment.pay_dueamount  = Global.amountPaid;
 		}

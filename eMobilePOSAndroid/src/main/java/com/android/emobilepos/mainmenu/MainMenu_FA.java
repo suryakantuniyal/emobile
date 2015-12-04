@@ -103,7 +103,7 @@ public class MainMenu_FA extends FragmentActivity {
 		global.stopActivityTransitionTimer();
 
 		if (hasBeenCreated && !global.loggedIn
-				&& (myPref.printerType(true, -2) != Global.POWA || (myPref.printerType(true, -2) == Global.POWA
+				&& (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
 						&& (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)))) {
 			if (global.getGlobalDlog() != null)
 				global.getGlobalDlog().dismiss();
@@ -246,18 +246,18 @@ public class MainMenu_FA extends FragmentActivity {
 				else
 					sb.append(_peripheralName).append(": ").append("Failed to connect\n");
 			}
-			if ((myPref.printerType(true, -2) != -1) && (Global.mainPrinterManager == null)) // ||(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice==null)))
+			if ((myPref.getPrinterType() != -1) && (Global.mainPrinterManager == null)) // ||(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice==null)))
 			{
 				edm = new EMSDeviceManager();
 				Global.mainPrinterManager = edm.getManager();
-				_peripheralName = Global.getPeripheralName(myPref.printerType(true, -2));
+				_peripheralName = Global.getPeripheralName(myPref.getPrinterType());
 				_portName = myPref.printerMACAddress(true, null);
 				String _portNumber = myPref.getStarPort();
 				boolean isPOS = myPref.posPrinter(true, false);
 				int txtAreaSize = myPref.printerAreaSize(true, -1);
 
-				if (myPref.printerType(true, -2) != Global.POWA) {
-					if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.printerType(true, -2), txtAreaSize,
+				if (myPref.getPrinterType() != Global.POWA) {
+					if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
 							isPOS, _portName, _portNumber))
 						sb.append(_peripheralName).append(": ").append("Connected\n");
 					else
@@ -277,7 +277,7 @@ public class MainMenu_FA extends FragmentActivity {
 			else if (isUSB && Global.mainPrinterManager.currentDevice == null) {
 				if (global.getGlobalDlog() != null)
 					global.getGlobalDlog().dismiss();
-				Global.mainPrinterManager.loadMultiDriver(activity, myPref.printerType(true, -2), 0, true, "", "");
+				Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
 			}
 		}
 	}

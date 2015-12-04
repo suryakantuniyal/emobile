@@ -280,7 +280,7 @@ public class EMSUniMagDriver implements  uniMagReaderMsg ,uniMagReaderToolsMsg{
 				
 				String tr1 = cd.getT1DataAscii()==null?"":cd.getT1DataAscii();
 				String tr2 = cd.getT2DataAscii()==null?"":cd.getT2DataAscii();
-				CreditCardInfo temp = Global.parseSimpleMSR(activity, tr1.replace("%*", "%").replace("?*", "?")+tr2.replace("?*", "?"));
+				CreditCardInfo temp = Global.parseSimpleMSR(activity, tr1.replace("%*", "%").replace("?*", "?")+tr2.replace("?*", "?"), isEncryptSwipe);
 				cardManager.setCardExpMonth(temp.getCardExpMonth());
 				cardManager.setCardExpYear(temp.getCardExpYear());
 				cardManager.setCardLast4(temp.getCardLast4());
@@ -299,7 +299,7 @@ public class EMSUniMagDriver implements  uniMagReaderMsg ,uniMagReaderToolsMsg{
 				else
 					tracks.append(cd.getT1DataAscii()==null?"":cd.getT1DataAscii()).append(cd.getT2DataAscii()==null?"":cd.getT2DataAscii());
 				
-				cardManager = Global.parseSimpleMSR(activity, tracks.toString());
+				cardManager = Global.parseSimpleMSR(activity, tracks.toString(), isEncryptSwipe);
 			}
 			
 			return cardManager;
@@ -333,7 +333,7 @@ public class EMSUniMagDriver implements  uniMagReaderMsg ,uniMagReaderToolsMsg{
 			cardManager.setEncryptedTrack2(cd.getT2Encrypted());
 			cardManager.setDeviceSerialNumber(cd.getSerialNumber());
 			
-			CreditCardInfo temp = Global.parseSimpleMSR(activity, cd.getT1DataAscii().replace("%*", "%").replace("?*", "?")+cd.getT2DataAscii().replace("?*", "?"));
+			CreditCardInfo temp = Global.parseSimpleMSR(activity, cd.getT1DataAscii().replace("%*", "%").replace("?*", "?")+cd.getT2DataAscii().replace("?*", "?"), isEncryptSwipe);
 			cardManager.setCardExpMonth(temp.getCardExpMonth());
 			cardManager.setCardExpYear(temp.getCardExpYear());
 			cardManager.setCardLast4(temp.getCardLast4());
@@ -351,7 +351,7 @@ public class EMSUniMagDriver implements  uniMagReaderMsg ,uniMagReaderToolsMsg{
 			else
 				tracks.append(cd.getT1DataAscii()).append(cd.getT2DataAscii());
 			
-			cardManager = Global.parseSimpleMSR(activity, tracks.toString());
+			cardManager = Global.parseSimpleMSR(activity, tracks.toString(), isEncryptSwipe);
 		}
 		
 		return cardManager;

@@ -13,6 +13,7 @@ import com.android.support.Encrypt;
 import com.android.support.GenerateXML;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -770,7 +771,7 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "Amounts");
 
         serializer.startTag(empstr, "CCAmt");
-        String temp = payment.pay_amount;
+        String temp = NumberUtils.cleanCurrencyFormatedNumber(payment.pay_amount.toString());
         try {
             temp = Global.getRoundBigDecimal(new BigDecimal(temp));
         } catch (Exception e) {

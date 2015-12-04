@@ -607,7 +607,7 @@ public class SettingsManager_FA extends FragmentActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					myPref.printerType(false, Global.SNBC);
+					myPref.setPrinterType(Global.SNBC);
 					// myPref.printerMACAddress(false, macAddressList.get(pos));
 
 					EMSDeviceManager edm = new EMSDeviceManager();
@@ -778,7 +778,7 @@ public class SettingsManager_FA extends FragmentActivity {
 							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) // star
 																									// micronics
 							{
-								myPref.printerType(false, Global.STAR);
+								myPref.setPrinterType(Global.STAR);
 								myPref.printerMACAddress(false, "BT:" + macAddressList.get(pos));
 
 								EMSDeviceManager edm = new EMSDeviceManager();
@@ -787,7 +787,7 @@ public class SettingsManager_FA extends FragmentActivity {
 
 							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) // bamboo
 							{
-								myPref.printerType(false, Global.BAMBOO);
+								myPref.setPrinterType(Global.BAMBOO);
 								myPref.printerMACAddress(false, macAddressList.get(pos));
 
 								EMSDeviceManager edm = new EMSDeviceManager();
@@ -804,7 +804,7 @@ public class SettingsManager_FA extends FragmentActivity {
 								Global.btSled.loadDrivers(activity, Global.ISMP, false);
 							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
 							{
-								myPref.printerType(false, Global.ZEBRA);
+								myPref.setPrinterType(Global.ZEBRA);
 								myPref.printerMACAddress(false, macAddressList.get(pos));
 
 								EMSDeviceManager edm = new EMSDeviceManager();
@@ -812,7 +812,7 @@ public class SettingsManager_FA extends FragmentActivity {
 								Global.mainPrinterManager.loadDrivers(activity, Global.ZEBRA, false);
 							} else if (val[pos].toUpperCase(Locale.getDefault()).contains("MP")) // Oneil
 							{
-								myPref.printerType(false, Global.ONEIL);
+								myPref.setPrinterType(Global.ONEIL);
 								myPref.printerMACAddress(false, macAddressList.get(pos));
 
 								EMSDeviceManager edm = new EMSDeviceManager();
@@ -844,16 +844,20 @@ public class SettingsManager_FA extends FragmentActivity {
 			EMSDeviceManager edm = new EMSDeviceManager();
 
 			if (myPref.isAsura(true, false)) {
-				myPref.printerType(false, Global.ASURA);
+				myPref.setPrinterType(Global.ASURA);
 				Global.mainPrinterManager = edm.getManager();
 				Global.mainPrinterManager.loadDrivers(activity, Global.ASURA, false);
 
-			} else if (myPref.isPAT100(true, false)) {
-				myPref.printerType(false, Global.PAT100);
+			} else if (myPref.isPAT100()) {
+				myPref.setPrinterType(Global.PAT100);
 				Global.mainPrinterManager = edm.getManager();
 				Global.mainPrinterManager.loadDrivers(activity, Global.PAT100, false);
+			} else if (myPref.isEM100()) {
+				myPref.setPrinterType(Global.EM100);
+				Global.mainPrinterManager = edm.getManager();
+				Global.mainPrinterManager.loadDrivers(activity, Global.EM100, false);
 			} else {
-				myPref.printerType(false, Global.POWA);
+				myPref.setPrinterType(Global.POWA);
 				Global.mainPrinterManager = edm.getManager();
 				Global.mainPrinterManager.loadDrivers(activity, Global.POWA, false);
 			}
@@ -913,34 +917,7 @@ public class SettingsManager_FA extends FragmentActivity {
 				EMSDeviceManager edm;
 
 				int size = c.getCount();
-				// if(c!=null&&size>0&&Global.multiPrinterManager!=null&&Global.multiPrinterMap!=null)
-				// {
-				// int size2 = Global.multiPrinterManager.size();
-				// c.moveToFirst();
-				// for(int i = 0 ; i<size2; i++)
-				// {
-				// if(Global.multiPrinterManager.get(i).currentDevice==null)//not
-				// connected
-				// {
-				// if
-				// (Global.multiPrinterManager.get(i).loadMultiDriver(activity,
-				// Global.STAR, 48, true,"TCP:"+
-				// c.getString(c.getColumnIndex("printer_ip")),
-				// c.getString(c.getColumnIndex("printer_port"))))
-				// sb.append(c.getString(c.getColumnIndex("printer_ip"))).append(":
-				// ").append("Connected\n");
-				// else
-				// sb.append(c.getString(c.getColumnIndex("printer_ip"))).append(":
-				// ").append("Failed to connect\n");
-				// }
-				// else
-				// {
-				// sb.append(c.getString(c.getColumnIndex("printer_ip"))).append(":
-				// ").append("Connected\n");
-				// }
-				// c.moveToNext();
-				// }
-				// }
+
 				if (c != null && size > 0) {
 					Global.multiPrinterManager.clear();
 					Global.multiPrinterMap.clear();
@@ -990,25 +967,25 @@ public class SettingsManager_FA extends FragmentActivity {
 					_peripheralName = Global.getPeripheralName(myPref.swiperType(true, -2));
 					sb.append(_peripheralName).append(": ").append("Connected\n");
 				}
-				if ((myPref.printerType(true, -2) != -1)
+				if ((myPref.getPrinterType()!= -1)
 						&& (Global.mainPrinterManager == null || (Global.mainPrinterManager.currentDevice == null))) {
 					edm = new EMSDeviceManager();
 					Global.mainPrinterManager = edm.getManager();
-					_peripheralName = Global.getPeripheralName(myPref.printerType(true, -2));
+					_peripheralName = Global.getPeripheralName(myPref.getPrinterType());
 					_portName = myPref.printerMACAddress(true, null);
 					String _portNumber = myPref.getStarPort();
 					boolean isPOS = myPref.posPrinter(true, false);
 					int txtAreaSize = myPref.printerAreaSize(true, -1);
 
-					if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.printerType(true, -2), txtAreaSize,
+					if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
 							isPOS, _portName, _portNumber))
 						sb.append(_peripheralName).append(": ").append("Connected\n");
 					else
 						sb.append(_peripheralName).append(": ").append("Failed to connect\n");
 
-				} else if (myPref.printerType(true, -2) != -1 && Global.mainPrinterManager != null
+				} else if (myPref.getPrinterType() != -1 && Global.mainPrinterManager != null
 						&& Global.mainPrinterManager.currentDevice != null) {
-					_peripheralName = Global.getPeripheralName(myPref.printerType(true, -2));
+					_peripheralName = Global.getPeripheralName(myPref.getPrinterType());
 					sb.append(_peripheralName).append(": ").append("Connected\n");
 
 				}

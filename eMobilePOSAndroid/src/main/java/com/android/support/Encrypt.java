@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.emobilepos.R;
 
@@ -35,15 +36,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Encrypt 
 {
-	private Activity activity;
+	private Context context;
 
 	public Encrypt()
 	{
 		
 	}
-	public Encrypt(Activity activity)
+	public Encrypt(Context context)
 	{
-		this.activity = activity;
+		this.context = context;
 		Security.addProvider(new BouncyCastleProvider());
 	}
     
@@ -191,7 +192,7 @@ public class Encrypt
  	private PublicKey getLocalPublicKey()throws Exception 
  	{
  		X509Certificate crt = null;
- 		InputStream in = activity.getResources().openRawResource( R.raw.public_key);
+ 		InputStream in = context.getResources().openRawResource( R.raw.public_key);
  		CertificateFactory cf;
 		try {
 			cf = CertificateFactory.getInstance("X.509");

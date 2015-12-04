@@ -38,6 +38,7 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.bbpos.b.l;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
@@ -543,21 +544,7 @@ public class EMSDeviceDriver {
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
                 ;
             } else {
-//                tempAmount += formatStrToDouble(detailsList.get(0).getPay_amount());
-//                String _pay_type = detailsList.get(0).getPaymethod_name().toUpperCase(Locale.getDefault()).trim();
-//                double tempTipAmount = formatStrToDouble(detailsList.get(0).getPay_tip());
-//                StringBuilder tempSB = new StringBuilder();
-//                tempSB.append(textHandler.oneColumnLineWithLeftAlignedText(
-//                        Global.formatDoubleStrToCurrency(detailsList.get(0).getPay_amount()) + "[" + detailsList.get(0).getPaymethod_name() + "]",
-//                        lineWidth, 1));
-//                if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-//                    tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + detailsList.get(0).getPay_transid(),
-//                            lineWidth, 1));
-//                    tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("CC#: *" + detailsList.get(0).getCcnum_last4(),
-//                            lineWidth, 1));
-//                }
-//                if (!detailsList.get(0).getPay_signature().isEmpty())
-//                    receiptSignature = detailsList.get(0).getPay_signature();
+
                 double paidAmount = 0;
                 double tempTipAmount = 0;
                 StringBuilder tempSB = new StringBuilder();
@@ -614,24 +601,28 @@ public class EMSDeviceDriver {
             if (Global.isIvuLoto && detailsList.size() > 0) {
 
                 if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-                    sb.append("\n");
-                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-                    sb.append(textHandler.centeredString("CONTROL: " + detailsList.get(0).getIvuLottoNumber(), lineWidth));
-//					sb.append(textHandler.centeredString(payArrayList.get(0)[6], lineWidth));
-                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-                    sb.append("\n");
-                    print(sb.toString().getBytes());
+//                    sb.append("\n");
+//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+//                    sb.append(textHandler.centeredString("CONTROL: " + detailsList.get(0).getIvuLottoNumber(), lineWidth));
+//                    sb.append(getString(R.string.enabler_prefix)+"\n");
+//
+//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+//
+//                    sb.append("\n");
+//                    print(sb.toString().getBytes());
+                    printIVULoto(detailsList.get(0).getIvuLottoNumber(), lineWidth);
+
 //					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
                 } else {
 //					encodedQRCode = payArrayList.get(0)[8];
                     printImage(2);
-                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-                    sb.append("\t").append("CONTROL: ").append(detailsList.get(0).getIvuLottoNumber()).append("\n");
-//                    sb.append(payArrayList.get(0)[6]).append("\n");
-//					sb.append(payArrayList.get(0)[6]).append("\n");
-                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-                    print(sb.toString().getBytes());
-//					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+//                    sb.append("\t").append("CONTROL: ").append(detailsList.get(0).getIvuLottoNumber()).append("\n");
+//                    sb.append(getString(R.string.enabler_prefix)+"\n");
+//
+//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+//                    print(sb.toString().getBytes());
+                    printIVULoto(detailsList.get(0).getIvuLottoNumber(), lineWidth);
                 }
                 sb.setLength(0);
             }
@@ -644,13 +635,11 @@ public class EMSDeviceDriver {
             if (!receiptSignature.isEmpty()) {
                 encodedSignature = receiptSignature;
                 printImage(1);
-                // print(enableCenter); // center
                 sb.setLength(0);
                 sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
                 sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
                 print(sb.toString(), FORMAT);
-                // print(disableCenter); // disable
-                // center
+
             }
 
             if (isFromHistory) {
@@ -659,7 +648,7 @@ public class EMSDeviceDriver {
                 print(sb.toString());
                 print(textHandler.newLines(1));
             }
-
+            printEnablerWebSite(lineWidth);
             cutPaper();
         } catch (StarIOPortException e) {
 
@@ -667,10 +656,26 @@ public class EMSDeviceDriver {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-
-//			releasePrinter();
         }
 
+    }
+
+    private void printIVULoto(String ivuLottoNumber, int lineWidth) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("\n");
+        sb.append(textHandler.ivuLines(2 * lineWidth / 3) + "\n");
+        sb.append(activity.getString(R.string.ivuloto_control_label) + ivuLottoNumber  + "\n");
+        sb.append(getString(R.string.enabler_prefix) + "\n");
+        sb.append(getString(R.string.powered_by_enabler) + "\n");
+        sb.append(textHandler.ivuLines(2 * lineWidth / 3) + "\n");
+        print(sb.toString().getBytes());
+    }
+
+    private void printEnablerWebSite(int lineWidth) {
+        StringBuilder sb = new StringBuilder();
+        sb.setLength(0);
+        sb.append(textHandler.centeredString(getString(R.string.enabler_website), lineWidth));
+        print(sb.toString());
     }
 
     public void cutPaper() {
@@ -1093,27 +1098,35 @@ public class EMSDeviceDriver {
                 // center
 
                 if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-                    sb.append("\n");
-                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-                    sb.append(textHandler.centeredString("CONTROL: " + payArray.getIvuLottoNumber(), lineWidth));
-//                    sb.append(textHandler.centeredString(payArray[12], lineWidth));
-                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-                    sb.append("\n");
-
-//					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-                    print(sb.toString(), FORMAT);
+//                    sb.append("\n");
+//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+//                    sb.append(textHandler.centeredString("CONTROL: " + payArray.getIvuLottoNumber(), lineWidth));
+//                    sb.append(getString(R.string.enabler_prefix)+"\n");
+//
+////                    sb.append(textHandler.centeredString(payArray[12], lineWidth));
+//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
+//                    sb.append("\n");
+//
+////					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+//                    print(sb.toString(), FORMAT);
+                    printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
                 } else {
 //                    encodedQRCode = payArray[14];
 
 //                    this.printImage(2);
 
-                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-                    sb.append("\t").append("CONTROL: ").append(payArray.getIvuLottoNumber()).append("\n");
-//                    sb.append(payArray[12]).append("\n");
-                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+//                    sb.append("\t").append("CONTROL: ").append(payArray.getIvuLottoNumber()).append("\n");
+//                    sb.append(getString(R.string.enabler_prefix)+"\n");
+//
+////                    sb.append(payArray[12]).append("\n");
+//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
+//
+////					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+//                    print(sb.toString(), FORMAT);
 
-//					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-                    print(sb.toString(), FORMAT);
+                    printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
+
                 }
                 sb.setLength(0);
             }
@@ -1143,6 +1156,7 @@ public class EMSDeviceDriver {
                 //port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                 print(sb.toString(), FORMAT);
             }
+            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
@@ -1153,12 +1167,7 @@ public class EMSDeviceDriver {
         } catch (JAException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally {            // if (port != null) {
-            // try {
-            // StarIOPort.releasePort(port);
-//        } catch (StarIOPortException e) {
-//        }
-//    }
+        } finally {
         }
 
     }
@@ -1272,6 +1281,8 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(1));
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
+            printEnablerWebSite(lineWidth);
+
             if (isPOSPrinter) {
                 byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
                 characterExpansion[2] = (byte) (0 + '0');
@@ -1284,7 +1295,7 @@ public class EMSDeviceDriver {
             // db.close();
         } catch (StarIOPortException e) {
             /*
-			 * Builder dialog = new AlertDialog.Builder(this.activity);
+             * Builder dialog = new AlertDialog.Builder(this.activity);
 			 * dialog.setNegativeButton("Ok", null); AlertDialog alert =
 			 * dialog.create(); alert.setTitle("Failure"); alert.setMessage(
 			 * "Failed to connect to printer"); alert.show();
@@ -1382,6 +1393,7 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
 //			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).getBytes(FORMAT).length);
             print(textHandler.newLines(1), FORMAT);
+            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
@@ -1514,6 +1526,7 @@ public class EMSDeviceDriver {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+            printEnablerWebSite(lineWidth);
 
 //			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
             print(textHandler.newLines(1), FORMAT);
@@ -1651,6 +1664,7 @@ public class EMSDeviceDriver {
 
 //			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
             print(textHandler.newLines(3), FORMAT);
+            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
@@ -1737,6 +1751,7 @@ public class EMSDeviceDriver {
 //				port.writePort(disableCenter, 0, disableCenter.length); // disable
                 // center
             }
+            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
@@ -1824,6 +1839,7 @@ public class EMSDeviceDriver {
             print(sb_refunds.toString(), FORMAT);
 //            port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
             print(textHandler.newLines(5), FORMAT);
+            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut

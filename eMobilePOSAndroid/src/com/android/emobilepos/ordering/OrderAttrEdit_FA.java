@@ -353,7 +353,7 @@ public class OrderAttrEdit_FA extends FragmentActivity
 					doneScanning = false;
 					String data = hiddenField.getText().toString().trim().replace("\n", "");
 					// hiddenField.setText("");
-					cardInfoManager = Global.parseSimpleMSR(activity, data);
+					cardInfoManager = Global.parseSimpleMSR(activity, data, isEncryptSwipe);
 					updateViewAfterSwipe();
 					hiddenField.setText("");
 					// fieldHiddenScan.requestFocus();
@@ -409,7 +409,7 @@ public class OrderAttrEdit_FA extends FragmentActivity
 			// get the data from the intent
 			String data = i.getStringExtra(DATA_STRING_TAG);
 			if (isCardInfo) {
-				this.cardInfoManager = Global.parseSimpleMSR(this, data);
+				this.cardInfoManager = Global.parseSimpleMSR(this, data, isEncryptSwipe);
 				updateViewAfterSwipe();
 			} else
 				fieldComment.setText(data);

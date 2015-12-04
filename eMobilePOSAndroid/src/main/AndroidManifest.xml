@@ -428,6 +428,7 @@
         <service
             android:name="com.mpowa.android.sdk.powapos.common.communication.usbsocket.PowaUsbService"
             android:enabled="true" />
+
     </application>
 
 </manifest>
