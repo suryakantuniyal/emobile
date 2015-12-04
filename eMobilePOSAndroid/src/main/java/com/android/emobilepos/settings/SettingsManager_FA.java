@@ -856,7 +856,11 @@ public class SettingsManager_FA extends FragmentActivity {
 				myPref.setPrinterType(Global.EM100);
 				Global.mainPrinterManager = edm.getManager();
 				Global.mainPrinterManager.loadDrivers(activity, Global.EM100, false);
-			} else {
+			} else if (myPref.isEM70()) {
+				myPref.setPrinterType(Global.EM70);
+				Global.mainPrinterManager = edm.getManager();
+				Global.mainPrinterManager.loadDrivers(activity, Global.EM70, false);
+			}else {
 				myPref.setPrinterType(Global.POWA);
 				Global.mainPrinterManager = edm.getManager();
 				Global.mainPrinterManager.loadDrivers(activity, Global.POWA, false);

@@ -794,6 +794,18 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isEM70() {
+        String device_em70 = "device_em70";
+        return prefs.getBoolean(device_em70, false);
+    }
+
+    public boolean setIsEM70(boolean value) {
+        String device_em70 = "device_em70";
+        prefEditor.putBoolean(device_em70, value);
+        prefEditor.commit();
+        return false;
+    }
+
     public boolean isDolphin(boolean isGet, boolean value) {
         String device_dolphin = "device_dolphin";
         if (isGet)
