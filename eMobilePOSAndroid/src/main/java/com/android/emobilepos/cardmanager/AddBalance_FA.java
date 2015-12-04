@@ -86,7 +86,7 @@ public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnCli
 		global = (Global)getApplication();
 		myPref = new MyPreferences(this);
 		Global.isEncryptSwipe = true;
-		
+
 		Button btnProcess = (Button)findViewById(R.id.processButton);
 		btnProcess.setOnClickListener(this);
 		fieldCardNum = (EditText)findViewById(R.id.fieldCardNumber);

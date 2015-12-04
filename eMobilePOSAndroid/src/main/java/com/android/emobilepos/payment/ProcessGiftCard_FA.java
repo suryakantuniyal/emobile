@@ -44,7 +44,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -140,7 +139,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
                 Global.formatDoubleToCurrency(0.00));
         tax2.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
-        fieldHidden.addTextChangedListener(new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager));
+        fieldHidden.addTextChangedListener(new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager, Global.isEncryptSwipe));
         Button btnExact = (Button) findViewById(R.id.exactAmountBut);
         Button btnProcess = (Button) findViewById(R.id.processButton);
         btnExact.setOnClickListener(this);

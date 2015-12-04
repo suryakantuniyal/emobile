@@ -239,7 +239,7 @@ public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnCli
 
 			// get the data from the intent
 			String data = i.getStringExtra(DATA_STRING_TAG);
-			this.cardInfoManager = Global.parseSimpleMSR(this, data);
+			this.cardInfoManager = Global.parseSimpleMSR(this, data, isEncryptSwipe);
 			updateViewAfterSwipe();
 		}
 	}

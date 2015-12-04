@@ -18,12 +18,14 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
     private CreditCardInfo creditCardInfo;
     private Context context;
     private EditText cardEditText;
+    private boolean encryptCardNumber;
 
-    public GiftCardTextWatcher(Context context, EditText hiddenEditText, EditText cardEditText, CreditCardInfo creditCardInfo) {
+    public GiftCardTextWatcher(Context context, EditText hiddenEditText, EditText cardEditText, CreditCardInfo creditCardInfo, boolean encryptCardNumber) {
         this.hiddenEditText = hiddenEditText;
         this.context = context;
         this.cardEditText = cardEditText;
         this.creditCardInfo = creditCardInfo;
+        this.encryptCardNumber = encryptCardNumber;
     }
 
     @Override
@@ -43,7 +45,11 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
             doneScanning = false;
             String data = hiddenEditText.getText().toString().trim().replace("\n", "");
             creditCardInfo = Global.parseSimpleMSR(context, data);
-            cardEditText.setText(creditCardInfo.getCardNumUnencrypted());
+            if (encryptCardNumber) {
+                cardEditText.setText(creditCardInfo.getCardNumAESEncrypted());
+            } else {
+                cardEditText.setText(creditCardInfo.getCardNumUnencrypted());
+            }
             creditCardInfo.setCardType("GiftCard");
             hiddenEditText.setText("");
             SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
@@ -57,6 +63,7 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
             }
             creditCardInfo.setCardExpYear(formatedYear);
             creditCardInfo.setWasSwiped(true);
+
         }
     }
 }

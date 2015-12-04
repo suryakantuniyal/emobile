@@ -12,7 +12,6 @@ import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -268,7 +267,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
 
                 break;
         }
-        hiddenField.addTextChangedListener(new GiftCardTextWatcher(activity, hiddenField, fieldCardNum, cardInfoManager));
+        hiddenField.addTextChangedListener(new GiftCardTextWatcher(activity, hiddenField, fieldCardNum, cardInfoManager, Global.isEncryptSwipe));
 
         setUpCardReader();
         hasBeenCreated = true;

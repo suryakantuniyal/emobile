@@ -129,7 +129,7 @@ public class OrderAttrEdit_FA extends FragmentActivity
         fieldHiddenScan.addTextChangedListener(textWatcher());
         fieldHiddenScan.requestFocus();
 
-        fieldHiddenSwiper.addTextChangedListener(new GiftCardTextWatcher(activity, fieldHiddenSwiper, fieldCardNum, cardInfoManager));
+        fieldHiddenSwiper.addTextChangedListener(new GiftCardTextWatcher(activity, fieldHiddenSwiper, fieldCardNum, cardInfoManager, Global.isEncryptSwipe));
 
         setUpCardReader();
         setUpIfModify();

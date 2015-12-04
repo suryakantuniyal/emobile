@@ -12,7 +12,6 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
