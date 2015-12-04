@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.view.View;
@@ -78,7 +79,7 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
 		
 		invJobView = (EditText) findViewById(R.id.geniusJobIDView);
 		amountView = (EditText) findViewById(R.id.geniusAmountView);
-		
+
 		Button btnProcess = (Button) findViewById(R.id.processGeniusButton);
 		btnProcess.setOnClickListener(this);
 		
@@ -110,11 +111,13 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
 		invJobView.setText(inv_id);
 		amountView.setText(extras.getString("amount"));
 		amountView.addTextChangedListener(getTextWatcher(amountView));
-		
-				
+//      move the amount cursor to the right of the default value
+        Selection.setSelection(amountView.getText(), amountView.getText().length());
+
 		hasBeenCreated = true;
 
 	}
+
 	private TextWatcher getTextWatcher(final EditText editText) {
 
 		return new TextWatcher() {
