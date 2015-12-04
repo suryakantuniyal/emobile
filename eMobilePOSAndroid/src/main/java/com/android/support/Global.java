@@ -112,6 +112,12 @@ public class Global extends MultiDexApplication {
     public static final int ASURA = 7;
     public static final int PAT100 = 8;
     public static final int ISMP = 9;
+    public static final int EM100 = 10;
+
+
+    public enum Devices {
+        MAGTEK, STAR, ZEBRA, BAMBOO, ONEIL, SNBC, POWA, ASURA, PAT100, ISMP, EM100
+    }
 
     public static final String AUDIO_MSR_UNIMAG = "0";
     public static final String AUDIO_MSR_MAGTEK = "1";
@@ -119,15 +125,6 @@ public class Global extends MultiDexApplication {
     public static final String AUDIO_MSR_WALKER = "3";
 
 
-    //    public final static String IS_ORDER = "0";
-//    public final static String IS_RETURN = "1";
-//    public final static String IS_INVOICE = "2";
-//    public final static String IS_ESTIMATE = "3";
-//    public final static String IS_CONSIGNMENT_FILLUP = "4";
-//    public final static String IS_SALES_RECEIPT = "5";
-//    public final static String IS_CONSIGNMENT_PICKUP = "6";
-//    public final static String IS_CONSIGNMENT_INVOICE = "7";
-//    public final static String IS_CONSIGNMENT_RETURN = "8";
     public enum TransactionType {
         SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
         PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
@@ -222,14 +219,7 @@ public class Global extends MultiDexApplication {
     }
 
     ;
-//	public final static int INT_ORDER = 0;
-//	public final static int INT_RETURN = 1;
-//	public final static int INT_INVOICE = 2;
-//	public final static int INT_ESTIMATE = 3;
-//	public final static int INT_CONSIGNMENT_FILLUP = 4;
-//	public final static int INT_SALES_RECEIPT = 5;
-//	public final static int INT_CONSIGNMENT_PICKUP = 6;
-//	public final static int INT_CONSIGNMENT_INVOICE = 7;
+
 
     public final static int S_CUSTOMERS = 1;
     public final static int S_ADDRESS = 2;
@@ -1117,7 +1107,7 @@ public class Global extends MultiDexApplication {
             uart_tool.config(3, 9600, 8, 1);
             uart_tool.write(3, Global.emptySpaces(40, 0, false));
             uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
-        } else if (myPref.isPAT100(true, true)) {
+        } else if (myPref.isPAT100()) {
             StringBuilder sb = new StringBuilder();
             String row1 = data[1];
             String row2 = sb.append(Global.formatDoubleStrToCurrency(data[2])).toString();
@@ -1127,7 +1117,7 @@ public class Global extends MultiDexApplication {
 
     }
 
-    public static CreditCardInfo parseSimpleMSR(Activity activity, String data) {
+    public static CreditCardInfo parseSimpleMSR(Context activity, String data) {
         CreditCardInfo cardManager = new CreditCardInfo();
         Encrypt encrypt = new Encrypt(activity);
         String card_number;
@@ -1714,7 +1704,7 @@ public class Global extends MultiDexApplication {
             uart_tool.config(3, 9600, 8, 1);
             uart_tool.write(3, Global.emptySpaces(40, 0, false));
             uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-        } else if (myPref.isPAT100(true, true)) {
+        } else if (myPref.isPAT100()) {
             EMSPAT100.getTerminalDisp().clearText();
             EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
         }
@@ -1727,7 +1717,7 @@ public class Global extends MultiDexApplication {
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
-                || _device_type == Global.STAR);
+                || _device_type == Global.STAR || _device_type == Global.EM100);
     }
 
     // Handle application transition for background

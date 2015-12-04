@@ -1067,7 +1067,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
             TerminalDisplay.setTerminalDisplay(myPref,row1,row2);
 
-        } else if (myPref.isPAT100(true, true)) {
+        } else if (myPref.isPAT100()) {
 
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);

@@ -551,7 +551,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 					doneScanning = false;
 					String data = hiddenField.getText().toString().trim().replace("\n", "");
 					hiddenField.setText("");
-					cardInfoManager = Global.parseSimpleMSR(activity, data);
+					cardInfoManager = Global.parseSimpleMSR(activity, data, isEncryptSwipe);
 					cardInfoManager.setCardType("GiftCard");
 					updateViewAfterSwipe();
 				}
@@ -617,7 +617,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 
 			// get the data from the intent
 			String data = i.getStringExtra(DATA_STRING_TAG);
-			this.cardInfoManager = Global.parseSimpleMSR(activity, data);
+			this.cardInfoManager = Global.parseSimpleMSR(activity, data, isEncryptSwipe);
 			updateViewAfterSwipe();
 		}
 	}

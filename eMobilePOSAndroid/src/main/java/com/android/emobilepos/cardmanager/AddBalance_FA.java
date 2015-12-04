@@ -86,7 +86,7 @@ public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnCli
 		global = (Global)getApplication();
 		myPref = new MyPreferences(this);
 		Global.isEncryptSwipe = true;
-		
+
 		Button btnProcess = (Button)findViewById(R.id.processButton);
 		btnProcess.setOnClickListener(this);
 		fieldCardNum = (EditText)findViewById(R.id.fieldCardNumber);
@@ -195,7 +195,7 @@ public class AddBalance_FA extends FragmentActivity implements EMSCallBack,OnCli
 //			}
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
-			int _printer_type = myPref.printerType(true, -2);
+			int _printer_type = myPref.getPrinterType();
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
 				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
 			} else if (_printer_type != -1

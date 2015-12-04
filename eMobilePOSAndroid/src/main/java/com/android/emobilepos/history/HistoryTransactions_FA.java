@@ -230,10 +230,10 @@ public class HistoryTransactions_FA extends FragmentActivity implements OnTabCha
     private void getCursorData(int _tab_id) {
         switch (_tab_id) {
             case R.id.orders_tab:
-                orderTypes =new Global.OrderType[]{ Global.OrderType.ORDER};
+                orderTypes = new Global.OrderType[]{Global.OrderType.ORDER};
                 break;
             case R.id.returns_tab://1 = return, 8 = consignment return
-                orderTypes =new Global.OrderType[] {Global.OrderType.RETURN, Global.OrderType.CONSIGNMENT_RETURN}; //"'1','8'";
+                orderTypes = new Global.OrderType[]{Global.OrderType.RETURN, Global.OrderType.CONSIGNMENT_RETURN}; //"'1','8'";
                 break;
             case R.id.invoices_tab: // 2 = invoice, 7 = consignment invoice
                 orderTypes = new Global.OrderType[]{Global.OrderType.INVOICE, Global.OrderType.CONSIGNMENT_INVOICE};//"'2','7'";
@@ -252,6 +252,13 @@ public class HistoryTransactions_FA extends FragmentActivity implements OnTabCha
 
         myAdapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         lView.setAdapter(myAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (myCursor != null)
+            myCursor.close();
     }
 
     private void updateMyTabs(String tabID, int placeHolder) {

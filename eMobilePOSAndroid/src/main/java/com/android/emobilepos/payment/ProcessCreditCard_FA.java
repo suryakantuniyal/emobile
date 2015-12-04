@@ -12,7 +12,6 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -515,7 +514,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             // }).start();
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
-            int _printer_type = myPref.printerType(true, -2);
+            int _printer_type = myPref.getPrinterType();
             int _sled_type = myPref.sledType(true, -2);
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
@@ -535,7 +534,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s(true, false) || myPref.isPAT100(true, false)) {
+        } else if (myPref.isSam4s(true, false) || myPref.isPAT100()) {
             cardSwipe.setChecked(true);
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())

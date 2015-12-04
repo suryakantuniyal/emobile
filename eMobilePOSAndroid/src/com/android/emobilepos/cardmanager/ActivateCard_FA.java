@@ -225,7 +225,7 @@ public class ActivateCard_FA extends FragmentActivity implements EMSCallBack, On
 
 			// get the data from the intent
 			String data = i.getStringExtra(DATA_STRING_TAG);
-			this.cardInfoManager = Global.parseSimpleMSR(this, data);
+			this.cardInfoManager = Global.parseSimpleMSR(this, data, isEncryptSwipe);
 			updateViewAfterSwipe();
 		}
 	}
