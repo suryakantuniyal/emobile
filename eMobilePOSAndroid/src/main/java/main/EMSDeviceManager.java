@@ -159,6 +159,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.STAR:
                 aDevice = new EMSBluetoothStarPrinter();
                 break;
+            case Global.EM70:
+                aDevice = new EMSEM70();
+                break;
         }
         if (aDevice != null)
             return aDevice.autoConnect(activity, instance, paperSize, isPOSPrinter, portName, portNumber);

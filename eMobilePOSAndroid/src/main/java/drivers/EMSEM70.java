@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.util.Log;
 
 import com.android.emobilepos.models.Orders;
@@ -33,7 +34,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     private CreditCardInfo cardManager;
     private EMSDeviceManager edm;
     private EMSEM70 thisInstance;
-
+    private Handler handler;
     String scannedData = "";
 
     @Override
@@ -142,19 +143,30 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void loadScanner(EMSCallBack callBack) {
 
         scannerCallBack = callBack;
-
+        if (handler == null)
+            handler = new Handler();
         if (callBack != null) {
             IntentFilter filter = new IntentFilter();
             filter.addAction("android.intent.action.bcr.newdata");
             filter.addAction("android.intent.action.scanner.data");
             activity.registerReceiver(mBroadcastReceiver, filter);
+            Intent intent = activity.getIntent();
+            String action = intent.getAction();
+            if ("android.intent.action.bcr.newdata".equals(action)) {
+                String SCANNER_DATA_KEY = "com.partner.barcode.data";
+                String data = intent.getStringExtra(SCANNER_DATA_KEY);
+            }
         }
     }
 
 
     @Override
     public void releaseCardReader() {
-
+        try {
+            activity.unregisterReceiver(mBroadcastReceiver);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -177,7 +189,17 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return false;
     }
 
+    private Runnable runnableScannedData = new Runnable() {
+        public void run() {
+            try {
+                if (scannerCallBack != null)
+                    scannerCallBack.scannerWasRead(scannedData);
 
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     public static final String SCANNER_DATA_KEY = "com.partner.barcode.data";
     public static final String ACTION_NEW_DATA1 = "android.intent.action.bcr.newdata";
@@ -190,26 +212,26 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         }
     };
 
-    public class BCRReceiver extends BroadcastReceiver {
-
-        private String LOG_TAG = "BCRReceiver";
-        public static final String SCANNER_DATA_KEY = "com.partner.barcode.data";
-        public static final String EXTRA_BCR_STRING = "com.oem.barcode.string";
-        public static final String EXTRA_BCR_TYPE = "com.oem.barcode.type";
-        public static final String EXTRA_BCR_DATA = "com.oem.barcode.data";
-        public static final String EXTRA_BCR_CHARSET = "com.oem.barcode.encoding";
-        public static final String ACTION_NEW_DATA = "android.intent.action.bcr.newdata";
-
-        public BCRReceiver(){
-
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-//            Log.d(LOG_TAG, "onReceive: action = " + intent.getAction());
-//            String bcrData = intent.getStringExtra(SCANNER_DATA_KEY);
-//            scannerCallBack.scannerWasRead(scannedData);
-        }
-
-    }
+//    public class BCRReceiver extends BroadcastReceiver {
+//
+//        private String LOG_TAG = "BCRReceiver";
+//        public static final String SCANNER_DATA_KEY = "com.partner.barcode.data";
+//        public static final String EXTRA_BCR_STRING = "com.oem.barcode.string";
+//        public static final String EXTRA_BCR_TYPE = "com.oem.barcode.type";
+//        public static final String EXTRA_BCR_DATA = "com.oem.barcode.data";
+//        public static final String EXTRA_BCR_CHARSET = "com.oem.barcode.encoding";
+//        public static final String ACTION_NEW_DATA = "android.intent.action.bcr.newdata";
+//
+//        public BCRReceiver() {
+//            String s = null;
+//        }
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+////            Log.d(LOG_TAG, "onReceive: action = " + intent.getAction());
+////            String bcrData = intent.getStringExtra(SCANNER_DATA_KEY);
+////            scannerCallBack.scannerWasRead(scannedData);
+//        }
+//
+//    }
 }

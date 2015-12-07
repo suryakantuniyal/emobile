@@ -428,7 +428,7 @@
         <service
             android:name="com.mpowa.android.sdk.powapos.common.communication.usbsocket.PowaUsbService"
             android:enabled="true" />
-        <receiver android:name="drivers.EMSEM70$BCRReceiver">
+        <receiver android:name="drivers.em70.utils.BCRReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.bcr.newdata" />
                 <action android:name="android.intent.action.scanner.data" />
