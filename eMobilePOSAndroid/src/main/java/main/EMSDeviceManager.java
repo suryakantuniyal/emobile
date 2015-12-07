@@ -26,6 +26,7 @@ import drivers.EMSPAT100;
 import drivers.EMSPowaPOS;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
+import drivers.EMSEM70;
 import protocols.EMSConnectionDelegate;
 import protocols.EMSDeviceManagerPrinterDelegate;
 import protocols.EMSPrintingDelegate;
@@ -113,6 +114,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSEM100();
                 aDevice.connect(activity, -1, true, instance);
                 break;
+            case Global.EM70:
+                aDevice = new EMSEM70();
+                aDevice.connect(activity, -1, true, instance);
+                break;
             case Global.ISMP:
                 aDevice = new EMSIngenico();
                 aDevice.connect(activity, -1, true, instance);
@@ -153,6 +158,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.STAR:
                 aDevice = new EMSBluetoothStarPrinter();
+                break;
+            case Global.EM70:
+                aDevice = new EMSEM70();
                 break;
         }
         if (aDevice != null)

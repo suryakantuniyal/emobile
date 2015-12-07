@@ -657,7 +657,10 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("EM100")) {
             myPref.setIsEM100(true);
             return true;
-        } else {
+        } else if (model.equals("EM70")) {
+            myPref.setIsEM70(true);
+            return true;
+        }else {
             boolean isTablet = (activity.getResources().getConfiguration().screenLayout
                     & Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE;

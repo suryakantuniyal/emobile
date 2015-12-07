@@ -113,10 +113,12 @@ public class Global extends MultiDexApplication {
     public static final int PAT100 = 8;
     public static final int ISMP = 9;
     public static final int EM100 = 10;
+    public static final int EM70 = 11;
+
 
 
     public enum Devices {
-        MAGTEK, STAR, ZEBRA, BAMBOO, ONEIL, SNBC, POWA, ASURA, PAT100, ISMP, EM100
+        MAGTEK, STAR, ZEBRA, BAMBOO, ONEIL, SNBC, POWA, ASURA, PAT100, ISMP, EM100, EM70
     }
 
     public static final String AUDIO_MSR_UNIMAG = "0";
@@ -1717,7 +1719,7 @@ public class Global extends MultiDexApplication {
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
-                || _device_type == Global.STAR || _device_type == Global.EM100);
+                || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70);
     }
 
     // Handle application transition for background
