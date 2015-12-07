@@ -486,8 +486,10 @@ public class ProductsHandler {
 	public String[] getUPCProducts(String value) {
 		if (value.indexOf('\n') >= 0)
 			value = new StringBuffer(value).deleteCharAt(value.indexOf('\n')).toString();
+		if (value.indexOf('\r') >= 0)
+			value = new StringBuffer(value).deleteCharAt(value.indexOf('\r')).toString();
 		// SQLiteDatabase db = dbManager.openReadableDB();
-		StringBuilder sb = new StringBuilder();
+ 		StringBuilder sb = new StringBuilder();
 		StringBuilder sb2 = new StringBuilder();
 		String query;
 		String[] data = new String[13];

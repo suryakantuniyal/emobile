@@ -408,7 +408,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
             _msrUsbSams = new EMSIDTechUSB(activity, msrCallBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        } else if(myPref.isEM100()){
+        } else if(myPref.isEM100() || myPref.isEM70()){
             cardSwipe.setChecked(true);
         }
     }

@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.content.Context;
 import android.text.Editable;
+import android.util.Log;
 import android.widget.EditText;
 
 import java.text.ParseException;
@@ -35,12 +36,13 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (s.toString().contains("\n"))
+        if (s.toString().contains("\n") || s.toString().contains("\r") || s.toString().contains("?"))
             doneScanning = true;
     }
 
     @Override
     public void afterTextChanged(Editable s) {
+        Log.d("Read:", s.toString());
         if (doneScanning) {
             doneScanning = false;
             String data = hiddenEditText.getText().toString().trim().replace("\n", "");
