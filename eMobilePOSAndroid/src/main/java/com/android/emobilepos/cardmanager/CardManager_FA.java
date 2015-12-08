@@ -32,7 +32,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
-import com.android.support.GiftCardTextWatcher;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
