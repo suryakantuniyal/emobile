@@ -39,8 +39,7 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (s.toString().endsWith("\n") || s.toString().endsWith("\r") ||
-                (s.toString().contains(";") && s.toString().endsWith("?"))) {
+        if (s.toString().contains(";") && s.toString().endsWith("?")) {
             doneScanning = true;
         }
     }
