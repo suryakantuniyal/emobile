@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="POSSDKForAndroid">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/POSSDKForAndroid.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
