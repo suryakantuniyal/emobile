@@ -114,11 +114,11 @@ public class Global extends MultiDexApplication {
     public static final int ISMP = 9;
     public static final int EM100 = 10;
     public static final int EM70 = 11;
-
+    public static final int OT310 = 12;
 
 
     public enum Devices {
-        MAGTEK, STAR, ZEBRA, BAMBOO, ONEIL, SNBC, POWA, ASURA, PAT100, ISMP, EM100, EM70
+        MAGTEK, STAR, ZEBRA, BAMBOO, ONEIL, SNBC, POWA, ASURA, PAT100, ISMP, EM100, EM70, OT310
     }
 
     public static final String AUDIO_MSR_UNIMAG = "0";
@@ -1714,12 +1714,14 @@ public class Global extends MultiDexApplication {
 
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
-                || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA);
+                || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
+                || _printer_type == Global.EM70 || _printer_type == Global.OT310);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
-                || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70);
+                || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
+                || _device_type == Global.OT310);
     }
 
     // Handle application transition for background

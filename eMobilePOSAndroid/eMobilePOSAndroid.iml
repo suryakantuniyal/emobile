@@ -128,11 +128,13 @@
     <orderEntry type="library" exported="" name="commons-lang3-3.4" level="project" />
     <orderEntry type="library" exported="" name="mDOpenCV-release-" level="project" />
     <orderEntry type="library" exported="" name="core-sdk" level="project" />
+    <orderEntry type="library" exported="" name="com.oem.barcode.sdk" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="Android_Platform_Adapter" level="project" />
     <orderEntry type="library" exported="" name="IDTuniMagSDKAndroid" level="project" />
     <orderEntry type="library" exported="" name="JAsura_Android" level="project" />
     <orderEntry type="library" exported="" name="zbar" level="project" />
+    <orderEntry type="library" exported="" name="misccom" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="POSSDKForAndroid" level="project" />
     <orderEntry type="library" exported="" name="pat100Cashdrawer1.1" level="project" />

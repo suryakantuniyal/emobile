@@ -541,6 +541,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
+            cardSwipe.setChecked(true);
         }
     }
 
@@ -1890,7 +1892,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     }
 
     public void updateViewAfterSwipe(CreditCardInfo creditCardInfo) {
-        cardInfoManager=creditCardInfo;
+        cardInfoManager = creditCardInfo;
         wasReadFromReader = true;
         month.setText(cardInfoManager.getCardExpMonth());
         String formatedYear = cardInfoManager.getCardExpYear();

@@ -290,7 +290,7 @@ public class OrderAttrEdit_FA extends FragmentActivity
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        }else if(myPref.isEM100() || myPref.isEM70()){
+        }else if(myPref.isEM100() || myPref.isEM70() || myPref.isOT310()){
             checkBox.setChecked(true);
         }
     }

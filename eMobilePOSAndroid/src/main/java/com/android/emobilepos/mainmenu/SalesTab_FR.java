@@ -260,7 +260,7 @@ public class SalesTab_FR extends Fragment {
 
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         intent = new Intent(activity, OrderingMain_FA.class);
-                            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                         startActivityForResult(intent, 0);
                     } else {
                         promptWithCustomer();
@@ -660,7 +660,10 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("EM70")) {
             myPref.setIsEM70(true);
             return true;
-        }else {
+        } else if (model.equals("OT-310")) {
+            myPref.setIsOT310(true);
+            return true;
+        } else {
             boolean isTablet = (activity.getResources().getConfiguration().screenLayout
                     & Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE;

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="com.oem.barcode.sdk">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/com.oem.barcode.sdk.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

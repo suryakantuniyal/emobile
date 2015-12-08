@@ -806,6 +806,18 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isOT310() {
+        String device_ot310 = "device_ot310";
+        return prefs.getBoolean(device_ot310, false);
+    }
+
+    public boolean setIsOT310(boolean value) {
+        String device_ot310 = "device_ot310";
+        prefEditor.putBoolean(device_ot310, value);
+        prefEditor.commit();
+        return false;
+    }
+
     public boolean isDolphin(boolean isGet, boolean value) {
         String device_dolphin = "device_dolphin";
         if (isGet)
