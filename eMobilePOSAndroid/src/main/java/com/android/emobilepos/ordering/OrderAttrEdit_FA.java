@@ -28,7 +28,7 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
-import com.android.support.GiftCardTextWatcher;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;

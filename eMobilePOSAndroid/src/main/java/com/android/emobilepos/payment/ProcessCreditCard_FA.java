@@ -20,6 +20,7 @@ import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -54,6 +55,8 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.textwatcher.CreditCardTextWatcher;
+import com.android.support.textwatcher.TextWatcherCallback;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -80,7 +83,7 @@ import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import protocols.EMSCallBack;
 
-public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
+public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
     private static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
@@ -199,7 +202,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             custidkey = "";
 
         hiddenField = (EditText) findViewById(R.id.hiddenField);
-        hiddenField.addTextChangedListener(hiddenTxtWatcher(hiddenField));
         zipCode = (EditText) findViewById(R.id.processCardZipCode);
         zipCode.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         month = (EditText) findViewById(R.id.monthEdit);
@@ -233,8 +235,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
         amountField.addTextChangedListener(getTextWatcher(amountField));
         this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
-
-
 
 
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
@@ -334,6 +334,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 && !paymentMethodType.equalsIgnoreCase(PAYMENT_GIFT_CARDS.LOYALTYCARD.name())) {
             enableManualCreditCard();
         }
+        hiddenField.addTextChangedListener(new CreditCardTextWatcher(activity, hiddenField, cardNum, cardInfoManager, Global.isEncryptSwipe, this));
+
         setUpCardReader();
     }
 
@@ -433,45 +435,45 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         };
     }
 
-    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
-
-        return new TextWatcher() {
-            boolean doneScanning = false;
-            String temp;
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (doneScanning) {
-                    doneScanning = false;
-                    String data = hiddenField.getText().toString().replace("\n", "");
-                    hiddenField.setText("");
-                    // if(Global.isEncryptSwipe)
-                    // cardInfoManager = EMSUniMagDriver.parseCardData(activity,
-                    // data);
-                    // else
-                    // cardInfoManager = Global.parseSimpleMSR(activity, data);
-                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-                    updateViewAfterSwipe();
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
-                temp = s.toString();
-                if (temp.contains("\n") && temp.split("\n").length >= 2
-                        && temp.substring(temp.length() - 1).contains("\n")) {
-                    doneScanning = true;
-                }
-
-            }
-        };
-    }
+//    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
+//
+//        return new TextWatcher() {
+//            boolean doneScanning = false;
+//            String temp;
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if (doneScanning) {
+//                    doneScanning = false;
+//                    String data = hiddenField.getText().toString().replace("\n", "");
+//                    hiddenField.setText("");
+//                    // if(Global.isEncryptSwipe)
+//                    // cardInfoManager = EMSUniMagDriver.parseCardData(activity,
+//                    // data);
+//                    // else
+//                    // cardInfoManager = Global.parseSimpleMSR(activity, data);
+//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
+//                    updateViewAfterSwipe();
+//                }
+//            }
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                // TODO Auto-generated method stub
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                // TODO Auto-generated method stub
+//                temp = s.toString();
+//                if (temp.contains("\n") && temp.split("\n").length >= 2
+//                        && temp.substring(temp.length() - 1).contains("\n")) {
+//                    doneScanning = true;
+//                }
+//
+//            }
+//        };
+//    }
 
     @SuppressWarnings("deprecation")
     private void setUpCardReader() {
@@ -1860,7 +1862,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
         // TODO Auto-generated method stub
         this.cardInfoManager = cardManager;
-        updateViewAfterSwipe();
+        updateViewAfterSwipe(cardManager);
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
             uniMagReader.startReading();
         } else if (walkerReader != null) {
@@ -1887,7 +1889,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
     }
 
-    private void updateViewAfterSwipe() {
+    public void updateViewAfterSwipe(CreditCardInfo creditCardInfo) {
+        cardInfoManager=creditCardInfo;
         wasReadFromReader = true;
         month.setText(cardInfoManager.getCardExpMonth());
         String formatedYear = cardInfoManager.getCardExpYear();
@@ -1912,7 +1915,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             // get the data from the intent
             String data = i.getStringExtra(DATA_STRING_TAG);
             this.cardInfoManager = Global.parseSimpleMSR(activity, data);
-            updateViewAfterSwipe();
+            updateViewAfterSwipe(this.cardInfoManager);
         }
     }
 

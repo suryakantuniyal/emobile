@@ -1,9 +1,12 @@
-package com.android.support;
+package com.android.support.textwatcher;
 
 import android.content.Context;
 import android.text.Editable;
 import android.util.Log;
 import android.widget.EditText;
+
+import com.android.support.CreditCardInfo;
+import com.android.support.Global;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,8 +39,10 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (s.toString().contains("\n") || s.toString().contains("\r") || s.toString().contains("?"))
+        if (s.toString().endsWith("\n") || s.toString().endsWith("\r") ||
+                (s.toString().contains(";") && s.toString().endsWith("?"))) {
             doneScanning = true;
+        }
     }
 
     @Override
@@ -45,7 +50,7 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
         Log.d("Read:", s.toString());
         if (doneScanning) {
             doneScanning = false;
-            String data = hiddenEditText.getText().toString().trim().replace("\n", "");
+            String data = hiddenEditText.getText().toString().replace("\n", "").replace("\r", "");
             creditCardInfo = Global.parseSimpleMSR(context, data);
             if (encryptCardNumber) {
                 cardEditText.setText(creditCardInfo.getCardNumAESEncrypted());
