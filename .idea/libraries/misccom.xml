@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="misccom">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/misccom.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

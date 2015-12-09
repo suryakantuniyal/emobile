@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="powapos-sdk-android-2.0.2">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/eMobilePOSAndroid/libs/powapos-sdk-android-2.0.2.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
