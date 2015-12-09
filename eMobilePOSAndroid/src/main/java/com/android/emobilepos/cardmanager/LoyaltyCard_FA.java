@@ -19,8 +19,9 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class LoyaltyCard_FA extends FragmentActivity implements OnItemClickListener{
+public class LoyaltyCard_FA extends BaseFragmentActivityActionBar implements OnItemClickListener{
 
 	private final int ACTIVATE = 0,BALANCE_INQUIRY = 1, MANUAL_BALANCE = 2;
 	private Global global;
@@ -29,7 +30,6 @@ public class LoyaltyCard_FA extends FragmentActivity implements OnItemClickListe
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		global = (Global)getApplication();
 		setContentView(R.layout.gift_loyal_reward_main_layout);
 		TextView headerTitle = (TextView)findViewById(R.id.HeaderTitle);

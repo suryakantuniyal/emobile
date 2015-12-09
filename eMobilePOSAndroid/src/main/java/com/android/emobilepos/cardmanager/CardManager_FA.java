@@ -32,6 +32,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -57,7 +58,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import protocols.EMSCallBack;
 
-public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
+public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private EditText hiddenField;
@@ -169,7 +170,6 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         Bundle extras = getIntent().getExtras();
         cardTypeCase = extras.getInt("CARD_TYPE");

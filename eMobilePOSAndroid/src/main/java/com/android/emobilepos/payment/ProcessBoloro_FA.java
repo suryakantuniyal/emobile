@@ -42,6 +42,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -58,7 +59,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import IDTech.MSR.uniMag.Common;
 
-public class ProcessBoloro_FA extends FragmentActivity implements OnClickListener,OnItemSelectedListener{
+public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements OnClickListener,OnItemSelectedListener{
 	
 	private Activity activity;
 	private ProgressDialog progressDlog;
@@ -82,7 +83,6 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         Bundle extras = this.getIntent().getExtras();
         global = (Global)getApplication();
         if(extras.getBoolean("isNFC"))

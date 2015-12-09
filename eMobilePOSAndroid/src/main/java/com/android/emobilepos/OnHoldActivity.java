@@ -36,6 +36,7 @@ import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -49,7 +50,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 
-public class OnHoldActivity extends Activity {
+public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Activity activity;
     private ListView listView;
     private ListViewCursorAdapter myAdapter;
@@ -71,7 +72,6 @@ public class OnHoldActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.onhold_layout);
         activity = this;
         global = (Global) activity.getApplication();

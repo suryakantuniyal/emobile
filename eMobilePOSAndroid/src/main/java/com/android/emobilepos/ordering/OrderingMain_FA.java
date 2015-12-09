@@ -54,6 +54,7 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -79,7 +80,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import protocols.EMSCallBack;
 
-public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddProductBtnCallback,
+public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
         OrderLoyalty_FR.SwiperLoyaltyCallback, OrderRewards_FR.SwiperRewardCallback, EMSCallBack {
 
@@ -125,9 +126,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.order_main_layout);
-
         activity = this;
         instance = this;
         callBackMSR = (EMSCallBack) this;

@@ -41,12 +41,13 @@ import com.android.emobilepos.history.details.HistoryOpenInvoicesDetails_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryOpenInvoices_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
+public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
 	private boolean hasBeenCreated = false;
 	private Global global;
@@ -71,7 +72,6 @@ public class HistoryOpenInvoices_FA extends FragmentActivity implements OnClickL
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.hist_invoices_listview);
 		global = (Global)getApplication();
 		activity = this;

@@ -25,12 +25,13 @@ import com.android.emobilepos.adapters.ReportsShiftAdapter;
 import com.android.emobilepos.shifts.ShiftReportDetails_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class ViewReport_FA extends FragmentActivity {
+public class ViewReport_FA extends BaseFragmentActivityActionBar {
 	
 	private static ReportsMenuAdapter mainAdapter;
 	private static ReportsShiftAdapter shiftAdapter;
@@ -49,7 +50,6 @@ public class ViewReport_FA extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.report_layout);
 		activity = this;
 		

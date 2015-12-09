@@ -13,8 +13,9 @@ import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class ConsignmentCheckout_FA extends FragmentActivity 
+public class ConsignmentCheckout_FA extends BaseFragmentActivityActionBar
 {
 	private Activity activity;
 	private Global global;
@@ -25,7 +26,6 @@ public class ConsignmentCheckout_FA extends FragmentActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		Bundle extras =this.getIntent().getExtras();
 		if(extras.getInt("consignmentType")==2)
 			setContentView(R.layout.consign_fragment_container);

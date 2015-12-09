@@ -39,6 +39,7 @@ import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,7 +51,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 
-public class CreateCustomer_FA extends FragmentActivity implements OnCheckedChangeListener,CompoundButton.OnCheckedChangeListener
+public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements OnCheckedChangeListener,CompoundButton.OnCheckedChangeListener
 ,OnClickListener {
 	final static int[] fieldID = new int[] { R.id.newCustAlias, R.id.newCustfName, R.id.newCustlName, R.id.newCustCompany,
 			R.id.newCustEmail, R.id.newCustPhone, R.id.newCustContact, R.id.newCustBillStr1, R.id.newCustBillStr2, R.id.newCustBillCity,
@@ -89,7 +90,6 @@ public class CreateCustomer_FA extends FragmentActivity implements OnCheckedChan
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.new_customer_layout);
 		global = (Global)getApplication();
 		activity = this;

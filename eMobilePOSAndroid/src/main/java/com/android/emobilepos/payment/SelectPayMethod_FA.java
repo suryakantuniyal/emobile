@@ -52,6 +52,7 @@ import com.android.support.MyPreferences;
 import com.android.support.Post;
 
 import com.android.support.TerminalDisplay;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -75,7 +76,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import drivers.EMSPAT100;
 
-public class SelectPayMethod_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
+public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
 	private CardsListAdapter myAdapter;
 	private ListView myListview;
@@ -110,7 +111,6 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		activity = this;
 
 		setContentView(R.layout.card_list_layout);

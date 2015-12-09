@@ -20,8 +20,9 @@ import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
 import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter.ViewHolder;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class GiftCard_FA extends FragmentActivity implements OnItemClickListener{
+public class GiftCard_FA extends BaseFragmentActivityActionBar implements OnItemClickListener{
 	
 	
 	private boolean hasBeenCreated = false;
@@ -31,7 +32,6 @@ public class GiftCard_FA extends FragmentActivity implements OnItemClickListener
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.gift_loyal_reward_main_layout);
 		
 		global = (Global)getApplication();

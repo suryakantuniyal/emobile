@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import net.sourceforge.zbar.Config;
 import net.sourceforge.zbar.Image;
@@ -22,7 +23,7 @@ import net.sourceforge.zbar.ImageScanner;
 import net.sourceforge.zbar.Symbol;
 import net.sourceforge.zbar.SymbolSet;
 
-public class TupyxCamera_FA extends FragmentActivity{
+public class TupyxCamera_FA extends BaseFragmentActivityActionBar {
 	private Camera mCamera;
     private TupyxCameraPreview_SV mPreview;
     private Handler autoFocusHandler;
@@ -39,7 +40,6 @@ public class TupyxCamera_FA extends FragmentActivity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.tupyx_camera_layout);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

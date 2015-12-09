@@ -34,6 +34,7 @@ import com.android.saxhandler.SAXProcessGeniusHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -53,7 +54,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class ProcessGenius_FA extends FragmentActivity implements OnClickListener {
+public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
 	private String inv_id, paymethod_id;
 	private Activity activity;
 	private Bundle extras;
@@ -71,7 +72,6 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.process_genius_layout);
 		activity = this;
 		global = (Global)this.getApplication();

@@ -17,8 +17,9 @@ import android.widget.TextView;
 import com.android.database.CustomerInventoryHandler;
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class ConsignmentHistory_FA extends FragmentActivity
+public class ConsignmentHistory_FA extends BaseFragmentActivityActionBar
 {
 	private Activity activity;
 	private Global global;
@@ -32,7 +33,6 @@ public class ConsignmentHistory_FA extends FragmentActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.consignment_history_layout);
 		global = (Global)getApplication();
 		activity = this;

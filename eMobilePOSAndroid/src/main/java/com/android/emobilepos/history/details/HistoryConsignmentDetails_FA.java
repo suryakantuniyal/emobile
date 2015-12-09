@@ -25,12 +25,13 @@ import android.widget.TextView;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-public class HistoryConsignmentDetails_FA extends FragmentActivity implements OnClickListener{
+public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar implements OnClickListener{
 	
 	private StickyListHeadersListView lView;
 	private ConsignmentDetailsLV_Adapter adapter;
@@ -48,7 +49,6 @@ public class HistoryConsignmentDetails_FA extends FragmentActivity implements On
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.consignment_details_layout);
 		
 		extras = this.getIntent().getExtras();

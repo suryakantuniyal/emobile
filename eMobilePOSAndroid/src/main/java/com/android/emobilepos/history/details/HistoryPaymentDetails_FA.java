@@ -42,6 +42,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -61,7 +62,7 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClickListener{
+public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar implements OnClickListener{
 
 	private boolean hasBeenCreated = false;
 	private Global global;
@@ -87,7 +88,6 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.histpay_detailslv_layout);
 		global = (Global)getApplication();
 		activity = this;

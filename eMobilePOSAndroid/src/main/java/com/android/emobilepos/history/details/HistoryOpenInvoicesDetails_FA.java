@@ -22,6 +22,7 @@ import com.android.database.InvoicesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -31,7 +32,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryOpenInvoicesDetails_FA extends FragmentActivity 
+public class HistoryOpenInvoicesDetails_FA extends BaseFragmentActivityActionBar
 {
 	private ListView myListView;
 	private CustomAdapter myAdapter;
@@ -51,7 +52,6 @@ public class HistoryOpenInvoicesDetails_FA extends FragmentActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.hist_inv_details_layout);
 		myListView = (ListView) findViewById(R.id.invoiceDetailsLV);
 		Button payButton = (Button)findViewById(R.id.invPaymentButton);

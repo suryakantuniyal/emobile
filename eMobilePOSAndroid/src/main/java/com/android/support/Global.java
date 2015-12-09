@@ -117,8 +117,12 @@ public class Global extends MultiDexApplication {
     public static final int OT310 = 12;
 
 
-    public enum Devices {
-        MAGTEK, STAR, ZEBRA, BAMBOO, ONEIL, SNBC, POWA, ASURA, PAT100, ISMP, EM100, EM70, OT310
+    public enum BuildModel {
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+        @Override
+        public String toString() {
+            return super.toString();
+        }
     }
 
     public static final String AUDIO_MSR_UNIMAG = "0";

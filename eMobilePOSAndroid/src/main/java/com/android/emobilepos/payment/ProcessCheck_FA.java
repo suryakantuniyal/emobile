@@ -34,6 +34,7 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -50,7 +51,7 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChangeListener,OnClickListener{
+public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements OnCheckedChangeListener,OnClickListener{
 	
 	private Global global;
 	private Activity activity;
@@ -97,7 +98,6 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		extras = this.getIntent().getExtras();
 		activity = this;
 		myPref = new MyPreferences(activity);

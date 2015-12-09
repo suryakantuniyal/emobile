@@ -30,6 +30,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -45,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class PickerAddon_FA  extends FragmentActivity  implements OnClickListener
+public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements OnClickListener
 {
 	private boolean hasBeenCreated = false;
 	
@@ -85,7 +86,6 @@ public class PickerAddon_FA  extends FragmentActivity  implements OnClickListene
 		
 		
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
 		
 		

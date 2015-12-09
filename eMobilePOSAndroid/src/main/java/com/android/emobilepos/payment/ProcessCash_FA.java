@@ -1,5 +1,6 @@
 package com.android.emobilepos.payment;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,6 +34,7 @@ import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Payment;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -44,7 +46,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class ProcessCash_FA extends FragmentActivity implements OnClickListener {
+public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
     private Context thisContext = this;
@@ -83,7 +85,6 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.process_cash_layout);
         global = (Global) this.getApplication();
         myPref = new MyPreferences(activity);

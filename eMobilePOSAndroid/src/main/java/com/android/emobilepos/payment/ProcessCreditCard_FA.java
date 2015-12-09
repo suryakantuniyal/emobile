@@ -55,6 +55,7 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
 
@@ -83,7 +84,7 @@ import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import protocols.EMSCallBack;
 
-public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener, TextWatcherCallback {
+public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
     private static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
@@ -158,7 +159,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         callBack = this;
         setContentView(R.layout.procress_card_layout);
 

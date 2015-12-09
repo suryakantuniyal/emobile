@@ -19,11 +19,12 @@ import android.widget.TextView;
 import com.android.database.OrdProdAttrList_DB;
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class OrderAttributes_FA extends FragmentActivity implements OnItemClickListener{
+public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements OnItemClickListener{
 		
 	
 	private ArrayList<OrdProdAttrHolder>listAttr;
@@ -43,7 +44,6 @@ public class OrderAttributes_FA extends FragmentActivity implements OnItemClickL
 //			super.setTheme(R.style.AppTheme);
 		
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.order_attributes_layout);
 		
 		global = (Global)getApplication();

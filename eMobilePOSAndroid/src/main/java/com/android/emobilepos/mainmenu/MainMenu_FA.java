@@ -15,6 +15,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,6 +28,7 @@ import com.android.emobilepos.adapters.SynchMenuAdapter;
 import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ import java.util.HashMap;
 
 import main.EMSDeviceManager;
 
-public class MainMenu_FA extends FragmentActivity {
+public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
 	private static AdapterTabs tabsAdapter;
 	private ViewPager viewPager;
@@ -44,12 +47,11 @@ public class MainMenu_FA extends FragmentActivity {
 	private static int selectedPage = 0;
 	private static ViewPager childViewPager;
 	private TextView synchTextView, tvStoreForward;
-	private ActionBar myBar;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
 
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_menu);
 		viewPager = (ViewPager) findViewById(R.id.main_menu_pager);
 		synchTextView = (TextView) findViewById(R.id.synch_title);
@@ -60,10 +62,10 @@ public class MainMenu_FA extends FragmentActivity {
 
 		activity = this;
 		global = (Global) getApplication();
-		myBar = this.getActionBar();
-
-		myBar.setDisplayShowTitleEnabled(false);
-		myBar.setDisplayShowHomeEnabled(false);
+//		myBar = this.getActionBar();
+//
+//		myBar.setDisplayShowTitleEnabled(false);
+//		myBar.setDisplayShowHomeEnabled(false);
 		tabsAdapter = new AdapterTabs(this, viewPager);
 
 		tabsAdapter.addTab(myBar.newTab().setText(R.string.sales_title), SalesTab_FR.class, null);
@@ -95,7 +97,9 @@ public class MainMenu_FA extends FragmentActivity {
 		hasBeenCreated = true;
 	}
 
-	@Override
+
+
+    @Override
 	public void onResume() {
 
 		if (global.isApplicationSentToBackground(activity))
