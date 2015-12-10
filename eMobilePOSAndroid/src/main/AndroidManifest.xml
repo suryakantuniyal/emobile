@@ -65,7 +65,6 @@
         </activity>
         <activity
             android:name="com.android.emobilepos.mainmenu.MainMenu_FA"
-            android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
