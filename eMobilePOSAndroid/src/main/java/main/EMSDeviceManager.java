@@ -28,6 +28,7 @@ import drivers.EMSPowaPOS;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
 import drivers.EMSEM70;
+import drivers.star.utils.EMSELO;
 import protocols.EMSConnectionDelegate;
 import protocols.EMSDeviceManagerPrinterDelegate;
 import protocols.EMSPrintingDelegate;
@@ -123,6 +124,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSOT310();
                 aDevice.connect(activity, -1, true, instance);
                 break;
+            case Global.ESY13P1:
+                aDevice = new EMSELO();
+                aDevice.connect(activity, -1, true, instance);
+                break;
             case Global.ISMP:
                 aDevice = new EMSIngenico();
                 aDevice.connect(activity, -1, true, instance);
@@ -170,6 +175,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.OT310:
                 aDevice = new EMSOT310();
                 break;
+            case Global.ESY13P1:
+                aDevice = new EMSELO();
+                break;
         }
         if (aDevice != null)
             return aDevice.autoConnect(activity, instance, paperSize, isPOSPrinter, portName, portNumber);
@@ -177,20 +185,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         return false;
     }
 
-
-//	public void loadUSBDriver(Activity activity,int type)
-//	{
-//		this.activity = activity;
-//		switch(type)
-//		{
-//		case Global.POWA:
-//			aDevice = new EMSPowaPOS();
-//			break;
-//		}
-//		
-//		if(aDevice!=null)
-//			aDevice.connectUSB(activity, instance);
-//	}
 
     private void promptTypeOfStarPrinter() {
         ListView listViewPrinterType = new ListView(activity);

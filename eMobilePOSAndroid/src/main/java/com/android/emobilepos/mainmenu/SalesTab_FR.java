@@ -668,6 +668,9 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("OT-310")) {
             myPref.setIsOT310(true);
             return true;
+        } else if (model.equals("PayPoint ESY13P1")) {
+            myPref.setIsESY13P1(true);
+            return true;
         } else {
             boolean isTablet = (activity.getResources().getConfiguration().screenLayout
                     & Configuration.SCREENLAYOUT_SIZE_MASK)

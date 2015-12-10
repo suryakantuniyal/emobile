@@ -371,19 +371,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                     roverReader.initializeReader(activity, false);
                 }
             }
-            // if
-            // (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
-            // {
-            // uniMagReader = new EMSUniMagDriver();
-            // uniMagReader.initializeReader(this);
-            // } else {
-            // magtekReader = new EMSMagtekAudioCardReader(this);
-            // new Thread(new Runnable() {
-            // public void run() {
-            // magtekReader.connectMagtek(true,msrCallBack);
-            // }
-            // }).start();
-            // }
+
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
             int _printer_type = myPref.getPrinterType();

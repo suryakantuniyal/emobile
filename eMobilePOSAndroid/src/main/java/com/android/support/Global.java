@@ -115,10 +115,12 @@ public class Global extends MultiDexApplication {
     public static final int EM100 = 10;
     public static final int EM70 = 11;
     public static final int OT310 = 12;
+    public static final int ESY13P1 = 13;
 
 
     public enum BuildModel {
         ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+
         @Override
         public String toString() {
             return super.toString();
@@ -1719,13 +1721,13 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
-                || _printer_type == Global.EM70 || _printer_type == Global.OT310);
+                || _printer_type == Global.EM70 || _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.OT310);
+                || _device_type == Global.OT310 || _device_type == Global.ESY13P1);
     }
 
     // Handle application transition for background
