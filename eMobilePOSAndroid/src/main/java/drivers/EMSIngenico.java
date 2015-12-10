@@ -85,12 +85,15 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 		commSettings.BT_Name = "";
 
 		setCommTimeOuts();
-		ERROR_ID connectionRequest = RBA_API.Connect(commSettings);
-
+		ERROR_ID connectionRequest;
+		try {
+			connectionRequest = RBA_API.Connect(commSettings);
+		}catch (Exception e){
+			connectionRequest = ERROR_ID.RESULT_ERROR;
+		}
 		switch (connectionRequest) {
 		case RESULT_SUCCESS:
 		case RESULT_ERROR_ALREADY_CONNECTED:
-
 			didConnect = true;
 			break;
 		default:

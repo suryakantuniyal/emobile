@@ -42,26 +42,26 @@
                 android:textAppearance="@style/blue_txt_appearance_unbold"
                 android:textColor="#0071E3"
                 android:textSize="@dimen/small_button_text_size"
-                >
+              >
             </TextView>
 
         </LinearLayout>
 
 
-        <Button
-            android:id="@+id/invoiceButton"
-            android:text="@string/selectinvoices"
-            android:textAppearance="@style/blue_txt_appearance_unbold"
-            android:textColor="#0071E3"
-            android:textSize="@dimen/small_button_text_size"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@drawable/grey_button_selector"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:layout_weight="1"
-            android:layout_marginLeft="5dp" />
+            <Button
+                android:id="@+id/invoiceButton"
+                android:text="@string/selectinvoices"
+                android:textAppearance="@style/blue_txt_appearance_unbold"
+                android:textColor="#0071E3"
+                android:textSize="@dimen/small_button_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/grey_button_selector"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp" />
 
     </LinearLayout>
 
@@ -78,10 +78,10 @@
         android:id="@+id/salesGridLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:columnWidth="300dp"
+
         android:gravity="center"
         android:horizontalSpacing="5dp"
-        android:numColumns="auto_fit"
+        android:numColumns="3"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
         android:paddingLeft="5dp"

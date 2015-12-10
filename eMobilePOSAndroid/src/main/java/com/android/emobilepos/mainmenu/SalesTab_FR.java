@@ -20,6 +20,8 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -50,7 +52,7 @@ import java.util.HashMap;
 
 public class SalesTab_FR extends Fragment {
     private SalesMenuAdapter myAdapter;
-    private ListView myListview;
+    private GridView myListview;
     private Context thisContext;
     private boolean isSelected = false;
     private TextView selectedCust;
@@ -58,6 +60,7 @@ public class SalesTab_FR extends Fragment {
     private Button salesInvoices;
     public static Activity activity;
     private EditText hiddenField;
+//    GridView gridView;
 
 
     @Override
@@ -68,7 +71,9 @@ public class SalesTab_FR extends Fragment {
         myPref = new MyPreferences(activity);
         myPref.setLogIn(true);
         PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_layout, false);
-        myListview = (ListView) view.findViewById(R.id.salesListview);
+        myListview = (GridView) view.findViewById(R.id.salesGridLayout);
+//        gridView = (GridView) view.findViewById(R.id.salesGridLayout);
+
         thisContext = getActivity();
         selectedCust = (TextView) view.findViewById(R.id.salesCustomerName);
         salesInvoices = (Button) view.findViewById(R.id.invoiceButton);

@@ -1110,5 +1110,6 @@
 	<string name="powered_by_enabler">Powered by Enabler</string>
 	<string name="ivuloto_control_label">"CONTROL: "</string>
 	<string name="menu_back">Back</string>
+	<string name="selectinvoices">Select Invoices</string>
 
 </resources>
