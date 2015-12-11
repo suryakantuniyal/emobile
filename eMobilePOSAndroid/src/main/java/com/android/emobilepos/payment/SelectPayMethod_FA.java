@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -146,7 +147,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true)
                 .displayer(new FadeInBitmapDisplayer(200)).cacheOnDisc(true)
-                .imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
+                .imageScaleType(ImageScaleType.EXACTLY).build();
 
         if (ImageLoader.getInstance().isInited())
             ImageLoader.getInstance().destroy();
@@ -155,8 +156,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         File cacheDir = new File(myPref.getCacheDir());
         if (!cacheDir.exists())
             cacheDir.mkdirs();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity).memoryCacheExtraOptions(43, 43)
-                .discCacheExtraOptions(43, 43, CompressFormat.JPEG, 100, null)
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity)
                 .discCache(new UnlimitedDiscCache(cacheDir)).build();
         imageLoader.init(config);
         imageLoader.handleSlowNetwork(true);
@@ -475,16 +475,19 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 String name = payType.get(position)[1];
                 String img_url = payType.get(position)[3];
 
+
                 if (img_url.isEmpty()) {
-                    String iconName = Global.paymentIconsMap.get(key);
-                    if (iconName == null)
+                    if (key == null) {
                         iconId = R.drawable.debit;// context.getResources().getIdentifier("debit", "drawable", context.getString(R.string.pkg_name));
-                    else
-                        iconId = context.getResources().getIdentifier(iconName, "drawable",
+                    } else {
+                        Log.d("Logo Name", key);
+                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
                                 context.getPackageName());
+                    }
 
                     holder.ivPayIcon.setImageResource(iconId);
                 } else {
+                    Log.d("Logo Name", img_url);
                     imageLoader.displayImage(img_url, holder.ivPayIcon, options);
                 }
                 holder.textLine2.setTag(name);
@@ -496,26 +499,20 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             } else {
                 holder = (ViewHolder) convertView.getTag();
-//				if (type == 0) {
-//					holder.totalView
-//							.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(total))));
-//					holder.paidView
-//							.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(paid))));
-//					holder.dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
-//					holder.tipView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tipPaidAmount)));
-//				} else {
                 String key = payType.get(position)[2];
                 String name = payType.get(position)[1];
                 String img_url = payType.get(position)[3];
 
                 if (img_url.isEmpty()) {
-                    String iconName = Global.paymentIconsMap.get(key);
-                    if (iconName == null)
+                    if (key == null) {
                         iconId = R.drawable.debit;//context.getResources().getIdentifier("debit", "drawable",
+                    }
 //									context.getString(R.string.pkg_name));
-                    else
-                        iconId = context.getResources().getIdentifier(iconName, "drawable",
+                    else {
+                        Log.d("Logo Name", key);
+                        iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
                                 context.getPackageName());
+                    }
 
                     holder.ivPayIcon.setImageResource(iconId);
                 } else {
@@ -523,7 +520,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
                 holder.textLine2.setTag(name);
                 holder.textLine2.setText(name);
-//				}
+
             }
             return convertView;
         }
