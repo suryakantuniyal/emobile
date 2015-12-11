@@ -127,7 +127,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
 		@Override
 		protected String doInBackground(Integer... params) {
-			// TODO Auto-generated method stub
 			RBA_API.Initialize();
 			RBA_API.SetMessageCallBack(sdkEventHandler);
 

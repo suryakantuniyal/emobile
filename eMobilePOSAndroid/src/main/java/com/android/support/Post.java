@@ -40,39 +40,39 @@ public class Post {
     private boolean isShortResponse = false;
     private boolean isPost = false;
     static InputStream keyStoreInputStream;
-    static KeyStore trustStore;
-    static TrustManagerFactory tmf;
-    static SSLContext sslContext;
+//    static KeyStore trustStore;
+//    static TrustManagerFactory tmf;
+//    static SSLContext sslContext;
     static HttpsURLConnection urlConnection;
     double apiVersion = Double.valueOf(android.os.Build.VERSION.SDK_INT);
 
-    public void initSSL() {
-        System.setProperty("http.keepAlive", "false");
-        if (apiVersion >= 14) // ICS+
-            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure);
-        else // GingerBread
-            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure_godaddyroot);
-
-        try {
-            trustStore = KeyStore.getInstance("BKS");
-            trustStore.load(keyStoreInputStream, "mysecret".toCharArray());
-            tmf = TrustManagerFactory.getInstance("X509");
-            tmf.init(trustStore);
-            sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, tmf.getTrustManagers(), null);
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public void initSSL() {
+//        System.setProperty("http.keepAlive", "false");
+//        if (apiVersion >= 14) // ICS+
+//            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure);
+//        else // GingerBread
+//            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure_godaddyroot);
+//
+//        try {
+//            trustStore = KeyStore.getInstance("BKS");
+//            trustStore.load(keyStoreInputStream, "mysecret".toCharArray());
+//            tmf = TrustManagerFactory.getInstance("X509");
+//            tmf.init(trustStore);
+//            sslContext = SSLContext.getInstance("TLS");
+//            sslContext.init(null, tmf.getTrustManagers(), null);
+//        } catch (KeyStoreException e) {
+//            e.printStackTrace();
+//        } catch (CertificateException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        } catch (KeyManagementException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     public String postData(int type, Activity activity, String varyingVariable) {
         GenerateXML xml = new GenerateXML(activity);
@@ -278,12 +278,12 @@ public class Post {
 
         HttpsURLConnection urlConnection;
         try {
-           if (sslContext==null){
-               initSSL();
-           }
+//           if (sslContext==null){
+//               initSSL();
+//           }
             HttpsURLConnection.setFollowRedirects(false);
             urlConnection = (HttpsURLConnection) url.openConnection();
-            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+//            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
             // urlConnection.setRequestMethod("GET");
             urlConnection.setRequestProperty("Connection", "close");
             urlConnection.setUseCaches(false);
@@ -352,11 +352,11 @@ public class Post {
             URL url = new URL(Url);
 
             try {
-                if (sslContext == null) {
-                    initSSL();
-                }
+//                if (sslContext == null) {
+//                    initSSL();
+//                }
                 urlConnection = (HttpsURLConnection) url.openConnection();
-                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+//                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                 urlConnection.setRequestMethod("POST");
                 HttpURLConnection.setFollowRedirects(true);
 

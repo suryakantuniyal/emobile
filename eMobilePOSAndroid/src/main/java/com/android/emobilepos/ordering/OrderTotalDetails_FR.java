@@ -555,7 +555,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             if (_subtotal.compareTo(new BigDecimal("0.00")) != 0) {
                 if (isVat)
                     listOrderTaxesTotal.set(j,
-                            listOrderTaxesTotal.get(j).add(tax_amount.multiply(qty)).setScale(2, RoundingMode.HALF_UP));
+                            listOrderTaxesTotal.get(j).add(tax_amount.multiply(qty.abs()).setScale(2, RoundingMode.HALF_UP)));
                 else
                     listOrderTaxesTotal.set(j,
                             listOrderTaxesTotal.get(j).add(tax_amount).setScale(4, RoundingMode.HALF_UP));
@@ -566,7 +566,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
 
         if (isVat)
-            _total_tax = _total_tax.setScale(2, RoundingMode.HALF_UP).multiply(qty);
+            _total_tax = _total_tax.setScale(2, RoundingMode.HALF_UP).multiply(qty.abs());
         tempTaxableAmount = tempTaxableAmount.add(_total_tax).setScale(4, RoundingMode.HALF_UP);
     }
 
