@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" 
+    android:orientation="vertical"
     android:gravity="center"
+    android:background="@drawable/shadow_layer"
     android:paddingLeft="15dp"
     android:paddingRight="15dp">
 
@@ -15,12 +16,12 @@
 
     <TextView
         android:id="@+id/cardsListname"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:text="" 
-        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Payment Name"
         android:textAppearance="@style/black_text_appearance"
       	style="@style/text_shadow"
+
       	android:textSize="@dimen/listview_text_size"
         android:gravity="right|center_vertical"/>
 

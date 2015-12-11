@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:orientation="vertical"
+    android:background="@drawable/shadow_layer"
     android:gravity="center_horizontal">
 
     <ImageView

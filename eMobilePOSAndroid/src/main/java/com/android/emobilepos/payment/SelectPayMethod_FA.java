@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -79,7 +80,7 @@ import drivers.EMSPAT100;
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
     private CardsListAdapter myAdapter;
-    private ListView myListview;
+    private GridView myListview;
     private String total;
     private String paid;
     private Activity activity;
@@ -118,7 +119,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         activity = this;
 
         setContentView(R.layout.card_list_layout);
-        myListview = (ListView) findViewById(R.id.cardsListview);
+        myListview = (GridView) findViewById(R.id.cardsListview);
         global = (Global) getApplication();
         extras = this.getIntent().getExtras();
         myPref = new MyPreferences(this);
@@ -465,49 +466,29 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if (convertView == null) {
 
                 holder = new ViewHolder();
-                switch (type) {
-//					case 0:// dividers layout
-//						convertView = myInflater.inflate(R.layout.card_listrow1_adapter, null);
-//
-//						holder.totalView = (TextView) convertView.findViewById(R.id.totalValue);
-//						holder.paidView = (TextView) convertView.findViewById(R.id.paidValue);
-//						holder.tipView = (TextView) convertView.findViewById(R.id.tipValue);
-//						holder.dueView = (TextView) convertView.findViewById(R.id.dueValue);
-//
-//						holder.totalView
-//								.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(total))));
-//						holder.paidView
-//								.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(paid))));
-//						holder.dueView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(overAllRemainingBalance)));
-//						holder.tipView.setText(Global.getCurrencyFormat(Global.formatNumToLocale(tipPaidAmount)));
-//
-//						break;
-                    default:
-                        convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
 
-                        holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
-                        holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
-                        String key = payType.get(position)[2];
-                        String name = payType.get(position)[1];
-                        String img_url = payType.get(position)[3];
+                convertView = myInflater.inflate(R.layout.card_listrow2_adapter, null);
 
-                        if (img_url.isEmpty()) {
-                            String iconName = Global.paymentIconsMap.get(key);
-                            if (iconName == null)
-                                iconId = R.drawable.debit;// context.getResources().getIdentifier("debit", "drawable", context.getString(R.string.pkg_name));
-                            else
-                                iconId = context.getResources().getIdentifier(iconName, "drawable",
-                                        context.getPackageName());
+                holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
+                holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
+                String key = payType.get(position)[2];
+                String name = payType.get(position)[1];
+                String img_url = payType.get(position)[3];
 
-                            holder.ivPayIcon.setImageResource(iconId);
-                        } else {
-                            imageLoader.displayImage(img_url, holder.ivPayIcon, options);
-                        }
-                        holder.textLine2.setTag(name);
-                        holder.textLine2.setText(name);
+                if (img_url.isEmpty()) {
+                    String iconName = Global.paymentIconsMap.get(key);
+                    if (iconName == null)
+                        iconId = R.drawable.debit;// context.getResources().getIdentifier("debit", "drawable", context.getString(R.string.pkg_name));
+                    else
+                        iconId = context.getResources().getIdentifier(iconName, "drawable",
+                                context.getPackageName());
 
-                        break;
+                    holder.ivPayIcon.setImageResource(iconId);
+                } else {
+                    imageLoader.displayImage(img_url, holder.ivPayIcon, options);
                 }
+                holder.textLine2.setTag(name);
+                holder.textLine2.setText(name);
 
                 if (convertView != null) {
                     convertView.setTag(holder);
