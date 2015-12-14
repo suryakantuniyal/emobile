@@ -13,14 +13,12 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -1800,6 +1798,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             else
                 viewMsg.setText(R.string.dlog_msg_want_to_print);
         }
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);

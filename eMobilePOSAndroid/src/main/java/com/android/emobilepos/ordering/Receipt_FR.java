@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -21,7 +20,6 @@ import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -71,8 +69,6 @@ import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
-import com.mobeta.android.dslv.DragSortController;
-import com.mobeta.android.dslv.DragSortListView;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
@@ -286,7 +282,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
             }
         } else {
-            switch ((Global.TransactionType)extras.get("option_number")) {
+            switch ((Global.TransactionType) extras.get("option_number")) {
                 case SALE_RECEIPT: {
                     Global.ord_type = Global.OrderType.SALES_RECEIPT;
                     break;
@@ -809,6 +805,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         viewMsg.setText(R.string.dlog_msg_add_more_products);
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -1501,7 +1499,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
-        globalDlog.setContentView(R.layout.dlog_field_single_layout);
+        globalDlog.setContentView(R.layout.dlog_field_single_two_btn);
 
         final EditText viewField = (EditText) globalDlog
                 .findViewById(R.id.dlogFieldSingle);
@@ -1514,8 +1512,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             viewMsg.setText(R.string.invalid_password);
         else
             viewMsg.setText(R.string.dlog_title_enter_manager_password);
+        Button cancelBtn = (Button) globalDlog.findViewById(R.id.btnDlogRight);
+        cancelBtn.setText(R.string.button_cancel);
+        cancelBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
 
-        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
@@ -1563,7 +1569,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.enter_name);
-
+        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
@@ -1666,6 +1678,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             viewTitle.setText(R.string.dlog_title_confirm);
             viewMsg.setText(R.string.dlog_msg_want_to_print);
         }
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
@@ -1820,6 +1834,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         viewMsg.setText(R.string.dlog_msg_want_to_make_refund);
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -1865,6 +1880,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.take_payment_now);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
@@ -2053,7 +2069,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             Button btnLoad = (Button) dlog.findViewById(R.id.btnDlogRight);
             btnSave.setText(R.string.button_save);
             btnLoad.setText(R.string.button_load);
-
+            Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dlog.dismiss();
+                }
+            });
             btnSave.setOnClickListener(new View.OnClickListener() {
 
                 @Override

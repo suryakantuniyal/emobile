@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -341,7 +340,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
 			viewTitle.setText(R.string.dlog_title_error);
 			viewMsg.setText(R.string.dlog_msg_failed_print);
-
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
 		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
 		btnYes.setText(R.string.button_yes);
@@ -419,7 +418,13 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 		TextView viewMsg = (TextView)globalDlog.findViewById(R.id.dlogMessage);
 		viewTitle.setText(R.string.dlog_title_confirm);
 			viewMsg.setText(R.string.dlog_title_enter_manager_password);
-		
+		Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+		btnCancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				globalDlog.dismiss();
+			}
+		});
 		Button btnOk = (Button)globalDlog.findViewById(R.id.btnDlogSingle);
 		btnOk.setText(R.string.button_ok);
 		btnOk.setOnClickListener(new View.OnClickListener() {

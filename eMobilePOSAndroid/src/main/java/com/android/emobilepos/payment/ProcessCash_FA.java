@@ -1,6 +1,5 @@
 package com.android.emobilepos.payment;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -37,7 +35,6 @@ import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -933,6 +930,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             viewTitle.setText(R.string.dlog_title_error);
             viewMsg.setText(R.string.dlog_msg_failed_print);
         }
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);

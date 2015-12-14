@@ -430,7 +430,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private void showPrintDlg() {
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlog.setCancelable(false);
+        dlog.setCancelable(true);
+        dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
 
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
@@ -441,6 +442,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        ((Button) dlog.findViewById(R.id.btnDlogCancel)).setVisibility(View.GONE);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -525,6 +527,13 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             viewMsg.setText(R.string.invalid_password);
         else
             viewMsg.setText(R.string.dlog_title_enter_manager_password);
+        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
 
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
@@ -567,6 +576,13 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         viewMsg.setVisibility(View.GONE);
         Button btnOpen = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnPrint = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
         btnOpen.setText(R.string.button_open);
         btnPrint.setText(R.string.button_print);
 
@@ -641,7 +657,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.prod_taxId = c.getString(c.getColumnIndex("prod_taxId"));
             ord.discount_id = c.getString(c.getColumnIndex("discount_id"));
                 /*ord.getSetData("taxAmount", false, taxAmount);
-				ord.getSetData("taxTotal", false, taxTotal);
+                ord.getSetData("taxTotal", false, taxTotal);
 				ord.getSetData("disAmount", false, disAmount);
 				ord.getSetData("disTotal", false, disTotal);*/
 
@@ -661,7 +677,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.uom_name = c.getString(c.getColumnIndex("uom_name"));
             ord.uom_id = c.getString(c.getColumnIndex("uom_id"));
             ord.uom_conversion = c.getString(c.getColumnIndex("uom_conversion"));
-				
+
 				
 				/*if(discountIsTaxable)
 				{

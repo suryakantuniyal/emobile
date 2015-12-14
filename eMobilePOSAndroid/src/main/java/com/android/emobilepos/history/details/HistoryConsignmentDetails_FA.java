@@ -12,7 +12,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -193,7 +192,7 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 		viewTitle.setText(R.string.dlog_title_error);
 		viewMsg.setText(R.string.dlog_msg_failed_print);
 
-		
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
 		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
 		btnYes.setText(R.string.button_yes);

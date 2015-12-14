@@ -20,7 +20,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -334,7 +333,13 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 viewTitle.setText(R.string.reenter_password);
                 viewMsg.setVisibility(View.GONE);
             }
-
+            Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
             Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
@@ -480,6 +485,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 viewMsg.setText(R.string.dlog_msg_confirm_force_upload);
             else
                 viewMsg.setText(R.string.dlog_msg_confirm_backup_data);
+            promptDialog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
             Button btnYes = (Button) promptDialog.findViewById(R.id.btnDlogLeft);
             Button btnNo = (Button) promptDialog.findViewById(R.id.btnDlogRight);
             btnYes.setText(R.string.button_yes);

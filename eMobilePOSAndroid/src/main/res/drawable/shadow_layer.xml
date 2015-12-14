@@ -63,7 +63,7 @@
     <!-- Background -->
     <item>
         <shape>
-            <solid android:color="@color/white" />
+            <solid android:color="@color/gray_flat_tiles" />
             <corners android:radius="3dp" />
             <corners android:radius="10dip"></corners>
 

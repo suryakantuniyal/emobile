@@ -6,13 +6,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap.CompressFormat;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +26,6 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.database.DrawInfoHandler;
@@ -52,7 +48,6 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
-
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
@@ -61,7 +56,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.zzzapi.uart.uart;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -75,8 +69,6 @@ import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import drivers.EMSPAT100;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
@@ -129,7 +121,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         order_email = extras.getString("order_email", "");
         isFromMainMenu = extras.getBoolean("isFromMainMenu");
         overAllRemainingBalance = Double.parseDouble(total);
-
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
             typeOfProcedure = extras.getInt("typeOfProcedure");
@@ -593,6 +584,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -677,7 +670,13 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewMsg.setText(R.string.dlog_title_enter_manager_password);
-
+        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new OnClickListener() {

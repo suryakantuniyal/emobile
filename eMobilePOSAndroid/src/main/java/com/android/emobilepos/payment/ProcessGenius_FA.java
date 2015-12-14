@@ -12,7 +12,6 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -39,13 +38,11 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
@@ -322,9 +319,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             } else {
                 viewMsg.setText(R.string.dlog_msg_print_cust_copy);
             }
+            dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
             Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
             Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+            Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+            btnCancel.setVisibility(View.GONE);
             btnYes.setText(R.string.button_yes);
             btnNo.setText(R.string.button_no);
 

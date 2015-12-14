@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -419,6 +418,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
 			viewTitle.setText(R.string.dlog_title_error);
 			viewMsg.setText(R.string.dlog_msg_failed_print);
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
 		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
@@ -641,6 +641,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 		viewMsg.setVisibility(View.GONE);
 		Button btnVoid = (Button)dlog.findViewById(R.id.btnDlogRight);
 		Button btnCancel = (Button)dlog.findViewById(R.id.btnDlogLeft);
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
 		btnVoid.setText(R.string.button_void);
 		btnCancel.setText(R.string.button_cancel);
 		

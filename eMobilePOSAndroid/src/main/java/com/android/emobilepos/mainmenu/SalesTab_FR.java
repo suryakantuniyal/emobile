@@ -20,11 +20,9 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.database.ClerksHandler;
@@ -517,6 +515,7 @@ public class SalesTab_FR extends Fragment {
         sb.append("From: ").append(Global.locationFrom.get(Locations_DB.loc_name)).append("\n");
         sb.append("To: ").append(Global.locationTo.get(Locations_DB.loc_name));
         viewMsg.setText(sb.toString());
+        globalDlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
         btnOk.setText(R.string.button_ok);
@@ -526,7 +525,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
             }
         });
@@ -534,7 +532,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 Global.isInventoryTransfer = true;
                 Intent intent = new Intent(activity, OrderingMain_FA.class);
@@ -560,7 +557,13 @@ public class SalesTab_FR extends Fragment {
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewMsg.setText(R.string.dlog_title_enter_clerk_password);
-
+        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {

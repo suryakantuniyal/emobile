@@ -16,7 +16,6 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -631,6 +630,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         Button btnLeft = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnRight = (Button) dlog.findViewById(R.id.btnDlogRight);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         if (isFromOnHold) {
             viewMsg.setVisibility(View.GONE);
             viewTitle.setText(R.string.cust_dlog_choose_action);
@@ -1316,7 +1317,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
             /*
-			 * HashMap<String,String> voidedTrans = new
+             * HashMap<String,String> voidedTrans = new
 			 * HashMap<String,String>(); voidedTrans.put("ord_id",
 			 * Global.lastOrdID); voidedTrans.put("ord_type",
 			 * global.order.ord_type);

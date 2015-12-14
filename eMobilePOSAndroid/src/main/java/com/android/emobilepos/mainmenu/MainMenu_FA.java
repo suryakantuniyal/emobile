@@ -15,8 +15,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -326,6 +324,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 			tab.setTag(info);
 			tab.setTabListener(this);
 			myTabs.add(info);
+
 			myActionBar.addTab(tab);
 			notifyDataSetChanged();
 		}

@@ -32,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.database.OrdProdAttrList_DB;
-import com.android.database.OrdersHandler;
 import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsAttrHandler;
 import com.android.database.ProductsHandler;
@@ -47,11 +46,9 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TerminalDisplay;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.zzzapi.uart.uart;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -60,8 +57,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
-
-import drivers.EMSPAT100;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
@@ -715,7 +710,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.dlog_msg_enter_qty);
-
+        Button btnCancel = (Button) dlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
         Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {

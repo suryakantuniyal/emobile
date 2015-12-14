@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.view.View;
 import android.view.Window;
@@ -120,7 +119,13 @@ public class GiftCard_FA extends BaseFragmentActivityActionBar implements OnItem
 		viewTitle.setText(R.string.dlog_title_confirm);
 
 			viewMsg.setText(R.string.dlog_title_enter_manager_password);
-		
+		Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+		btnCancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				globalDlog.dismiss();
+			}
+		});
 		Button btnOk = (Button)globalDlog.findViewById(R.id.btnDlogSingle);
 		btnOk.setText(R.string.button_ok);
 		btnOk.setOnClickListener(new View.OnClickListener() {

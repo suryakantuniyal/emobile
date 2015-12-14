@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 
 import com.android.emobilepos.R;
@@ -27,6 +26,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 myBar.setDisplayShowTitleEnabled(Build.MODEL.equalsIgnoreCase("PayPoint ESY13P1"));
                 myBar.setDisplayShowHomeEnabled(Build.MODEL.equalsIgnoreCase("PayPoint ESY13P1"));
                 myBar.setHomeButtonEnabled(Build.MODEL.equalsIgnoreCase("PayPoint ESY13P1"));
+                myBar.setStackedBackgroundDrawable(getResources().getDrawable(R.drawable.blue_gradient_header_horizontal));
             }
         } else {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
