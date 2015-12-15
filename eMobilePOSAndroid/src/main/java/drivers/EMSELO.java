@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.emobilepos.models.Orders;
@@ -32,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 
 
+import drivers.elo.utils.MagStripDriver;
+import drivers.elo.utils.MagStripeCardParser;
 import drivers.elo.utils.PrinterAPI;
 import main.EMSDeviceManager;
 import protocols.EMSCallBack;
@@ -54,6 +57,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     private EMSCallBack scannerCallBack;
+    MagStripDriver eloCardSwiper;
     private Encrypt encrypt;
     private CreditCardInfo cardManager;
     private EMSDeviceManager edm;
@@ -258,7 +262,36 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
+        eloCardSwiper = new MagStripDriver(activity);
+        eloCardSwiper.startDevice();
+        eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
 
+            @Override
+            public void OnDeviceDisconnected() { //Fired when the Device has been Disconnected.
+                Toast.makeText(activity, "Magnetic-Stripe Device Disconnected !", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void OnDeviceConnected() { //Fired when the Device has been Connected.
+                Toast.makeText(activity, "Magnetic-Stripe Device Connected !", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void OnCardSwiped(String cardData) { //Fired when a card has been swiped on the device.
+                try {
+                    MagStripeCardParser mParser = new MagStripeCardParser(cardData); //Instance of card swipe reader
+                    if (mParser.isDataParse()) {
+                        if (mParser.hasTrack1()) {
+                            String accountNo = mParser.getAccountNumber();
+                            accountNo = accountNo.replaceAll(accountNo.substring(0, accountNo.length() - 4), "XXXX-XXXX-XXXX-"); //Only last 4 digits of the card is required.
+                        }
+                    }
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

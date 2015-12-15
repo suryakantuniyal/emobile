@@ -52,8 +52,7 @@ public class MagStripDriver
 			{
 				case DEVICE_CONNECTED : 
 				{
-					Log.d("MagStripDriver Object at Inside MagTek :", "Read Data " + ((Number) msg.obj).intValue());
-					if(mListener != null) 
+					if(mListener != null)
 						mListener.OnDeviceConnected();
 					break;
 				}
