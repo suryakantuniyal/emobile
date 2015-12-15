@@ -536,6 +536,11 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 	}
 
 	@Override
+	public void playSound() {
+
+	}
+
+	@Override
 	public void printEndOfDayReport(String date, String clerk_id)
 	{
 		

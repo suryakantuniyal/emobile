@@ -79,7 +79,14 @@ import drivers.EMSPAT100;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
-
+    //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
+    // In constructor we are loading .so file for Cash Drawer.
+    static {
+        System.loadLibrary("cashdrawerjni");
+        System.loadLibrary("cfdjni");
+        System.loadLibrary("barcodereaderjni");
+        System.loadLibrary("serial_port");
+    }
     @Override
     public void onCreate() {
         super.onCreate();

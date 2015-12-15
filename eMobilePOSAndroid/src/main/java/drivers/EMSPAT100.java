@@ -396,6 +396,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public void playSound() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         // TODO Auto-generated method stub
         try {

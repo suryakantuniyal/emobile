@@ -690,6 +690,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
+                    if(Global.mainPrinterManager!=null && Global.mainPrinterManager.currentDevice!=null){
+                        Global.mainPrinterManager.currentDevice.playSound();
+                    }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
                     upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
                     String[] listData = handler.getUPCProducts(upc);

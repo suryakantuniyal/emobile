@@ -321,6 +321,11 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 	}
 
 	@Override
+	public void playSound() {
+
+	}
+
+	@Override
 	public void printEndOfDayReport(String date, String clerk_id)
 	{
 		EMSReceiptHelper em = new EMSReceiptHelper(activity,42);

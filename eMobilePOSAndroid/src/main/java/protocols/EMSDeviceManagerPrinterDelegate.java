@@ -12,45 +12,47 @@ import java.util.List;
 
 public interface EMSDeviceManagerPrinterDelegate {
 
-	public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
 
-	public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint);
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint);
 
-	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature);
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature);
 
-	public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature);
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature);
 
-	public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup);
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup);
 
-	public void printStationPrinter(List<Orders> orderProducts, String ordID);
-	
+    public void printStationPrinter(List<Orders> orderProducts, String ordID);
 
-	public boolean printOpenInvoices(String invID);
 
-	public boolean printOnHold(Object onHold);
+    public boolean printOpenInvoices(String invID);
 
-	public void setBitmap(Bitmap bmp);
+    public boolean printOnHold(Object onHold);
 
-	public boolean printReport(String curDate);
-	
-	public void printEndOfDayReport(String date, String clerk_id);
+    public void setBitmap(Bitmap bmp);
 
-	public void registerPrinter();
+    public void playSound();
 
-	public void unregisterPrinter();
+    public boolean printReport(String curDate);
 
-	public void loadCardReader(EMSCallBack callBack, boolean isDebitCard);
-	
-	public void loadScanner(EMSCallBack _callBack);
+    public void printEndOfDayReport(String date, String clerk_id);
 
-	public void releaseCardReader();
+    public void registerPrinter();
 
-	public void openCashDrawer();
+    public void unregisterPrinter();
 
-	public void printHeader();
+    public void loadCardReader(EMSCallBack callBack, boolean isDebitCard);
 
-	public void printFooter();
-	
-	public boolean isUSBConnected();
+    public void loadScanner(EMSCallBack _callBack);
+
+    public void releaseCardReader();
+
+    public void openCashDrawer();
+
+    public void printHeader();
+
+    public void printFooter();
+
+    public boolean isUSBConnected();
 
 }

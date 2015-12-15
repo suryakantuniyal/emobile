@@ -28,7 +28,7 @@ import drivers.EMSPowaPOS;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
 import drivers.EMSEM70;
-import drivers.star.utils.EMSELO;
+import drivers.EMSELO;
 import protocols.EMSConnectionDelegate;
 import protocols.EMSDeviceManagerPrinterDelegate;
 import protocols.EMSPrintingDelegate;

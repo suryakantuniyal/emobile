@@ -226,6 +226,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	}
 
 	@Override
+	public void playSound() {
+
+	}
+
+	@Override
 	public boolean printReport(String curDate) {
 		// TODO Auto-generated method stub
 		return false;
