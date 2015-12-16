@@ -12,7 +12,7 @@ public class MagStripDriver
 {
 	public interface MagStripeListener
 	{
-		public abstract void OnCardSwiped(String cardData);
+		public abstract void OnCardSwiped(MagTeklibDynamag cardData);
 		public abstract void OnDeviceDisconnected();
 		public abstract void OnDeviceConnected();
 	}
@@ -67,7 +67,7 @@ public class MagStripDriver
 						try {
 							mMagStripe.setCardData((String)msg.obj);
 							if ((mMagStripe.getTrack2Masked().length() > 0)&& (!mMagStripe.getTrack2Masked().equalsIgnoreCase(";E?"))){
-								mListener.OnCardSwiped(mMagStripe.getTrack1Masked());
+								mListener.OnCardSwiped(mMagStripe);
 							}
 						} catch (Exception e) {
 							// This is basically to catch the runtime exceptions

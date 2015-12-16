@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,6 +24,9 @@ import com.android.support.MyPreferences;
 import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
 import com.elotouch.paypoint.register.cd.CashDrawer;
 import com.elotouch.paypoint.register.printer.SerialPort;
+import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
+
+import org.bouncycastle.crypto.digests.LongDigest;
 
 import java.io.File;
 import java.io.IOException;
@@ -277,19 +281,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             }
 
             @Override
-            public void OnCardSwiped(String cardData) { //Fired when a card has been swiped on the device.
-                try {
-                    MagStripeCardParser mParser = new MagStripeCardParser(cardData); //Instance of card swipe reader
-                    if (mParser.isDataParse()) {
-                        if (mParser.hasTrack1()) {
-                            String accountNo = mParser.getAccountNumber();
-                            accountNo = accountNo.replaceAll(accountNo.substring(0, accountNo.length() - 4), "XXXX-XXXX-XXXX-"); //Only last 4 digits of the card is required.
-                        }
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+            public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
+                Log.d("Card Data", cardData.toString());
+                CreditCardInfo creditCardInfo = new CreditCardInfo();
+                creditCardInfo.setWasSwiped(true);
+                creditCardInfo.setCardExpMonth(cardData.get);
             }
         });
     }
