@@ -104,6 +104,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private TextView paidView;
     private TextView dueView;
     private TextView tipView;
+    private Global.OrderType orderType;
 
 
     @Override
@@ -125,7 +126,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             job_id = extras.getString("job_id");
             typeOfProcedure = extras.getInt("typeOfProcedure");
         }
-
+        orderType = (Global.OrderType) extras.get("ord_type");
         paymentHandlerDB = new PaymentsHandler(this);
         GenerateNewID generator = new GenerateNewID(this);
         pay_id = generator.getNextID(IdType.PAYMENT_ID);
@@ -236,11 +237,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onBackPressed() {
 
-        if (currentPaidAmount == 0) {
+		if (overAllRemainingBalance == 0) {
             // setResult(50);
             finish();
         } else {
-            if (typeOfProcedure == Integer.parseInt(Global.OrderType.SALES_RECEIPT.getCodeString())) {
+			if (orderType == Global.OrderType.SALES_RECEIPT) {
                 final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.android.emobilepos.models.Orders;
 import com.android.soundmanager.SoundManager;
+import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -179,37 +180,97 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint) {
-        super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH);
-        return false;
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+
+        return true;
     }
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        super.printConsignmentReceipt(myConsignment, encodedSignature, LINE_WIDTH);
-        return false;
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printConsignmentReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        super.printConsignmentPickupReceipt(myConsignment, encodedSignature, LINE_WIDTH);
-        return false;
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printConsignmentPickupReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        super.printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
-        return false;
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override
     public void printStationPrinter(List<Orders> orderProducts, String ordID) {
-        super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH);
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        super.printOpenInvoicesReceipt(invID, LINE_WIDTH);
-        return false;
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printOpenInvoicesReceipt(invID, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
@@ -237,8 +298,17 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public boolean printReport(String curDate) {
-        super.printReportReceipt(curDate, LINE_WIDTH);
-        return false;
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            super.printReportReceipt(curDate, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
@@ -265,7 +335,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
+    public void loadCardReader(final EMSCallBack callBack, boolean isDebitCard) {
         eloCardSwiper = new MagStripDriver(activity);
         eloCardSwiper.startDevice();
         eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
@@ -284,8 +354,8 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
                 Log.d("Card Data", cardData.toString());
                 CreditCardInfo creditCardInfo = new CreditCardInfo();
-                creditCardInfo.setWasSwiped(true);
-                creditCardInfo.setCardExpMonth(cardData.get);
+                CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
+                callBack.cardWasReadSuccessfully(true, creditCardInfo);
             }
         });
     }

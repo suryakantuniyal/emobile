@@ -290,7 +290,12 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        }else if(myPref.isEM100() || myPref.isEM70() || myPref.isOT310()){
+        } else if (myPref.isESY13P1()) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+                checkBox.setChecked(true);
+            }
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
             checkBox.setChecked(true);
         }
     }

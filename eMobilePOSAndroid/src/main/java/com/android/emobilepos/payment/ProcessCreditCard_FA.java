@@ -159,7 +159,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         super.onCreate(savedInstanceState);
         callBack = this;
         setContentView(R.layout.procress_card_layout);
-
         activity = this;
         global = (Global) getApplication();
         myPref = new MyPreferences(activity);
@@ -494,13 +493,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     roverReader.initializeReader(activity, isDebit);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
                     walkerReader = new EMSWalker(activity, true);
-                    // new Thread(new Runnable(){
-                    // public void run()
-                    // {
-                    // walkerReader = new EMSWalker(activity);
-                    // }
-                    // }).start();
-                    // new connectWalkerAsync().execute();
+
                 }
             }
 
@@ -539,6 +532,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
+        } else if (myPref.isESY13P1()) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
+                cardSwipe.setChecked(true);
+            }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
             cardSwipe.setChecked(true);
         }
@@ -1148,10 +1146,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } catch (NumberFormatException e) {
             return "";
         }
-        if (cardNumber >= 14 && Integer.parseInt(number.substring(0, 6)) >= 622126
+        if (Integer.parseInt(number.substring(0, 6)) >= 622126
                 && Integer.parseInt(number.substring(0, 6)) <= 622925) {
             ccType = CREDITCARD_TYPE_CUP;
-        } else if (cardNumber >= 14 && Integer.parseInt(number.substring(0, 6)) == 564182
+        } else if (Integer.parseInt(number.substring(0, 6)) == 564182
                 || Integer.parseInt(number.substring(0, 6)) == 633110) {
             ccType = CREDITCARD_TYPE_DISCOVER;
         } else {
@@ -1964,7 +1962,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         month.setBackgroundResource(android.R.drawable.edit_text);
         amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
         boolean error = false;
-        if (cardNum.getText().toString().isEmpty()
+        if (cardNum.getText().toString().isEmpty() || cardNum.getText().toString().length() < 14
                 || (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
             cardNum.setBackgroundResource(R.drawable.edittext_wrong_input);
             error = true;
