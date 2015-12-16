@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
+    android:orientation="vertical"
+    android:background="@drawable/shadow_layer"
     >
 
     <TextView
@@ -14,6 +15,6 @@
         android:gravity="center"
         style="@style/text_shadow"
         android:textSize="@dimen/sales_tab_lv_text_size"
-        android:textAppearance="@style/white_text_appearance"/>
+        android:textAppearance="@style/black_text_appearance"/>
 
 </LinearLayout>

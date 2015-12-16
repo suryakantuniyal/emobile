@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 
 import com.android.emobilepos.R;
@@ -20,7 +21,7 @@ import com.android.emobilepos.history.HistoryPayments_FA;
 import com.android.emobilepos.history.HistoryTransactions_FA;
 
 public class HistoryTab_FR extends Fragment {
-	ListView myListview;
+	GridView myListview;
 	private HistoryMenuAdapter myAdapter;
 
 	@Override
@@ -28,7 +29,7 @@ public class HistoryTab_FR extends Fragment {
 
 		View view = inflater.inflate(R.layout.history_layout, container, false);
 
-		myListview = (ListView) view.findViewById(R.id.historyListView);
+		myListview = (GridView) view.findViewById(R.id.historyListView);
 		myAdapter = new HistoryMenuAdapter(getActivity());
 		return view;
 

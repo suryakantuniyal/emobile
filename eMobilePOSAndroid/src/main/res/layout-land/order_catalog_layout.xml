@@ -9,30 +9,19 @@
         android:layout_height="wrap_content"
         android:background="#454344"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="5dp" >
+        android:orientation="horizontal">
 
         <Spinner
             android:id="@+id/filterButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_height="match_parent"
             android:background="@drawable/blue_btn_selector"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:textAppearance="@style/white_text_appearance" />
+            android:textAppearance="@style/black_text_appearance" />
 
         <com.android.support.MyEditText
             android:id="@+id/catalogSearchField"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:background="@drawable/text_field_selector"
             android:drawableLeft="@drawable/search_icon"
             android:ellipsize="start"
@@ -41,19 +30,17 @@
             android:inputType="textNoSuggestions"
             android:textAppearance="@style/black_text_appearance_unbold"
             android:textColor="#000000"
-            android:textSize="@dimen/field_general_txt_size" >
+            android:textSize="@dimen/field_general_txt_size"
+            android:layout_weight="1">
         </com.android.support.MyEditText>
 
         <Button
             android:id="@+id/categoryButton"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/header_bar_button_height"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="10dp"
+            android:layout_height="match_parent"
             android:background="@drawable/blue_btn_selector"
             android:text="Category"
-            android:textAppearance="@style/white_text_appearance_unbold"
-            android:textColor="#FFFFFF"
+            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size" />
     </LinearLayout>
 
@@ -75,7 +62,7 @@
         android:id="@+id/categoriesButtonLayoutHolder"
         android:layout_width="match_parent"
         android:layout_height="@dimen/add_orders_bottom_section_size"
-        android:background="#262526" >
+        android:background="#262526">
 
         <Button
             android:id="@+id/buttonAllCategories"
@@ -87,8 +74,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
-           
-            android:textColor="#FFFFFF"
+            android:textAppearance="@style/black_text_appearance"
             android:text="All"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>

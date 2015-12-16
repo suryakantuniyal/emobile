@@ -451,9 +451,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         myPref.cdtLine1(false, value1);
                         myPref.cdtLine2(false, value2);
 
-                        if (myPref.isSam4s(true, true)) {
+//                        if (myPref.isSam4s(true, true)) {
                             Global.showCDTDefault(activity);
-                        }
+//                        }
 
                         globalDlog.dismiss();
                     }

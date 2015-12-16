@@ -823,7 +823,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             // we know that simple_spinner_item has android.R.id.text1 TextView:
 
             TextView text = (TextView) view.findViewById(android.R.id.text1);
-            text.setTextColor(Color.WHITE);// choose your color
+            text.setTextAppearance(activity, R.style.black_text_appearance);// choose your color
             text.setTextSize(TypedValue.COMPLEX_UNIT_PX, activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
             return view;
         }

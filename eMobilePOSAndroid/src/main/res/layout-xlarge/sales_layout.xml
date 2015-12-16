@@ -19,7 +19,7 @@
             android:layout_gravity="center"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:background="@drawable/grey_button_selector"
+            android:background="@drawable/grey_shadow_button_layer"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -51,7 +51,7 @@
             android:layout_gravity="center"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:background="@drawable/grey_button_selector"
+            android:background="@drawable/grey_shadow_button_layer"
             android:gravity="center"
             android:orientation="horizontal"
             android:text="@string/selectinvoices"

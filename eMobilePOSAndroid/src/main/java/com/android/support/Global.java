@@ -1716,16 +1716,16 @@ public class Global extends MultiDexApplication {
         String msg2 = myPref.cdtLine2(true, "");
         sb1.append(Global.emptySpaces(20, msg1.length(), true)).append(msg1);
         sb2.append(Global.emptySpaces(20, msg2.length(), true)).append(msg2);
-        if (myPref.isSam4s(true, true)) {
-
-            uart_tool.config(3, 9600, 8, 1);
-            uart_tool.write(3, Global.emptySpaces(40, 0, false));
-            uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
+//        if (myPref.isSam4s(true, true)) {
+//
+//            uart_tool.config(3, 9600, 8, 1);
+//            uart_tool.write(3, Global.emptySpaces(40, 0, false));
+//            uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
+//        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
             TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
 //            EMSPAT100.getTerminalDisp().clearText();
 //            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-        }
+//        }
     }
 
     public static boolean deviceHasMSR(int _printer_type) {

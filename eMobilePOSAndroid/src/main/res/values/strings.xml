@@ -1111,5 +1111,7 @@
 	<string name="ivuloto_control_label">"CONTROL: "</string>
 	<string name="menu_back">Back</string>
 	<string name="selectinvoices">Select Invoices</string>
+	<string name="sync_send_btn">Send</string>
+	<string name="sync_receive_btn">Receive</string>
 
 </resources>

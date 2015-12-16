@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000" >
+        android:background="@drawable/blue_gradient_header_horizontal">
 
         <TextView
             android:id="@+id/HeaderTitle"
@@ -23,35 +23,34 @@
         <Button
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
-            android:layout_margin="5dp"
+            android:layout_margin="10dp"
             android:background="@drawable/blue_btn_selector"
             android:text="@string/button_save"
             android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
             android:textSize="@dimen/ordering_checkout_btn_txt_size" />
-         <EditText
-                        android:id="@+id/hiddenFieldSwiper"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp">
-                    </EditText>
-                    <EditText
-                        android:id="@+id/hiddenFieldScan"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp">
-                    </EditText>
+
+        <EditText
+            android:id="@+id/hiddenFieldSwiper"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"></EditText>
+
+        <EditText
+            android:id="@+id/hiddenFieldScan"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"></EditText>
     </FrameLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -61,30 +60,30 @@
                 android:layout_marginRight="@dimen/input_field_holder_lr_margin"
                 android:layout_marginTop="@dimen/input_field_holder_top_margin"
                 android:background="@drawable/light_grey_background"
-                android:orientation="vertical" >
+                android:orientation="vertical">
+
                 <Switch
-                        android:id="@+id/switchView"                        
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:layout_marginBottom="20dp"
-                        android:textOn=""
-                        android:textOff=""
-                        android:text="@string/swipe" />
+                    android:id="@+id/switchView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginBottom="20dp"
+                    android:text="@string/swipe"
+                    android:textOff=""
+                    android:textOn="" />
 
                 <LinearLayout
                     android:id="@+id/cardInfoLayoutHolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
-                    
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/card_information"
                         android:layout_gravity="left"
+                        android:text="@string/card_information"
                         android:textAppearance="@style/blue_txt_appearance_bold"
                         android:textSize="@dimen/list_view_header_txt_size" />
 
@@ -97,14 +96,13 @@
                         android:text="@string/card_card_swipe"
                         android:textSize="@dimen/list_view_general_txt_size" />
 
-                   
 
                     <com.android.support.MyEditText
                         android:id="@+id/fieldCardNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:ems="13"
                         android:layout_gravity="center_vertical"
+                        android:ems="13"
                         android:hint="@string/card_number"
                         android:imeOptions="flagNoExtractUi|actionNext"
                         android:inputType="text"
@@ -112,21 +110,20 @@
                         android:singleLine="true"
                         android:textAppearance="@style/black_text_appearance_unbold"
                         android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
-                    </com.android.support.MyEditText>
+                        android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/commentLayoutHolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/comments"
                         android:layout_gravity="left"
+                        android:text="@string/comments"
                         android:textAppearance="@style/blue_txt_appearance_bold"
                         android:textSize="@dimen/list_view_header_txt_size" />
 
@@ -134,38 +131,38 @@
                         android:id="@+id/fieldComments"
                         android:layout_width="wrap_content"
                         android:layout_height="150dp"
-                        android:ems="13"
                         android:layout_gravity="center_vertical"
+                        android:ems="13"
+                        android:gravity="top"
                         android:imeOptions="flagNoExtractUi|actionNext"
-                      android:gravity="top"
-        android:inputType="textMultiLine"
-        android:scrollHorizontally="false"
-        android:scrollbars="vertical"
+                        android:inputType="textMultiLine"
+                        android:scrollHorizontally="false"
+                        android:scrollbars="vertical"
                         android:textAppearance="@style/black_text_appearance_unbold"
                         android:textColor="#000000"
-                      
-                        android:textSize="@dimen/field_general_txt_size" >
-                    </com.android.support.MyEditText>
+
+                        android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
                 </LinearLayout>
-                
-                 <LinearLayout
+
+                <LinearLayout
                     android:id="@+id/lastSavedLayoutHolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:orientation="vertical" >
-                <TextView 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/list_view_header_txt_size"
-                    android:text="@string/last_saved"/>
-                
-                <TextView 
-                    android:id="@+id/lastSavedTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/field_general_txt_size"/>
-                     </LinearLayout>
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/last_saved"
+                        android:textSize="@dimen/list_view_header_txt_size" />
+
+                    <TextView
+                        android:id="@+id/lastSavedTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/field_general_txt_size" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
