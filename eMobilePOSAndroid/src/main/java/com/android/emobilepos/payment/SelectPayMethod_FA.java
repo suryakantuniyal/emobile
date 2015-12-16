@@ -105,9 +105,10 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	private DisplayImageOptions options;
 	private int totalPayCount = 0;
 	private String order_email = "";
+    private Global.OrderType orderType;
 
 
-	@Override
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -128,7 +129,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 			job_id = extras.getString("job_id");
 			typeOfProcedure = extras.getInt("typeOfProcedure");
 		}
-
+        orderType = (Global.OrderType) extras.get("ord_type");
 		paymentHandlerDB = new PaymentsHandler(this);
 		GenerateNewID generator = new GenerateNewID(this);
 		pay_id = generator.getNextID(IdType.PAYMENT_ID);
@@ -227,11 +228,11 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 	@Override
 	public void onBackPressed() {
 
-		if (currentPaidAmount == 0) {
+		if (overAllRemainingBalance == 0) {
 			// setResult(50);
 			finish();
 		} else {
-			if (typeOfProcedure == Integer.parseInt(Global.OrderType.SALES_RECEIPT.getCodeString())) {
+			if (orderType == Global.OrderType.SALES_RECEIPT) {
 				final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
 				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dialog.setCancelable(true);

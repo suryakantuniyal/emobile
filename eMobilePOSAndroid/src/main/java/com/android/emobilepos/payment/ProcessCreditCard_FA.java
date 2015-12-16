@@ -161,7 +161,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         callBack = this;
         setContentView(R.layout.procress_card_layout);
-
         activity = this;
         global = (Global) getApplication();
         myPref = new MyPreferences(activity);
@@ -1150,10 +1149,10 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         } catch (NumberFormatException e) {
             return "";
         }
-        if (cardNumber >= 14 && Integer.parseInt(number.substring(0, 6)) >= 622126
+        if (Integer.parseInt(number.substring(0, 6)) >= 622126
                 && Integer.parseInt(number.substring(0, 6)) <= 622925) {
             ccType = CREDITCARD_TYPE_CUP;
-        } else if (cardNumber >= 14 && Integer.parseInt(number.substring(0, 6)) == 564182
+        } else if (Integer.parseInt(number.substring(0, 6)) == 564182
                 || Integer.parseInt(number.substring(0, 6)) == 633110) {
             ccType = CREDITCARD_TYPE_DISCOVER;
         } else {
@@ -1964,7 +1963,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         month.setBackgroundResource(android.R.drawable.edit_text);
         amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
         boolean error = false;
-        if (cardNum.getText().toString().isEmpty()
+        if (cardNum.getText().toString().isEmpty() || cardNum.getText().toString().length() < 14
                 || (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
             cardNum.setBackgroundResource(R.drawable.edittext_wrong_input);
             error = true;
