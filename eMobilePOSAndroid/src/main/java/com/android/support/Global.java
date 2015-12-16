@@ -87,6 +87,7 @@ public class Global extends MultiDexApplication {
         System.loadLibrary("barcodereaderjni");
         System.loadLibrary("serial_port");
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -1122,12 +1123,13 @@ public class Global extends MultiDexApplication {
             uart_tool.config(3, 9600, 8, 1);
             uart_tool.write(3, Global.emptySpaces(40, 0, false));
             uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
-        } else if (myPref.isPAT100()) {
+        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
             StringBuilder sb = new StringBuilder();
             String row1 = data[1];
             String row2 = sb.append(Global.formatDoubleStrToCurrency(data[2])).toString();
-            EMSPAT100.getTerminalDisp().clearText();
-            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//            EMSPAT100.getTerminalDisp().clearText();
+//            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
         }
 
     }
@@ -1719,9 +1721,10 @@ public class Global extends MultiDexApplication {
             uart_tool.config(3, 9600, 8, 1);
             uart_tool.write(3, Global.emptySpaces(40, 0, false));
             uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-        } else if (myPref.isPAT100()) {
-            EMSPAT100.getTerminalDisp().clearText();
-            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
+        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
+            TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
+//            EMSPAT100.getTerminalDisp().clearText();
+//            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
         }
     }
 

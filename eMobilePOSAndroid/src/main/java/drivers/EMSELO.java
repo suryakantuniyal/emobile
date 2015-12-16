@@ -24,8 +24,11 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
 import com.elotouch.paypoint.register.cd.CashDrawer;
+import com.elotouch.paypoint.register.cfd.CFD;
 import com.elotouch.paypoint.register.printer.SerialPort;
 import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
+import com.partner.pt100.display.DisplayLineApiContext;
+import com.partner.pt100.display.DisplayManager;
 
 import org.bouncycastle.crypto.digests.LongDigest;
 
@@ -72,6 +75,27 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private final int LINE_WIDTH = 32;
     private BarcodeReader barcodereader = new BarcodeReader();
     private boolean didConnect;
+    private static CFD customerFacingDisplay;
+
+    public static CFD getTerminalDisp() {
+        if (customerFacingDisplay == null) {
+            customerFacingDisplay = new CFD();
+
+        }
+        return customerFacingDisplay;
+    }
+
+    /*
+ *
+ * Prints/Displays Text on Customer Facing Display.
+ *
+ * */
+    public static void printTextOnCFD(String Line1, String Line2) {
+        getTerminalDisp().setBacklight(true);
+        getTerminalDisp().clearDisplay();
+        getTerminalDisp().setLine1(Line1);
+        getTerminalDisp().setLine2(Line2);
+    }
 
 
     @Override
@@ -123,7 +147,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort port = null;
             try {
-
                 port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
                 OutputStream stream = port.getOutputStream();
                 InputStream iStream = port.getInputStream();

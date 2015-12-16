@@ -646,4 +646,6 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void printFooter() {
         super.printFooter(LINE_WIDTH);
     }
+
+
 }

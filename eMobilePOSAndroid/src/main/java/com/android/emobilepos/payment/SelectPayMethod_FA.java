@@ -172,6 +172,10 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             String row1 = "Grand Total";
             String row2 = Global.formatDoubleStrToCurrency(total);
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+        } else if (myPref.isESY13P1()) {
+            String row1 = "Grand Total";
+            String row2 = Global.formatDoubleStrToCurrency(total);
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         }
 
         if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()
@@ -237,11 +241,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onBackPressed() {
 
-		if (overAllRemainingBalance == 0) {
+        if (overAllRemainingBalance == 0) {
             // setResult(50);
             finish();
         } else {
-			if (orderType == Global.OrderType.SALES_RECEIPT) {
+            if (orderType == Global.OrderType.SALES_RECEIPT) {
                 final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);

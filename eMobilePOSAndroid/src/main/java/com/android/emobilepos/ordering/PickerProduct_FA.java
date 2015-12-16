@@ -58,6 +58,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import drivers.EMSELO;
+
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
     private boolean hasBeenCreated = false;
@@ -756,7 +758,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 if (!myPref.getPreferences(MyPreferences.pref_block_price_level_change)) {
                     PriceLevelHandler handler1 = new PriceLevelHandler(activity);
                     listData_LV = handler1.getFixedPriceLevel(prodID);
-				/*if (myPref.isCustSelected()) {
+                /*if (myPref.isCustSelected()) {
 					PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
 					List<String[]> temp = handler.getPriceLevel(prodID);
 					int size = temp.size();
@@ -1067,10 +1069,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (myPref.isSam4s(true, true)) {
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref,row1,row2);
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
         } else if (myPref.isPAT100()) {
-
+            String row1 = ord.ordprod_name;
+            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+        } else if (myPref.isESY13P1()) {
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
