@@ -524,17 +524,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     private void addCategoryButton(String categoryName, String cat_id) {
-        Button btn = new Button(getActivity(), null, android.R.attr.buttonStyleSmall);
+        Button btn = new Button(activity);
         btn.setTag(cat_id);
         btn.setText(categoryName);
         //btn.setPadding(18, 0, 18, 0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        params.gravity = Gravity.CENTER_VERTICAL;
-        params.setMargins(0, 5, 5, 5);
+                LinearLayout.LayoutParams.WRAP_CONTENT);
         catButLayout.addView(btn, params);
-        btn.setTextColor(Color.WHITE);
-        btn.setSingleLine(true);
+        btn.setTextAppearance(activity, R.style.black_text_appearance);
+        btn.setPadding(5, 0, 5, 0);
         btn.setTextSize(TypedValue.COMPLEX_UNIT_PX, activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
         //btn.setEms(6);
         btn.setBackgroundResource(R.drawable.blue_btn_selector);

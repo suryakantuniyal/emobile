@@ -351,15 +351,15 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 		
 		final EditText editTextField = new EditText(activity);
 		int orientation = getResources().getConfiguration().orientation;
-		DisplayMetrics metrics = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(metrics);
-		int size = 200; 
-		if(orientation == Configuration.ORIENTATION_PORTRAIT)
-			size = metrics.heightPixels/3;
-		else
-			size = metrics.widthPixels/3;
+//		DisplayMetrics metrics = new DisplayMetrics();
+//		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//		int size = 200;
+//		if(orientation == Configuration.ORIENTATION_PORTRAIT)
+//			size = metrics.heightPixels/3;
+//		else
+//			size = metrics.widthPixels/3;
 		
-		editTextField.setHeight(size);
+//		editTextField.setHeight(size);
 		editTextField.setSingleLine(false);
 		editTextField.setGravity(Gravity.TOP);
 		

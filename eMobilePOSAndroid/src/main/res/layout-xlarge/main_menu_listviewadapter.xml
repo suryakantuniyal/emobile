@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:orientation="vertical"
-    android:background="@drawable/shadow_layer"
+    android:background="@drawable/blue_btn_selector"
     android:gravity="center_horizontal">
 
     <ImageView

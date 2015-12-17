@@ -474,7 +474,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 if (img_url.isEmpty()) {
                     if (key == null) {
-                        iconId = R.drawable.debit;// context.getResources().getIdentifier("debit", "drawable", context.getString(R.string.pkg_name));
+                        iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
                     } else {
                         Log.d("Logo Name", key);
                         iconId = context.getResources().getIdentifier(key.toLowerCase(), "drawable",
@@ -501,7 +501,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 if (img_url.isEmpty()) {
                     if (key == null) {
-                        iconId = R.drawable.debit;//context.getResources().getIdentifier("debit", "drawable",
+                        iconId = R.drawable.debitcard;//context.getResources().getIdentifier("debitcard", "drawable",
                     }
 //									context.getString(R.string.pkg_name));
                     else {

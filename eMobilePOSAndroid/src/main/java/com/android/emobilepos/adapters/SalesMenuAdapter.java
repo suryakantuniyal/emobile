@@ -97,14 +97,14 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		int gradientId = R.drawable.shadow_layer;
+//		int gradientId = R.drawable.shadow_layer;
 		String resourceName = mainMenuIconsMap.get(indexOfEnabled.get(position));
 		int iconId = activity.getResources().getIdentifier(resourceName, "drawable", activity.getPackageName());
 		holder.iconLine.setImageResource(iconId);
 		
 		holder.textLine.setText(mainMenuList[indexOfEnabled.get(position)]);
 		
-		convertView.setBackgroundResource(gradientId);
+//		convertView.setBackgroundResource(gradientId);
 
 		return convertView;
 	}

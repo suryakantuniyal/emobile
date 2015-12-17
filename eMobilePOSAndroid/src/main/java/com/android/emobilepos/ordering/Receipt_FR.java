@@ -92,7 +92,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             UPDATE_HOLD_STATUS = 1, CHECK_OUT_HOLD = 2;
     private Activity activity;
     private SemiClosedSlidingDrawer slidingDrawer;
-    public EditText custName;
+    public TextView custName;
     public static ReceiptMainLV_Adapter mainLVAdapter;
     private ReceiptRestLV_Adapter restLVAdapter;
     // private ListViewAdapter myAdapter;
@@ -154,7 +154,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         callBackAddProd = (AddProductBtnCallback) activity;
         callBackUpdateHeaderTitle = (UpdateHeaderTitleCallback) activity;
 
-        custName = (EditText) view.findViewById(R.id.membersField);
+        custName = (TextView) view.findViewById(R.id.membersField);
         receiptListView = (ListView) view.findViewById(R.id.receiptListView);
         slidingDrawer = (SemiClosedSlidingDrawer) view
                 .findViewById(R.id.slideDrawer);

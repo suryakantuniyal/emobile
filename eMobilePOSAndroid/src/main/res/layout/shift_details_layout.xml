@@ -9,7 +9,7 @@
             android:layout_height="wrap_content"
             android:text="@string/shift_details"
             android:gravity="center"
-            android:background="#000000"
+            android:background="@drawable/blue_gradient_header_horizontal"
             android:padding="10dp"
             android:textSize="@dimen/header_bar_text_size"
        		android:textAppearance="@style/white_text_appearance"

@@ -135,20 +135,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/blue_button_selector"
+                android:background="@drawable/blue_btn_selector"
                 android:text="@string/button_cancel"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/button_text_size" />
+                android:textSize="@dimen/button_text_size"
+                android:textAppearance="@style/black_text_appearance" />
 
             <Button
                 android:id="@+id/nextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:background="@drawable/blue_button_selector"
+                android:background="@drawable/blue_btn_selector"
                 android:text="@string/button_accept"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/button_text_size" />
+                android:textSize="@dimen/button_text_size"
+                android:textAppearance="@style/black_text_appearance" />
         </LinearLayout>
     </LinearLayout>
 

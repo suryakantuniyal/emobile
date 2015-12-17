@@ -467,7 +467,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 					if (img_url.isEmpty()) {
 						String iconName = Global.paymentIconsMap.get(key);
 						if (iconName == null)
-							iconId = context.getResources().getIdentifier("debit", "drawable",
+							iconId = context.getResources().getIdentifier("debitcard", "drawable",
 									context.getString(R.string.pkg_name));
 						else
 							iconId = context.getResources().getIdentifier(iconName, "drawable",
@@ -504,7 +504,7 @@ public class SelectPayMethod_FA extends FragmentActivity implements OnClickListe
 					if (img_url.isEmpty()) {
 						String iconName = Global.paymentIconsMap.get(key);
 						if (iconName == null)
-							iconId = context.getResources().getIdentifier("debit", "drawable",
+							iconId = context.getResources().getIdentifier("debitcard", "drawable",
 									context.getString(R.string.pkg_name));
 						else
 							iconId = context.getResources().getIdentifier(iconName, "drawable",

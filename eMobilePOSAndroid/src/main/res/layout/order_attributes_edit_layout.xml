@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@drawable/blue_btn_selector"
             android:text="@string/button_save"
             android:textAppearance="@style/white_text_appearance"

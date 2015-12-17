@@ -309,6 +309,13 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         viewMsg.setVisibility(View.GONE);
         Button btnPrint = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnPay = (Button) dlog.findViewById(R.id.btnDlogRight);
+        Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+        btnCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         btnPrint.setText(R.string.button_print);

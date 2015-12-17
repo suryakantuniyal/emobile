@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000"
+        android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 

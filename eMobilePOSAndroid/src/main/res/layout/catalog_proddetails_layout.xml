@@ -9,7 +9,7 @@
             android:id="@+id/HeaderTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#000000"
+            android:background="@drawable/blue_gradient_header_horizontal"
             android:text="@string/cat_details_title"
             android:gravity="center"
             android:padding="5dp"

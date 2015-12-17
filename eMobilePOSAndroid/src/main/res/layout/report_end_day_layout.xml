@@ -9,7 +9,7 @@
         android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000"
+        android:background="@drawable/blue_gradient_header_horizontal"
         android:orientation="horizontal" >
 
         <TextView
@@ -31,10 +31,9 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
-            android:background="@drawable/blue_button_selector"
+            android:background="@drawable/blue_btn_selector"
             android:text="Print"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
+            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size" />
     </RelativeLayout>
 

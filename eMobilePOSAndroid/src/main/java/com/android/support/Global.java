@@ -772,13 +772,13 @@ public class Global extends MultiDexApplication {
 
         result.put("AmericanExpress", "amex");
         result.put("Cash", "cash");
-        result.put("Check", "debit");
+        result.put("Check", "debitcard");
         result.put("Discover", "discover");
         result.put("MasterCard", "mastercard");
         result.put("Visa", "visa");
-        result.put("DebitCard", "debit");
-        result.put("GiftCard", "debit");
-        result.put("ECheck", "debit");
+        result.put("DebitCard", "debitcard");
+        result.put("GiftCard", "debitcard");
+        result.put("ECheck", "debitcard");
         result.put("Genius", "ic_cayan");
         result.put("Tupyx", "tupyx");
         result.put("Wallet", "tupyx");

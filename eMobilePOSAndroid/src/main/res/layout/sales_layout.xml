@@ -14,20 +14,19 @@
 
         <LinearLayout
             android:id="@+id/salesCustomerBut"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:background="@drawable/grey_shadow_button_layer"
-            android:gravity="center"
             android:orientation="horizontal"
             android:layout_weight="1"
+            android:gravity="center"
             android:layout_marginRight="5dp">
 
             <ImageButton
                 android:id="@+id/clearCustomerBut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
                 android:background="@drawable/image_button_selector"
                 android:padding="10dp"
 
@@ -54,14 +53,13 @@
             android:textAppearance="@style/blue_txt_appearance_unbold"
             android:textColor="#0071E3"
             android:textSize="@dimen/small_button_text_size"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:background="@drawable/grey_shadow_button_layer"
-            android:gravity="center"
             android:orientation="horizontal"
             android:layout_weight="1"
-            android:layout_marginLeft="5dp" />
+            android:gravity="center" />
 
     </LinearLayout>
 

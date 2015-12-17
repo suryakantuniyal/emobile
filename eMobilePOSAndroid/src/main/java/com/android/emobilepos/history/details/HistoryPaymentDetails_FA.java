@@ -173,28 +173,20 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 		String curDate = sdf.format(new Date());
 		if(curDate.equals(rightValues[0])&&rightValues[9].equals("0"))				//It was a payment done on the current date
 		{
-			voidButton.setBackgroundResource(R.drawable.blue_button_selector);
 			voidButton.setOnClickListener(this);
 		}
-		else
-		{
-			voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
-		}
+
 		
 		
 		
 		//Handle the click event and begin the process for Printing the transaction
 		MyPreferences myPref = new MyPreferences(activity);
+		printButton.setEnabled(myPref.getPreferences(MyPreferences.pref_enable_printing));
 		if(myPref.getPreferences(MyPreferences.pref_enable_printing))
 		{
-			printButton.setBackgroundResource(R.drawable.blue_button_selector);
 			printButton.setOnClickListener(this);
 		}
-		else
-		{
-			printButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
-		}
-		
+
 		
 		
 		hasBeenCreated = true;
@@ -388,7 +380,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 			if(paymentToBeRefunded.pay_transid.isEmpty())
 			{
 				payHandler.createVoidPayment(paymentToBeRefunded, false, null);
-				voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
 			}
 			else
 			{
@@ -400,7 +391,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 		{
 			//payHandler.updateIsVoid(pay_id);
 			payHandler.createVoidPayment(paymentToBeRefunded, false, null);
-			voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
 		}
 	}
 	
@@ -522,7 +512,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 			if(parsedMap!=null&&parsedMap.size()>0&&parsedMap.get("epayStatusCode").equals("APPROVED")) //Void was successful
 			{
 				payHandler.createVoidPayment(paymentToBeRefunded, true, parsedMap);
-				voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
 			}
 			else
 			{
