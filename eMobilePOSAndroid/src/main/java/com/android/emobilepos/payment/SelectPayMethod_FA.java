@@ -241,7 +241,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onBackPressed() {
 
-        if (overAllRemainingBalance == 0) {
+        if (currentPaidAmount == 0) {
             // setResult(50);
             finish();
         } else {
