@@ -10,7 +10,7 @@
         android:id="@+id/HeaderTitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#000000"
+        android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center"
         android:padding="10dp"
         android:text="@string/consignment_title"

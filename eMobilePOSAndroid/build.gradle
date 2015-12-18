@@ -99,4 +99,8 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile files('libs/com.oem.barcode.sdk.jar')
     compile files('libs/misccom.jar')
+    compile files('libs/elotouchcashdrawer.jar')
+    compile files('libs/elotouchcfd.jar')
+    compile files('libs/magtek-usb.jar')
+    compile files('libs/redlasersdk.jar')
 }

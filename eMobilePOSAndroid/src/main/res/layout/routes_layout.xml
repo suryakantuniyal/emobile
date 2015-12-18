@@ -4,33 +4,33 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_white_page"
     android:gravity="center_horizontal"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/dateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/grey_button_selector"
+        android:background="@drawable/blue_btn_selector"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="20dp" >
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/routesDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Jul 17,2012"
-            android:textColor="#1E74BA"
-            android:textSize="18sp" />
+            android:textAppearance="@style/blue_text_appearance"
+            android:textSize="@dimen/large_button_text_size" />
 
         <TextView
             android:id="@+id/routesSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/routes_but_subtitle"
-            android:textColor="#000000"
-            android:textSize="10sp" />
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/text_default" />
     </LinearLayout>
 
 </LinearLayout>

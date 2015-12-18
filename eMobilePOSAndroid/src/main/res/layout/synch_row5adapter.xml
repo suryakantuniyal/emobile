@@ -12,10 +12,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="@drawable/sync_tab_grey_holder"
+        android:background="@drawable/shadow_layer"
         android:clickable="false"
         android:gravity="center"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:padding="20dp">
 
         <TextView
             android:id="@+id/synchLastsynch"

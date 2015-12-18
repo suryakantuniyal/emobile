@@ -20,7 +20,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -50,6 +49,7 @@ import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ import java.util.Set;
 
 import main.EMSDeviceManager;
 
-public class SettingsManager_FA extends FragmentActivity {
+public class SettingsManager_FA extends BaseFragmentActivityActionBar {
     private static int settingsType = 0;
     private static Activity activity;
     private static FragmentManager fragManager;
@@ -333,7 +333,13 @@ public class SettingsManager_FA extends FragmentActivity {
                 viewTitle.setText(R.string.reenter_password);
                 viewMsg.setVisibility(View.GONE);
             }
-
+            Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
             Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
             btnOk.setText(R.string.button_ok);
             btnOk.setOnClickListener(new View.OnClickListener() {
@@ -445,9 +451,9 @@ public class SettingsManager_FA extends FragmentActivity {
                         myPref.cdtLine1(false, value1);
                         myPref.cdtLine2(false, value2);
 
-                        if (myPref.isSam4s(true, true)) {
+//                        if (myPref.isSam4s(true, true)) {
                             Global.showCDTDefault(activity);
-                        }
+//                        }
 
                         globalDlog.dismiss();
                     }
@@ -479,6 +485,8 @@ public class SettingsManager_FA extends FragmentActivity {
                 viewMsg.setText(R.string.dlog_msg_confirm_force_upload);
             else
                 viewMsg.setText(R.string.dlog_msg_confirm_backup_data);
+            promptDialog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
             Button btnYes = (Button) promptDialog.findViewById(R.id.btnDlogLeft);
             Button btnNo = (Button) promptDialog.findViewById(R.id.btnDlogRight);
             btnYes.setText(R.string.button_yes);
@@ -860,6 +868,10 @@ public class SettingsManager_FA extends FragmentActivity {
                 myPref.setPrinterType(Global.EM70);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(activity, Global.EM70, false);
+            } else if (myPref.isESY13P1()) {
+                myPref.setPrinterType(Global.ESY13P1);
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(activity, Global.ESY13P1, false);
             } else if (myPref.isOT310()) {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();

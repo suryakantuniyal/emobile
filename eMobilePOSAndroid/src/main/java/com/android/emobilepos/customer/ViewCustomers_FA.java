@@ -34,8 +34,9 @@ import com.android.emobilepos.history.HistoryTransactions_FA;
 import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class ViewCustomers_FA extends FragmentActivity implements OnClickListener, OnItemClickListener{
+public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener{
 	private ListView myListView;
 
 	private Context thisContext = this;
@@ -58,7 +59,6 @@ public class ViewCustomers_FA extends FragmentActivity implements OnClickListene
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.custselec_listview_layout);
 
 		activity = this;

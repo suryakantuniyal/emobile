@@ -19,12 +19,10 @@
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/blue_btn_selector"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp"
-            android:text="Send"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/sync_button_text_size" />
+            android:text="@string/sync_send_btn"
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/large_button_text_size"
+            android:padding="15dp" />
 
         <Button
             android:id="@+id/synchButton2"
@@ -34,12 +32,10 @@
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/blue_btn_selector"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp"
-            android:text="Receive"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/sync_button_text_size" />
+            android:text="@string/sync_receive_btn"
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/large_button_text_size"
+            android:padding="15dp" />
     </LinearLayout>
 
 </LinearLayout>

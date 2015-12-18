@@ -14,7 +14,7 @@
         android:layout_marginBottom="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginLeft="5dp"
-        android:background="@drawable/grey_button_selector"
+        android:background="@drawable/grey_shadow_button_layer"
         android:gravity="center" >
 
         <ImageButton

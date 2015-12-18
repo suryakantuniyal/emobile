@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyEditText;
@@ -47,7 +48,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import protocols.EMSCallBack;
 
-public class OrderAttrEdit_FA extends FragmentActivity
+public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         implements OnClickListener, OnCheckedChangeListener, EMSCallBack {
 
     private MyEditText fieldCardNum, fieldComment;
@@ -94,7 +95,6 @@ public class OrderAttrEdit_FA extends FragmentActivity
             super.setTheme(R.style.LightTheme);
 
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.order_attributes_edit_layout);
 
         cardLayoutHolder = (LinearLayout) findViewById(R.id.cardInfoLayoutHolder);
@@ -290,7 +290,12 @@ public class OrderAttrEdit_FA extends FragmentActivity
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        }else if(myPref.isEM100() || myPref.isEM70() || myPref.isOT310()){
+        } else if (myPref.isESY13P1()) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+                checkBox.setChecked(true);
+            }
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
             checkBox.setChecked(true);
         }
     }

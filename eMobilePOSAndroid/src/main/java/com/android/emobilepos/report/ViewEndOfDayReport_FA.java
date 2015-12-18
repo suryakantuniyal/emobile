@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportEndDayAdapter;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickListener{
+public class ViewEndOfDayReport_FA  extends BaseFragmentActivityActionBar implements OnClickListener{
 	
 
 	private StickyListHeadersListView myListview;
@@ -47,7 +47,6 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.report_end_day_layout);
 		activity = this;
 		global = (Global)activity.getApplication();
@@ -124,7 +123,8 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 		viewTitle.setText(R.string.dlog_title_error);
 		viewMsg.setText(R.string.dlog_msg_failed_print);
 
-		
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
 		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
 		btnYes.setText(R.string.button_yes);

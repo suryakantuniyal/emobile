@@ -5,83 +5,99 @@
     android:background="@drawable/bg_white_page"
     android:orientation="vertical" >
 
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#000000"
-        android:gravity="center_vertical"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/HeaderTitle"
-            style="@style/text_shadow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center_vertical"
-            android:padding="10dp"
-            android:text="@string/shift_open_shift"
-            android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_bar_text_size" />
+        android:layout_height="match_parent">
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/HeaderTitle"
-            android:gravity="right" >
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_alignParentTop="false"
+            android:id="@+id/linearLayout"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="10dp">
 
             <Button
                 android:id="@+id/openShiftDoneButton"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/header_bar_button_height"
-                android:background="@drawable/blue_button_selector"
+                android:layout_height="wrap_content"
                 android:text="@string/button_done"
-                android:textAppearance="@style/white_text_appearance"
-                android:textColor="#FFFFFF"
-                android:textSize="@dimen/large_button_text_size" />
+                android:textSize="@dimen/large_button_text_size"
+                android:layout_marginRight="5dp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_cancel"
+                android:id="@+id/openShiftCancelButton"
+                android:textSize="@dimen/large_button_text_size"
+                android:layout_marginLeft="5dp" />
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/text_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Petty Cash Amount:"
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/listview_text_size"
+            android:layout_below="@+id/HeaderTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
+
+        <com.android.support.MyEditText
+            android:id="@+id/pettyCashAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/text_field_selector"
+            android:ems="5"
+            android:gravity="center"
+            android:inputType="number"
+            android:text="0.00"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textColor="#000000"
+            android:textSize="@dimen/field_text_size"
+            android:layout_below="@+id/textView1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp">
+        </com.android.support.MyEditText>
+
+        <TextView
+                android:id="@+id/HeaderTitle"
+                style="@style/text_shadow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+                android:padding="10dp"
+            android:text="@string/shift_open_shift"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/header_bar_text_size"
+            android:layout_weight="1"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/blue_gradient_header_horizontal" />
+
+        <ListView
+            android:id="@+id/openShiftListView"
+            android:layout_width="match_parent"
+            android:layout_height="209dp"
+            android:divider="@color/listview_divider"
+               android:dividerHeight="0.1dp"
+            android:choiceMode="singleChoice"
+            android:focusable="true"
+            android:layout_below="@+id/pettyCashAmount"
+            android:layout_alignParentLeft="true">
+        </ListView>
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/textView1"
-        style="@style/text_shadow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="10dp"
-        android:text="Petty Cash Amount:"
-        android:textAppearance="@style/black_text_appearance"
-        android:textSize="@dimen/listview_text_size" />
-
-    <com.android.support.MyEditText
-        android:id="@+id/pettyCashAmount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="40dp"
-        android:background="@drawable/text_field_selector"
-        android:ems="5"
-        android:gravity="center"
-        android:inputType="number"
-        android:text="0.00"
-        android:textAppearance="@style/black_text_appearance_unbold"
-        android:textColor="#000000"
-        android:textSize="@dimen/field_text_size" >
-    </com.android.support.MyEditText>
-
-    <ListView
-        android:id="@+id/openShiftListView"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:divider="@color/listview_divider"
-       	android:dividerHeight="0.1dp"
-        android:choiceMode="singleChoice" 
-        android:focusable="true">
-    </ListView>
 
 </LinearLayout>

@@ -68,7 +68,7 @@
                 android:id="@+id/subtotalField"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/txt_field_default"
                 android:ellipsize="start"
@@ -98,7 +98,8 @@
                 <Spinner
                     android:id="@+id/globalDiscountSpinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/add_orders_button_height"
+                    android:layout_height="wrap_content"
+
                     android:background="@drawable/blue_btn_selector" />
             </LinearLayout>
 
@@ -106,7 +107,7 @@
                 android:id="@+id/globalDiscountField"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/txt_field_default"
                 android:ellipsize="start"
@@ -136,7 +137,7 @@
                 <Spinner
                     android:id="@+id/globalTaxSpinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/add_orders_button_height"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/blue_btn_selector" />
             </LinearLayout>
 
@@ -144,7 +145,7 @@
                 android:id="@+id/globalTaxField"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/txt_field_default"
                 android:ellipsize="start"

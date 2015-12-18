@@ -27,6 +27,7 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -46,7 +47,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import protocols.EMSCallBack;
 
-public class BalanceInquiry_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
+public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
 	public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
 	private int typeCase;
@@ -71,7 +72,6 @@ public class BalanceInquiry_FA extends FragmentActivity implements EMSCallBack, 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activate_card_layout);
 		Bundle extras = getIntent().getExtras();
 		typeCase = extras.getInt("case");

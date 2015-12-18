@@ -11,8 +11,9 @@ import android.widget.ImageView;
 
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class CaptureCheck_FA extends FragmentActivity implements OnClickListener{
+public class CaptureCheck_FA extends BaseFragmentActivityActionBar implements OnClickListener{
 	
 	private ImageView imgFront,imgBack;
 	private final int CAPTURE_CHECK_FRONT = 100,CAPTURE_CHECK_BACK = 101;
@@ -22,7 +23,6 @@ public class CaptureCheck_FA extends FragmentActivity implements OnClickListener
 	public void onCreate(Bundle savedInstanceState) 
 	{
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.check_capture_layout);
         
         global = (Global)getApplication();

@@ -33,8 +33,9 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryPaymentDetails_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class HistoryGiftRewardLoyalty_FA extends FragmentActivity implements OnItemClickListener, OnTabChangeListener{
+public class HistoryGiftRewardLoyalty_FA extends BaseFragmentActivityActionBar implements OnItemClickListener, OnTabChangeListener{
 
 	public static final int CASE_GIFTCARD = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
 	private static final String[] TABS = new String[] { "payments", "addbalance"};
@@ -62,7 +63,6 @@ public class HistoryGiftRewardLoyalty_FA extends FragmentActivity implements OnI
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.history_loyalty_reward_layout);
 		activity = this;
 		global = (Global)getApplication();

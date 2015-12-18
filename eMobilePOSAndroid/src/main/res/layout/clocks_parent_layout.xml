@@ -22,15 +22,14 @@
         android:id="@+id/clockSubmitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_submit" 
-        android:layout_marginTop="10dp"
+        android:text="@string/button_submit"
         android:ems="5"
-        android:padding="5dp"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/clockPasswordField"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/blue_button_selector"
-		android:textAppearance="@style/white_text_appearance_unbold"
-        android:textSize="@dimen/large_button_text_size"/>
+        android:background="@drawable/blue_btn_selector"
+		android:textAppearance="@style/black_text_appearance_unbold"
+        android:textSize="@dimen/large_button_text_size"
+        android:layout_marginTop="10dp"
+        android:layout_alignRight="@+id/clockPasswordField"
+        android:layout_alignLeft="@+id/clockPasswordField" />
 
 </RelativeLayout>

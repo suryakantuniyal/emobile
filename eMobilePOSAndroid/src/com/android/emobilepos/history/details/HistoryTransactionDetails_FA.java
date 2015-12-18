@@ -956,7 +956,7 @@ public class HistoryTransactionDetails_FA extends FragmentActivity implements On
 					
 						String iconName = Global.paymentIconsMap.get(paymethodName);
 						if(iconName == null)
-							iconId = context.getResources().getIdentifier("debit", "drawable", context.getString(R.string.pkg_name));
+							iconId = context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
 						else
 							iconId = context.getResources().getIdentifier(iconName, "drawable", context.getString(R.string.pkg_name));
 						

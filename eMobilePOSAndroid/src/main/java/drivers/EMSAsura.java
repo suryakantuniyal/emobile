@@ -1040,6 +1040,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void playSound() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String date, String clerk_id) {
 
     }

@@ -48,10 +48,10 @@ public class HistoryMenuAdapter extends BaseAdapter implements Filterable {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		int gradientId = R.drawable.blue_btn_selector;
+//		int gradientId = R.drawable.shadow_layer;
 
 		holder.textLine.setText(lvTitle[position]);
-		convertView.setBackgroundResource(gradientId);
+//		convertView.setBackgroundResource(gradientId);
 
 		return convertView;
 	}

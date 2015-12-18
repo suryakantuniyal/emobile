@@ -235,6 +235,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public void playSound() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String date, String clerk_id) {
 
     }

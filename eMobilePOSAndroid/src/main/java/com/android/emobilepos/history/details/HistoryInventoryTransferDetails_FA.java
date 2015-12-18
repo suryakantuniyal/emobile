@@ -24,6 +24,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -33,7 +34,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class HistoryInventoryTransferDetails_FA extends FragmentActivity{
+public class HistoryInventoryTransferDetails_FA extends BaseFragmentActivityActionBar {
 
 	private boolean hasBeenCreated = false;
 	private Global global;
@@ -66,7 +67,6 @@ public class HistoryInventoryTransferDetails_FA extends FragmentActivity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.order_detailslv_layout);
 		global = (Global)getApplication();
 		activity = this;

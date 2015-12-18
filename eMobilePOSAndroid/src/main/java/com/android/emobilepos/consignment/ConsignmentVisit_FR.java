@@ -37,7 +37,6 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.payments.core.TransactionType;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -351,6 +350,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         viewMsg.setText(msg);
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 

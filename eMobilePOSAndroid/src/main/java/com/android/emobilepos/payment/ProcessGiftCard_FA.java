@@ -35,6 +35,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -60,7 +61,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import protocols.EMSCallBack;
 
-public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
+public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
     private EditText fieldAmountDue, fieldAmountTendered, fieldCardNum, fieldHidden;
     private Global global;
@@ -95,7 +96,6 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         global = (Global) getApplication();
         activity = this;
         callBack = this;

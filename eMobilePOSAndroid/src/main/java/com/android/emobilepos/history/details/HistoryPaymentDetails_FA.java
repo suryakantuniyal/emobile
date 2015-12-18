@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -42,6 +41,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -61,7 +61,7 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClickListener{
+public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar implements OnClickListener{
 
 	private boolean hasBeenCreated = false;
 	private Global global;
@@ -87,7 +87,6 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.histpay_detailslv_layout);
 		global = (Global)getApplication();
 		activity = this;
@@ -174,28 +173,20 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 		String curDate = sdf.format(new Date());
 		if(curDate.equals(rightValues[0])&&rightValues[9].equals("0"))				//It was a payment done on the current date
 		{
-			voidButton.setBackgroundResource(R.drawable.blue_button_selector);
 			voidButton.setOnClickListener(this);
 		}
-		else
-		{
-			voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
-		}
+
 		
 		
 		
 		//Handle the click event and begin the process for Printing the transaction
 		MyPreferences myPref = new MyPreferences(activity);
+		printButton.setEnabled(myPref.getPreferences(MyPreferences.pref_enable_printing));
 		if(myPref.getPreferences(MyPreferences.pref_enable_printing))
 		{
-			printButton.setBackgroundResource(R.drawable.blue_button_selector);
 			printButton.setOnClickListener(this);
 		}
-		else
-		{
-			printButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
-		}
-		
+
 		
 		
 		hasBeenCreated = true;
@@ -341,7 +332,7 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 
 			viewTitle.setText(R.string.dlog_title_error);
 			viewMsg.setText(R.string.dlog_msg_failed_print);
-
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
 		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
 		btnYes.setText(R.string.button_yes);
@@ -389,7 +380,6 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 			if(paymentToBeRefunded.pay_transid.isEmpty())
 			{
 				payHandler.createVoidPayment(paymentToBeRefunded, false, null);
-				voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
 			}
 			else
 			{
@@ -401,7 +391,6 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 		{
 			//payHandler.updateIsVoid(pay_id);
 			payHandler.createVoidPayment(paymentToBeRefunded, false, null);
-			voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
 		}
 	}
 	
@@ -419,7 +408,13 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 		TextView viewMsg = (TextView)globalDlog.findViewById(R.id.dlogMessage);
 		viewTitle.setText(R.string.dlog_title_confirm);
 			viewMsg.setText(R.string.dlog_title_enter_manager_password);
-		
+		Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+		btnCancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				globalDlog.dismiss();
+			}
+		});
 		Button btnOk = (Button)globalDlog.findViewById(R.id.btnDlogSingle);
 		btnOk.setText(R.string.button_ok);
 		btnOk.setOnClickListener(new View.OnClickListener() {
@@ -517,7 +512,6 @@ public class HistoryPaymentDetails_FA extends FragmentActivity implements OnClic
 			if(parsedMap!=null&&parsedMap.size()>0&&parsedMap.get("epayStatusCode").equals("APPROVED")) //Void was successful
 			{
 				payHandler.createVoidPayment(paymentToBeRefunded, true, parsedMap);
-				voidButton.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
 			}
 			else
 			{

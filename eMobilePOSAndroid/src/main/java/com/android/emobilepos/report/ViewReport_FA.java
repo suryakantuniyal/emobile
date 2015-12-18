@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
@@ -25,12 +24,13 @@ import com.android.emobilepos.adapters.ReportsShiftAdapter;
 import com.android.emobilepos.shifts.ShiftReportDetails_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class ViewReport_FA extends FragmentActivity {
+public class ViewReport_FA extends BaseFragmentActivityActionBar {
 	
 	private static ReportsMenuAdapter mainAdapter;
 	private static ReportsShiftAdapter shiftAdapter;
@@ -49,7 +49,6 @@ public class ViewReport_FA extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.report_layout);
 		activity = this;
 		
@@ -207,7 +206,8 @@ public class ViewReport_FA extends FragmentActivity {
 		viewTitle.setText(R.string.dlog_title_error);
 		viewMsg.setText(R.string.dlog_msg_failed_print);
 
-		
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
 		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
 		btnYes.setText(R.string.button_yes);

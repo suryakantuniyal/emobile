@@ -9,7 +9,7 @@
         android:id="@+id/headerTitleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000" >
+        android:background="@drawable/blue_gradient_header_horizontal" >
 
         <TextView
             android:id="@+id/headerTitle"
@@ -24,16 +24,17 @@
             android:id="@+id/btnCheckOut"
             
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:background="@drawable/blue_btn_selector"
             android:layout_margin="5dp"
             android:ems="5"
             android:text="Checkout"
-            android:textAppearance="@style/white_text_appearance"
+            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
-            android:textColor="#FFFFFF" />
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
 
         <EditText
             android:id="@+id/invisibleSearchMain"

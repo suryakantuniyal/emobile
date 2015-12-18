@@ -32,7 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.database.OrdProdAttrList_DB;
-import com.android.database.OrdersHandler;
 import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsAttrHandler;
 import com.android.database.ProductsHandler;
@@ -47,10 +46,10 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TerminalDisplay;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.zzzapi.uart.uart;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -60,7 +59,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import drivers.EMSPAT100;
+import drivers.EMSELO;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
@@ -144,13 +143,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         setContentView(R.layout.catalog_picker_layout);
 
-        if (myPref.getIsTablet()) {
-//			DisplayMetrics metrics = getResources().getDisplayMetrics();
-//	        int screenWidth = (int) (metrics.widthPixels * 0.80);
-//	        int screenHeight = (int) (metrics.heightPixels*0.80);
-//	        getWindow().setLayout(screenWidth, screenHeight);
-        }
-
+        this.setFinishOnTouchOutside(true);
         if (OrderingMain_FA.returnItem) {
             TextView tvHeaderTitle = (TextView) findViewById(R.id.HeaderTitle);
             tvHeaderTitle.setText(R.string.return_title);
@@ -714,7 +707,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.dlog_msg_enter_qty);
-
+        Button btnCancel = (Button) dlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
         Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
@@ -754,7 +753,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 if (!myPref.getPreferences(MyPreferences.pref_block_price_level_change)) {
                     PriceLevelHandler handler1 = new PriceLevelHandler(activity);
                     listData_LV = handler1.getFixedPriceLevel(prodID);
-				/*if (myPref.isCustSelected()) {
+                /*if (myPref.isCustSelected()) {
 					PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
 					List<String[]> temp = handler.getPriceLevel(prodID);
 					int size = temp.size();
@@ -1065,10 +1064,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (myPref.isSam4s(true, true)) {
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref,row1,row2);
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
         } else if (myPref.isPAT100()) {
-
+            String row1 = ord.ordprod_name;
+            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+        } else if (myPref.isESY13P1()) {
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);

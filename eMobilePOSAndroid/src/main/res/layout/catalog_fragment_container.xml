@@ -11,7 +11,7 @@
         android:id="@+id/catalogHeaderTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000"
+        android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="5dp"
@@ -38,12 +38,13 @@
                 android:id="@+id/categoryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/header_bar_button_height"
-                android:background="@drawable/blue_button_selector"
+                android:background="@drawable/blue_btn_selector"
                 android:text="@string/button_category"
                 android:layout_margin="5dp"
-                android:textColor="#FFFFFF"
-                android:textAppearance="@style/white_text_appearance"
-                android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+                android:textAppearance="@style/black_text_appearance"
+                android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp" />
         </LinearLayout>
     </RelativeLayout>
 
