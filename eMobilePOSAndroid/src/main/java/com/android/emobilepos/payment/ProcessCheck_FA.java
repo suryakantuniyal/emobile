@@ -24,7 +24,9 @@ import android.widget.TextView;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
+import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCheckHandler;
@@ -88,10 +90,10 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 	private double amountToBePaid = 0,actualAmount = 0;
 	private Button btnProcess;
 	private TextView tvCheckChange;
-	
-	
-	
-	
+	private EditText subtotal, tax1, tax2, amountField;//,tipAmount,promptTipField
+	private List<GroupTax> groupTaxRate;
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,7 +101,15 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 		extras = this.getIntent().getExtras();
 		activity = this;
 		myPref = new MyPreferences(activity);
-		
+        String custTaxCode;
+
+        if (myPref.isCustSelected()) {
+            custTaxCode = myPref.getCustTaxCode();
+        }
+        else {
+            custTaxCode = myPref.getEmployeeDefaultTax();
+        }
+
 		if(myPref.getPreferences(MyPreferences.pref_process_check_online))
 		{
 			isLivePayment = true;
@@ -109,8 +119,15 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 		{
 			setContentView(R.layout.process_local_check_layout);
 		}
-		
 
+		subtotal = (EditText) findViewById(R.id.subtotalCashEdit);
+		tax1 = (EditText) findViewById(R.id.tax1CashEdit);
+		tax2 = (EditText) findViewById(R.id.tax2CashEdit);
+		TextView tax1Lbl = (TextView) findViewById(R.id.tax1CashLbl);
+		TextView tax2Lbl = (TextView) findViewById(R.id.tax2CashLbl);
+        groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
+		ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
+		this.amountField = (EditText) findViewById(R.id.checkAmount);
 		
 		field = new EditText[] { (EditText) findViewById(R.id.checkName), (EditText) findViewById(R.id.checkEmail),
 				(EditText) findViewById(R.id.checkPhone), (EditText) findViewById(R.id.checkAmount),
@@ -216,37 +233,85 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 		
 		
 		
-		field[CHECK_AMOUNT].addTextChangedListener(new TextWatcher() {
+//		field[CHECK_AMOUNT].addTextChangedListener(new TextWatcher() {
+//
+//			@Override
+//			public void afterTextChanged(Editable arg0) {
+//				recalculateChange();
+//			}
+//			@Override
+//			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
+//			@Override
+//			public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {parseInputedCurrency(s,0);}
+//		});
+//
+		
+//
+//		field[CHECK_AMOUNT_PAID].addTextChangedListener(new TextWatcher() {
+//
+//			@Override
+//			public void afterTextChanged(Editable arg0) {
+//				if(!field[CHECK_AMOUNT_PAID].getText().toString().isEmpty())
+//					recalculateChange();
+//			}
+//			@Override
+//			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
+//			@Override
+//			public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {parseInputedCurrency(s,1);}
+//		});
 
-			@Override
-			public void afterTextChanged(Editable arg0) {
-				recalculateChange();
-			}
-			@Override
-			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
-			@Override
-			public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {parseInputedCurrency(s,0);}
-		});
-		
-		
-		
-		field[CHECK_AMOUNT_PAID].addTextChangedListener(new TextWatcher() {
+        subtotal.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                ProcessCash_FA.parseInputedCurrency(s, subtotal);
+                if (!isFromSalesReceipt) {
+                    ProcessCash_FA.calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
+                    ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                }
+                recalculateChange();
 
-			@Override
-			public void afterTextChanged(Editable arg0) {
-				if(!field[CHECK_AMOUNT_PAID].getText().toString().isEmpty())
-					recalculateChange();
-			}
-			@Override
-			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
-			@Override
-			public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {parseInputedCurrency(s,1);}
-		});
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ProcessCash_FA.parseInputedCurrency(s, subtotal);
+            }
+        });
+        tax1.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                recalculateChange();
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ProcessCash_FA.parseInputedCurrency(s, tax1);
+            }
+        });
+        tax2.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                recalculateChange();
+
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ProcessCash_FA.parseInputedCurrency(s, tax2);
+            }
+        });
+
+
 
 		hasBeenCreated = true;
 	}
-	
-	
+
+
 	private void recalculateChange()
 	{
 		

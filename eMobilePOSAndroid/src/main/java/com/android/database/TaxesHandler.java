@@ -158,6 +158,36 @@ public class TaxesHandler {
         return list;
     }
 
+    public List<String[]> getTaxes(String taxId) {
+        //SQLiteDatabase db = dbManager.openReadableDB();
+
+        List<String[]> list = new ArrayList<String[]>();
+        String[] data = new String[4];
+        String[] fields = new String[]{tax_name, tax_id, tax_rate, tax_type};
+
+        Cursor cursor;
+
+        if (myPref.getPreferences(MyPreferences.pref_show_only_group_taxes))
+            cursor = DBManager._db.query(false, table_name, fields, "tax_type = ? AND tax_id = ?", new String[]{"G", taxId}, null, null, tax_name, null);
+        else
+            cursor = DBManager._db.query(false, table_name, fields, "tax_id = ?",  new String[]{taxId}, null, null, tax_name, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                data[0] = cursor.getString(cursor.getColumnIndex(tax_name));
+                data[1] = cursor.getString(cursor.getColumnIndex(tax_id));
+                data[2] = cursor.getString(cursor.getColumnIndex(tax_rate));
+                data[3] = cursor.getString(cursor.getColumnIndex(tax_type));
+                list.add(data);
+                data = new String[4];
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        //db.close();
+        return list;
+    }
 
     public static List<GroupTax> getGroupTaxRate(String taxGroupId) {
         List<GroupTax> list = new ArrayList<GroupTax>();

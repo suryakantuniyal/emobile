@@ -17,7 +17,7 @@ import util.CardData;
 
 
 public class EMSUniMagDriver implements  uniMagReaderMsg ,uniMagReaderToolsMsg{
-	
+
 
 	private uniMagReader myUniMagReader = null;
 	private uniMagSDKTools firmwareUpdateTool = null;
@@ -220,35 +220,7 @@ public class EMSUniMagDriver implements  uniMagReaderMsg ,uniMagReaderToolsMsg{
 			//You need to decrypt the data here first.
 			strMsrData = new String (cardData);
 		}
-		
-		
-	
-//		CardData cd = new CardData(cardData);
-//		StringBuilder tracks= new StringBuilder();
-//		
-//		if(cd.isDataEncrypted()&&cd.getT2Encrypted()!=null)
-//		{
-//			Encrypt encrypt = new Encrypt(activity);
-//			cardManager.setTrackDataKSN(cd.getKSN());
-//			cardManager.setEncryptedAESTrack1(encrypt.encryptWithAES(cd.getT1DataAscii()));
-//			cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(cd.getT2DataAscii()));
-//			StringBuilder sb = new StringBuilder();
-//			cardManager.setEncryptedBlock(sb.append(cd.getT1Encrypted()).append(cd.getT2Encrypted()).toString());
-//			cardManager.setEncryptedTrack1(cd.getT1Encrypted());
-//			cardManager.setEncryptedTrack2(cd.getT2Encrypted());
-//			cardManager.setDeviceSerialNumber(cd.getSerialNumber());
-//		}
-//		else
-//		{
-//			if(cd.getT1Data().length()>0&&cd.getT2Data().length()==0&&cd.getT1DataAscii().contains(";"))
-//				tracks.append("").append(cd.getT1DataAscii());
-//			else if(cd.getT1Data().length()>0&&cd.getT2Data().length()==0&&cd.getT1DataAscii().contains("%"))
-//				tracks.append(cd.getT1DataAscii()).append("");
-//			else
-//				tracks.append(cd.getT1DataAscii()).append(cd.getT2DataAscii());
-//			
-//			this.cardManager = Global.parseSimpleMSR(activity, tracks.toString());
-//		}
+
 		
 		this.cardManager = parseCardData(activity,cardData);
 		isSwipping = false;

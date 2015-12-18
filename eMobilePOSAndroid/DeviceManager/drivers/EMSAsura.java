@@ -1757,7 +1757,7 @@ public class EMSAsura extends EMSDeviceDriver
 		count++;
 
 		if (count >= 3) {
-			this.cardManager = Global.parseSimpleMSR(activity, msr_data.toString().replace("\r", ""));
+			this.cardManager = Global.parseSimpleMSR(activity, msr_data.toString().replace("\r", ""), isEncryptSwipe);
 			handler.post(doUpdateViews);
 			count = 0;
 			msr_data.setLength(0);

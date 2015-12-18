@@ -35,6 +35,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -43,7 +44,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,7 +71,6 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
     private boolean isRefund = false;
 
     private Activity activity;
-    private boolean wasReadFromReader = false;
 
     private static boolean cardReaderConnected = false;
     private EMSUniMagDriver uniMagReader;
@@ -124,20 +123,23 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
             findViewById(R.id.row1Gift).setVisibility(View.GONE);
             findViewById(R.id.row2Gift).setVisibility(View.GONE);
             findViewById(R.id.row3Gift).setVisibility(View.GONE);
+
+        } else {
+            subtotal.addTextChangedListener(getTextWatcher(subtotal));
+            tax1.addTextChangedListener(getTextWatcher(tax1));
+            tax2.addTextChangedListener(getTextWatcher(tax2));
+            ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
+
         }
 
 
-        ProcessCash_FA.setTaxLabels(groupTaxRate, tax1Lbl, tax2Lbl);
-        subtotal.addTextChangedListener(getTextWatcher(subtotal));
-        tax1.addTextChangedListener(getTextWatcher(tax1));
-        tax2.addTextChangedListener(getTextWatcher(tax2));
         subtotal.setText(
                 Global.formatDoubleToCurrency(0.00));
         tax1.setText(
                 Global.formatDoubleToCurrency(0.00));
         tax2.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
-        fieldHidden.addTextChangedListener(hiddenTxtWatcher(fieldHidden));
+        fieldHidden.addTextChangedListener(new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager, Global.isEncryptSwipe));
         Button btnExact = (Button) findViewById(R.id.exactAmountBut);
         Button btnProcess = (Button) findViewById(R.id.processButton);
         btnExact.setOnClickListener(this);
@@ -288,7 +290,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
             // }
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
-            int _printer_type = myPref.printerType(true, -2);
+            int _printer_type = myPref.getPrinterType();
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
                 Global.btSwiper.currentDevice.loadCardReader(callBack, false);
@@ -339,7 +341,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
     }
 
     private void populateCardInfo() {
-        if (!wasReadFromReader) {
+        if (!cardInfoManager.getWasSwiped()) {
             Encrypt encrypt = new Encrypt(activity);
             int size = fieldCardNum.getText().toString().length();
             if (size > 4) {
@@ -388,7 +390,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
         payment.pay_dueamount = Double.toString(totalAmount - amountTendered);
 
         payment.pay_amount = Double.toString(amountTendered);
-        payment.originalTotalAmount=Double.toString(totalAmount);
+        payment.originalTotalAmount = Double.toString(totalAmount);
 
         payment.paymethod_id = extras.getString("paymethod_id");
 
@@ -448,13 +450,13 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 
         if (!isRefund) {
             payment.pay_type = "0";
-            generatedURL = payGate.paymentWithAction("ChargeGiftCardAction", wasReadFromReader, cardType,
+            generatedURL = payGate.paymentWithAction("ChargeGiftCardAction", cardInfoManager.getWasSwiped(), cardType,
                     cardInfoManager);
 
         } else {
             payment.is_refund = "1";
             payment.pay_type = "2";
-            generatedURL = payGate.paymentWithAction("ReturnGiftCardAction", wasReadFromReader, cardType,
+            generatedURL = payGate.paymentWithAction("ReturnGiftCardAction", cardInfoManager.getWasSwiped(), cardType,
                     cardInfoManager);
         }
 
@@ -594,47 +596,44 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
             Date date = dt2.parse(cardInfoManager.getCardExpYear());
             formatedYear = dt.format(date);
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
         }
 
         cardInfoManager.setCardExpYear(formatedYear);
         fieldCardNum.setText(cardInfoManager.getCardNumAESEncrypted());
-
-        wasReadFromReader = true;
+        cardInfoManager.setWasSwiped(true);
     }
 
-    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
-
-        return new TextWatcher() {
-            boolean doneScanning = false;
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (doneScanning) {
-                    doneScanning = false;
-                    String data = hiddenField.getText().toString().trim().replace("\n", "");
-                    hiddenField.setText("");
-                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-                    cardInfoManager.setCardType("GiftCard");
-                    updateViewAfterSwipe();
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
-                if (s.toString().contains("\n"))
-                    doneScanning = true;
-            }
-        };
-    }
+//    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
+//
+//        return new TextWatcher() {
+//            boolean doneScanning = false;
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if (doneScanning) {
+//                    doneScanning = false;
+//                    String data = hiddenField.getText().toString().trim().replace("\n", "");
+//                    hiddenField.setText("");
+//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
+//                    cardInfoManager.setCardType("GiftCard");
+//                    updateViewAfterSwipe();
+//                }
+//            }
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                // TODO Auto-generated method stub
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                // TODO Auto-generated method stub
+//                if (s.toString().contains("\n"))
+//                    doneScanning = true;
+//            }
+//        };
+//    }
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
@@ -643,7 +642,8 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
         updateViewAfterSwipe();
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
             uniMagReader.startReading();
-        } else if (magtekReader == null && Global.btSwiper == null && Global.mainPrinterManager != null)
+        } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
+                && Global.mainPrinterManager != null)
             Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
     }
 

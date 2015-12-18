@@ -9,3 +9,6 @@
 *.lock
 *.bin
 *.log
+build/intermediates/dex-cache/cache.xml
+eMobilePOSAndroid/eMobilePOSAndroid.iml
+.idea/libraries/

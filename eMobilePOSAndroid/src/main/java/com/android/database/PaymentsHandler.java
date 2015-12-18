@@ -91,6 +91,11 @@ public class PaymentsHandler {
     private final String Tax1_name = "Tax1_name";
     private final String Tax2_amount = "Tax2_amount";
     private final String Tax2_name = "Tax2_name";
+    private static Payment lastPaymentInserted;
+
+    public static Payment getLastPaymentInserted() {
+        return lastPaymentInserted;
+    }
 
     public final List<String> attr = Arrays.asList(new String[]{pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
             inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
@@ -235,6 +240,7 @@ public class PaymentsHandler {
         } finally {
             myPref.setLastPayID(payment.pay_id);
             DBManager._db.endTransaction();
+            lastPaymentInserted = payment;
         }
         // db.close();
     }
@@ -908,7 +914,7 @@ public class PaymentsHandler {
         sb.append("AND p.job_id = '").append(jobID).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-       PaymentDetails details = new PaymentDetails();
+        PaymentDetails details = new PaymentDetails();
         if (cursor.moveToFirst()) {
 
             do {

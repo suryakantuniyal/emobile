@@ -20,6 +20,11 @@
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.NFC" />
+    <permission
+        android:name="android.permission.MSR_OPERATION"
+        android:protectionLevel="normal" />
+    <uses-permission android:name="android.permission.MSR_OPERATION" />
+
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -428,6 +433,12 @@
         <service
             android:name="com.mpowa.android.sdk.powapos.common.communication.usbsocket.PowaUsbService"
             android:enabled="true" />
+        <receiver android:name="drivers.em70.utils.BCRReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.bcr.newdata" />
+                <action android:name="android.intent.action.scanner.data" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

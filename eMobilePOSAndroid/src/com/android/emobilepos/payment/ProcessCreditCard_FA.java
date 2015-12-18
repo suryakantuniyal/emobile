@@ -409,7 +409,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 					// data);
 					// else
 					// cardInfoManager = Global.parseSimpleMSR(activity, data);
-					cardInfoManager = Global.parseSimpleMSR(activity, data);
+					cardInfoManager = Global.parseSimpleMSR(activity, data, isEncryptSwipe);
 					updateViewAfterSwipe();
 				}
 			}
@@ -1975,7 +1975,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		if (i.getAction() != null && i.getAction().contentEquals(ourIntentAction)) {
 			// get the data from the intent
 			String data = i.getStringExtra(DATA_STRING_TAG);
-			this.cardInfoManager = Global.parseSimpleMSR(activity, data);
+			this.cardInfoManager = Global.parseSimpleMSR(activity, data, isEncryptSwipe);
 			updateViewAfterSwipe();
 		}
 	}
