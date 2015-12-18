@@ -32,7 +32,10 @@
             android:background="@drawable/blue_btn_selector"
             android:text="Pay"
             android:textAppearance="@style/black_text_appearance"
-                android:textSize="@dimen/ordering_checkout_btn_txt_size"/>
+                android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:layout_margin="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </RelativeLayout>
     
 

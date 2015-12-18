@@ -42,7 +42,9 @@
                 android:text="@string/button_category"
                 android:layout_margin="5dp"
                 android:textAppearance="@style/black_text_appearance"
-                android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+                android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp" />
         </LinearLayout>
     </RelativeLayout>
 

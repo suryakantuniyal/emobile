@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.Orders;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CardParser;
@@ -309,11 +310,8 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     @Override
     public void playSound() {
         try {
-            SoundManager.getInstance();
-            SoundManager.initSounds(activity);
-            SoundManager.loadSounds();
-            SoundManager.playSound(1, 1);
-            Thread.sleep(500);
+            MediaPlayer mPlayer = MediaPlayer.create(activity, R.raw.beep);
+            mPlayer.start();
         } catch (Exception e) {
             e.printStackTrace();
         }

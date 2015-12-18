@@ -35,8 +35,9 @@
             android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:enabled="false"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="10dp" />
+            android:layout_margin="5dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </RelativeLayout>
 
     <!--

@@ -74,7 +74,9 @@ android:background="@drawable/bg_white_page">
                 android:ems="6"
                 android:text="Log In"
                 android:textAppearance="@style/black_text_appearance"
-                android:textSize="@dimen/large_button_text_size" />
+                android:textSize="@dimen/large_button_text_size"
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp" />
 
             <ImageView
                 android:id="@+id/imageView2"

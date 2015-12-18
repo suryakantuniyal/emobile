@@ -138,7 +138,8 @@
                 android:background="@drawable/blue_btn_selector"
                 android:text="@string/button_cancel"
                 android:textSize="@dimen/button_text_size"
-                android:textAppearance="@style/black_text_appearance" />
+                android:textAppearance="@style/black_text_appearance"
+                android:padding="20dp" />
 
             <Button
                 android:id="@+id/nextButton"
@@ -148,7 +149,8 @@
                 android:background="@drawable/blue_btn_selector"
                 android:text="@string/button_accept"
                 android:textSize="@dimen/button_text_size"
-                android:textAppearance="@style/black_text_appearance" />
+                android:textAppearance="@style/black_text_appearance"
+                android:padding="20dp" />
         </LinearLayout>
     </LinearLayout>
 

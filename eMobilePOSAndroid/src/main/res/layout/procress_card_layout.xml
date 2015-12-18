@@ -29,7 +29,9 @@
             android:background="@drawable/blue_btn_selector"
             android:text="@string/card_button_process"
             android:textAppearance="@style/blue_text_appearance"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </RelativeLayout>
 
     <TextView
@@ -349,7 +351,9 @@
                             android:singleLine="true"
                             android:text="@string/cash_exact"
                             android:textAppearance="@style/black_text_appearance"
-                            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+                            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="14dp" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/processCardAmountPaid"
@@ -380,7 +384,9 @@
                             android:background="@drawable/blue_btn_selector"
                             android:text="@string/cash_tip"
                             android:textAppearance="@style/black_text_appearance"
-                            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+                            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="14dp" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/processCardTip"

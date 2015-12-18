@@ -32,13 +32,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="5dp"
             android:background="@drawable/blue_btn_selector"
             android:text="Category"
             android:textSize="@dimen/large_button_text_size"
             android:textAppearance="@style/black_text_appearance"
             android:paddingLeft="5dp"
-            android:paddingRight="15dp" />
+            android:paddingRight="14dp"
+            android:layout_margin="5dp" />
     </RelativeLayout>
 
     <TabHost
@@ -99,7 +99,8 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@android:id/tabhost" >
+        android:layout_below="@android:id/tabhost"
+        android:orientation="horizontal">
     </LinearLayout>
 
 </RelativeLayout>

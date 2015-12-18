@@ -22,26 +22,21 @@
             android:textAppearance="@style/white_text_appearance"
             android:textSize="@dimen/header_bar_text_size" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/HeaderTitle"
-            android:gravity="right" >
-
-            <Button
-                android:id="@+id/btnProcessAll"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/ordering_checkout_btn_height_size"
-                android:layout_margin="5dp"
-                android:background="@drawable/blue_btn_selector"
-                android:text="@string/btn_process_all"
-                android:textAppearance="@style/black_text_appearance"
-                android:textSize="@dimen/ordering_checkout_btn_txt_size"
-                android:paddingLeft="10dp"
-                android:paddingRight="15dp" />
-        </LinearLayout>
+        <Button
+            android:id="@+id/btnProcessAll"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:background="@drawable/blue_btn_selector"
+            android:text="@string/btn_process_all"
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentLeft="false"
+            android:layout_margin="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 
     <ListView

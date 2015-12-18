@@ -46,6 +46,7 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TerminalDisplay;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -142,13 +143,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         setContentView(R.layout.catalog_picker_layout);
 
-        if (myPref.getIsTablet()) {
-//			DisplayMetrics metrics = getResources().getDisplayMetrics();
-//	        int screenWidth = (int) (metrics.widthPixels * 0.80);
-//	        int screenHeight = (int) (metrics.heightPixels*0.80);
-//	        getWindow().setLayout(screenWidth, screenHeight);
-        }
-
+        this.setFinishOnTouchOutside(true);
         if (OrderingMain_FA.returnItem) {
             TextView tvHeaderTitle = (TextView) findViewById(R.id.HeaderTitle);
             tvHeaderTitle.setText(R.string.return_title);

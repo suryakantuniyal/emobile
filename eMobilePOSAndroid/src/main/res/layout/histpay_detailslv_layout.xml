@@ -45,7 +45,9 @@
        	android:textSize="@dimen/large_button_text_size"
         android:layout_marginTop="6dp"
         android:layout_marginBottom="6dp"
-        android:layout_marginRight="25dp"/>
+        android:layout_marginRight="25dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp" />
 
     <Button
         android:id="@+id/printButton"
@@ -55,7 +57,9 @@
         android:text="@string/button_print"
         android:textAppearance="@style/black_text_appearance_unbold"
       	android:textSize="@dimen/large_button_text_size" 
-        android:layout_marginLeft="25dp"/>
+        android:layout_marginLeft="25dp"
+        android:paddingRight="14dp"
+        android:paddingLeft="5dp" />
     </LinearLayout>
 
 

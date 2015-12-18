@@ -29,7 +29,9 @@
             android:background="@drawable/blue_btn_selector"
             android:text="@string/button_save"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
 
         <EditText
             android:id="@+id/hiddenFieldSwiper"

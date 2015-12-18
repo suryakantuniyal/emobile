@@ -124,12 +124,12 @@
                     android:id="@+id/clockIn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
                     android:background="@drawable/blue_btn_selector"
                     android:text="Clock In"
                     android:textAppearance="@style/black_text_appearance"
                     android:padding="20dp"
-                    android:textSize="@dimen/sync_button_text_size" />
+                    android:textSize="@dimen/sync_button_text_size"
+                    android:layout_margin="5dp" />
 
                 <Button
                     android:id="@+id/clockOut"
@@ -139,7 +139,8 @@
                     android:text="Clock Out"
                     android:textAppearance="@style/black_text_appearance"
                     android:padding="20dp"
-                    android:textSize="@dimen/sync_button_text_size" />
+                    android:textSize="@dimen/sync_button_text_size"
+                    android:layout_margin="5dp" />
             </LinearLayout>
 
 

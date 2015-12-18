@@ -30,7 +30,9 @@
             android:background="@drawable/blue_btn_selector"
             android:text="@string/check_button_process"
             android:textAppearance="@style/black_text_appearance"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </RelativeLayout>
 
     <ScrollView
@@ -202,7 +204,10 @@
                         android:background="@drawable/blue_btn_selector"
                         android:text="@string/cash_exact"
                         android:textAppearance="@style/black_text_appearance"
-                        android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+                        android:textSize="@dimen/ordering_checkout_btn_txt_size"
+                        android:layout_margin="5dp"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="14dp" />
 
                     <com.android.support.MyEditText
                         android:id="@+id/checkAmountPaid"

@@ -32,10 +32,9 @@
             android:text="Process"
             android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/large_button_text_size"
-            android:paddingLeft="10dp"
-            android:paddingRight="15dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp" />
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp"
+            android:layout_margin="5dp" />
     </RelativeLayout>
 
     <TextView

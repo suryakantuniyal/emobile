@@ -114,8 +114,8 @@
             android:text="@string/button_none"
             android:textColor="@style/black_text_appearance"
             android:textSize="@dimen/button_text_size"
-            android:paddingLeft="10dp"
-            android:paddingRight="15dp" />
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -162,8 +162,8 @@
                 android:text="@string/button_cancel"
                 android:textSize="@dimen/button_text_size"
                 android:textAppearance="@style/black_text_appearance"
-                android:paddingLeft="10dp"
-                android:paddingRight="15dp" />
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp" />
 
             <Button
                 android:id="@+id/acceptTipButton"
@@ -174,8 +174,8 @@
                 android:text="@string/button_accept"
                 android:textSize="@dimen/button_text_size"
                 android:textAppearance="@style/black_text_appearance"
-                android:paddingLeft="10dp"
-                android:paddingRight="15dp" />
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp" />
         </LinearLayout>
     </LinearLayout>
 

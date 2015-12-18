@@ -32,7 +32,9 @@
             android:ems="1"
             android:text="+"
             android:textAppearance="@style/blue_text_appearance"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </RelativeLayout>
 
     <com.android.support.MyEditText

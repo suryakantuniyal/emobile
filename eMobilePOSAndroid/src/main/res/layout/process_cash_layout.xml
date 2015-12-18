@@ -30,7 +30,9 @@
             android:background="@drawable/blue_btn_selector"
             android:text="@string/cash_button_process"
             android:textAppearance="@style/black_text_appearance"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingRight="14dp"
+            android:paddingLeft="5dp" />
     </RelativeLayout>
 
     <ScrollView
@@ -209,7 +211,10 @@
                             android:text="@string/cash_exact"
                             android:textAppearance="@style/black_text_appearance"
                             android:textSize="@dimen/ordering_checkout_btn_txt_size"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="14dp" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/paidCashEdit"
@@ -225,8 +230,7 @@
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
                             android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="3dp">
+                            android:layout_weight="1">
 
 
                         </com.android.support.MyEditText>
@@ -282,7 +286,10 @@
                             android:text="@string/cash_tip"
                             android:textAppearance="@style/black_text_appearance"
                             android:textSize="@dimen/ordering_checkout_btn_txt_size"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="14dp" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tipAmountField"
@@ -297,8 +304,7 @@
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
                             android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="3dp">
+                            android:layout_weight="1">
                         </com.android.support.MyEditText>
                     </TableRow>
 
