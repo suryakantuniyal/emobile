@@ -195,6 +195,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 case SettingsTab_FR.CASE_MANAGER:
                     addPreferencesFromResource(R.xml.settings_manager_layout);
                     prefManager = getPreferenceManager();
+                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
