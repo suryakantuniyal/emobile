@@ -12,3 +12,5 @@
 build/intermediates/dex-cache/cache.xml
 eMobilePOSAndroid/eMobilePOSAndroid.iml
 .idea/libraries/
+.idea/misc.xml
+.idea/workspace.xml
