@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXGetGeniusHandler;
 import com.android.saxhandler.SAXProcessGeniusHandler;
@@ -34,6 +35,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -54,14 +56,13 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
-    private String inv_id, paymethod_id;
+    private String paymethod_id;
     private Activity activity;
     private Bundle extras;
 
     private EditText invJobView, amountView;
     private ProgressDialog myProgressDialog;
     private Payment payment;
-    private boolean isFromMainMenu;
     private String geniusIP;
     private Global global;
     private MyPreferences myPref;
@@ -88,7 +89,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         myPref = new MyPreferences(activity);
         geniusIP = myPref.getGeniusIP();
 
-        isFromMainMenu = extras.getBoolean("isFromMainMenu");
+        boolean isFromMainMenu = extras.getBoolean("isFromMainMenu");
         if (!isFromMainMenu) {
             invJobView.setEnabled(false);
         }
@@ -96,6 +97,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         paymethod_id = extras.getString("paymethod_id");
 
+        String inv_id;
         if (extras.getBoolean("histinvoices"))
             inv_id = extras.getString("inv_id");
         else
@@ -180,7 +182,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-        String generatedURL = new String();
+        String generatedURL;
 
         if (isRefund) {
             payment.is_refund = "1";
@@ -199,7 +201,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         private List<String[]> returnedGenius;
         private boolean boProcessed = false;
         private boolean geniusConnected = false;
-        private String temp = "", temp2 = "";
+        private String temp = "";
 
         @Override
         protected void onPreExecute() {
@@ -214,7 +216,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         @Override
         protected String doInBackground(String... params) {
             // TODO Auto-generated method stub
-
+            Gson gson=new Gson();
             if (pingGeniusDevice()) {
                 geniusConnected = true;
                 Post post = new Post();
@@ -223,7 +225,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 try {
                     String xml = post.postData(13, activity, params[0]);
-                    temp = xml.toString();
+                    temp = xml;
                     InputSource inSource = new InputSource(new StringReader(xml));
 
                     SAXParser sp = spf.newSAXParser();
@@ -237,10 +239,10 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         boProcessed = true;
                         MyPreferences myPref = new MyPreferences(activity);
                         StringBuilder sb = new StringBuilder();
-                        sb.append("http://").append(myPref.getGeniusIP()).append(":8080/pos?TransportKey=").append(getData("TransportKey", 0, 0));
-                        sb.append("&Format=XML");
+                        sb.append("http://").append(myPref.getGeniusIP()).append(":8080/v2/pos?TransportKey=").append(getData("TransportKey", 0, 0));
+                        sb.append("&Format=JSON");
                         xml = post.postData(11, activity, sb.toString());
-                        temp2 = xml;
+                        gson.fromJson(xml, GeniusResponse.class);
                         inSource = new InputSource(new StringReader(xml));
                         SAXGetGeniusHandler getGenius = new SAXGetGeniusHandler(activity);
                         sp = spf.newSAXParser();
@@ -276,8 +278,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 String signa = getData("SignatureData", 0, 1);
                 if (signa.contains("^"))
                     parseSignature(signa);
-                String paymethodType = payMethodDictionary(getData("PaymentType", 0, 1));
-                payment.card_type = paymethodType;
+                payment.card_type = payMethodDictionary(getData("PaymentType", 0, 1));
                 payment.processed = "1";
                 //PayMethodsHandler payMethodsHandler = new PayMethodsHandler(activity);
                 payment.paymethod_id = "Genius";
@@ -296,7 +297,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 else
                     finish();
             } else {
-                Global.showPrompt(activity, R.string.dlog_title_error,  getData("Status", 0, 1));
+                Global.showPrompt(activity, R.string.dlog_title_error, getData("Status", 0, 1));
             }
 
 
@@ -387,16 +388,12 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         private boolean pingGeniusDevice() {
             boolean isReachable = true;
             try {
-                URL url = new URL("http://" + geniusIP+":8080");
+                URL url = new URL("http://" + geniusIP + ":8080");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setConnectTimeout(2000);
                 int code = connection.getResponseCode();
 
-                if (code == 200 || code == 400) {
-                    isReachable = true;
-                } else {
-                    isReachable = false;
-                }
+                isReachable = code == 200 || code == 400;
             } catch (IOException e) {
 
             }
@@ -456,8 +453,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 t.setStrokeWidth(2);
                 t.setColor(Color.BLACK);
 
-                for (int i = 0; i < size; i++) {
-                    pairs = splitFirstSentinel[i].split(Pattern.quote(","));
+                for (String aSplitFirstSentinel : splitFirstSentinel) {
+                    pairs = aSplitFirstSentinel.split(Pattern.quote(","));
                     if (!pairs[0].equals("~"))
                         newCanvas.drawPoint((float) Integer.parseInt(pairs[0]), (float) Integer.parseInt(pairs[1]), t);
                 }
