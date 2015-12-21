@@ -141,7 +141,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         if (showTipField)
             this.tipAmount.setText(Global.formatDoubleToCurrency(0.00));
 
-        amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amountDue")))));
+        amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
 
