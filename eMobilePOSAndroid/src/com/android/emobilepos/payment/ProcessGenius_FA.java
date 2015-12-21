@@ -281,7 +281,7 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
 				PaymentsHandler payHandler = new PaymentsHandler(activity);
 				payHandler.insert(payment);
 				//setResult(-1);
-				String paid_amount = Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+				String paid_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountView)));
 				Intent result = new Intent();
 				result.putExtra("total_amount",paid_amount);
 				Global.amountPaid = paid_amount;

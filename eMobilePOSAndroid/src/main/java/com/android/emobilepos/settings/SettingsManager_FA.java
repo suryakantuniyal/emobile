@@ -765,6 +765,8 @@ public class SettingsManager_FA extends FragmentActivity {
 						public void onClick(DialogInterface dialog, int which) {
 							// TODO Auto-generated method stub
 							MyPreferences myPref = new MyPreferences(activity);
+							String strDeviceName;
+							strDeviceName = val[pos].toUpperCase(Locale.getDefault());
 							if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
 																								// swiper
 							{
@@ -780,6 +782,7 @@ public class SettingsManager_FA extends FragmentActivity {
 							{
 								myPref.printerType(false, Global.STAR);
 								myPref.printerMACAddress(false, "BT:" + macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
 								EMSDeviceManager edm = new EMSDeviceManager();
 								Global.mainPrinterManager = edm.getManager();
@@ -789,6 +792,7 @@ public class SettingsManager_FA extends FragmentActivity {
 							{
 								myPref.printerType(false, Global.BAMBOO);
 								myPref.printerMACAddress(false, macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
 								EMSDeviceManager edm = new EMSDeviceManager();
 								Global.mainPrinterManager = edm.getManager();
@@ -806,6 +810,7 @@ public class SettingsManager_FA extends FragmentActivity {
 							{
 								myPref.printerType(false, Global.ZEBRA);
 								myPref.printerMACAddress(false, macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
 								EMSDeviceManager edm = new EMSDeviceManager();
 								Global.mainPrinterManager = edm.getManager();
@@ -814,6 +819,7 @@ public class SettingsManager_FA extends FragmentActivity {
 							{
 								myPref.printerType(false, Global.ONEIL);
 								myPref.printerMACAddress(false, macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
 								EMSDeviceManager edm = new EMSDeviceManager();
 								Global.mainPrinterManager = edm.getManager();

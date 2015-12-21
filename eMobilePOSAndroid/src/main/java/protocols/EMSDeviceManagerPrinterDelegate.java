@@ -23,7 +23,6 @@ public interface EMSDeviceManagerPrinterDelegate {
 	public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup);
 
 	public void printStationPrinter(List<Orders> orderProducts, String ordID);
-	
 
 	public boolean printOpenInvoices(String invID);
 
@@ -33,7 +32,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
 	public boolean printReport(String curDate);
 	
-	public void printEndOfDayReport(String date, String clerk_id);
+	public void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
 
 	public void registerPrinter();
 

@@ -24,6 +24,8 @@ public class TemplateHandler {
 	private final String _id = "_id";
 	private final String cust_id = "cust_id";
 	private final String product_id = "product_id";
+	private final String prod_sku = "prod_sku";
+	private final String prod_upc = "prod_upc";
 	private final String quantity = "quantity";
 
 	private final String price_level_id = "price_level_id";
@@ -39,7 +41,7 @@ public class TemplateHandler {
 	// private final String itemTotal = "itemTotal";
 
 	private final List<String> attr = Arrays.asList(new String[] { _id, cust_id, product_id, name, overwrite_price,
-			quantity, price, price_level_id, price_level, _update, isactive, isSync });
+			quantity, price, price_level_id, price_level, _update, isactive, isSync, prod_sku, prod_upc });
 
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";
@@ -111,7 +113,9 @@ public class TemplateHandler {
 				OrderProducts prod = global.orderProducts.get(i);
 				insert.bindString(index(_id), empStr); // _id
 				insert.bindString(index(cust_id), custID); // cust_id
-				insert.bindString(index(product_id), prod.prod_id == null ? "" : prod.prod_id); // product_id
+                insert.bindString(index(product_id), prod.prod_id == null ? "" : prod.prod_id); // product_id
+                insert.bindString(index(prod_sku), prod.prod_sku == null ? "" : prod.prod_sku); // product_sku
+                insert.bindString(index(prod_upc), prod.prod_upc == null ? "" : prod.prod_upc); // product_upc
 				insert.bindString(index(quantity), prod.ordprod_qty == null ? "0" : prod.ordprod_qty); // quantity
 				insert.bindString(index(price_level_id), prod.pricelevel_id == null ? "" : prod.pricelevel_id); // price_level_id
 				insert.bindString(index(price_level), prod.priceLevelName == null ? "" : prod.priceLevelName); // price_level
@@ -162,7 +166,9 @@ public class TemplateHandler {
 			for (int i = 0; i < size; i++) {
 				insert.bindString(index(_id), getData(_id, i)); // _id
 				insert.bindString(index(cust_id), getData(cust_id, i)); // cust_id
-				insert.bindString(index(product_id), getData(product_id, i)); // product_id
+                insert.bindString(index(product_id), getData(product_id, i)); // product_id
+                insert.bindString(index(prod_sku), getData(prod_sku, i));
+                insert.bindString(index(prod_upc), getData(prod_upc, i));
 				insert.bindString(index(quantity), getData(quantity, i)); // quantity
 				insert.bindString(index(price_level_id), getData(price_level_id, i)); // price_level_id
 				insert.bindString(index(price_level), getData(price_level, i));// price_level
@@ -217,7 +223,7 @@ public class TemplateHandler {
 		 */
 
 		sb.append(
-				"SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  FROM Templates t ");
+				"SELECT t.product_id,t.name,t.overwrite_price,t.price,t.quantity,p.prod_desc, p.prod_sku, p.prod_upc,IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable'  FROM Templates t ");
 		sb.append(
 				"LEFT JOIN Products p ON t.product_id = p.prod_id LEFT JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id  WHERE cust_id = ?");
 
@@ -231,6 +237,9 @@ public class TemplateHandler {
 
 		if (cursor.moveToFirst()) {
 			int i_prod_id = cursor.getColumnIndex(product_id);
+			int i_prod_sku = cursor.getColumnIndex(prod_sku);
+			int i_prod_upc = cursor.getColumnIndex(prod_upc);
+
 			int i_prod_name = cursor.getColumnIndex(name);
 			int i_overwrite_price = cursor.getColumnIndex(overwrite_price);
 			int i_ordprod_qty = cursor.getColumnIndex(quantity);
@@ -239,6 +248,8 @@ public class TemplateHandler {
 			int i_prod_istaxable = cursor.getColumnIndex("prod_istaxable");
 			do {
 				map.put("prod_id", cursor.getString(i_prod_id));
+				map.put("prod_sku", cursor.getString(i_prod_sku));
+				map.put("prod_upc", cursor.getString(i_prod_upc));
 				map.put("prod_name", cursor.getString(i_prod_name));
 				map.put(overwrite_price, cursor.getString(i_overwrite_price));
 				map.put("ordprod_qty", cursor.getString(i_ordprod_qty));

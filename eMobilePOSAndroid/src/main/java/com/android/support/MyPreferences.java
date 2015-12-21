@@ -697,6 +697,15 @@ public class MyPreferences {
 		return -1;
 	}
 
+	public void setPrinterName(String value) {
+		prefEditor.putString("printer_name", value);
+		prefEditor.commit();
+	}
+
+	public String getPrinterName() {
+		return prefs.getString("printer_name", "");
+	}
+
 	public int sledType(boolean isGet, int value) {
 		String sled_type = "sled_type";
 		if (isGet)
@@ -713,6 +722,7 @@ public class MyPreferences {
 		String printer_type = "printer_type";
 		String swiper_type = "swiper_type";
 
+		setPrinterName(""); //clean the printer name
 		prefEditor.putInt(sled_type, -1);
 		prefEditor.putInt(printer_type, -1);
 		prefEditor.putInt(swiper_type, -1);

@@ -311,7 +311,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
         // TODO Auto-generated method stub
 
-		printPaymentDetailsReceipt(payID,type, isReprint, LINE_WIDTH);
+		printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH);
 
 
         return true;
@@ -330,8 +330,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+//        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override

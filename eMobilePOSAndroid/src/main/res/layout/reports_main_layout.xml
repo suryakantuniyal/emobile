@@ -43,7 +43,6 @@
         android:textSize="@dimen/sales_tab_lv_text_size"
         android:textAppearance="@style/white_text_appearance"
         android:background="@drawable/blue_btn_selector"
-        android:visibility="gone"
         android:text="End of day" />
 	
 </LinearLayout>

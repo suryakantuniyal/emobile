@@ -1606,7 +1606,7 @@ public class Global extends MultiDexApplication {
         if (val == null || val.isEmpty())
             val = "0";
         try {
-            double valDbl = Global.formatNumFromLocale(val.toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double valDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(val));
             DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
             df.setParseBigDecimal(true);
             df.setMaximumFractionDigits(4);

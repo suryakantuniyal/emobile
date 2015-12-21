@@ -41,6 +41,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsImagesHandler;
+import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
@@ -51,6 +52,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -692,13 +694,15 @@ public class HistoryTransactionDetails_FA extends FragmentActivity implements On
 	
 	private List<Payment>listVoidPayments;
 	private PaymentsHandler payHandler;
+
 	private void voidTransaction()
 	{
+		double amountToBeSubstracted;
+
 		OrdersHandler handler = new OrdersHandler(activity);
 		handler.updateIsVoid(order_id);
 		handler.updateIsProcessed(order_id, "9");
-		
-		
+
 		VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
 		/*HashMap<String,String> voidedTrans = new HashMap<String,String>();
 		voidedTrans.put("ord_id", order_id);
@@ -709,6 +713,14 @@ public class HistoryTransactionDetails_FA extends FragmentActivity implements On
 		order.ord_id = order_id;
 		order.ord_type = orderHashMap.get("ord_type");
 		voidHandler.insert(order);
+
+		//Section to update the local ShiftPeriods database to reflect the VOID
+		ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
+
+		amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(orderHashMap.get("ord_total"))); //find total to be credited
+
+        //update ShiftPeriods (isReturn set to true)
+		handlerSP.updateShiftAmounts(myPref.getShiftID(), amountToBeSubstracted, true);
 		
 		
 		

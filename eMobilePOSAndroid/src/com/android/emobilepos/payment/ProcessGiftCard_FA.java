@@ -314,7 +314,7 @@ public class ProcessGiftCard_FA extends FragmentActivity implements EMSCallBack,
 		payment.paymethod_id = extras.getString("paymethod_id");
 
 		String amountToBePaid = Double.toString(
-				Global.formatNumFromLocale(fieldAmountPaid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+				Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid)));
 		Global.amountPaid = amountToBePaid;
 		payment.pay_dueamount = Double
 				.toString(Double.parseDouble(Global.amountPaid) - Double.parseDouble(amountToBePaid));

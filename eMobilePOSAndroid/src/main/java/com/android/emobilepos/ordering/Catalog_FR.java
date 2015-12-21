@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap.CompressFormat;
@@ -16,6 +17,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -57,6 +59,7 @@ import com.zzzapi.uart.uart;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -273,6 +276,46 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // TODO Auto-generated method stub
                 global.searchType = position;
+                //hide the keyboard
+
+//                InputMethodManager imm;
+//                imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.hideSoftInputFromWindow(selectedItemView.getWindowToken(), InputMethodManager.SHOW_FORCED);
+//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+//                searchField.clearFocus();
+                //catButLayout.requestFocus();
+
+                switch (position)
+                {
+                    case 0: //Name
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
+                        break;
+                    }
+                    case 1: //description
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
+                        break;
+                    }
+                    case 2: //type
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
+                        break;
+                    }
+
+                    case 3: //upc
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
+                        break;
+                    }
+                    case 4: //sku
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
+                        break;
+                    }
+                }
+
+ //                searchField.clearFocus();
 
             }
 
@@ -469,10 +512,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             case 3: // search by UPC
             {
                 search_type = "prod_upc";
+                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
             }
             case 4:
                 search_type = "prod_sku";
+                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
         }
 
@@ -583,7 +628,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
 
     public String[] populateDataForIntent(Cursor c) {
-        String[] data = new String[13];
+        String[] data = new String[15];
         data[0] = c.getString(myCursor.getColumnIndex("_id"));
 
         String val = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
@@ -644,6 +689,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         data[11] = c.getString(c.getColumnIndex("prod_taxtype"));
         data[12] = c.getString(c.getColumnIndex("prod_taxcode"));
+        data[13] = c.getString(c.getColumnIndex("prod_sku"));
+        data[14] = c.getString(c.getColumnIndex("prod_upc"));
         return data;
     }
 
@@ -653,6 +700,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
             intent.putExtra("prod_id", data[0]);
+            intent.putExtra("prod_sku", data[13]);
+            intent.putExtra("prod_upc", data[14]);
             intent.putExtra("prod_name", data[1]);
             intent.putExtra("prod_on_hand", data[4]);
             intent.putExtra("prod_price", data[2]);
@@ -722,6 +771,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                 String data[] = populateDataForIntent(myCursor);
                 intent.putExtra("prod_id", data[0]);
+                intent.putExtra("prod_sku", data[13]);
+                intent.putExtra("prod_upc", data[14]);
                 intent.putExtra("prod_name", data[1]);
                 intent.putExtra("prod_on_hand", data[4]);
                 intent.putExtra("prod_price", data[2]);
@@ -772,6 +823,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
                     String data[] = populateDataForIntent(myCursor);
                     intent.putExtra("prod_id", data[0]);
+                    intent.putExtra("prod_sku", data[13]);
+                    intent.putExtra("prod_upc", data[14]);
                     intent.putExtra("prod_name", data[1]);
                     intent.putExtra("prod_on_hand", data[4]);
                     intent.putExtra("prod_price", data[2]);

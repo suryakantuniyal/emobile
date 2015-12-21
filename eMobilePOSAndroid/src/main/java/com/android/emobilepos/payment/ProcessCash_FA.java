@@ -33,6 +33,7 @@ import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Payment;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -43,6 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import util.NumberUtil;
 
 public class ProcessCash_FA extends FragmentActivity implements OnClickListener {
     private ProgressDialog myProgressDialog;
@@ -247,7 +250,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 btnProcess.setEnabled(false);
-                double enteredAmount = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 if (enteredAmount < 0) {
                     paid.setBackgroundResource(R.drawable.edittext_wrong_input);
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
@@ -256,7 +259,6 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
                     if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                         Global.mainPrinterManager.currentDevice.openCashDrawer();
-
                     }
 
                     if (!isInvoice || (isInvoice && !isMultiInvoice))
@@ -275,7 +277,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                double amountToBePaid = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 paid.setText(amount.getText().toString());
 
@@ -399,9 +401,9 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     }
 
     public static void calculateAmountDue(EditText subtotal, EditText tax1, EditText tax2, EditText amount) {
-        double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double tax1Dbl = Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double tax2Dbl = Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
+        double tax1Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1));
+        double tax2Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2));
         double amountDueDbl = subtotalDbl + tax1Dbl + tax2Dbl;
 
         amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(amountDueDbl)));
@@ -417,8 +419,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
     private void recalculateChange() {
 
-        double totAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double totalPaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
+        double totalPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
         if (totalPaid > totAmount) {
             double tempTotal = Math.abs(totAmount - totalPaid);
@@ -447,7 +449,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         /*final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
         dialog.setContentView(dialogLayout);*/
 
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         grandTotalAmount = amountToBePaid + amountToTip;
 
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
@@ -495,7 +497,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = (float) (amountToBePaid * (0.1));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -507,7 +509,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = (float) (amountToBePaid * (0.15));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -519,7 +521,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = (float) (amountToBePaid * (0.2));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -532,7 +534,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -545,7 +547,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dialog.dismiss();
@@ -594,7 +596,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     }
 
     public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
-        double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         //set default taxes values to zero
         BigDecimal tax1Rate = new BigDecimal(0.00);
         BigDecimal tax2Rate = new BigDecimal(0.00);
@@ -620,11 +622,11 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
     private Payment processPayment() {
         PaymentsHandler payHandler = new PaymentsHandler(activity);
-        double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
         if (Global.isIvuLoto) {
-            Global.subtotalAmount = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         }
 
         String jobId = null;
@@ -660,10 +662,10 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
                 taxAmnt2 = extras.getString("Tax2_amount");
                 taxName2 = extras.getString("Tax2_name");
             } else {
-                taxAmnt1 = Double.toString(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
                 if (groupTaxRate.size() > 0)
                     taxName1 = groupTaxRate.get(0).getTaxName();
-                taxAmnt2 = Double.toString(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
                 if (groupTaxRate.size() > 1)
                     taxName2 = groupTaxRate.get(1).getTaxName();
             }
@@ -708,7 +710,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         } else if (extras.getBoolean("salespayment") || extras.getBoolean("salesrefund")) {
             Intent result = new Intent();
             result.putExtra("total_amount",
-                    Double.toString(Global.formatNumFromLocale(this.amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+                    Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.amount))));
             setResult(-2, result);
         } else
             setResult(-1);
@@ -738,7 +740,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
         }
 
-        double tempPaid = Global.formatNumFromLocale(this.paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double tempPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.paid));
         Global.amountPaid = Double.toString(grandTotalAmount);
         boolean endBreak = false;
         for (int i = 0; i < size; i++) {
@@ -767,8 +769,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
 
         PaymentsHandler payHandler = new PaymentsHandler(activity);
-        double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         String clerkId = null;
         if (!myPref.getShiftIsOpen())
             clerkId = myPref.getShiftClerkID();
@@ -810,8 +812,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
     private void updateShiftAmount() {
 
         if (!myPref.getShiftIsOpen()) {
-            double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-            double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             boolean isReturn = false;
             if (Global.ord_type.equals(Global.OrderType.RETURN.getCodeString()) || isRefund)
                 isReturn = true;
@@ -859,8 +861,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         protected void onPostExecute(Payment payment) {
             myProgressDialog.dismiss();
 
-            double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-            double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
 
             if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment) && !isFromMainMenu) {
 
@@ -903,8 +905,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
         @Override
         protected void onPostExecute(Payment payment) {
             myProgressDialog.dismiss();
-            double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-            double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
             if (printSuccessful) {
                 if (amountToBePaid <= actualAmount)
@@ -952,8 +954,8 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
 
             @Override
             public void onClick(View v) {
-                double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amount));
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
                 dlog.dismiss();
                 //activity.finish();
@@ -1044,7 +1046,7 @@ public class ProcessCash_FA extends FragmentActivity implements OnClickListener 
                 temp = 50;
                 break;
         }
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         amountToBePaid += temp;
         grandTotalAmount = amountToBePaid + amountToTip;
         paid.setText(Global.formatDoubleToCurrency(amountToBePaid));

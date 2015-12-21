@@ -384,6 +384,8 @@ public class PickerAddon_FA  extends FragmentActivity  implements OnClickListene
 		ordProd.itemSubtotal = Global.getRoundBigDecimal(temp);
 		ordProd.itemTotal = Global.getRoundBigDecimal(temp);
 		ordProd.ordprod_desc = itemData[3] + _ord_desc.toString();
+		ordProd.prod_sku = itemData[13];
+		ordProd.prod_upc = itemData[14];
 		global.orderProducts.set(position, ordProd);
 	}
 

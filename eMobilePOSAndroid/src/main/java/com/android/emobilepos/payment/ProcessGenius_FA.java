@@ -33,6 +33,7 @@ import com.android.saxhandler.SAXGetGeniusHandler;
 import com.android.saxhandler.SAXProcessGeniusHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 
 import org.xml.sax.InputSource;
@@ -299,7 +300,7 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
 				PaymentsHandler payHandler = new PaymentsHandler(activity);
 				payHandler.insert(payment);
 				//setResult(-1);
-				String paid_amount = Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+				String paid_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountView)));
 				Intent result = new Intent();
 				result.putExtra("total_amount",paid_amount);
 				Global.amountPaid = paid_amount;

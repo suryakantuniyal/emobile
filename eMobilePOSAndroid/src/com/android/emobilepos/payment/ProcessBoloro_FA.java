@@ -798,8 +798,7 @@ public class ProcessBoloro_FA extends FragmentActivity implements OnClickListene
 				Intent result = new Intent();
 				result.putExtra(
 						"total_amount",
-						Double.toString(Global.formatNumFromLocale(fieldAmountDue.getText().toString().replaceAll("[^\\d\\,\\.]", "")
-								.trim())));
+						Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountDue))));
 				setResult(-2, result);
 
 				finish();

@@ -54,6 +54,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 
 import org.xml.sax.InputSource;
@@ -566,7 +567,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         if (walkerReader == null)
             populateCardInfo();
         if (Global.isIvuLoto) {
-            Global.subtotalAmount = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         }
         payHandler = new PaymentsHandler(activity);
 
@@ -588,7 +589,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
 
         double amountToBePaid = Global
-                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
 
         Global.amountPaid = Double.toString(amountToBePaid);
@@ -607,16 +608,15 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 taxAmnt2 = extras.getString("Tax2_amount");
                 taxName2 = extras.getString("Tax2_name");
             } else {
-                taxAmnt1 = Double.toString(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
                 if (groupTaxRate.size() > 0)
                     taxName1 = groupTaxRate.get(0).getTaxName();
-                taxAmnt2 = Double.toString(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
                 if (groupTaxRate.size() > 1)
                     taxName2 = groupTaxRate.get(1).getTaxName();
             }
         }
-        double actualAmount = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountField));
 
         String isRef = null;
         String paymentType = null;
@@ -700,8 +700,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             }
         }
 
-        double tempPaid = Global
-                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double tempPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         Global.amountPaid = Double.toString(tempPaid);
         boolean endBreak = false;
         for (int i = 0; i < size; i++) {
@@ -739,10 +738,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             clerkId = myPref.getClerkID();
 
 
-        double amountToBePaid = Global
-                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double actualAmount = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+        double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountField));
 
         String pay_dueamount = extras.getString("amount");
 
@@ -895,7 +892,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		 */
 
         double amountToBePaid = Global
-                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         grandTotalAmount = amountToBePaid + amountToTip;
 
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
@@ -943,7 +940,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = (float) (amountToBePaid * 0.1);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -956,7 +953,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = (float) (amountToBePaid * 0.15);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -969,7 +966,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             @Override
             public void onClick(View v) {
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = (float) (amountToBePaid * 0.2);
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -981,8 +978,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global
-                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -994,8 +990,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global
-                        .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dialog.dismiss();
@@ -1048,8 +1043,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         TextView dlogCardType = (TextView) dialogLayout.findViewById(R.id.confirmCardType);
         TextView dlogCardExpDate = (TextView) dialogLayout.findViewById(R.id.confirmExpDate);
         TextView dlogCardNum = (TextView) dialogLayout.findViewById(R.id.confirmCardNumber);
-        double amountToBePaid = Global
-                .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
         grandTotalAmount = amountToBePaid;
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -1730,7 +1724,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             Intent result = new Intent();
 
             result.putExtra("total_amount", Double.toString(Global
-                    .formatNumFromLocale(this.amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+                    .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.amountField))));
             setResult(-2, result);
         }
 
@@ -1928,8 +1922,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.exactAmountBut:
-                double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountField));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 amountPaidField.setText(amountField.getText().toString());
                 break;
@@ -2003,8 +1996,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         }
 
         if (!isFromMainMenu) {
-            double enteredAmount = Global
-                    .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
             double actualAmount = Double.parseDouble(extras.getString("amount"));
 
             if (enteredAmount > actualAmount) {
@@ -2018,8 +2010,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             }
 
         } else {
-            double enteredAmount = Global
-                    .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
             if (enteredAmount <= 0) {
                 errorMsg = getString(R.string.error_wrong_amount);
@@ -2066,8 +2057,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         @Override
         protected void onPreExecute() {
             myTask = this;
-            enteredAmount = Global
-                    .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
             myProgressDialog = new ProgressDialog(activity);
             if (walkerReader.deviceConnected())

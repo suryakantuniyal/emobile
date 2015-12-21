@@ -223,8 +223,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		this.amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 		this.amountField.setText(
 				Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
-		actualAmount = Global
-				.formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+		actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountField));
 
 		amountField.addTextChangedListener(getTextWatcher(R.id.processCardAmount));
 		this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
@@ -673,8 +672,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			}
 		}
 
-		double tempPaid = Global
-				.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+		double tempPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 		Global.amountPaid = Double.toString(tempPaid);
 		boolean endBreak = false;
 		for (int i = 0; i < size; i++) {
@@ -887,8 +885,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		 * dialog.setContentView(dialogLayout);
 		 */
 
-		amountToBePaid = Global
-				.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+		amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 		grandTotalAmount = amountToBePaid + amountToTip;
 
 		Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
@@ -1100,20 +1097,17 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 				break;
 			case R.id.processCardAmountPaid:
 				amountPaidField.setText(cashAmountBuilder);
-				amountToBePaid = (float) (Global
-						.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+				amountToBePaid = (float) (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmountBuilder)));
 				grandTotalAmount = amountToBePaid + amountToTip;
 				break;
 			case R.id.processCardTip:
 				this.tipAmount.setText(cashAmountBuilder.toString());
-				amountToTip = (float) (Global
-						.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+				amountToTip = (float) (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmountBuilder)));
 				grandTotalAmount = amountToBePaid + amountToTip;
 				break;
 			case R.id.otherTipAmountField:
 				this.promptTipField.setText(cashAmountBuilder);
-				amountToTipFromField = (float) (Global
-						.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+				amountToTipFromField = (float) (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmountBuilder)));
 				if (amountToTipFromField > 0) {
 					amountToTip = amountToTipFromField;
 					grandTotalAmount = amountToBePaid + amountToTip;
@@ -1791,8 +1785,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			setResult(-2);
 		else {
 			Intent result = new Intent();
-			result.putExtra("total_amount", Double.toString(Global
-					.formatNumFromLocale(this.amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+			result.putExtra("total_amount", Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.amountField))));
 			setResult(-2, result);
 		}
 
@@ -1991,8 +1984,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.exactAmountBut:
-			amountToBePaid = Global
-					.formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+			amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountField));
 			grandTotalAmount = amountToBePaid + amountToTip;
 			amountPaidField.setText(amountField.getText().toString());
 			break;
@@ -2066,8 +2058,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		}
 
 		if (!isFromMainMenu) {
-			double enteredAmount = Global
-					.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+			double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 			double actualAmount = Double.parseDouble(extras.getString("amount"));
 
 			if (enteredAmount > actualAmount) {
@@ -2081,8 +2072,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 			}
 
 		} else {
-			double enteredAmount = Global
-					.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+			double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
 			if (enteredAmount <= 0) {
 				errorMsg = getString(R.string.error_wrong_amount);
@@ -2155,8 +2145,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
 		@Override
 		protected Void doInBackground(Void... params) {
 			// TODO Auto-generated method stub
-			double enteredAmount = Global
-					.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+			double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 			cardInfoManager.dueAmount = BigDecimal.valueOf(enteredAmount);
 			walkerReader.startReading(cardInfoManager, myProgressDialog);
 			return null;

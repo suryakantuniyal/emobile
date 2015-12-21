@@ -422,8 +422,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 							public void onClick(DialogInterface thisDialog,
 									int which) {
 								// TODO Auto-generated method stub
-								String value = input.getText().toString()
-										.replaceAll("[^\\d\\,\\.]", "");
+								String value = NumberUtils.cleanCurrencyFormatedNumber(input);
 								if (!value.isEmpty()) {
 									BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global
 											.formatNumFromLocale(value))));

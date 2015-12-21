@@ -223,7 +223,7 @@ public class OpenShift_FA extends FragmentActivity implements OnClickListener, O
 			cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
 
 			this.pettyCashField.setText(cashAmountBuilder.toString());
-			pettyCash = (float) (Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+			pettyCash = (float) (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmountBuilder)));
 
 		}
 		Selection.setSelection(this.pettyCashField.getText(), this.pettyCashField.getText().length());

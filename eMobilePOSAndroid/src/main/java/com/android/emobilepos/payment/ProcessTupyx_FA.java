@@ -28,6 +28,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 
 import org.xml.sax.InputSource;
@@ -252,10 +253,8 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 //		payment.pay_dueamount = Global.amountPaid);
 		
 		
-		double _amountToBePaid = Global.formatNumFromLocale(fieldAmountToPay.getText().toString()
-				.replaceAll("[^\\d\\,\\.]", "").trim());
-		double _actualAmount = Global.formatNumFromLocale(fieldTotalAmount.getText().toString()
-				.replaceAll("[^\\d\\,\\.]", "").trim());
+		double _amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountToPay));
+		double _actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldTotalAmount));
 		
 		
 		payment.pay_dueamount = Double.toString(_amountToBePaid);

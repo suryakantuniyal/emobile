@@ -53,6 +53,8 @@
 
 	<string name = "err_invalid_device">Device is not compatible</string>
 
+	<string name = "dlog_title_print_details">Print details</string>
+	<string name = "dlog_msg_print_details">Include details on receipt?</string>
 
 	<string name = "dlog_title_error">Error</string>
 	<string name = "dlog_msg_select_customer">Select a customer before proceeding</string>

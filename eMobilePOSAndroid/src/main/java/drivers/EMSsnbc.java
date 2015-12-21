@@ -320,14 +320,19 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
 	}
 
+//	@Override
+//	public void printEndOfDayReport(String date, String clerk_id)
+//	{
+//		EMSReceiptHelper em = new EMSReceiptHelper(activity,42);
+//		String t = em.getEndOfDayReportReceipt(clerk_id,Global.getCurrentDate());
+//		this.printString(t);
+//		pos_sdk.systemFeedLine(5);
+//		cutPaper();
+//	}
+
 	@Override
-	public void printEndOfDayReport(String date, String clerk_id)
-	{
-		EMSReceiptHelper em = new EMSReceiptHelper(activity,42);
-		String t = em.getEndOfDayReportReceipt(clerk_id,Global.getCurrentDate());
-		this.printString(t);
-		pos_sdk.systemFeedLine(5);
-		cutPaper();
+	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
 	}
 	
 	

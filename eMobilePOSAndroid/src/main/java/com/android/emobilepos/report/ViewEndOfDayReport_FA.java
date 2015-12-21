@@ -1,9 +1,11 @@
 package com.android.emobilepos.report;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportEndDayAdapter;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,10 +43,9 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 	private boolean hasBeenCreated = false;
 	private ProgressDialog myProgressDialog;
 	private ReportEndDayAdapter adapter;
-	
-	
-	
-	@Override
+
+
+    @Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
@@ -95,6 +97,9 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 	}
 
 
+
+
+
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -106,12 +111,51 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 			newFrag.show(fm, "dialog");
 			break;
 		case R.id.btnPrint:
-			new printAsync().execute();
+            showPrintDetailsDlg();
 			break;
 		}
 	}
-	
-	private void showPrintDlg() {
+
+    private void showPrintDlg() {
+        final Dialog dlog = new Dialog(activity,R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = (TextView)dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView)dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+
+        viewTitle.setText(R.string.dlog_title_error);
+        viewMsg.setText(R.string.dlog_msg_failed_print);
+
+
+        Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
+        btnYes.setText(R.string.button_yes);
+        btnNo.setText(R.string.button_no);
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                dlog.dismiss();
+                new printAsync().execute();
+            }
+        });
+        btnNo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
+    }
+
+	private void showPrintDetailsDlg() {
 		final Dialog dlog = new Dialog(activity,R.style.Theme_TransparentTest);
 		dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dlog.setCancelable(false);
@@ -119,10 +163,9 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 		
 		TextView viewTitle = (TextView)dlog.findViewById(R.id.dlogTitle);
 		TextView viewMsg = (TextView)dlog.findViewById(R.id.dlogMessage);
-		viewTitle.setText(R.string.dlog_title_confirm);
 
-		viewTitle.setText(R.string.dlog_title_error);
-		viewMsg.setText(R.string.dlog_msg_failed_print);
+		viewTitle.setText(R.string.dlog_title_print_details);
+		viewMsg.setText(R.string.dlog_msg_print_details);
 
 		
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
@@ -136,7 +179,7 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dlog.dismiss();
-				new printAsync().execute();
+				new printAsync().execute(true);
 			}
 		});
 		btnNo.setOnClickListener(new View.OnClickListener() {
@@ -144,13 +187,14 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				dlog.dismiss();
-			}
+ 				dlog.dismiss();
+                new printAsync().execute(false);
+            }
 		});
 		dlog.show();
 	}
 	
-	private class printAsync extends AsyncTask<Void, Void, Void> 
+	private class printAsync extends AsyncTask<Boolean, Void, Void>
 	{
 		private boolean printSuccessful = true;
 		@Override
@@ -164,11 +208,11 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 		}
 
 		@Override
-		protected Void doInBackground(Void... params) {
+		protected Void doInBackground(Boolean... params) {
 			// TODO Auto-generated method stub
 
 			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
-				Global.mainPrinterManager.currentDevice.printEndOfDayReport(curDate, null);
+				Global.mainPrinterManager.currentDevice.printEndOfDayReport(curDate, null, params[0]);
 			return null;
 		}
 
@@ -182,7 +226,7 @@ public class ViewEndOfDayReport_FA  extends FragmentActivity implements OnClickL
 	}
 	
 	
-	public  class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+	public class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {

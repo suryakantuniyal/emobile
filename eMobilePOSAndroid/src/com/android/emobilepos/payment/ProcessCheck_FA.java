@@ -250,8 +250,8 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 	private void recalculateChange()
 	{
 		
-		double totAmount = Global.formatNumFromLocale(field[CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-		double totalPaid = Global.formatNumFromLocale(field[CHECK_AMOUNT_PAID].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+		double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT]));
+		double totalPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
 		
 		if(totalPaid>totAmount)
 		{
@@ -381,11 +381,9 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 	private void processPayment()
 	{
 		MyPreferences myPref = new MyPreferences(activity);
-		actualAmount = Global.formatNumFromLocale(field[this.CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-		amountToBePaid = Global.formatNumFromLocale(field[CHECK_AMOUNT_PAID].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-		
-		
-	
+		actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[this.CHECK_AMOUNT]));
+		amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
+
 		//custName = field[CHECK_NAME].getText().toString();
 		payHandler = new PaymentsHandler(activity);
 		payment = new Payment(activity);
@@ -490,7 +488,7 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 			else if(extras.getBoolean("salespayment")||extras.getBoolean("salesrefund"))
 			{
 				Intent result = new Intent();
-				result.putExtra("total_amount", Double.toString(Global.formatNumFromLocale(field[CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+				result.putExtra("total_amount", Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT]))));
 				setResult(-2,result);
 			}
 			else
@@ -601,8 +599,8 @@ public class ProcessCheck_FA extends FragmentActivity implements OnCheckedChange
 			}
 		}
 		
-		actualAmount = Global.formatNumFromLocale(field[this.CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-		amountToBePaid = Global.formatNumFromLocale(field[CHECK_AMOUNT_PAID].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+		actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[this.CHECK_AMOUNT]));
+		amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
 		
 		Global.amountPaid = Double.toString(amountToBePaid);
 		boolean endBreak = false;
