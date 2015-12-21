@@ -20,9 +20,9 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.database.ClerksHandler;
@@ -50,7 +50,7 @@ import java.util.HashMap;
 
 public class SalesTab_FR extends Fragment {
     private SalesMenuAdapter myAdapter;
-    private ListView myListview;
+    private GridView myListview;
     private Context thisContext;
     private boolean isSelected = false;
     private TextView selectedCust;
@@ -58,6 +58,7 @@ public class SalesTab_FR extends Fragment {
     private Button salesInvoices;
     public static Activity activity;
     private EditText hiddenField;
+//    GridView gridView;
 
 
     @Override
@@ -68,7 +69,9 @@ public class SalesTab_FR extends Fragment {
         myPref = new MyPreferences(activity);
         myPref.setLogIn(true);
         PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_layout, false);
-        myListview = (ListView) view.findViewById(R.id.salesListview);
+        myListview = (GridView) view.findViewById(R.id.salesGridLayout);
+//        gridView = (GridView) view.findViewById(R.id.salesGridLayout);
+
         thisContext = getActivity();
         selectedCust = (TextView) view.findViewById(R.id.salesCustomerName);
         salesInvoices = (Button) view.findViewById(R.id.invoiceButton);
@@ -512,6 +515,7 @@ public class SalesTab_FR extends Fragment {
         sb.append("From: ").append(Global.locationFrom.get(Locations_DB.loc_name)).append("\n");
         sb.append("To: ").append(Global.locationTo.get(Locations_DB.loc_name));
         viewMsg.setText(sb.toString());
+        globalDlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
         btnOk.setText(R.string.button_ok);
@@ -521,7 +525,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
             }
         });
@@ -529,7 +532,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 Global.isInventoryTransfer = true;
                 Intent intent = new Intent(activity, OrderingMain_FA.class);
@@ -555,7 +557,13 @@ public class SalesTab_FR extends Fragment {
         viewTitle.setText(R.string.dlog_title_confirm);
 
         viewMsg.setText(R.string.dlog_title_enter_clerk_password);
-
+        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
@@ -662,6 +670,9 @@ public class SalesTab_FR extends Fragment {
             return true;
         } else if (model.equals("OT-310")) {
             myPref.setIsOT310(true);
+            return true;
+        } else if (model.equals("PayPoint ESY13P1")) {
+            myPref.setIsESY13P1(true);
             return true;
         } else {
             boolean isTablet = (activity.getResources().getConfiguration().screenLayout

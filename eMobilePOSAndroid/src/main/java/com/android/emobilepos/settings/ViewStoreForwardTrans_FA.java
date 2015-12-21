@@ -32,6 +32,7 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -45,7 +46,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class ViewStoreForwardTrans_FA extends FragmentActivity implements OnItemClickListener, OnClickListener{
+public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar implements OnItemClickListener, OnClickListener{
 	private Activity activity;
 	private Global global;
 	private boolean hasBeenCreated = false;
@@ -58,7 +59,6 @@ public class ViewStoreForwardTrans_FA extends FragmentActivity implements OnItem
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.view_store_forward_trans_layout);
 		activity = this;
 		global = (Global)getApplication();

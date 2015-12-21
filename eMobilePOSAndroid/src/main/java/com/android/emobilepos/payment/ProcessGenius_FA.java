@@ -12,7 +12,6 @@ import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -34,6 +33,7 @@ import com.android.saxhandler.SAXProcessGeniusHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class ProcessGenius_FA extends FragmentActivity implements OnClickListener {
+public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private String inv_id, paymethod_id;
     private Activity activity;
     private Bundle extras;
@@ -319,9 +319,12 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
             } else {
                 viewMsg.setText(R.string.dlog_msg_print_cust_copy);
             }
+            dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
             Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
             Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+            Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogCancel);
+            btnCancel.setVisibility(View.GONE);
             btnYes.setText(R.string.button_yes);
             btnNo.setText(R.string.button_no);
 
@@ -403,17 +406,21 @@ public class ProcessGenius_FA extends FragmentActivity implements OnClickListene
 
         private String getData(String tag, int record, int type) {
             Global global = (Global) getApplication();
-            Integer i = global.dictionary.get(record).get(tag);
-            if (i != null) {
-                switch (type) {
-                    case 0:
-                        return returnedPost.get(record)[i];
-                    case 1: {
-                        if (i > 13)
-                            i = i - 1;
-                        return returnedGenius.get(record)[i];
+            try {
+                Integer i = global.dictionary.get(record).get(tag);
+                if (i != null) {
+                    switch (type) {
+                        case 0:
+                            return returnedPost.get(record)[i];
+                        case 1: {
+                            if (i > 13)
+                                i = i - 1;
+                            return returnedGenius.get(record)[i];
+                        }
                     }
                 }
+            }catch (Exception e){
+                return  e.getMessage();
             }
             return "";
         }

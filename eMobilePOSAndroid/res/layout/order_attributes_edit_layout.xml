@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:background="#FFFFFF">
+    android:background="@drawable/blue_gradient_header_horizontal">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -28,9 +28,10 @@
             android:layout_margin="5dp"
             android:background="@drawable/blue_btn_selector"
             android:text="@string/button_save"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
          <EditText
                         android:id="@+id/hiddenFieldSwiper"
                         android:layout_width="match_parent"

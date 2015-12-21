@@ -16,7 +16,6 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -54,6 +53,7 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -79,7 +79,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import protocols.EMSCallBack;
 
-public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddProductBtnCallback,
+public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
         OrderLoyalty_FR.SwiperLoyaltyCallback, OrderRewards_FR.SwiperRewardCallback, EMSCallBack {
 
@@ -119,15 +119,14 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
     private ProgressDialog myProgressDialog;
     private CreditCardInfo cardInfoManager;
     private Button btnCheckout;
-    private Global.TransactionType mTransType = null;
+    public static Global.TransactionType mTransType = null;
     public static boolean returnItem = false;
+    private Bundle extras;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.order_main_layout);
-
         activity = this;
         instance = this;
         callBackMSR = (EMSCallBack) this;
@@ -140,7 +139,9 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
         btnCheckout.setOnClickListener(this);
 
         myPref = new MyPreferences(this);
-
+        extras = getIntent().getExtras();
+        mTransType = (Global.TransactionType) extras.get("option_number");
+        returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.getIsTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -185,9 +186,8 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
     }
 
     private void setupTitle() {
-        Bundle extras = getIntent().getExtras();
         headerTitle = (TextView) findViewById(R.id.headerTitle);
-        mTransType = (Global.TransactionType) extras.get("option_number");
+
         headerContainer = (RelativeLayout) findViewById(R.id.headerTitleContainer);
         if (myPref.isCustSelected()) {
 
@@ -201,7 +201,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
                     break;
                 }
                 case RETURN: {
-                    headerTitle.setText(R.string.return_tag);
+                    setReturnConfiguration(R.string.return_title);
                     break;
                 }
                 case INVOICE: {
@@ -234,7 +234,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
                             headerTitle.setText(R.string.consignment_stacked);
                             break;
                         case CONSIGNMENT_RETURN:
-                            headerTitle.setText(R.string.consignment_returned);
+                            setReturnConfiguration(R.string.consignment_returned);
                             break;
                         case CONSIGNMENT_FILLUP:
                             headerTitle.setText(R.string.consignment_filledup);
@@ -261,7 +261,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
                     break;
                 }
                 case RETURN: {
-                    headerTitle.setText(R.string.sales_receipt);
+                    setReturnConfiguration(R.string.return_title);
                     break;
                 }
                 case LOCATION:// Inventory Transfer
@@ -275,15 +275,21 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
     private static RelativeLayout headerContainer;
 
     public static void switchHeaderTitle(boolean newTitle, String title) {
-        if (newTitle) {
+        if (mTransType == Global.TransactionType.RETURN || newTitle) {
             savedHeaderTitle = headerTitle.getText().toString();
             headerTitle.setText(title);
             headerContainer.setBackgroundColor(Color.RED);
 
         } else {
             headerTitle.setText(savedHeaderTitle);
-            headerContainer.setBackgroundColor(Color.BLACK);
+            headerContainer.setBackgroundResource(R.drawable.blue_gradient_header_horizontal);
         }
+    }
+
+    private void setReturnConfiguration(int titleResId) {
+        headerTitle.setText(getString(titleResId));
+        headerContainer.setBackgroundColor(Color.RED);
+        OrderingMain_FA.returnItem = true;
     }
 
     private void handleFragments() {
@@ -632,6 +638,8 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 
         Button btnLeft = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnRight = (Button) dlog.findViewById(R.id.btnDlogRight);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         if (isFromOnHold) {
             viewMsg.setVisibility(View.GONE);
             viewTitle.setText(R.string.cust_dlog_choose_action);
@@ -690,6 +698,9 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                        Global.mainPrinterManager.currentDevice.playSound();
+                    }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
                     upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
                     String[] listData = handler.getUPCProducts(upc);
@@ -1317,7 +1328,7 @@ public class OrderingMain_FA extends FragmentActivity implements Receipt_FR.AddP
 
             VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
             /*
-			 * HashMap<String,String> voidedTrans = new
+             * HashMap<String,String> voidedTrans = new
 			 * HashMap<String,String>(); voidedTrans.put("ord_id",
 			 * Global.lastOrdID); voidedTrans.put("ord_type",
 			 * global.order.ord_type);

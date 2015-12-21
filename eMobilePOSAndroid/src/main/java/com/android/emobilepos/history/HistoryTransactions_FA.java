@@ -30,8 +30,9 @@ import com.android.database.OrdersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryTransactionDetails_FA;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class HistoryTransactions_FA extends FragmentActivity implements OnTabChangeListener {
+public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implements OnTabChangeListener {
 
     private static final String[] TABS = new String[]{"orders", "returns", "invoices", "estimates", "receipts"};
     private static String[] TABS_TAG;
@@ -56,7 +57,6 @@ public class HistoryTransactions_FA extends FragmentActivity implements OnTabCha
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.history_transactions_layout);
 
         global = (Global) getApplication();

@@ -31,8 +31,9 @@ import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryConsignmentDetails_FA;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class HistoryConsignment_FA extends FragmentActivity implements OnTabChangeListener {
+public class HistoryConsignment_FA extends BaseFragmentActivityActionBar implements OnTabChangeListener {
 	private static final String[] TABS = new String[] { "transactions", "pickup"};
 	private static String[] TABS_TAG;
 	private static final int[] TABS_ID = new int[] {R.id.consignment_tab, R.id.pickup_tab};
@@ -57,7 +58,6 @@ public class HistoryConsignment_FA extends FragmentActivity implements OnTabChan
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.history_consignment_layout);
 		activity = this;
 		global = (Global)getApplication();

@@ -72,7 +72,13 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 			viewMsg.setText(R.string.dlog_title_enter_admin_password);
 		else
 			viewMsg.setText(R.string.dlog_title_enter_manager_password);
-		
+		Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+		btnCancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				globalDlog.dismiss();
+			}
+		});
 		Button btnOk = (Button)globalDlog.findViewById(R.id.btnDlogSingle);
 		btnOk.setText(R.string.button_ok);
 		btnOk.setOnClickListener(new View.OnClickListener() {

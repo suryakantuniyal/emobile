@@ -39,15 +39,35 @@
             android:textSize="@dimen/field_general_txt_size" >
         </com.android.support.MyEditText>
 
-        <Button
-            android:id="@+id/btnDlogSingle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/white_btn_selector"
-            android:ems="7"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textColor="#000000"
-            android:textSize="@dimen/dlog_btn_size" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btnDlogSingle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_btn_selector"
+                android:ems="7"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/dlog_btn_size"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnCancelDlogSingle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_btn_selector"
+                android:ems="7"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:text="@string/button_cancel"
+                android:textSize="@dimen/dlog_btn_size"
+                android:layout_weight="1" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

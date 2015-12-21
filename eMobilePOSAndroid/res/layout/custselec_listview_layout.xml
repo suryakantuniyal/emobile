@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000" >
+        android:background="@drawable/blue_gradient_header_horizontal" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -31,9 +31,10 @@
             android:background="@drawable/blue_btn_selector"
             android:ems="1"
             android:text="+"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </RelativeLayout>
 
     <com.android.support.MyEditText

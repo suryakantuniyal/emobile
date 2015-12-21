@@ -104,6 +104,11 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public void playSound() {
+
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         return false;
     }

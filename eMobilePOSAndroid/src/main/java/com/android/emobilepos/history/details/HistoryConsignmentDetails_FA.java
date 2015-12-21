@@ -12,7 +12,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +24,13 @@ import android.widget.TextView;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-public class HistoryConsignmentDetails_FA extends FragmentActivity implements OnClickListener{
+public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar implements OnClickListener{
 	
 	private StickyListHeadersListView lView;
 	private ConsignmentDetailsLV_Adapter adapter;
@@ -48,7 +48,6 @@ public class HistoryConsignmentDetails_FA extends FragmentActivity implements On
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.consignment_details_layout);
 		
 		extras = this.getIntent().getExtras();
@@ -193,7 +192,7 @@ public class HistoryConsignmentDetails_FA extends FragmentActivity implements On
 		viewTitle.setText(R.string.dlog_title_error);
 		viewMsg.setText(R.string.dlog_msg_failed_print);
 
-		
+		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
 		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
 		btnYes.setText(R.string.button_yes);

@@ -19,12 +19,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/draw_receipt_cancel"
-            android:background="@drawable/blue_button_selector" 
+            android:background="@drawable/blue_btn_selector"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingRight="15dp"
             android:layout_margin="2dp"
-            android:textColor="#FFFFFF"
-            android:textSize="30sp"/>
+            android:textSize="30sp"
+            android:textAppearance="@style/black_text_appearance" />
 
         <Button
             android:id="@+id/clearBut"
@@ -32,12 +32,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/draw_receipt_clear" 
-            android:background="@drawable/blue_button_selector"
+            android:background="@drawable/blue_btn_selector"
 			android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingRight="15dp"
             android:layout_margin="2dp"
             android:textSize="30sp"
-            android:textColor="#FFFFFF"/>
+            android:textAppearance="@style/black_text_appearance" />
 
         <Button
             android:id="@+id/acceptBut"
@@ -45,12 +45,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/draw_receipt_accept" 
-            android:background="@drawable/blue_button_selector"
+            android:background="@drawable/blue_btn_selector"
 			android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingRight="15dp"
             android:layout_margin="2dp"
             android:textSize="30sp"
-            android:textColor="#FFFFFF"/>
+            android:textAppearance="@style/black_text_appearance" />
     </LinearLayout>
 
     <LinearLayout

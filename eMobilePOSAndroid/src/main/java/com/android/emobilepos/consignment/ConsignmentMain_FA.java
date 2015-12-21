@@ -19,8 +19,9 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class ConsignmentMain_FA extends FragmentActivity implements OnItemClickListener
+public class ConsignmentMain_FA extends BaseFragmentActivityActionBar implements OnItemClickListener
 {
 	private Activity activity;
 	private Global global;

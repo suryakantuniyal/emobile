@@ -23,8 +23,9 @@ import com.android.database.TransferLocations_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.history.details.HistoryInventoryTransferDetails_FA;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class HistoryInventoryTransfer_FA extends FragmentActivity implements OnItemClickListener{
+public class HistoryInventoryTransfer_FA extends BaseFragmentActivityActionBar implements OnItemClickListener{
 	
 	private Activity activity;
 	private Cursor c;
@@ -38,7 +39,6 @@ public class HistoryInventoryTransfer_FA extends FragmentActivity implements OnI
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.history_inventory_transfer_layout);
 		activity = this;
 		global = (Global)getApplication();

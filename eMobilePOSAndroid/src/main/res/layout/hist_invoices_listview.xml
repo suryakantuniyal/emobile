@@ -1,42 +1,42 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bg_white_page" >
-    <RelativeLayout 
+    android:background="@drawable/bg_white_page">
+
+    <RelativeLayout
         android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#000000"
-        >
-        
-         <TextView
-        android:id="@+id/invoicesHeaderTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="Medium Text"
-        android:padding="10dp"
-        android:textSize="@dimen/header_bar_text_size"
-        	android:textAppearance="@style/white_text_appearance"
-        	style="@style/text_shadow"/>
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/payInvoiceButton"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/ordering_checkout_btn_height_size"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:background="@drawable/blue_button_selector"
-        android:layout_margin="5dp"
-        android:text="Pay" 
-        android:textColor="#FFFFFF"
-                android:textAppearance="@style/white_text_appearance"
-                android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+        <TextView
+            android:id="@+id/invoicesHeaderTitle"
+            style="@style/text_shadow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Medium Text"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_bar_text_size" />
+
+        <Button
+            android:id="@+id/payInvoiceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/blue_btn_selector"
+            android:text="Pay"
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </RelativeLayout>
 
-   
 
     <com.android.support.MyEditText
         android:id="@+id/searchField"
@@ -44,10 +44,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/headerContainer"
         android:layout_centerHorizontal="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/text_field_selector"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
         android:drawableLeft="@drawable/search_icon"
         android:ellipsize="start"
         android:ems="13"
@@ -55,8 +55,7 @@
         android:imeOptions="actionSearch"
         android:inputType="textNoSuggestions"
         android:textColor="#000000"
-        android:textSize="@dimen/field_general_txt_size" >
-    </com.android.support.MyEditText>
+        android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
 
     <TextView
         android:id="@+id/invoiceStatic"
@@ -78,9 +77,8 @@
         android:layout_below="@+id/invoiceStatic"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:fastScrollEnabled="true"
         android:divider="@color/listview_divider"
-       	android:dividerHeight="0.1dp" >
-    </ListView>
+        android:dividerHeight="0.1dp"
+        android:fastScrollEnabled="true"></ListView>
 
 </RelativeLayout>

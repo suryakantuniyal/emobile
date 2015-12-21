@@ -32,6 +32,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -57,7 +58,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import protocols.EMSCallBack;
 
-public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnClickListener {
+public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private EditText hiddenField;
@@ -169,7 +170,6 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         Bundle extras = getIntent().getExtras();
         cardTypeCase = extras.getInt("CARD_TYPE");
@@ -371,19 +371,7 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
                     roverReader.initializeReader(activity, false);
                 }
             }
-            // if
-            // (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
-            // {
-            // uniMagReader = new EMSUniMagDriver();
-            // uniMagReader.initializeReader(this);
-            // } else {
-            // magtekReader = new EMSMagtekAudioCardReader(this);
-            // new Thread(new Runnable() {
-            // public void run() {
-            // magtekReader.connectMagtek(true,msrCallBack);
-            // }
-            // }).start();
-            // }
+
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
             int _printer_type = myPref.getPrinterType();
@@ -408,7 +396,12 @@ public class CardManager_FA extends FragmentActivity implements EMSCallBack, OnC
             _msrUsbSams = new EMSIDTechUSB(activity, msrCallBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        } else if(myPref.isEM100() || myPref.isEM70() || myPref.isOT310()){
+        } else if (myPref.isESY13P1()) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
+                cardSwipe.setChecked(true);
+            }
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
             cardSwipe.setChecked(true);
         }
     }

@@ -39,6 +39,7 @@ import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.bbpos.b.l;
+import com.elotouch.paypoint.register.printer.SerialPort;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
@@ -52,11 +53,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.util.Base64;
 import android.util.Log;
 
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
+import drivers.elo.utils.PrinterAPI;
 import drivers.star.utils.Communication;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
@@ -88,6 +91,8 @@ public class EMSDeviceDriver {
     protected Connection_Bluetooth device;
     protected PowaPOS powaPOS;
     protected POSSDK pos_sdk = null;
+    PrinterAPI eloPrinterApi;
+
     protected final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
 
     protected InputStream inputStream;
@@ -200,7 +205,9 @@ public class EMSDeviceDriver {
             Log.d("Print", str);
             return;
         }
-        if (this instanceof EMSBluetoothStarPrinter) {
+        if (this instanceof EMSELO) {
+            eloPrinterApi.print(str);
+        } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 port.writePort(str.toString().getBytes(), 0, str.toString().length());
             } catch (StarIOPortException e) {
@@ -243,7 +250,10 @@ public class EMSDeviceDriver {
             Log.d("Print", new String(byteArray));
             return;
         }
-        if (this instanceof EMSBluetoothStarPrinter) {
+
+        if (this instanceof EMSELO) {
+            eloPrinterApi.print(new String(byteArray));
+        } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 port.writePort(byteArray, 0, byteArray.length);
             } catch (StarIOPortException e) {
@@ -282,7 +292,9 @@ public class EMSDeviceDriver {
             Log.d("Print", str);
             return;
         }
-        if (this instanceof EMSBluetoothStarPrinter) {
+        if (this instanceof EMSELO) {
+            eloPrinterApi.print(str);
+        } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 port.writePort(str.getBytes(FORMAT), 0, str.length());
             } catch (UnsupportedEncodingException e) {
@@ -664,7 +676,7 @@ public class EMSDeviceDriver {
         StringBuffer sb = new StringBuffer();
         sb.append("\n");
         sb.append(textHandler.ivuLines(2 * lineWidth / 3) + "\n");
-        sb.append(activity.getString(R.string.ivuloto_control_label) + ivuLottoNumber  + "\n");
+        sb.append(activity.getString(R.string.ivuloto_control_label) + ivuLottoNumber + "\n");
         sb.append(getString(R.string.enabler_prefix) + "\n");
         sb.append(getString(R.string.powered_by_enabler) + "\n");
         sb.append(textHandler.ivuLines(2 * lineWidth / 3) + "\n");
@@ -674,7 +686,7 @@ public class EMSDeviceDriver {
     private void printEnablerWebSite(int lineWidth) {
         StringBuilder sb = new StringBuilder();
         sb.setLength(0);
-        sb.append(textHandler.centeredString(getString(R.string.enabler_website), lineWidth));
+        sb.append(textHandler.centeredString(getString(R.string.enabler_website)+"\n\n\n", lineWidth));
         print(sb.toString());
     }
 
@@ -776,19 +788,9 @@ public class EMSDeviceDriver {
         }
 
         if (myBitmap != null) {
-            // myBitmap = BitmapFactory.decodeResource(activity.getResources(),
-            // R.drawable.companylogo);
+
             if (this instanceof EMSBluetoothStarPrinter) {
-//				float diff = PAPER_WIDTH - myBitmap.getWidth();
-//				float percentage = diff / myBitmap.getWidth();
-//				int w = myBitmap.getWidth() + (int) (myBitmap.getWidth() * percentage);
-//				int h = myBitmap.getHeight();
-//				Bitmap canvasBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-//				Canvas canvas = new Canvas(canvasBmp);
-//				int centreX = (w - myBitmap.getWidth()) / 2;
-//				canvas.drawColor(Color.WHITE);
-//				canvas.drawBitmap(myBitmap, centreX, 0, null);
-//				myBitmap = canvasBmp;
+
                 byte[] data;
 
                 if (isPOSPrinter) {
@@ -867,6 +869,12 @@ public class EMSDeviceDriver {
                 pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
                 pos_sdk.imageStandardModeRasterPrint(myBitmap, PrinterWidth);
                 pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
+            } else if (this instanceof EMSELO) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                matrix.preScale(1.0f, -1.0f);
+                Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
+                eloPrinterApi.print_image(activity, rotatedBmp);
             }
 
             try {

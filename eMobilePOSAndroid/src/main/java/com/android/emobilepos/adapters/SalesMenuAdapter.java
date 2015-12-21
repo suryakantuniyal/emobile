@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.util.ArrayList;
@@ -37,20 +38,20 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
 		mainMenuList = activity.getResources().getStringArray(R.array.mainMenuArray);
 		
 		mainMenuIconsMap = new SparseArray<String>();
-		mainMenuIconsMap.put(0, "list");	//Sales Receipt
-		mainMenuIconsMap.put(1, "order");	//Order
-		mainMenuIconsMap.put(2, "return_icon");	//Return
-		mainMenuIconsMap.put(3, "invoice");	//Invoice
-		mainMenuIconsMap.put(4, "estimate");	//Estimate
-		mainMenuIconsMap.put(5, "payment");	//Payment
-		mainMenuIconsMap.put(6, "gift_card");	//Gift Card
-		mainMenuIconsMap.put(7, "loyalty_card");	//Loyalty Card
-		mainMenuIconsMap.put(8, "gift_card");	//Reward Card
-		mainMenuIconsMap.put(9, "return_icon");	//Refund
-		mainMenuIconsMap.put(10, "routes");	//Route
-		mainMenuIconsMap.put(11, "list_red");	//On Hold
-		mainMenuIconsMap.put(12, "list");	//Consignment
-		mainMenuIconsMap.put(13, "list"); //Transfer Inventory
+		mainMenuIconsMap.put(Global.TransactionType.SALE_RECEIPT.getCode(), "list");	//Sales Receipt
+		mainMenuIconsMap.put(Global.TransactionType.ORDERS.getCode(), "order");	//Order
+		mainMenuIconsMap.put(Global.TransactionType.RETURN.getCode(), "return_icon");	//Return
+		mainMenuIconsMap.put(Global.TransactionType.INVOICE.getCode(), "invoice");	//Invoice
+		mainMenuIconsMap.put(Global.TransactionType.ESTIMATE.getCode(), "estimate");	//Estimate
+		mainMenuIconsMap.put(Global.TransactionType.PAYMENT.getCode(), "payment");	//Payment
+		mainMenuIconsMap.put(Global.TransactionType.GIFT_CARD.getCode(), "gift_card");	//Gift Card
+		mainMenuIconsMap.put(Global.TransactionType.LOYALTY_CARD.getCode(), "loyalty_card");	//Loyalty Card
+		mainMenuIconsMap.put(Global.TransactionType.REWARD_CARD.getCode(), "gift_card");	//Reward Card
+		mainMenuIconsMap.put(Global.TransactionType.REFUND.getCode(), "return_icon");	//Refund
+		mainMenuIconsMap.put(Global.TransactionType.ROUTE.getCode(), "routes");	//Route
+		mainMenuIconsMap.put(Global.TransactionType.ON_HOLD.getCode(), "list_red");	//On Hold
+		mainMenuIconsMap.put(Global.TransactionType.CONSIGNMENT.getCode(), "list");	//Consignment
+		mainMenuIconsMap.put(Global.TransactionType.LOCATION.getCode(), "list"); //Transfer Inventory
 		
 		
 		
@@ -96,14 +97,14 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		int gradientId = R.drawable.blue_btn_selector;
+//		int gradientId = R.drawable.shadow_layer;
 		String resourceName = mainMenuIconsMap.get(indexOfEnabled.get(position));
 		int iconId = activity.getResources().getIdentifier(resourceName, "drawable", activity.getPackageName());
 		holder.iconLine.setImageResource(iconId);
 		
 		holder.textLine.setText(mainMenuList[indexOfEnabled.get(position)]);
 		
-		convertView.setBackgroundResource(gradientId);
+//		convertView.setBackgroundResource(gradientId);
 
 		return convertView;
 	}

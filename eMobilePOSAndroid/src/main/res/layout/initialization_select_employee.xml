@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:background="#000000"
+        android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center"
         android:padding="10dp"
         android:text="Select Employee"
@@ -23,10 +23,9 @@
         android:layout_width="@dimen/large_button_width"
        	android:layout_height="@dimen/large_button_height"
         android:layout_gravity="center"
-        android:text="Reload" 
-        android:textColor="#FFFFFF"
-        android:background="@drawable/blue_button_selector"
-        android:textAppearance="@style/white_text_appearance"
+        android:text="Reload"
+        android:background="@drawable/blue_btn_selector"
+        android:textAppearance="@style/black_text_appearance_unbold"
                 android:textSize="@dimen/large_button_text_size"/>
 
     <ListView

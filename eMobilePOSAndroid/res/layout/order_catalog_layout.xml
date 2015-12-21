@@ -15,12 +15,13 @@
 
         <Spinner
             android:id="@+id/filterButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/blue_btn_selector"
             android:paddingBottom="8dp"
             android:paddingTop="8dp"
-            android:textAppearance="@style/white_text_appearance" />
+            android:textAppearance="@style/white_text_appearance"
+            android:layout_weight="0.40" />
 
         <com.android.support.MyEditText
             android:id="@+id/catalogSearchField"
@@ -43,13 +44,14 @@
 
         <Button
             android:id="@+id/categoryButton"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/header_bar_button_height"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/blue_btn_selector"
             android:text="Category"
-            android:textAppearance="@style/white_text_appearance_unbold"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:layout_weight="0.40"
+            android:layout_margin="5dp" />
     </LinearLayout>
 
     <ListView
@@ -81,8 +83,9 @@
             android:layout_marginTop="5dp"
             android:background="@drawable/blue_btn_selector"
             android:text="All"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp" />
     </LinearLayout>
 
 </LinearLayout>

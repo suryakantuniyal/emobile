@@ -21,9 +21,8 @@
             android:background="@drawable/blue_btn_selector"
             android:paddingBottom="15dp"
             android:paddingTop="15dp"
-            android:text="Send"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
+            android:text="@string/sync_send_btn"
+            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/sync_button_text_size" />
 
         <Button
@@ -36,9 +35,8 @@
             android:background="@drawable/blue_btn_selector"
             android:paddingBottom="15dp"
             android:paddingTop="15dp"
-            android:text="Receive"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
+            android:text="@string/sync_receive_btn"
+            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/sync_button_text_size" />
     </LinearLayout>
 

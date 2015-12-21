@@ -111,8 +111,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         List<String> taxes = new ArrayList<String>();
         List<String> discount = new ArrayList<String>();
         String custTaxCode = "";
-        if (myPref.isCustSelected())
+        if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
+            if(custTaxCode.isEmpty()){
+                custTaxCode = myPref.getEmployeeDefaultTax();
+            }
+        }
         else if (Global.isFromOnHold)
             custTaxCode = Global.taxID;
         else {
@@ -183,7 +187,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
             // we know that simple_spinner_item has android.R.id.text1 TextView:
             TextView text = (TextView) view.findViewById(android.R.id.text1);
-            text.setTextColor(Color.WHITE);// choose your color
+            text.setTextAppearance(activity, R.style.black_text_appearance);// choose your color
             text.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
             return view;

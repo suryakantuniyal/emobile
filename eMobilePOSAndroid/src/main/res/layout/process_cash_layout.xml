@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000" >
+        android:background="@drawable/blue_gradient_header_horizontal" >
 
         <TextView
             android:id="@+id/HeaderTitle"
@@ -29,9 +29,10 @@
             android:layout_margin="5dp"
             android:background="@drawable/blue_btn_selector"
             android:text="@string/cash_button_process"
-            android:textAppearance="@style/white_text_appearance"
-            android:textColor="#FFFFFF"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size" />
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/ordering_checkout_btn_txt_size"
+            android:paddingRight="14dp"
+            android:paddingLeft="5dp" />
     </RelativeLayout>
 
     <ScrollView
@@ -165,7 +166,7 @@
 
                             />
                         <com.android.support.MyEditText
-                            android:id="@+id/amountCashEdit"
+                            android:id="@+id/amountDueCashEdit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:digits="0123456789"
@@ -208,10 +209,12 @@
                             android:layout_height="@dimen/ordering_checkout_btn_height_size"
                             android:background="@drawable/blue_btn_selector"
                             android:text="@string/cash_exact"
-                            android:textAppearance="@style/white_text_appearance"
-                            android:textColor="#FFFFFF"
+                            android:textAppearance="@style/black_text_appearance"
                             android:textSize="@dimen/ordering_checkout_btn_txt_size"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="14dp" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/paidCashEdit"
@@ -227,8 +230,7 @@
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
                             android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="3dp">
+                            android:layout_weight="1">
 
 
                         </com.android.support.MyEditText>
@@ -282,10 +284,12 @@
                             android:layout_height="@dimen/ordering_checkout_btn_height_size"
                             android:background="@drawable/blue_btn_selector"
                             android:text="@string/cash_tip"
-                            android:textAppearance="@style/white_text_appearance"
-                            android:textColor="#FFFFFF"
+                            android:textAppearance="@style/black_text_appearance"
                             android:textSize="@dimen/ordering_checkout_btn_txt_size"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="14dp" />
 
                         <com.android.support.MyEditText
                             android:id="@+id/tipAmountField"
@@ -300,8 +304,7 @@
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
                             android:textSize="@dimen/field_general_txt_size"
-                            android:layout_weight="1"
-                            android:layout_marginLeft="3dp">
+                            android:layout_weight="1">
                         </com.android.support.MyEditText>
                     </TableRow>
 

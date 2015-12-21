@@ -34,14 +34,14 @@ android {
         ems {
             minSdkVersion 14
             applicationId = 'com.emobilepos.app'
-            versionName "1.0.82.12"
+            versionName "1.1.0.1"
             targetSdkVersion 23
             multiDexEnabled = true
         }
         ivupos {
             minSdkVersion 14
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.0.82.12"
+            versionName "1.1.0.1"
             targetSdkVersion 23
             multiDexEnabled = true
         }
@@ -99,4 +99,8 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile files('libs/com.oem.barcode.sdk.jar')
     compile files('libs/misccom.jar')
+    compile files('libs/elotouchcashdrawer.jar')
+    compile files('libs/elotouchcfd.jar')
+    compile files('libs/magtek-usb.jar')
+    compile files('libs/redlasersdk.jar')
 }

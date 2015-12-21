@@ -79,6 +79,14 @@ import drivers.EMSPAT100;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
+    //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
+    // In constructor we are loading .so file for Cash Drawer.
+    static {
+        System.loadLibrary("cashdrawerjni");
+        System.loadLibrary("cfdjni");
+        System.loadLibrary("barcodereaderjni");
+        System.loadLibrary("serial_port");
+    }
 
     @Override
     public void onCreate() {
@@ -115,10 +123,16 @@ public class Global extends MultiDexApplication {
     public static final int EM100 = 10;
     public static final int EM70 = 11;
     public static final int OT310 = 12;
+    public static final int ESY13P1 = 13;
 
 
-    public enum Devices {
-        MAGTEK, STAR, ZEBRA, BAMBOO, ONEIL, SNBC, POWA, ASURA, PAT100, ISMP, EM100, EM70, OT310
+    public enum BuildModel {
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+
+        @Override
+        public String toString() {
+            return super.toString();
+        }
     }
 
     public static final String AUDIO_MSR_UNIMAG = "0";
@@ -758,13 +772,13 @@ public class Global extends MultiDexApplication {
 
         result.put("AmericanExpress", "amex");
         result.put("Cash", "cash");
-        result.put("Check", "debit");
+        result.put("Check", "debitcard");
         result.put("Discover", "discover");
         result.put("MasterCard", "mastercard");
         result.put("Visa", "visa");
-        result.put("DebitCard", "debit");
-        result.put("GiftCard", "debit");
-        result.put("ECheck", "debit");
+        result.put("DebitCard", "debitcard");
+        result.put("GiftCard", "debitcard");
+        result.put("ECheck", "debitcard");
         result.put("Genius", "ic_cayan");
         result.put("Tupyx", "tupyx");
         result.put("Wallet", "tupyx");
@@ -1109,12 +1123,13 @@ public class Global extends MultiDexApplication {
             uart_tool.config(3, 9600, 8, 1);
             uart_tool.write(3, Global.emptySpaces(40, 0, false));
             uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
-        } else if (myPref.isPAT100()) {
+        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
             StringBuilder sb = new StringBuilder();
             String row1 = data[1];
             String row2 = sb.append(Global.formatDoubleStrToCurrency(data[2])).toString();
-            EMSPAT100.getTerminalDisp().clearText();
-            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
+            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//            EMSPAT100.getTerminalDisp().clearText();
+//            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
         }
 
     }
@@ -1701,27 +1716,28 @@ public class Global extends MultiDexApplication {
         String msg2 = myPref.cdtLine2(true, "");
         sb1.append(Global.emptySpaces(20, msg1.length(), true)).append(msg1);
         sb2.append(Global.emptySpaces(20, msg2.length(), true)).append(msg2);
-        if (myPref.isSam4s(true, true)) {
-
-            uart_tool.config(3, 9600, 8, 1);
-            uart_tool.write(3, Global.emptySpaces(40, 0, false));
-            uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-        } else if (myPref.isPAT100()) {
-            EMSPAT100.getTerminalDisp().clearText();
-            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-        }
+//        if (myPref.isSam4s(true, true)) {
+//
+//            uart_tool.config(3, 9600, 8, 1);
+//            uart_tool.write(3, Global.emptySpaces(40, 0, false));
+//            uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
+//        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
+            TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
+//            EMSPAT100.getTerminalDisp().clearText();
+//            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
+//        }
     }
 
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
-                || _printer_type == Global.EM70 || _printer_type == Global.OT310);
+                || _printer_type == Global.EM70 || _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.OT310);
+                || _device_type == Global.OT310 || _device_type == Global.ESY13P1);
     }
 
     // Handle application transition for background

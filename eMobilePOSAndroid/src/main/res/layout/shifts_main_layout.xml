@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/header_bar_glossy"
+        android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center"
         android:padding="10dp"
         android:text="@string/shift_title"

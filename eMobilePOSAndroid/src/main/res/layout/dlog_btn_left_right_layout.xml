@@ -55,6 +55,17 @@
                 android:textAppearance="@style/black_text_appearance_unbold"
                 android:textColor="#000000"
                 android:textSize="@dimen/dlog_btn_size" />
+            <Button
+                android:id="@+id/btnDlogCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/white_btn_selector"
+                android:ems="9"
+                android:text="@string/button_cancel"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/dlog_btn_size" />
         </LinearLayout>
     </LinearLayout>
 

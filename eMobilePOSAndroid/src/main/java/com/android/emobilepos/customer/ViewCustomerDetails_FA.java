@@ -22,12 +22,13 @@ import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
 import com.android.support.DBManager;
 import com.android.support.Global;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ViewCustomerDetails_FA extends Activity {
+public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
 	private ListViewAdapter myAdapter;
 
 	private  List<String> allInfoLeft;
@@ -51,7 +52,6 @@ public class ViewCustomerDetails_FA extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.customer_moreinfo_layout);
 
 		activity = this;

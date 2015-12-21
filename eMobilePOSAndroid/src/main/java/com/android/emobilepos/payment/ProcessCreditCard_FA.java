@@ -13,14 +13,12 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -55,6 +53,7 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
 
@@ -83,7 +82,7 @@ import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import protocols.EMSCallBack;
 
-public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBack, OnClickListener, TextWatcherCallback {
+public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
     private static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
@@ -119,7 +118,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     private int requestCode = 0;
     private boolean isRefund = false;
     private EditText tipAmount, reference, promptTipField;
-    private EditText amountField;
+    private EditText amountDueField;
     private EditText amountPaidField;
     private EditText phoneNumberField, customerEmailField;
     private EditText authIDField, transIDField;
@@ -158,7 +157,6 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         callBack = this;
         setContentView(R.layout.procress_card_layout);
         activity = this;
@@ -227,20 +225,20 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             subtotalDbl += Double.parseDouble(products.itemSubtotal);
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
-        this.amountField = (EditText) findViewById(R.id.processCardAmount);
-        this.amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        this.amountField.setText(
+        this.amountDueField = (EditText) findViewById(R.id.processCardAmount);
+        this.amountDueField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        this.amountDueField.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
 
-        amountField.addTextChangedListener(getTextWatcher(amountField));
-        this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
+        amountDueField.addTextChangedListener(getTextWatcher(amountDueField));
+        this.amountDueField.setOnFocusChangeListener(getFocusListener(amountDueField));
 
 
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax1.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax2.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         if (!isFromMainMenu || Global.isIvuLoto) {
-            amountField.setEnabled(false);
+            amountDueField.setEnabled(false);
         }
         if (!Global.isIvuLoto || !isFromMainMenu) {
             findViewById(R.id.row1Credit).setVisibility(View.GONE);
@@ -398,12 +396,12 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                 switch (editText.getId()) {
                     case R.id.subtotalCardAmount: {
                         ProcessCash_FA.calculateTaxes(groupTaxRate, editText, tax1, tax2);
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountDueField);
                         break;
                     }
                     case R.id.tax2CardAmount:
                     case R.id.tax1CardAmount: {
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountDueField);
                         break;
                     }
                 }
@@ -495,13 +493,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
                     roverReader.initializeReader(activity, isDebit);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
                     walkerReader = new EMSWalker(activity, true);
-                    // new Thread(new Runnable(){
-                    // public void run()
-                    // {
-                    // walkerReader = new EMSWalker(activity);
-                    // }
-                    // }).start();
-                    // new connectWalkerAsync().execute();
+
                 }
             }
 
@@ -540,6 +532,11 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
+        } else if (myPref.isESY13P1()) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
+                cardSwipe.setChecked(true);
+            }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
             cardSwipe.setChecked(true);
         }
@@ -618,7 +615,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             }
         }
         double actualAmount = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         String isRef = null;
         String paymentType = null;
@@ -744,7 +741,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         double amountToBePaid = Global
                 .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         double actualAmount = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         String pay_dueamount = extras.getString("amount");
 
@@ -1732,7 +1729,7 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             Intent result = new Intent();
 
             result.putExtra("total_amount", Double.toString(Global
-                    .formatNumFromLocale(this.amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+                    .formatNumFromLocale(this.amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
             setResult(-2, result);
         }
 
@@ -1799,6 +1796,8 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
             else
                 viewMsg.setText(R.string.dlog_msg_want_to_print);
         }
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
@@ -1932,9 +1931,9 @@ public class ProcessCreditCard_FA extends FragmentActivity implements EMSCallBac
         switch (v.getId()) {
             case R.id.exactAmountBut:
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 grandTotalAmount = amountToBePaid + amountToTip;
-                amountPaidField.setText(amountField.getText().toString());
+                amountPaidField.setText(amountDueField.getText().toString());
                 break;
             case R.id.processButton:
                 if (walkerReader == null)

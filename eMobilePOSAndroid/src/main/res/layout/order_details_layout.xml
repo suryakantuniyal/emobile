@@ -13,7 +13,7 @@
             android:padding="10dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:background="#000000"
+            android:background="@drawable/blue_gradient_header_horizontal"
             android:textSize="@dimen/header_bar_text_size"
         	android:textAppearance="@style/white_text_appearance"
         	style="@style/text_shadow" />

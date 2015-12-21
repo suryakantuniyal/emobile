@@ -101,6 +101,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/stickyListHeaders-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/viewPagerIndicator-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/ivuposDebug" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/ivuposRelease" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
@@ -121,6 +122,7 @@
     <orderEntry type="library" exported="" name="roverapi-android-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="bouncycastle" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.4.0" level="project" />
+    <orderEntry type="library" exported="" name="elotouchcashdrawer" level="project" />
     <orderEntry type="library" exported="" name="ksoap2-android-assembly-2.6.5-jar-with-dependencies" level="project" />
     <orderEntry type="library" exported="" name="honeywell-release-" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.1" level="project" />
@@ -135,7 +137,10 @@
     <orderEntry type="library" exported="" name="zbar" level="project" />
     <orderEntry type="library" exported="" name="misccom" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
+    <orderEntry type="library" exported="" name="elotouchcfd" level="project" />
     <orderEntry type="library" exported="" name="POSSDKForAndroid" level="project" />
+    <orderEntry type="library" exported="" name="redlasersdk" level="project" />
+    <orderEntry type="library" exported="" name="magtek-usb" level="project" />
     <orderEntry type="library" exported="" name="pat100Cashdrawer1.1" level="project" />
     <orderEntry type="library" exported="" name="dragSortLibrary-release-" level="project" />
     <orderEntry type="library" exported="" name="stickyListHeaders-release-" level="project" />

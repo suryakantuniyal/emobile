@@ -372,105 +372,105 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
         // TODO Auto-generated method stub
 
-        printPaymentDetailsReceipt(payID,type, isReprint, LINE_WIDTH);
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+    @Override
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
 
-		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
 
         return true;
     }
 
-/*
-    @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+    /*
+        @Override
+        public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
 
-		
-        StringBuilder sb = new StringBuilder();
-        printPref = myPref.getPrintingPreferences();
-        //SQLiteDatabase db = new DBManager(activity).openReadableDB();
-        ProductsHandler productDBHandler = new ProductsHandler(activity);
-        HashMap<String, String> map = new HashMap<String, String>();
-        double ordTotal = 0, totalSold = 0, totalReturned = 0, totalDispached = 0, totalLines = 0;
 
-        int size = myConsignment.size();
+            StringBuilder sb = new StringBuilder();
+            printPref = myPref.getPrintingPreferences();
+            //SQLiteDatabase db = new DBManager(activity).openReadableDB();
+            ProductsHandler productDBHandler = new ProductsHandler(activity);
+            HashMap<String, String> map = new HashMap<String, String>();
+            double ordTotal = 0, totalSold = 0, totalReturned = 0, totalDispached = 0, totalLines = 0;
 
-        if (printPref.contains(MyPreferences.print_header))
-            this.printHeader();
+            int size = myConsignment.size();
 
-        sb.append(textHandler.centeredString("Consignment Summary", LINE_WIDTH)).append("\n\n");
+            if (printPref.contains(MyPreferences.print_header))
+                this.printHeader();
 
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), myPref.getCustName(), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee), myPref.getEmpName(), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-        sb.append(textHandler.newLines(3));
+            sb.append(textHandler.centeredString("Consignment Summary", LINE_WIDTH)).append("\n\n");
 
-        for (int i = 0; i < size; i++) {
-            map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), myPref.getCustName(), LINE_WIDTH, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee), myPref.getEmpName(), LINE_WIDTH, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
+            sb.append(textHandler.newLines(3));
 
-            sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_name"), LINE_WIDTH, 0));
+            for (int i = 0; i < size; i++) {
+                map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
 
-            if (printPref.contains(MyPreferences.print_descriptions)) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "", LINE_WIDTH, 3)).append(
-                        "\n");
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_desc"), LINE_WIDTH, 5)).append("\n");
-            } else
-                sb.append(textHandler.newLines(1));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_name"), LINE_WIDTH, 0));
 
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
-                    myConsignment.get(i).ConsOriginal_Qty, LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Rack Qty:", myConsignment.get(i)
-                    .ConsStock_Qty, LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Returned Qty:",
-                    myConsignment.get(i).ConsReturn_Qty, LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sold Qty:",
-                    myConsignment.get(i).ConsInvoice_Qty, LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Dispatched Qty:",
-                    myConsignment.get(i).ConsDispatch_Qty, LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty,
-                    LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Product Price:",
-                    Global.formatDoubleStrToCurrency(map.get("prod_price")), LINE_WIDTH, 5));
-            sb.append(
-                    textHandler.twoColumnLineWithLeftAlignedText("Total:",
-                            Global.formatDoubleStrToCurrency(myConsignment.get(i).invoice_total), LINE_WIDTH, 5))
-                    .append(textHandler.newLines(2));
+                if (printPref.contains(MyPreferences.print_descriptions)) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "", LINE_WIDTH, 3)).append(
+                            "\n");
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_desc"), LINE_WIDTH, 5)).append("\n");
+                } else
+                    sb.append(textHandler.newLines(1));
 
-            totalSold += Double.parseDouble(myConsignment.get(i).ConsInvoice_Qty);
-            totalReturned += Double.parseDouble(myConsignment.get(i).ConsReturn_Qty);
-            totalDispached += Double.parseDouble(myConsignment.get(i).ConsDispatch_Qty);
-            totalLines += 1;
-            ordTotal += Double.parseDouble(myConsignment.get(i).invoice_total);
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
+                        myConsignment.get(i).ConsOriginal_Qty, LINE_WIDTH, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Rack Qty:", myConsignment.get(i)
+                        .ConsStock_Qty, LINE_WIDTH, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Returned Qty:",
+                        myConsignment.get(i).ConsReturn_Qty, LINE_WIDTH, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sold Qty:",
+                        myConsignment.get(i).ConsInvoice_Qty, LINE_WIDTH, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Dispatched Qty:",
+                        myConsignment.get(i).ConsDispatch_Qty, LINE_WIDTH, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty,
+                        LINE_WIDTH, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Product Price:",
+                        Global.formatDoubleStrToCurrency(map.get("prod_price")), LINE_WIDTH, 5));
+                sb.append(
+                        textHandler.twoColumnLineWithLeftAlignedText("Total:",
+                                Global.formatDoubleStrToCurrency(myConsignment.get(i).invoice_total), LINE_WIDTH, 5))
+                        .append(textHandler.newLines(2));
+
+                totalSold += Double.parseDouble(myConsignment.get(i).ConsInvoice_Qty);
+                totalReturned += Double.parseDouble(myConsignment.get(i).ConsReturn_Qty);
+                totalDispached += Double.parseDouble(myConsignment.get(i).ConsDispatch_Qty);
+                totalLines += 1;
+                ordTotal += Double.parseDouble(myConsignment.get(i).invoice_total);
+
+                myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
+                sb.setLength(0);
+            }
+
+            sb.append(textHandler.lines(LINE_WIDTH));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Sold:", Double.toString(totalSold), LINE_WIDTH, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Returned", Double.toString(totalReturned), LINE_WIDTH, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Dispatched", Double.toString(totalDispached), LINE_WIDTH, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Line Items", Double.toString(totalLines), LINE_WIDTH, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:", Global.formatDoubleToCurrency(ordTotal), LINE_WIDTH, 0));
+            sb.append(textHandler.newLines(3));
 
             myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-            sb.setLength(0);
+
+            if (printPref.contains(MyPreferences.print_footer))
+                this.printFooter();
+            myPrinter.printText(textHandler.newLines(3), ALIGN_LEFT, 0, TEXT_SIZE, false);
+            //db.close();
+
+            return true;
         }
 
-        sb.append(textHandler.lines(LINE_WIDTH));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Sold:", Double.toString(totalSold), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Returned", Double.toString(totalReturned), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Dispatched", Double.toString(totalDispached), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Line Items", Double.toString(totalLines), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:", Global.formatDoubleToCurrency(ordTotal), LINE_WIDTH, 0));
-        sb.append(textHandler.newLines(3));
-
-        myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-
-        if (printPref.contains(MyPreferences.print_footer))
-            this.printFooter();
-        myPrinter.printText(textHandler.newLines(3), ALIGN_LEFT, 0, TEXT_SIZE, false);
-        //db.close();
-
-        return true;
-    }
-
-*/
+    */
     @Override
     public boolean printOnHold(Object onHold) {
         // TODO Auto-generated method stub
@@ -484,6 +484,11 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
+    public void playSound() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String date, String clerk_id) {
 
     }
@@ -491,7 +496,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     @Override
     public boolean printReport(String curDate) {
         // TODO Auto-generated method stub
-		printReportReceipt(curDate, LINE_WIDTH);
+        printReportReceipt(curDate, LINE_WIDTH);
 
         return true;
     }
@@ -794,7 +799,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
                 case MESSAGE_START_WORK:
 
 				/*
-				 * mListView.setEnabled(false);
+                 * mListView.setEnabled(false);
 				 * mProgressBar.setVisibility(View.VISIBLE);
 				 */
                     break;
@@ -844,10 +849,10 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     };
 
     @Override
-	public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         // TODO Auto-generated method stub
 
-		printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         return true;
     }
@@ -860,9 +865,9 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-	public void printStationPrinter(List<Orders> orders, String ordID) {
+    public void printStationPrinter(List<Orders> orders, String ordID) {
         // TODO Auto-generated method stub
-        printStationPrinterReceipt(orders, ordID,LINE_WIDTH);
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
 
     }
 
@@ -876,7 +881,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
         // TODO Auto-generated method stub
 
-		printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
 
         return true;

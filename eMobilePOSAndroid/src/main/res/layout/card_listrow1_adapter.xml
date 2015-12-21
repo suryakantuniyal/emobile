@@ -13,7 +13,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:adjustViewBounds="true"
-        android:background="@drawable/linen_background"
+        android:background="@color/gray_flat_headers"
         android:scaleType="fitXY" />
 
     <LinearLayout
@@ -45,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textColor="#FFFFFF"
+                    android:textAppearance="@style/black_text_appearance"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_view_total"
-                    android:textColor="#FFFFFF"
+                    android:textAppearance="@style/black_text_appearance"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -70,7 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textColor="#FFFFFF"
+                    android:textAppearance="@style/black_text_appearance"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -79,7 +79,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_view_paid"
-                    android:textColor="#FFFFFF"
+                    android:textAppearance="@style/black_text_appearance"
                     android:textSize="15sp" />
             </LinearLayout>
 
@@ -95,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textColor="#FFFFFF"
+                    android:textAppearance="@style/black_text_appearance"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -104,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/payment_view_tip"
-                    android:textColor="#FFFFFF"
+                    android:textAppearance="@style/black_text_appearance"
                     android:textSize="15sp" />
             </LinearLayout>
         </LinearLayout>
@@ -120,7 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/payment_view_due"
-                android:textColor="#FFFFFF"
+                android:textAppearance="@style/black_text_appearance"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -129,7 +129,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="#FFFFFF"
+                android:textAppearance="@style/black_text_appearance"
                 android:textSize="22sp"
                 android:textStyle="bold" />
         </LinearLayout>

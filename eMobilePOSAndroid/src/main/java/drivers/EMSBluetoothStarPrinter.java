@@ -407,6 +407,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
+    public void playSound() {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String date, String clerk_id) {
 
     }

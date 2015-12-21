@@ -2,6 +2,7 @@ package com.android.support;
 
 import com.zzzapi.uart.uart;
 
+import drivers.EMSELO;
 import drivers.EMSPAT100;
 
 /**
@@ -17,6 +18,8 @@ public class TerminalDisplay {
         } else if (myPref.isPAT100()) {
             EMSPAT100.getTerminalDisp().clearText();
             EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1, row2));
+        }else if (myPref.isESY13P1()) {
+            EMSELO.printTextOnCFD(row1, row2);
         }
     }
 }

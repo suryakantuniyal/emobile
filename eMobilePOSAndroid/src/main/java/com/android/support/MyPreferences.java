@@ -818,6 +818,19 @@ public class MyPreferences {
         return false;
     }
 
+
+    public boolean isESY13P1() {
+        String device_ESY13P1 = "device_ESY13P1";
+        return prefs.getBoolean(device_ESY13P1, false);
+    }
+
+    public boolean setIsESY13P1(boolean value) {
+        String device_ESY13P1 = "device_ESY13P1";
+        prefEditor.putBoolean(device_ESY13P1, value);
+        prefEditor.commit();
+        return false;
+    }
+
     public boolean isDolphin(boolean isGet, boolean value) {
         String device_dolphin = "device_dolphin";
         if (isGet)
