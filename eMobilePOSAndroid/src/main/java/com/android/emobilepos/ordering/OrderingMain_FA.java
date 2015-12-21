@@ -119,8 +119,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private ProgressDialog myProgressDialog;
     private CreditCardInfo cardInfoManager;
     private Button btnCheckout;
-    private Global.TransactionType mTransType = null;
+    public static Global.TransactionType mTransType = null;
     public static boolean returnItem = false;
+    private Bundle extras;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,7 +139,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         btnCheckout.setOnClickListener(this);
 
         myPref = new MyPreferences(this);
-
+        extras = getIntent().getExtras();
+        mTransType = (Global.TransactionType) extras.get("option_number");
+        returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.getIsTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -183,9 +186,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private void setupTitle() {
-        Bundle extras = getIntent().getExtras();
         headerTitle = (TextView) findViewById(R.id.headerTitle);
-        mTransType = (Global.TransactionType) extras.get("option_number");
+
         headerContainer = (RelativeLayout) findViewById(R.id.headerTitleContainer);
         if (myPref.isCustSelected()) {
 
@@ -199,7 +201,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     break;
                 }
                 case RETURN: {
-                    headerTitle.setText(R.string.return_tag);
+                    setReturnConfiguration(R.string.return_title);
                     break;
                 }
                 case INVOICE: {
@@ -232,7 +234,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                             headerTitle.setText(R.string.consignment_stacked);
                             break;
                         case CONSIGNMENT_RETURN:
-                            headerTitle.setText(R.string.consignment_returned);
+                            setReturnConfiguration(R.string.consignment_returned);
                             break;
                         case CONSIGNMENT_FILLUP:
                             headerTitle.setText(R.string.consignment_filledup);
@@ -259,7 +261,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     break;
                 }
                 case RETURN: {
-                    headerTitle.setText(R.string.sales_receipt);
+                    setReturnConfiguration(R.string.return_title);
                     break;
                 }
                 case LOCATION:// Inventory Transfer
@@ -273,15 +275,21 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private static RelativeLayout headerContainer;
 
     public static void switchHeaderTitle(boolean newTitle, String title) {
-        if (newTitle) {
+        if (mTransType == Global.TransactionType.RETURN || newTitle) {
             savedHeaderTitle = headerTitle.getText().toString();
             headerTitle.setText(title);
             headerContainer.setBackgroundColor(Color.RED);
 
         } else {
             headerTitle.setText(savedHeaderTitle);
-            headerContainer.setBackgroundColor(Color.BLACK);
+            headerContainer.setBackgroundResource(R.drawable.blue_gradient_header_horizontal);
         }
+    }
+
+    private void setReturnConfiguration(int titleResId) {
+        headerTitle.setText(getString(titleResId));
+        headerContainer.setBackgroundColor(Color.RED);
+        OrderingMain_FA.returnItem = true;
     }
 
     private void handleFragments() {
@@ -690,7 +698,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
-                    if(Global.mainPrinterManager!=null && Global.mainPrinterManager.currentDevice!=null){
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                         Global.mainPrinterManager.currentDevice.playSound();
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");

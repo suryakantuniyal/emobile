@@ -118,7 +118,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private int requestCode = 0;
     private boolean isRefund = false;
     private EditText tipAmount, reference, promptTipField;
-    private EditText amountField;
+    private EditText amountDueField;
     private EditText amountPaidField;
     private EditText phoneNumberField, customerEmailField;
     private EditText authIDField, transIDField;
@@ -225,20 +225,20 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             subtotalDbl += Double.parseDouble(products.itemSubtotal);
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
-        this.amountField = (EditText) findViewById(R.id.processCardAmount);
-        this.amountField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-        this.amountField.setText(
+        this.amountDueField = (EditText) findViewById(R.id.processCardAmount);
+        this.amountDueField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        this.amountDueField.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
 
-        amountField.addTextChangedListener(getTextWatcher(amountField));
-        this.amountField.setOnFocusChangeListener(getFocusListener(amountField));
+        amountDueField.addTextChangedListener(getTextWatcher(amountDueField));
+        this.amountDueField.setOnFocusChangeListener(getFocusListener(amountDueField));
 
 
         subtotal.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax1.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         tax2.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         if (!isFromMainMenu || Global.isIvuLoto) {
-            amountField.setEnabled(false);
+            amountDueField.setEnabled(false);
         }
         if (!Global.isIvuLoto || !isFromMainMenu) {
             findViewById(R.id.row1Credit).setVisibility(View.GONE);
@@ -396,12 +396,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 switch (editText.getId()) {
                     case R.id.subtotalCardAmount: {
                         ProcessCash_FA.calculateTaxes(groupTaxRate, editText, tax1, tax2);
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountDueField);
                         break;
                     }
                     case R.id.tax2CardAmount:
                     case R.id.tax1CardAmount: {
-                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
+                        ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountDueField);
                         break;
                     }
                 }
@@ -615,7 +615,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         }
         double actualAmount = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         String isRef = null;
         String paymentType = null;
@@ -741,7 +741,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         double amountToBePaid = Global
                 .formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
         double actualAmount = Global
-                .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                .formatNumFromLocale(amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
 
         String pay_dueamount = extras.getString("amount");
 
@@ -1729,7 +1729,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             Intent result = new Intent();
 
             result.putExtra("total_amount", Double.toString(Global
-                    .formatNumFromLocale(this.amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+                    .formatNumFromLocale(this.amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
             setResult(-2, result);
         }
 
@@ -1931,9 +1931,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         switch (v.getId()) {
             case R.id.exactAmountBut:
                 double amountToBePaid = Global
-                        .formatNumFromLocale(amountField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                        .formatNumFromLocale(amountDueField.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
                 grandTotalAmount = amountToBePaid + amountToTip;
-                amountPaidField.setText(amountField.getText().toString());
+                amountPaidField.setText(amountDueField.getText().toString());
                 break;
             case R.id.processButton:
                 if (walkerReader == null)
