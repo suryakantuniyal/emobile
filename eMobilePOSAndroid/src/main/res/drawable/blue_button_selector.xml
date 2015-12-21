@@ -3,5 +3,5 @@
     
      <item android:state_pressed="true"
            android:drawable="@drawable/blue_flat_button_pressed" />
-     <item android:drawable="@drawable/blue_flat_button" />
+     <item android:drawable="@drawable/blue_gradient_header_horizontal" />
 </selector>
