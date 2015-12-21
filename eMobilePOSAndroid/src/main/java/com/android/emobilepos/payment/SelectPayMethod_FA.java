@@ -124,7 +124,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
-            typeOfProcedure = extras.getInt("typeOfProcedure");
+            typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
         }
         orderType = (Global.OrderType) extras.get("ord_type");
         paymentHandlerDB = new PaymentsHandler(this);
@@ -241,7 +241,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onBackPressed() {
 
-        if (overAllRemainingBalance == 0) {
+        if (currentPaidAmount == 0) {
             // setResult(50);
             finish();
         } else {
