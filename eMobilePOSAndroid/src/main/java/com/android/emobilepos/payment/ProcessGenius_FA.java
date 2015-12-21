@@ -406,17 +406,21 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         private String getData(String tag, int record, int type) {
             Global global = (Global) getApplication();
-            Integer i = global.dictionary.get(record).get(tag);
-            if (i != null) {
-                switch (type) {
-                    case 0:
-                        return returnedPost.get(record)[i];
-                    case 1: {
-                        if (i > 13)
-                            i = i - 1;
-                        return returnedGenius.get(record)[i];
+            try {
+                Integer i = global.dictionary.get(record).get(tag);
+                if (i != null) {
+                    switch (type) {
+                        case 0:
+                            return returnedPost.get(record)[i];
+                        case 1: {
+                            if (i > 13)
+                                i = i - 1;
+                            return returnedGenius.get(record)[i];
+                        }
                     }
                 }
+            }catch (Exception e){
+                return  e.getMessage();
             }
             return "";
         }
