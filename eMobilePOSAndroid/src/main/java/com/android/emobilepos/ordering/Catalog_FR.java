@@ -686,7 +686,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             }
 
             if (OrderingMain_FA.returnItem) {
-                OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+                if (OrderingMain_FA.mTransType == Global.TransactionType.RETURN) {
+                    OrderingMain_FA.returnItem = true;
+                } else {
+                    OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+                }
                 OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
             }
         }

@@ -166,7 +166,7 @@
 
                             />
                         <com.android.support.MyEditText
-                            android:id="@+id/amountCashEdit"
+                            android:id="@+id/amountDueCashEdit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:digits="0123456789"
