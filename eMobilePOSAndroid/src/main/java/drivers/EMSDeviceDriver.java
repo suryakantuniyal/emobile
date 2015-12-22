@@ -594,10 +594,17 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
                             Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
 
-                    if (tempGrandTotal >= paidAmount)
+                    if (type == Global.OrderType.RETURN) {
+                        tempAmount = paidAmount;
+                    } else if (tempGrandTotal >= paidAmount) {
                         tempAmount = 0.00;
-                    else
-                        tempAmount = paidAmount - tempGrandTotal;
+                    } else {
+                        if (tempGrandTotal > 0) {
+                            tempAmount = paidAmount - tempGrandTotal;
+                        } else {
+                            tempAmount = Math.abs(tempGrandTotal);
+                        }
+                    }
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
                             Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
                             .append("\n\n");
@@ -686,7 +693,7 @@ public class EMSDeviceDriver {
     private void printEnablerWebSite(int lineWidth) {
         StringBuilder sb = new StringBuilder();
         sb.setLength(0);
-        sb.append(textHandler.centeredString(getString(R.string.enabler_website)+"\n\n\n", lineWidth));
+        sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n\n", lineWidth));
         print(sb.toString());
     }
 

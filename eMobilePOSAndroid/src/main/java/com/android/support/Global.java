@@ -1126,7 +1126,7 @@ public class Global extends MultiDexApplication {
             uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
         } else if (myPref.isPAT100() || myPref.isESY13P1()) {
             StringBuilder sb = new StringBuilder();
-            String row1 =product.getProdName();
+            String row1 = product.getProdName();
             String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 //            EMSPAT100.getTerminalDisp().clearText();
@@ -1310,7 +1310,7 @@ public class Global extends MultiDexApplication {
         if (this.qtyCounter.containsKey(product.getId()))
             sum = Integer.parseInt(this.qtyCounter.get(product.getId()));
 
-        if (!OrderingMain_FA.returnItem)
+        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == TransactionType.RETURN)
             global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
         else
             global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
@@ -1339,7 +1339,7 @@ public class Global extends MultiDexApplication {
         ord.overwrite_price = total.toString();
         ord.prod_price = total.toString();
 
-        total = total.multiply(OrderingMain_FA.returnItem ? new BigDecimal(-1) : new BigDecimal(1));
+        total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
 
         DecimalFormat frmt = new DecimalFormat("0.00");
         order.setTotal(frmt.format(total));
@@ -1349,7 +1349,7 @@ public class Global extends MultiDexApplication {
         ord.prod_taxcode = product.getProdTaxCode();
 
         // add order to db
-        ord.ordprod_qty = OrderingMain_FA.returnItem ? "-1" : "1";
+        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType!=TransactionType.RETURN ? "-1" : "1";
         ord.ordprod_name = product.getProdName();
         ord.ordprod_desc = product.getProdDesc();
         ord.prod_id = product.getId();
@@ -1723,7 +1723,7 @@ public class Global extends MultiDexApplication {
 //            uart_tool.write(3, Global.emptySpaces(40, 0, false));
 //            uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
 //        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
-            TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
+        TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
 //            EMSPAT100.getTerminalDisp().clearText();
 //            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
 //        }
