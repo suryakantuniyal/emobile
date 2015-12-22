@@ -643,8 +643,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, Global.OrderType.getByCode(typeOfProcedure),
-                            wasReprint, false);
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, orderType, wasReprint, false);
             }
             return null;
         }
