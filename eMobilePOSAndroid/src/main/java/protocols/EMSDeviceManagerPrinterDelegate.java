@@ -3,7 +3,9 @@ package protocols;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 
@@ -11,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface EMSDeviceManagerPrinterDelegate {
+
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer);
 
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
 

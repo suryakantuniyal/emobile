@@ -6,9 +6,11 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.android.database.DrawInfoHandler;
+import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.annotations.Expose;
 
 public class Payment  {
 
@@ -115,8 +117,9 @@ public class Payment  {
     public String is_retry = "0";
     public String payment_xml = "";
 
-
+    @Expose(deserialize = false, serialize = false)
     public MyPreferences myPref;
+    public GeniusResponse geniusResponse;
 
     public Payment(Activity activity) {
         myPref = new MyPreferences(activity);

@@ -10,7 +10,9 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -60,6 +62,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         thisInstance = this;
         this.edm.driverDidConnectToDevice(thisInstance, false);
         return true;
+    }
+
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return false;
     }
 
     @Override

@@ -6,7 +6,7 @@ package com.android.emobilepos.models.genius;
 public class AdditionalParameters {
     private String SignatureData;
     private AmountDetails AmountDetails;
-    EMV EMV;
+    private EMV EMV;
 
 
     public String getSignatureData() {
@@ -23,5 +23,13 @@ public class AdditionalParameters {
 
     public void setAmountDetails(com.android.emobilepos.models.genius.AmountDetails amountDetails) {
         AmountDetails = amountDetails;
+    }
+
+    public com.android.emobilepos.models.genius.EMV getEMV() {
+        return EMV;
+    }
+
+    public void setEMV(com.android.emobilepos.models.genius.EMV EMV) {
+        this.EMV = EMV;
     }
 }

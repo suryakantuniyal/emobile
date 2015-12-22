@@ -10,7 +10,9 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -56,6 +58,11 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
         return true;
+    }
+
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return false;
     }
 
     @Override

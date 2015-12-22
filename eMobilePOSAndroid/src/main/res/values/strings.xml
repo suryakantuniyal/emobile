@@ -1115,5 +1115,9 @@
 	<string name="sync_receive_btn">Receive</string>
 	<string name="pay_button">Pay</string>
 	<string name="sync_enabler_submitlocationinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx</string>
+	<string name="genius_aid">AID:</string>
+	<string name="cryptogram_type">Cryptogram Type:</string>
+	<string name="cryptogram">Cryptogram:</string>
+	<string name="pin_statement">PIN Statement:</string>
 
 </resources>

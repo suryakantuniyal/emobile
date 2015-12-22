@@ -11,7 +11,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.internal.misccomm.misccommManager;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -84,6 +86,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 //        int ret = misccommManager.getDefault().setMsrEnable();
         return 0 == 0;
 
+    }
+
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return false;
     }
 
     @Override

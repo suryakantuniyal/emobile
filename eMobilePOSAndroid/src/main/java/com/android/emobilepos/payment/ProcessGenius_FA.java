@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.genius.GeniusTransportToken;
@@ -248,16 +249,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         StringBuilder sb = new StringBuilder();
                         sb.append("http://").append(myPref.getGeniusIP()).append(":8080/v2/pos?TransportKey=").append(geniusTransportToken.getTransportkey());
                         sb.append("&Format=JSON");
-                        xml = post.postData(11, activity, sb.toString());
-                        geniusResponse = gson.fromJson(xml, GeniusResponse.class);
-//                        inSource = new InputSource(new StringReader(xml));
-//                        SAXGetGeniusHandler getGenius = new SAXGetGeniusHandler(activity);
-//                        sp = spf.newSAXParser();
-//                        xr = sp.getXMLReader();
-//                        xr.setContentHandler(getGenius);
-//                        xr.parse(inSource);
+                        String json = post.postData(11, activity, sb.toString());
+                        geniusResponse = gson.fromJson(json, GeniusResponse.class);
 
-//                        returnedGenius = getGenius.getEmpData();
                     }
 
                 } catch (Exception e) {
@@ -289,13 +283,17 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.processed = "1";
                 //PayMethodsHandler payMethodsHandler = new PayMethodsHandler(activity);
                 payment.paymethod_id = "Genius";
-
+                payment.geniusResponse = response;
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
                 payHandler.insert(payment);
                 //setResult(-1);
+                EMVContainer emvContainer = new EMVContainer();
+                emvContainer.setGeniusResponse(response);
                 String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());//Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 Intent result = new Intent();
                 result.putExtra("total_amount", paid_amount);
+
+                result.putExtra("emvcontainer", new Gson().toJson(emvContainer, EMVContainer.class));
                 Global.amountPaid = paid_amount;
                 setResult(-2, result);
 
@@ -498,7 +496,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         }
     }
 
-    private enum Limiters {
+    public enum Limiters {
         VISA, MASTERCARD, AMEX, DISCOVER, DEBIT, GIFT;
 
         public static Limiters toLimit(String str) {

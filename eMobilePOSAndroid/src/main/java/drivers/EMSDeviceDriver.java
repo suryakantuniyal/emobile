@@ -31,9 +31,12 @@ import com.android.database.ProductsHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DBManager;
 import com.android.support.Global;
@@ -323,7 +326,35 @@ public class EMSDeviceDriver {
 
     }
 
-    protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory) {
+    private void printGeniusSection(EMVContainer emvContainer, int lineWidth) {
+        if (emvContainer.getGeniusResponse() != null) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
+                    emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
+                    emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
+            if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
+                    emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name()) ||
+                    emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase("EMVCo")) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_exp_date),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getCardInformation().getCardExpiryDate(), lineWidth, 0));
+            }
+            if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name())) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram_type),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogramType(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogram(), lineWidth, 0));
+            }
+            if (!emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement().isEmpty()) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.pin_statement),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement(), lineWidth, 0));
+            }
+            sb.append("\n\n");
+            print(sb.toString());
+        }
+    }
+
+    protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
@@ -344,7 +375,7 @@ public class EMSDeviceDriver {
             printImage(0);
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-
+            printGeniusSection(emvContainer, lineWidth);
             if (anOrder.isVoid.equals("1"))
                 sb.append(textHandler.centeredString("*** VOID ***", lineWidth)).append("\n\n");
 
@@ -686,7 +717,7 @@ public class EMSDeviceDriver {
     private void printEnablerWebSite(int lineWidth) {
         StringBuilder sb = new StringBuilder();
         sb.setLength(0);
-        sb.append(textHandler.centeredString(getString(R.string.enabler_website)+"\n\n\n", lineWidth));
+        sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n\n", lineWidth));
         print(sb.toString());
     }
 

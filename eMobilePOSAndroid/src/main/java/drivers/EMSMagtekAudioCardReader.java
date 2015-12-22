@@ -13,7 +13,9 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -471,7 +473,12 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
 		}
 	}
-	
+
+
+	@Override
+	public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+		return true;
+	}
 
 	@Override
 	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
