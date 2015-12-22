@@ -546,7 +546,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.btnReturn:
                 OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
                 OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem,
-                        "Return");
+                        getString(R.string.return_title));
                 break;
             case R.id.btnScrollLeft:
                 btnScrollLeft.setVisibility(View.GONE);

@@ -44,6 +44,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.Product;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
@@ -119,8 +120,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private ProgressDialog myProgressDialog;
     private CreditCardInfo cardInfoManager;
     private Button btnCheckout;
-    private Global.TransactionType mTransType = null;
+    public static Global.TransactionType mTransType = null;
     public static boolean returnItem = false;
+    private Bundle extras;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,7 +140,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         btnCheckout.setOnClickListener(this);
 
         myPref = new MyPreferences(this);
-
+        extras = getIntent().getExtras();
+        mTransType = (Global.TransactionType) extras.get("option_number");
+        returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.getIsTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -183,9 +187,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private void setupTitle() {
-        Bundle extras = getIntent().getExtras();
         headerTitle = (TextView) findViewById(R.id.headerTitle);
-        mTransType = (Global.TransactionType) extras.get("option_number");
+
         headerContainer = (RelativeLayout) findViewById(R.id.headerTitleContainer);
         if (myPref.isCustSelected()) {
 
@@ -199,7 +202,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     break;
                 }
                 case RETURN: {
-                    headerTitle.setText(R.string.return_tag);
+                    setReturnConfiguration(R.string.return_title);
                     break;
                 }
                 case INVOICE: {
@@ -232,7 +235,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                             headerTitle.setText(R.string.consignment_stacked);
                             break;
                         case CONSIGNMENT_RETURN:
-                            headerTitle.setText(R.string.consignment_returned);
+                            setReturnConfiguration(R.string.consignment_returned);
                             break;
                         case CONSIGNMENT_FILLUP:
                             headerTitle.setText(R.string.consignment_filledup);
@@ -259,7 +262,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     break;
                 }
                 case RETURN: {
-                    headerTitle.setText(R.string.sales_receipt);
+                    setReturnConfiguration(R.string.return_title);
                     break;
                 }
                 case LOCATION:// Inventory Transfer
@@ -273,15 +276,21 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private static RelativeLayout headerContainer;
 
     public static void switchHeaderTitle(boolean newTitle, String title) {
-        if (newTitle) {
+        if (mTransType == Global.TransactionType.RETURN || newTitle) {
             savedHeaderTitle = headerTitle.getText().toString();
             headerTitle.setText(title);
             headerContainer.setBackgroundColor(Color.RED);
 
         } else {
             headerTitle.setText(savedHeaderTitle);
-            headerContainer.setBackgroundColor(Color.BLACK);
+            headerContainer.setBackgroundResource(R.drawable.blue_gradient_header_horizontal);
         }
+    }
+
+    private void setReturnConfiguration(int titleResId) {
+        headerTitle.setText(getString(titleResId));
+        headerContainer.setBackgroundColor(Color.RED);
+        OrderingMain_FA.returnItem = true;
     }
 
     private void handleFragments() {
@@ -589,22 +598,22 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     Global.rewardCardInfo = cardInfoManager;
                 swiperField.setText(cardInfoManager.getCardNumUnencrypted());
             } else {
-                String[] listData = handler.getUPCProducts(data);
+                Product product = handler.getUPCProducts(data);
 
-                if (listData[0] != null) {
+                if (product.getId() != null) {
 
                     if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                        if (validAutomaticAddQty(listData)) {
+                        if (validAutomaticAddQty(product)) {
                             if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                int foundPosition = global.checkIfGroupBySKU(this, listData[0], "1");
+                                int foundPosition = global.checkIfGroupBySKU(this,product.getId(), "1");
                                 if (foundPosition != -1) // product already
                                 // exist in list
                                 {
-                                    global.refreshParticularOrder(myPref, foundPosition, listData);
+                                    global.refreshParticularOrder(myPref, foundPosition, product);
                                 } else
-                                    Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
+                                    Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                             } else
-                                Catalog_FR.instance.automaticAddOrder(listData);
+                                Catalog_FR.instance.automaticAddOrder(product);
                             refreshView();
                         } else {
                             Global.showPrompt(activity, R.string.dlog_title_error,
@@ -690,28 +699,28 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
-                    if(Global.mainPrinterManager!=null && Global.mainPrinterManager.currentDevice!=null){
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                         Global.mainPrinterManager.currentDevice.playSound();
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
                     upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    String[] listData = handler.getUPCProducts(upc);
-                    if (listData[0] != null) {
+                    Product product= handler.getUPCProducts(upc);
+                    if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                            if (validAutomaticAddQty(listData)) {
+                            if (validAutomaticAddQty(product)) {
                                 if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                    int foundPosition = global.checkIfGroupBySKU(activity, listData[0], "1");
+                                    int foundPosition = global.checkIfGroupBySKU(activity, product.getId(), "1");
                                     if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
                                     // already
                                     // exist
                                     // in
                                     // list
                                     {
-                                        global.refreshParticularOrder(myPref, foundPosition, listData);
+                                        global.refreshParticularOrder(myPref, foundPosition, product);
                                     } else
-                                        Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
+                                        Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                                 } else
-                                    Catalog_FR.instance.automaticAddOrder(listData);
+                                    Catalog_FR.instance.automaticAddOrder(product);
                                 refreshView();
                                 if (OrderingMain_FA.returnItem) {
                                     OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
@@ -833,22 +842,22 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     private void scanAddItem(String upc) {
         ProductsHandler handler = new ProductsHandler(this);
-        String[] listData = handler.getUPCProducts(upc);
+        Product product = handler.getUPCProducts(upc);
         // SoundManager.playSound(1, 1);
-        if (listData[0] != null) {
+        if (product.getId() != null) {
 
             if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                if (validAutomaticAddQty(listData)) {
+                if (validAutomaticAddQty(product)) {
                     if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                        int foundPosition = global.checkIfGroupBySKU(this, listData[0], "1");
+                        int foundPosition = global.checkIfGroupBySKU(this, product.getId(), "1");
                         if (foundPosition != -1) // product already exist in
                         // list
                         {
-                            global.refreshParticularOrder(myPref, foundPosition, listData);
+                            global.refreshParticularOrder(myPref, foundPosition, product);
                         } else
-                            Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
+                            Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                     } else
-                        Catalog_FR.instance.automaticAddOrder(listData);
+                        Catalog_FR.instance.automaticAddOrder(product);
                     refreshView();
                 } else {
                     Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.limit_onhand));
@@ -860,15 +869,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    public boolean validAutomaticAddQty(String[] listData) {
-        String addedQty = global.qtyCounter.get(listData[0]) == null ? "0" : global.qtyCounter.get(listData[0]);
+    public boolean validAutomaticAddQty(Product product) {
+        String addedQty = global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
         double newQty = Double.parseDouble(addedQty) + 1;
-        double onHandQty = Double.parseDouble(listData[4]);
-        if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !listData[7].equals("Service")
+        double onHandQty = Double.parseDouble(product.getProdOnHand());
+        if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
                 && (((Global.ord_type == Global.OrderType.SALES_RECEIPT || Global.ord_type == Global.OrderType.INVOICE)
                 && (newQty > onHandQty))))
-                || (Global.isConsignment && !listData[7].equals("Service")
-                && !validConsignment(newQty, onHandQty, listData[0]))) {
+                || (Global.isConsignment && !product.getProdType().equals("Service")
+                && !validConsignment(newQty, onHandQty, product.getId()))) {
             return false;
         } else {
             return true;

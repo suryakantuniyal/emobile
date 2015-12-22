@@ -124,7 +124,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
-            typeOfProcedure = extras.getInt("typeOfProcedure");
+            typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
         }
         orderType = (Global.OrderType) extras.get("ord_type");
         paymentHandlerDB = new PaymentsHandler(this);
@@ -643,8 +643,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, Global.OrderType.getByCode(typeOfProcedure),
-                            wasReprint, false);
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, orderType, wasReprint, false);
             }
             return null;
         }
