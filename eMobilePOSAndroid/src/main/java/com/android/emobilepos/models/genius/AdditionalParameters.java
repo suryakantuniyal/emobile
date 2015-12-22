@@ -6,6 +6,7 @@ package com.android.emobilepos.models.genius;
 public class AdditionalParameters {
     private String SignatureData;
     private AmountDetails AmountDetails;
+    EMV EMV;
 
 
     public String getSignatureData() {

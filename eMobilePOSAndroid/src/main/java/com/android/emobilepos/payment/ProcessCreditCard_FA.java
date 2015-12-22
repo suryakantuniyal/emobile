@@ -432,46 +432,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         };
     }
 
-//    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
-//
-//        return new TextWatcher() {
-//            boolean doneScanning = false;
-//            String temp;
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if (doneScanning) {
-//                    doneScanning = false;
-//                    String data = hiddenField.getText().toString().replace("\n", "");
-//                    hiddenField.setText("");
-//                    // if(Global.isEncryptSwipe)
-//                    // cardInfoManager = EMSUniMagDriver.parseCardData(activity,
-//                    // data);
-//                    // else
-//                    // cardInfoManager = Global.parseSimpleMSR(activity, data);
-//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-//                    updateViewAfterSwipe();
-//                }
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                // TODO Auto-generated method stub
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                // TODO Auto-generated method stub
-//                temp = s.toString();
-//                if (temp.contains("\n") && temp.split("\n").length >= 2
-//                        && temp.substring(temp.length() - 1).contains("\n")) {
-//                    doneScanning = true;
-//                }
-//
-//            }
-//        };
-//    }
-
     @SuppressWarnings("deprecation")
     private void setUpCardReader() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);

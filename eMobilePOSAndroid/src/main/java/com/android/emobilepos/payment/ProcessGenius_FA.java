@@ -28,11 +28,13 @@ import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.genius.GeniusResponse;
+import com.android.emobilepos.models.genius.GeniusTransportToken;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXGetGeniusHandler;
 import com.android.saxhandler.SAXProcessGeniusHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.gson.Gson;
@@ -107,11 +109,17 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             isRefund = true;
 
         invJobView.setText(inv_id);
-        amountView.setText(extras.getString("amount"));
+        amountView.setText(
+                Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         amountView.addTextChangedListener(getTextWatcher(amountView));
-//      move the amount cursor to the right of the default value
-        Selection.setSelection(amountView.getText(), amountView.getText().length());
-
+        amountView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    Selection.setSelection(amountView.getText(), amountView.getText().length());
+                }
+            }
+        });
         hasBeenCreated = true;
 
     }
@@ -176,8 +184,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         payment.pay_expmonth = "0";// dummy
         payment.pay_expyear = "2000";// dummy
         payment.pay_tip = "0.00";
-        payment.pay_dueamount = amountView.getText().toString();
-        payment.pay_amount = amountView.getText().toString();
+        payment.pay_dueamount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());
+        payment.pay_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());
         payment.originalTotalAmount = "0";
 
 
@@ -195,10 +203,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         new processLivePaymentAsync().execute(generatedURL);
     }
 
-    private class processLivePaymentAsync extends AsyncTask<String, String, String> {
+    private class processLivePaymentAsync extends AsyncTask<String, String, GeniusResponse> {
 
-        private List<String[]> returnedPost;
-        private List<String[]> returnedGenius;
         private boolean boProcessed = false;
         private boolean geniusConnected = false;
         private String temp = "";
@@ -214,9 +220,10 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected GeniusResponse doInBackground(String... params) {
             // TODO Auto-generated method stub
-            Gson gson=new Gson();
+            Gson gson = new Gson();
+            GeniusResponse geniusResponse = null;
             if (pingGeniusDevice()) {
                 geniusConnected = true;
                 Post post = new Post();
@@ -232,25 +239,25 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     XMLReader xr = sp.getXMLReader();
                     xr.setContentHandler(handler);
                     xr.parse(inSource);
-                    returnedPost = handler.getEmpData();
+                    GeniusTransportToken geniusTransportToken = handler.getGeniusTransportToken();
 
-                    if (returnedPost != null && getData("statusCode", 0, 0).equals("APPROVED")) {
+                    if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
 
                         boProcessed = true;
                         MyPreferences myPref = new MyPreferences(activity);
                         StringBuilder sb = new StringBuilder();
-                        sb.append("http://").append(myPref.getGeniusIP()).append(":8080/v2/pos?TransportKey=").append(getData("TransportKey", 0, 0));
+                        sb.append("http://").append(myPref.getGeniusIP()).append(":8080/v2/pos?TransportKey=").append(geniusTransportToken.getTransportkey());
                         sb.append("&Format=JSON");
                         xml = post.postData(11, activity, sb.toString());
-                        gson.fromJson(xml, GeniusResponse.class);
-                        inSource = new InputSource(new StringReader(xml));
-                        SAXGetGeniusHandler getGenius = new SAXGetGeniusHandler(activity);
-                        sp = spf.newSAXParser();
-                        xr = sp.getXMLReader();
-                        xr.setContentHandler(getGenius);
-                        xr.parse(inSource);
+                        geniusResponse = gson.fromJson(xml, GeniusResponse.class);
+//                        inSource = new InputSource(new StringReader(xml));
+//                        SAXGetGeniusHandler getGenius = new SAXGetGeniusHandler(activity);
+//                        sp = spf.newSAXParser();
+//                        xr = sp.getXMLReader();
+//                        xr.setContentHandler(getGenius);
+//                        xr.parse(inSource);
 
-                        returnedGenius = getGenius.getEmpData();
+//                        returnedGenius = getGenius.getEmpData();
                     }
 
                 } catch (Exception e) {
@@ -258,27 +265,27 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 }
 
             }
-            return null;
+            return geniusResponse;
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(GeniusResponse response) {
             myProgressDialog.dismiss();
 
             if (!geniusConnected) {
                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.failed_genius_connectivity));
             } else if (!boProcessed) {
                 Global.showPrompt(activity, R.string.dlog_title_error, temp);
-            } else if (returnedGenius != null && returnedGenius.size() > 0 && getData("Status", 0, 1).equals("APPROVED")) {
-                payment.pay_transid = getData("Token", 0, 1);
-                payment.authcode = getData("AuthorizationCode", 0, 1);
-                payment.ccnum_last4 = getData("AccountNumber", 0, 1).replace("*", "").trim();
-                payment.pay_name = getData("Cardholder", 0, 1);
-                payment.pay_date = getData("TransactionDate", 0, 1);
-                String signa = getData("SignatureData", 0, 1);
+            } else if (response != null && response.getStatus().equals("APPROVED")) {
+                payment.pay_transid = response.getToken();//getData("Token", 0, 1);
+                payment.authcode = response.getAuthorizationCode();//getData("AuthorizationCode", 0, 1);
+                payment.ccnum_last4 = response.getAccountNumber();//getData("AccountNumber", 0, 1).replace("*", "").trim();
+                payment.pay_name = response.getCardholder();// getData("Cardholder", 0, 1);
+                payment.pay_date = response.getTransactionDate();// getData("TransactionDate", 0, 1);
+                String signa = response.getAdditionalParameters().getSignatureData();// getData("SignatureData", 0, 1);
                 if (signa.contains("^"))
                     parseSignature(signa);
-                payment.card_type = payMethodDictionary(getData("PaymentType", 0, 1));
+                payment.card_type = payMethodDictionary(response.getPaymentType());// getData("PaymentType", 0, 1));
                 payment.processed = "1";
                 //PayMethodsHandler payMethodsHandler = new PayMethodsHandler(activity);
                 payment.paymethod_id = "Genius";
@@ -286,7 +293,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
                 payHandler.insert(payment);
                 //setResult(-1);
-                String paid_amount = Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());//Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 Intent result = new Intent();
                 result.putExtra("total_amount", paid_amount);
                 Global.amountPaid = paid_amount;
@@ -297,7 +304,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 else
                     finish();
             } else {
-                Global.showPrompt(activity, R.string.dlog_title_error, getData("Status", 0, 1));
+                Global.showPrompt(activity, R.string.dlog_title_error, response.getStatus());
             }
 
 
@@ -401,22 +408,22 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         }
 
 
-        private String getData(String tag, int record, int type) {
-            Global global = (Global) getApplication();
-            Integer i = global.dictionary.get(record).get(tag);
-            if (i != null) {
-                switch (type) {
-                    case 0:
-                        return returnedPost.get(record)[i];
-                    case 1: {
-                        if (i > 13)
-                            i = i - 1;
-                        return returnedGenius.get(record)[i];
-                    }
-                }
-            }
-            return "";
-        }
+//        private String getData(String tag, int record, int type) {
+//            Global global = (Global) getApplication();
+//            Integer i = global.dictionary.get(record).get(tag);
+//            if (i != null) {
+//                switch (type) {
+//                    case 0:
+//                        return returnedPost.get(record)[i];
+//                    case 1: {
+//                        if (i > 13)
+//                            i = i - 1;
+//                        return returnedGenius.get(record)[i];
+//                    }
+//                }
+//            }
+//            return "";
+//        }
 
         private String payMethodDictionary(String value) {
             Limiters test = Limiters.toLimit(value);
