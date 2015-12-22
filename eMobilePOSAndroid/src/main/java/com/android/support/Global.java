@@ -35,6 +35,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Product;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -1076,7 +1077,7 @@ public class Global extends MultiDexApplication {
         return orderIndex;
     }
 
-    public void refreshParticularOrder(MyPreferences myPref, int position, String[] data) {
+    public void refreshParticularOrder(MyPreferences myPref, int position, Product product) {
         OrderProducts orderedProducts = this.orderProducts.get(position);
 
         String newPickedOrders = orderedProducts.ordprod_qty;
@@ -1087,7 +1088,7 @@ public class Global extends MultiDexApplication {
         else
             sum = Integer.parseInt(newPickedOrders);
 
-        String prLevTotal = data[2];// orderedProducts.getSetData("overwrite_price",
+        String prLevTotal = product.getPriceLevelPrice();// orderedProducts.getSetData("overwrite_price",
         // true, null);
 
         double total = 0;// = sum*Double.parseDouble(prLevTotal);
@@ -1117,16 +1118,16 @@ public class Global extends MultiDexApplication {
 
         if (myPref.isSam4s(true, true)) {
             StringBuilder sb = new StringBuilder();
-            String row1 = data[1];
-            String row2 = sb.append(Global.formatDoubleStrToCurrency(data[2])).toString();
+            String row1 = product.getProdName();
+            String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
             uart uart_tool = new uart();
             uart_tool.config(3, 9600, 8, 1);
             uart_tool.write(3, Global.emptySpaces(40, 0, false));
             uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
         } else if (myPref.isPAT100() || myPref.isESY13P1()) {
             StringBuilder sb = new StringBuilder();
-            String row1 = data[1];
-            String row2 = sb.append(Global.formatDoubleStrToCurrency(data[2])).toString();
+            String row1 =product.getProdName();
+            String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 //            EMSPAT100.getTerminalDisp().clearText();
 //            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
@@ -1301,30 +1302,30 @@ public class Global extends MultiDexApplication {
         return cardManager;
     }
 
-    public void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, String[] data) {
+    public void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product) {
         Orders order = new Orders();
         OrderProducts ord = new OrderProducts();
 
         int sum = 0;
-        if (this.qtyCounter.containsKey(data[0]))
-            sum = Integer.parseInt(this.qtyCounter.get(data[0]));
+        if (this.qtyCounter.containsKey(product.getId()))
+            sum = Integer.parseInt(this.qtyCounter.get(product.getId()));
 
         if (!OrderingMain_FA.returnItem)
-            global.qtyCounter.put(data[0], Integer.toString(sum + 1));
+            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
         else
-            global.qtyCounter.put(data[0], Integer.toString(sum - 1));
+            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
         if (OrderingMain_FA.returnItem)
             ord.isReturned = true;
 
-        order.setName(data[1]);
-        order.setValue(data[2]);
-        order.setProdID(data[0]);
+        order.setName(product.getProdName());
+        order.setValue(product.getProdPrice());
+        order.setProdID(product.getId());
         order.setDiscount("0.00");
         order.setTax("0.00");
         order.setDistQty("0");
         order.setTaxQty("0");
 
-        String val = data[2];
+        String val = product.getProdPrice();
         if (val.isEmpty() || val == null)
             val = "0.00";
 
@@ -1343,22 +1344,22 @@ public class Global extends MultiDexApplication {
         DecimalFormat frmt = new DecimalFormat("0.00");
         order.setTotal(frmt.format(total));
 
-        ord.prod_istaxable = data[6];
-        ord.prod_taxtype = data[11];
-        ord.prod_taxcode = data[12];
+        ord.prod_istaxable = product.getProdIstaxable();
+        ord.prod_taxtype = product.getProdTaxType();
+        ord.prod_taxcode = product.getProdTaxCode();
 
         // add order to db
         ord.ordprod_qty = OrderingMain_FA.returnItem ? "-1" : "1";
-        ord.ordprod_name = data[1];
-        ord.ordprod_desc = data[3];
-        ord.prod_id = data[0];
+        ord.ordprod_name = product.getProdName();
+        ord.ordprod_desc = product.getProdDesc();
+        ord.prod_id = product.getId();
 
-        ord.onHand = data[4];
-        ord.imgURL = data[5];
-        ord.cat_id = data[8];
+        ord.onHand = product.getProdOnHand();
+        ord.imgURL = product.getProdImgName();
+        ord.cat_id = product.getCatId();
         try {
-            ord.prod_price_points = data[9];
-            ord.prod_value_points = data[10];
+            ord.prod_price_points = product.getProdPricePoints();
+            ord.prod_value_points = product.getProdValuePoints();
         } catch (Exception e) {
 
         }
@@ -1443,7 +1444,7 @@ public class Global extends MultiDexApplication {
             }
         }
         String row1 = ord.ordprod_name;
-        String row2 = Global.formatDoubleStrToCurrency(data[2]);
+        String row2 = Global.formatDoubleStrToCurrency(product.getProdPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         global.orderProducts.add(ord);
     }

@@ -44,6 +44,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.Product;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
@@ -597,22 +598,22 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     Global.rewardCardInfo = cardInfoManager;
                 swiperField.setText(cardInfoManager.getCardNumUnencrypted());
             } else {
-                String[] listData = handler.getUPCProducts(data);
+                Product product = handler.getUPCProducts(data);
 
-                if (listData[0] != null) {
+                if (product.getId() != null) {
 
                     if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                        if (validAutomaticAddQty(listData)) {
+                        if (validAutomaticAddQty(product)) {
                             if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                int foundPosition = global.checkIfGroupBySKU(this, listData[0], "1");
+                                int foundPosition = global.checkIfGroupBySKU(this,product.getId(), "1");
                                 if (foundPosition != -1) // product already
                                 // exist in list
                                 {
-                                    global.refreshParticularOrder(myPref, foundPosition, listData);
+                                    global.refreshParticularOrder(myPref, foundPosition, product);
                                 } else
-                                    Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
+                                    Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                             } else
-                                Catalog_FR.instance.automaticAddOrder(listData);
+                                Catalog_FR.instance.automaticAddOrder(product);
                             refreshView();
                         } else {
                             Global.showPrompt(activity, R.string.dlog_title_error,
@@ -703,23 +704,23 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
                     upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    String[] listData = handler.getUPCProducts(upc);
-                    if (listData[0] != null) {
+                    Product product= handler.getUPCProducts(upc);
+                    if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                            if (validAutomaticAddQty(listData)) {
+                            if (validAutomaticAddQty(product)) {
                                 if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                    int foundPosition = global.checkIfGroupBySKU(activity, listData[0], "1");
+                                    int foundPosition = global.checkIfGroupBySKU(activity, product.getId(), "1");
                                     if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
                                     // already
                                     // exist
                                     // in
                                     // list
                                     {
-                                        global.refreshParticularOrder(myPref, foundPosition, listData);
+                                        global.refreshParticularOrder(myPref, foundPosition, product);
                                     } else
-                                        Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
+                                        Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                                 } else
-                                    Catalog_FR.instance.automaticAddOrder(listData);
+                                    Catalog_FR.instance.automaticAddOrder(product);
                                 refreshView();
                                 if (OrderingMain_FA.returnItem) {
                                     OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
@@ -841,22 +842,22 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     private void scanAddItem(String upc) {
         ProductsHandler handler = new ProductsHandler(this);
-        String[] listData = handler.getUPCProducts(upc);
+        Product product = handler.getUPCProducts(upc);
         // SoundManager.playSound(1, 1);
-        if (listData[0] != null) {
+        if (product.getId() != null) {
 
             if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
-                if (validAutomaticAddQty(listData)) {
+                if (validAutomaticAddQty(product)) {
                     if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                        int foundPosition = global.checkIfGroupBySKU(this, listData[0], "1");
+                        int foundPosition = global.checkIfGroupBySKU(this, product.getId(), "1");
                         if (foundPosition != -1) // product already exist in
                         // list
                         {
-                            global.refreshParticularOrder(myPref, foundPosition, listData);
+                            global.refreshParticularOrder(myPref, foundPosition, product);
                         } else
-                            Catalog_FR.instance.automaticAddOrder(listData);// temp.automaticAddOrder(listData);
+                            Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                     } else
-                        Catalog_FR.instance.automaticAddOrder(listData);
+                        Catalog_FR.instance.automaticAddOrder(product);
                     refreshView();
                 } else {
                     Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.limit_onhand));
@@ -868,15 +869,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    public boolean validAutomaticAddQty(String[] listData) {
-        String addedQty = global.qtyCounter.get(listData[0]) == null ? "0" : global.qtyCounter.get(listData[0]);
+    public boolean validAutomaticAddQty(Product product) {
+        String addedQty = global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
         double newQty = Double.parseDouble(addedQty) + 1;
-        double onHandQty = Double.parseDouble(listData[4]);
-        if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !listData[7].equals("Service")
+        double onHandQty = Double.parseDouble(product.getProdOnHand());
+        if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
                 && (((Global.ord_type == Global.OrderType.SALES_RECEIPT || Global.ord_type == Global.OrderType.INVOICE)
                 && (newQty > onHandQty))))
-                || (Global.isConsignment && !listData[7].equals("Service")
-                && !validConsignment(newQty, onHandQty, listData[0]))) {
+                || (Global.isConsignment && !product.getProdType().equals("Service")
+                && !validConsignment(newQty, onHandQty, product.getId()))) {
             return false;
         } else {
             return true;

@@ -45,6 +45,7 @@ import com.android.database.CategoriesHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.Product;
 import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyEditText;
@@ -571,27 +572,27 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
     }
 
-    public void automaticAddOrder(String[] data) {
+    public void automaticAddOrder(Product product) {
 
 
-        global.automaticAddOrder(getActivity(), false, global, data);
+        global.automaticAddOrder(getActivity(), false, global, product);
         refreshListView();
         callBackRefreshView.refreshView();
     }
 
 
-    public String[] populateDataForIntent(Cursor c) {
-        String[] data = new String[13];
-        data[0] = c.getString(myCursor.getColumnIndex("_id"));
+    public Product populateDataForIntent(Cursor c) {
+        Product product = new Product();
+        product.setId(c.getString(myCursor.getColumnIndex("_id")));
 
         String val = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
 
         if (val.equals("prod_desc"))
-            data[1] = c.getString(c.getColumnIndex("prod_desc"));
+            product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
         else if (val.equals("prod_name"))
-            data[1] = c.getString(c.getColumnIndex("prod_name"));
+            product.setProdName(c.getString(c.getColumnIndex("prod_name")));
         else
-            data[1] = c.getString(c.getColumnIndex("prod_extradesc"));
+            product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
 
 
         String tempPrice = c.getString(c.getColumnIndex("volume_price"));
@@ -603,17 +604,17 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 if (tempPrice == null || tempPrice.isEmpty())
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
             }
-        } else if (global.qtyCounter.containsKey(data[0])) {
-            BigDecimal origQty = new BigDecimal(global.qtyCounter.get(data[0]));
+        } else if (global.qtyCounter.containsKey(product.getId())) {
+            BigDecimal origQty = new BigDecimal(global.qtyCounter.get(product.getId()));
             BigDecimal newQty = origQty.add(Global.getBigDecimalNum("1"));
             //String [] temp = volPriceHandler.getVolumePrice(global.qtyCounter.get(data[0]),data[0]);
-            String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), data[0]);
+            String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), product.getId());
             if (temp[1] != null && !temp[1].isEmpty())
                 tempPrice = temp[1];
         }
 
-        data[2] = tempPrice;
-        data[3] = c.getString(c.getColumnIndex("prod_desc"));
+        product.setProdPrice(tempPrice);
+        product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
 
         tempPrice = new String();
         tempPrice = c.getString(c.getColumnIndex("local_prod_onhand"));
@@ -621,67 +622,67 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             tempPrice = c.getString(c.getColumnIndex("master_prod_onhand"));
         if (tempPrice.isEmpty())
             tempPrice = "0";
-        data[4] = tempPrice;
+        product.setProdOnHand(tempPrice);
         if (Global.isInventoryTransfer) {
             tempPrice = c.getString(c.getColumnIndex("location_qty"));
             if (tempPrice == null || tempPrice.isEmpty())
                 tempPrice = "0";
-            data[4] = tempPrice;
+            product.setProdOnHand(tempPrice);
         }
 
-        data[5] = c.getString(c.getColumnIndex("prod_img_name"));
-        data[6] = c.getString(c.getColumnIndex("prod_istaxable"));
-        data[7] = c.getString(c.getColumnIndex("prod_type"));
-        data[8] = c.getString(c.getColumnIndex("cat_id"));
-        data[9] = c.getString(c.getColumnIndex("prod_price_points"));
-        if (data[9] == null || data[9].isEmpty())
-            data[9] = "0";
-        data[10] = c.getString(c.getColumnIndex("prod_value_points"));
-        if (data[10] == null || data[10].isEmpty())
-            data[10] = "0";
+        product.setProdImgName(c.getString(c.getColumnIndex("prod_img_name")));
+        product.setProdIstaxable(c.getString(c.getColumnIndex("prod_istaxable")));
+        product.setProdType(c.getString(c.getColumnIndex("prod_type")));
+        product.setCatId(c.getString(c.getColumnIndex("cat_id")));
+        product.setProdPricePoints(c.getString(c.getColumnIndex("prod_price_points")));
+        if (product.getProdPricePoints() == null || product.getProdPricePoints().isEmpty())
+            product.setProdPricePoints("0");
+        product.setProdValuePoints(c.getString(c.getColumnIndex("prod_value_points")));
+        if (product.getProdValuePoints() == null || product.getProdValuePoints().isEmpty())
+            product.setProdValuePoints("0");
 
-        data[11] = c.getString(c.getColumnIndex("prod_taxtype"));
-        data[12] = c.getString(c.getColumnIndex("prod_taxcode"));
-        return data;
+        product.setProdTaxType(c.getString(c.getColumnIndex("prod_taxtype")));
+        product.setProdTaxCode(c.getString(c.getColumnIndex("prod_taxcode")));
+        return product;
     }
 
     private void performClickEvent() {
-        String[] data = populateDataForIntent(myCursor);
+        Product product = populateDataForIntent(myCursor);
 
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
-            intent.putExtra("prod_id", data[0]);
-            intent.putExtra("prod_name", data[1]);
-            intent.putExtra("prod_on_hand", data[4]);
-            intent.putExtra("prod_price", data[2]);
-            intent.putExtra("prod_desc", data[3]);
-            intent.putExtra("url", data[5]);
-            intent.putExtra("prod_istaxable", data[6]);
-            intent.putExtra("prod_type", data[7]);
-            intent.putExtra("prod_taxcode", data[12]);
-            intent.putExtra("prod_taxtype", data[11]);
-            intent.putExtra("cat_id", myCursor.getString(myCursor.getColumnIndex("cat_id")));
-            intent.putExtra("prod_price_points", data[9]);
-            intent.putExtra("prod_value_points", data[10]);
+            intent.putExtra("prod_id", product.getId());
+            intent.putExtra("prod_name", product.getProdName());
+            intent.putExtra("prod_on_hand", product.getProdOnHand());
+            intent.putExtra("prod_price", product.getProdPrice());
+            intent.putExtra("prod_desc", product.getProdDesc());
+            intent.putExtra("url", product.getProdImgName());
+            intent.putExtra("prod_istaxable", product.getProdIstaxable());
+            intent.putExtra("prod_type", product.getProdType());
+            intent.putExtra("prod_taxcode", product.getProdTaxCode());
+            intent.putExtra("prod_taxtype", product.getProdTaxType());
+            intent.putExtra("cat_id", product.getCatId());
+            intent.putExtra("prod_price_points", product.getProdPricePoints());
+            intent.putExtra("prod_value_points", product.getProdValuePoints());
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
 
             startActivityForResult(intent, 0);
         } else {
-            if (!OrderingMain_FA.instance.validAutomaticAddQty(data)) {
+            if (!OrderingMain_FA.instance.validAutomaticAddQty(product)) {
                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.limit_onhand));
             } else {
                 if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                    int orderIndex = global.checkIfGroupBySKU(getActivity(), data[0], "1");
+                    int orderIndex = global.checkIfGroupBySKU(getActivity(), product.getId(), "1");
                     if (orderIndex != -1 && !OrderingMain_FA.returnItem) {
-                        global.refreshParticularOrder(myPref, orderIndex, data);
+                        global.refreshParticularOrder(myPref, orderIndex, product);
                         refreshListView();
                         callBackRefreshView.refreshView();
                     } else
-                        automaticAddOrder(data);
+                        automaticAddOrder(product);
                 } else
-                    automaticAddOrder(data);
+                    automaticAddOrder(product);
 
             }
 
@@ -722,21 +723,21 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
 
 
-                String data[] = populateDataForIntent(myCursor);
-                intent.putExtra("prod_id", data[0]);
-                intent.putExtra("prod_name", data[1]);
-                intent.putExtra("prod_on_hand", data[4]);
-                intent.putExtra("prod_price", data[2]);
-                intent.putExtra("prod_desc", data[3]);
-                intent.putExtra("url", data[5]);
-                intent.putExtra("prod_istaxable", data[6]);
-                intent.putExtra("prod_type", data[7]);
-                intent.putExtra("prod_taxcode", data[12]);
-                intent.putExtra("prod_taxtype", data[11]);
-                intent.putExtra("cat_id", myCursor.getString(myCursor.getColumnIndex("cat_id")));
+                Product product = populateDataForIntent(myCursor);
+                intent.putExtra("prod_id", product.getId());
+                intent.putExtra("prod_name", product.getProdName());
+                intent.putExtra("prod_on_hand", product.getProdOnHand());
+                intent.putExtra("prod_price", product.getProdPrice());
+                intent.putExtra("prod_desc", product.getProdDesc());
+                intent.putExtra("url", product.getProdImgName());
+                intent.putExtra("prod_istaxable", product.getProdIstaxable());
+                intent.putExtra("prod_type", product.getProdType());
+                intent.putExtra("prod_taxcode", product.getProdTaxCode());
+                intent.putExtra("prod_taxtype", product.getProdTaxType());
+                intent.putExtra("cat_id", product.getCatId());
 
-                intent.putExtra("prod_price_points", data[9]);
-                intent.putExtra("prod_value_points", data[10]);
+                intent.putExtra("prod_price_points", product.getProdPricePoints());
+                intent.putExtra("prod_value_points", product.getProdValuePoints());
 
                 Global.productParentAddons = tempListMap;
 
@@ -772,21 +773,21 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
-                    String data[] = populateDataForIntent(myCursor);
-                    intent.putExtra("prod_id", data[0]);
-                    intent.putExtra("prod_name", data[1]);
-                    intent.putExtra("prod_on_hand", data[4]);
-                    intent.putExtra("prod_price", data[2]);
-                    intent.putExtra("prod_desc", data[3]);
-                    intent.putExtra("url", data[5]);
-                    intent.putExtra("prod_istaxable", data[6]);
-                    intent.putExtra("prod_type", data[7]);
-                    intent.putExtra("prod_taxcode", data[12]);
-                    intent.putExtra("prod_taxtype", data[11]);
-                    intent.putExtra("cat_id", myCursor.getString(myCursor.getColumnIndex("cat_id")));
+                    Product product = populateDataForIntent(myCursor);
+                    intent.putExtra("prod_id", product.getId());
+                    intent.putExtra("prod_name", product.getProdName());
+                    intent.putExtra("prod_on_hand", product.getProdOnHand());
+                    intent.putExtra("prod_price", product.getProdPrice());
+                    intent.putExtra("prod_desc", product.getProdDesc());
+                    intent.putExtra("url", product.getProdImgName());
+                    intent.putExtra("prod_istaxable", product.getProdIstaxable());
+                    intent.putExtra("prod_type", product.getProdType());
+                    intent.putExtra("prod_taxcode", product.getProdTaxCode());
+                    intent.putExtra("prod_taxtype", product.getProdType());
+                    intent.putExtra("cat_id", product.getCatId());
 
-                    intent.putExtra("prod_price_points", data[9]);
-                    intent.putExtra("prod_value_points", data[10]);
+                    intent.putExtra("prod_price_points", product.getProdPricePoints());
+                    intent.putExtra("prod_value_points", product.getProdValuePoints());
 
                     Global.productParentAddons = tempListMap;
 
