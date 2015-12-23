@@ -1119,5 +1119,8 @@
 	<string name="cryptogram_type">Cryptogram Type:</string>
 	<string name="cryptogram">Cryptogram:</string>
 	<string name="pin_statement">PIN Statement:</string>
+	<string name="payment_save_declined">Payment was declined.</string>
+	<string name="credit_approval_status">Status:</string>
+	<string name="approved">Approved</string>
 
 </resources>

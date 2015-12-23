@@ -210,12 +210,13 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
 
+
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         try {
             SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
             eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH);
+            super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
             eloPrinterPort.getInputStream().close();
             eloPrinterPort.getOutputStream().close();
             eloPrinterPort.close();

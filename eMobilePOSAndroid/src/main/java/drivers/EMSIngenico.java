@@ -192,10 +192,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint) {
-        // TODO Auto-generated method stub
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         return false;
     }
+
+
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {

@@ -255,72 +255,16 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         return true;
     }
 
-    @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
 
-        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH);
+    @Override
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
         return true;
     }
 
-    // private double formatStrToDouble(String val) {
-    // if (val == null || val.isEmpty())
-    // return 0.00;
-    // return Double.parseDouble(val);
-    // }
 
-    // private void printBambooImage(int type) {
-    // Bitmap myBitmap = null;
-    // switch (type) {
-    // case 0: // Logo
-    // {
-    // File imgFile = new File(myPref.getAccountLogoPath());
-    // if (imgFile.exists()) {
-    // myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-    //
-    // }
-    // break;
-    // }
-    // case 1: // signature
-    // {
-    // if (!encodedSignature.isEmpty()) {
-    // byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
-    // myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-    // }
-    // break;
-    // }
-    // case 2:
-    // if (!encodedQRCode.isEmpty()) {
-    // byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
-    // myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-    // }
-    // break;
-    // }
-    //
-    // if (myBitmap != null) {
-    // EMSBambooImageLoader loader = new EMSBambooImageLoader();
-    // ArrayList<ArrayList<Byte>> arrayListList =
-    // loader.bambooDataWithAlignment(0, myBitmap);
-    //
-    // for (ArrayList<Byte> arrayList : arrayListList) {
-    //
-    // byte[] byteArray = new byte[arrayList.size()];
-    // int size = arrayList.size();
-    // for (int i = 0; i < size; i++) {
-    //
-    // byteArray[i] = arrayList.get(i).byteValue();
-    //
-    // }
-    // try {
-    // Thread.sleep(800);
-    // } catch (InterruptedException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // this.printByteArray(byteArray);
-    // }
-    // }
-    // }
 
     public boolean printOnHold(Object onHold) {
         EMSBambooImageLoader loader = new EMSBambooImageLoader();

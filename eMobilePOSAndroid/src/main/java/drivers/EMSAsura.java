@@ -320,17 +320,11 @@ public class EMSAsura extends EMSDeviceDriver
         return true;
     }
 
-    // private double formatStrToDouble(String val)
-    // {
-    // if(val==null||val.isEmpty())
-    // return 0.00;
-    // return Double.parseDouble(val);
-    // }
+
+
 
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
-        // TODO Auto-generated method stub
-
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         try {
 
             Bitmap textBitmap = null;

@@ -177,21 +177,14 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         return true;
     }
 
-//	private double formatStrToDouble(String val) {
-//		if (val == null || val.isEmpty())
-//			return 0.00;
-//		return Double.parseDouble(val);
-//	}
-//
-//	private String getString(int id) {
-//		return (activity.getResources().getString(id));
-//	}
+
+
 
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         // TODO Auto-generated method stub
 
-        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH);
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
         return true;
     }

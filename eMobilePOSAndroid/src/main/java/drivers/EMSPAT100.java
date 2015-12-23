@@ -159,7 +159,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory,emvContainer);
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
@@ -169,8 +169,10 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         return true;
     }
 
+
+
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         // TODO Auto-generated method stub
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         printPref = myPref.getPrintingPreferences();

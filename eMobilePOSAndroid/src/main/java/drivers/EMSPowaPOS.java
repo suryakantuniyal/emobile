@@ -218,11 +218,12 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         return true;
     }
 
-    @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
-        // TODO Auto-generated method stub
 
-        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH);
+
+    @Override
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
 
         return true;

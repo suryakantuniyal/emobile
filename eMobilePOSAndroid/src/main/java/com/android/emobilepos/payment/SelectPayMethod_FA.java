@@ -640,13 +640,13 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         protected String doInBackground(Object... params) {
             // TODO Auto-generated method stub
 
-            wasReprint = (Boolean)params[0];
+            wasReprint = (Boolean) params[0];
             EMVContainer emvContainer = (EMVContainer) params[1];
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
-                            wasReprint);
+                            wasReprint, emvContainer);
                 else
                     printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, Global.OrderType.getByCode(typeOfProcedure),
                             wasReprint, false, emvContainer);
@@ -937,7 +937,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
-        viewMsg.setText(R.string.payment_saved_successfully);
+        if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
+            if (emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) {
+                viewMsg.setText(R.string.payment_saved_successfully);
+            } else {
+                viewMsg.setText(R.string.payment_save_declined);
+            }
+        } else {
+            viewMsg.setText(R.string.payment_saved_successfully);
+        }
 
         Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
@@ -945,7 +953,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (withPrintRequest) {
                     if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
@@ -971,7 +978,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onDismiss(DialogInterface dialog) {
-                // TODO Auto-generated method stub
                 handler.removeCallbacks(runnable);
             }
         });

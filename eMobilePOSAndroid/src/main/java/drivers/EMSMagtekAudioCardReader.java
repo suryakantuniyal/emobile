@@ -486,12 +486,12 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 		return true;
 	}
 
-
 	@Override
-	public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint) {
-		// TODO Auto-generated method stub
+	public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
 		return true;
 	}
+
+
 
 
 	@Override

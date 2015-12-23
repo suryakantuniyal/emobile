@@ -235,19 +235,11 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
 
-//	private double formatStrToDouble(String val)
-//	{
-//		if(val==null||val.isEmpty())
-//			return 0.00;
-//		return Double.parseDouble(val);
-//	}
-//	
-
 
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         // TODO Auto-generated method stub
-        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH);
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
 
         return true;

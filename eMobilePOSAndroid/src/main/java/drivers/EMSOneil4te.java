@@ -155,7 +155,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
             if (!device.getIsOpen())
                 device.open();
-            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory,emvContainer);
+            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
 
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
@@ -179,8 +179,10 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
 
+
+
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         // TODO Auto-generated method stub
         try {
             if (!device.getIsOpen())

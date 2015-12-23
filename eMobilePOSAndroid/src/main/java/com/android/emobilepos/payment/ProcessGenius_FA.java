@@ -33,6 +33,7 @@ import com.android.emobilepos.models.genius.GeniusTransportToken;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXGetGeniusHandler;
 import com.android.saxhandler.SAXProcessGeniusHandler;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -270,25 +271,29 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.failed_genius_connectivity));
             } else if (!boProcessed) {
                 Global.showPrompt(activity, R.string.dlog_title_error, temp);
-            } else if (response != null && response.getStatus().equals("APPROVED")) {
-                payment.pay_transid = response.getToken();//getData("Token", 0, 1);
-                payment.authcode = response.getAuthorizationCode();//getData("AuthorizationCode", 0, 1);
-                payment.ccnum_last4 = response.getAccountNumber();//getData("AccountNumber", 0, 1).replace("*", "").trim();
-                payment.pay_name = response.getCardholder();// getData("Cardholder", 0, 1);
-                payment.pay_date = response.getTransactionDate();// getData("TransactionDate", 0, 1);
-                String signa = response.getAdditionalParameters().getSignatureData();// getData("SignatureData", 0, 1);
+            } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
+                    response.getStatus().equalsIgnoreCase("DECLINED"))) {
+                payment.pay_transid = response.getToken();
+                payment.authcode = response.getAuthorizationCode();
+                payment.ccnum_last4 = response.getAccountNumber();
+                payment.pay_name = response.getCardholder();
+                payment.pay_date = DateUtils.getDateStringAsString(response.getTransactionDate(), "MM/dd/yyyy HH:mm:ss a");
+                String signa = response.getAdditionalParameters().getSignatureData();
                 if (signa.contains("^"))
                     parseSignature(signa);
-                payment.card_type = payMethodDictionary(response.getPaymentType());// getData("PaymentType", 0, 1));
+                payment.card_type = payMethodDictionary(response.getPaymentType());
                 payment.processed = "1";
-                //PayMethodsHandler payMethodsHandler = new PayMethodsHandler(activity);
                 payment.paymethod_id = "Genius";
-                payment.geniusResponse = response;
+                payment.emvContainer = new EMVContainer(response);
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
-                payHandler.insert(payment);
-                //setResult(-1);
-                EMVContainer emvContainer = new EMVContainer();
-                emvContainer.setGeniusResponse(response);
+                if(response.getStatus().equalsIgnoreCase("APPROVED")) {
+                    payHandler.insert(payment);
+                }else{
+                    payHandler.insertDeclined(payment);
+
+                }
+                EMVContainer emvContainer = new EMVContainer(response);
+
                 String paid_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());//Double.toString(Global.formatNumFromLocale(amountView.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
                 Intent result = new Intent();
                 result.putExtra("total_amount", paid_amount);
@@ -374,7 +379,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 // TODO Auto-generated method stub
 
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, true);
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, true, payment.emvContainer);
                 }
                 return null;
             }

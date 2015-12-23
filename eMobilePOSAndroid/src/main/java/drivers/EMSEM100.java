@@ -71,9 +71,11 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         return false;
     }
+
+
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {

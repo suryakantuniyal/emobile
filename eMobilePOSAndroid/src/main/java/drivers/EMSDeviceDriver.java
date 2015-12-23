@@ -326,11 +326,9 @@ public class EMSDeviceDriver {
 
     }
 
-    private void printGeniusSection(EMVContainer emvContainer, int lineWidth) {
-        if (emvContainer.getGeniusResponse() != null) {
+    private void printEMVSection(EMVContainer emvContainer, int lineWidth) {
+        if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
             StringBuffer sb = new StringBuffer();
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
-                    emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
                     emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
             if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
@@ -375,7 +373,6 @@ public class EMSDeviceDriver {
             printImage(0);
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-            printGeniusSection(emvContainer, lineWidth);
             if (anOrder.isVoid.equals("1"))
                 sb.append(textHandler.centeredString("*** VOID ***", lineWidth)).append("\n\n");
 
@@ -996,15 +993,13 @@ public class EMSDeviceDriver {
     }
 
 
-    protected void printPaymentDetailsReceipt(String payID, int type, boolean isReprint, int lineWidth) {
-        // TODO Auto-generated method stub
+    protected void printPaymentDetailsReceipt(String payID, int type, boolean isReprint, int lineWidth, EMVContainer emvContainer) {
 
         try {
 
 
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             printPref = myPref.getPrintingPreferences();
-
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             PaymentDetails payArray;
             boolean isStoredFwd = false;
@@ -1012,6 +1007,9 @@ public class EMSDeviceDriver {
             if (pay_count == 0) {
                 isStoredFwd = true;
                 StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
+                if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
+                    type = 2;
+                }
                 payArray = dbStoredPay.getPrintingForPaymentDetails(payID, type);
             } else {
                 payArray = payHandler.getPrintingForPaymentDetails(payID, type);
@@ -1035,7 +1033,6 @@ public class EMSDeviceDriver {
 
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-
 //			port.writePort(enableCenter, 0, enableCenter.length); // enable
             // center
 
@@ -1077,6 +1074,15 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
                         payArray.getPay_check(), lineWidth, 0));
             }
+
+            print(sb.toString());
+            sb.setLength(0);
+
+            printEMVSection(emvContainer, lineWidth);
+
+            String status = emvContainer != null && emvContainer.getGeniusResponse() != null ? emvContainer.getGeniusResponse().getStatus() : getString(R.string.approved);
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.credit_approval_status),
+                    status, lineWidth, 0));
 
             sb.append(textHandler.newLines(1));
             if (Global.isIvuLoto && Global.subtotalAmount > 0 && !payArray.getTax1_amount().isEmpty()

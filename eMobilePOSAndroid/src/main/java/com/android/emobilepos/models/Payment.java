@@ -12,11 +12,9 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.annotations.Expose;
 
-public class Payment  {
+public class Payment {
 
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
     private String empstr = "";
@@ -117,12 +115,11 @@ public class Payment  {
     public String is_retry = "0";
     public String payment_xml = "";
 
-    @Expose(deserialize = false, serialize = false)
-    public MyPreferences myPref;
-    public GeniusResponse geniusResponse;
+
+    public EMVContainer emvContainer;
 
     public Payment(Activity activity) {
-        myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(activity);
 
         pay_issync = "0";
         isVoid = "0";
@@ -144,7 +141,7 @@ public class Payment  {
                    String cardExpMonth, String cardExpYear, String cardPostalCode, String cardSecurityCode, String trackOne,
                    String trackTwo, String transactionId, String authcode) {
 
-        myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(activity);
         pay_issync = "0";
         isVoid = "0";
         status = "1";

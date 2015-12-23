@@ -18,7 +18,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
 
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint);
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer);
 
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature);
 

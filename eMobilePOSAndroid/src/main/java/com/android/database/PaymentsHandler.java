@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
@@ -112,6 +113,7 @@ public class PaymentsHandler {
     private Global global;
     private MyPreferences myPref;
     private static final String table_name = "Payments";
+    private static final String table_name_declined = "PaymentsDeclined";
     private Activity activity;
 
     public PaymentsHandler(Activity activity) {
@@ -942,28 +944,42 @@ public class PaymentsHandler {
         // SQLiteDatabase db = dbManager.openReadableDB();
 
         StringBuilder sb = new StringBuilder();
+        switch (type){
+            // May come from History>Payment>Details
+            case 0:{
+                sb.append(
+                        "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
+                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
+                                + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
+                break;
+            }
+            // Straight from main menu 'Payment'
+            case 1:{
+                sb.append(
+                        "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
+                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
+                break;
+            }
+            // Straight from main menu 'Payment & Declined'
+            case 2:{
+                sb.append(
+                        "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
+                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
+                break;
+            }
 
-        if (type == 0) // May come from History>Payment>Details
-        {
-
-            sb.append(
-                    "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
-                            + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
-                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                            + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
-                            + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
-                            + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
-        } else if (type == 1) // Straight from main menu 'Payment'
-        {
-            sb.append(
-                    "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
-                            + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
-                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                            + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
-                            + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
-                            + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
         }
-
         sb.append(payID).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
@@ -1210,5 +1226,98 @@ public class PaymentsHandler {
 
     public static PaymentsHandler getInstance(Activity activity) {
         return new PaymentsHandler(activity);
+    }
+
+    public void insertDeclined(Payment payment) {
+        DBManager._db.beginTransaction();
+        try {
+            SQLiteStatement insert = null;
+            StringBuilder sb = new StringBuilder();
+            sb.append("INSERT INTO ").append(table_name_declined).append(" (").append(sb1.toString()).append(")")
+                    .append("VALUES (").append(sb2.toString()).append(")");
+            insert = DBManager._db.compileStatement(sb.toString());
+            insert.bindString(index(pay_id), payment.pay_id == null ? "" : payment.pay_id); // pay_id
+            insert.bindString(index(group_pay_id), payment.group_pay_id == null ? "" : payment.group_pay_id); // group_pay_id
+            insert.bindString(index(original_pay_id), payment.original_pay_id == null ? "" : payment.original_pay_id); // group_pay_id
+            insert.bindString(index(cust_id), payment.cust_id == null ? "" : payment.cust_id); // cust_id
+            insert.bindString(index(tupyx_user_id), payment.tupyx_user_id == null ? "" : payment.tupyx_user_id);
+            insert.bindString(index(custidkey), payment.custidkey == null ? "" : payment.custidkey); // custidkey
+            insert.bindString(index(emp_id), payment.emp_id == null ? "" : payment.emp_id); // emp_id
+            insert.bindString(index(inv_id), payment.inv_id == null ? "" : payment.inv_id); // inv_id
+            insert.bindString(index(paymethod_id), payment.paymethod_id == null ? "" : payment.paymethod_id); // paymethod_id
+            insert.bindString(index(pay_check), payment.pay_check == null ? "" : payment.pay_check); // pay_check
+            insert.bindString(index(pay_receipt), payment.pay_receipt == null ? "" : payment.pay_receipt); // pay_receipt
+            insert.bindString(index(pay_amount), TextUtils.isEmpty(payment.pay_amount) ? "0" : payment.pay_amount); // pay_amount
+            insert.bindString(index(pay_dueamount),
+                    TextUtils.isEmpty(payment.pay_dueamount) ? "0" : payment.pay_dueamount); // pay_dueamount;
+            insert.bindString(index(pay_comment), payment.pay_comment == null ? "" : payment.pay_comment); // pay_comment
+            insert.bindString(index(pay_timecreated), payment.pay_timecreated == null ? "" : payment.pay_timecreated); // pay_timecreated
+            insert.bindString(index(pay_timesync), payment.pay_timesync == null ? "" : payment.pay_timesync); // pay_timesync
+            insert.bindString(index(account_id), payment.account_id == null ? "" : payment.account_id); // account_id
+            insert.bindString(index(processed), TextUtils.isEmpty(payment.processed) ? "0" : payment.processed); // processed
+            insert.bindString(index(pay_issync), TextUtils.isEmpty(payment.pay_issync) ? "0" : payment.pay_issync); // pay_issync
+            insert.bindString(index(pay_transid), payment.pay_transid == null ? "" : payment.pay_transid); // pay_transid
+            insert.bindString(index(pay_refnum), payment.pay_refnum == null ? "" : payment.pay_refnum); // pay_refnum
+            insert.bindString(index(pay_name), payment.pay_name == null ? "" : payment.pay_name); // pay_name
+            insert.bindString(index(pay_addr), payment.pay_addr == null ? "" : payment.pay_addr); // pay_addr
+            insert.bindString(index(pay_poscode), payment.pay_poscode == null ? "" : payment.pay_poscode); // pay_poscode
+            insert.bindString(index(pay_seccode), payment.pay_seccode == null ? "" : payment.pay_seccode); // pay_seccode
+            insert.bindString(index(pay_maccount), payment.pay_maccount == null ? "" : payment.pay_maccount); // pay_maccount
+            insert.bindString(index(pay_groupcode), payment.pay_groupcode == null ? "" : payment.pay_groupcode); // pay_groupcode
+            insert.bindString(index(pay_stamp), payment.pay_stamp == null ? "" : payment.pay_stamp); // pay_stamp
+            insert.bindString(index(pay_resultcode), payment.pay_resultcode == null ? "" : payment.pay_resultcode); // pay_resultcode
+            insert.bindString(index(pay_resultmessage),
+                    payment.pay_resultmessage == null ? "" : payment.pay_resultmessage); // pay_resultmessage
+            insert.bindString(index(pay_ccnum), payment.pay_ccnum == null ? "" : payment.pay_ccnum); // pay_ccnum
+            insert.bindString(index(pay_expmonth), payment.pay_expmonth == null ? "" : payment.pay_expmonth); // pay_expMonth
+            insert.bindString(index(pay_expyear), payment.pay_expyear == null ? "" : payment.pay_expyear); // pay_expyear
+            insert.bindString(index(pay_expdate), payment.pay_expdate == null ? "" : payment.pay_expdate); // pay_expdate
+            insert.bindString(index(pay_result), payment.pay_result == null ? "" : payment.pay_result); // pay_result
+            insert.bindString(index(pay_date), payment.pay_date == null ? "" : payment.pay_date); // pay_date
+            insert.bindString(index(recordnumber), payment.recordnumber == null ? "" : payment.recordnumber); // recordnumber
+            insert.bindString(index(pay_signature), payment.pay_signature == null ? "" : payment.pay_signature); // pay_signaute
+            insert.bindString(index(authcode), payment.authcode == null ? "" : payment.authcode); // authcode
+            insert.bindString(index(status), payment.status == null ? "" : payment.status); // status
+            insert.bindString(index(job_id), payment.job_id == null ? "" : payment.job_id); // job_id
+
+            insert.bindString(index(user_ID), payment.user_ID == null ? "" : payment.user_ID); // user_ID
+            insert.bindString(index(pay_type), payment.pay_type == null ? "" : payment.pay_type); // pay_type
+            insert.bindString(index(pay_tip), TextUtils.isEmpty(payment.pay_tip) ? "0" : payment.pay_tip); // pay_tip
+            insert.bindString(index(ccnum_last4), payment.ccnum_last4 == null ? "" : payment.ccnum_last4); // ccnum_last4
+            insert.bindString(index(pay_phone), payment.pay_phone == null ? "" : payment.pay_phone); // pay_phone
+            insert.bindString(index(pay_email), payment.pay_email == null ? "" : payment.pay_email); // pay_email
+            insert.bindString(index(isVoid), TextUtils.isEmpty(payment.isVoid) ? "0" : payment.isVoid); // isVoid
+            insert.bindString(index(pay_latitude), payment.pay_latitude == null ? "" : payment.pay_latitude); // pay_latitude
+            insert.bindString(index(pay_longitude), payment.pay_longitude == null ? "" : payment.pay_longitude); // pay_longitude
+            insert.bindString(index(tipAmount), TextUtils.isEmpty(payment.tipAmount) ? "0" : payment.tipAmount); // tipAmount
+            insert.bindString(index(clerk_id), payment.clerk_id == null ? "" : payment.clerk_id); // clerk_id
+
+            insert.bindString(index(is_refund), TextUtils.isEmpty(payment.is_refund) ? "0" : payment.is_refund); // is_refund
+            insert.bindString(index(ref_num), payment.ref_num == null ? "" : payment.ref_num); // ref_num
+            insert.bindString(index(card_type), payment.card_type == null ? "" : payment.card_type); // card_type
+
+            insert.bindString(index(IvuLottoDrawDate),
+                    payment.IvuLottoDrawDate == null ? "" : payment.IvuLottoDrawDate); // IvuLottoDrawData
+            insert.bindString(index(IvuLottoNumber), payment.IvuLottoNumber == null ? "" : payment.IvuLottoNumber); // IvuLottoNumber
+            insert.bindString(index(IvuLottoQR), payment.IvuLottoQR == null ? "" : payment.IvuLottoQR); // IvuLottoQR
+
+            insert.bindString(index(Tax1_amount), TextUtils.isEmpty(payment.Tax1_amount) ? "0" : payment.Tax1_amount);
+            insert.bindString(index(Tax1_name), payment.Tax1_name == null ? "" : payment.Tax1_name);
+            insert.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.Tax2_amount) ? "0" : payment.Tax2_amount);
+            insert.bindString(index(Tax2_name), payment.Tax2_name == null ? "" : payment.Tax2_name);
+
+            insert.execute();
+            insert.clearBindings();
+            insert.close();
+            DBManager._db.setTransactionSuccessful();
+
+        } catch (Exception e) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(e.getMessage()).append(" [com.android.emobilepos.PaymentsHandler (at Class.insertDeclined)]");
+            Log.d("Exception", sb.toString());
+        } finally {
+            myPref.setLastPayID(payment.pay_id);
+            DBManager._db.endTransaction();
+        }
     }
 }

@@ -8,6 +8,10 @@ import com.android.emobilepos.models.genius.GeniusResponse;
 public class EMVContainer {
     private GeniusResponse geniusResponse;
 
+    public EMVContainer(GeniusResponse geniusResponse) {
+        this.geniusResponse = geniusResponse;
+    }
+
     public GeniusResponse getGeniusResponse() {
         return geniusResponse;
     }

@@ -1717,7 +1717,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             wasReprint = (Boolean) params[0];
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printingSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1,
-                        wasReprint);
+                        wasReprint, null);
             }
             return payment;
         }
