@@ -1114,5 +1114,6 @@
 	<string name="sync_send_btn">Send</string>
 	<string name="sync_receive_btn">Receive</string>
 	<string name="pay_button">Pay</string>
+	<string name="error_reading_card">Card swipe read error.</string>
 
 </resources>

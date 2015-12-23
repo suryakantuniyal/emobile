@@ -311,7 +311,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
-        }else if (myPref.isESY13P1()) {
+        } else if (myPref.isESY13P1()) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
                 cardSwipe.setChecked(true);
@@ -644,14 +644,17 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
-        this.cardInfoManager = cardManager;
-        updateViewAfterSwipe();
-        if (uniMagReader != null && uniMagReader.readerIsConnected()) {
-            uniMagReader.startReading();
-        } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
-                && Global.mainPrinterManager != null)
-            Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+        if (read) {
+            this.cardInfoManager = cardManager;
+            updateViewAfterSwipe();
+            if (uniMagReader != null && uniMagReader.readerIsConnected()) {
+                uniMagReader.startReading();
+            } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
+                    && Global.mainPrinterManager != null)
+                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+        }else{
+            Global.showPrompt(activity, R.string.card_card_swipe,getString(R.string.error_reading_card));
+        }
     }
 
     @Override
