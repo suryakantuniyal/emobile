@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.DBManager;
@@ -13,6 +14,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -92,6 +94,8 @@ public class PaymentsHandler {
     private final String Tax1_name = "Tax1_name";
     private final String Tax2_amount = "Tax2_amount";
     private final String Tax2_name = "Tax2_name";
+    private final String EMVJson = "EMV_JSON";
+
     private static Payment lastPaymentInserted;
 
     public static Payment getLastPaymentInserted() {
@@ -105,7 +109,7 @@ public class PaymentsHandler {
             pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
             job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
             tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
-            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id});
+            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, EMVJson});
 
     private StringBuilder sb1, sb2;
     private final String empStr = "";
@@ -227,6 +231,8 @@ public class PaymentsHandler {
             insert.bindString(index(Tax1_name), payment.Tax1_name == null ? "" : payment.Tax1_name);
             insert.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.Tax2_amount) ? "0" : payment.Tax2_amount);
             insert.bindString(index(Tax2_name), payment.Tax2_name == null ? "" : payment.Tax2_name);
+            insert.bindString(index(EMVJson), payment.emvContainer == null ? "" : new Gson().toJson(payment.emvContainer, EMVContainer.class));
+
 
             insert.execute();
             insert.clearBindings();
@@ -944,36 +950,36 @@ public class PaymentsHandler {
         // SQLiteDatabase db = dbManager.openReadableDB();
 
         StringBuilder sb = new StringBuilder();
-        switch (type){
+        switch (type) {
             // May come from History>Payment>Details
-            case 0:{
+            case 0: {
                 sb.append(
                         "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
                                 + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
                                 + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
                 break;
             }
             // Straight from main menu 'Payment'
-            case 1:{
+            case 1: {
                 sb.append(
                         "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON  "
                                 + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                 + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
                 break;
             }
             // Straight from main menu 'Payment & Declined'
-            case 2:{
+            case 2: {
                 sb.append(
                         "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON  "
                                 + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                 + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
                 break;
@@ -1013,6 +1019,7 @@ public class PaymentsHandler {
                 payDetail.setTax2_name(cursor.getString(cursor.getColumnIndex(Tax2_name)));
                 payDetail.setTax1_amount(cursor.getString(cursor.getColumnIndex(Tax1_amount)));
                 payDetail.setTax2_amount(cursor.getString(cursor.getColumnIndex(Tax2_amount)));
+                payDetail.setEmvContainer(new Gson().fromJson(cursor.getString(cursor.getColumnIndex(EMVJson)), EMVContainer.class));
 
             } while (cursor.moveToNext());
         }
@@ -1305,6 +1312,7 @@ public class PaymentsHandler {
             insert.bindString(index(Tax1_name), payment.Tax1_name == null ? "" : payment.Tax1_name);
             insert.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.Tax2_amount) ? "0" : payment.Tax2_amount);
             insert.bindString(index(Tax2_name), payment.Tax2_name == null ? "" : payment.Tax2_name);
+            insert.bindString(index(EMVJson), payment.emvContainer == null ? "" : new Gson().toJson(payment.emvContainer, EMVContainer.class));
 
             insert.execute();
             insert.clearBindings();

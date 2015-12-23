@@ -27,6 +27,7 @@ public class PaymentDetails {
     private String Tax1_name;
     private String Tax2_name;
     private String pay_tip;
+    private EMVContainer emvContainer;
 
     public String getPaymethod_name() {
         return paymethod_name;
@@ -210,5 +211,13 @@ public class PaymentDetails {
 
     public void setPay_tip(String pay_tip) {
         this.pay_tip = pay_tip;
+    }
+
+    public EMVContainer getEmvContainer() {
+        return emvContainer;
+    }
+
+    public void setEmvContainer(EMVContainer emvContainer) {
+        this.emvContainer = emvContainer;
     }
 }

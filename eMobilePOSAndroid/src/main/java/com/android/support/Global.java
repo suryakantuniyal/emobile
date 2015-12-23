@@ -788,6 +788,9 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatToDisplayDate(String date, Activity activity, int type) {
+        if (date == null) {
+            return "";
+        }
         Calendar cal = Calendar.getInstance();
         TimeZone tz = cal.getTimeZone();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
@@ -815,8 +818,7 @@ public class Global extends MultiDexApplication {
             StringBuilder sb = new StringBuilder();
             sb.append(e.getMessage()).append(" [")
                     .append("com.android.support.Global (at Class.formatToDisplayDate) ]");
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+            formatedDate = "";
         }
         return formatedDate;
     }
@@ -1722,7 +1724,7 @@ public class Global extends MultiDexApplication {
 //            uart_tool.write(3, Global.emptySpaces(40, 0, false));
 //            uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
 //        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
-            TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
+        TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
 //            EMSPAT100.getTerminalDisp().clearText();
 //            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
 //        }

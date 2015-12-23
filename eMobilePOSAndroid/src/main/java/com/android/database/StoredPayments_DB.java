@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.DBManager;
 import com.android.support.Global;
+import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -91,6 +93,8 @@ public class StoredPayments_DB {
     private final String payment_xml = "payment_xml";
     private final String is_retry = "is_retry";
     private final String pay_uuid = "pay_uuid";
+    private final String EMVJson = "EMV_JSON";
+
 
     public final List<String> attr = Arrays.asList(new String[]{pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
             inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
@@ -222,6 +226,7 @@ public class StoredPayments_DB {
             insert.bindString(index(pay_uuid), payment.pay_uuid);
             insert.bindString(index(is_retry), payment.is_retry);
             insert.bindString(index(payment_xml), payment.payment_xml);
+            insert.bindString(index(EMVJson), payment.emvContainer == null ? "" : new Gson().toJson(payment.emvContainer, EMVContainer.class));
 
             insert.execute();
             insert.clearBindings();
@@ -333,7 +338,7 @@ public class StoredPayments_DB {
                         "SELECT p.inv_id,p.job_id, CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
                                 + "FROM StoredPayments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
                                 + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
 
@@ -344,7 +349,7 @@ public class StoredPayments_DB {
                         "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
                                 + "FROM StoredPayments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                 + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
 
@@ -355,7 +360,7 @@ public class StoredPayments_DB {
                         "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
                                 + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
                                 + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
 
@@ -392,6 +397,7 @@ public class StoredPayments_DB {
                 paymentDetails.setTax2_amount(cursor.getString(cursor.getColumnIndex(Tax2_amount)));
                 paymentDetails.setTax1_name(cursor.getString(cursor.getColumnIndex(Tax1_name)));
                 paymentDetails.setTax2_name(cursor.getString(cursor.getColumnIndex(Tax2_name)));
+                paymentDetails.setEmvContainer(new Gson().fromJson(cursor.getString(cursor.getColumnIndex(EMVJson)),EMVContainer.class));
 
             } while (cursor.moveToNext());
         }

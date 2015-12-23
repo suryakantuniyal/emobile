@@ -1078,9 +1078,9 @@ public class EMSDeviceDriver {
             print(sb.toString());
             sb.setLength(0);
 
-            printEMVSection(emvContainer, lineWidth);
+            printEMVSection(payArray.getEmvContainer(), lineWidth);
 
-            String status = emvContainer != null && emvContainer.getGeniusResponse() != null ? emvContainer.getGeniusResponse().getStatus() : getString(R.string.approved);
+            String status = payArray.getEmvContainer() != null && payArray.getEmvContainer().getGeniusResponse() != null ? payArray.getEmvContainer().getGeniusResponse().getStatus() : getString(R.string.approved);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.credit_approval_status),
                     status, lineWidth, 0));
 

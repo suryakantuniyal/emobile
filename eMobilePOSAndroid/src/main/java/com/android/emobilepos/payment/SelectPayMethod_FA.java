@@ -845,7 +845,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         myListview.setSelection(0);
         myListview.setSelected(false);
         EMVContainer emvContainer = null;
-        if (data.hasExtra("emvcontainer"))
+        if (data!=null && data.hasExtra("emvcontainer"))
             emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 
         myAdapter.notifyDataSetChanged();
