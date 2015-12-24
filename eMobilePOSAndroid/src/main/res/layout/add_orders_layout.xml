@@ -97,7 +97,7 @@
                 android:id="@+id/addProdButton"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/add_orders_button_height"
+                android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@drawable/blue_btn_selector"
                 android:text="@string/button_add_prod_serv"
