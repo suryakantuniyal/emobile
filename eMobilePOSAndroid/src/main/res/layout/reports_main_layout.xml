@@ -18,10 +18,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:background="@drawable/blue_btn_selector"
+            android:padding="25dp"
             android:text="@string/report_but_title"
             android:textAppearance="@style/black_text_appearance"
-            android:textSize="@dimen/sales_tab_lv_text_size"
-            android:padding="25dp" />
+            android:textSize="@dimen/sales_tab_lv_text_size" />
 
         <Button
             android:id="@+id/btnReportPerShift"
@@ -39,10 +39,9 @@
             android:layout_height="wrap_content"
             android:background="@drawable/blue_btn_selector"
             android:padding="25dp"
-            android:text="End of day"
+            android:text="@string/endofdayBtn"
             android:textAppearance="@style/black_text_appearance"
-            android:textSize="@dimen/sales_tab_lv_text_size"
-            android:visibility="gone" />
+            android:textSize="@dimen/sales_tab_lv_text_size" />
 
     </LinearLayout>
 </ScrollView>

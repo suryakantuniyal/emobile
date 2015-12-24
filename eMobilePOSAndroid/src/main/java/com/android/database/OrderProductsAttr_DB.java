@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
-import com.android.support.DBManager;
 
 import net.sqlcipher.database.SQLiteStatement;
 

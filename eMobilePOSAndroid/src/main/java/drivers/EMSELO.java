@@ -333,9 +333,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
+        super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
     }
+
+
 
 
     @Override

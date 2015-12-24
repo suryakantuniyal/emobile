@@ -25,7 +25,8 @@ public class Product {
     private String prodTaxCode;
     private String prodOnHand;
     private String prodPrice;
-
+    private String prod_sku;
+    private String prod_upc;
 
     public String getId() {
         return id;
@@ -195,4 +196,19 @@ public class Product {
         this.prodPrice = prodPrice;
     }
 
+    public String getProd_sku() {
+        return prod_sku;
+    }
+
+    public void setProd_sku(String prod_sku) {
+        this.prod_sku = prod_sku;
+    }
+
+    public String getProd_upc() {
+        return prod_upc;
+    }
+
+    public void setProd_upc(String prod_upc) {
+        this.prod_upc = prod_upc;
+    }
 }

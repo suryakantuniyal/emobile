@@ -14,7 +14,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -26,7 +25,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Product;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -385,6 +384,8 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 		ordProd.itemSubtotal = Global.getRoundBigDecimal(temp);
 		ordProd.itemTotal = Global.getRoundBigDecimal(temp);
 		ordProd.ordprod_desc = itemData[3] + _ord_desc.toString();
+		ordProd.prod_sku = itemData[13];
+		ordProd.prod_upc = itemData[14];
 		global.orderProducts.set(position, ordProd);
 	}
 

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap.CompressFormat;
@@ -18,7 +19,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,23 +46,19 @@ import com.android.database.ProductAddonsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Product;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
-import com.android.support.TerminalDisplay;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.zzzapi.uart.uart;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import drivers.EMSPAT100;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
         MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback {
@@ -274,6 +270,46 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // TODO Auto-generated method stub
                 global.searchType = position;
+                //hide the keyboard
+
+//                InputMethodManager imm;
+//                imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.hideSoftInputFromWindow(selectedItemView.getWindowToken(), InputMethodManager.SHOW_FORCED);
+//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+//                searchField.clearFocus();
+                //catButLayout.requestFocus();
+
+                switch (position)
+                {
+                    case 0: //Name
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
+                        break;
+            }
+                    case 1: //description
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
+                        break;
+                    }
+                    case 2: //type
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
+                        break;
+                    }
+
+                    case 3: //upc
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
+                        break;
+                    }
+                    case 4: //sku
+                    {
+//                        searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
+                        break;
+                    }
+                }
+
+ //                searchField.clearFocus();
 
             }
 
@@ -382,7 +418,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
-        // TODO Auto-generated method stub
 
         myCursor = c;
         if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
@@ -470,10 +505,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             case 3: // search by UPC
             {
                 search_type = "prod_upc";
+                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
             }
             case 4:
                 search_type = "prod_sku";
+                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
         }
 
@@ -643,14 +680,18 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         product.setProdTaxType(c.getString(c.getColumnIndex("prod_taxtype")));
         product.setProdTaxCode(c.getString(c.getColumnIndex("prod_taxcode")));
+        product.setProd_sku(c.getString(c.getColumnIndex("prod_sku")));
+        product.setProd_upc(c.getString(c.getColumnIndex("prod_upc")));
+
         return product;
+
     }
 
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
 
         if (!isFastScanning) {
-            Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
+            Intent intent = new Intent(activity, PickerProduct_FA.class);
             intent.putExtra("prod_id", product.getId());
             intent.putExtra("prod_name", product.getProdName());
             intent.putExtra("prod_on_hand", product.getProdOnHand());
@@ -664,6 +705,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             intent.putExtra("cat_id", product.getCatId());
             intent.putExtra("prod_price_points", product.getProdPricePoints());
             intent.putExtra("prod_value_points", product.getProdValuePoints());
+            intent.putExtra("prod_sku", product.getProd_sku());
+            intent.putExtra("prod_upc", product.getProd_upc());
+
+
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
@@ -735,7 +780,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 intent.putExtra("prod_taxcode", product.getProdTaxCode());
                 intent.putExtra("prod_taxtype", product.getProdTaxType());
                 intent.putExtra("cat_id", product.getCatId());
-
+                intent.putExtra("prod_sku", product.getProd_sku());
+                intent.putExtra("prod_upc", product.getProd_upc());
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
 
@@ -785,7 +831,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     intent.putExtra("prod_taxcode", product.getProdTaxCode());
                     intent.putExtra("prod_taxtype", product.getProdType());
                     intent.putExtra("cat_id", product.getCatId());
-
+                    intent.putExtra("prod_sku", product.getProd_sku());
+                    intent.putExtra("prod_upc", product.getProd_upc());
                     intent.putExtra("prod_price_points", product.getProdPricePoints());
                     intent.putExtra("prod_value_points", product.getProdValuePoints());
 

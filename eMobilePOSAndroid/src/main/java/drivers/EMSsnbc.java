@@ -11,35 +11,19 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.util.Base64;
 
-import com.android.database.InvProdHandler;
-import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
-import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import POSAPI.POSInterfaceAPI;
 import POSAPI.POSUSBAPI;
@@ -48,7 +32,6 @@ import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
-import util.EMSReceiptHelper;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate{
 	private final int LINE_WIDTH = 42;
@@ -325,14 +308,19 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
 	}
 
+//	@Override
+//	public void printEndOfDayReport(String date, String clerk_id)
+//	{
+//		EMSReceiptHelper em = new EMSReceiptHelper(activity,42);
+//		String t = em.getEndOfDayReportReceipt(clerk_id,Global.getCurrentDate());
+//		this.printString(t);
+//		pos_sdk.systemFeedLine(5);
+//		cutPaper();
+//	}
+
 	@Override
-	public void printEndOfDayReport(String date, String clerk_id)
-	{
-		EMSReceiptHelper em = new EMSReceiptHelper(activity,42);
-		String t = em.getEndOfDayReportReceipt(clerk_id,Global.getCurrentDate());
-		this.printString(t);
-		pos_sdk.systemFeedLine(5);
-		cutPaper();
+	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
 	}
 	
 	

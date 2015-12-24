@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.Product;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -212,7 +211,7 @@ public class ProductsHandler {
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
             sb.append(
-                    "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
+					"ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc, p.prod_sku, p.prod_upc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
             sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
 
             if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
@@ -287,7 +286,7 @@ public class ProductsHandler {
         } else {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price',ch.over_price_net as 'chain_price',");
+                    "SELECT  p.prod_id as '_id', p.prod_sku, p.prod_upc, p.prod_price as 'master_price',vp.price as 'volume_price',ch.over_price_net as 'chain_price',");
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
             sb.append(
@@ -765,6 +764,8 @@ public class ProductsHandler {
 
             data[11] = cursor.getString(cursor.getColumnIndex("prod_taxtype"));
             data[12] = cursor.getString(cursor.getColumnIndex("prod_taxcode"));
+			data[13] = cursor.getString(cursor.getColumnIndex("prod_sku"));
+			data[14] = cursor.getString(cursor.getColumnIndex("prod_upc"));
 
         }
 

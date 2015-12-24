@@ -118,9 +118,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
+    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
 
     }
+
+
 
 
     @Override

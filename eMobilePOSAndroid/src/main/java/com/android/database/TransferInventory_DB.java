@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.emobilepos.holders.TransferInventory_Holder;
-import com.android.support.DBManager;
 
 import net.sqlcipher.database.SQLiteStatement;
 

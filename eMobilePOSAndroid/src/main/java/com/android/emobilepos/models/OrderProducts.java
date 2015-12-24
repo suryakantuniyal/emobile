@@ -14,6 +14,8 @@ public class OrderProducts {
 	public String ordprod_id = empt;
 	public String ord_id = empt;
 	public String prod_id = empt;
+	public String prod_sku = empt;
+	public String prod_upc = empt;
 	public String ordprod_qty = empt;
 	public String overwrite_price = empt;
 	public String reason_id = empt;

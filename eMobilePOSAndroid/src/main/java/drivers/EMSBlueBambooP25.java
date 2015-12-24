@@ -338,16 +338,17 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 	}
 
 	@Override
-	public void printEndOfDayReport(String date, String clerk_id) {
-
-	}
-
-	@Override
 	public boolean printReport(String curDate) {
 
 		printReportReceipt(curDate, LINE_WIDTH);
 
 		return true;
+	}
+
+
+	@Override
+	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
 	}
 
 	public void registerPrinter() {

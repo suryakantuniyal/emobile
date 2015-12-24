@@ -20,7 +20,7 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.starmicronics.stario.StarIOPortException;
@@ -722,8 +722,8 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	}
 
 	@Override
-	public void printEndOfDayReport(String date, String clerk_id) {
-
+	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+//		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
 	}
 
 	@Override

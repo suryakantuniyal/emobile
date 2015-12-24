@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.support.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;

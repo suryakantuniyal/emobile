@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.android.emobilepos.models.Order;
 import com.android.support.Customer;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 

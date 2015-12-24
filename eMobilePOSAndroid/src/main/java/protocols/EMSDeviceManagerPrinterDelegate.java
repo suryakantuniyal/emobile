@@ -24,7 +24,6 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     public void printStationPrinter(List<Orders> orderProducts, String ordID);
 
-
     public boolean printOpenInvoices(String invID);
 
     public boolean printOnHold(Object onHold);
@@ -35,7 +34,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     public boolean printReport(String curDate);
 
-    public void printEndOfDayReport(String date, String clerk_id);
+	public void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
 
     public void registerPrinter();
 

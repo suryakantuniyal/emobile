@@ -156,7 +156,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
         myPref = new MyPreferences(activity);
-        extras = activity.getIntent().getExtras();
+        Intent intent = activity.getIntent();
+        extras = intent.getExtras();
+        //extras = activity.getIntent().getExtras();
 
         LayoutInflater inflater = LayoutInflater.from(this);
         View header = inflater.inflate(R.layout.catalog_picker_header, (ViewGroup) activity.findViewById(R.id.header_layout_root));
@@ -294,6 +296,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void setExtrasMapValues() {
         extrasMap.put("prod_id", extras.getString("prod_id"));
+        extrasMap.put("prod_sku", extras.getString("prod_sku"));
+        extrasMap.put("prod_upc", extras.getString("prod_upc"));
         extrasMap.put("prod_name", extras.getString("prod_name"));
         extrasMap.put("prod_price", extras.getString("prod_price"));
         extrasMap.put("prod_img_url", extras.getString("url"));
@@ -563,6 +567,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         //extrasMap.put("cat_id", myCursor.getString(myCursor.getColumnIndex("cat_id")));
         extrasMap.put("prod_price_points", data[8]);
         extrasMap.put("prod_value_points", data[9]);
+        extrasMap.put("prod_sku", data[13]);
+        extrasMap.put("prod_upc", data[14]);
 
 
         imgURL = extrasMap.get("prod_img_url");
@@ -938,6 +944,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.onHand = extrasMap.get("prod_on_hand");
         ord.imgURL = extrasMap.get("prod_img_url");
         ord.cat_id = extrasMap.get("cat_id");
+
+        ord.prod_sku = extrasMap.get("prod_sku");
+        ord.prod_upc = extrasMap.get("prod_upc");
 
 
         BigDecimal pricePoints = new BigDecimal(extrasMap.get("prod_price_points"));

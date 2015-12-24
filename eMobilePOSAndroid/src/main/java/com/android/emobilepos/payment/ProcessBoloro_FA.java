@@ -203,8 +203,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 		
 		payment.paymethod_id = extras.getString("paymethod_id");
 		
-
-		Global.amountPaid= NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid.getText().toString());
+		Global.amountPaid= NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid);
 		if(!Global.amountPaid.isEmpty())
 		{
 			payment.pay_amount = Global.amountPaid;
@@ -758,8 +757,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 				Intent result = new Intent();
 				result.putExtra(
 						"total_amount",
-						Double.toString(Global.formatNumFromLocale(fieldAmountDue.getText().toString().replaceAll("[^\\d\\,\\.]", "")
-								.trim())));
+						Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountDue))));
 				setResult(-2, result);
 
 				finish();

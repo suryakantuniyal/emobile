@@ -6,7 +6,6 @@ import android.database.Cursor;
 
 import com.android.emobilepos.models.Address;
 import com.android.support.Customer;
-import com.android.support.DBManager;
 
 import net.sqlcipher.database.SQLiteStatement;
 
