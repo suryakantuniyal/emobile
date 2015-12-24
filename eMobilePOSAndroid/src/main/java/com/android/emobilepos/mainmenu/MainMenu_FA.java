@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.android.database.PrintersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.SynchMenuAdapter;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;

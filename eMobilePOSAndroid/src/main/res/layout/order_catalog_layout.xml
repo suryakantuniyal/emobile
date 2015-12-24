@@ -28,7 +28,7 @@
             android:ellipsize="start"
             android:enabled="true"
             android:imeOptions="actionSearch"
-            android:inputType="textNoSuggestions"
+            android:inputType="text"
             android:textAppearance="@style/black_text_appearance_unbold"
             android:textColor="#000000"
             android:textSize="@dimen/field_general_txt_size"
@@ -77,5 +77,6 @@
             android:text="All"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
+
 
 </LinearLayout>

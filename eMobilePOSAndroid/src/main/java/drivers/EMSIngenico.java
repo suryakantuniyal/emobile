@@ -579,9 +579,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-        // TODO Auto-generated method stub
-
+	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+		//printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     public void getAcctNum() {

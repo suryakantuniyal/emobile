@@ -9,7 +9,6 @@ import android.os.PowerManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
@@ -20,7 +19,7 @@ import android.widget.TextView;
 import com.android.database.AddressHandler;
 import com.android.database.CustomersHandler;
 import com.android.emobilepos.R;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 

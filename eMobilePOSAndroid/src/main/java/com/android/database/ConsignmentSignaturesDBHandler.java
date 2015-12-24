@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

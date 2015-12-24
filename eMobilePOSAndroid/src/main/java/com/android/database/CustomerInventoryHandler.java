@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.android.support.CustomerInventory;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 

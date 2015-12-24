@@ -31,6 +31,7 @@ import com.android.emobilepos.models.ShiftPeriods;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.NumberUtils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -230,7 +231,7 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
             cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
 
             this.pettyCashField.setText(cashAmountBuilder.toString());
-            pettyCash = (float) (Global.formatNumFromLocale(cashAmountBuilder.toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+			pettyCash = (float) (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmountBuilder)));
 
         }
         Selection.setSelection(this.pettyCashField.getText(), this.pettyCashField.getText().length());

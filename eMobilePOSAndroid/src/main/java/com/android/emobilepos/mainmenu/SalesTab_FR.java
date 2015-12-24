@@ -42,7 +42,7 @@ import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 

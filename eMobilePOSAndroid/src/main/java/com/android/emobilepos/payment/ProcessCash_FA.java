@@ -33,6 +33,7 @@ import com.android.emobilepos.models.Payment;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.NumberUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -55,7 +56,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     private String inv_id;
     private boolean isFromSalesReceipt = false;
     private boolean isFromMainMenu = false;
-    private EditText paid, amount, reference, tipAmount, promptTipField, subtotal, tax1, tax2;//,tipAmount,promptTipField
+    private EditText paid, amountDue, reference, tipAmount, promptTipField, subtotal, tax1, tax2;//,tipAmount,promptTipField
     private EditText customerNameField, customerEmailField, phoneNumberField;
     private TextView change;
     private boolean isMultiInvoice = false;
@@ -102,11 +103,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         extras = this.getIntent().getExtras();
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
         isFromMainMenu = extras.getBoolean("isFromMainMenu");
-        if (!Global.isIvuLoto || isFromSalesReceipt) {
-            findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
-            findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
-            findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
-        }
 
         if (extras.getBoolean("salespayment") || extras.getBoolean("salesreceipt")) {
             headerTitle.setText(getString(R.string.cash_payment_title));
@@ -120,7 +116,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             headerTitle.setText(R.string.cash_invoice_lbl);
         }
 
-        amount = (EditText) findViewById(R.id.amountCashEdit);
+        amountDue = (EditText) findViewById(R.id.amountDueCashEdit);
         reference = (EditText) findViewById(R.id.referenceNumber);
         tipAmount = (EditText) findViewById(R.id.tipAmountField);
         subtotal = (EditText) findViewById(R.id.subtotalCashEdit);
@@ -146,7 +142,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         if (showTipField)
             this.tipAmount.setText(Global.formatDoubleToCurrency(0.00));
 
-        amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+        amountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
 
@@ -156,7 +152,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             custidkey = "";
 
         if (!isFromMainMenu || Global.isIvuLoto) {
-            amount.setEnabled(false);
+            amountDue.setEnabled(false);
         }
 
         this.paid = (EditText) findViewById(R.id.paidCashEdit);
@@ -176,50 +172,18 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
                 }
             }
         });
-        this.amount.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        this.amountDue.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 // TODO Auto-generated method stub
                 if (v.hasFocus()) {
-                    Selection.setSelection(amount.getText(), amount.getText().length());
+                    Selection.setSelection(amountDue.getText(), amountDue.getText().length());
                 }
 
             }
         });
-        subtotal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
-                if (v.hasFocus()) {
-                    Selection.setSelection(subtotal.getText(), subtotal.getText().length());
-                }
-
-            }
-        });
-        tax1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
-                if (v.hasFocus()) {
-                    Selection.setSelection(tax1.getText(), tax1.getText().length());
-                }
-
-            }
-        });
-        tax2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
-                if (v.hasFocus()) {
-                    Selection.setSelection(tax2.getText(), tax2.getText().length());
-                }
-
-            }
-        });
         change = (TextView) findViewById(R.id.changeCashText);
 
         Button exactBut = (Button) findViewById(R.id.exactAmountBut);
@@ -244,7 +208,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 btnProcess.setEnabled(false);
-                double enteredAmount = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 if (enteredAmount < 0) {
                     paid.setBackgroundResource(R.drawable.edittext_wrong_input);
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
@@ -253,7 +217,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
                     if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                         Global.mainPrinterManager.currentDevice.openCashDrawer();
-
                     }
 
                     if (!isInvoice || (isInvoice && !isMultiInvoice))
@@ -272,16 +235,16 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                double amountToBePaid = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
                 grandTotalAmount = amountToBePaid + amountToTip;
-                paid.setText(amount.getText().toString());
+                paid.setText(amountDue.getText().toString());
 
             }
 
         });
 
 
-        this.amount.addTextChangedListener(new TextWatcher() {
+        this.amountDue.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 recalculateChange();
             }
@@ -291,54 +254,10 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, amount);
+                parseInputedCurrency(s, amountDue);
             }
         });
-        subtotal.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-                parseInputedCurrency(s, subtotal);
-                if (!isFromSalesReceipt) {
-                    calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
-                    calculateAmountDue(subtotal, tax1, tax2, amount);
-                }
-                recalculateChange();
 
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                parseInputedCurrency(s, subtotal);
-            }
-        });
-        tax1.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-                calculateAmountDue(subtotal, tax1, tax2, amount);
-                recalculateChange();
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                parseInputedCurrency(s, tax1);
-            }
-        });
-        tax2.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-                calculateAmountDue(subtotal, tax1, tax2, amount);
-                recalculateChange();
-
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                parseInputedCurrency(s, tax2);
-            }
-        });
         this.paid.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 if (!paid.getText().toString().isEmpty())
@@ -360,6 +279,13 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 //        }
 //        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
+        if (!Global.isIvuLoto || isFromSalesReceipt) {
+            findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
+        } else {
+            setIVUPOSFieldListeners();
+        }
 
         if (showTipField) {
             Button tipButton = (Button) findViewById(R.id.tipAmountBut);
@@ -395,10 +321,91 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         hasBeenCreated = true;
     }
 
+    private void setIVUPOSFieldListeners() {
+        subtotal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // TODO Auto-generated method stub
+                if (v.hasFocus()) {
+                    Selection.setSelection(subtotal.getText(), subtotal.getText().length());
+                }
+
+            }
+        });
+        tax1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // TODO Auto-generated method stub
+                if (v.hasFocus()) {
+                    Selection.setSelection(tax1.getText(), tax1.getText().length());
+                }
+
+            }
+        });
+        tax2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // TODO Auto-generated method stub
+                if (v.hasFocus()) {
+                    Selection.setSelection(tax2.getText(), tax2.getText().length());
+                }
+
+            }
+        });
+        subtotal.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                parseInputedCurrency(s, subtotal);
+                if (!isFromSalesReceipt) {
+                    calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
+                    calculateAmountDue(subtotal, tax1, tax2, amountDue);
+                }
+                recalculateChange();
+
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                parseInputedCurrency(s, subtotal);
+            }
+        });
+        tax1.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                calculateAmountDue(subtotal, tax1, tax2, amountDue);
+                recalculateChange();
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                parseInputedCurrency(s, tax1);
+            }
+        });
+        tax2.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                calculateAmountDue(subtotal, tax1, tax2, amountDue);
+                recalculateChange();
+
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                parseInputedCurrency(s, tax2);
+            }
+        });
+    }
+
     public static void calculateAmountDue(EditText subtotal, EditText tax1, EditText tax2, EditText amount) {
-        double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double tax1Dbl = Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double tax2Dbl = Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
+        double tax1Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1));
+        double tax2Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2));
         double amountDueDbl = subtotalDbl + tax1Dbl + tax2Dbl;
 
         amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(amountDueDbl)));
@@ -414,8 +421,8 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     private void recalculateChange() {
 
-        double totAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double totalPaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+        double totalPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
         if (totalPaid > totAmount) {
             double tempTotal = Math.abs(totAmount - totalPaid);
@@ -444,7 +451,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         /*final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
         dialog.setContentView(dialogLayout);*/
 
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         grandTotalAmount = amountToBePaid + amountToTip;
 
         Button tenPercent = (Button) dialogLayout.findViewById(R.id.tenPercent);
@@ -492,7 +499,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = (float) (amountToBePaid * (0.1));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -504,7 +511,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = (float) (amountToBePaid * (0.15));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -516,7 +523,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = (float) (amountToBePaid * (0.2));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -529,7 +536,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
@@ -542,7 +549,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 amountToTip = 0;
                 grandTotalAmount = amountToBePaid;
                 dialog.dismiss();
@@ -591,7 +598,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     }
 
     public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
-        double subtotalDbl = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         //set default taxes values to zero
         BigDecimal tax1Rate = new BigDecimal(0.00);
         BigDecimal tax2Rate = new BigDecimal(0.00);
@@ -617,11 +624,11 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     private Payment processPayment() {
         PaymentsHandler payHandler = new PaymentsHandler(activity);
-        double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
         if (Global.isIvuLoto) {
-            Global.subtotalAmount = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         }
 
         String jobId = null;
@@ -657,10 +664,10 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
                 taxAmnt2 = extras.getString("Tax2_amount");
                 taxName2 = extras.getString("Tax2_name");
             } else {
-                taxAmnt1 = Double.toString(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                taxAmnt1 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
                 if (groupTaxRate.size() > 0)
                     taxName1 = groupTaxRate.get(0).getTaxName();
-                taxAmnt2 = Double.toString(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                taxAmnt2 = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
                 if (groupTaxRate.size() > 1)
                     taxName2 = groupTaxRate.get(1).getTaxName();
             }
@@ -705,7 +712,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         } else if (extras.getBoolean("salespayment") || extras.getBoolean("salesrefund")) {
             Intent result = new Intent();
             result.putExtra("total_amount",
-                    Double.toString(Global.formatNumFromLocale(this.amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+                    Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.amountDue))));
             setResult(-2, result);
         } else
             setResult(-1);
@@ -735,7 +742,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
         }
 
-        double tempPaid = Global.formatNumFromLocale(this.paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double tempPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.paid));
         Global.amountPaid = Double.toString(grandTotalAmount);
         boolean endBreak = false;
         for (int i = 0; i < size; i++) {
@@ -764,8 +771,8 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
 
         PaymentsHandler payHandler = new PaymentsHandler(activity);
-        double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         String clerkId = null;
         if (!myPref.getShiftIsOpen())
             clerkId = myPref.getShiftClerkID();
@@ -807,8 +814,8 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     private void updateShiftAmount() {
 
         if (!myPref.getShiftIsOpen()) {
-            double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-            double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             boolean isReturn = false;
             if (Global.ord_type.equals(Global.OrderType.RETURN.getCodeString()) || isRefund)
                 isReturn = true;
@@ -856,8 +863,8 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         protected void onPostExecute(Payment payment) {
             myProgressDialog.dismiss();
 
-            double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-            double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
 
             if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment) && !isFromMainMenu) {
 
@@ -900,8 +907,8 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         @Override
         protected void onPostExecute(Payment payment) {
             myProgressDialog.dismiss();
-            double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-            double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
             if (printSuccessful) {
                 if (amountToBePaid <= actualAmount)
@@ -950,8 +957,8 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                double actualAmount = Global.formatNumFromLocale(amount.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-                double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
                 dlog.dismiss();
                 //activity.finish();
@@ -1042,7 +1049,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
                 temp = 50;
                 break;
         }
-        double amountToBePaid = Global.formatNumFromLocale(paid.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
         amountToBePaid += temp;
         grandTotalAmount = amountToBePaid + amountToTip;
         paid.setText(Global.formatDoubleToCurrency(amountToBePaid));

@@ -13,7 +13,7 @@ import android.os.Process;
 import android.os.StatFs;
 import android.util.Log;
 
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 
 import java.io.File;
 import java.io.PrintWriter;

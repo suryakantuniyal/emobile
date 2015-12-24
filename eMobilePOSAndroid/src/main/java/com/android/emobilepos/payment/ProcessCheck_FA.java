@@ -32,6 +32,7 @@ import com.android.saxhandler.SAXProcessCheckHandler;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -295,8 +296,8 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
     private void recalculateChange() {
 
-        double totAmount = Global.formatNumFromLocale(field[CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        double totalPaid = Global.formatNumFromLocale(field[CHECK_AMOUNT_PAID].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT]));
+        double totalPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
 
         if (totalPaid > totAmount) {
             double tempTotal = Math.abs(totAmount - totalPaid);
@@ -407,8 +408,8 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
     private void processPayment() {
         MyPreferences myPref = new MyPreferences(activity);
-        actualAmount = Global.formatNumFromLocale(field[this.CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        amountToBePaid = Global.formatNumFromLocale(field[CHECK_AMOUNT_PAID].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[this.CHECK_AMOUNT]));
+        amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
 
 
         //custName = field[CHECK_NAME].getText().toString();
@@ -503,7 +504,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
                 setResult(-2);
             else if (extras.getBoolean("salespayment") || extras.getBoolean("salesrefund")) {
                 Intent result = new Intent();
-                result.putExtra("total_amount", Double.toString(Global.formatNumFromLocale(field[CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim())));
+                result.putExtra("total_amount", Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT]))));
                 setResult(-2, result);
             } else
                 setResult(-1);
@@ -595,8 +596,8 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             }
         }
 
-        actualAmount = Global.formatNumFromLocale(field[this.CHECK_AMOUNT].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        amountToBePaid = Global.formatNumFromLocale(field[CHECK_AMOUNT_PAID].getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[this.CHECK_AMOUNT]));
+        amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
 
         Global.amountPaid = Double.toString(amountToBePaid);
         boolean endBreak = false;
@@ -1078,14 +1079,13 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
                 } else {
                     if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
                         Global.mainPrinterManager.currentDevice.openCashDrawer();
-
-
-                    if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
-                        processPayment();
-                    else
-                        processMultiInvoicePayment();
-
                 }
+
+                if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
+                    processPayment();
+                else
+                    processMultiInvoicePayment();
+
                 btnProcess.setEnabled(true);
                 break;
             case R.id.exactAmountBut:

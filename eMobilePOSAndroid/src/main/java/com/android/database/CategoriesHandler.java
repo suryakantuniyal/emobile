@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -233,9 +232,6 @@ public class CategoriesHandler {
 			sb.append("  WHERE c1.cat_id ='").append(Global.cat_id).append("' ");
 		else if(myPref.getPreferences(MyPreferences.pref_enable_multi_category))
 			sb.append("  WHERE c1.parentID='' AND c1.cat_id !='' ");
-		
-		
-			
 		
 		sb.append(" ORDER BY c1.cat_name");
 		

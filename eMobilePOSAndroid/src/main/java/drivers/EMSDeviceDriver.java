@@ -28,21 +28,22 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
+import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.ShiftPeriods;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.bbpos.b.l;
-import com.elotouch.paypoint.register.printer.SerialPort;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
@@ -622,10 +623,17 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
                             Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
 
-                    if (tempGrandTotal >= paidAmount)
+                    if (type == Global.OrderType.RETURN) {
+                        tempAmount = paidAmount;
+                    } else if (tempGrandTotal >= paidAmount) {
                         tempAmount = 0.00;
-                    else
+                    } else {
+                        if (tempGrandTotal > 0) {
                         tempAmount = paidAmount - tempGrandTotal;
+                        } else {
+                            tempAmount = Math.abs(tempGrandTotal);
+                        }
+                    }
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
                             Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
                             .append("\n\n");
@@ -1813,6 +1821,269 @@ public class EMSDeviceDriver {
         }
 
     }
+
+
+    protected void printEndOfDayReportReceipt(String curDate, int lineWidth, boolean printDetails) {
+
+        String mDate = Global.formatToDisplayDate(curDate, activity, 4);
+        StringBuilder sb = new StringBuilder();
+        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+        StringBuilder sb_ord_types = new StringBuilder();
+
+        OrdersHandler ordHandler = new OrdersHandler(activity);
+        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
+        OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
+        PaymentsHandler paymentHandler = new PaymentsHandler(activity);
+        boolean showTipField = false;
+
+        //determine if we should include the tip field
+        if (myPref.getPreferences(MyPreferences.pref_show_tips_for_cash)) {
+            showTipField = true;
+        }
+
+        sb.append(textHandler.centeredString("End Of Day Report", lineWidth));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Date", Global.formatToDisplayDate(curDate, activity, 1), lineWidth, 0));
+
+//        sb.append(textHandler.twoColumnLineWithLeftAlignedText( , ,lineWidth, 3));
+
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.centeredString("Summary", lineWidth));
+        sb.append(textHandler.newLines(1));
+
+        BigDecimal returnAmount = new BigDecimal("0");
+        BigDecimal salesAmount = new BigDecimal("0");
+        BigDecimal invoiceAmount = new BigDecimal("0");
+
+        sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
+        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate);
+
+        for(Order ord:listOrder)
+        {
+
+            switch(Global.OrderType.getByCode(Integer.parseInt(ord.ord_type)))
+            {
+                case RETURN:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Return",lineWidth,0));
+                    returnAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case ESTIMATE:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Estimate", lineWidth, 0));
+                    break;
+                case ORDER:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Order", lineWidth, 0));
+                    break;
+                case SALES_RECEIPT:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Sales Receipt", lineWidth, 0));
+                    salesAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case INVOICE:
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Invoice", lineWidth, 0));
+                    invoiceAmount = new BigDecimal(ord.ord_total);
+                    break;
+            }
+
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("SubTotal", Global.formatDoubleStrToCurrency(ord.ord_subtotal), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Discount Total", Global.formatDoubleStrToCurrency(ord.ord_discount), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Tax Total", Global.formatDoubleStrToCurrency(ord.ord_taxamount), lineWidth, 3));
+            sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Net Total", Global.formatDoubleStrToCurrency(ord.ord_total), lineWidth, 3));
+        }
+
+        listOrder.clear();
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Return", "(" + Global.formatDoubleStrToCurrency(returnAmount.toString()) + ")", lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Receipt", Global.formatDoubleStrToCurrency(salesAmount.toString()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", Global.formatDoubleStrToCurrency(invoiceAmount.toString()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total", Global.formatDoubleStrToCurrency(salesAmount.add(invoiceAmount).subtract(returnAmount).toString()), lineWidth, 0));
+
+        listOrder = ordHandler.getARTransactionsDayReport(null,mDate);
+        if(listOrder.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("A/R Transactions", lineWidth));
+            sb.append(textHandler.threeColumnLineItem("ID", 40, "Customer", 40, "Amount", 20, lineWidth, 0));
+            for(Order ord:listOrder)
+            {
+                if(ord.ord_id!=null)
+                    sb.append(textHandler.threeColumnLineItem(ord.ord_id, 40, ord.cust_name, 40, Global.formatDoubleStrToCurrency(ord.ord_total), 20, lineWidth, 0));
+            }
+            listOrder.clear();
+        }
+
+        List<ShiftPeriods>listShifts = shiftHandler.getShiftDayReport(null, mDate);
+        if(listShifts.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Totals By Shift", lineWidth));
+            for(ShiftPeriods shift:listShifts) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk", shift.assignee_name, lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("From", Global.formatToDisplayDate(shift.startTime, activity, 2), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("To", Global.formatToDisplayDate(shift.endTime, activity, 2), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Beginning Petty Cash", Global.formatDoubleStrToCurrency(shift.beginning_petty_cash), lineWidth, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Expenses", "(" + Global.formatDoubleStrToCurrency(shift.total_expenses) + ")", lineWidth, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", Global.formatDoubleStrToCurrency(shift.ending_petty_cash), lineWidth, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Transactions Cash", Global.formatDoubleStrToCurrency(shift.total_transaction_cash), lineWidth, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Ending Cash", Global.formatDoubleStrToCurrency(shift.total_ending_cash), lineWidth, 3));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Refunds", "(" + "?????" + ")", lineWidth, 3));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Entered Close Amount", shift.entered_close_amount, lineWidth, 3));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Over (Short)", shift.over_short, lineWidth, 3));
+            }
+            listShifts.clear();
+        }
+
+        sb.append(textHandler.newLines(2));
+//???? what is this doing???
+        sb.append(sb_ord_types);
+
+
+        List<OrderProducts>listProd = ordProdHandler.getProductsDayReport(true, null,mDate);
+        if(listProd.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Items Sold", lineWidth));
+
+            sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
+
+            for(OrderProducts prod:listProd)
+            {
+                sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
+                if(printDetails){
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("SKU:" + prod.prod_sku, "", lineWidth, 3));
+                }
+            }
+
+            listProd.clear();
+        }
+
+        List<Payment>listPayments = paymentHandler.getPaymentsDayReport(0, null, mDate);
+        if(listPayments.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Payments", lineWidth));
+            for(Payment payment:listPayments)
+            {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
+
+                if(printDetails) {
+                    //check if tip should be printed
+                    if (showTipField) {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
+                    }
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText("Details", lineWidth, 3));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.pay_id, lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.job_id, lineWidth, 4));
+                    sb.append(textHandler.newLines(1));
+                }
+            }
+            listPayments.clear();
+        }
+
+
+        listPayments = paymentHandler.getPaymentsDayReport(1, null,mDate);
+        if(listPayments.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Void", lineWidth));
+            for(Payment payment:listPayments)
+            {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth,2));
+
+                if(printDetails) {
+                    //check if tip should be printed
+                    if (showTipField) {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
+                    }
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText("Details", lineWidth, 3));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.pay_id, lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.job_id, lineWidth, 4));
+                    sb.append(textHandler.newLines(1));
+                }
+            }
+            listPayments.clear();
+        }
+
+        listPayments = paymentHandler.getPaymentsDayReport(2, null, mDate);
+        if(listPayments.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Refund", lineWidth));
+            for(Payment payment:listPayments)
+            {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
+
+                if(printDetails) {
+                    //check if tip should be printed
+                    if (showTipField) {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
+                    }
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText("Details", lineWidth, 3));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.pay_id, lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.job_id, lineWidth, 4));
+                    sb.append(textHandler.newLines(1));
+                }
+            }
+            listPayments.clear();
+        }
+
+
+        listProd = ordProdHandler.getProductsDayReport(false, null, mDate);
+        if(listProd.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Items Returned", lineWidth));
+            sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
+            for(OrderProducts prod:listProd)
+            {
+                sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
+                if(printDetails){
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("SKU:" + prod.prod_sku, "", lineWidth, 3));
+                }
+            }
+            listProd.clear();
+        }
+
+        listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
+        if(listProd.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Department Sales", lineWidth));
+            sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
+            for(OrderProducts prod:listProd)
+            {
+                sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
+            }
+            listProd.clear();
+        }
+
+        listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
+        if(listProd.size()>0)
+        {
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.centeredString("Department Returns", lineWidth));
+            sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
+            for(OrderProducts prod:listProd)
+            {
+                sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
+            }
+            listProd.clear();
+        }
+
+
+
+        sb.append(textHandler.centeredString("** End of report **", lineWidth));
+        sb.append(textHandler.newLines(4));
+        print(sb.toString(), FORMAT);
+    }
+
 
     protected void printReportReceipt(String curDate, int lineWidth) {
         // TODO Auto-generated method stub

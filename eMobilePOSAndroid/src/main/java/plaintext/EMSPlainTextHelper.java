@@ -1,7 +1,11 @@
 package plaintext;
 
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
 
 
 public class EMSPlainTextHelper {
@@ -154,10 +158,48 @@ public class EMSPlainTextHelper {
 
 		return sb.toString();
 	}
-	
-	
-	public String fourColumnLineWithLeftAlignedText(String first, String second,String third,String fourth, int theLineWidth, int theIndentation) {
+
+	public String threeColumnLineWithLeftAlignedText(String first, String second, String third, int theLineWidth, int theIndentation) {
 		int numSpaces = 0;
+
+		if(first == null)
+			first = empStr;
+		if(second == null)
+			second = empStr;
+		if(third == null)
+			third = empStr;
+
+		int firstCharCount = first.length();
+		int secondCharCount = second.length();
+		int thirdCharCount = third.length();
+		numSpaces = theLineWidth - (firstCharCount + secondCharCount+thirdCharCount);
+		numSpaces = numSpaces/3;
+
+		StringBuilder sb = new StringBuilder();
+
+		if (numSpaces > 0) {
+			sb.append(this.spaces(numSpaces - theIndentation));
+			sb.append(first);
+			sb.append(this.spaces(numSpaces - theIndentation));
+			sb.append(second);
+			sb.append(this.spaces(numSpaces - theIndentation));
+			sb.append(third);
+
+		} else {
+			sb.append(this.spaces(theIndentation));
+			sb.append(first).append("\n");
+			sb.append(" ");
+			sb.append(second).append("\n");
+			sb.append(" ");
+			sb.append(third).append("\n");
+		}
+
+		return sb.toString();
+	}
+
+	public String fourColumnLineWithLeftAlignedText(String first, String second, String third, String fourth, int theLineWidth, int theIndentation) {
+		int numSpaces = 0;
+        int allTextFieldsLength = 0;
 		
 		if(first == null)
 			first = empStr;
@@ -168,25 +210,32 @@ public class EMSPlainTextHelper {
 		if(fourth == null)
 			fourth = empStr;
 		
+		first = first.trim();
+		second = second.trim();
+		third = third.trim();
+		fourth = fourth.trim();
 
-			int firstCharCount = first.length();
-			int secondCharCount = second.length();
-			int thirdCharCount = third.length();
-			int fourthCharCount = fourth.length();
-			numSpaces = theLineWidth - (firstCharCount + secondCharCount+thirdCharCount+fourthCharCount);
-			numSpaces = numSpaces/4;
+		int firstCharCount = first.length();
+		int secondCharCount = second.length();
+		int thirdCharCount = third.length();
+		int fourthCharCount = fourth.length();
+
+        allTextFieldsLength = firstCharCount + secondCharCount + thirdCharCount + fourthCharCount;
+		numSpaces = theLineWidth - allTextFieldsLength;
+		numSpaces = numSpaces/4;
 		
 		StringBuilder sb = new StringBuilder();
 
 		if (numSpaces > 0) {
+            sb.append("\n");
+            sb.append(first);
 			sb.append(this.spaces(numSpaces - theIndentation));
-			sb.append(first);
+            sb.append(second);
 			sb.append(this.spaces(numSpaces - theIndentation));
-			sb.append(second);
+            sb.append(third);
 			sb.append(this.spaces(numSpaces - theIndentation));
-			sb.append(third);
+            sb.append(fourth);
 			sb.append(this.spaces(numSpaces - theIndentation));
-			sb.append(fourth);
 		} else {
 			sb.append(this.spaces(theIndentation));
 			sb.append(first).append("\n");
@@ -200,11 +249,152 @@ public class EMSPlainTextHelper {
 
 		return sb.toString();
 	}
-	
-	
-	
 
-	public ArrayList<String> lineArrayFromString(String theString, int theLineWidth) {
+
+    public String fourColumnLineWithLeftAlignedTextPercentWidth(String first, int firstWidthPercent, String second, int secondWidthPercent, String third, int thirdWidthPercent, String fourth, int fourthWidthPercent, int lineWidth, int theIndentation) {
+        // the sum of all width percents must total 100%
+        int numSpaces = 0;
+
+        if(first == null)
+            first = empStr;
+        if(second == null)
+            second = empStr;
+        if(third == null)
+            third = empStr;
+        if(fourth == null)
+            fourth = empStr;
+
+        first = first.trim();
+        second = second.trim();
+        third = third.trim();
+        fourth = fourth.trim();
+
+        lineWidth = lineWidth - theIndentation; //count out indentation spaces
+        int firstColumnFinalLength = (int)(lineWidth * ((double) firstWidthPercent / 100.0d));
+        int secondColumnFinalLength = (int)(lineWidth * ((double) secondWidthPercent / 100.0d));
+        int thirdColumnFinalLength = (int)(lineWidth * ((double) thirdWidthPercent / 100.0d));
+        int fourthColumnFinalLength = (int)(lineWidth * ((double) fourthWidthPercent / 100.0d));
+
+        int firstCharCount = first.length();
+        int secondCharCount = second.length();
+        int thirdCharCount = third.length();
+        int fourthCharCount = fourth.length();
+//        numSpaces = lineWidth - (firstCharCount + secondCharCount + thirdCharCount + fourthCharCount);
+//        numSpaces = numSpaces/4;
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n");
+        sb.append(StringUtils.left(first, firstColumnFinalLength));
+        sb.append(this.spaces(firstColumnFinalLength - firstCharCount));
+        sb.append(StringUtils.left(second,secondColumnFinalLength));
+        sb.append(this.spaces(secondColumnFinalLength - secondCharCount));
+        sb.append(StringUtils.left(third, thirdColumnFinalLength));
+        sb.append(this.spaces(thirdColumnFinalLength - thirdCharCount));
+        sb.append(StringUtils.left(fourth, fourthColumnFinalLength));
+        sb.append(this.spaces(fourthColumnFinalLength - fourthCharCount));
+
+        return sb.toString();
+    }
+
+
+    public String fourColumnLineItem(String first, int firstWidthPercent, String second, int secondWidthPercent, String third, int thirdWidthPercent, String fourth, int fourthWidthPercent, int lineWidth, int theIndentation) {
+        // the sum of all width percents must total 100%
+        int numSpaces = 0;
+
+        if(first == null)
+            first = empStr;
+        if(second == null)
+            second = empStr;
+        if(third == null)
+            third = empStr;
+        if(fourth == null)
+            fourth = empStr;
+
+        first = first.trim();
+        second = second.trim();
+        third = third.trim();
+        fourth = fourth.trim();
+
+        lineWidth = lineWidth - theIndentation; //count out indentation spaces
+        int firstColumnFinalLength = (int)(lineWidth * ((double) firstWidthPercent / 100.0d));
+        int secondColumnFinalLength = (int)(lineWidth * ((double) secondWidthPercent / 100.0d));
+        int thirdColumnFinalLength = (int)(lineWidth * ((double) thirdWidthPercent / 100.0d));
+        int fourthColumnFinalLength = (int)(lineWidth * ((double) fourthWidthPercent / 100.0d));
+
+        int firstCharCount = first.length();
+        int secondCharCount = second.length();
+        int thirdCharCount = third.length();
+        int fourthCharCount = fourth.length();
+//        numSpaces = lineWidth - (firstCharCount + secondCharCount + thirdCharCount + fourthCharCount);
+//        numSpaces = numSpaces/4;
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n");
+        sb.append(this.spaces(theIndentation));
+        sb.append(StringUtils.left(first, firstColumnFinalLength));
+        sb.append(this.spaces(firstColumnFinalLength - firstCharCount));
+        sb.append(StringUtils.left(second, secondColumnFinalLength));
+        sb.append(this.spaces(secondColumnFinalLength - secondCharCount));
+        sb.append(this.spaces(thirdColumnFinalLength - thirdCharCount));
+        sb.append(StringUtils.left(third, thirdColumnFinalLength));
+        sb.append(this.spaces(fourthColumnFinalLength - fourthCharCount));
+        sb.append(StringUtils.left(fourth, fourthColumnFinalLength));
+
+        return sb.toString();
+    }
+
+	public String threeColumnLineItem(String first, int firstWidthPercent, String second, int secondWidthPercent, String third, int thirdWidthPercent, int lineWidth, int theIndentation) {
+		// the sum of all width percents must total 100%
+
+		if(first == null)
+			first = empStr;
+		if(second == null)
+			second = empStr;
+		if(third == null)
+			third = empStr;
+
+		first = first.trim();
+		second = second.trim();
+		third = third.trim();
+
+		lineWidth = lineWidth - theIndentation; //count out indentation spaces
+		int firstColumnFinalLength = (int)(lineWidth * ((double) firstWidthPercent / 100.0d));
+		int secondColumnFinalLength = (int)(lineWidth * ((double) secondWidthPercent / 100.0d));
+		int thirdColumnFinalLength = (int)(lineWidth * ((double) thirdWidthPercent / 100.0d));
+
+        //adjust for rounding issues with integers, add spaces...
+        int totalComputedColumnLengths = firstColumnFinalLength + secondColumnFinalLength + thirdColumnFinalLength;
+
+        if (totalComputedColumnLengths < lineWidth){
+            int theDifference = lineWidth - totalComputedColumnLengths;
+            //add spaces to the last column
+            thirdColumnFinalLength += theDifference;
+        }
+
+		int firstCharCount = first.length();
+		int secondCharCount = second.length();
+		int thirdCharCount = third.length();
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("\n");
+		sb.append(this.spaces(theIndentation));
+		sb.append(StringUtils.left(first, firstColumnFinalLength));
+		sb.append(this.spaces(firstColumnFinalLength - firstCharCount));
+		sb.append(this.spaces(secondColumnFinalLength - secondCharCount));
+		sb.append(StringUtils.left(second, secondColumnFinalLength));
+		sb.append(this.spaces(thirdColumnFinalLength - thirdCharCount));
+		sb.append(StringUtils.left(third, thirdColumnFinalLength));
+
+		return sb.toString();
+	}
+
+
+
+
+    public ArrayList<String> lineArrayFromString(String theString, int theLineWidth) {
 		String stringCopy = theString;
 		stringCopy = stringCopy.replace("\n", empStr);
 		stringCopy = stringCopy.replace("\t", empStr);

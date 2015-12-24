@@ -49,6 +49,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -127,7 +128,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
-            typeOfProcedure = extras.getInt("typeOfProcedure");
+            typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
         }
         orderType = (Global.OrderType) extras.get("ord_type");
         paymentHandlerDB = new PaymentsHandler(this);
@@ -244,7 +245,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onBackPressed() {
 
-        if (overAllRemainingBalance == 0) {
+        if (currentPaidAmount == 0) {
             // setResult(50);
             finish();
         } else {
@@ -864,7 +865,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
             paid = Global.formatNumber(true, currentPaidAmount);
 
-            if (total.replaceAll("[^\\d\\,\\.]", "").trim().equals("0.00") && data != null) {
+			if (NumberUtils.cleanCurrencyFormatedNumber(total).equals("0.00") && data != null) {
                 total = data.getStringExtra("total_amount");
             }
             overAllRemainingBalance = Global.formatNumFromLocale(

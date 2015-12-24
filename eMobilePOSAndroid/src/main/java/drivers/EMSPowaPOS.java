@@ -13,14 +13,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.StarMicronics.jasura.JAException;
-import com.android.database.InvProdHandler;
-import com.android.database.InvoicesHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
@@ -29,7 +21,6 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.mpowa.android.powapos.accessory.abstraction.PowaHidKeyDecoder;
@@ -43,22 +34,14 @@ import com.mpowa.android.sdk.powapos.core.PowaPOSEnums;
 import com.mpowa.android.sdk.powapos.core.PowaPOSEnums.BootloaderUpdateError;
 import com.mpowa.android.sdk.powapos.core.PowaPOSEnums.PowaUSBCOMPort;
 import com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallback;
-import com.starmicronics.stario.StarIOPortException;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
 
@@ -247,8 +230,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+//        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override

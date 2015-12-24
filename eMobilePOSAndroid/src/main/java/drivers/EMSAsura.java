@@ -576,8 +576,8 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override

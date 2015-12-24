@@ -60,11 +60,12 @@ import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
@@ -410,14 +411,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             public void onClick(DialogInterface thisDialog,
                                                 int which) {
                                 // TODO Auto-generated method stub
-                                String value = input.getText().toString()
-                                        .replaceAll("[^\\d\\,\\.]", "");
+                                String value = NumberUtils.cleanCurrencyFormatedNumber(input);
                                 if (!value.isEmpty()) {
-                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global
-                                            .formatNumFromLocale(value))));
+                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
                                     BigDecimal prod_qty = new BigDecimal("0");
-                                    BigDecimal new_subtotal = new BigDecimal(
-                                            "0");
+                                    BigDecimal new_subtotal = new BigDecimal("0");
                                     try {
                                         prod_qty = new BigDecimal(
                                                 global.orderProducts
@@ -546,7 +544,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.btnReturn:
                 OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
                 OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem,
-                        "Return");
+                        getString(R.string.return_title));
                 break;
             case R.id.btnScrollLeft:
                 btnScrollLeft.setVisibility(View.GONE);
@@ -1760,7 +1758,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
-
+//                        Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
                                 && Global.multiPrinterManager.get(printMap).currentDevice != null)
                             Global.multiPrinterManager.get(printMap).currentDevice

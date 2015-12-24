@@ -111,8 +111,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         List<String> taxes = new ArrayList<String>();
         List<String> discount = new ArrayList<String>();
         String custTaxCode = "";
-        if (myPref.isCustSelected())
+        if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
+            if(custTaxCode.isEmpty()){
+                custTaxCode = myPref.getEmployeeDefaultTax();
+            }
+        }
         else if (Global.isFromOnHold)
             custTaxCode = Global.taxID;
         else {

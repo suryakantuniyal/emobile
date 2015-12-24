@@ -286,9 +286,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.paymethod_id = "Genius";
                 payment.emvContainer = new EMVContainer(response);
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
-                if(response.getStatus().equalsIgnoreCase("APPROVED")) {
+                if (response.getStatus().equalsIgnoreCase("APPROVED")) {
                     payHandler.insert(payment);
-                }else{
+                    //setResult(-1);
+                    String paid_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountView)));
+                } else {
                     payHandler.insertDeclined(payment);
 
                 }
@@ -307,7 +309,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 else
                     finish();
             } else {
-                Global.showPrompt(activity, R.string.dlog_title_error, response.getStatus());
+                Global.showPrompt(activity, R.string.dlog_title_error, response != null ? response.getStatus() : getString(R.string.failed_genius_connectivity));
             }
 
 

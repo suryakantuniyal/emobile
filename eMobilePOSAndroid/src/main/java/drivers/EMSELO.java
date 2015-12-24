@@ -342,9 +342,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
+        super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
     }
+
+
 
 
     @Override
@@ -384,8 +386,8 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
                 Log.d("Card Data", cardData.toString());
                 CreditCardInfo creditCardInfo = new CreditCardInfo();
-                CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
-                callBack.cardWasReadSuccessfully(true, creditCardInfo);
+                boolean parsed = CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
+                callBack.cardWasReadSuccessfully(parsed, creditCardInfo);
             }
         });
     }

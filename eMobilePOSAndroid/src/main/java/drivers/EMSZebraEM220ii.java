@@ -301,10 +301,9 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+//        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
-
     @Override
     public boolean printReport(String curDate) {
         // TODO Auto-generated method stub

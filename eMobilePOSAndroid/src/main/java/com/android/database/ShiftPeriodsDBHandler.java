@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.util.SparseArray;
 
 import com.android.emobilepos.models.ShiftPeriods;
-import com.android.support.DBManager;
 import com.android.support.Global;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -29,7 +28,9 @@ public class ShiftPeriodsDBHandler {
 	private final String beginning_petty_cash = "beginning_petty_cash";
 	private final String ending_petty_cash = "ending_petty_cash";
 	private final String entered_close_amount = "entered_close_amount";
+	private final String over_short = "over_short";
 	private final String total_transaction_cash = "total_transaction_cash";
+	private final String total_ending_cash = "total_ending_cash";
 	private final String shift_issync = "shift_issync";
 
 	public final List<String> attr = Arrays.asList(new String[] { shift_id, assignee_id, assignee_name, creationDate,
@@ -196,12 +197,12 @@ public class ShiftPeriodsDBHandler {
 			map.put(2, Global.formatDoubleStrToCurrency("0"));
 			map.put(3, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(ending_petty_cash))));
 			map.put(4, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(total_transaction_cash))));
-			map.put(5, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex("total_ending_cash"))));
+			map.put(5, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(total_ending_cash))));
 
 			if (!c.getString(c.getColumnIndex("end_type")).equals("Open")) {
 				sb.setLength(0);
 
-				double temp1 = Double.parseDouble(c.getString(c.getColumnIndex("total_ending_cash")));
+				double temp1 = Double.parseDouble(c.getString(c.getColumnIndex(total_ending_cash)));
 				double temp2 = Double.parseDouble(c.getString(c.getColumnIndex(entered_close_amount)));
 				if (temp1 == temp2)
 					map.put(6, Global.formatDoubleToCurrency(temp2));
@@ -349,16 +350,18 @@ public class ShiftPeriodsDBHandler {
 
 					double temp1 = Double.parseDouble(shift.total_ending_cash);
 					double temp2 = Double.parseDouble(shift.entered_close_amount);
+//					shift.entered_close_amount = Global.formatDoubleToCurrency(temp2);
 					if (temp2 < temp1) {
-						query.append(Global.formatDoubleToCurrency(temp2)).append("(");
-						query.append(Global.formatDoubleToCurrency(temp1 - temp2)).append(" Short)");
-						shift.entered_close_amount = query.toString();
+                        query.append(Global.formatDoubleToCurrency(temp2)).append(" (");
+                        query.append(Global.formatDoubleToCurrency(temp1 - temp2)).append(" Short)");
+//						shift.over_short = query.toString();
+                        shift.entered_close_amount = query.toString();
 					} else {
-						query.append(Global.formatDoubleToCurrency(temp2)).append("(");
-						query.append(Global.formatDoubleToCurrency(temp2 - temp1)).append(" Over)");
+                        query.append(Global.formatDoubleToCurrency(temp2)).append(" (");
+                        query.append(Global.formatDoubleToCurrency(temp2 - temp1)).append(" Over)");
+//						shift.over_short = query.toString();
 						shift.entered_close_amount = query.toString();
 					}
-
 				}
 
 				listShifts.add(shift);

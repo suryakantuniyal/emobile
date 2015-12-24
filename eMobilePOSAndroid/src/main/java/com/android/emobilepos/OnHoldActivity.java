@@ -32,7 +32,7 @@ import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXdownloadHandler;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;

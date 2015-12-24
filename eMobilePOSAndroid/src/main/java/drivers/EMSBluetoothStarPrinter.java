@@ -1,25 +1,11 @@
 package drivers;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
-import com.StarMicronics.jasura.JAException;
-import com.android.database.InvProdHandler;
-import com.android.database.InvoicesHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
-import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
@@ -29,7 +15,6 @@ import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
-import com.android.support.DBManager;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -54,7 +39,6 @@ import drivers.star.utils.Communication;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.PrinterSetting;
 import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
 import util.RasterDocument;
@@ -294,6 +278,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
     }
 
+
+
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
@@ -418,8 +404,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override
@@ -456,6 +442,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public void registerPrinter() {
         // TODO Auto-generated method stub
         edm.currentDevice = this;
+
     }
 
     @Override
@@ -741,8 +728,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void openCashDrawer() {
-
+        String printerName;
         byte[] data;
+        printerName = myPref.getPrinterName();
+
 //	     releasePrinter();
         data = PrinterFunctions.createCommandsOpenCashDrawer();
 
@@ -750,13 +739,14 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         Communication.Result result;
 
+        if (printerName.toUpperCase().contains("MPOP")) {
         try {
             result = Communication.sendCommands(data, getStarIOPort(), this.activity);
         } catch (StarIOPortException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }   // 10000mS!!!
-
+    }
     }
 
     @Override

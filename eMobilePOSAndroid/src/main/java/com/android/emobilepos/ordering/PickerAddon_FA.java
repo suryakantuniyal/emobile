@@ -14,7 +14,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -25,7 +24,8 @@ import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProducts;
-import com.android.support.DBManager;
+import com.android.emobilepos.models.Product;
+import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -384,45 +384,47 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 		ordProd.itemSubtotal = Global.getRoundBigDecimal(temp);
 		ordProd.itemTotal = Global.getRoundBigDecimal(temp);
 		ordProd.ordprod_desc = itemData[3] + _ord_desc.toString();
+		ordProd.prod_sku = itemData[13];
+		ordProd.prod_upc = itemData[14];
 		global.orderProducts.set(position, ordProd);
 	}
 
 	private void terminateAdditionProcess() {
 		if (!isEditAddon) {
-			String[] data = new String[13];
-			data[0] = extras.getString("prod_id");
-			data[1] = extras.getString("prod_name");
-			data[2] = extras.getString("prod_price");
-			data[3] = extras.getString("prod_desc");
-			data[4] = extras.getString("prod_on_hand");
-			data[5] = extras.getString("url");
-			data[6] = extras.getString("prod_istaxable");
-			data[7] = extras.getString("prod_type");
-			data[8] = extras.getString("cat_id");
-			data[12] = extras.getString("prod_taxcode");
-			data[11] = extras.getString("prod_taxtype");
-			data[9] = extras.getString("prod_price_points");
-			data[10] = extras.getString("prod_value_points");
+			Product product = new Product();
+			product.setId(extras.getString("prod_id"));
+			product.setProdName(extras.getString("prod_name"));
+			product.setProdPrice(extras.getString("prod_price"));
+			product.setProdDesc(extras.getString("prod_desc"));
+			product.setProdOnHand(extras.getString("prod_on_hand"));
+			product.setProdImgName(extras.getString("url"));
+			product.setProdIstaxable(extras.getString("prod_istaxable"));
+			product.setProdType(extras.getString("prod_type"));
+			product.setCatId(extras.getString("cat_id"));
+			product.setProdTaxCode(extras.getString("prod_taxcode"));
+			product.setProdTaxType(extras.getString("prod_taxtype"));
+			product.setProdPricePoints(extras.getString("prod_price_points"));
+			product.setProdValuePoints(extras.getString("prod_value_points"));
 
 			if (!myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
 				Intent intent = new Intent(activity, PickerProduct_FA.class);
-				intent.putExtra("prod_id", data[0]);
-				intent.putExtra("prod_name", data[1]);
-				intent.putExtra("prod_price", data[2]);
-				intent.putExtra("prod_desc", data[3]);
-				intent.putExtra("prod_on_hand", data[4]);
-				intent.putExtra("url", data[5]);
-				intent.putExtra("prod_istaxable", data[6]);
-				intent.putExtra("prod_type", data[7]);
-				intent.putExtra("prod_taxcode", data[12]);
-				intent.putExtra("prod_taxtype", data[11]);
-				intent.putExtra("prod_price_points", data[9]);
-				intent.putExtra("prod_value_points", data[10]);
+				intent.putExtra("prod_id",product.getId());
+				intent.putExtra("prod_name", product.getProdName());
+				intent.putExtra("prod_price", product.getProdPrice());
+				intent.putExtra("prod_desc", product.getProdDesc());
+				intent.putExtra("prod_on_hand", product.getProdOnHand());
+				intent.putExtra("url", product.getProdImgName());
+				intent.putExtra("prod_istaxable", product.getProdIstaxable());
+				intent.putExtra("prod_type", product.getProdType());
+				intent.putExtra("prod_taxcode", product.getProdTaxCode());
+				intent.putExtra("prod_taxtype", product.getProdTaxType());
+				intent.putExtra("prod_price_points", product.getProdPricePoints());
+				intent.putExtra("prod_value_points", product.getProdValuePoints());
 				intent.putExtra("isFromAddon", true);
 				intent.putExtra("cat_id", extras.getString("cat_id"));
 				startActivityForResult(intent, 0);
 			} else {
-				global.automaticAddOrder(activity, true, global, data);
+				global.automaticAddOrder(activity, true, global, product);
 				activity.setResult(2);
 				// activity.finish();
 			}

@@ -7,7 +7,6 @@ import android.database.Cursor;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.google.gson.Gson;
 

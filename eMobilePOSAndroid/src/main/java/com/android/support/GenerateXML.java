@@ -10,6 +10,7 @@ import com.android.database.AddressHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
+import com.android.database.DBManager;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsAttr_DB;

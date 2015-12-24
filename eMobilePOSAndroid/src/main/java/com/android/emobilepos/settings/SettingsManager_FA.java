@@ -45,7 +45,7 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.shifts.OpenShift_FA;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -195,6 +195,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 case SettingsTab_FR.CASE_MANAGER:
                     addPreferencesFromResource(R.xml.settings_manager_layout);
                     prefManager = getPreferenceManager();
+                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
@@ -773,6 +774,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         public void onClick(DialogInterface dialog, int which) {
                             // TODO Auto-generated method stub
                             MyPreferences myPref = new MyPreferences(activity);
+							String strDeviceName;
+							strDeviceName = val[pos].toUpperCase(Locale.getDefault());
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
                             {
@@ -788,6 +791,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.printerMACAddress(false, "BT:" + macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -797,6 +801,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.BAMBOO);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -814,6 +819,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -822,6 +828,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.ONEIL);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
+								myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();

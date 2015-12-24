@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.TimeClock;
-import com.android.support.DBManager;
 
 import net.sqlcipher.database.SQLiteStatement;
 
