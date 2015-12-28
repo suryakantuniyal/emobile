@@ -414,10 +414,10 @@ public class PaymentsHandler {
 
     public PaymentDetails getPaymentDetails(String payID, boolean isDeclined) {
         String tableName = table_name;
-        if(isDeclined)
-            tableName=table_name_declined;
+        if (isDeclined)
+            tableName = table_name_declined;
         String sql = "SELECT pay_date,pay_comment,job_id, inv_id,group_pay_id,pay_signature,ccnum_last4," +
-                "pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id FROM "+tableName+
+                "pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id FROM " + tableName +
                 " WHERE pay_id = ?";
 
         PaymentDetails paymentDetails = new PaymentDetails();
@@ -613,18 +613,31 @@ public class PaymentsHandler {
     }
 
     public Cursor getCardPayments(boolean isRefund) {
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM ")
-                .append(table_name)
-                .append(" p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id AND (m.paymentmethod_type = ");
-        sb.append(
-                "'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') AND pay_type !='1'  AND is_refund='");
-
+        String is_refund = "0";
         if (isRefund)
-            sb.append("1' ORDER BY p.pay_id DESC");
-        else
-            sb.append("0' ORDER BY p.pay_id DESC");
+            is_refund = "1";
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
+                "p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync,p.pay_tip as pay_tip " +
+                "FROM " + table_name +
+                " p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id " +
+                "WHERE p.paymethod_id = m.paymethod_id AND " +
+                "(m.paymentmethod_type = 'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR " +
+                "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
+                "AND pay_type !='1'  AND is_refund='" + is_refund + "' " +
+                " UNION " +
+                "SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
+                "p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync,p.pay_tip as pay_tip " + "FROM " + table_name_declined +
+                " p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id " +
+                "WHERE p.paymethod_id = m.paymethod_id AND " +
+                "(m.paymentmethod_type = 'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR " +
+                "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
+                "AND pay_type !='1'  AND is_refund='" + is_refund + "' ");
+//
+//        if (isRefund)
+//            sb.append("1' ORDER BY p.pay_id DESC");
+//        else
+//            sb.append("0' ORDER BY p.pay_id DESC");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
 
