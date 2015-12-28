@@ -11,6 +11,7 @@ import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 
 import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteDiskIOException;
 
 import org.apache.commons.io.FileUtils;
@@ -22,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-	public static final int VERSION = 34;
+    public static final int VERSION = 34;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -146,19 +147,65 @@ public class DBManager {
         }
     }
 
-    public void exportDBFile() {
-        File dbFile = null;
-        try {
-            dbFile = activity.getDatabasePath(CIPHER_DB_NAME);
-        } catch (Exception e1) {
-            e1.printStackTrace();
+
+    public static void decrypt(Context ctxt, String dbName, String passphrase) throws IOException {
+        File originalFile = ctxt.getDatabasePath(CIPHER_DB_NAME);
+
+        if (originalFile.exists()) {
+            File newFile = File.createTempFile("sqlcipherutils", "tmp", ctxt.getCacheDir());
+            SQLiteDatabase db;
+            try {
+                db = SQLiteDatabase.openDatabase(originalFile.getAbsolutePath(), passphrase, null,
+                        SQLiteDatabase.OPEN_READWRITE);
+
+                db.rawExecSQL(String.format("ATTACH DATABASE '%s' AS cleartext KEY '';", newFile.getAbsolutePath()));
+
+                db.rawExecSQL("SELECT sqlcipher_export('cleartext')");
+                db.rawExecSQL("DETACH DATABASE cleartext;");
+
+                int version = db.getVersion();
+
+                db.close();
+
+                db = SQLiteDatabase.openDatabase(newFile.getAbsolutePath(), "", null,
+                        SQLiteDatabase.OPEN_READWRITE);
+
+                db.setVersion(version);
+                db.close();
+                File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
+                try {
+                    FileUtils.copyFile(newFile, outFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                originalFile.delete();
+//                newFile.renameTo(ctxt.getDatabasePath(CIPHER_DB_NAME));
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         }
-        File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
+    }
+
+    public void exportDBFile() {
         try {
-            FileUtils.copyFile(dbFile, outFile);
+            decrypt(activity, CIPHER_DB_NAME, getPassword());
         } catch (IOException e) {
             e.printStackTrace();
         }
+//        File dbFile = null;
+//        try {
+//            dbFile = activity.getDatabasePath(CIPHER_DB_NAME);
+//        } catch (Exception e1) {
+//            e1.printStackTrace();
+//        }
+//        File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
+//        try {
+//            FileUtils.copyFile(dbFile, outFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public boolean isNewDBVersion() {
@@ -323,7 +370,7 @@ public class DBManager {
             + "[isAdded] [bit] NULL, [ordprod_name][varchar](50) NULL, [prod_taxId][varchar](50) NULL, [prod_taxValue][varchar](50) NULL , "
             + "[uom_id] [varchar],[prod_istaxable][tinyint] NULL,[discount_is_taxable][tinyint],[discount_is_fixed][tinyint],[onHand][double],"
             + "[imgURL][varchar],[prod_price][money],[prod_type][varchar],[cardIsActivated][tinyint] DEFAULT 0,[itemTotal][money],[itemSubtotal][money],[addon_section_name][varchar],"
-			+ "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL)";
+            + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL)";
 
     private final String CREATE_ORDERS = "CREATE TABLE [Orders]( [ord_id] [varchar](50) PRIMARY KEY NOT NULL, [qbord_id] [varchar](50) NULL, "
             + "[qbtxid] [varchar](255) NULL, [emp_id] [int] NULL, [cust_id] [varchar](50) NULL,[custidkey] [varchar], [ord_po] [varchar](50) NULL, [total_lines] [int] NULL, "
@@ -458,7 +505,7 @@ public class DBManager {
 
     private final String CREATE_TEMPLATES = "CREATE TABLE Templates (_id [varchar],cust_id [varchar],product_id[varchar],quantity [double],"
             + "price_level_id [varchar],price_level [varchar], name [varchar], price [money], overwrite_price [money], _update[date],"
-			+ "isactive [varchar],isSync[boolean] DEFAULT 0,[prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL)";
+            + "isactive [varchar],isSync[boolean] DEFAULT 0,[prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL)";
 
     private final String CREATE_TERMS = "CREATE TABLE [Terms]( [terms_id] [varchar](50) PRIMARY KEY NOT NULL, [terms_name] [varchar](255) NOT NULL, "
             + "[terms_stdduedays] [int] NULL, [terms_stddiscdays] [int] NULL, [terms_discpct] [float] NULL, [isactive] [tinyint] NOT NULL, "

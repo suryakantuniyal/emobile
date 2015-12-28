@@ -16,7 +16,7 @@ public class PayMethodsHandler {
 
 	
 
-	private final String paymethod_id = "paymethod_id";
+	private final static String paymethod_id = "paymethod_id";
 	private final String paymethod_name = "paymethod_name";
 	private final String paymentmethod_type = "paymentmethod_type";
 	private final String paymethod_update = "paymethod_update";
@@ -209,7 +209,7 @@ public class PayMethodsHandler {
 	}
 	
 	
-	public String getPayMethodID(String methodType)
+	public static String getPayMethodID(String methodType)
 	{
 		//SQLiteDatabase db = dbManager.openReadableDB();
 		
@@ -227,8 +227,7 @@ public class PayMethodsHandler {
 		}
 		
 		cursor.close();
-		//db.close();
-		
+
 		return data;
 	}
 	

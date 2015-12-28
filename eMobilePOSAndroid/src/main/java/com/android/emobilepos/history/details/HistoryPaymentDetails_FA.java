@@ -35,6 +35,7 @@ import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.payments.EMSPayGate_Default;
 import com.android.payments.EMSPayGate_Default.EAction;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -82,6 +83,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
     private Drawable mapDrawable;
     private Button voidButton, printButton;
     private MyPreferences myPref;
+    private boolean isDeclined;
 
 
     @Override
@@ -98,11 +100,12 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         pay_amount = extras.getString("pay_amount");
         cust_name = extras.getString("cust_name");
         paymethod_name = extras.getString("paymethod_name");
+        isDeclined = Boolean.parseBoolean(extras.getString("isDeclined"));
 
 
         printButton = (Button) findViewById(R.id.printButton);
         voidButton = (Button) findViewById(R.id.histpayVoidBut);
-
+        voidButton.setEnabled(!isDeclined);
 
         allInfoLeft = Arrays.asList(new String[]{getString(R.string.pay_details_id), getString(R.string.pay_details_date),
                 getString(R.string.pay_details_method), getString(R.string.pay_details_comment), getString(R.string.pay_details_inv_num),
@@ -111,19 +114,21 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
 
         payHandler = new PaymentsHandler(activity);
-        final String[] rightValues = payHandler.getPaymentDetails(pay_id);
+
+        PaymentDetails paymentDetails = payHandler.getPaymentDetails(pay_id, isDeclined);
         if (extras.getBoolean("histpay")) {
 
-            if (rightValues[8].isEmpty()) {
-                if (rightValues[2].isEmpty()) {
+            if (paymentDetails.getJob_id().isEmpty()) {
+                if (paymentDetails.getInv_id().isEmpty()) {
                     InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(activity);
-                    rightValues[2] = invPayHandler.getInvoicePaymentsID(pay_id);
+                    paymentDetails.setInv_id(invPayHandler.getInvoicePaymentsID(pay_id));
                 }
             } else
-                rightValues[2] = rightValues[8];
+                paymentDetails.setInv_id(paymentDetails.getJob_id());
 
-            allInfoRight = Arrays.asList(new String[]{pay_id, rightValues[0], paymethod_name, rightValues[1], rightValues[2],
-                    rightValues[3], "*" + rightValues[5], rightValues[10], rightValues[11], rightValues[12]});
+            allInfoRight = Arrays.asList(new String[]{pay_id, paymentDetails.getPay_date(), paymethod_name, paymentDetails.getPay_comment(),
+                    paymentDetails.getInv_id(), paymentDetails.getGroup_pay_id(), "*" + paymentDetails.getCcnum_last4(),
+                    paymentDetails.getAuthcode(), paymentDetails.getPay_transid(), paymentDetails.getClerk_id()});
         } else {
 
             allInfoRight = Arrays.asList(new String[]{"", "", "", "", "", ""});
@@ -141,7 +146,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         paid_amount.setText(Global.formatDoubleStrToCurrency(pay_amount));
 
 
-        String encodedImg = rightValues[4];
+        String encodedImg = paymentDetails.getPay_signature();
         if (!encodedImg.isEmpty()) {
             Resources resources = activity.getResources();
             Drawable[] layers = new Drawable[2];
@@ -158,7 +163,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         final ImageView mapImg = (ImageView) footerView.findViewById(R.id.ordDetailsMapImg);
 
 
-        loadMapImage(mapImg, rightValues[6], rightValues[7]);
+        loadMapImage(mapImg, paymentDetails.getPay_latitude(), paymentDetails.getPay_longitude());
         myListView.addFooterView(footerView);
         myAdapter = new ListViewAdapter(activity);
         myListView.setAdapter(myAdapter);
@@ -167,7 +172,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         //----------------------------------- Handle void button -------------------------------------------//
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         String curDate = sdf.format(new Date());
-        if (curDate.equals(rightValues[0]) && rightValues[9].equals("0"))                //It was a payment done on the current date
+        if (curDate.equals(paymentDetails.getPay_date()) && paymentDetails.getIsVoid().equals("0"))                //It was a payment done on the current date
         {
             voidButton.setOnClickListener(this);
         }
@@ -454,7 +459,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 } else
                     errorMsg = xml;
                 /*returnedPost = new String[handler.getEmpData().length];
-				returnedPost = handler.getEmpData();*/
+                returnedPost = handler.getEmpData();*/
                 //String val = "";
 
             } catch (Exception e) {

@@ -1126,5 +1126,6 @@
 	<string name="approved">Approved</string>
 	<string name="error_reading_card">Card swipe read error.</string>
 	<string name="endofdayBtn">End of day</string>
+	<string name="declined">DECLINED</string>
 
 </resources>

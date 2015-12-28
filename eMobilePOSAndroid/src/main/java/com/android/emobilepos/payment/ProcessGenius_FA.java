@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
@@ -283,7 +284,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     parseSignature(signa);
                 payment.card_type = payMethodDictionary(response.getPaymentType());
                 payment.processed = "1";
-                payment.paymethod_id = "Genius";
+                payment.paymethod_id = PayMethodsHandler.getPayMethodID(payMethodDictionary(response.getPaymentType()));
                 payment.emvContainer = new EMVContainer(response);
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
                 if (response.getStatus().equalsIgnoreCase("APPROVED")) {
