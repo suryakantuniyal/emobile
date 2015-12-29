@@ -235,8 +235,6 @@ public class Global extends MultiDexApplication {
         }
     }
 
-    ;
-
 
     public final static int S_CUSTOMERS = 1;
     public final static int S_ADDRESS = 2;
@@ -768,7 +766,7 @@ public class Global extends MultiDexApplication {
 
     public static Map<String, String> paymentIconsMap = paymentIconMap();
 
-    private static final Map<String, String> paymentIconMap() {
+    private static Map<String, String> paymentIconMap() {
         HashMap<String, String> result = new HashMap<String, String>();
 
         result.put("AmericanExpress", "amex");
@@ -924,7 +922,6 @@ public class Global extends MultiDexApplication {
     public static String formatNumToLocale(double val) {
 
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
-        ;
         nf.setParseIntegerOnly(false);
         DecimalFormat df = (DecimalFormat) nf;
         return df.format(val);

@@ -33,7 +33,7 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
 	private  List<String> allInfoLeft;
 	private List<String> allInfoRight = new ArrayList<String>();
 
-	private  List<String> allFinancialLeft = Arrays.asList(new String[] { "Balance", "Limit", "Taxable","Tax ID" });
+	private  List<String> allFinancialLeft = Arrays.asList("Balance", "Limit", "Taxable","Tax ID");
 	private List<String> allFinancialRight = new ArrayList<String>();
 
 
@@ -57,10 +57,10 @@ public class ViewCustomerDetails_FA extends BaseFragmentActivityActionBar {
 		dbManager = new DBManager(this.activity);
 		global = (Global)getApplication();
 		
-		allInfoLeft = Arrays.asList(new String[] { getString(R.string.cust_detail_name), getString(R.string.cust_detail_contact),
-				getString(R.string.cust_detail_phone),getString(R.string.cust_detail_email), getString(R.string.cust_detail_company)});
-		allFinancialLeft = Arrays.asList(new String[] { getString(R.string.cust_detail_balance), getString(R.string.cust_detail_limit),
-				getString(R.string.cust_detail_taxable),getString(R.string.cust_detail_tax_id) });
+		allInfoLeft = Arrays.asList(getString(R.string.cust_detail_name), getString(R.string.cust_detail_contact),
+				getString(R.string.cust_detail_phone),getString(R.string.cust_detail_email), getString(R.string.cust_detail_company));
+		allFinancialLeft = Arrays.asList(getString(R.string.cust_detail_balance), getString(R.string.cust_detail_limit),
+				getString(R.string.cust_detail_taxable),getString(R.string.cust_detail_tax_id));
 		
 		Bundle extras = getIntent().getExtras();
 		

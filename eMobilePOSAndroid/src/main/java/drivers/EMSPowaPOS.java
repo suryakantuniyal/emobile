@@ -138,11 +138,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-        if (!deviceList.isEmpty()) {
-            return true;
-        }
+        return !deviceList.isEmpty();
 
-        return false;
     }
 
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {

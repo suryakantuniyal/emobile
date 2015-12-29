@@ -39,7 +39,7 @@ public class MenuCatGV_Adapter extends CursorAdapter
 	private boolean isFastScanning = false;
 	
 	public interface ItemClickedCallback{
-		public void itemClicked(int position,boolean showAllProducts);
+		void itemClicked(int position, boolean showAllProducts);
 	}
 	
 	
@@ -49,7 +49,7 @@ public class MenuCatGV_Adapter extends CursorAdapter
 		// TODO Auto-generated constructor stub
 		activity = context;
 		inflater = LayoutInflater.from(context);
-		callBack = (ItemClickedCallback)_this;
+		callBack = _this;
 		isPortrait = Global.isPortrait(context);
 		imageLoader = _imageLoader;
 		MyPreferences myPref = new MyPreferences(context);

@@ -13,7 +13,7 @@ public class GenerateNewID {
 	private MyPreferences myPref;
 	private Activity activity;
 
-	public static enum IdType {
+	public enum IdType {
 		ORDER_ID, PAYMENT_ID
 	}
 

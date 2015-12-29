@@ -22,21 +22,18 @@ public class VolumePricesHandler {
 	private final String isactive = "isactive";
 
 	private final List<String> attr = Arrays
-			.asList(new String[] { id_key, prod_id, minQty, maxQty, price, isactive, pricelevel_id });
+			.asList(id_key, prod_id, minQty, maxQty, price, isactive, pricelevel_id);
 
 	private static final String table_name = "VolumePrices";
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 
 	private List<String[]> addrData;
 	private List<HashMap<String, Integer>> dictionaryListMap;
 	private MyPreferences myPref;
-	private Activity activity;
 
 	public VolumePricesHandler(Activity activity) {
 		attrHash = new HashMap<String, Integer>();
-		this.activity = activity;
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);
@@ -63,7 +60,7 @@ public class VolumePricesHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {

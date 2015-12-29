@@ -273,9 +273,9 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     	                return true;
     	            }
     				break;
-            	};
-        		
-        	}
+            	}
+
+			}
         	catch(Exception ex)
         	{
         		

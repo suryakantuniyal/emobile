@@ -14,21 +14,18 @@ public class LocationsInventory_DB {
 	public static final String prod_id = "prod_id";
 	public static final String prod_onhand = "prod_onhand";
 	
-	private static final List<String> attr = Arrays.asList(new String[] {loc_id,prod_id,prod_onhand});
+	private static final List<String> attr = Arrays.asList(loc_id,prod_id,prod_onhand);
 
 	private static final String TABLE_NAME = "LocationsInventory";
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> prodData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 	
 	public LocationsInventory_DB(Activity activity) {
 		attrHash = new HashMap<String, Integer>();
 		prodData = new ArrayList<String[]>();
-		this.activity = activity;
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		initDictionary();
@@ -58,7 +55,7 @@ public class LocationsInventory_DB {
 		if (i != null) {
 			return prodData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	

@@ -32,7 +32,6 @@ public class TaxesHandler {
             isactive, tax_update, prTax, tax_default, tax_account);
 
     private StringBuilder sb1, sb2;
-    private final String empStr = "";
     private HashMap<String, Integer> attrHash;
     private List<String[]> addrData;
     private MyPreferences myPref;
@@ -68,7 +67,7 @@ public class TaxesHandler {
         if (i != null) {
             return addrData.get(record)[i];
         }
-        return empStr;
+        return "";
     }
 
 

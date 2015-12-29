@@ -337,7 +337,7 @@ public class EMSIDTechUSB {
 	        String action = intent.getAction();
 	        if (ACTION_USB_PERMISSION.equals(action)) {
 	            synchronized (this) {
-	                UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+	                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
  
 	                if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
 	                    if(device != null){

@@ -38,78 +38,6 @@ public class CustomKeyboard {
     private Activity     mHostActivity;
     private Handler handler;
 
-    /** The key (code) handler. */
-    private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
-
-        public final static int CodeDelete   = -5; // Keyboard.KEYCODE_DELETE
-        public final static int CodeCancel   = -3; // Keyboard.KEYCODE_CANCEL
-        public final static int CodeReturn   = -1; // Keyboard.KEYCODE_RETURN
-        public final static int CodePrev     = 55000;
-        public final static int CodeAllLeft  = 55001;
-        public final static int CodeLeft     = 55002;
-        public final static int CodeRight    = 55003;
-        public final static int CodeAllRight = 55004;
-        public final static int CodeNext     = 55005;
-        public final static int CodeClear    = 55006;
-        public final static int CodeDoubleZero   = 55007;
-
-
-        @Override public void onKey(int primaryCode, int[] keyCodes) {
-            // NOTE We can say '<Key android:codes="49,50" ... >' in the xml file; all codes come in keyCodes, the first in this list in primaryCode
-            // Get the EditText and its Editable
-            View focusCurrent = mHostActivity.getWindow().getCurrentFocus();
-//            if( focusCurrent==null || focusCurrent.getClass()!=EditText.class ) return;
-            EditText edittext = (EditText) focusCurrent;
-            Editable editable = edittext.getText();
-            int start = edittext.getSelectionStart();
-            // Apply the key to the edittext
-            if( primaryCode==CodeCancel ) {
-                hideCustomKeyboard();
-            } else if( primaryCode==CodeDelete ) {
-                if( editable!=null && start>0 ) editable.delete(start - 1, start);
-            } else if( primaryCode==CodeClear ) {
-                if( editable!=null ) editable.clear();
-            } else if( primaryCode==CodeDoubleZero ) {
-                editable.insert(start, "00");
-            } else if( primaryCode==CodeReturn ) {
-                //Message msgObj = handler.obtainMessage();
-                Message msgObj = new Message();// handler.obtainMessage();
-                Bundle b = new Bundle();
-                b.putString("message", "PerformSearch");
-                b.putString("searchfield", editable.toString());
-                msgObj.setData(b);
-                handler.sendMessage(msgObj);
-
-
-                return;
-            } else { // insert character
-                editable.insert(start, Character.toString((char) primaryCode));
-            }
-        }
-
-
-        @Override public void onPress(int arg0) {
-        }
-
-        @Override public void onRelease(int primaryCode) {
-        }
-
-        @Override public void onText(CharSequence text) {
-        }
-
-        @Override public void swipeDown() {
-        }
-
-        @Override public void swipeLeft() {
-        }
-
-        @Override public void swipeRight() {
-        }
-
-        @Override public void swipeUp() {
-        }
-    };
-
     /**
      * Create a custom keyboard, that uses the KeyboardView (with resource id <var>viewid</var>) of the <var>host</var> activity,
      * and load the keyboard layout from xml file <var>layoutid</var> (see {@link Keyboard} for description).
@@ -126,6 +54,85 @@ public class CustomKeyboard {
         mKeyboardView= (KeyboardView)mHostActivity.findViewById(viewid);
         mKeyboardView.setKeyboard(new Keyboard(mHostActivity, layoutid));
         mKeyboardView.setPreviewEnabled(false); // NOTE Do not show the preview balloons
+        /* The key (code) handler. */
+        OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
+
+            public final static int CodeDelete = -5; // Keyboard.KEYCODE_DELETE
+            public final static int CodeCancel = -3; // Keyboard.KEYCODE_CANCEL
+            public final static int CodeReturn = -1; // Keyboard.KEYCODE_RETURN
+            public final static int CodePrev = 55000;
+            public final static int CodeAllLeft = 55001;
+            public final static int CodeLeft = 55002;
+            public final static int CodeRight = 55003;
+            public final static int CodeAllRight = 55004;
+            public final static int CodeNext = 55005;
+            public final static int CodeClear = 55006;
+            public final static int CodeDoubleZero = 55007;
+
+
+            @Override
+            public void onKey(int primaryCode, int[] keyCodes) {
+                // NOTE We can say '<Key android:codes="49,50" ... >' in the xml file; all codes come in keyCodes, the first in this list in primaryCode
+                // Get the EditText and its Editable
+                View focusCurrent = mHostActivity.getWindow().getCurrentFocus();
+//            if( focusCurrent==null || focusCurrent.getClass()!=EditText.class ) return;
+                EditText edittext = (EditText) focusCurrent;
+                Editable editable = edittext.getText();
+                int start = edittext.getSelectionStart();
+                // Apply the key to the edittext
+                if (primaryCode == CodeCancel) {
+                    hideCustomKeyboard();
+                } else if (primaryCode == CodeDelete) {
+                    if (editable != null && start > 0) editable.delete(start - 1, start);
+                } else if (primaryCode == CodeClear) {
+                    if (editable != null) editable.clear();
+                } else if (primaryCode == CodeDoubleZero) {
+                    editable.insert(start, "00");
+                } else if (primaryCode == CodeReturn) {
+                    //Message msgObj = handler.obtainMessage();
+                    Message msgObj = new Message();// handler.obtainMessage();
+                    Bundle b = new Bundle();
+                    b.putString("message", "PerformSearch");
+                    b.putString("searchfield", editable.toString());
+                    msgObj.setData(b);
+                    handler.sendMessage(msgObj);
+
+
+                    return;
+                } else { // insert character
+                    editable.insert(start, Character.toString((char) primaryCode));
+                }
+            }
+
+
+            @Override
+            public void onPress(int arg0) {
+            }
+
+            @Override
+            public void onRelease(int primaryCode) {
+            }
+
+            @Override
+            public void onText(CharSequence text) {
+            }
+
+            @Override
+            public void swipeDown() {
+            }
+
+            @Override
+            public void swipeLeft() {
+            }
+
+            @Override
+            public void swipeRight() {
+            }
+
+            @Override
+            public void swipeUp() {
+            }
+        };
         mKeyboardView.setOnKeyboardActionListener(mOnKeyboardActionListener);
         // Hide the standard keyboard initially
         mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);

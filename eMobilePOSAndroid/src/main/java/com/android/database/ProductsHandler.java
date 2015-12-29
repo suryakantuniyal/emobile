@@ -48,11 +48,11 @@ public class ProductsHandler {
     private static final String prod_price_points = "prod_price_points";
     private static final String prod_value_points = "prod_value_points";
 
-    private static final List<String> attr = Arrays.asList(new String[]{prod_id, prod_type, prod_disc_type, cat_id,
+    private static final List<String> attr = Arrays.asList(prod_id, prod_type, prod_disc_type, cat_id,
             prod_sku, prod_upc, prod_name, prod_desc, prod_extradesc, prod_onhand, prod_onorder, prod_uom, prod_price,
             prod_cost, prod_taxcode, prod_taxtype, prod_glaccount, prod_mininv, prod_update, isactive, prod_showOnline,
             prod_ispromo, prod_shipping, prod_weight, prod_expense, prod_disc_type_points, prod_price_points,
-            prod_value_points});
+            prod_value_points);
 
     private static final String table_name = "Products";
     private StringBuilder sb1, sb2;
@@ -60,13 +60,11 @@ public class ProductsHandler {
     private HashMap<String, Integer> attrHash;
     private List<String[]> prodData;
     private MyPreferences myPref;
-    private Activity activity;
     private List<HashMap<String, Integer>> dictionaryListMap;
 
     public ProductsHandler(Activity activity) {
         attrHash = new HashMap<String, Integer>();
         prodData = new ArrayList<String[]>();
-        this.activity = activity;
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);

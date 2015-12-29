@@ -14,7 +14,7 @@ public class TermsAndConditionsHandler
 	private final String tc_term = "tc_term";
 	private final String loc_id = "loc_id";
 	
-	private final List<String> attr = Arrays.asList(new String[]{tc_id,tc_term,loc_id});
+	private final List<String> attr = Arrays.asList(tc_id,tc_term,loc_id);
 	
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";

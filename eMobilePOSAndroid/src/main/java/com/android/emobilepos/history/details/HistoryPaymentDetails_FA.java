@@ -71,8 +71,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
     private ListViewAdapter myAdapter;
 
     private List<String> allInfoLeft;
-    private List<String> allInfoRight = Arrays.asList(new String[]{"56-00021-2012", "Jul 20,2012 1:05PM",
-            "Cash", "Not Specified", "56-00027-2012", "56-00061-2012"});
+    private List<String> allInfoRight = Arrays.asList("56-00021-2012", "Jul 20,2012 1:05PM",
+            "Cash", "Not Specified", "56-00027-2012", "56-00061-2012");
 
     private ListView myListView;
     private String pay_id, pay_amount, cust_name, paymethod_name;
@@ -107,10 +107,10 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         voidButton = (Button) findViewById(R.id.histpayVoidBut);
         voidButton.setEnabled(!isDeclined);
 
-        allInfoLeft = Arrays.asList(new String[]{getString(R.string.pay_details_id), getString(R.string.pay_details_date),
+        allInfoLeft = Arrays.asList(getString(R.string.pay_details_id), getString(R.string.pay_details_date),
                 getString(R.string.pay_details_method), getString(R.string.pay_details_comment), getString(R.string.pay_details_inv_num),
                 getString(R.string.pay_details_group_id), getString(R.string.pay_details_cc_num), getString(R.string.pay_details_auth_id),
-                getString(R.string.pay_details_trans_id), getString(R.string.pay_details_clerk_id)});
+                getString(R.string.pay_details_trans_id), getString(R.string.pay_details_clerk_id));
 
 
         payHandler = new PaymentsHandler(activity);
@@ -126,12 +126,12 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             } else
                 paymentDetails.setInv_id(paymentDetails.getJob_id());
 
-            allInfoRight = Arrays.asList(new String[]{pay_id, paymentDetails.getPay_date(), paymethod_name, paymentDetails.getPay_comment(),
+            allInfoRight = Arrays.asList(pay_id, paymentDetails.getPay_date(), paymethod_name, paymentDetails.getPay_comment(),
                     paymentDetails.getInv_id(), paymentDetails.getGroup_pay_id(), "*" + paymentDetails.getCcnum_last4(),
-                    paymentDetails.getAuthcode(), paymentDetails.getPay_transid(), paymentDetails.getClerk_id()});
+                    paymentDetails.getAuthcode(), paymentDetails.getPay_transid(), paymentDetails.getClerk_id());
         } else {
 
-            allInfoRight = Arrays.asList(new String[]{"", "", "", "", "", ""});
+            allInfoRight = Arrays.asList("", "", "", "", "", "");
         }
 
         myListView = (ListView) findViewById(R.id.payDetailsLV);

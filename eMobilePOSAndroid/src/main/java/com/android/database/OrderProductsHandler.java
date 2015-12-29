@@ -62,11 +62,11 @@ public class OrderProductsHandler {
     private final String addon_position = "addon_position";
     private final String hasAddons = "hasAddons";
 
-    public final List<String> attr = Arrays.asList(new String[]{addon, isAdded, isPrinted, item_void, ordprod_id,
+    public final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
-            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id});
+            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id);
 
     public StringBuilder sb1, sb2, sb3;
     public final String empStr = "";

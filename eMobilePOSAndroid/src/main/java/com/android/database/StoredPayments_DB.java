@@ -95,7 +95,7 @@ public class StoredPayments_DB {
     private final String EMVJson = "EMV_JSON";
 
 
-    public final List<String> attr = Arrays.asList(new String[]{pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
+    public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
             inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
             pay_timesync, account_id, processed, pay_issync, pay_transid, pay_refnum, pay_name, pay_addr, pay_poscode,
             pay_seccode, pay_maccount, pay_groupcode, pay_stamp, pay_resultcode, pay_resultmessage, pay_ccnum,
@@ -103,7 +103,7 @@ public class StoredPayments_DB {
             job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
             tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
             Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, pay_uuid, is_retry,
-            payment_xml});
+            payment_xml);
 
     private StringBuilder sb1, sb2;
     private final String empStr = "";
@@ -483,8 +483,6 @@ public class StoredPayments_DB {
         SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        if (count == 0)
-            return false;
-        return true;
+        return count != 0;
     }
 }

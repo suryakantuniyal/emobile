@@ -29,15 +29,22 @@ import drivers.star.utils.RasterDocument.RasTopMargin;
 
 public class PrinterFunctions {
 
-	public enum NarrowWide {_2_6, _3_9, _4_12, _2_5, _3_8, _4_10, _2_4, _3_6, _4_8};
+	public enum NarrowWide {_2_6, _3_9, _4_12, _2_5, _3_8, _4_10, _2_4, _3_6, _4_8}
+
 	public enum BarCodeOption {No_Added_Characters_With_Line_Feed, Adds_Characters_With_Line_Feed, No_Added_Characters_Without_Line_Feed, Adds_Characters_Without_Line_Feed}
-	public enum Min_Mod_Size {_2_dots, _3_dots, _4_dots};
-	public enum NarrowWideV2 {_2_5, _4_10, _6_15, _2_4, _4_8, _6_12, _2_6, _3_9, _4_12};
-	public enum CorrectionLevelOption {Low, Middle, Q, High};
-	public enum Model {Model1, Model2};
-	public enum Limit {USE_LIMITS, USE_FIXED};
-	public enum CutType {FULL_CUT, PARTIAL_CUT, FULL_CUT_FEED, PARTIAL_CUT_FEED};
-	public enum Alignment {Left, Center, Right};
+	public enum Min_Mod_Size {_2_dots, _3_dots, _4_dots}
+
+	public enum NarrowWideV2 {_2_5, _4_10, _6_15, _2_4, _4_8, _6_12, _2_6, _3_9, _4_12}
+
+	public enum CorrectionLevelOption {Low, Middle, Q, High}
+
+	public enum Model {Model1, Model2}
+
+	public enum Limit {USE_LIMITS, USE_FIXED}
+
+	public enum CutType {FULL_CUT, PARTIAL_CUT, FULL_CUT_FEED, PARTIAL_CUT_FEED}
+
+	public enum Alignment {Left, Center, Right}
 
 	private static int printableArea = 576;    // for raster data
 	public static byte[] createCommandsEnglish2inchLineModeReceipt() {

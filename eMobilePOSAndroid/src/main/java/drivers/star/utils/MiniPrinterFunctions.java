@@ -19,9 +19,10 @@ import java.util.Map;
 
 public class MiniPrinterFunctions 
 {
-	enum BarcodeWidth {_125, _250, _375, _500, _625, _750, _875, _1_0};
-	enum BarcodeType {code39, ITF, code93, code128};
-	
+	enum BarcodeWidth {_125, _250, _375, _500, _625, _750, _875, _1_0}
+
+	enum BarcodeType {code39, ITF, code93, code128}
+
 	private static StarIOPort portForMoreThanOneFunction = null;
 	
 	public static void AddRange(ArrayList<Byte> array, Byte[] newData)

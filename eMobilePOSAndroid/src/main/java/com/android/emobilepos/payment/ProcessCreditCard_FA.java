@@ -970,7 +970,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 } else {
                     if (tipAmount != null)
                         tipAmount.setText(Global.getCurrencyFormat(
-                                Global.formatNumToLocale(Double.parseDouble(Double.toString((double) amountToTip)))));
+                                Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
                     dialog.dismiss();
                 }
 

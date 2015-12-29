@@ -82,7 +82,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
 		ordProdDB = new OrderProductsHandler(this);
 		activity = this;
-		msrCallBack = (EMSCallBack) this;
+		msrCallBack = this;
 		global = (Global) getApplication();
 		myPref = new MyPreferences(this);
 		Global.isEncryptSwipe = false;

@@ -20,19 +20,16 @@ public class PrintersHandler {
 	private final String cat_name = "cat_name";
 	private final String cat_id = "cat_id";
 	
-	private final List<String> attr = Arrays.asList(new String[] { printer_id, printer_name, printer_ip, 
-			printer_port, printer_type,cat_name,cat_id});
+	private final List<String> attr = Arrays.asList(printer_id, printer_name, printer_ip,
+			printer_port, printer_type,cat_name,cat_id);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	public static final String table_name = "Printers";
 
 	public PrintersHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -59,7 +56,7 @@ public class PrintersHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {

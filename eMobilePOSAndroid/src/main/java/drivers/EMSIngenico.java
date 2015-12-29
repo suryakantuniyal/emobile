@@ -624,11 +624,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
      * ------------------------------
      */
     public boolean getConnectionStatus() {
-        if (RBA_API.GetConnectionStatus() != RBA_API.ConnectionStatus.CONNECTED) {
-            return false;
-        } else {
-            return true;
-        }
+        return RBA_API.GetConnectionStatus() == RBA_API.ConnectionStatus.CONNECTED;
     }
 
 }

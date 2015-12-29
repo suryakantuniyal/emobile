@@ -52,20 +52,17 @@ public class CustomersHandler {
 	private static final String table_name = "Customers";
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> custData;
 	private List<HashMap<String, Integer>> dictionaryListMap;
-	private Activity activity;
 
-	private final List<String> attr = Arrays.asList(new String[] { cust_id, cust_id_ref, qb_sync, zone_id, CompanyName,
+	private final List<String> attr = Arrays.asList(cust_id, cust_id_ref, qb_sync, zone_id, CompanyName,
 			Salutation, cust_name, cust_chain, cust_balance, cust_limit, cust_contact, cust_firstName, cust_middleName,
 			cust_lastName, cust_phone, cust_email, cust_fax, cust_update, isactive, cust_ordertype, cust_taxable,
 			cust_salestaxcode, pricelevel_id, cust_terms, cust_pwd, cust_securityquestion, cust_securityanswer,
-			cust_points, custidkey, cust_id_numeric, cust_dob, AccountNumnber });
+			cust_points, custidkey, cust_id_numeric, cust_dob, AccountNumnber);
 
 	public CustomersHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		custData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -92,7 +89,7 @@ public class CustomersHandler {
 		if (i != null) {
 			return custData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {
@@ -271,9 +268,7 @@ public class CustomersHandler {
 //		stmt = DBManager._db.compileStatement(str);
 //		long c = stmt.simpleQueryForLong();
 		stmt.close();
-		if (count == 0)
-			return false;
-		return true;
+		return count != 0;
 
 	}
 

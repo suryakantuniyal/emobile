@@ -51,7 +51,7 @@ public class EMSPayGate_Default {
         writer = new StringWriter();
     }
 
-    public static enum EAction {
+    public enum EAction {
         ChargeCreditCardAction(1010), ChargeTupixAction(1010), ChargeCheckAction(1012), ChargeCashAction(
                 1013), ChargeDebitAction(1014),
 
@@ -77,7 +77,7 @@ public class EMSPayGate_Default {
 
         private int foo;
 
-        private EAction(int val) {
+        EAction(int val) {
             this.foo = val;
         }
 

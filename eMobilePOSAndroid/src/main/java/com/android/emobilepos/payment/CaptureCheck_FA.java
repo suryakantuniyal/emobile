@@ -132,9 +132,7 @@ public class CaptureCheck_FA extends BaseFragmentActivityActionBar implements On
 	
 	private boolean validCheckCapture()
 	{
-		if(!Global.imgBackCheck.isEmpty()&&!Global.imgFrontCheck.isEmpty())
-			return true;
-		return false;
+		return !Global.imgBackCheck.isEmpty() && !Global.imgFrontCheck.isEmpty();
 	}
 	
 	

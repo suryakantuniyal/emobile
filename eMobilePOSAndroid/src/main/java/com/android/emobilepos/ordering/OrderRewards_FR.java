@@ -30,7 +30,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
 
     public interface SwiperRewardCallback {
-        public void startRewardSwiper();
+        void startRewardSwiper();
     }
 
 

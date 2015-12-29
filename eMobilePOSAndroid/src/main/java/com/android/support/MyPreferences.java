@@ -938,10 +938,7 @@ public class MyPreferences {
             List<String> list = Arrays.asList(selected);
 
             for (int i = 0; i < NUM_OF_ITEMS; i++) {
-                if (list.contains(Integer.toString(i)))
-                    values[i] = true;
-                else
-                    values[i] = false;
+                values[i] = list.contains(Integer.toString(i));
             }
         } else
             values = new boolean[]{true, true, true, true, true, true, true, true, true, true, true, true, true,

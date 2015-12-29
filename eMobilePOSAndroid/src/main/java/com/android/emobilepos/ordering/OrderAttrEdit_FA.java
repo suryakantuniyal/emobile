@@ -85,7 +85,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
     @Override
     public void onCreate(Bundle savedInstanceState) {
         activity = this;
-        callBack = (EMSCallBack) this;
+        callBack = this;
         global = (Global) getApplication();
         myPref = new MyPreferences(this);
         Global.isEncryptSwipe = false; // will not encrypt number of card after

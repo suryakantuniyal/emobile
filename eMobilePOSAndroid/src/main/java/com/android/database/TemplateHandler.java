@@ -39,22 +39,20 @@ public class TemplateHandler {
 
 	// private final String itemTotal = "itemTotal";
 
-	private final List<String> attr = Arrays.asList(new String[] { _id, cust_id, product_id, name, overwrite_price,
-			quantity, price, price_level_id, price_level, _update, isactive, isSync, prod_sku, prod_upc });
+	private final List<String> attr = Arrays.asList(_id, cust_id, product_id, name, overwrite_price,
+			quantity, price, price_level_id, price_level, _update, isactive, isSync, prod_sku, prod_upc);
 
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
 	private List<HashMap<String, Integer>> dictionaryListMap;
-	private MyPreferences myPref;
 	private static final String table_name = "Templates";
 	private Activity activity;
 	private Global global;
 
 	public TemplateHandler(Activity activity) {
 		// global = (Global) activity.getApplication();
-		myPref = new MyPreferences(activity);
 		global = (Global) activity.getApplication();
 		attrHash = new HashMap<String, Integer>();
 		this.activity = activity;
@@ -309,9 +307,7 @@ public class TemplateHandler {
 		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
-		if (count == 0)
-			return false;
-		return true;
+		return count != 0;
 	}
 
 	public void emptyTable() {

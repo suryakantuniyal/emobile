@@ -25,20 +25,17 @@ public class PayMethodsHandler {
 	private final String image_url = "image_url";
 	private final String OriginalTransid = "OriginalTransid";
 
-	private final List<String> attr = Arrays.asList(new String[] { paymethod_id, paymethod_name, paymentmethod_type, paymethod_update,
-			isactive, paymethod_showOnline,image_url, OriginalTransid });
+	private final List<String> attr = Arrays.asList(paymethod_id, paymethod_name, paymentmethod_type, paymethod_update,
+			isactive, paymethod_showOnline,image_url, OriginalTransid);
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
 	private MyPreferences myPref;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 
 	private static final String table_name = "PayMethods";
 
 	public PayMethodsHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -66,7 +63,7 @@ public class PayMethodsHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {

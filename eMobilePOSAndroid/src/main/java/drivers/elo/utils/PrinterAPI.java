@@ -318,7 +318,7 @@ public class PrinterAPI {
         ArrayList<Byte> list = new ArrayList<Byte>();
         list.add(Byte.valueOf((byte) 29));
         list.add(Byte.valueOf((byte) 33));
-        list.add(Byte.valueOf((byte) val));
+        list.add(Byte.valueOf(val));
         return list;
     }
 
@@ -427,13 +427,13 @@ public class PrinterAPI {
         ArrayList<Byte> list = new ArrayList<Byte>();
 
         for (byte b : SET_LINE_SPACE_24) {
-            list.add(Byte.valueOf((byte) b));
+            list.add(Byte.valueOf(b));
         }
 
         for (int y = 0; y < pixels.length; y += 24) {
             // Set Image Mode
             for (byte b : SELECT_BIT_IMAGE_MODE) {
-                list.add(Byte.valueOf((byte) b));
+                list.add(Byte.valueOf(b));
             }
 
             // Set Pixel Length
@@ -442,26 +442,26 @@ public class PrinterAPI {
                     (byte) ((0xff00 & pixels[y].length) >> 8)};
 
             for (byte b : nLnH) {
-                list.add(Byte.valueOf((byte) b));
+                list.add(Byte.valueOf(b));
             }
 
             // Set Horizontal pixel
             for (int x = 0; x < pixels[y].length; x++) {
                 byte[] sliceArray = recollectSlice(y, x, pixels);
                 for (byte b : sliceArray) {
-                    list.add(Byte.valueOf((byte) b));
+                    list.add(Byte.valueOf(b));
                 }
             }
 
             // Go to next line
             for (byte b : LINE_FEED) {
-                list.add(Byte.valueOf((byte) b));
+                list.add(Byte.valueOf(b));
             }
 
         }
 
         for (byte b : SET_LINE_SPACE_30) {
-            list.add(Byte.valueOf((byte) b));
+            list.add(Byte.valueOf(b));
         }
 
         return list;

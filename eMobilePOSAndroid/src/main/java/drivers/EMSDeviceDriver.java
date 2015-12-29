@@ -583,7 +583,6 @@ public class EMSDeviceDriver {
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
-                ;
             } else {
 
                 double paidAmount = 0;
@@ -921,10 +920,10 @@ public class EMSDeviceDriver {
     }
 
     public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
-        float ratio = Math.min((float) maxImageSize / realImage.getWidth(),
-                (float) maxImageSize / realImage.getHeight());
-        int width = Math.round((float) ratio * realImage.getWidth());
-        int height = Math.round((float) ratio * realImage.getHeight());
+        float ratio = Math.min(maxImageSize / realImage.getWidth(),
+                maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
 
         Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width, height, filter);
         return newBitmap;

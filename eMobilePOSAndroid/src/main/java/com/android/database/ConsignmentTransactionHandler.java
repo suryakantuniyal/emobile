@@ -34,9 +34,9 @@ public class ConsignmentTransactionHandler {
 	private final String Cons_timecreated = "Cons_timecreated";
 	private final String is_synched = "is_synched";
 
-	private final List<String> attr = Arrays.asList(new String[] { Cons_ID, ConsTrans_ID, ConsEmp_ID, ConsCust_ID,
+	private final List<String> attr = Arrays.asList(Cons_ID, ConsTrans_ID, ConsEmp_ID, ConsCust_ID,
 			ConsInvoice_ID, ConsReturn_ID, ConsPickup_ID, ConsDispatch_ID, ConsProd_ID, ConsOriginal_Qty, ConsStock_Qty,
-			ConsInvoice_Qty, ConsReturn_Qty, ConsDispatch_Qty, ConsPickup_Qty, ConsNew_Qty, Cons_timecreated });
+			ConsInvoice_Qty, ConsReturn_Qty, ConsDispatch_Qty, ConsPickup_Qty, ConsNew_Qty, Cons_timecreated);
 
 	private StringBuilder sb1, sb2;
 	private final HashMap<String, Integer> attrHash;
@@ -255,9 +255,7 @@ public class ConsignmentTransactionHandler {
 		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
-		if (count == 0)
-			return false;
-		return true;
+		return count != 0;
 	}
 
 	public Cursor getConsignmentCursor(boolean typePickup) {

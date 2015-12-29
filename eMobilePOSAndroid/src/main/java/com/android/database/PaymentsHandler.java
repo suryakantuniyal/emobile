@@ -374,7 +374,6 @@ public class PaymentsHandler {
 
         args.put(isVoid, "1");
         DBManager._db.update(table_name, args, pay_id + " = ?", new String[]{param});
-        ;
     }
 
     public void createVoidPayment(Payment payment, boolean onlineVoid, HashMap<String, String> response) {

@@ -61,8 +61,6 @@ public class EMSAsura extends EMSDeviceDriver
         ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT
     }
 
-    ;
-
     private int LINE_WIDTH = 40;
     private int PRINT_TXT_SIZE = 24;
     private int PAPER_WIDTH = 576;

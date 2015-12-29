@@ -36,12 +36,11 @@ public class InvoicesHandler {
 	private final static String txnID = "txnID";
 	private final static String inv_update = "inv_update";
 
-	private static final List<String> attr = Arrays.asList(new String[] { inv_id, cust_id, emp_id, inv_timecreated,
+	private static final List<String> attr = Arrays.asList(inv_id, cust_id, emp_id, inv_timecreated,
 			inv_ispending, inv_ponumber, inv_terms, inv_duedate, inv_shipdate, inv_shipmethod, inv_total, inv_apptotal,
-			inv_balance, inv_custmsg, inv_ispaid, inv_paiddate, mod_date, txnID, inv_update });
+			inv_balance, inv_custmsg, inv_ispaid, inv_paiddate, mod_date, txnID, inv_update);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
 	private List<HashMap<String, Integer>> dictionaryListMap;
@@ -79,7 +78,7 @@ public class InvoicesHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {

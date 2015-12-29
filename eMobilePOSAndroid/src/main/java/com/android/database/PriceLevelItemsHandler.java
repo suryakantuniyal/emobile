@@ -18,19 +18,16 @@ public class PriceLevelItemsHandler {
 	private final String pricelevel_update = "pricelevel_update";
 	private final String isactive = "isactive";
 
-	private final List<String> attr = Arrays.asList(new String[] { pricelevel_prod_id, pricelevel_id, pricelevel, pricelevel_price, pricelevel_update,
-			isactive });
+	private final List<String> attr = Arrays.asList(pricelevel_prod_id, pricelevel_id, pricelevel, pricelevel_price, pricelevel_update,
+			isactive);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String table_name = "PriceLevelItems";
 
 	public PriceLevelItemsHandler(Activity activity) {		
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -57,7 +54,7 @@ public class PriceLevelItemsHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	

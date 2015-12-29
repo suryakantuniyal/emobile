@@ -12,10 +12,7 @@ public class BarcodeReader
     
     public boolean isBcrOn()
    	{
-    	if(isBcrTurnedOn()==1)
-    		return true;
-    	else
-    		return false;
+		return isBcrTurnedOn() == 1;
     	
    	}
 }

@@ -82,7 +82,7 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
 		
 		activity = this;
 		ordProdDB = new OrderProductsHandler(this);
-		msrCallBack = (EMSCallBack)this;
+		msrCallBack = this;
 		global = (Global)getApplication();
 		myPref = new MyPreferences(this);
 		Global.isEncryptSwipe = true;

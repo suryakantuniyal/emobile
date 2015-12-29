@@ -149,10 +149,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         ImageView receipt = (ImageView) headerView.findViewById(R.id.ordTicketImg);
 
 
-        allInfoLeft = Arrays.asList(new String[]{getString(R.string.trans_details_total), getString(R.string.trans_details_amount_paid),
+        allInfoLeft = Arrays.asList(getString(R.string.trans_details_total), getString(R.string.trans_details_amount_paid),
                 getString(R.string.trans_details_tip), getString(R.string.trans_details_clerk_id), getString(R.string.trans_details_comment),
                 getString(R.string.trans_details_ship_via), getString(R.string.trans_details_terms), getString(R.string.trans_details_delivery),
-                getString(R.string.trans_details_email), getString(R.string.trans_details_po)});
+                getString(R.string.trans_details_email), getString(R.string.trans_details_po));
 
 
         final Bundle extras = activity.getIntent().getExtras();

@@ -17,21 +17,18 @@ public class Locations_DB {
 	public static final String loc_id = "loc_id";
 	public static final String loc_name = "loc_name";
 	
-	private static final List<String> attr = Arrays.asList(new String[] {loc_key,loc_id,loc_name});
+	private static final List<String> attr = Arrays.asList(loc_key,loc_id,loc_name);
 
 	private static final String TABLE_NAME = "Locations";
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> prodData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 	
 	public Locations_DB(Activity activity) {
 		attrHash = new HashMap<String, Integer>();
 		prodData = new ArrayList<String[]>();
-		this.activity = activity;
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		initDictionary();
@@ -61,7 +58,7 @@ public class Locations_DB {
 		if (i != null) {
 			return prodData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	
