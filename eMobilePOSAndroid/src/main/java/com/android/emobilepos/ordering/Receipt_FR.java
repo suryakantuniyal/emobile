@@ -284,10 +284,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         } else {
             switch ((Global.TransactionType) extras.get("option_number")) {
                 case SALE_RECEIPT: {
+                    caseSelected = Global.TransactionType.SALE_RECEIPT;
                     Global.ord_type = Global.OrderType.SALES_RECEIPT;
                     break;
                 }
                 case RETURN: {
+                    caseSelected = Global.TransactionType.RETURN;
                     Global.ord_type = Global.OrderType.RETURN;
                     break;
                 }
