@@ -120,6 +120,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         catButLayout = (LinearLayout) view.findViewById(R.id.categoriesButtonLayoutHolder);
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
         searchField.setIsForSearching(activity, OrderingMain_FA.invisibleSearchMain);
+       // searchField.setText("58187869354"); //test upc
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(activity);
@@ -156,12 +157,20 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 _typeCase = CASE_PRODUCTS;
         }
 
+
+
         setupSpinners(view);
         setupCategoriesButtons();
 
         setupSearchField();
         loadCursor();
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 
 
@@ -201,7 +210,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 return false;
             }
         });
-
 
         searchField.addTextChangedListener(new TextWatcher() {
 

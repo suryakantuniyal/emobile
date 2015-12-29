@@ -49,9 +49,11 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
-import com.android.database.DBManager;
+import com.android.support.CustomKeyboard;
+import com.android.support.DBManager;
 import com.android.support.Encrypt;
 import com.android.support.Global;
+import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -124,6 +126,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static boolean returnItem = false;
     private Bundle extras;
 
+
+    CustomKeyboard mCustomKeyboard;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -183,7 +188,76 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.currentDevice != null)
                 Global.btSled.currentDevice.loadScanner(callBackMSR);
         }
+
+
         hasBeenCreated = true;
+    }
+
+    private Handler ScanResultHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case DecodeManager.MESSAGE_DECODER_COMPLETE:
+                    String strDecodeResult = "";
+                    DecodeResult decodeResult = (DecodeResult) msg.obj;
+
+                    strDecodeResult = decodeResult.barcodeData.trim();
+                    if (!strDecodeResult.isEmpty()) {
+                        SoundManager.playSound(1, 1);
+                        scanAddItem(strDecodeResult);
+                    }
+                    break;
+
+                case DecodeManager.MESSAGE_DECODER_FAIL: {
+                    SoundManager.playSound(2, 1);
+                }
+                break;
+                case DecodeManager.MESSAGE_DECODER_READY: {
+                    if (mDecodeManager != null) {
+                        SymConfigActivityOpeartor operator = mDecodeManager.getSymConfigActivityOpeartor();
+                        operator.removeAllSymFromConfigActivity();
+                        SymbologyConfigCodeUPCA upca = new SymbologyConfigCodeUPCA();
+                        upca.enableSymbology(true);
+                        upca.enableCheckTransmit(true);
+                        upca.enableSendNumSys(true);
+
+                        SymbologyConfigs symconfig = new SymbologyConfigs();
+                        symconfig.addSymbologyConfig(upca);
+
+                        try {
+                            mDecodeManager.setSymbologyConfigs(symconfig);
+                        } catch (RemoteException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+        }
+    };
+
+    private Handler SearchFieldHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            Bundle theBundle = msg.getData();
+            if(theBundle.getString("message").equals("PerformSearch")){
+                //call performSearch
+                String text = theBundle.getString("searchfield");
+                if (!text.isEmpty()) {
+                    rightFragment.performSearch(text);
+                }
+            };
+        }
+    };
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mCustomKeyboard= new CustomKeyboard(this, R.id.keyboardview, R.xml.upcskunumbersfirstrow);
+        mCustomKeyboard.registerEditText(R.id.catalogSearchField);
+        mCustomKeyboard.setHandler(SearchFieldHandler);
     }
 
     private void setupTitle() {
@@ -343,6 +417,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             else
                 showDlog(false);
         }
+
+        // NOTE Trap the back key: when the CustomKeyboard is still visible hide it, only when it is invisible, finish activity
+        if( mCustomKeyboard.isCustomKeyboardVisible() ) mCustomKeyboard.hideCustomKeyboard(); else this.finish();
     }
 
     @Override
@@ -794,51 +871,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private Handler ScanResultHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case DecodeManager.MESSAGE_DECODER_COMPLETE:
-                    String strDecodeResult = "";
-                    DecodeResult decodeResult = (DecodeResult) msg.obj;
 
-                    strDecodeResult = decodeResult.barcodeData.trim();
-                    if (!strDecodeResult.isEmpty()) {
-                        SoundManager.playSound(1, 1);
-                        scanAddItem(strDecodeResult);
-                    }
-                    break;
-
-                case DecodeManager.MESSAGE_DECODER_FAIL: {
-                    SoundManager.playSound(2, 1);
-                }
-                break;
-                case DecodeManager.MESSAGE_DECODER_READY: {
-                    if (mDecodeManager != null) {
-                        SymConfigActivityOpeartor operator = mDecodeManager.getSymConfigActivityOpeartor();
-                        operator.removeAllSymFromConfigActivity();
-                        SymbologyConfigCodeUPCA upca = new SymbologyConfigCodeUPCA();
-                        upca.enableSymbology(true);
-                        upca.enableCheckTransmit(true);
-                        upca.enableSendNumSys(true);
-
-                        SymbologyConfigs symconfig = new SymbologyConfigs();
-                        symconfig.addSymbologyConfig(upca);
-
-                        try {
-                            mDecodeManager.setSymbologyConfigs(symconfig);
-                        } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                break;
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-        }
-    };
 
     private void scanAddItem(String upc) {
         ProductsHandler handler = new ProductsHandler(this);
@@ -1361,5 +1394,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         // TODO Auto-generated method stub
 
     }
+
 
 }

@@ -596,9 +596,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if (!headerOnHand.getText().toString().isEmpty())
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());
 
-
-            if (OrderingMain_FA.returnItem || (isModify && global.orderProducts.get(modifyOrderPosition).isReturned)) {
-                qty_picked = new BigDecimal(qty_picked).negate().toString();
+            if (OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+                if (OrderingMain_FA.returnItem || (isModify && global.orderProducts.get(modifyOrderPosition).isReturned)) {
+                    qty_picked = new BigDecimal(qty_picked).negate().toString();
+                }
             }
             double selectedQty = Double.parseDouble(qty_picked);
             double newQty = 0;
@@ -760,7 +761,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     PriceLevelHandler handler1 = new PriceLevelHandler(activity);
                     listData_LV = handler1.getFixedPriceLevel(prodID);
                 /*if (myPref.isCustSelected()) {
-					PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
+                    PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
 					List<String[]> temp = handler.getPriceLevel(prodID);
 					int size = temp.size();
 					for (int i = 0; i < size; i++) {
