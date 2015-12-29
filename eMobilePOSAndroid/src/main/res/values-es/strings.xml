@@ -52,13 +52,13 @@
 	<string name = "invoices">Facturas</string>
 	<string name = "no_customer">No hay cliente seleccionado</string>
 	<string name = "sales_receipt">Registrar Venta</string>
-	<string name="order">Orden</string>
-	<string name="return_tag">Devoluci\u00F3n</string>
+	<string name = "order">Orden</string>
+	<string name = "return_tag">Devoluci\u00F3n</string>
 	<string name = "invoice">Facturar</string>
 	<string name = "estimate">Estimado</string>
-	<string name ="payment">Pago</string>
-	<string name ="refund">Devolver Dinero</string>
-	<string name ="route">Visitas</string>
+	<string name = "payment">Pago</string>
+	<string name = "refund">Devolver Dinero</string>
+	<string name = "route">Visitas</string>
 	<string name = "on_hold">En Espera</string>
 	<string name = "consignment">Consignaci\u00F3n</string>
 	

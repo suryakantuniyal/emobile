@@ -432,7 +432,15 @@ public class EMSPlainTextHelper {
 				sb.append("\n");
 		return sb.toString();
 	}
-	
+
+	public String newDivider(char c, int lineWidth){
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < lineWidth; i++) {
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
 	public String lines(int numLines) {
 		StringBuilder sb = new StringBuilder();
 
