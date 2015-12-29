@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
+import com.android.database.DBManager;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
@@ -50,10 +51,8 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
 import com.android.support.CustomKeyboard;
-import com.android.support.DBManager;
 import com.android.support.Encrypt;
 import com.android.support.Global;
-import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
