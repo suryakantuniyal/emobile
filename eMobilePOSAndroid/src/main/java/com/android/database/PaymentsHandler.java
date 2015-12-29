@@ -321,9 +321,23 @@ public class PaymentsHandler {
         return count != 0;
     }
 
-    public long paymentExist(String _pay_id) {
+    public long paymentExist(String pay_id) {
+        return paymentExist(pay_id, false);
 
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_id = '" + _pay_id + "'");
+    }
+
+    public long paymentExist(String pay_id, boolean includeDeclined) {
+
+        String sql = "select count(*) from %s WHERE pay_id = '%s'";
+        if (includeDeclined) {
+            sql = "select count(*) from (SELECT pay_id FROM %s" +
+                    " union " +
+                    "SELECT pay_id from %s) WHERE pay_id = '%s'";
+            sql = String.format(sql, table_name, table_name_declined, pay_id);
+        } else {
+            sql = String.format(sql, table_name, pay_id);
+        }
+        SQLiteStatement stmt = DBManager._db.compileStatement(sql);
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -757,23 +771,45 @@ public class PaymentsHandler {
             // May come from History>Payment>Details
             case 0: {
                 sb.append(
-                        "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
-                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
-                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON "
+                        "SELECT p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total as ord_total,p.pay_amount as pay_amount," +
+                                "p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
                                 + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
-                                + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
+                                + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='" + payID + "' " +
+                                " UNION " +
+                                "SELECT p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total as ord_total,p.pay_amount as pay_amount," +
+                                "p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
+                                + "FROM PaymentsDeclined p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
+                                + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='" + payID + "' "
+                );
                 break;
             }
             // Straight from main menu 'Payment'
             case 1: {
+
                 sb.append(
                         "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                 + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON  "
                                 + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
-                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '" + payID + "' " +
+                                " UNION " +
+                                "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
+                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON  "
+                                + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '" + payID + "' ");
                 break;
             }
             // Straight from main menu 'Payment & Declined'
@@ -784,12 +820,20 @@ public class PaymentsHandler {
                                 + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
                                 + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON  "
                                 + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
-                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '" + payID + "'" +
+                                " UNION " +
+                                "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
+                                + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name, p.EMV_JSON  "
+                                + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '" + payID + "'"
+                );
                 break;
             }
 
         }
-        sb.append(payID).append("'");
+//        sb.append(payID).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
         PaymentDetails payDetail = new PaymentDetails();

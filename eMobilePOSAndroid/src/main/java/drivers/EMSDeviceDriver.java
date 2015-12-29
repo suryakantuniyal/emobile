@@ -1010,7 +1010,7 @@ public class EMSDeviceDriver {
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             PaymentDetails payArray;
             boolean isStoredFwd = false;
-            long pay_count = payHandler.paymentExist(payID);
+            long pay_count = payHandler.paymentExist(payID, true);
             if (pay_count == 0) {
                 isStoredFwd = true;
                 StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
