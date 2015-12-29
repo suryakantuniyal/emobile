@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="10.00%p"
+    android:keyHeight="8%p">
+<!--
+    android:horizontalGap="0.50%p"
+    android:verticalGap="0.50%p"
+    NOTE When we add a horizontalGap in pixels, this interferes with keyWidth in percentages adding up to 100%
+    NOTE When we have a horizontalGap (on Keyboard level) of 0, this make the horizontalGap (on Key level) to move from after the key to before the key... (I consider this a bug) 
+ -->
+    
+    <Row>
+        <Key android:codes="49"    android:keyLabel="1" android:keyEdgeFlags="left"  />
+        <Key android:codes="50"    android:keyLabel="2" />
+        <Key android:codes="51"    android:keyLabel="3" />
+        <Key android:codes="52"    android:keyLabel="4" />
+        <Key android:codes="53"    android:keyLabel="5" />
+        <Key android:codes="54"    android:keyLabel="6" />
+        <Key android:codes="55"    android:keyLabel="7" />
+        <Key android:codes="56"    android:keyLabel="8" />
+        <Key android:codes="57"    android:keyLabel="9" />
+        <Key android:codes="48"    android:keyLabel="0" />
+    </Row>
+    <Row>
+        <Key android:codes="81"    android:keyLabel="Q" android:popupKeyboard="@xml/popup" android:popupCharacters="qQ" />
+        <Key android:codes="87"    android:keyLabel="W" android:popupKeyboard="@xml/popup" android:popupCharacters="wW" />
+        <Key android:codes="69"    android:keyLabel="E" android:popupKeyboard="@xml/popup" android:popupCharacters="eE" />
+        <Key android:codes="82"    android:keyLabel="R" android:popupKeyboard="@xml/popup" android:popupCharacters="rR" />
+        <Key android:codes="84"    android:keyLabel="T" android:popupKeyboard="@xml/popup" android:popupCharacters="tT" />
+        <Key android:codes="89"    android:keyLabel="Y" android:popupKeyboard="@xml/popup" android:popupCharacters="yY" />
+        <Key android:codes="85"    android:keyLabel="U" android:popupKeyboard="@xml/popup" android:popupCharacters="uU" />
+        <Key android:codes="73"    android:keyLabel="I" android:popupKeyboard="@xml/popup" android:popupCharacters="iI" />
+        <Key android:codes="79"    android:keyLabel="O" android:popupKeyboard="@xml/popup" android:popupCharacters="oO" />
+        <Key android:codes="80"    android:keyLabel="P" android:popupKeyboard="@xml/popup" android:popupCharacters="pP" />
+    </Row>
+    <Row>
+        <Key android:codes="65"    android:keyLabel="A" android:popupKeyboard="@xml/popup" android:popupCharacters="aA" />
+        <Key android:codes="83"    android:keyLabel="S" android:popupKeyboard="@xml/popup" android:popupCharacters="sS" />
+        <Key android:codes="68"    android:keyLabel="D" android:popupKeyboard="@xml/popup" android:popupCharacters="dD" />
+        <Key android:codes="70"    android:keyLabel="F" android:popupKeyboard="@xml/popup" android:popupCharacters="fF" />
+        <Key android:codes="71"    android:keyLabel="G" android:popupKeyboard="@xml/popup" android:popupCharacters="gG" />
+        <Key android:codes="72"    android:keyLabel="H" android:popupKeyboard="@xml/popup" android:popupCharacters="hH" />
+        <Key android:codes="74"    android:keyLabel="J" android:popupKeyboard="@xml/popup" android:popupCharacters="jJ" />
+        <Key android:codes="75"    android:keyLabel="K" android:popupKeyboard="@xml/popup" android:popupCharacters="kK" />
+        <Key android:codes="76"    android:keyLabel="L" android:popupKeyboard="@xml/popup" android:popupCharacters="lL" />
+        <Key android:codes="-1"    android:keyIcon="@drawable/sym_keyboard_return" />
+
+    </Row>
+    <Row>
+        <Key android:codes="90"    android:keyLabel="Z" android:popupKeyboard="@xml/popup" android:popupCharacters="zZ" />
+        <Key android:codes="88"    android:keyLabel="X" android:popupKeyboard="@xml/popup" android:popupCharacters="xX" />
+        <Key android:codes="67"    android:keyLabel="C" android:popupKeyboard="@xml/popup" android:popupCharacters="cC" />
+        <Key android:codes="86"    android:keyLabel="V" android:popupKeyboard="@xml/popup" android:popupCharacters="vV" />
+        <Key android:codes="66"    android:keyLabel="B" android:popupKeyboard="@xml/popup" android:popupCharacters="bB" />
+        <Key android:codes="78"    android:keyLabel="N" android:popupKeyboard="@xml/popup" android:popupCharacters="nN" />
+        <Key android:codes="77"    android:keyLabel="M" android:popupKeyboard="@xml/popup" android:popupCharacters="mM" />
+        <Key android:codes="46"    android:keyLabel="." />
+        <Key android:codes="32"    android:keyLabel="Space" />
+        <Key android:codes="-5"    android:keyIcon="@drawable/sym_keyboard_delete" android:isRepeatable="true" />
+
+    </Row>
+
+</Keyboard>
