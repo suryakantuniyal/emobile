@@ -84,7 +84,7 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
         activity = this;
         Global.isEncryptSwipe = false;
 
-        msrCallBack = (EMSCallBack) this;
+        msrCallBack = this;
         global = (Global) getApplication();
         myPref = new MyPreferences(this);
 
@@ -241,9 +241,7 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
 
     private boolean isValidAmount() {
         BigDecimal bd = Global.getBigDecimalNum(fieldAmountToAdd.getText().toString());
-        if (bd.compareTo(Global.getBigDecimalNum("0")) == 1)
-            return true;
-        return false;
+        return bd.compareTo(Global.getBigDecimalNum("0")) == 1;
     }
 
     private void populateCardInfo() {

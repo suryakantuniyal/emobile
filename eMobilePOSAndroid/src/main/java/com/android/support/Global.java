@@ -235,8 +235,6 @@ public class Global extends MultiDexApplication {
         }
     }
 
-    ;
-
 
     public final static int S_CUSTOMERS = 1;
     public final static int S_ADDRESS = 2;
@@ -768,7 +766,7 @@ public class Global extends MultiDexApplication {
 
     public static Map<String, String> paymentIconsMap = paymentIconMap();
 
-    private static final Map<String, String> paymentIconMap() {
+    private static Map<String, String> paymentIconMap() {
         HashMap<String, String> result = new HashMap<String, String>();
 
         result.put("AmericanExpress", "amex");
@@ -789,6 +787,9 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatToDisplayDate(String date, Activity activity, int type) {
+        if (date == null) {
+            return "";
+        }
         Calendar cal = Calendar.getInstance();
         TimeZone tz = cal.getTimeZone();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
@@ -816,8 +817,7 @@ public class Global extends MultiDexApplication {
             StringBuilder sb = new StringBuilder();
             sb.append(e.getMessage()).append(" [")
                     .append("com.android.support.Global (at Class.formatToDisplayDate) ]");
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+            formatedDate = "";
         }
         return formatedDate;
     }
@@ -922,7 +922,6 @@ public class Global extends MultiDexApplication {
     public static String formatNumToLocale(double val) {
 
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
-        ;
         nf.setParseIntegerOnly(false);
         DecimalFormat df = (DecimalFormat) nf;
         return df.format(val);

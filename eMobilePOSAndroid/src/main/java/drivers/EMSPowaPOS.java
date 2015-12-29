@@ -15,7 +15,11 @@ import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -134,11 +138,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
-        if (!deviceList.isEmpty()) {
-            return true;
-        }
+        return !deviceList.isEmpty();
 
-        return false;
     }
 
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {
@@ -185,19 +186,24 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         this.registerPrinter();
     }
 
-	@Override
-	public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
-
-        printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
-
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
-        // TODO Auto-generated method stub
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        printTransaction(ordID, type, isFromHistory, fromOnHold, null);
+        return true;
+    }
 
-		printPaymentDetailsReceipt(payID,type, isReprint, LINE_WIDTH);
+
+
+    @Override
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
 
         return true;
@@ -229,7 +235,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public boolean printReport(String curDate) {
         // TODO Auto-generated method stub
 
-		printReportReceipt(curDate, LINE_WIDTH);
+        printReportReceipt(curDate, LINE_WIDTH);
 
         return true;
     }
@@ -249,7 +255,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
 
-		printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
 
         return true;
@@ -271,7 +277,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
         // TODO Auto-generated method stub
 
-		printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         return true;
     }
@@ -280,7 +286,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public boolean printOpenInvoices(String invID) {
         // TODO Auto-generated method stub
 
-		printOpenInvoicesReceipt(invID, LINE_WIDTH);
+        printOpenInvoicesReceipt(invID, LINE_WIDTH);
 
         return true;
     }
@@ -289,9 +295,9 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public void printStationPrinter(List<Orders> orders, String ordID) {
         // TODO Auto-generated method stub
 
-		printStationPrinterReceipt(orders, ordID,LINE_WIDTH);
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
 
-	}
+    }
 
     @Override
     public void openCashDrawer() {
@@ -307,7 +313,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
         // TODO Auto-generated method stub
-		printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
         return true;
     }

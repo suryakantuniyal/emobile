@@ -33,22 +33,20 @@ public class ShiftPeriodsDBHandler {
 	private final String total_ending_cash = "total_ending_cash";
 	private final String shift_issync = "shift_issync";
 
-	public final List<String> attr = Arrays.asList(new String[] { shift_id, assignee_id, assignee_name, creationDate,
+	public final List<String> attr = Arrays.asList(shift_id, assignee_id, assignee_name, creationDate,
 			creationDateLocal, startTime, startTimeLocal, endTime, endTimeLocal, beginning_petty_cash,
-			ending_petty_cash, entered_close_amount, total_transaction_cash, shift_issync });
+			ending_petty_cash, entered_close_amount, total_transaction_cash, shift_issync);
 
 	public StringBuilder sb1, sb2;
 	public final String empStr = "";
 	public HashMap<String, Integer> attrHash;
 	public Global global;
 
-	private Activity activity;
 
 	public static final String table_name = "ShiftPeriods";
 
 	public ShiftPeriodsDBHandler(Activity activity) {
 		global = (Global) activity.getApplication();
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();

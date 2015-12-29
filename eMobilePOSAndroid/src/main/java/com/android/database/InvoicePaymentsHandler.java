@@ -17,15 +17,13 @@ public class InvoicePaymentsHandler {
 	private final String applied_amount = "applied_amount";
 	private final String txnID = "txnID";
 
-	public final List<String> attr = Arrays.asList(new String[] { pay_id, inv_id, txnID, applied_amount });
+	public final List<String> attr = Arrays.asList(pay_id, inv_id, txnID, applied_amount);
 
 	private StringBuilder sb1, sb2;
 	private HashMap<String, Integer> attrHash;
 	private static final String table_name = "InvoicePayments";
-	private Activity activity;
 
 	public InvoicePaymentsHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();

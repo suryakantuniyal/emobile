@@ -146,7 +146,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     prefManager.findPreference("pref_attribute_to_display").setOnPreferenceClickListener(this);
 
-                    openShiftPref = (Preference) getPreferenceManager().findPreference("pref_open_shift");
+                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
                         CharSequence c = new String(
                                 "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
@@ -156,7 +156,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
 
-                    defaultCountry = (Preference) prefManager.findPreference("pref_default_country");
+                    defaultCountry = prefManager.findPreference("pref_default_country");
                     CharSequence temp = new String("\t\t" + myPref.defaultCountryName(true, null));
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
@@ -164,7 +164,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     CheckBoxPreference _cbp_use_location_inv = (CheckBoxPreference) prefManager
                             .findPreference("pref_enable_location_inventory");
 
-                    storeForwardTransactions = (Preference) prefManager
+                    storeForwardTransactions = prefManager
                             .findPreference("pref_store_and_forward_transactions");
                     storeForwardFlag = (CheckBoxPreference) prefManager.findPreference("pref_use_store_and_forward");
                     storeForwardTransactions.setOnPreferenceClickListener(this);
@@ -201,7 +201,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
-                    openShiftPref = (Preference) getPreferenceManager().findPreference("pref_open_shift");
+                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
                         CharSequence c = new String(
                                 "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
@@ -674,11 +674,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (lastCount < count) {
-                        deleting = false;
-                    } else {
-                        deleting = true;
-                    }
+                    deleting = lastCount >= count;
                 }
 
                 @Override

@@ -423,7 +423,7 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         int size = val.length;
         double[] tempArray = new double[size];
         for (int i = 0; i < size; i++) {
-            tempArray[i] = (double) val[i];
+            tempArray[i] = val[i];
         }
         return tempArray;
     }

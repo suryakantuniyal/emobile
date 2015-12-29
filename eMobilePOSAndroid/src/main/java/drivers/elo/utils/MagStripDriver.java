@@ -12,9 +12,9 @@ public class MagStripDriver
 {
 	public interface MagStripeListener
 	{
-		public abstract void OnCardSwiped(MagTeklibDynamag cardData);
-		public abstract void OnDeviceDisconnected();
-		public abstract void OnDeviceConnected();
+		void OnCardSwiped(MagTeklibDynamag cardData);
+		void OnDeviceDisconnected();
+		void OnDeviceConnected();
 	}
 
 	protected static final int DEVICE_CONNECTED = 4;

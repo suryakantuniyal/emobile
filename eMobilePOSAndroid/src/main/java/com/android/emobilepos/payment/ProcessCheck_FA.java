@@ -1004,7 +1004,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             // TODO Auto-generated method stub
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, false);
+                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, false, null);
             }
             return null;
         }

@@ -17,16 +17,14 @@ public class OrderProductsAttr_DB {
 	public final static String attribute_id = "attribute_id";
 	public final static String name = "name";
 	public final static String value = "value";
-	private final List<String> attr = Arrays.asList(new String[] {ordprod_id,attribute_id,name,value});
+	private final List<String> attr = Arrays.asList(ordprod_id,attribute_id,name,value);
 	
 	private HashMap<String, Integer> attrHash;
 	private StringBuilder mainSB1,mainSB2;
 	private static final String TABLE_NAME = "OrderProductsAttr";
-	private Activity activity;
-	
+
 	public OrderProductsAttr_DB(Activity activity)
 	{
-		this.activity = activity;
 		attrHash = new HashMap<String,Integer>();
 		
 		mainSB1 = new StringBuilder();

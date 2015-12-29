@@ -4,9 +4,9 @@ import drivers.EMSDeviceDriver;
 
 public interface EMSConnectionDelegate {
 
-	public void driverDidConnectToDevice(EMSDeviceDriver theDevice,boolean showPrompt);
+	void driverDidConnectToDevice(EMSDeviceDriver theDevice, boolean showPrompt);
 
-	public void driverDidDisconnectFromDevice(EMSDeviceDriver theDevice,boolean showPrompt);
+	void driverDidDisconnectFromDevice(EMSDeviceDriver theDevice, boolean showPrompt);
 
-	public void driverDidNotConnectToDevice(EMSDeviceDriver theDevice,String msg,boolean showPrompt);
+	void driverDidNotConnectToDevice(EMSDeviceDriver theDevice, String msg, boolean showPrompt);
 }

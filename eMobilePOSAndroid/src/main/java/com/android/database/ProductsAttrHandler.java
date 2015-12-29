@@ -25,21 +25,18 @@ public class ProductsAttrHandler
 	private final String attr_group = "attr_group";
 	private final String attr_group_id = "attr_group_id";
 	
-	private final List<String> attr = Arrays.asList(new String[]{prodAttrKey,prod_id,attr_id,attr_name,attr_desc,attr_group,attr_group_id});
+	private final List<String> attr = Arrays.asList(prodAttrKey,prod_id,attr_id,attr_name,attr_desc,attr_group,attr_group_id);
 	
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String,Integer>attrHash;
 	private List<String[]>data;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private MyPreferences myPref;
 	private final String TABLE_NAME = "ProductsAttr";
-	private Activity activity;
 
 	public ProductsAttrHandler(Activity activity)
 	{
-		this.activity = activity;
-		myPref = new MyPreferences(this.activity);
+		myPref = new MyPreferences(activity);
 		attrHash = new HashMap<String,Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
@@ -70,15 +67,13 @@ public class ProductsAttrHandler
 		if (i != null) {
 			return data.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	
 	public void emptyTable() 
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("DELETE FROM ").append(TABLE_NAME);
-		DBManager._db.execSQL(sb.toString());
+		DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
 	}
 	
 	

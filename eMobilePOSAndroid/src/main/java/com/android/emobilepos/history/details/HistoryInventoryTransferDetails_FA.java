@@ -82,8 +82,8 @@ public class HistoryInventoryTransferDetails_FA extends BaseFragmentActivityActi
 		headerTitle.setText(getString(R.string.inventory_transfer_details));
 
 				
-		allInfoLeft = Arrays.asList(new String[]{getString(R.string.trans_details_transfer_id),getString(R.string.trans_details_origin),
-				getString(R.string.trans_details_destination),getString(R.string.trans_details_date)});
+		allInfoLeft = Arrays.asList(getString(R.string.trans_details_transfer_id),getString(R.string.trans_details_origin),
+				getString(R.string.trans_details_destination),getString(R.string.trans_details_date));
 		
 		
 		

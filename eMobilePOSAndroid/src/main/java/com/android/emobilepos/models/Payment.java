@@ -6,15 +6,15 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.android.database.DrawInfoHandler;
+import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.annotations.Expose;
 
-public class Payment  {
+public class Payment {
 
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 1L;
 
     private String empstr = "";
@@ -116,10 +116,10 @@ public class Payment  {
     public String payment_xml = "";
 
 
-    public MyPreferences myPref;
+    public EMVContainer emvContainer;
 
     public Payment(Activity activity) {
-        myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(activity);
 
         pay_issync = "0";
         isVoid = "0";
@@ -141,7 +141,7 @@ public class Payment  {
                    String cardExpMonth, String cardExpYear, String cardPostalCode, String cardSecurityCode, String trackOne,
                    String trackTwo, String transactionId, String authcode) {
 
-        myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(activity);
         pay_issync = "0";
         isVoid = "0";
         status = "1";

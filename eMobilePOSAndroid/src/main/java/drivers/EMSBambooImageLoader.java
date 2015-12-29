@@ -64,7 +64,7 @@ public class EMSBambooImageLoader {
 				eightPixels = 0;
 			}
 
-			if (((int) lum & 0xFF) < 128 && ((int) alpha & 0xFF) > 128) {
+			if ((lum & 0xFF) < 128 && (alpha & 0xFF) > 128) {
 				eightPixels = (byte) (eightPixels | (1 << (7 - pixelCount)));
 			}
 
@@ -86,7 +86,7 @@ public class EMSBambooImageLoader {
 			List<Byte> pixelsList = list.subList(0, length);
 			list = list.subList(length, list.size());
 			Byte[] values = { 0x1B, 0x58, 0x31, 0x32, (byte) (length / 0x32) };
-			List<Byte> header = (List<Byte>) (Arrays.asList(values));
+			List<Byte> header = Arrays.asList(values);
 			dataFrames.addAll(header);
 			dataFrames.addAll(pixelsList);
 

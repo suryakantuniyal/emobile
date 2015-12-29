@@ -108,7 +108,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
 
     public interface RefreshReceiptViewCallback {
-        public void refreshView();
+        void refreshView();
     }
 
 
@@ -357,13 +357,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     if (!isSubcategory)
                         index -= 1;
                     Global.cat_id = categories.get(index)[1];
-                    if (myPref.getPreferences(MyPreferences.pref_enable_multi_category) && !categories.get(index)[2].equals("0")) // it has sub-category
-                    {
-                        global.hasSubcategory = true;
-                        //_typeCase = CASE_CATEGORY;
-
-                    } else
-                        global.hasSubcategory = false;
+                    // it has sub-category
+//_typeCase = CASE_CATEGORY;
+                    global.hasSubcategory = myPref.getPreferences(MyPreferences.pref_enable_multi_category) && !categories.get(index)[2].equals("0");
                     global.isSubcategory = false;
                 }
                 dialog.dismiss();
@@ -589,7 +585,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 // TODO Auto-generated method stub
 
                 int size1 = btnListID.size();
-                int temp = btnListID.indexOf((String) v.getTag());
+                int temp = btnListID.indexOf(v.getTag());
                 List<String> tempList = new ArrayList<String>(btnListID);
                 for (int i = temp + 1; i < size1; i++) {
                     removeCategoryButton(tempList.get(i));

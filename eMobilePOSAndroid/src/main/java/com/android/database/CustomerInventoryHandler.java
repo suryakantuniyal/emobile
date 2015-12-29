@@ -28,23 +28,21 @@ public class CustomerInventoryHandler {
 	private final String is_synched = "is_synched";
 
 	private final List<String> attr = Arrays
-			.asList(new String[] { cust_id, prod_id, qty, price, prod_name, cust_update });
+			.asList(cust_id, prod_id, qty, price, prod_name, cust_update);
 
 	private StringBuilder sb1, sb2;
 	private final HashMap<String, Integer> attrHash;
 	private List<String[]> data;
 	private MyPreferences myPref;
-	private Activity activity;
 	private List<HashMap<String, Integer>> dictionaryListMap;
 	private final String TABLE_NAME = "CustomerInventory";
 
 	public CustomerInventoryHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		data = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
-		myPref = new MyPreferences(this.activity);
+		myPref = new MyPreferences(activity);
 		initDictionary();
 	}
 

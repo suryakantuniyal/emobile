@@ -13,7 +13,7 @@ public class ConsignmentSignaturesDBHandler {
 	private final String ConsTrans_ID = "ConsTrans_ID";
 	private final String encoded_signature = "encoded_signature";
 	
-	private final List<String>attr = Arrays.asList(new String[]{ConsTrans_ID,encoded_signature});
+	private final List<String>attr = Arrays.asList(ConsTrans_ID,encoded_signature);
 	
 	private StringBuilder sb1,sb2;
 	private final HashMap<String,Integer> attrHash;

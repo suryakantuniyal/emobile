@@ -34,14 +34,15 @@
             <Button
                 android:id="@+id/checkoutButton"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/header_bar_button_height"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_margin="5dp"
                 android:background="@drawable/blue_btn_selector"
+                android:paddingLeft="5dp"
+                android:paddingRight="14dp"
                 android:text="@string/button_checkout"
                 android:textAppearance="@style/black_text_appearance"
-                android:textSize="@dimen/ordering_checkout_btn_txt_size"
-                android:layout_margin="5dp"
-                android:paddingLeft="5dp"
-                android:paddingRight="14dp" />
+                android:textSize="@dimen/large_button_text_size" />
         </LinearLayout>
     </RelativeLayout>
 
@@ -96,7 +97,7 @@
                 android:id="@+id/addProdButton"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/add_orders_button_height"
+                android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="@drawable/blue_btn_selector"
                 android:text="@string/button_add_prod_serv"

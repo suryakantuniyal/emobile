@@ -1116,7 +1116,16 @@
 	<string name="sync_send_btn">Send</string>
 	<string name="sync_receive_btn">Receive</string>
 	<string name="pay_button">Pay</string>
+	<string name="sync_enabler_submitlocationinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx</string>
+	<string name="genius_aid">AID:</string>
+	<string name="cryptogram_type">Cryptogram Type:</string>
+	<string name="cryptogram">Cryptogram:</string>
+	<string name="pin_statement">PIN Statement:</string>
+	<string name="payment_save_declined">Payment was declined.</string>
+	<string name="credit_approval_status">Status:</string>
+	<string name="approved">Approved</string>
 	<string name="error_reading_card">Card swipe read error.</string>
 	<string name="endofdayBtn">End of day</string>
+	<string name="declined">DECLINED</string>
 
 </resources>

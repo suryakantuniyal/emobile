@@ -27,7 +27,7 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 
 
     public interface SwiperLoyaltyCallback {
-        public void startLoyaltySwiper();
+        void startLoyaltySwiper();
     }
 
 
@@ -122,9 +122,7 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
     public static boolean isValidPointClaim(String newUsedPoints) {
         double tempAvailable = Double.parseDouble(fieldPointsAvailable.getText().toString());
         double tempNewUsedPoints = Double.parseDouble(newUsedPoints);
-        if (tempAvailable >= tempNewUsedPoints)
-            return true;
-        return false;
+        return tempAvailable >= tempNewUsedPoints;
     }
 
 

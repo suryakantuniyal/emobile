@@ -15,7 +15,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -184,12 +186,12 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
 //            String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
             eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
+            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
             eloPrinterPort.getInputStream().close();
             eloPrinterPort.getOutputStream().close();
             eloPrinterPort.close();
@@ -201,13 +203,20 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         return true;
     }
 
+    @Override
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        printTransaction(ordID, type, isFromHistory, fromOnHold, null);
+        return true;
+    }
+
+
 
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         try {
             SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
             eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH);
+            super.printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
             eloPrinterPort.getInputStream().close();
             eloPrinterPort.getOutputStream().close();
             eloPrinterPort.close();

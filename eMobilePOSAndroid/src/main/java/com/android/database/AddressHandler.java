@@ -36,9 +36,9 @@ public class AddressHandler {
 	private final String addr_b_type = "addr_b_type";
 	private final String addr_s_type = "addr_s_type";
 
-	private final List<String> attr = Arrays.asList(new String[] { addr_id, cust_id,  addr_b_str1, addr_b_str2, addr_b_str3,
+	private final List<String> attr = Arrays.asList(addr_id, cust_id, addr_b_str1, addr_b_str2, addr_b_str3,
 			addr_b_city, addr_b_state, addr_b_country, addr_b_zipcode, addr_s_name, addr_s_str1, addr_s_str2, addr_s_str3, addr_s_city, addr_s_state,
-			addr_s_country, addr_s_zipcode, qb_cust_id,addr_b_type,addr_s_type });
+			addr_s_country, addr_s_zipcode, qb_cust_id,addr_b_type,addr_s_type);
 
 	private static final String table_name = "Address";
 	private StringBuilder sb1, sb2;
@@ -310,7 +310,9 @@ public class AddressHandler {
 			}
 			break;
 		}
-		cursor.close();
+		if (cursor != null) {
+			cursor.close();
+		}
 		//db.close();
 		return arrayList;
 	}

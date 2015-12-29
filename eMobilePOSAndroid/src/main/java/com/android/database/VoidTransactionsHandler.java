@@ -20,7 +20,6 @@ public class VoidTransactionsHandler {
 	private final String qb_synctime = "qb_synctime";
 	private final String is_sync = "is_sync";
 
-	private final String empStr = "";
 	private final String table_name = "VoidTransactions";
 
 	private HashMap<String, String> hashedValues;
@@ -32,7 +31,7 @@ public class VoidTransactionsHandler {
 		String value = hashedValues.get(key);
 		if (value != null)
 			return value;
-		return empStr;
+		return "";
 	}
 
 	public void insert(Order values) {

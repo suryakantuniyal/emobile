@@ -433,46 +433,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         };
     }
 
-//    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
-//
-//        return new TextWatcher() {
-//            boolean doneScanning = false;
-//            String temp;
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if (doneScanning) {
-//                    doneScanning = false;
-//                    String data = hiddenField.getText().toString().replace("\n", "");
-//                    hiddenField.setText("");
-//                    // if(Global.isEncryptSwipe)
-//                    // cardInfoManager = EMSUniMagDriver.parseCardData(activity,
-//                    // data);
-//                    // else
-//                    // cardInfoManager = Global.parseSimpleMSR(activity, data);
-//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-//                    updateViewAfterSwipe();
-//                }
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                // TODO Auto-generated method stub
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                // TODO Auto-generated method stub
-//                temp = s.toString();
-//                if (temp.contains("\n") && temp.split("\n").length >= 2
-//                        && temp.substring(temp.length() - 1).contains("\n")) {
-//                    doneScanning = true;
-//                }
-//
-//            }
-//        };
-//    }
-
     @SuppressWarnings("deprecation")
     private void setUpCardReader() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -1010,7 +970,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 } else {
                     if (tipAmount != null)
                         tipAmount.setText(Global.getCurrencyFormat(
-                                Global.formatNumToLocale(Double.parseDouble(Double.toString((double) amountToTip)))));
+                                Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
                     dialog.dismiss();
                 }
 
@@ -1751,7 +1711,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             wasReprint = (Boolean) params[0];
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printingSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1,
-                        wasReprint);
+                        wasReprint, null);
             }
             return payment;
         }

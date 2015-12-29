@@ -32,12 +32,14 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
+import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.database.DBManager;
 import com.android.support.Global;
@@ -325,7 +327,33 @@ public class EMSDeviceDriver {
 
     }
 
-    protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory) {
+    private void printEMVSection(EMVContainer emvContainer, int lineWidth) {
+        if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
+                    emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
+            if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
+                    emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name()) ||
+                    emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase("EMVCo")) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_exp_date),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getCardInformation().getCardExpiryDate(), lineWidth, 0));
+            }
+            if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name())) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram_type),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogramType(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogram(), lineWidth, 0));
+            }
+            if (!emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement().isEmpty()) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.pin_statement),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement(), lineWidth, 0));
+            }
+            sb.append("\n\n");
+            print(sb.toString());
+        }
+    }
+
+    protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
@@ -346,7 +374,6 @@ public class EMSDeviceDriver {
             printImage(0);
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-
             if (anOrder.isVoid.equals("1"))
                 sb.append(textHandler.centeredString("*** VOID ***", lineWidth)).append("\n\n");
 
@@ -556,7 +583,6 @@ public class EMSDeviceDriver {
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
-                ;
             } else {
 
                 double paidAmount = 0;
@@ -894,10 +920,10 @@ public class EMSDeviceDriver {
     }
 
     public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
-        float ratio = Math.min((float) maxImageSize / realImage.getWidth(),
-                (float) maxImageSize / realImage.getHeight());
-        int width = Math.round((float) ratio * realImage.getWidth());
-        int height = Math.round((float) ratio * realImage.getHeight());
+        float ratio = Math.min(maxImageSize / realImage.getWidth(),
+                maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
 
         Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width, height, filter);
         return newBitmap;
@@ -974,22 +1000,23 @@ public class EMSDeviceDriver {
     }
 
 
-    protected void printPaymentDetailsReceipt(String payID, int type, boolean isReprint, int lineWidth) {
-        // TODO Auto-generated method stub
+    protected void printPaymentDetailsReceipt(String payID, int type, boolean isReprint, int lineWidth, EMVContainer emvContainer) {
 
         try {
 
 
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             printPref = myPref.getPrintingPreferences();
-
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             PaymentDetails payArray;
             boolean isStoredFwd = false;
-            long pay_count = payHandler.paymentExist(payID);
+            long pay_count = payHandler.paymentExist(payID, true);
             if (pay_count == 0) {
                 isStoredFwd = true;
                 StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
+                if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
+                    type = 2;
+                }
                 payArray = dbStoredPay.getPrintingForPaymentDetails(payID, type);
             } else {
                 payArray = payHandler.getPrintingForPaymentDetails(payID, type);
@@ -1000,9 +1027,9 @@ public class EMSDeviceDriver {
             String constantValue = null;
             String creditCardFooting = "";
 
-            if (payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
+            if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
                 isCashPayment = true;
-            else if (payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
+            else if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
                 isCheckPayment = true;
             else {
                 constantValue = getString(R.string.receipt_included_tip);
@@ -1013,7 +1040,6 @@ public class EMSDeviceDriver {
 
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-
 //			port.writePort(enableCenter, 0, enableCenter.length); // enable
             // center
 
@@ -1055,6 +1081,15 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
                         payArray.getPay_check(), lineWidth, 0));
             }
+
+            print(sb.toString());
+            sb.setLength(0);
+
+            printEMVSection(payArray.getEmvContainer(), lineWidth);
+
+            String status = payArray.getEmvContainer() != null && payArray.getEmvContainer().getGeniusResponse() != null ? payArray.getEmvContainer().getGeniusResponse().getStatus() : getString(R.string.approved);
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.credit_approval_status),
+                    status, lineWidth, 0));
 
             sb.append(textHandler.newLines(1));
             if (Global.isIvuLoto && Global.subtotalAmount > 0 && !payArray.getTax1_amount().isEmpty()
@@ -1831,13 +1866,11 @@ public class EMSDeviceDriver {
         sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
         List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate);
 
-        for(Order ord:listOrder)
-        {
+        for (Order ord : listOrder) {
 
-            switch(Global.OrderType.getByCode(Integer.parseInt(ord.ord_type)))
-            {
+            switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
                 case RETURN:
-                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Return",lineWidth,0));
+                    sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Return", lineWidth, 0));
                     returnAmount = new BigDecimal(ord.ord_total);
                     break;
                 case ESTIMATE:
@@ -1869,26 +1902,23 @@ public class EMSDeviceDriver {
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", Global.formatDoubleStrToCurrency(invoiceAmount.toString()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total", Global.formatDoubleStrToCurrency(salesAmount.add(invoiceAmount).subtract(returnAmount).toString()), lineWidth, 0));
 
-        listOrder = ordHandler.getARTransactionsDayReport(null,mDate);
-        if(listOrder.size()>0)
-        {
+        listOrder = ordHandler.getARTransactionsDayReport(null, mDate);
+        if (listOrder.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("A/R Transactions", lineWidth));
             sb.append(textHandler.threeColumnLineItem("ID", 40, "Customer", 40, "Amount", 20, lineWidth, 0));
-            for(Order ord:listOrder)
-            {
-                if(ord.ord_id!=null)
+            for (Order ord : listOrder) {
+                if (ord.ord_id != null)
                     sb.append(textHandler.threeColumnLineItem(ord.ord_id, 40, ord.cust_name, 40, Global.formatDoubleStrToCurrency(ord.ord_total), 20, lineWidth, 0));
             }
             listOrder.clear();
         }
 
-        List<ShiftPeriods>listShifts = shiftHandler.getShiftDayReport(null, mDate);
-        if(listShifts.size()>0)
-        {
+        List<ShiftPeriods> listShifts = shiftHandler.getShiftDayReport(null, mDate);
+        if (listShifts.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Totals By Shift", lineWidth));
-            for(ShiftPeriods shift:listShifts) {
+            for (ShiftPeriods shift : listShifts) {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk", shift.assignee_name, lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("From", Global.formatToDisplayDate(shift.startTime, activity, 2), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("To", Global.formatToDisplayDate(shift.endTime, activity, 2), lineWidth, 0));
@@ -1909,18 +1939,16 @@ public class EMSDeviceDriver {
         sb.append(sb_ord_types);
 
 
-        List<OrderProducts>listProd = ordProdHandler.getProductsDayReport(true, null,mDate);
-        if(listProd.size()>0)
-        {
+        List<OrderProducts> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
+        if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Items Sold", lineWidth));
 
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
 
-            for(OrderProducts prod:listProd)
-            {
+            for (OrderProducts prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
-                if(printDetails){
+                if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("SKU:" + prod.prod_sku, "", lineWidth, 3));
                 }
@@ -1929,17 +1957,15 @@ public class EMSDeviceDriver {
             listProd.clear();
         }
 
-        List<Payment>listPayments = paymentHandler.getPaymentsDayReport(0, null, mDate);
-        if(listPayments.size()>0)
-        {
+        List<Payment> listPayments = paymentHandler.getPaymentsDayReport(0, null, mDate);
+        if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Payments", lineWidth));
-            for(Payment payment:listPayments)
-            {
+            for (Payment payment : listPayments) {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
 
-                if(printDetails) {
+                if (printDetails) {
                     //check if tip should be printed
                     if (showTipField) {
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
@@ -1955,17 +1981,15 @@ public class EMSDeviceDriver {
         }
 
 
-        listPayments = paymentHandler.getPaymentsDayReport(1, null,mDate);
-        if(listPayments.size()>0)
-        {
+        listPayments = paymentHandler.getPaymentsDayReport(1, null, mDate);
+        if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Void", lineWidth));
-            for(Payment payment:listPayments)
-            {
+            for (Payment payment : listPayments) {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth,2));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
 
-                if(printDetails) {
+                if (printDetails) {
                     //check if tip should be printed
                     if (showTipField) {
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
@@ -1981,16 +2005,14 @@ public class EMSDeviceDriver {
         }
 
         listPayments = paymentHandler.getPaymentsDayReport(2, null, mDate);
-        if(listPayments.size()>0)
-        {
+        if (listPayments.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Refund", lineWidth));
-            for(Payment payment:listPayments)
-            {
+            for (Payment payment : listPayments) {
                 sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
 
-                if(printDetails) {
+                if (printDetails) {
                     //check if tip should be printed
                     if (showTipField) {
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
@@ -2007,15 +2029,13 @@ public class EMSDeviceDriver {
 
 
         listProd = ordProdHandler.getProductsDayReport(false, null, mDate);
-        if(listProd.size()>0)
-        {
+        if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Items Returned", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for(OrderProducts prod:listProd)
-            {
+            for (OrderProducts prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
-                if(printDetails){
+                if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("SKU:" + prod.prod_sku, "", lineWidth, 3));
                 }
@@ -2024,31 +2044,26 @@ public class EMSDeviceDriver {
         }
 
         listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
-        if(listProd.size()>0)
-        {
+        if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Sales", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for(OrderProducts prod:listProd)
-            {
+            for (OrderProducts prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
             }
             listProd.clear();
         }
 
         listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
-        if(listProd.size()>0)
-        {
+        if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Returns", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for(OrderProducts prod:listProd)
-            {
+            for (OrderProducts prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
             }
             listProd.clear();
         }
-
 
 
         sb.append(textHandler.centeredString("** End of report **", lineWidth));

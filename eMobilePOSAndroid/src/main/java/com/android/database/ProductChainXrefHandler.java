@@ -21,20 +21,17 @@ public class ProductChainXrefHandler {
 	private final String productchain_update = "productchain_update";
 	private final String customer_item = "customer_item";
 
-	private final List<String> attr = Arrays.asList(new String[] { chainKey, cust_chain, prod_id, over_price_gross, over_price_net, isactive,
-			productchain_update, customer_item });
+	private final List<String> attr = Arrays.asList(chainKey, cust_chain, prod_id, over_price_gross, over_price_net, isactive,
+			productchain_update, customer_item);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String table_name = "ProductChainXRef";
 
 	public ProductChainXrefHandler(Activity activity) {
 		
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -61,7 +58,7 @@ public class ProductChainXrefHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {

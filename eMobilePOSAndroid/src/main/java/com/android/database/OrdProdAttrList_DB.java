@@ -21,19 +21,16 @@ public class OrdProdAttrList_DB {
 	public final static String required = "required";
 	
 	
-	private final List<String> attr = Arrays.asList(new String[] { Prod_id,Attrid,ordprod_attr_name,required});
+	private final List<String> attr = Arrays.asList(Prod_id,Attrid,ordprod_attr_name,required);
 	private HashMap<String, Integer> attrHash;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private List<String[]>data;
 	private StringBuilder mainSB1,mainSB2;
-	private final String empStr = "";
 	private static final String TABLE_NAME = "OrdProdAttrList";
-	private Activity activity;
 	private Global global;
 	
 	public OrdProdAttrList_DB(Activity activity)
 	{
-		this.activity = activity;
 		attrHash = new HashMap<String,Integer>();
 		
 		global = (Global)activity.getApplication();
@@ -61,7 +58,7 @@ public class OrdProdAttrList_DB {
 		if (i != null) {
 			return data.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {

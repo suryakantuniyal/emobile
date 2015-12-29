@@ -295,11 +295,14 @@ public class ExceptionHandler implements
 		if(oldHandler!=null)
 		{
 			oldHandler.uncaughtException(thread, exception);
+			Process.killProcess(Process.myPid());
+			System.exit(10);
 		}
 		else
 		{
 			Process.killProcess(Process.myPid());
 			System.exit(10);
 		}
+
 	}
 }

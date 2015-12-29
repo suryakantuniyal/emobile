@@ -899,7 +899,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         @Override
         protected Payment doInBackground(Payment... params) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(params[0].pay_id, 1, false);
+                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(params[0].pay_id, 1, false, null);
             }
             return params[0];
         }

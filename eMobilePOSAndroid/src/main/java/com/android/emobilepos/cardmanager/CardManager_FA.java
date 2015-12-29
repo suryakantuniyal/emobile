@@ -70,7 +70,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
         private int code;
 
-        private GiftCardActions(int code) {
+        GiftCardActions(int code) {
             this.code = code;
         }
 

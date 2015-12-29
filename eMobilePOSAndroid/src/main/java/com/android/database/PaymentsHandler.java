@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.Gson;
+import com.android.support.NumberUtils;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -90,27 +94,29 @@ public class PaymentsHandler {
     private final String Tax1_name = "Tax1_name";
     private final String Tax2_amount = "Tax2_amount";
     private final String Tax2_name = "Tax2_name";
+    private final String EMVJson = "EMV_JSON";
+
     private static Payment lastPaymentInserted;
 
     public static Payment getLastPaymentInserted() {
         return lastPaymentInserted;
     }
 
-    public final List<String> attr = Arrays.asList(new String[]{pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
+    public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
             inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
             pay_timesync, account_id, processed, pay_issync, pay_transid, pay_refnum, pay_name, pay_addr, pay_poscode,
             pay_seccode, pay_maccount, pay_groupcode, pay_stamp, pay_resultcode, pay_resultmessage, pay_ccnum,
             pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
             job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
             tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
-            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id});
+            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, EMVJson);
 
     private StringBuilder sb1, sb2;
-    private final String empStr = "";
     private HashMap<String, Integer> attrHash;
     private Global global;
     private MyPreferences myPref;
     private static final String table_name = "Payments";
+    private static final String table_name_declined = "PaymentsDeclined";
     private Activity activity;
 
     public PaymentsHandler(Activity activity) {
@@ -143,18 +149,11 @@ public class PaymentsHandler {
     }
 
     public void insert(Payment payment) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
+
         DBManager._db.beginTransaction();
         try {
-            SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(")")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            SQLiteStatement insert;
+            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ")" + "VALUES (" + sb2.toString() + ")");
             insert.bindString(index(pay_id), payment.pay_id == null ? "" : payment.pay_id); // pay_id
             insert.bindString(index(group_pay_id), payment.group_pay_id == null ? "" : payment.group_pay_id); // group_pay_id
             insert.bindString(index(original_pay_id), payment.original_pay_id == null ? "" : payment.original_pay_id); // group_pay_id
@@ -224,6 +223,8 @@ public class PaymentsHandler {
             insert.bindString(index(Tax1_name), payment.Tax1_name == null ? "" : payment.Tax1_name);
             insert.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.Tax2_amount) ? "0" : payment.Tax2_amount);
             insert.bindString(index(Tax2_name), payment.Tax2_name == null ? "" : payment.Tax2_name);
+            insert.bindString(index(EMVJson), payment.emvContainer == null ? "" : new Gson().toJson(payment.emvContainer, EMVContainer.class));
+
 
             insert.execute();
             insert.clearBindings();
@@ -241,37 +242,19 @@ public class PaymentsHandler {
             DBManager._db.endTransaction();
             lastPaymentInserted = payment;
         }
-        // db.close();
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
-    // public void emptyTable() {
-    // StringBuilder sb = new StringBuilder();
-    // SQLiteDatabase db = dbManager.openWritableDB();
-    // sb.append("DELETE FROM ").append(table_name);
-    // db.execSQL(sb.toString());
-    // db.close();
-    // }
 
     public long getDBSize() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name);
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
@@ -279,20 +262,12 @@ public class PaymentsHandler {
     // unsynchronized payments (used in
     // generation of XML for post)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
-                .append(" WHERE pay_issync = '0'");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
 
-        return cursor;
+        return DBManager._db.rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
     }
 
     public String getTotalPayAmount(String paymethod_id, String pay_date) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
+
         StringBuilder sb = new StringBuilder();
         if (paymethod_id.equals("Genius")) {
             sb.append(
@@ -313,24 +288,13 @@ public class PaymentsHandler {
                 total = "0.00";
         }
         cursor.close();
-        // db.close();
         return total;
     }
 
     public String getTotalRefundAmount(String paymethod_id, String pay_date) {
 
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '")
-                .append(paymethod_id);
-        sb.append("' AND date = '").append(pay_date).append("' AND is_refund = '1' AND isVoid != '1'");
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
         String total = "0.00";
         if (cursor.moveToFirst()) {
             total = cursor.getString(cursor.getColumnIndex("total"));
@@ -338,52 +302,49 @@ public class PaymentsHandler {
                 total = "0.00";
         }
         cursor.close();
-        // db.close();
         return total;
     }
 
     public long getNumUnsyncPayments() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE pay_issync = '0'");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public boolean unsyncPaymentsLeft() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE pay_issync = '0'");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        if (count == 0)
-            return false;
-        return true;
+        return count != 0;
     }
 
-    public long paymentExist(String _pay_id) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE pay_id = '").append(_pay_id).append("'");
+    public long paymentExist(String pay_id) {
+        return paymentExist(pay_id, false);
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+    }
+
+    public long paymentExist(String pay_id, boolean includeDeclined) {
+
+        String sql = "select count(*) from %s WHERE pay_id = '%s'";
+        if (includeDeclined) {
+            sql = "select count(*) from (SELECT pay_id FROM %s" +
+                    " union " +
+                    "SELECT pay_id from %s) WHERE pay_id = '%s'";
+            sql = String.format(sql, table_name, table_name_declined, pay_id);
+        } else {
+            sql = String.format(sql, table_name, pay_id);
+        }
+        SQLiteStatement stmt = DBManager._db.compileStatement(sql);
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public void updateIsSync(List<String[]> list) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
 
         StringBuilder sb = new StringBuilder();
         sb.append(pay_id).append(" = ?");
@@ -398,11 +359,9 @@ public class PaymentsHandler {
                 args.put(pay_issync, "0");
             DBManager._db.update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
         }
-        // db.close();
     }
 
     public String updateSignaturePayment(String payID) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
 
         StringBuilder sb = new StringBuilder();
         sb.append(pay_id).append(" = ?");
@@ -416,37 +375,28 @@ public class PaymentsHandler {
         sb.append("SELECT pay_amount FROM Payments WHERE pay_id = '").append(payID).append("'");
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
         String returningVal = "";
-        int count = cursor.getCount();
         if (cursor.moveToFirst()) {
             returningVal = cursor.getString(cursor.getColumnIndex("pay_amount"));
         }
 
         cursor.close();
-        // db.close();
         return returningVal;
     }
 
     public void updateIsVoid(String param) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(pay_id).append(" = ?");
 
         ContentValues args = new ContentValues();
 
         args.put(isVoid, "1");
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{param});
-
-        // db.close();
+        DBManager._db.update(table_name, args, pay_id + " = ?", new String[]{param});
     }
 
     public void createVoidPayment(Payment payment, boolean onlineVoid, HashMap<String, String> response) {
         GenerateNewID idGenerator = new GenerateNewID(activity);
         this.updateIsVoid(payment.pay_id);
         String _ord_id = payment.job_id;
-        String _orig_pay_id = payment.pay_id;// myPref.getLastPayID();
-        // String _orig_pay_id = payment.getSetData("pay_id", true, null);
-        // myPref.setLastPayID(idGenerator.getNextID(myPref.getLastPayID()));
+        String _orig_pay_id = payment.pay_id;
+
 
         payment.pay_id = idGenerator.getNextID(IdType.PAYMENT_ID);
         payment.pay_type = "1";
@@ -472,57 +422,50 @@ public class PaymentsHandler {
         }
     }
 
-    public String[] getPaymentDetails(String payID) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
+    public PaymentDetails getPaymentDetails(String payID) {
+        return getPaymentDetails(payID, false);
+    }
 
-        StringBuilder sb = new StringBuilder();
+    public PaymentDetails getPaymentDetails(String payID, boolean isDeclined) {
+        String tableName = table_name;
+        if (isDeclined)
+            tableName = table_name_declined;
+        String sql = "SELECT pay_date,pay_comment,job_id, inv_id,group_pay_id,pay_signature,ccnum_last4," +
+                "pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id FROM " + tableName +
+                " WHERE pay_id = ?";
 
-        sb.append(
-                "SELECT pay_date,pay_comment,job_id, inv_id,group_pay_id,pay_signature,ccnum_last4,pay_latitude,pay_longitude,isVoid,pay_transid,");
-        sb.append("authcode,clerk_id FROM Payments WHERE pay_id = ?");
-
-        String[] arrayVal = new String[13];
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{payID});
+        PaymentDetails paymentDetails = new PaymentDetails();
+        Cursor cursor = DBManager._db.rawQuery(sql, new String[]{payID});
         if (cursor.moveToFirst()) {
             do {
-                arrayVal[0] = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), activity,
-                        0);
-                arrayVal[1] = cursor.getString(cursor.getColumnIndex(pay_comment));
-                arrayVal[2] = cursor.getString(cursor.getColumnIndex(inv_id));// is
+                paymentDetails.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), activity,
+                        0));
+                paymentDetails.setPay_comment(cursor.getString(cursor.getColumnIndex(pay_comment)));
+                paymentDetails.setInv_id(cursor.getString(cursor.getColumnIndex(inv_id)));// is
                 // actually
                 // job_id
                 // as
                 // 'inv_id'
-                arrayVal[3] = cursor.getString(cursor.getColumnIndex(group_pay_id));
-                arrayVal[4] = cursor.getString(cursor.getColumnIndex(pay_signature));
-                arrayVal[5] = cursor.getString(cursor.getColumnIndex(ccnum_last4));
-                arrayVal[6] = cursor.getString(cursor.getColumnIndex(pay_latitude));
-                arrayVal[7] = cursor.getString(cursor.getColumnIndex(pay_longitude));
-                arrayVal[8] = cursor.getString(cursor.getColumnIndex(job_id));
-                arrayVal[9] = cursor.getString(cursor.getColumnIndex(isVoid));
-                arrayVal[10] = cursor.getString(cursor.getColumnIndex(authcode));
-                arrayVal[11] = cursor.getString(cursor.getColumnIndex(pay_transid));
-                arrayVal[12] = cursor.getString(cursor.getColumnIndex(clerk_id));
+                paymentDetails.setGroup_pay_id(cursor.getString(cursor.getColumnIndex(group_pay_id)));
+                paymentDetails.setPay_signature(cursor.getString(cursor.getColumnIndex(pay_signature)));
+                paymentDetails.setCcnum_last4(cursor.getString(cursor.getColumnIndex(ccnum_last4)));
+                paymentDetails.setPay_latitude(cursor.getString(cursor.getColumnIndex(pay_latitude)));
+                paymentDetails.setPay_longitude(cursor.getString(cursor.getColumnIndex(pay_longitude)));
+                paymentDetails.setJob_id(cursor.getString(cursor.getColumnIndex(job_id)));
+                paymentDetails.setIsVoid(cursor.getString(cursor.getColumnIndex(isVoid)));
+                paymentDetails.setAuthcode(cursor.getString(cursor.getColumnIndex(authcode)));
+                paymentDetails.setPay_transid(cursor.getString(cursor.getColumnIndex(pay_transid)));
+                paymentDetails.setClerk_id(cursor.getString(cursor.getColumnIndex(clerk_id)));
             } while (cursor.moveToNext());
         }
         cursor.close();
-        // db.close();
-        return arrayVal;
+        return paymentDetails;
     }
 
     public Payment getPaymentForVoid(String payID) {
         Payment payment = new Payment(this.activity);
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("SELECT * FROM Payments WHERE pay_id = '");
-        sb.append(payID).append("'");
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT * FROM Payments WHERE pay_id = '" + payID + "'", null);
 
         if (cursor.moveToFirst()) {
             cursorToPayment(cursor, payment);
@@ -533,20 +476,10 @@ public class PaymentsHandler {
         return payment;
     }
 
-    // private void setPayForVoid(Payment payment,String tag,String val)
-    // {
-    // payment.getSetData(tag, false, val);
-    // }
-    //
-
     public List<Payment> getOrderPayments(String _ordID) {
         Payment payment = new Payment(this.activity);
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("SELECT * FROM Payments WHERE job_id = '");
-        sb.append(_ordID).append("'");
-
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager._db.rawQuery("SELECT * FROM Payments WHERE job_id = '" + _ordID + "'", null);
 
         List<Payment> listPayment = new ArrayList<Payment>();
         if (c.moveToFirst()) {
@@ -621,37 +554,28 @@ public class PaymentsHandler {
     }
 
     public List<HashMap<String, String>> getPaymentDetailsForTransactions(String jobID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         List<HashMap<String, String>> mapList = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> map = new HashMap<String, String>();
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip',pm.paymentmethod_type AS 'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p,");
-        sb.append("PayMethods pm WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '").append(jobID)
-                .append("' UNION ");
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Wallet' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Reward' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Reward' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','GiftCard' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'GiftCard' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Genius' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = '' ");
-        sb.append("AND p.job_id = '").append(jobID).append("'");
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "pm.paymentmethod_type AS 'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p," + "PayMethods pm " +
+                "WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID + "' " +
+                "UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name'," +
+                "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Wallet' " +
+                "AND p.job_id = '" + jobID + "' UNION " +
+                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name'," +
+                "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" +
+                jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "'Reward' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Reward' " +
+                "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "'GiftCard' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p " +
+                "WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " +
+                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name'," +
+                "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" +
+                jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "'Genius' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = '' " +
+                "AND p.job_id = '" + jobID + "'", null);
         if (cursor.moveToFirst()) {
             do {
                 String data = cursor.getString(cursor.getColumnIndex(pay_amount));
@@ -671,12 +595,10 @@ public class PaymentsHandler {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        // db.close();
         return mapList;
     }
 
     public Cursor getCashCheckGiftPayment(String type, boolean isRefund) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         StringBuilder sb = new StringBuilder();
 
@@ -690,41 +612,46 @@ public class PaymentsHandler {
         else
             sb.append("0' ORDER BY p.pay_id DESC");
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
-        return cursor;
+        return DBManager._db.rawQuery(sb.toString(), null);
     }
 
     public Cursor searchCashCheckGift(String type, String search) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         String subquery1 = "SELECT p.pay_id as _id, p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id AND m.paymentmethod_type = '";// cust_name
         String subquery2 = "' AND pay_type !='1' AND c.cust_name LIKE ? ORDER BY p.pay_id DESC";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(subquery1).append(type).append(subquery2);// .append(search).append(subquery3);
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{"%" + search + "%"});
+        Cursor cursor = DBManager._db.rawQuery(subquery1 + type + subquery2, new String[]{"%" + search + "%"});
         cursor.moveToFirst();
-        // db.close();
 
         return cursor;
     }
 
     public Cursor getCardPayments(boolean isRefund) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM ")
-                .append(table_name)
-                .append(" p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id AND (m.paymentmethod_type = ");
-        sb.append(
-                "'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') AND pay_type !='1'  AND is_refund='");
-
+        String is_refund = "0";
         if (isRefund)
-            sb.append("1' ORDER BY p.pay_id DESC");
-        else
-            sb.append("0' ORDER BY p.pay_id DESC");
+            is_refund = "1";
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
+                "p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync,p.pay_tip as pay_tip " +
+                "FROM " + table_name +
+                " p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id " +
+                "WHERE p.paymethod_id = m.paymethod_id AND " +
+                "(m.paymentmethod_type = 'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR " +
+                "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
+                "AND pay_type !='1'  AND is_refund='" + is_refund + "' " +
+                " UNION " +
+                "SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
+                "p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync,p.pay_tip as pay_tip " + "FROM " + table_name_declined +
+                " p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id " +
+                "WHERE p.paymethod_id = m.paymethod_id AND " +
+                "(m.paymentmethod_type = 'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR " +
+                "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
+                "AND pay_type !='1'  AND is_refund='" + is_refund + "' ");
+//
+//        if (isRefund)
+//            sb.append("1' ORDER BY p.pay_id DESC");
+//        else
+//            sb.append("0' ORDER BY p.pay_id DESC");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
 
@@ -732,187 +659,89 @@ public class PaymentsHandler {
     }
 
     public Cursor searchCards(String search) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         String subquery1 = "SELECT p.pay_id as _id, p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id AND (m.paymentmethod_type = ";// cust_name
         String subquery2 = "'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') AND c.cust_name LIKE '%";
         String subquery3 = "%' ORDER BY p.pay_id DESC";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(subquery1).append(subquery2).append(search).append(subquery3);
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery(subquery1 + subquery2 + search + subquery3, null);
         cursor.moveToFirst();
-        // db.close();
 
         return cursor;
     }
 
     public Cursor getOtherPayments(boolean isRefund) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
         StringBuilder sb = new StringBuilder();
-
-        sb.append(
-                "SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
-        sb.append(
-                "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE   p.paymethod_id = 'Wallet' ");
-        sb.append("AND pay_type!=1 OR (p.paymethod_id = m.paymethod_id AND pay_type !='1'  AND ");
-        sb.append("(m.paymentmethod_type != 'AmericanExpress' AND m.paymentmethod_type != 'Discover' AND ");
-        sb.append("m.paymentmethod_type != 'MasterCard' AND m.paymentmethod_type != 'Visa' AND ");
-        sb.append(
-                "m.paymentmethod_type != 'Cash' AND m.paymentmethod_type != 'GiftCard')) OR p.paymethod_id = 'Genius' OR p.paymethod_id = '' ");
-
+        String is_refund = "0";
         if (isRefund)
-            sb.append(" AND is_refund = '1' GROUP BY p.pay_id ORDER BY p.pay_id DESC ");
-        else
-            sb.append(" AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+            is_refund = "1";
+        sb.append(
+                "SELECT 'FALSE' as DECLINED, p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name,p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync," +
+                        "p.pay_tip as pay_tip FROM Payments p, " +
+                        "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE   p.paymethod_id = 'Wallet' " +
+                        "AND pay_type!=1 OR (p.paymethod_id = m.paymethod_id AND pay_type !='1'  AND " +
+                        "(m.paymentmethod_type != 'AmericanExpress' AND m.paymentmethod_type != 'Discover' AND " +
+                        "m.paymentmethod_type != 'MasterCard' AND m.paymentmethod_type != 'Visa' AND " +
+                        "m.paymentmethod_type != 'Cash' AND m.paymentmethod_type != 'GiftCard')) OR p.paymethod_id = 'Genius' OR p.paymethod_id = '' " +
+                        " AND is_refund = '" + is_refund + "' GROUP BY p.pay_id " +
+                        "UNION " +
+                        "SELECT 'TRUE' as DECLINED, p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name,p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync," +
+                        "p.pay_tip as pay_tip FROM PaymentsDeclined p, " +
+                        "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE   p.paymethod_id = 'Wallet' " +
+                        "AND pay_type!=1 OR (p.paymethod_id = m.paymethod_id AND pay_type !='1'  AND " +
+                        "(m.paymentmethod_type != 'AmericanExpress' AND m.paymentmethod_type != 'Discover' AND " +
+                        "m.paymentmethod_type != 'MasterCard' AND m.paymentmethod_type != 'Visa' AND " +
+                        "m.paymentmethod_type != 'Cash' AND m.paymentmethod_type != 'GiftCard')) OR p.paymethod_id = 'Genius' OR p.paymethod_id = '' " +
+                        " AND is_refund = '" + is_refund + "' GROUP BY p.pay_id "
+        );
 
-        return cursor;
+        return DBManager._db.rawQuery(sb.toString(), null);
     }
 
     public Cursor getLoyaltyPayments() {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(
-                "SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
-        sb.append(
-                "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCard' ");
-        sb.append("AND pay_type!=1 ");
-
-        sb.append(" AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
-        return cursor;
+        return DBManager._db.rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCard' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getLoyaltyAddBalance() {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(
-                "SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
-        sb.append(
-                "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCardBalance' ");
-        sb.append("AND pay_type!=1 ");
-
-        sb.append(" AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
-        return cursor;
+        return DBManager._db.rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'LoyaltyCardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getGiftCardAddBalance() {
 
-        StringBuilder sb = new StringBuilder();
-        // sb.append(pay_id).append(" = ?");
-        //
-        // ContentValues args = new ContentValues();
-        //
-        // args.put(isVoid, "0");
-        // int update = DBManager._db.update(table_name, args, sb.toString(),
-        // new String[] { "19-00020-2015" });
-        //
-        // sb.setLength(0);
 
-        sb.append(
-                "SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
-        sb.append(
-                "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'GiftCardBalance' ");
-        sb.append("AND pay_type!=1 ");
-
-        sb.append(" AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
-        return cursor;
+        return DBManager._db.rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'GiftCardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getRewardPayments() {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(
-                "SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
-        sb.append("PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'Reward' ");
-        sb.append("AND pay_type!=1 ");
-
-        sb.append(" AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
-        return cursor;
+        return DBManager._db.rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'Reward' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor getRewardAddBalance() {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
 
-        sb.append(
-                "SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, ");
-        sb.append(
-                "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'RewardBalance' ");
-        sb.append("AND pay_type!=1 ");
-
-        sb.append(" AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
-        return cursor;
+        return DBManager._db.rawQuery("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, " + "PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = 'RewardBalance' " + "AND pay_type!=1 " + " AND is_refund = '0' GROUP BY p.pay_id ORDER BY p.pay_id DESC ", null);
     }
 
     public Cursor searchOther(String search) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         String subquery1 = "SELECT p.pay_id as _id, p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, PayMethods m LEFT OUTER JOIN "
                 + "Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id AND pay_type !='1'  AND (m.paymentmethod_type != ";// cust_name
         String subquery2 = "'AmericanExpress' AND m.paymentmethod_type != 'Discover' AND m.paymentmethod_type != 'MasterCard' "
                 + "AND m.paymentmethod_type != 'Visa' AND m.paymentmethod_type != 'Cash' AND m.paymentmethod_type != 'GiftCard') AND c.cust_name LIKE ? ORDER BY p.pay_id DESC";
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(subquery1).append(subquery2);// .append(search).append(subquery3);
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{"%" + search + "%"});
+        Cursor cursor = DBManager._db.rawQuery(subquery1 + subquery2, new String[]{"%" + search + "%"});
         cursor.moveToFirst();
-        // db.close();
 
         return cursor;
     }
 
     public List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
-        StringBuilder sb = new StringBuilder();
         List<PaymentDetails> list = new ArrayList<PaymentDetails>();
 
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',pm.paymethod_name AS 'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p,");
-        sb.append("PayMethods pm WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '").append(jobID)
-                .append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Wallet' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Reward' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'GiftCard' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Genius' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = '' ");
-        sb.append("AND p.job_id = '").append(jobID).append("'");
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_amount AS 'pay_amount',pm.paymethod_name AS 'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p," + "PayMethods pm WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Wallet' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Reward' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = '' " + "AND p.job_id = '" + jobID + "'", null);
         PaymentDetails details = new PaymentDetails();
         if (cursor.moveToFirst()) {
 
@@ -933,37 +762,100 @@ public class PaymentsHandler {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        // db.close();
         return list;
     }
 
     public PaymentDetails getPrintingForPaymentDetails(String payID, int type) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         StringBuilder sb = new StringBuilder();
+        switch (type) {
+            // May come from History>Payment>Details
+            case 0: {
+                sb.append(
+                        "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total as ord_total,p.pay_amount as pay_amount," +
+                                "p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
+                                + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
+                                + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND job_id ='" + payID + "' " +
+                                " UNION " +
+                                "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total as ord_total,p.pay_amount as pay_amount," +
+                                "p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON "
+                                + "FROM PaymentsDeclined p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
+                                + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id  AND job_id ='" + payID + "')" +
+                                " WHERE job_id ='" + payID + "' "
+                );
+                break;
+            }
+            // Straight from main menu 'Payment'
+            case 1: {
 
-        if (type == 0) // May come from History>Payment>Details
-        {
+                sb.append(
+                        "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
+                                "p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id  " +
+                                "  WHERE pay_id = '" + payID + "'" +
+                                " UNION " +
+                                "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
+                                "p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id" +
+                                "  WHERE pay_id = '" + payID + "'" +
+                                ")" +
+                                "  WHERE pay_id = '" + payID + "' ");
+                break;
+            }
+            // Straight from main menu 'Payment & Declined'
+            case 2: {
+                sb.append(
+                        "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total'," +
+                                "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
+                                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id " +
+                                "  WHERE pay_id = '" + payID + "'" +
+                                " UNION " +
+                                "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
+                                "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total'," +
+                                "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount,"
+                                + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
+                                + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
+                                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
+                                + "p.Tax1_amount as Tax1_amount, p.Tax2_amount as Tax2_amount, p.Tax1_name as Tax1_name, p.Tax2_name as Tax2_name, p.EMV_JSON as EMV_JSON  "
+                                + "FROM PaymentsDeclined p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
+                                + "PayMethods m ON p.paymethod_id = m.paymethod_id " +
+                                "  WHERE pay_id = '" + payID + "'" +
+                                ")" +
+                                "  WHERE pay_id = '" + payID + "'"
+                );
+                break;
+            }
 
-            sb.append(
-                    "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total,p.pay_amount,p.pay_dueamount,"
-                            + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature, "
-                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                            + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
-                            + "FROM Payments p,Orders o LEFT OUTER JOIN Customers c  ON c.cust_id = p.cust_id  "
-                            + "LEFT OUTER JOIN PayMethods m ON m.paymethod_id = p.paymethod_id WHERE o.ord_id = p.job_id AND p.job_id ='");
-        } else if (type == 1) // Straight from main menu 'Payment'
-        {
-            sb.append(
-                    "SELECT p.inv_id,p.job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name',p.pay_date,p.pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount,p.pay_dueamount,"
-                            + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature,  "
-                            + "p.pay_transid,p.ccnum_last4,p.pay_check,p.is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
-                            + "p.Tax1_amount, p.Tax2_amount, p.Tax1_name, p.Tax2_name "
-                            + "FROM Payments p LEFT OUTER JOIN Customers c ON c.cust_id =p.cust_id LEFT OUTER JOIN "
-                            + "PayMethods m ON p.paymethod_id = m.paymethod_id  WHERE p.pay_id = '");
         }
-
-        sb.append(payID).append("'");
+//        sb.append(payID).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
         PaymentDetails payDetail = new PaymentDetails();
@@ -996,6 +888,7 @@ public class PaymentsHandler {
                 payDetail.setTax2_name(cursor.getString(cursor.getColumnIndex(Tax2_name)));
                 payDetail.setTax1_amount(cursor.getString(cursor.getColumnIndex(Tax1_amount)));
                 payDetail.setTax2_amount(cursor.getString(cursor.getColumnIndex(Tax2_amount)));
+                payDetail.setEmvContainer(new Gson().fromJson(cursor.getString(cursor.getColumnIndex(EMVJson)), EMVContainer.class));
 
             } while (cursor.moveToNext());
         }
@@ -1006,11 +899,6 @@ public class PaymentsHandler {
     }
 
     public HashMap<String, String> getPaymentsRefundsForReportPrinting(String date, int type) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         StringBuilder sb = new StringBuilder();
 
@@ -1034,7 +922,7 @@ public class PaymentsHandler {
             do {
                 if (map.containsKey(cursor.getString(cursor.getColumnIndex("paymethod_id")))) {
                     bg = new BigDecimal(map.get(cursor.getString(cursor.getColumnIndex("paymethod_id"))));
-                    bg = bg.add(new BigDecimal(cursor.getString(cursor.getColumnIndex("total")))).setScale(2,
+                    bg = bg.add(new BigDecimal(NumberUtils.cleanCurrencyFormatedNumber(cursor.getString(cursor.getColumnIndex("total"))))).setScale(2,
                             RoundingMode.HALF_UP);
                     map.put(cursor.getString(cursor.getColumnIndex("paymethod_id")), bg.toString());
                 } else
@@ -1045,7 +933,6 @@ public class PaymentsHandler {
         }
 
         cursor.close();
-        // db.close();
         return map;
     }
 
@@ -1209,5 +1096,94 @@ public class PaymentsHandler {
 
     public static PaymentsHandler getInstance(Activity activity) {
         return new PaymentsHandler(activity);
+    }
+
+    public void insertDeclined(Payment payment) {
+        DBManager._db.beginTransaction();
+        try {
+            SQLiteStatement insert;
+            insert = DBManager._db.compileStatement("INSERT INTO " + table_name_declined + " (" + sb1.toString() + ")" + "VALUES (" + sb2.toString() + ")");
+            insert.bindString(index(pay_id), payment.pay_id == null ? "" : payment.pay_id); // pay_id
+            insert.bindString(index(group_pay_id), payment.group_pay_id == null ? "" : payment.group_pay_id); // group_pay_id
+            insert.bindString(index(original_pay_id), payment.original_pay_id == null ? "" : payment.original_pay_id); // group_pay_id
+            insert.bindString(index(cust_id), payment.cust_id == null ? "" : payment.cust_id); // cust_id
+            insert.bindString(index(tupyx_user_id), payment.tupyx_user_id == null ? "" : payment.tupyx_user_id);
+            insert.bindString(index(custidkey), payment.custidkey == null ? "" : payment.custidkey); // custidkey
+            insert.bindString(index(emp_id), payment.emp_id == null ? "" : payment.emp_id); // emp_id
+            insert.bindString(index(inv_id), payment.inv_id == null ? "" : payment.inv_id); // inv_id
+            insert.bindString(index(paymethod_id), payment.paymethod_id == null ? "" : payment.paymethod_id); // paymethod_id
+            insert.bindString(index(pay_check), payment.pay_check == null ? "" : payment.pay_check); // pay_check
+            insert.bindString(index(pay_receipt), payment.pay_receipt == null ? "" : payment.pay_receipt); // pay_receipt
+            insert.bindString(index(pay_amount), TextUtils.isEmpty(payment.pay_amount) ? "0" : payment.pay_amount); // pay_amount
+            insert.bindString(index(pay_dueamount),
+                    TextUtils.isEmpty(payment.pay_dueamount) ? "0" : payment.pay_dueamount); // pay_dueamount;
+            insert.bindString(index(pay_comment), payment.pay_comment == null ? "" : payment.pay_comment); // pay_comment
+            insert.bindString(index(pay_timecreated), payment.pay_timecreated == null ? "" : payment.pay_timecreated); // pay_timecreated
+            insert.bindString(index(pay_timesync), payment.pay_timesync == null ? "" : payment.pay_timesync); // pay_timesync
+            insert.bindString(index(account_id), payment.account_id == null ? "" : payment.account_id); // account_id
+            insert.bindString(index(processed), TextUtils.isEmpty(payment.processed) ? "0" : payment.processed); // processed
+            insert.bindString(index(pay_issync), TextUtils.isEmpty(payment.pay_issync) ? "0" : payment.pay_issync); // pay_issync
+            insert.bindString(index(pay_transid), payment.pay_transid == null ? "" : payment.pay_transid); // pay_transid
+            insert.bindString(index(pay_refnum), payment.pay_refnum == null ? "" : payment.pay_refnum); // pay_refnum
+            insert.bindString(index(pay_name), payment.pay_name == null ? "" : payment.pay_name); // pay_name
+            insert.bindString(index(pay_addr), payment.pay_addr == null ? "" : payment.pay_addr); // pay_addr
+            insert.bindString(index(pay_poscode), payment.pay_poscode == null ? "" : payment.pay_poscode); // pay_poscode
+            insert.bindString(index(pay_seccode), payment.pay_seccode == null ? "" : payment.pay_seccode); // pay_seccode
+            insert.bindString(index(pay_maccount), payment.pay_maccount == null ? "" : payment.pay_maccount); // pay_maccount
+            insert.bindString(index(pay_groupcode), payment.pay_groupcode == null ? "" : payment.pay_groupcode); // pay_groupcode
+            insert.bindString(index(pay_stamp), payment.pay_stamp == null ? "" : payment.pay_stamp); // pay_stamp
+            insert.bindString(index(pay_resultcode), payment.pay_resultcode == null ? "" : payment.pay_resultcode); // pay_resultcode
+            insert.bindString(index(pay_resultmessage),
+                    payment.pay_resultmessage == null ? "" : payment.pay_resultmessage); // pay_resultmessage
+            insert.bindString(index(pay_ccnum), payment.pay_ccnum == null ? "" : payment.pay_ccnum); // pay_ccnum
+            insert.bindString(index(pay_expmonth), payment.pay_expmonth == null ? "" : payment.pay_expmonth); // pay_expMonth
+            insert.bindString(index(pay_expyear), payment.pay_expyear == null ? "" : payment.pay_expyear); // pay_expyear
+            insert.bindString(index(pay_expdate), payment.pay_expdate == null ? "" : payment.pay_expdate); // pay_expdate
+            insert.bindString(index(pay_result), payment.pay_result == null ? "" : payment.pay_result); // pay_result
+            insert.bindString(index(pay_date), payment.pay_date == null ? "" : payment.pay_date); // pay_date
+            insert.bindString(index(recordnumber), payment.recordnumber == null ? "" : payment.recordnumber); // recordnumber
+            insert.bindString(index(pay_signature), payment.pay_signature == null ? "" : payment.pay_signature); // pay_signaute
+            insert.bindString(index(authcode), payment.authcode == null ? "" : payment.authcode); // authcode
+            insert.bindString(index(status), payment.status == null ? "" : payment.status); // status
+            insert.bindString(index(job_id), payment.job_id == null ? "" : payment.job_id); // job_id
+
+            insert.bindString(index(user_ID), payment.user_ID == null ? "" : payment.user_ID); // user_ID
+            insert.bindString(index(pay_type), payment.pay_type == null ? "" : payment.pay_type); // pay_type
+            insert.bindString(index(pay_tip), TextUtils.isEmpty(payment.pay_tip) ? "0" : payment.pay_tip); // pay_tip
+            insert.bindString(index(ccnum_last4), payment.ccnum_last4 == null ? "" : payment.ccnum_last4); // ccnum_last4
+            insert.bindString(index(pay_phone), payment.pay_phone == null ? "" : payment.pay_phone); // pay_phone
+            insert.bindString(index(pay_email), payment.pay_email == null ? "" : payment.pay_email); // pay_email
+            insert.bindString(index(isVoid), TextUtils.isEmpty(payment.isVoid) ? "0" : payment.isVoid); // isVoid
+            insert.bindString(index(pay_latitude), payment.pay_latitude == null ? "" : payment.pay_latitude); // pay_latitude
+            insert.bindString(index(pay_longitude), payment.pay_longitude == null ? "" : payment.pay_longitude); // pay_longitude
+            insert.bindString(index(tipAmount), TextUtils.isEmpty(payment.tipAmount) ? "0" : payment.tipAmount); // tipAmount
+            insert.bindString(index(clerk_id), payment.clerk_id == null ? "" : payment.clerk_id); // clerk_id
+
+            insert.bindString(index(is_refund), TextUtils.isEmpty(payment.is_refund) ? "0" : payment.is_refund); // is_refund
+            insert.bindString(index(ref_num), payment.ref_num == null ? "" : payment.ref_num); // ref_num
+            insert.bindString(index(card_type), payment.card_type == null ? "" : payment.card_type); // card_type
+
+            insert.bindString(index(IvuLottoDrawDate),
+                    payment.IvuLottoDrawDate == null ? "" : payment.IvuLottoDrawDate); // IvuLottoDrawData
+            insert.bindString(index(IvuLottoNumber), payment.IvuLottoNumber == null ? "" : payment.IvuLottoNumber); // IvuLottoNumber
+            insert.bindString(index(IvuLottoQR), payment.IvuLottoQR == null ? "" : payment.IvuLottoQR); // IvuLottoQR
+
+            insert.bindString(index(Tax1_amount), TextUtils.isEmpty(payment.Tax1_amount) ? "0" : payment.Tax1_amount);
+            insert.bindString(index(Tax1_name), payment.Tax1_name == null ? "" : payment.Tax1_name);
+            insert.bindString(index(Tax2_amount), TextUtils.isEmpty(payment.Tax2_amount) ? "0" : payment.Tax2_amount);
+            insert.bindString(index(Tax2_name), payment.Tax2_name == null ? "" : payment.Tax2_name);
+            insert.bindString(index(EMVJson), payment.emvContainer == null ? "" : new Gson().toJson(payment.emvContainer, EMVContainer.class));
+
+            insert.execute();
+            insert.clearBindings();
+            insert.close();
+            DBManager._db.setTransactionSuccessful();
+
+        } catch (Exception e) {
+            Log.d("Exception", e.getMessage() + " [com.android.emobilepos.PaymentsHandler (at Class.insertDeclined)]");
+        } finally {
+            myPref.setLastPayID(payment.pay_id);
+            DBManager._db.endTransaction();
+        }
     }
 }

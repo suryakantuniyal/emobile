@@ -134,7 +134,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         setContentView(R.layout.order_main_layout);
         activity = this;
         instance = this;
-        callBackMSR = (EMSCallBack) this;
+        callBackMSR = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
         catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
@@ -247,7 +247,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 if (!text.isEmpty()) {
                     rightFragment.performSearch(text);
                 }
-            };
+            }
         }
     };
 
@@ -905,15 +905,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String addedQty = global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());
-        if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
+        return !((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
                 && (((Global.ord_type == Global.OrderType.SALES_RECEIPT || Global.ord_type == Global.OrderType.INVOICE)
                 && (newQty > onHandQty))))
                 || (Global.isConsignment && !product.getProdType().equals("Service")
-                && !validConsignment(newQty, onHandQty, product.getId()))) {
-            return false;
-        } else {
-            return true;
-        }
+                && !validConsignment(newQty, onHandQty, product.getId())));
     }
 
     private boolean validConsignment(double selectedQty, double onHandQty, String prodID) {
@@ -1149,9 +1145,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         PayMethodsHandler payHandler = new PayMethodsHandler(activity);
 
         if (isLoyaltyCard)
-            payment.paymethod_id = payHandler.getPayMethodID("LoyaltyCard");
+            payment.paymethod_id = PayMethodsHandler.getPayMethodID("LoyaltyCard");
         else
-            payment.paymethod_id = payHandler.getPayMethodID("Reward");
+            payment.paymethod_id = PayMethodsHandler.getPayMethodID("Reward");
 
         payment.pay_name = cardInfoManager.getCardOwnerName();
         payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();

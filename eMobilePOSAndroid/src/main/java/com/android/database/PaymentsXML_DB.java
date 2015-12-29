@@ -15,15 +15,13 @@ public class PaymentsXML_DB {
 	public static final String app_id = "app_id";
 	public static final String payment_xml = "payment_xml";
 	
-	private final List<String> attr = Arrays.asList(new String[] {app_id,payment_xml});
+	private final List<String> attr = Arrays.asList(app_id,payment_xml);
 	private HashMap<String, Integer> attrHash;
 	private StringBuilder mainSB1,mainSB2;
 	private static final String TABLE_NAME = "PaymentsXML";
-	private Activity activity;
-	
+
 	public PaymentsXML_DB(Activity activity)
 	{
-		this.activity = activity;
 		attrHash = new HashMap<String,Integer>();
 		mainSB1 = new StringBuilder();
 		mainSB2 = new StringBuilder();

@@ -34,7 +34,7 @@
         android:layout_weight="0"
         android:orientation="horizontal"
         android:gravity="center"
-        android:background="@color/gray_flat_headers">
+        android:background="@drawable/blue_gradient_header_horizontal">
             <Button
         android:id="@+id/histpayVoidBut"
         android:layout_width="90dp"

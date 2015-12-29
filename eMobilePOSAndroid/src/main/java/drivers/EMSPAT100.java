@@ -11,7 +11,9 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -156,15 +158,21 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
-        // TODO Auto-generated method stub
-        printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
-
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        printTransaction(ordID, type, isFromHistory, fromOnHold, null);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         // TODO Auto-generated method stub
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         printPref = myPref.getPrintingPreferences();

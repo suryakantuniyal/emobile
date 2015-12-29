@@ -43,13 +43,11 @@ public class GenerateXML {
 	private StringBuilder ending = new StringBuilder();
 	private Activity thisActivity;
 	private static String empstr = "";
-	private DBManager dbManager;
 	private MyPreferences myPref;
 
 	public GenerateXML(Activity activity) {
 		info = new MyPreferences(activity);
 		thisActivity = activity;
-		dbManager = new DBManager(activity);
 		myPref = new MyPreferences(activity);
 		if (thisActivity instanceof ClockInOut_FA)
 			try {

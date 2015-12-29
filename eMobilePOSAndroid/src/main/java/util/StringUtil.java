@@ -623,10 +623,8 @@ public class StringUtil {
 			}
 		}
 
-		if (hexCharCount % 2 != 0)
-			return false;
+		return hexCharCount % 2 == 0;
 
-		return true;
 	}
 
 	/**

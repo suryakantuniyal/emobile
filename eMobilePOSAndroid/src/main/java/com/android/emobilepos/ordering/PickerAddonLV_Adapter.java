@@ -40,7 +40,7 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 	
 
 	public interface ProductClickedCallback {
-		public void productClicked(int position);
+		void productClicked(int position);
 	}
 
 	public PickerAddonLV_Adapter(Activity context, Cursor _c, int flags, ImageLoader _imageLoader) {

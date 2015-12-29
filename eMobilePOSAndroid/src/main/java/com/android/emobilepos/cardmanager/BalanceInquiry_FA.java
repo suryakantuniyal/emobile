@@ -79,7 +79,7 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 		activity = this;
 		Global.isEncryptSwipe = false;
 
-		msrCallBack = (EMSCallBack) this;
+		msrCallBack = this;
 		global = (Global) getApplication();
 		myPref = new MyPreferences(this);
 

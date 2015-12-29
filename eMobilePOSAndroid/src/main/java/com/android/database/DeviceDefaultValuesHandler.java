@@ -24,8 +24,8 @@ public class DeviceDefaultValuesHandler {
 	
 	
 	
-	private final List<String> attr = Arrays.asList(new String[] { df_id,posAdminPassword,loyaltyPointFeature,
-			pointsType,defaultPointsPricePercentage,globalDiscountID});
+	private final List<String> attr = Arrays.asList(df_id,posAdminPassword,loyaltyPointFeature,
+			pointsType,defaultPointsPricePercentage,globalDiscountID);
 	
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";

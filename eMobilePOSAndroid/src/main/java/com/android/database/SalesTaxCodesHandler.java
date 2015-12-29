@@ -21,20 +21,17 @@ public class SalesTaxCodesHandler {
 	private final String taxcode_update = "taxcode_update";
 
 	private final List<String> attr = Arrays
-			.asList(new String[] { taxcode_id, taxcode_name, taxcode_desc, taxcode_istaxable, isactive, taxcode_update });
+			.asList(taxcode_id, taxcode_name, taxcode_desc, taxcode_istaxable, isactive, taxcode_update);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 	private static final String table_name = "SalesTaxCodes";
 
 	public SalesTaxCodesHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -61,7 +58,7 @@ public class SalesTaxCodesHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {
