@@ -997,6 +997,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             handler.updateIsProcessed(Global.lastOrdID, "1");
                             showRefundDlg();
                         }
+                    } else {
+                        proceedToRefund();
                     }
                     break;
                 }
