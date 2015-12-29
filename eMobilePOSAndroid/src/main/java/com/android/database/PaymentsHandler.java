@@ -12,6 +12,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -1035,7 +1036,7 @@ public class PaymentsHandler {
             do {
                 if (map.containsKey(cursor.getString(cursor.getColumnIndex("paymethod_id")))) {
                     bg = new BigDecimal(map.get(cursor.getString(cursor.getColumnIndex("paymethod_id"))));
-                    bg = bg.add(new BigDecimal(cursor.getString(cursor.getColumnIndex("total")))).setScale(2,
+                    bg = bg.add(new BigDecimal(NumberUtils.cleanCurrencyFormatedNumber(cursor.getString(cursor.getColumnIndex("total"))))).setScale(2,
                             RoundingMode.HALF_UP);
                     map.put(cursor.getString(cursor.getColumnIndex("paymethod_id")), bg.toString());
                 } else
