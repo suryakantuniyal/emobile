@@ -172,7 +172,7 @@ public class DBManager {
 
                 db.setVersion(version);
                 db.close();
-                File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
+                File outFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.db");
                 try {
                     FileUtils.copyFile(newFile, outFile);
                 } catch (IOException e) {
