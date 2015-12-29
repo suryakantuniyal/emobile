@@ -1229,9 +1229,12 @@ public class EMSDeviceDriver {
             if (!anOrder.ord_HoldName.isEmpty())
                 sb.append(getString(R.string.receipt_name)).append(anOrder.ord_HoldName).append("\n");
 
+            if (!anOrder.cust_name.isEmpty())
+                sb.append(anOrder.cust_name).append("\n");
+
             sb.append(getString(R.string.order)).append(": ").append(ordID).append("\n");
             sb.append(getString(R.string.receipt_started)).append(" ")
-                    .append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 4)).append("\n");
+                    .append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append("\n");
 
             SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
             sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
@@ -1241,18 +1244,18 @@ public class EMSDeviceDriver {
             sb.append(getString(R.string.receipt_sent_by)).append(" ").append(myPref.getEmpName()).append(" (");
 
             if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
-                sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), activity, 4)).append(")");
+                sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), activity, -1)).append(")");
             else
-                sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 4)).append(")");
+                sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append(")");
 
             String ordComment = anOrder.ord_comment;
             if (ordComment != null && !ordComment.isEmpty()) {
                 sb.append("\nComments:\n");
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment, lineWidth, 3)).append("\n");
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment, lineWidth, 3));
             }
 
             sb.append("\n");
-
+            sb.append(textHandler.newDivider('=', lineWidth / 2)); //add double line divider
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
             sb.setLength(0);
@@ -1281,6 +1284,8 @@ public class EMSDeviceDriver {
 
                     if (!orders.get(m).getOrderProdComment().isEmpty())
                         sb.append("  ").append(orders.get(m).getOrderProdComment()).append("\n");
+
+                    sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
@@ -1290,15 +1295,18 @@ public class EMSDeviceDriver {
 
                     if (!orders.get(m).getOrderProdComment().isEmpty())
                         sb.append("  ").append(orders.get(m).getOrderProdComment()).append("\n");
+
+                    sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
                 }
             }
-            sb.append(textHandler.newLines(1));
+                sb.append(textHandler.newLines(1));
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
+
             print(sb.toString(), FORMAT);
-            printEnablerWebSite(lineWidth);
+//            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter) {
                 byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
