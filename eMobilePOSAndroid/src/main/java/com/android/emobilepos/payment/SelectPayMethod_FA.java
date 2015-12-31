@@ -628,7 +628,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPreExecute() {
-            Global.mainPrinterManager.currentDevice.loadScanner(null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadScanner(null);
+            }
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage("Printing...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -650,7 +652,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, Global.OrderType.getByCode(typeOfProcedure),
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id,orderType,
                             wasReprint, false, emvContainer);
             }
             return null;
