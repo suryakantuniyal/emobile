@@ -566,17 +566,17 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         @Override
         public void onScannerInitialized(PowaPOSEnums.InitializedResult initializedResult) {
-
+            Log.d("", "onScannerInitialized()");
         }
 
         @Override
         public void onHIDDeviceAttached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
-            // Not used in this sample.
+            Log.d("", "onHIDDeviceAttached()");
         }
 
         @Override
         public void onHIDDeviceDetached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
-            // Not used in this sample.
+            Log.d("", "onHIDDeviceDetached()");
         }
 
         @Override
