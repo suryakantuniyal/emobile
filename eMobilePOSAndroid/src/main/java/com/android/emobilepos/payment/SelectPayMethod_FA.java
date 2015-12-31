@@ -642,7 +642,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             // TODO Auto-generated method stub
 
             wasReprint = (Boolean) params[0];
-            EMVContainer emvContainer = (EMVContainer) params[1];
+
+            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
@@ -846,7 +847,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         myListview.setSelection(0);
         myListview.setSelected(false);
         EMVContainer emvContainer = null;
-        if (data!=null && data.hasExtra("emvcontainer"))
+        if (data != null && data.hasExtra("emvcontainer"))
             emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 
         myAdapter.notifyDataSetChanged();
@@ -865,7 +866,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
             paid = Global.formatNumber(true, currentPaidAmount);
 
-			if (NumberUtils.cleanCurrencyFormatedNumber(total).equals("0.00") && data != null) {
+            if (NumberUtils.cleanCurrencyFormatedNumber(total).equals("0.00") && data != null) {
                 total = data.getStringExtra("total_amount");
             }
             overAllRemainingBalance = Global.formatNumFromLocale(

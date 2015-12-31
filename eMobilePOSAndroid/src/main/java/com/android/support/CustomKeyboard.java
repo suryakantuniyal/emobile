@@ -5,6 +5,7 @@ package com.android.support;
  */
 
 import android.app.Activity;
+import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
@@ -13,6 +14,7 @@ import android.os.Message;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,7 +35,7 @@ import android.widget.EditText;
 public class CustomKeyboard {
 
     /** A link to the KeyboardView that is used to render this CustomKeyboard. */
-    private KeyboardView mKeyboardView;
+    private MyKeyboardView mKeyboardView;
     /** A link to the activity that hosts the {@link #mKeyboardView}. */
     private Activity     mHostActivity;
     private Handler handler;
@@ -51,7 +53,7 @@ public class CustomKeyboard {
      */
     public CustomKeyboard(Activity host, int viewid, int layoutid) {
         mHostActivity= host;
-        mKeyboardView= (KeyboardView)mHostActivity.findViewById(viewid);
+        mKeyboardView= (MyKeyboardView)mHostActivity.findViewById(viewid);
         mKeyboardView.setKeyboard(new Keyboard(mHostActivity, layoutid));
         mKeyboardView.setPreviewEnabled(false); // NOTE Do not show the preview balloons
         /* The key (code) handler. */
@@ -198,7 +200,6 @@ public class CustomKeyboard {
         this.handler = scanResultHandler;
     }
 }
-
 
 // NOTE How can we change the background color of some keys (like the shift/ctrl/alt)?
 // NOTE What does android:keyEdgeFlags do/mean
