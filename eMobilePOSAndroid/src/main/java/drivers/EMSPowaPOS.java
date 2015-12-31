@@ -614,6 +614,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         @Override
         public void onScanStartDecoding() {
+            Log.d("", "onScanStartDecoding()");
             // This event is only useful for providing animation while the
             // decoding is in process.
             // Usually this process take about 1.5 second, so developers can
