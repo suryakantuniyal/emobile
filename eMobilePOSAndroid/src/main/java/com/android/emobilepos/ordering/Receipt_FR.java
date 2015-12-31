@@ -1062,7 +1062,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.ord_total = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
         order.ord_subtotal = Global
-                .getRoundBigDecimal(OrderTotalDetails_FR.sub_total);
+                .getRoundBigDecimal(OrderTotalDetails_FR.sub_total.subtract(OrderTotalDetails_FR.itemsDiscountTotal));
 
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
