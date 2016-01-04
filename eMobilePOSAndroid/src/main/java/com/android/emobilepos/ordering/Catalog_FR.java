@@ -42,11 +42,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.database.CategoriesHandler;
+import com.android.database.DBManager;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Product;
-import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
@@ -64,22 +64,19 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback {
 
 
-    public static Catalog_FR instance;
-
-    private Activity activity;
+    public static final int CASE_CATEGORY = 1, CASE_SUBCATEGORY = 2, CASE_PRODUCTS = 0, CASE_SEARCH_PROD = 3;
     private static final int THE_LOADER = 0x01;
+    public static Catalog_FR instance;
+    public static int _typeCase = -1;
+    public static String search_text = "", search_type = "";
+    public static List<String> btnListID = new ArrayList<String>();
+    public static List<String> btnListName = new ArrayList<String>();
+    private Activity activity;
     private AbsListView catalogList;
     //private SQLiteDatabase db;
     private DBManager dbManager;
-    public static int _typeCase = -1;
-    public static String search_text = "", search_type = "";
-    public static final int CASE_CATEGORY = 1, CASE_SUBCATEGORY = 2, CASE_PRODUCTS = 0, CASE_SEARCH_PROD = 3;
     private ImageLoader imageLoader;
-
     private Cursor myCursor;
-    public static List<String> btnListID = new ArrayList<String>();
-    public static List<String> btnListName = new ArrayList<String>();
-
     private LinearLayout catButLayout;
     private MyPreferences myPref;
     private Global global;
@@ -106,12 +103,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private boolean isFastScanning = false;
     private long lastClickTime = 0;
 
-
-    public interface RefreshReceiptViewCallback {
-        void refreshView();
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_catalog_layout, container, false);
@@ -120,7 +111,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         catButLayout = (LinearLayout) view.findViewById(R.id.categoriesButtonLayoutHolder);
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
         searchField.setIsForSearching(activity, OrderingMain_FA.invisibleSearchMain);
-       // searchField.setText("58187869354"); //test upc
+        // searchField.setText("58187869354"); //test upc
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(activity);
@@ -142,7 +133,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         global = (Global) activity.getApplication();
 
 
-        if (Global.cat_id == "0")
+        if (Global.cat_id.equals("0"))
             Global.cat_id = myPref.getPreferencesValue(MyPreferences.pref_default_category);
 
         if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
@@ -158,7 +149,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
 
 
-
         setupSpinners(view);
         setupCategoriesButtons();
 
@@ -166,13 +156,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         loadCursor();
         return view;
     }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -188,7 +171,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 break;
         }
     }
-
 
     private void setupSearchField() {
         searchField.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_ACTION_SEARCH);
@@ -242,7 +224,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             performSearch(search_text);
     }
 
-
     private void setupSpinners(View v) {
 
         Button btnCategory = (Button) v.findViewById(R.id.categoryButton);
@@ -287,13 +268,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 //                searchField.clearFocus();
                 //catButLayout.requestFocus();
 
-                switch (position)
-                {
+                switch (position) {
                     case 0: //Name
                     {
 //                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
                         break;
-            }
+                    }
                     case 1: //description
                     {
 //                        searchField.setRawInputType(Configuration.KEYBOARD_NOKEYS);
@@ -317,7 +297,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     }
                 }
 
- //                searchField.clearFocus();
+                //                searchField.clearFocus();
 
             }
 
@@ -328,7 +308,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         });
 
     }
-
 
     private void setupCategoryView() {
         if (dialog != null && dialog.isShowing()) {
@@ -405,20 +384,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
     }
 
-
     public void loadCursor() {
         //OrderingMain_FA.invisibleSearchMain.requestFocus();
         getLoaderManager().initLoader(THE_LOADER, null, this).forceLoad();
     }
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        // TODO Auto-generated method stub
-        Catalog_Loader loader = new Catalog_Loader(activity);
-        return loader;
+        return new Catalog_Loader(activity);
     }
-
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
@@ -473,7 +447,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         itemClicked(showAllProducts);
     }
 
-
     public void searchUPC(String upc) {
         search_text = upc;
         _typeCase = CASE_SEARCH_PROD;
@@ -482,7 +455,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         loadCursor();
         restModeViewingProducts = true;
     }
-
 
     public void performSearch(String text) {
 
@@ -523,11 +495,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         OrderingMain_FA.invisibleSearchMain.requestFocus();
     }
 
-
     private void getCategoryCursor(int i_id, int i_cat_name, int i_num_subcategories, boolean showAllProducts) {
         restModeViewingProducts = false;
         String catID = myCursor.getString(myCursor.getColumnIndex("_id"));
-        boolean found_category_name = myCursor.getColumnIndex("cat_name") == -1 ? false : true;
+        boolean found_category_name = myCursor.getColumnIndex("cat_name") != -1;
         if (found_category_name) {
             String catName = myCursor.getString(myCursor.getColumnIndex("cat_name"));
             //Global.cat_id = new String(_catID);
@@ -535,9 +506,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
                 restModeViewingProducts = true;
-                btnListID.add(new String(catID));
-                btnListName.add(new String(catName));
-                addCategoryButton(catName, new String(catID));
+                btnListID.add(catID);
+                btnListName.add(catName);
+                addCategoryButton(catName, catID);
 
                 _typeCase = CASE_PRODUCTS;
                 loadCursor();
@@ -547,16 +518,16 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 int num_subcategories = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("num_subcategories")));
                 if (num_subcategories > 0 && !showAllProducts) {
 
-                    btnListID.add(new String(catID));
-                    btnListName.add(new String(catName));
-                    addCategoryButton(catName, new String(catID));
+                    btnListID.add(catID);
+                    btnListName.add(catName);
+                    addCategoryButton(catName, catID);
                     _typeCase = CASE_SUBCATEGORY;
                     loadCursor();
                 } else {
                     restModeViewingProducts = true;
-                    btnListID.add(new String(catID));
-                    btnListName.add(new String(catName));
-                    addCategoryButton(catName, new String(catID));
+                    btnListID.add(catID);
+                    btnListName.add(catName);
+                    addCategoryButton(catName, catID);
 
                     _typeCase = CASE_PRODUCTS;
                     loadCursor();
@@ -621,7 +592,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         callBackRefreshView.refreshView();
     }
 
-
     public Product populateDataForIntent(Cursor c) {
         Product product = new Product();
         product.setId(c.getString(myCursor.getColumnIndex("_id")));
@@ -657,7 +627,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         product.setProdPrice(tempPrice);
         product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
 
-        tempPrice = new String();
         tempPrice = c.getString(c.getColumnIndex("local_prod_onhand"));
         if (tempPrice == null || tempPrice.isEmpty())
             tempPrice = c.getString(c.getColumnIndex("master_prod_onhand"));
@@ -752,7 +721,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         if (resultCode == 2) {
             refreshListView();
             getActivity().setResult(-2);
-        } else if (resultCode == 9) {
         }
     }
 
@@ -859,10 +827,30 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
     }
 
+    public void showSubcategories(String subCategoryName) {
+
+        categories = catHandler.getSubcategories(subCategoryName);
+        int size = categories.size();
+        catName.clear();
+        catIDs.clear();
+        for (int i = 0; i < size; i++) {
+            catName.add(categories.get(i)[0]);
+            catIDs.add(categories.get(i)[1]);
+        }
+
+        isSubcategory = true;
+        setupCategoryView();
+        dialog.show();
+    }
+
+
+    public interface RefreshReceiptViewCallback {
+        void refreshView();
+    }
 
     private class CustomSpinnerAdapter extends ArrayAdapter<String> {
-        private Activity context;
         String[] leftData = null;
+        private Activity context;
 
         public CustomSpinnerAdapter(Activity activity, int resource, String[] left) {
             super(activity, resource, left);
@@ -897,7 +885,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             return row;
         }
     }
-
 
     private class ListViewAdapter extends BaseAdapter {
 
@@ -1008,22 +995,5 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             TextView categoryName;
             ImageView icon;
         }
-    }
-
-
-    public void showSubcategories(String subCategoryName) {
-
-        categories = catHandler.getSubcategories(subCategoryName);
-        int size = categories.size();
-        catName.clear();
-        catIDs.clear();
-        for (int i = 0; i < size; i++) {
-            catName.add(categories.get(i)[0]);
-            catIDs.add(categories.get(i)[1]);
-        }
-
-        isSubcategory = true;
-        setupCategoryView();
-        dialog.show();
     }
 }
