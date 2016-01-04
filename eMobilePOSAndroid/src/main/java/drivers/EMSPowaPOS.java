@@ -384,7 +384,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         scannerCallBack = _callBack;
         if (handler == null)
             handler = new Handler();
-        if (_callBack != null) {
+        if (_callBack != null && powaPOS != null) {
 
             List<PowaDeviceObject> availScanners = powaPOS.getAvailableScanners();
             if (availScanners.size() > 0) {
