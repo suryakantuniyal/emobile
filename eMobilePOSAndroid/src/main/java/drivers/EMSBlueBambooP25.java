@@ -104,7 +104,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         thisInstance = this;
         this.edm = edm;
         encrypt = new Encrypt(activity);
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().execute();
     }
 
     @Override
@@ -143,7 +143,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         return didConnect;
     }
 
-    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
+    public class processConnectionAsync extends AsyncTask<Void, String, String> {
 
         String msg = new String("Failed to connect");
         boolean didConnect = false;
@@ -159,8 +159,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         }
 
         @Override
-        protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
+        protected String doInBackground(Void... params) {
 
             String macAddress = myPref.printerMACAddress(true, null);
             BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
@@ -196,20 +195,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         }
     }
 
-//	public void printString(String theString) {
-//		byte[] header = { 0x1B, 0x21, 0x01 };
-//		byte[] lang = new byte[] { (byte) 0x1B, (byte) 0x4B, (byte) 0x31, (byte) 0x1B, (byte) 0x52, 48 };
-//
-//		try {
-//			this.outputStream.write(header);
-//			this.outputStream.write(lang);
-//			this.outputStream.write(theString.getBytes("UTF-8"));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
 
         if (handler == null)
@@ -228,7 +213,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         try {
             this.outputStream.write(byteArray);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -280,7 +264,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             this.printByteArray(byteArray);
@@ -304,13 +287,11 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 	}
 
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
         this.printingDelegate = edm;
     }
 
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = null;
         this.printingDelegate = null;
     }
@@ -400,7 +381,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
                                             try {
                                                 trackone = new String(trackcontent, "utf-8");
                                             } catch (UnsupportedEncodingException e) {
-                                                // TODO Auto-generated catch block
                                                 e.printStackTrace();
                                             }
 
@@ -429,7 +409,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
                                             try {
                                                 tracktwo = new String(trackcontent, "utf-8");
                                             } catch (UnsupportedEncodingException e) {
-                                                // TODO Auto-generated catch block
                                                 e.printStackTrace();
                                             }
 
@@ -458,7 +437,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
                                             try {
                                                 trackthree = new String(trackcontent, "utf-8");
                                             } catch (UnsupportedEncodingException e) {
-                                                // TODO Auto-generated catch block
                                                 e.printStackTrace();
                                             }
                                             // Log.i("track three content=",
@@ -503,13 +481,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
                                         String[] tempCardNum = cardValues[1].split(";");
                                         cardNumber = tempCardNum[1].replace("?", "");
                                     }
-                                    // String[] secondTrack =
-                                    // cardValues[1].split("=");
-                                    // String[] cardNumber =
-                                    // secondTrack[0].split(";"); // cardNumber[1]
-                                    // // contains
-                                    // // card
-                                    // // number
+
 
                                     StringBuilder sb = new StringBuilder();
                                     for (int i = 0; i < firstTrack.length; i++)
@@ -526,12 +498,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
                                         if (!Global.isEncryptSwipe)
                                             cardManager.setCardNumUnencrypted(cardNumber);
-                                        // if(Global.isEncryptSwipe)
-                                        // cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(cardNumber));
-                                        // else
-                                        // {
-                                        // cardManager.setCardNumUnencrypted(cardNumber);
-                                        // }
+
                                     }
                                     cardManager.setCardExpMonth(expDate);
                                     cardManager.setCardExpYear(expYear);
@@ -574,14 +541,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
                             System.arraycopy(temp, 0, btBuf, 0, btBuf.length);
 
-                            // Log.i("receive message", btBuf[0] + "");
-                            //
-                            // Log.i("receive message package data",
-                            // btBuf.length + "");
-                            // for (int i = 0; i < btBuf.length; i++) {
-                            // Log.i("receive message package data log",
-                            // btBuf[i] + "" + "_" + i);
-                            // }
 
                             if (btBuf[0] == START_FRAME && btBuf[btBuf.length - 1] == END_FRAME) {
                                 // Log.i("receive message", "put whole data");
@@ -675,7 +634,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-        // TODO Auto-generated method stub
         printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         return true;
@@ -683,7 +641,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        // TODO Auto-generated method stub
         printOpenInvoicesReceipt(invID, LINE_WIDTH);
 
         return true;
@@ -691,20 +648,17 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public void printStationPrinter(List<Orders> orders, String ordID) {
-        // TODO Auto-generated method stub
         printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
 
     }
 
     @Override
     public void openCashDrawer() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        // TODO Auto-generated method stub
         printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
         return true;
@@ -712,7 +666,6 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
-        // TODO Auto-generated method stub
     }
 
     @Override

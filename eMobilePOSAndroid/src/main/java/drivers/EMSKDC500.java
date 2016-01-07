@@ -1,10 +1,15 @@
 package drivers;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -14,11 +19,16 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
+import drivers.star.utils.PrinterFunctions;
 import koamtac.kdc.sdk.KDCBarcodeDataReceivedListener;
+import koamtac.kdc.sdk.KDCBarcodeOption;
 import koamtac.kdc.sdk.KDCConnectionListener;
+import koamtac.kdc.sdk.KDCConstants;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCDataReceivedListener;
 import koamtac.kdc.sdk.KDCGPSDataReceivedListener;
@@ -51,10 +61,12 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private EMSDeviceManager edm;
     private EMSKDC500 thisInstance;
     KDCReader kdcReader;
+    String msg = new String("Failed to connect");
 
 
     private Handler handler;
     String scannedData = "";
+    private BluetoothDevice btDev;
 
 
     @Override
@@ -65,8 +77,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
-
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+        new processConnectionAsync().execute();
     }
 
 
@@ -79,11 +90,60 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
+        if (connectKDC500()) {
+            this.edm.driverDidConnectToDevice(thisInstance, false);
+            return true;
+        } else {
+            this.edm.driverDidNotConnectToDevice(thisInstance, msg, false);
+            return false;
+        }
+    }
 
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+    private boolean connectKDC500() {
+        if (kdcReader == null) {
+            kdcReader = new KDCReader(this, null, null, null, null, this, this, false);
+        }
+        btDev = null;
+        if (KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
+            btDev = KDCReader.GetAvailableDeviceList().get(0);
+            kdcReader.Connect(btDev);
+            kdcReader.Listen();
+        }
         return true;
     }
 
+    public class processConnectionAsync extends AsyncTask<Void, String, Boolean> {
+
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Connecting Printer...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return connectKDC500();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            myProgressDialog.dismiss();
+
+            if (result) {
+                edm.driverDidConnectToDevice(thisInstance, true);
+            } else {
+
+                edm.driverDidNotConnectToDevice(thisInstance, msg, true);
+            }
+
+        }
+    }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
@@ -179,7 +239,6 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (handler == null)
             handler = new Handler();
         if (callBack != null) {
-            kdcReader = new KDCReader(this, null, null, null, null, this, this, false);
         }
     }
 
@@ -215,8 +274,68 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void ConnectionChanged(BluetoothDevice bluetoothDevice, int i) {
+    public void ConnectionChanged(BluetoothDevice bluetoothDevice, int state) {
+        switch (state) {
+            case KDCConstants.CONNECTION_STATE_CONNECTED:
 
+                Log.d("KDCReader", "Connected");
+
+                break;
+
+            case KDCConstants.CONNECTION_STATE_CONNECTING:
+
+
+            case KDCConstants.CONNECTION_STATE_NONE:
+
+                Toast.makeText(activity, "Connection Closed", Toast.LENGTH_LONG).show();
+
+                WaitForNewConnection();
+
+                break;
+
+            case KDCConstants.CONNECTION_STATE_LOST:
+
+                Toast.makeText(activity, "Connection Lost", Toast.LENGTH_LONG).show();
+
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                WaitForNewConnection();
+
+                break;
+
+            case KDCConstants.CONNECTION_STATE_FAILED:
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                WaitForNewConnection();
+
+                break;
+
+            case KDCConstants.CONNECTION_STATE_LISTEN:
+
+                break;
+        }
+    }
+
+    private void WaitForNewConnection() {
+        if (kdcReader != null) {
+            if (kdcReader != null) {
+                kdcReader.Connect(btDev);
+                btDev = null;
+            } else {
+                kdcReader.Listen();
+            }
+        }
     }
 
     @Override
@@ -241,8 +360,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
 
     @Override
-    public void POSDataReceived(KPOSData pData)
-    {
+    public void POSDataReceived(KPOSData pData) {
         if (pData != null) {
             switch (pData.GetEventCode()) {
                 case KPOSConstants.EVT_BARCODE_SCANNED:
@@ -315,13 +433,12 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         }
     }
 
-    private void HandleBarcodeScannedEvent(KPOSData pData)
-    {
+    private void HandleBarcodeScannedEvent(KPOSData pData) {
         try {
             scannedData = new String(pData.GetBarcodeBytes());
-            scannerCallBack.scannerWasRead(scannedData);
+            scannerCallBack.scannerWasRead(scannedData.substring(1));
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace();
         }
     }
 }
