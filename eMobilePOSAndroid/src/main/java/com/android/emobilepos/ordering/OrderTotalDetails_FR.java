@@ -447,8 +447,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             if (global.orderProducts.get(i).discount_is_taxable.equals("1")) {
                 BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4,
                         RoundingMode.HALF_UP);
-                tempSubTotal = tempSubTotal.subtract(new BigDecimal(global.orderProducts.get(i).discount_value));
-
+                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(global.orderProducts.get(i).discount_value).abs());
+                if (global.orderProducts.get(i).isReturned && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+                    tempSubTotal = tempSubTotal.negate();
+                }
                 BigDecimal tax1 = tempSubTotal.multiply(temp);
                 tempTaxTotal = tax1;
                 taxTotal = tax1.toString();
@@ -686,8 +688,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             globalDiscount.setText(Global.getCurrencyFrmt(discount_amount.toString()));
             globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount)));
 
-            gran_total = sub_total.subtract(discount_amount).add(tax_amount)
-                    .subtract(itemsDiscountTotal);
+            gran_total = sub_total.abs().subtract(discount_amount.abs()).add(tax_amount.abs())
+                    .subtract(itemsDiscountTotal.abs());
+            if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+                gran_total = gran_total.negate();
+            }
             // gran_total =
             // discountable_sub_total.subtract(discount_amount).add(tax_amount);
             OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),
