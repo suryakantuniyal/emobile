@@ -55,8 +55,8 @@ public class ProductsHandler {
             prod_value_points);
 
     private static final String table_name = "Products";
-    private StringBuilder sb1, sb2;
     private final String empStr = "";
+    private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private List<String[]> prodData;
     private MyPreferences myPref;
@@ -103,11 +103,8 @@ public class ProductsHandler {
         try {
             prodData = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            SQLiteStatement insert;
+            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = prodData.size();
 
@@ -160,20 +157,14 @@ public class ProductsHandler {
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
     public List<String> getColumn(String tag) {
         // SQLiteDatabase db = dbManager.openReadableDB();
         List<String> list = new ArrayList<String>();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ").append(tag).append(" FROM ").append(table_name).append(" ORDER BY ");
-        sb.append("prod_name ").append("COLLATE NOCASE");
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT " + tag + " FROM " + table_name + " ORDER BY " + "prod_name " + "COLLATE NOCASE", null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -192,11 +183,11 @@ public class ProductsHandler {
         // if(db==null||!db.isOpen())
         // db = dbManager.openReadableDB();
 
-        String[] parameters = null;
+        String[] parameters;
         String query = empStr;
         StringBuilder sb = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-        String priceLevelID = new String();
+        String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
@@ -385,10 +376,10 @@ public class ProductsHandler {
         // if(!db.isOpen())
         // db = dbManager.openReadableDB();
 
-        String query = empStr;
+        String query;
         StringBuilder sb = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-        String priceLevelID = new String();
+        String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
@@ -597,7 +588,6 @@ public class ProductsHandler {
 
             product.setProdDesc(cursor.getString(cursor.getColumnIndex("prod_desc")));
 
-            temp = new String();
             temp = cursor.getString(cursor.getColumnIndex("local_prod_onhand"));
             if (temp == null || temp.isEmpty()) {
                 temp = cursor.getString(cursor.getColumnIndex("master_prod_onhand"));
@@ -739,7 +729,6 @@ public class ProductsHandler {
 
             data[3] = cursor.getString(cursor.getColumnIndex("prod_desc"));
 
-            temp = new String();
             temp = cursor.getString(cursor.getColumnIndex("local_prod_onhand"));
             if (temp == null || temp.isEmpty()) {
                 temp = cursor.getString(cursor.getColumnIndex("master_prod_onhand"));
@@ -829,12 +818,7 @@ public class ProductsHandler {
         // SQLiteDatabase db = dbManager.openReadableDB();
         List<String> list = new ArrayList<String>();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT p.prod_onhand AS 'master_prod_onhand',ei.prod_onhand AS 'local_prod_onhand' FROM Products p LEFT OUTER JOIN ");
-        sb.append("EmpInv ei ON p.prod_id = ei.prod_id WHERE p.prod_id = ?");
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{id});
+        Cursor cursor = DBManager._db.rawQuery("SELECT p.prod_onhand AS 'master_prod_onhand',ei.prod_onhand AS 'local_prod_onhand' FROM Products p LEFT OUTER JOIN " + "EmpInv ei ON p.prod_id = ei.prod_id WHERE p.prod_id = ?", new String[]{id});
 
         // String[] fields = new String[] { prod_onhand };
         // String[] arguments = new String[] { id };
@@ -894,12 +878,7 @@ public class ProductsHandler {
 
     public Cursor getProductDetailsForOnHold(SQLiteDatabase db, String prodID) {
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(
-                "SELECT CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' FROM ")
-                .append(table_name).append(" p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id");
-        Cursor c = db.rawQuery(sb.toString(), new String[]{prodID});
+        Cursor c = db.rawQuery("SELECT CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' FROM " + table_name + " p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id", new String[]{prodID});
         c.moveToFirst();
         return c;
     }
@@ -909,13 +888,8 @@ public class ProductsHandler {
 
         List<String[]> list = new ArrayList<String[]>();
         String[] data = new String[5];
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT p.prod_name,p.prod_disc_type,p.prod_price,IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'");
-        sb.append(
-                ",p.prod_id FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE p.prod_type = 'Discount' ORDER BY p.prod_name ASC");
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT p.prod_name,p.prod_disc_type,p.prod_price,IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE p.prod_type = 'Discount' ORDER BY p.prod_name ASC", null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -939,11 +913,8 @@ public class ProductsHandler {
         if (discount_id == null)
             discount_id = "";
         HashMap<String, String> map = new HashMap<String, String>();
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("SELECT prod_disc_type,prod_price FROM Products WHERE prod_id LIKE ?");
-
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{discount_id});
+        Cursor c = DBManager._db.rawQuery("SELECT prod_disc_type,prod_price FROM Products WHERE prod_id LIKE ?", new String[]{discount_id});
         if (c.moveToFirst()) {
             map.put("discount_type", c.getString(c.getColumnIndex(prod_disc_type)));
             map.put("discount_price", c.getString(c.getColumnIndex(prod_price)));
@@ -963,14 +934,14 @@ public class ProductsHandler {
 
         StringBuilder sb = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-        String priceLevelID = new String();
+        String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
             priceLevelID = myPref.getEmployeePriceLevel();
 
         sb.append(
-                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
+                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ");
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(
@@ -1055,18 +1026,8 @@ public class ProductsHandler {
 
     public String[] getDiscount(String discountID, String prodPrice) {
         // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT p.prod_price,p.prod_disc_type, CASE WHEN p.prod_disc_type = 'Fixed' THEN (")
-                .append(prodPrice);
-        sb.append("-p.prod_price) ELSE ROUND((").append(prodPrice);
-        sb.append("-(").append(prodPrice).append("*CAST(p.prod_price AS REAL)/100)),2) END AS discount, ");
-        sb.append("CASE WHEN p.prod_disc_type = 'Fixed' THEN (p.prod_price) ELSE ROUND(((").append(prodPrice);
-        sb.append(
-                "*CAST(p.prod_price AS REAL)/100)),2) END AS discAmount,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
-        sb.append("FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE prod_id = '");
-        sb.append(discountID).append("'");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager._db.rawQuery("SELECT p.prod_price,p.prod_disc_type, p.prod_sku as prod_sku, p.prod_upc as prod_upc, CASE WHEN p.prod_disc_type = 'Fixed' THEN (" + prodPrice + "-p.prod_price) ELSE ROUND((" + prodPrice + "-(" + prodPrice + "*CAST(p.prod_price AS REAL)/100)),2) END AS discount, " + "CASE WHEN p.prod_disc_type = 'Fixed' THEN (p.prod_price) ELSE ROUND(((" + prodPrice + "*CAST(p.prod_price AS REAL)/100)),2) END AS discAmount,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' " + "FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE prod_id = '" + discountID + "'", null);
         String[] values = new String[5];
         if (c.moveToFirst()) {
             values[0] = c.getString(c.getColumnIndex("prod_price"));
@@ -1089,7 +1050,7 @@ public class ProductsHandler {
 
     public HashMap<String, String> getProductMap(String prodID, boolean isConsignment) {
         StringBuilder sb = new StringBuilder();
-        String priceLevelID = new String();
+        String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
@@ -1111,7 +1072,7 @@ public class ProductsHandler {
 		 */
 
         sb.append(
-                "SELECT  p.prod_id as '_id',ci.price as 'inventory_price', p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
+                "SELECT  p.prod_id as '_id',ci.price as 'inventory_price', p.prod_price as 'master_price',vp.price as 'volume_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ch.over_price_net as 'chain_price',");
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(
@@ -1126,7 +1087,7 @@ public class ProductsHandler {
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{priceLevelID, priceLevelID, priceLevelID,
                 myPref.getCustID(), myPref.getCustID(), prodID});
-        String tempPrice = new String();
+        String tempPrice = "";
         HashMap<String, String> map = new HashMap<String, String>();
         if (cursor.moveToFirst()) {
 
@@ -1162,10 +1123,7 @@ public class ProductsHandler {
     public String getProductPrice(String prodID) {
         // SQLiteDatabase db = dbManager.openReadableDB();
 
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("SELECT prod_price FROM Products WHERE prod_id = ?");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{prodID});
+        Cursor c = DBManager._db.rawQuery("SELECT prod_price FROM Products WHERE prod_id = ?", new String[]{prodID});
         String price = "0";
         if (c.moveToFirst())
             price = c.getString(c.getColumnIndex("prod_price"));

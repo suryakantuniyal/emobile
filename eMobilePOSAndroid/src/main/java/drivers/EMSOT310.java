@@ -1,25 +1,25 @@
 package drivers;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
 import com.android.internal.misccomm.misccommManager;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
 import com.oem.barcode.BCRIntents;
 import com.oem.barcode.BCRManager;
 
@@ -41,6 +41,16 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private CreditCardInfo cardManager;
     private EMSDeviceManager edm;
     private EMSOT310 thisInstance;
+    private MagTeklibDynamag magTeklibDynamag;
+    private Handler mReaderDataHandler;
+
+    public static final int DEVICE_MESSAGE_CARDDATA_CHANGE = 3;
+    public static final int DEVICE_STATUS_CONNECTED = 4;
+    public static final int DEVICE_STATUS_DISCONNECTED = 5;
+    public static final int DEVICE_STATUS_CONNECTED_SUCCESS = 0;
+    public static final int DEVICE_STATUS_CONNECTED_FAIL = 1;
+    public static final int DEVICE_STATUS_CONNECTED_PERMISSION_DENIED = 2;
+
     private Handler handler;
     String scannedData = "";
     private BCRAppBroadcastReceiver mBroadcastReceiver = new BCRAppBroadcastReceiver() {
@@ -53,7 +63,6 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
         }
     };
-    private EMSCallBack swiperBack;
 
 
     @Override
@@ -64,6 +73,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
+
         this.edm.driverDidConnectToDevice(thisInstance, false);
     }
 
@@ -77,13 +87,19 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
+
         this.edm.driverDidConnectToDevice(thisInstance, false);
         return true;
     }
 
+    private void initializeData() {
+        magTeklibDynamag.clearCardData();
+        scannedData = "";
+    }
+
     private boolean openUSBPort() {
-        misccommManager.getDefault().setMsrDefault();
-//        int ret = misccommManager.getDefault().setMsrEnable();
+//        misccommManager.setMsrDefault();
+        int ret = misccommManager.getDefault().setMsrEnable();
         return 0 == 0;
 
     }
@@ -162,32 +178,29 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
 
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
     }
 
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
-        openUSBPort();
-        this.swiperBack = callBack;
-    }
 
-    private Runnable runnableScannedData = new Runnable() {
-        public void run() {
-            try {
-                if (scannerCallBack != null)
-                    scannerCallBack.scannerWasRead(scannedData);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+        if (mReaderDataHandler == null) {
+            mReaderDataHandler = new Handler(new MtHandlerCallback());
         }
-    };
+        if (magTeklibDynamag == null) {
+            magTeklibDynamag = new MagTeklibDynamag(activity, mReaderDataHandler);
+        }
+        initializeData();
+        if (!magTeklibDynamag.isDeviceConnected()) {
+            magTeklibDynamag.openDevice();
+        }
+        openUSBPort();
+
+    }
 
 
     @Override
@@ -208,7 +221,10 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public void releaseCardReader() {
         try {
-//            misccommManager.getDefault().setMsrDisable();
+            if (magTeklibDynamag.isDeviceConnected()) {
+                magTeklibDynamag.closeDevice();
+            }
+            misccommManager.getDefault().setMsrDisable();
             activity.unregisterReceiver(mBroadcastReceiver);
         } catch (Exception e) {
             e.printStackTrace();
@@ -232,8 +248,44 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean isUSBConnected() {
-        return false;
+        return true;
     }
 
+    private class MtHandlerCallback implements Handler.Callback {
+        public boolean handleMessage(Message msg) {
 
+            boolean ret = false;
+            Log.d("MSR Handler:"+msg.what, msg.obj.toString());
+            switch (msg.what) {
+                case DEVICE_MESSAGE_CARDDATA_CHANGE:
+                    scannedData = (String) msg.obj;
+                    if (scannerCallBack != null)
+                        scannerCallBack.scannerWasRead(scannedData);
+                    ret = true;
+                    break;
+
+                case DEVICE_STATUS_CONNECTED:
+                    if (((Number) msg.obj).intValue() == DEVICE_STATUS_CONNECTED_SUCCESS) {
+                        EMSOT310.this.edm.driverDidConnectToDevice(thisInstance, false);
+                    } else if (((Number) msg.obj).intValue() == DEVICE_STATUS_CONNECTED_FAIL) {
+                        EMSOT310.this.edm.driverDidNotConnectToDevice(thisInstance, getString(R.string.error_reading_card), true);
+                    } else if (((Number) msg.obj).intValue() == DEVICE_STATUS_CONNECTED_PERMISSION_DENIED) {
+                        EMSOT310.this.edm.driverDidNotConnectToDevice(thisInstance, getString(R.string.error_reading_card), true);
+                    }
+
+                    break;
+
+                case DEVICE_STATUS_DISCONNECTED:
+                    EMSOT310.this.edm.driverDidDisconnectFromDevice(thisInstance, true);
+                    break;
+
+                default:
+                    ret = false;
+                    break;
+
+            }
+
+            return ret;
+        }
+    }
 }

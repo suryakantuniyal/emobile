@@ -158,10 +158,7 @@ public class ConsignmentMain_FA extends BaseFragmentActivityActionBar implements
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			int gradientId =R.drawable.blue_button_selector;
-
 			holder.textLine.setText(lvTitle[position]);
-			convertView.setBackgroundResource(gradientId);
 
 			return convertView;
 		}

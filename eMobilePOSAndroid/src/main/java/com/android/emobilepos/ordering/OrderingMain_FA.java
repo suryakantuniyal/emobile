@@ -126,7 +126,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Bundle extras;
 
 
-    CustomKeyboard mCustomKeyboard;
+//    CustomKeyboard mCustomKeyboard;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -241,7 +241,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Handler SearchFieldHandler = new Handler() {
         public void handleMessage(Message msg) {
             Bundle theBundle = msg.getData();
-            if(theBundle.getString("message").equals("PerformSearch")){
+            if (theBundle.getString("message").equals("PerformSearch")) {
                 //call performSearch
                 String text = theBundle.getString("searchfield");
                 if (!text.isEmpty()) {
@@ -254,9 +254,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mCustomKeyboard= new CustomKeyboard(this, R.id.keyboardview, R.xml.upcskunumbersfirstrow);
-        mCustomKeyboard.registerEditText(R.id.catalogSearchField);
-        mCustomKeyboard.setHandler(SearchFieldHandler);
+//        mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.upcskunumbersfirstrow);
+//        mCustomKeyboard.registerEditText(R.id.catalogSearchField);
+//        mCustomKeyboard.setHandler(SearchFieldHandler);
     }
 
     private void setupTitle() {
@@ -418,7 +418,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         // NOTE Trap the back key: when the CustomKeyboard is still visible hide it, only when it is invisible, finish activity
-        if( mCustomKeyboard.isCustomKeyboardVisible() ) mCustomKeyboard.hideCustomKeyboard(); else this.finish();
+//        if (mCustomKeyboard.isCustomKeyboardVisible()) {
+//            mCustomKeyboard.hideCustomKeyboard();
+//        }
     }
 
     @Override
@@ -681,7 +683,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                         if (validAutomaticAddQty(product)) {
                             if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                int foundPosition = global.checkIfGroupBySKU(this,product.getId(), "1");
+                                int foundPosition = global.checkIfGroupBySKU(this, product.getId(), "1");
                                 if (foundPosition != -1) // product already
                                 // exist in list
                                 {
@@ -780,7 +782,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
                     upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    Product product= handler.getUPCProducts(upc);
+                    Product product = handler.getUPCProducts(upc);
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                             if (validAutomaticAddQty(product)) {
@@ -869,7 +871,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             e.printStackTrace();
         }
     }
-
 
 
     private void scanAddItem(String upc) {

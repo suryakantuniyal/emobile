@@ -121,6 +121,7 @@
     <orderEntry type="library" exported="" name="nostraLoader-release-" level="project" />
     <orderEntry type="library" exported="" name="zxing" level="project" />
     <orderEntry type="library" exported="" name="commons-io-1.3.2" level="project" />
+    <orderEntry type="library" exported="" name="powa-platform-android-1.5.1-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="roverapi-android-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="bouncycastle" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.4.0" level="project" />
@@ -148,6 +149,7 @@
     <orderEntry type="library" exported="" name="stickyListHeaders-release-" level="project" />
     <orderEntry type="library" exported="" name="StarIOPort3.1" level="project" />
     <orderEntry type="library" exported="" name="RBA_SDK" level="project" />
+    <orderEntry type="library" exported="" name="kdcreader" level="project" />
     <orderEntry type="library" exported="" name="do_androidsdk" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="sqlcipher" level="project" />

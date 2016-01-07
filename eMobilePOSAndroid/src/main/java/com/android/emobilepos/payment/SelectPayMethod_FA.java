@@ -628,7 +628,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPreExecute() {
-            Global.mainPrinterManager.currentDevice.loadScanner(null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadScanner(null);
+            }
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage("Printing...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -642,14 +644,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             // TODO Auto-generated method stub
 
             wasReprint = (Boolean) params[0];
-            EMVContainer emvContainer = (EMVContainer) params[1];
+
+            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, Global.OrderType.getByCode(typeOfProcedure),
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id,orderType,
                             wasReprint, false, emvContainer);
             }
             return null;
@@ -846,7 +849,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         myListview.setSelection(0);
         myListview.setSelected(false);
         EMVContainer emvContainer = null;
-        if (data!=null && data.hasExtra("emvcontainer"))
+        if (data != null && data.hasExtra("emvcontainer"))
             emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 
         myAdapter.notifyDataSetChanged();
@@ -865,7 +868,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
             paid = Global.formatNumber(true, currentPaidAmount);
 
-			if (NumberUtils.cleanCurrencyFormatedNumber(total).equals("0.00") && data != null) {
+            if (NumberUtils.cleanCurrencyFormatedNumber(total).equals("0.00") && data != null) {
                 total = data.getStringExtra("total_amount");
             }
             overAllRemainingBalance = Global.formatNumFromLocale(
