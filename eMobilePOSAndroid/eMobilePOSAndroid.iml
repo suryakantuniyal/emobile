@@ -149,6 +149,7 @@
     <orderEntry type="library" exported="" name="stickyListHeaders-release-" level="project" />
     <orderEntry type="library" exported="" name="StarIOPort3.1" level="project" />
     <orderEntry type="library" exported="" name="RBA_SDK" level="project" />
+    <orderEntry type="library" exported="" name="kdcreader" level="project" />
     <orderEntry type="library" exported="" name="do_androidsdk" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="sqlcipher" level="project" />
