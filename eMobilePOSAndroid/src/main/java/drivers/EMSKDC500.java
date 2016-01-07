@@ -35,7 +35,7 @@ import protocols.EMSDeviceManagerPrinterDelegate;
 /**
  * Created by Guarionex on 12/8/2015.
  */
-public class KDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
+public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
         KDCDataReceivedListener,        // required for KDC Barcode Solution models
         KDCBarcodeDataReceivedListener,  // required for KDC Barcode Solution models
         KDCGPSDataReceivedListener,        // required for KDC Barcode Solution models
@@ -49,7 +49,7 @@ public class KDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private Encrypt encrypt;
     private CreditCardInfo cardManager;
     private EMSDeviceManager edm;
-    private KDC500 thisInstance;
+    private EMSKDC500 thisInstance;
     KDCReader kdcReader;
 
 
@@ -251,19 +251,19 @@ public class KDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 //                case KPOSConstants.EVT_NFC_CARD_TAPPED:
 //                    HandleNFCCardReadEvent(pData);
 //                    break;
-//                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and KDC500 read it successfully
+//                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC500 read it successfully
 //                    HandleCardSwipedEvent(pData);
 //                    break;
-//                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and KDC500 read it successfully and encrypt
+//                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and EMSKDC500 read it successfully and encrypt
 //                    HandleCardSwipedEncryptedEvent(pData);
 //                    break;
 //                case KPOSConstants.EVT_VALUE_ENTERED:
 //                    HandleValueEnteredEvent(pData);
 //                    break;
-//                case KPOSConstants.EVT_CARD_READ_FAILED: // an user swiped a card, but KDC500 could not read it successfully
+//                case KPOSConstants.EVT_CARD_READ_FAILED: // an user swiped a card, but EMSKDC500 could not read it successfully
 //                    HandleCardReadFailedEvent();
 //                    break;
-//                case KPOSConstants.EVT_CANCELLED_CARD_READ: // an user pressed CANCEL button on KDC500 during the card read mode
+//                case KPOSConstants.EVT_CANCELLED_CARD_READ: // an user pressed CANCEL button on EMSKDC500 during the card read mode
 //                    HandleCardReadCancelledEvent();
 //                    break;
 //                case KPOSConstants.EVT_TIMEOUT_CARD_READ: // an user did not swipe a card before time-out occurred
@@ -275,13 +275,13 @@ public class KDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 //                case KPOSConstants.EVT_TIMEOUT:
 //                    HandleTimeoutEvent();
 //                    break;
-//                case KPOSConstants.EVT_PINBLOCK_GENERATED: // an user entered PIN, and KDC500 generated PIN Block successfully
+//                case KPOSConstants.EVT_PINBLOCK_GENERATED: // an user entered PIN, and EMSKDC500 generated PIN Block successfully
 //                    HandlePinblockGeneratedEvent(pData);
 //                    break;
-//                case KPOSConstants.EVT_PINBLOCK_GENERATION_FAILED: // an user entered PIN, but KDC500 could not generate PIN Block successfully
+//                case KPOSConstants.EVT_PINBLOCK_GENERATION_FAILED: // an user entered PIN, but EMSKDC500 could not generate PIN Block successfully
 //                    HandlePinblockGenerationFailedEvent();
 //                    break;
-//                case KPOSConstants.EVT_CANCELLED_PIN_ENTRY: // an user pressed CANCEL button on KDC500 during the pin entry mode
+//                case KPOSConstants.EVT_CANCELLED_PIN_ENTRY: // an user pressed CANCEL button on EMSKDC500 during the pin entry mode
 //                    HandlePinEntryCancelledEvent();
 //                    break;
 //                case KPOSConstants.EVT_TIMEOUT_PIN_ENTRY: // an user did not enter PIN completely before time-out occurred

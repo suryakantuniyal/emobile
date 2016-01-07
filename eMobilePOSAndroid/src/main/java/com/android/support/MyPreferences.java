@@ -817,6 +817,17 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isKDC5000() {
+        String device_kdc500 = "device_kdc500";
+        return prefs.getBoolean(device_kdc500, false);
+    }
+
+    public boolean setIsKDC500(boolean value) {
+        String device_kdc500 = "device_kdc500";
+        prefEditor.putBoolean(device_kdc500, value);
+        prefEditor.commit();
+        return false;
+    }
 
     public boolean isESY13P1() {
         String device_ESY13P1 = "device_ESY13P1";

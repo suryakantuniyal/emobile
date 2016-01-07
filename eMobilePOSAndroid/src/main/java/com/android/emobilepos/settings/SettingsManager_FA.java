@@ -879,7 +879,11 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(activity, Global.OT310, false);
-            } else {
+            } else if (myPref.isKDC5000()) {
+                myPref.setPrinterType(Global.KDC500);
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
+            }else {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(activity, Global.POWA, false);
