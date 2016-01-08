@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -23,6 +24,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import drivers.star.utils.PrinterFunctions;
 import koamtac.kdc.sdk.KDCBarcodeDataReceivedListener;
@@ -41,6 +44,7 @@ import koamtac.kdc.sdk.KPOSDataReceivedListener;
 import main.EMSDeviceManager;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
+import util.StringUtil;
 
 /**
  * Created by Guarionex on 12/8/2015.
@@ -107,7 +111,6 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (KDCReader.GetAvailableDeviceList() != null && KDCReader.GetAvailableDeviceList().size() > 0) {
             btDev = KDCReader.GetAvailableDeviceList().get(0);
             kdcReader.Connect(btDev);
-            kdcReader.Listen();
         }
         return true;
     }
@@ -219,27 +222,43 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
 
     public void registerPrinter() {
-        edm.currentDevice = this;
+
+        edm.currentDevice = thisInstance;
     }
 
     public void unregisterPrinter() {
+
         edm.currentDevice = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
-
-
+        if (handler == null)
+            handler = new Handler();
+        scannerCallBack = callBack;
+        kdcReader.EnableMSR_POS();
+        handler.post(doUpdateDidConnect);
     }
 
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (scannerCallBack != null)
+                    scannerCallBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void loadScanner(EMSCallBack callBack) {
         scannerCallBack = callBack;
+        kdcReader.EnableMSR_POS();
         if (handler == null)
             handler = new Handler();
-        if (callBack != null) {
-        }
+
     }
 
 
@@ -277,66 +296,23 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void ConnectionChanged(BluetoothDevice bluetoothDevice, int state) {
         switch (state) {
             case KDCConstants.CONNECTION_STATE_CONNECTED:
-
                 Log.d("KDCReader", "Connected");
-
                 break;
 
             case KDCConstants.CONNECTION_STATE_CONNECTING:
-
-
             case KDCConstants.CONNECTION_STATE_NONE:
-
-                Toast.makeText(activity, "Connection Closed", Toast.LENGTH_LONG).show();
-
-                WaitForNewConnection();
-
+                Log.d("KDCReader", "Connection Closed");
                 break;
-
             case KDCConstants.CONNECTION_STATE_LOST:
-
-                Toast.makeText(activity, "Connection Lost", Toast.LENGTH_LONG).show();
-
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                WaitForNewConnection();
-
+                Log.d("KDCReader", "Connection Lost");
                 break;
-
             case KDCConstants.CONNECTION_STATE_FAILED:
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                WaitForNewConnection();
-
                 break;
-
             case KDCConstants.CONNECTION_STATE_LISTEN:
-
                 break;
         }
     }
 
-    private void WaitForNewConnection() {
-        if (kdcReader != null) {
-            if (kdcReader != null) {
-                kdcReader.Connect(btDev);
-                btDev = null;
-            } else {
-                kdcReader.Listen();
-            }
-        }
-    }
 
     @Override
     public void DataReceived(KDCData kdcData) {
@@ -360,21 +336,36 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
 
     @Override
-    public void POSDataReceived(KPOSData pData) {
+    public void POSDataReceived(final KPOSData pData) {
         if (pData != null) {
             switch (pData.GetEventCode()) {
                 case KPOSConstants.EVT_BARCODE_SCANNED:
-                    HandleBarcodeScannedEvent(pData);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            HandleBarcodeScannedEvent(pData);
+                        }
+                    });
                     break;
 //                case KPOSConstants.EVT_NFC_CARD_TAPPED:
 //                    HandleNFCCardReadEvent(pData);
 //                    break;
-//                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC500 read it successfully
-//                    HandleCardSwipedEvent(pData);
-//                    break;
-//                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and EMSKDC500 read it successfully and encrypt
-//                    HandleCardSwipedEncryptedEvent(pData);
-//                    break;
+                case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC500 read it successfully
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            HandleCardSwipedEvent(pData);
+                        }
+                    });
+                    break;
+                case KPOSConstants.EVT_CARD_SWIPED_ENCRYPTED: // an user swiped a card, and EMSKDC500 read it successfully and encrypt
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            HandleCardSwipedEncryptedEvent(pData);
+                        }
+                    });
+                    break;
 //                case KPOSConstants.EVT_VALUE_ENTERED:
 //                    HandleValueEnteredEvent(pData);
 //                    break;
@@ -440,5 +431,61 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String cleanTrack(String track) {
+        String c = track;//"hjdg$h&jk8^i0ssh6";
+        Pattern pt = Pattern.compile("[^a-zA-Z0-9;/%?-_.,*= ]");
+        Matcher match = pt.matcher(c);
+        while (match.find()) {
+            String s = match.group();
+            c = c.replaceAll("\\" + s, "");
+        }
+        return c;
+    }
+
+    private void HandleCardSwipedEvent(KPOSData pData) {
+
+        String track1 = cleanTrack(pData.GetTrack1());
+
+        String track2 = cleanTrack(pData.GetTrack2());
+        String track3 = cleanTrack(pData.GetTrack3());
+        Log.d("TRK1:", "[" + track1 + "]");
+        Log.d("TRK2:", "[" + track2 + "]");
+
+        CreditCardInfo creditCardInfo = new CreditCardInfo();
+        boolean parsed = CardParser.parseCreditCard(activity, track1 + track2 + track3, creditCardInfo);
+        scannerCallBack.cardWasReadSuccessfully(parsed, creditCardInfo);
+    }
+
+    private void HandleCardSwipedEncryptedEvent(KPOSData pData) {
+        short encryptionType = pData.GetEncryptionType();
+        String deviceSerialNumber = pData.GetDeviceSerialNumber();
+
+        String ksn = pData.GetCardDataKSN();
+
+        short unencryptedTrack1Length = pData.GetUnencryptedTrack1Length();
+        short unencryptedTrack2Length = pData.GetUnencryptedTrack2Length();
+        short unencryptedTrack3Length = pData.GetUnencryptedTrack3Length();
+
+        short encryptedTrack1Length = pData.GetEncryptedTrack1Length();
+        short encryptedTrack2Length = pData.GetEncryptedTrack2Length();
+        short encryptedTrack3Length = pData.GetEncryptedTrack3Length();
+
+        short track1DigestLength = pData.GetTrack1DigestLength();
+        short track2DigestLength = pData.GetTrack2DigestLength();
+        short track3DigestLength = pData.GetTrack3DigestLength();
+
+        byte[] encryptedTrack1Data = pData.GetEncryptedTrack1Bytes();
+        byte[] encryptedTrack2Data = pData.GetEncryptedTrack2Bytes();
+        byte[] encryptedTrack3Data = pData.GetEncryptedTrack3Bytes();
+
+        short digestType = pData.GetDigestType();
+
+        byte[] track1Digest = pData.GetTrack1DigestBytes();
+        byte[] track2Digest = pData.GetTrack2DigestBytes();
+        byte[] track3Digest = pData.GetTrack3DigestBytes();
+
+
     }
 }

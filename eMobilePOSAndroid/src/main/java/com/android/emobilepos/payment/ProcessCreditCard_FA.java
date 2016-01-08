@@ -1834,8 +1834,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             cardReaderConnected = true;
             if (uniMagReader != null && uniMagReader.readerIsConnected())
                 uniMagReader.startReading();
-            if (!cardSwipe.isChecked())
-                cardSwipe.setChecked(true);
+            cardSwipe.setChecked(true);
         } else {
             cardReaderConnected = false;
             if (cardSwipe.isChecked())
