@@ -237,6 +237,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             handler = new Handler();
         scannerCallBack = callBack;
         kdcReader.EnableMSR_POS();
+        kdcReader.EnableNFC_POS();
         handler.post(doUpdateDidConnect);
     }
 
@@ -335,6 +336,12 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
 
+    private void HandleNFCCardReadEvent(KPOSData pData)
+    {
+        String nfcUID = pData.GetNFCUID();
+
+    }
+
     @Override
     public void POSDataReceived(final KPOSData pData) {
         if (pData != null) {
@@ -347,9 +354,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                         }
                     });
                     break;
-//                case KPOSConstants.EVT_NFC_CARD_TAPPED:
-//                    HandleNFCCardReadEvent(pData);
-//                    break;
+                case KPOSConstants.EVT_NFC_CARD_TAPPED:
+                    HandleNFCCardReadEvent(pData);
+                    break;
                 case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC500 read it successfully
                     activity.runOnUiThread(new Runnable() {
                         @Override
