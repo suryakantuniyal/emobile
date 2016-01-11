@@ -16,30 +16,23 @@ import android.widget.Toast;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.mpowa.android.powapos.accessory.abstraction.PowaHidKeyDecoder;
 import com.mpowa.android.powapos.accessory.hid.PowaHidScanner;
 import com.mpowa.android.sdk.powapos.PowaPOS;
-import com.mpowa.android.sdk.powapos.common.base.PowaEnums;
 import com.mpowa.android.sdk.powapos.common.base.PowaLog;
 import com.mpowa.android.sdk.powapos.common.dataobjects.PowaDeviceObject;
 import com.mpowa.android.sdk.powapos.common.utils.ByteUtils;
 import com.mpowa.android.sdk.powapos.core.PowaPOSEnums;
-import com.mpowa.android.sdk.powapos.core.PowaPOSEnums.BootloaderUpdateError;
-import com.mpowa.android.sdk.powapos.core.PowaPOSEnums.PowaUSBCOMPort;
 import com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallback;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import main.EMSDeviceManager;
 import protocols.EMSCallBack;
@@ -47,18 +40,127 @@ import protocols.EMSDeviceManagerPrinterDelegate;
 
 //com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallbackBas
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
+    String scannedData = "";
     private int LINE_WIDTH = 48;
-
     private Handler handler;
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
     private EMSCallBack callBack, scannerCallBack;
-
     private boolean isAutoConnect = false;
     private Global global;
-
     private PowaHidScanner powaHidDecoderScanner;
+    private Runnable runnableScannedData = new Runnable() {
+        public void run() {
+            try {
+                if (scannerCallBack != null)
+                    scannerCallBack.scannerWasRead(scannedData);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
+    PowaPOSCallback mPowaPOSCallback = new PowaPOSCallback() {
+        @Override
+        public void onMCUInitialized(PowaPOSEnums.InitializedResult initializedResult) {
+
+            if (myProgressDialog != null)
+                myProgressDialog.dismiss();
+
+            if (isAutoConnect && !global.loggedIn) {
+                if (global.getGlobalDlog() != null)
+                    global.getGlobalDlog().dismiss();
+                global.promptForMandatoryLogin(activity);
+                SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
+            }
+
+            if (initializedResult.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
+                edm.driverDidConnectToDevice(thisInstance, !isAutoConnect);
+            else
+                edm.driverDidNotConnectToDevice(thisInstance, "Failed to connect to MCU", !isAutoConnect);
+        }
+
+        @Override
+        public void onScannerInitialized(PowaPOSEnums.InitializedResult initializedResult) {
+            Log.d("", "onScannerInitialized()");
+        }
+
+        @Override
+        public void onHIDDeviceAttached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
+            Log.d("", "onHIDDeviceAttached()");
+        }
+
+        @Override
+        public void onHIDDeviceDetached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
+            Log.d("", "onHIDDeviceDetached()");
+        }
+
+        @Override
+        public void onHIDReceivedData(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type, byte[] data) {
+            PowaLog.getInstance().logInternal("TAG", ByteUtils.byteArrayToHexStringPretty(data));
+            powaHidDecoderScanner.decode(port, type, data);
+
+        }
+
+        @Override
+        public void onScannerRead(String data) {
+            scannedData = data;
+            handler.post(runnableScannedData);
+        }
+
+//        @Override
+//        public void onScannerRead(byte[] data) {
+//            scannedData = new String(data);
+//            handler.post(runnableScannedData);
+//        }
+
+
+    };
+    // ===================================== SCANNER CALLBACK
+    // =======================================
+    PowaHidScanner.Callback hidScannerCB = new PowaHidScanner.Callback() {
+        @Override
+        public void onScannerReady() {
+            Log.d("", "onScannerReady()");
+        }
+
+        @Override
+        public void onScannerDetached() {
+            Log.d("", "onScannerDetached()");
+        }
+
+        @Override
+        public void onControlKeyScanned(PowaHidKeyDecoder.CONTROL_KEY controlKey) {
+            Toast.makeText(EMSPowaPOS.this.activity, controlKey.name() + " has been received", Toast.LENGTH_SHORT)
+                    .show();
+            // Some scanners send CONTROL KEYS at the start/end of the data,
+            // this way users may identify
+            // different events happening. Check if your scanner brand send any
+            // of them by overriding this
+            // method.
+        }
+
+        @Override
+        public void onScanStartDecoding() {
+            Log.d("", "onScanStartDecoding()");
+            // This event is only useful for providing animation while the
+            // decoding is in process.
+            // Usually this process take about 1.5 second, so developers can
+            // start playing a nice animation
+            // at this point.
+        }
+
+        @Override
+        public void onScanFinishedDecoding(byte[] data) {
+            try {
+                scannedData = new String(data, "UTF-8");
+                handler.post(runnableScannedData);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -84,7 +186,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             }
         }
     }
-
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -128,7 +229,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         } else {
             global.promptForMandatoryLogin(activity);
         }
-
+        this.edm.driverDidConnectToDevice(thisInstance, false);
         return true;
     }
 
@@ -140,45 +241,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
         return !deviceList.isEmpty();
 
-    }
-
-    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
-
-        String msg = new String();
-        boolean didConnect = false;
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
-
-            try {
-                powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);
-                powaPOS.initializeMCU(true);
-                powaPOS.initializeScanner();
-                powaHidDecoderScanner = new PowaHidScanner(hidScannerCB);
-                didConnect = true;
-            } catch (Exception e) {
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
-
-            Toast.makeText(activity, "finished connection", Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -197,8 +259,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
-
-
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
@@ -318,199 +378,13 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         return true;
     }
 
-    private PowaPOSCallback peripheralCallback = new PowaPOSCallback() {
-        @Override
-        public void onMCUInitialized(PowaPOSEnums.InitializedResult result) {
-
-            if (myProgressDialog != null)
-                myProgressDialog.dismiss();
-
-            if (isAutoConnect && !global.loggedIn) {
-                if (global.getGlobalDlog() != null)
-                    global.getGlobalDlog().dismiss();
-                global.promptForMandatoryLogin(activity);
-                SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
-            }
-
-            if (result.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
-                edm.driverDidConnectToDevice(thisInstance, !isAutoConnect);
-            else
-                edm.driverDidNotConnectToDevice(thisInstance, "Failed to connect to MCU", !isAutoConnect);
-        }
-
-        @Override
-        public void onMCUFirmwareUpdateStarted() {
-
-        }
-
-        @Override
-        public void onScannerConnectionStateChanged(PowaEnums.ConnectionState newState) {
-            if (newState.equals(PowaEnums.ConnectionState.CONNECTED)) {
-                powaPOS.getScanner().scannerBeep(PowaPOSEnums.PowaScannerBeep.SHORT_2_BEEP_HIGH);
-            }
-        }
-
-        @Override
-        public void onScannerInitialized(final PowaPOSEnums.InitializedResult result) {
-            if (result.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL)) {
-
-            } else {
-                // scannerReconnect();
-            }
-
-        }
-
-        @Override
-        public void onMCUFirmwareUpdateProgress(int progress) {
-
-        }
-
-        @Override
-        public void onMCUFirmwareUpdateFinished() {
-
-        }
-
-        @Override
-        public void onCashDrawerStatus(PowaPOSEnums.CashDrawerStatus status) {
-            // Dialog dialog = createAlertDialog("The cash drawer status is: " +
-            // status.toString());
-            // dialog.show();
-            // Toast.makeText(activity, "cash drawer status",
-            // Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onRotationSensorStatus(PowaPOSEnums.RotationSensorStatus status) {
-            // Dialog dialog = createAlertDialog("The rotation sensor status is:
-            // " + status.toString());
-            // dialog.show();
-            // Toast.makeText(activity, "rotation sensor status",
-            // Toast.LENGTH_LONG).show();
-        }
-
-        // @Override
-        // public void onPrintJobCompleted(PowaPOSEnums.PrintJobResult result) {
-        // // Toast.makeText(activity, "print job completed",
-        // // Toast.LENGTH_LONG).show();
-        // }
-
-        @Override
-        public void onScannerRead(String data) {
-            // if(scannerFragment != null){
-            // scannerFragment.scannerRead(data);
-            // }
-            // Toast.makeText(activity, "scanner read",
-            // Toast.LENGTH_LONG).show();
-            // Toast.makeText(activity, "Data: "+data,
-            // Toast.LENGTH_LONG).show();
-            // if(_scannerCallBack!=null)
-            // {
-            // Toast.makeText(activity, "Callback: "+data,
-            // Toast.LENGTH_LONG).show();
-            // _scannerCallBack.scannerWasRead(data);
-            // }
-
-            scannedData = data;
-            handler.post(runnableScannedData);
-        }
-
-        @Override
-        public void onMCUSystemConfiguration(Map<String, String> configuration) {
-            // String str = "";
-            // for(Map.Entry<String, String> data: configuration.entrySet()){
-            // str += data.getKey() + ": " + data.getValue() + "\n";
-            // }
-            // Dialog dialog = createAlertDialog(str);
-            // dialog.show();
-            // Toast.makeText(activity, "MCU Sys Config",
-            // Toast.LENGTH_LONG).show();
-        }
-
-        // @Override
-        // public void onMCUDeviceAttached(PowaMsgHeader.DeviceType type) {
-        //
-        // //Toast.makeText(activity, "MCU Device Attached",
-        // Toast.LENGTH_LONG).show();
-        // }
-        //
-        // @Override
-        // public void onMCUDeviceDetached(PowaMsgHeader.DeviceType type) {
-        // //Toast.makeText(activity, "MCU Device Detached",
-        // Toast.LENGTH_LONG).show();
-        // }
-        //
-        // @Override
-        // public void onMCUBootloaderUpdateFailed(BootloaderUpdateError arg0) {
-        // // TODO Auto-generated method stub
-        //
-        // }
-
-        @Override
-        public void onMCUBootloaderUpdateFinished() {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onMCUBootloaderUpdateProgress(int arg0) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onMCUBootloaderUpdateStarted() {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onUSBDeviceAttached(PowaUSBCOMPort arg0) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onUSBDeviceDetached(PowaUSBCOMPort arg0) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onUSBReceivedData(PowaUSBCOMPort arg0, byte[] arg1) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onMCUBootloaderUpdateFailed(BootloaderUpdateError arg0) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onHIDDeviceAttached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
-            // Not used in this sample.
-        }
-
-        @Override
-        public void onHIDDeviceDetached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
-            // Not used in this sample.
-        }
-
-        @Override
-        public void onHIDReceivedData(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type, byte[] data) {
-            powaHidDecoderScanner.decode(port, type, data);
-        }
-
-    };
-
     @Override
     public void loadScanner(EMSCallBack _callBack) {
         // TODO Auto-generated method stub
         scannerCallBack = _callBack;
         if (handler == null)
             handler = new Handler();
-        if (_callBack != null) {
+        if (_callBack != null && powaPOS != null) {
 
             List<PowaDeviceObject> availScanners = powaPOS.getAvailableScanners();
             if (availScanners.size() > 0) {
@@ -519,20 +393,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             }
         }
     }
-
-    String scannedData = "";
-
-    private Runnable runnableScannedData = new Runnable() {
-        public void run() {
-            try {
-                if (scannerCallBack != null)
-                    scannerCallBack.scannerWasRead(scannedData);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    };
 
     @Override
     public void printHeader() {
@@ -544,91 +404,42 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         super.printFooter(LINE_WIDTH);
     }
 
-    PowaPOSCallback mPowaPOSCallback = new PowaPOSCallback() {
-        @Override
-        public void onMCUInitialized(PowaPOSEnums.InitializedResult initializedResult) {
+    public class processConnectionAsync extends AsyncTask<Integer, String, String> {
 
-            if (myProgressDialog != null)
-                myProgressDialog.dismiss();
-
-            if (isAutoConnect && !global.loggedIn) {
-                if (global.getGlobalDlog() != null)
-                    global.getGlobalDlog().dismiss();
-                global.promptForMandatoryLogin(activity);
-                SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
-            }
-
-            if (initializedResult.equals(PowaPOSEnums.InitializedResult.SUCCESSFUL))
-                edm.driverDidConnectToDevice(thisInstance, !isAutoConnect);
-            else
-                edm.driverDidNotConnectToDevice(thisInstance, "Failed to connect to MCU", !isAutoConnect);
-        }
+        String msg = "";
+        boolean didConnect = false;
 
         @Override
-        public void onScannerInitialized(PowaPOSEnums.InitializedResult initializedResult) {
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(activity.getString(R.string.progress_connecting_printer));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
 
         }
 
         @Override
-        public void onHIDDeviceAttached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
-            // Not used in this sample.
-        }
+        protected String doInBackground(Integer... params) {
+            // TODO Auto-generated method stub
 
-        @Override
-        public void onHIDDeviceDetached(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type) {
-            // Not used in this sample.
-        }
-
-        @Override
-        public void onHIDReceivedData(PowaPOSEnums.PowaHIDPort port, PowaPOSEnums.PowaHIDType type, byte[] data) {
-            PowaLog.getInstance().logInternal("TAG", ByteUtils.byteArrayToHexStringPretty(data));
-            powaHidDecoderScanner.decode(port, type, data);
-
-        }
-
-    };
-
-    // ===================================== SCANNER CALLBACK
-    // =======================================
-    PowaHidScanner.Callback hidScannerCB = new PowaHidScanner.Callback() {
-        @Override
-        public void onScannerReady() {
-            Log.d("", "onScannerReady()");
-        }
-
-        @Override
-        public void onScannerDetached() {
-            Log.d("", "onScannerDetached()");
-        }
-
-        @Override
-        public void onControlKeyScanned(PowaHidKeyDecoder.CONTROL_KEY controlKey) {
-            Toast.makeText(EMSPowaPOS.this.activity, controlKey.name() + " has been received", Toast.LENGTH_SHORT)
-                    .show();
-            // Some scanners send CONTROL KEYS at the start/end of the data,
-            // this way users may identify
-            // different events happening. Check if your scanner brand send any
-            // of them by overriding this
-            // method.
-        }
-
-        @Override
-        public void onScanStartDecoding() {
-            // This event is only useful for providing animation while the
-            // decoding is in process.
-            // Usually this process take about 1.5 second, so developers can
-            // start playing a nice animation
-            // at this point.
-        }
-
-        @Override
-        public void onScanFinishedDecoding(byte[] data) {
             try {
-                scannedData = new String(data, "UTF-8");
-                handler.post(runnableScannedData);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);
+                powaPOS.initializeMCU(true);
+                powaPOS.initializeScanner();
+                powaHidDecoderScanner = new PowaHidScanner(hidScannerCB);
+                didConnect = true;
+            } catch (Exception e) {
             }
+
+            return null;
         }
-    };
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+
+            Toast.makeText(activity, "finished connection", Toast.LENGTH_LONG).show();
+        }
+    }
 }

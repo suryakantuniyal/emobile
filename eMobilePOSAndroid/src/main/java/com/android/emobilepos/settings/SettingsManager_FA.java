@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import koamtac.kdc.sdk.KDCReader;
 import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends BaseFragmentActivityActionBar {
@@ -453,7 +454,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         myPref.cdtLine2(false, value2);
 
 //                        if (myPref.isSam4s(true, true)) {
-                            Global.showCDTDefault(activity);
+                        Global.showCDTDefault(activity);
 //                        }
 
                         globalDlog.dismiss();
@@ -770,8 +771,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         public void onClick(DialogInterface dialog, int which) {
                             // TODO Auto-generated method stub
                             MyPreferences myPref = new MyPreferences(activity);
-							String strDeviceName;
-							strDeviceName = val[pos].toUpperCase(Locale.getDefault());
+                            String strDeviceName;
+                            strDeviceName = val[pos].toUpperCase(Locale.getDefault());
+
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
                             {
@@ -787,7 +789,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.printerMACAddress(false, "BT:" + macAddressList.get(pos));
-								myPref.setPrinterName(strDeviceName);
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -797,7 +799,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.BAMBOO);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
-								myPref.setPrinterName(strDeviceName);
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -815,7 +817,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
-								myPref.setPrinterName(strDeviceName);
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -824,11 +826,20 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.ONEIL);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
-								myPref.setPrinterName(strDeviceName);
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.ONEIL, false);
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) // KDC500
+                            {
+                                myPref.setPrinterType(Global.KDC500);
+                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
                             } else {
                                 Toast.makeText(activity, R.string.err_invalid_device, Toast.LENGTH_LONG).show();
                             }

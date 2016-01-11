@@ -52,6 +52,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -275,6 +276,15 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
                     response.getStatus().equalsIgnoreCase("DECLINED"))) {
                 payment.pay_transid = response.getToken();
+                payment.tipAmount = response.getAdditionalParameters().getAmountDetails().getUserTip();
+                payment.pay_tip = response.getAdditionalParameters().getAmountDetails().getUserTip();
+
+                BigDecimal tip = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getUserTip());
+                BigDecimal cashBack = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getCashback());
+
+                BigDecimal aprovedAmount = new BigDecimal(response.getAmountApproved());
+                BigDecimal payAmount = aprovedAmount.subtract(tip).subtract(cashBack);
+                payment.pay_amount = Global.getRoundBigDecimal(payAmount);
                 payment.authcode = response.getAuthorizationCode();
                 payment.ccnum_last4 = response.getAccountNumber();
                 payment.pay_name = response.getCardholder();
@@ -289,8 +299,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
                 if (response.getStatus().equalsIgnoreCase("APPROVED")) {
                     payHandler.insert(payment);
-                    //setResult(-1);
-                    String paid_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountView)));
                 } else {
                     payHandler.insertDeclined(payment);
 

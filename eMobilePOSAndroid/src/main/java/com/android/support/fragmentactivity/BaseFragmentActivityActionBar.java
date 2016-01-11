@@ -19,7 +19,6 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
 
     private void setActionBar() {
-
         if (this instanceof MainMenu_FA || Build.MODEL.equalsIgnoreCase("PayPoint ESY13P1")) {
             myBar = this.getActionBar();
             if (myBar != null) {

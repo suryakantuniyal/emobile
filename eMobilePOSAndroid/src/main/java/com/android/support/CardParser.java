@@ -37,7 +37,7 @@ public class CardParser {
                 tempCardData.setCardNumAESEncrypted(encrypt.encryptWithAES(card_num));
                 tempCardData.setCardOwnerName(card_owner_name);
                 tempCardData.setCardExpYear(card_exp_date.substring(0, 2));
-                tempCardData.setCardExpMonth(card_exp_date.substring(2, 2));
+                tempCardData.setCardExpMonth(card_exp_date.substring(2, 4));
                 tempCardData.setCardLast4(card_num.substring(card_num.length() - 4));
 
 
