@@ -12,6 +12,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.text.InputType;
@@ -118,7 +119,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         PaymentDetails paymentDetails = payHandler.getPaymentDetails(pay_id, isDeclined);
         if (extras.getBoolean("histpay")) {
 
-            if (paymentDetails.getJob_id().isEmpty()) {
+            if (paymentDetails.getJob_id() != null && paymentDetails.getJob_id().isEmpty()) {
                 if (paymentDetails.getInv_id().isEmpty()) {
                     InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(activity);
                     paymentDetails.setInv_id(invPayHandler.getInvoicePaymentsID(pay_id));
@@ -147,7 +148,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
 
         String encodedImg = paymentDetails.getPay_signature();
-        if (!encodedImg.isEmpty()) {
+        if (encodedImg != null && !encodedImg.isEmpty()) {
             Resources resources = activity.getResources();
             Drawable[] layers = new Drawable[2];
             layers[0] = resources.getDrawable(R.drawable.torn_paper);
@@ -258,7 +259,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 StringBuilder sb = new StringBuilder();
 
 
-                if (!latitude.isEmpty() && !longitude.isEmpty()) {
+                if (latitude != null && longitude != null && !latitude.isEmpty() && !longitude.isEmpty()) {
                     sb.append("https://maps.googleapis.com/maps/api/staticmap?center=");
                     sb.append(latitude).append(",").append(longitude);
                     sb.append("&markers=color:red|label:S|");
@@ -291,12 +292,9 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(pay_id, 1, true, null);
             }
-
             return null;
         }
 

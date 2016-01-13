@@ -53,11 +53,16 @@ import POSSDK.POSSDK;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.util.Base64;
 import android.util.Log;
 
@@ -330,26 +335,29 @@ public class EMSDeviceDriver {
     private void printEMVSection(EMVContainer emvContainer, int lineWidth) {
         if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
             StringBuffer sb = new StringBuffer();
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
-                    emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
-            if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
-                    emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name()) ||
-                    emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase("EMVCo")) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_exp_date),
-                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getCardInformation().getCardExpiryDate(), lineWidth, 0));
+            if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
+                    emvContainer.getGeniusResponse().getAdditionalParameters().getEMV() != null) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
+                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
+                if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
+                        emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name()) ||
+                        emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase("EMVCo")) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_exp_date),
+                            emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getCardInformation().getCardExpiryDate(), lineWidth, 0));
+                }
+                if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name())) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram_type),
+                            emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogramType(), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram),
+                            emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogram(), lineWidth, 0));
+                }
+                if (!emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement().isEmpty()) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.pin_statement),
+                            emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement(), lineWidth, 0));
+                }
+                sb.append("\n\n");
+                print(sb.toString());
             }
-            if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.AMEX.name())) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram_type),
-                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogramType(), lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.cryptogram),
-                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationCryptogram().getCryptogram(), lineWidth, 0));
-            }
-            if (!emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement().isEmpty()) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.pin_statement),
-                        emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getPINStatement(), lineWidth, 0));
-            }
-            sb.append("\n\n");
-            print(sb.toString());
         }
     }
 
@@ -837,8 +845,20 @@ public class EMSDeviceDriver {
 //					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
 //							PAPER_WIDTH, false);
                 } else {
+                    Bitmap bmp = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
+                    int w = bmp.getWidth();
+                    int h = bmp.getHeight();
+                    int pixel;
+                    for (int x = 0; x < w; x++) {
+                        for (int y = 0; y < h; y++) {
+                            pixel = bmp.getPixel(x, y);
+                            if (pixel == Color.TRANSPARENT)
+                                bmp.setPixel(x, y, Color.WHITE);
+                        }
+                    }
+
                     MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
-                            myBitmap, PAPER_WIDTH, false, false);
+                            bmp, PAPER_WIDTH, false, false);
                 }
 
             } else if (this instanceof EMSPAT100) {
@@ -1337,7 +1357,7 @@ public class EMSDeviceDriver {
                     sb.setLength(0);
                 }
             }
-                sb.append(textHandler.newLines(1));
+            sb.append(textHandler.newLines(1));
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
 
             print(sb.toString(), FORMAT);
