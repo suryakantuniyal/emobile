@@ -22,7 +22,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.support.ConsignmentTransaction;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.emobilepos.app.R;

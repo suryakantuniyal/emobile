@@ -36,9 +36,11 @@ import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -47,9 +49,11 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -158,25 +162,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             setResult(-1);
 
             if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-                showPaymentSuccessDlog(true);
+                showPaymentSuccessDlog(true, null);
             } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-                showPaymentSuccessDlog(true);
+                showPaymentSuccessDlog(true, null);
             }
         }
 
-        if (myPref.isSam4s(true, true)) {
             String row1 = "Grand Total";
             String row2 = Global.formatDoubleStrToCurrency(total);
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        } else if (myPref.isPAT100()) {
-            String row1 = "Grand Total";
-            String row2 = Global.formatDoubleStrToCurrency(total);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        } else if (myPref.isESY13P1()) {
-            String row1 = "Grand Total";
-            String row2 = Global.formatDoubleStrToCurrency(total);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        }
 
         if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()
                 && !myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).equals("0")) {
@@ -290,7 +284,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (Global.overallPaidAmount == 0)
                         setResult(-1);
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                        showPrintDlg(false, false);
+                        showPrintDlg(false, false, null);
                     else
                         new printAsync().execute(false);
                 } else {
@@ -567,7 +561,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     }
 
-    private void showPrintDlg(final boolean isReprint, boolean isRetry) {
+    private void showPrintDlg(final boolean isReprint, boolean isRetry, final EMVContainer emvContainer) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -600,7 +594,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 dlog.dismiss();
-                new printAsync().execute(isReprint);
+                new printAsync().execute(isReprint, emvContainer);
 
             }
         });
@@ -618,13 +612,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.show();
     }
 
-    private class printAsync extends AsyncTask<Boolean, String, String> {
+    private class printAsync extends AsyncTask<Object, String, String> {
         private boolean wasReprint = false;
         private boolean printSuccessful = true;
 
         @Override
         protected void onPreExecute() {
-            Global.mainPrinterManager.currentDevice.loadScanner(null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadScanner(null);
+            }
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage("Printing...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -634,16 +630,20 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
 
         @Override
-        protected String doInBackground(Boolean... params) {
+        protected String doInBackground(Object... params) {
             // TODO Auto-generated method stub
 
-            wasReprint = params[0];
+            wasReprint = (Boolean) params[0];
+
+            EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
+
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
-                            wasReprint);
+                            wasReprint, emvContainer);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, orderType, wasReprint, false);
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id,orderType,
+                            wasReprint, false, emvContainer);
             }
             return null;
         }
@@ -656,7 +656,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
                     activity.finish();
             } else {
-                showPrintDlg(wasReprint, true);
+                showPrintDlg(wasReprint, true, null);
             }
         }
     }
@@ -838,6 +838,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         super.onActivityResult(requestCode, resultCode, data);
         myListview.setSelection(0);
         myListview.setSelected(false);
+        EMVContainer emvContainer = null;
+        if (data != null && data.hasExtra("emvcontainer"))
+            emvContainer = new Gson().fromJson(data.getStringExtra("emvcontainer"), EMVContainer.class);
 
         myAdapter.notifyDataSetChanged();
         if (resultCode == -1) {
@@ -845,18 +848,17 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 setResult(Global.FROM_PAYMENT);
             else
                 setResult(-1);
-            showPaymentSuccessDlog(true);
+            showPaymentSuccessDlog(true, emvContainer);
         } else if (resultCode == -2) {
             totalPayCount++;
             OrdersHandler handler = new OrdersHandler(activity);
             handler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
-
             currentPaidAmount = currentPaidAmount + Double.parseDouble(Global.amountPaid);
             Global.overallPaidAmount = currentPaidAmount;
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
             paid = Global.formatNumber(true, currentPaidAmount);
 
-            if (total.replaceAll("[^\\d\\,\\.]", "").trim().equals("0.00") && data != null) {
+            if (NumberUtils.cleanCurrencyFormatedNumber(total).equals("0.00") && data != null) {
                 total = data.getStringExtra("total_amount");
             }
             overAllRemainingBalance = Global.formatNumFromLocale(
@@ -879,9 +881,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 String temp = Global.formatDoubleStrToCurrency("0.00");
 
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
-                    showPaymentSuccessDlog(true);
+                    showPaymentSuccessDlog(true, emvContainer);
                 else
-                    showPaymentSuccessDlog(false);
+                    showPaymentSuccessDlog(false, emvContainer);
 
             } else {
                 if (job_id != null && !job_id.isEmpty()) {
@@ -891,7 +893,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 String temp = Global.formatDoubleStrToCurrency(Double.toString(overAllRemainingBalance));
                 previous_pay_id = pay_id;
-                showPaymentSuccessDlog(true);
+                showPaymentSuccessDlog(true, emvContainer);
             }
         }
     }
@@ -919,7 +921,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         dlog.show();
     }
 
-    private void showPaymentSuccessDlog(final boolean withPrintRequest) {
+    private void showPaymentSuccessDlog(final boolean withPrintRequest, final EMVContainer emvContainer) {
 
         dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -929,7 +931,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
-        viewMsg.setText(R.string.payment_saved_successfully);
+        if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
+            if (emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) {
+                viewMsg.setText(R.string.payment_saved_successfully);
+            } else {
+                viewMsg.setText(R.string.payment_save_declined);
+            }
+        } else {
+            viewMsg.setText(R.string.payment_saved_successfully);
+        }
 
         Button btnOk = (Button) dlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
@@ -937,7 +947,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (withPrintRequest) {
                     if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
@@ -947,7 +956,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     } else {
                         if (myPref.getPreferences(MyPreferences.pref_enable_printing)
                                 && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
-                            showPrintDlg(false, false);
+                            showPrintDlg(false, false, emvContainer);
                         } else if (overAllRemainingBalance <= 0) {
                             finish();
                         }
@@ -963,7 +972,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onDismiss(DialogInterface dialog) {
-                // TODO Auto-generated method stub
                 handler.removeCallbacks(runnable);
             }
         });
@@ -1256,7 +1264,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 dlog.dismiss();
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                        showPrintDlg(false, false);
+                        showPrintDlg(false, false, null);
                     else
                         new printAsync().execute(false);
                 } else {

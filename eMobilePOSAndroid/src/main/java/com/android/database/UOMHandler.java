@@ -3,8 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -24,12 +22,10 @@ public class UOMHandler
 	private String isactive = "isactive";
 	
 	
-	private final List<String> attr = Arrays.asList(new String[] {uomitem_id,uom_id,uom_name,prod_id,uom_conversion,uom_update,isactive});
+	private final List<String> attr = Arrays.asList(uomitem_id,uom_id,uom_name,prod_id,uom_conversion,uom_update,isactive);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
-	private Activity activity;
 	private List<String[]> uomData;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
@@ -40,7 +36,6 @@ public class UOMHandler
 		uomData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
-		this.activity = activity;
 		initDictionary();
 	}
 	
@@ -64,7 +59,7 @@ public class UOMHandler
 		if (i != null) {
 			return uomData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {

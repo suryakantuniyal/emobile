@@ -26,7 +26,7 @@ public class CardData {
 	public int getDataLength() {
 		if (!isDataEncrypted())
 			return byteData.length;
-		return (int)(0xFFFF&(byteData[2]<<8) + 0xFF&byteData[1]);
+		return 0xFFFF&(byteData[2]<<8) + 0xFF&byteData[1];
 	}
 	public String getCardEncodeType() {
 		if (!isDataEncrypted())
@@ -81,9 +81,7 @@ public class CardData {
 		String binaryString = getFieldByte1Binary();
 		if (binaryString.length()!=8)
 			return false;
-		if (binaryString.charAt(7)=='1')
-			return true;
-		return false;
+		return binaryString.charAt(7) == '1';
 	}
 	
 	public String getT1Encrypted()
@@ -345,16 +343,10 @@ public class CardData {
 	}
 	
 	public boolean isStartingWithSTX() {
-		if (getSTX().equals("02") || getSTX().equals("25"))
-			return true;
-		else 
-			return false;
+		return getSTX().equals("02") || getSTX().equals("25");
 	}
 	public boolean isEndingWithETX() {
-		if (getETX().equalsIgnoreCase("03") || getETX().equals("0d"))
-			return true;
-		else 
-			return false;
+		return getETX().equalsIgnoreCase("03") || getETX().equals("0d");
 	}
 	public boolean isLRCCorrect() {
 		if (!isDataEncrypted())
@@ -362,10 +354,7 @@ public class CardData {
 		String lrc = Integer.toHexString(0xFF&calculateLRC());
 		if (lrc.length()==1)
 			lrc = "0"+lrc;
-		if (lrc.equalsIgnoreCase(getLRC()))
-			return true;
-		else 
-			return false;
+		return lrc.equalsIgnoreCase(getLRC());
 	}
 	public boolean isCheckSumCorrect() {
 		if (!isDataEncrypted())
@@ -373,11 +362,8 @@ public class CardData {
 		String checkSum = Integer.toHexString(0xFF&calculateCheckSum());
 		if (checkSum.length()==1)
 			checkSum = "0"+checkSum;
-		
-		if (checkSum.equalsIgnoreCase(getCheckSum()))
-			return true;
-		else 
-			return false;
+
+		return checkSum.equalsIgnoreCase(getCheckSum());
 	}
 	public boolean isSNPresent() {
 		if (!isDataEncrypted())
@@ -385,9 +371,7 @@ public class CardData {
 		String binaryString = getFieldByte1Binary();
 		if (binaryString.length()!=8)
 			return false;
-		if (binaryString.charAt(0)=='1')
-			return true;
-		return false;
+		return binaryString.charAt(0) == '1';
 	}
 	public boolean isKSNPresent() {
 		if (!isDataEncrypted())
@@ -395,9 +379,7 @@ public class CardData {
 		String binaryString = getFieldByte2Binary();
 		if (binaryString.length()!=8)
 			return false;
-		if (binaryString.charAt(0)=='1')
-			return true;
-		return false;	
+		return binaryString.charAt(0) == '1';
 	}
 	
 	public boolean isT2DataPresent() {
@@ -406,9 +388,7 @@ public class CardData {
 		String binaryString = getFieldByte1Binary();
 		if (binaryString.length()!=8)
 			return false;
-		if (binaryString.charAt(6)=='1')
-			return true;
-		return false;
+		return binaryString.charAt(6) == '1';
 	}
 	
 	public boolean isEncryptedWithTDES() {
@@ -417,9 +397,7 @@ public class CardData {
 		String binaryString = getFieldByte1Binary();
 		while (binaryString.length()<8)
 			binaryString = "00"+binaryString;
-		if (binaryString.substring(2,4).equals("00"))
-			return true;
-		return false;	
+		return binaryString.substring(2, 4).equals("00");
 	}
 	public boolean isEncryptedWithAES() {
 		if (!isDataEncrypted())
@@ -427,16 +405,12 @@ public class CardData {
 		String binaryString = getFieldByte1Binary();
 		if (binaryString.length()!=8)
 			return false;
-		if (binaryString.substring(2,4).equals("01"))
-			return true;
-		return false;
+		return binaryString.substring(2, 4).equals("01");
 	}
 	public boolean isDataEncrypted(){
 		if (byteData[0]==0x25 && byteData[byteData.length-1]==0x0d)
 			return false;
-		if (byteData[0]==0x02 && byteData[byteData.length-1]==0x03)
-			return true;
-		return false;
+		return byteData[0] == 0x02 && byteData[byteData.length - 1] == 0x03;
 	}
 	public String getFieldByte1Binary() {
 		String binaryString =  hexToBin(getFieldByte1());

@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -23,19 +22,16 @@ public class ProductAddonsHandler {
 	private final String _update = "_update";
 	private final String isactive = "isactive";
 
-	private final List<String> attr = Arrays.asList(new String[] { rest_addons, prod_id, cat_id, isactive, _update });
+	private final List<String> attr = Arrays.asList(rest_addons, prod_id, cat_id, isactive, _update);
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private MyPreferences myPref;
 
 	private static final String table_name = "Product_addons";
 
 	public ProductAddonsHandler(Activity activity) {
-		this.activity = activity;
 		myPref = new MyPreferences(activity);
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
@@ -64,7 +60,7 @@ public class ProductAddonsHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {

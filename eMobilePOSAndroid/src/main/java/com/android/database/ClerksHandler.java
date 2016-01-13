@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -36,23 +35,20 @@ public class ClerksHandler
 	private final String emp_pos = "emp_pos";
 	private final String pricelevel_id = "pricelevel_id";
 
-	private final List<String> attr = Arrays.asList(new String[] { emp_id, zone_id, emp_name, emp_init, emp_pcs, emp_carrier,
+	private final List<String> attr = Arrays.asList(emp_id, zone_id, emp_name, emp_init, emp_pcs, emp_carrier,
 			emp_lastlogin, emp_cleanup, emp_pos, qb_emp_id, qb_salesrep_id, quota_month_goal, quota_month, quota_year_goal,
-			quota_year, emp_pwd, isactive, email, classid, tax_default, pricelevel_id });
+			quota_year, emp_pwd, isactive, email, classid, tax_default, pricelevel_id);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String,Integer>attrHash;
 	private List<String[]>data;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private MyPreferences myPref;
 	private final String TABLE_NAME = "Clerks";
-	private Activity activity;
-	
+
 	public ClerksHandler(Activity activity)
 	{
-		this.activity = activity;
-		myPref = new MyPreferences(this.activity);
+		myPref = new MyPreferences(activity);
 		attrHash = new HashMap<String,Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
@@ -83,7 +79,7 @@ public class ClerksHandler
 		if (i != null) {
 			return data.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	public void emptyTable() 

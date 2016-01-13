@@ -25,7 +25,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;

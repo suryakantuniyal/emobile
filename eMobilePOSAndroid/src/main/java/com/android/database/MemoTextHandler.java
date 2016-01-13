@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -26,21 +25,18 @@ public class MemoTextHandler {
 	private static final String store_email = "store_email";
 	private static final String isactive = "isactive";
 
-	private static final List<String> attr = Arrays.asList(new String[] { memo_id, memo_headerLine1, memo_headerLine2, memo_headerLine3,
-			memo_footerLine1, memo_footerLine2, memo_footerLine3, store_name, store_email, isactive });
+	private static final List<String> attr = Arrays.asList(memo_id, memo_headerLine1, memo_headerLine2, memo_headerLine3,
+			memo_footerLine1, memo_footerLine2, memo_footerLine3, store_name, store_email, isactive);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
 	private static final String table_name = "memotext";
 	private MyPreferences myPref;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 
 	public MemoTextHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		myPref = new MyPreferences(activity);
@@ -68,7 +64,7 @@ public class MemoTextHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {

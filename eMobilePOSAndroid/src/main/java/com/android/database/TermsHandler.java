@@ -3,8 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -22,19 +20,16 @@ public class TermsHandler {
 	private final String terms_update = "terms_update";
 	private final String isactive = "isactive";
 
-	private final List<String> attr = Arrays.asList(new String[] { terms_id, terms_name, terms_stdduedays, terms_stddiscdays, terms_discpct, isactive,
-			terms_update });
+	private final List<String> attr = Arrays.asList(terms_id, terms_name, terms_stdduedays, terms_stddiscdays, terms_discpct, isactive,
+			terms_update);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String table_name = "Terms";
 
 	public TermsHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -61,7 +56,7 @@ public class TermsHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {

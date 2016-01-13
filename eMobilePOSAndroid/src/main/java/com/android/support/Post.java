@@ -40,45 +40,45 @@ public class Post {
     private boolean isShortResponse = false;
     private boolean isPost = false;
     static InputStream keyStoreInputStream;
-//    static KeyStore trustStore;
-//    static TrustManagerFactory tmf;
-//    static SSLContext sslContext;
+    static KeyStore trustStore;
+    static TrustManagerFactory tmf;
+    static SSLContext sslContext;
     static HttpsURLConnection urlConnection;
     double apiVersion = Double.valueOf(android.os.Build.VERSION.SDK_INT);
 
-//    public void initSSL() {
-//        System.setProperty("http.keepAlive", "false");
-//        if (apiVersion >= 14) // ICS+
-//            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure);
-//        else // GingerBread
-//            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure_godaddyroot);
-//
-//        try {
-//            trustStore = KeyStore.getInstance("BKS");
-//            trustStore.load(keyStoreInputStream, "mysecret".toCharArray());
-//            tmf = TrustManagerFactory.getInstance("X509");
-//            tmf.init(trustStore);
-//            sslContext = SSLContext.getInstance("TLS");
-//            sslContext.init(null, tmf.getTrustManagers(), null);
-//        } catch (KeyStoreException e) {
-//            e.printStackTrace();
-//        } catch (CertificateException e) {
-//            e.printStackTrace();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        } catch (KeyManagementException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+    public void initSSL() {
+        System.setProperty("http.keepAlive", "false");
+        if (apiVersion >= 14) // ICS+
+            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure);
+        else // GingerBread
+            keyStoreInputStream = activity.getResources().openRawResource(R.raw.azure_godaddyroot);
+
+        try {
+            trustStore = KeyStore.getInstance("BKS");
+            trustStore.load(keyStoreInputStream, "mysecret".toCharArray());
+            tmf = TrustManagerFactory.getInstance("X509");
+            tmf.init(trustStore);
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public String postData(int type, Activity activity, String varyingVariable) {
         GenerateXML xml = new GenerateXML(activity);
         this.activity = activity;
         StringBuilder baseURL = new StringBuilder();
-        baseURL.append("https://sync.enablermobile.com/deviceASXMLTrans/");
+        baseURL.append(activity.getString(R.string.sync_enablermobile_deviceasxmltrans));
 
         StringBuilder url = new StringBuilder();
 
@@ -133,33 +133,33 @@ public class Post {
             }
 
             case Global.S_GET_XML_ORDERS: {
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/getXMLOrders.aspx";
+                postLink = activity.getString(R.string.sync_enablermobile_getxmlorders);
                 entity = xml.synchOrders(false).toString();
                 isPost = true;
 
                 break;
             }
             case Global.S_SUBMIT_ON_HOLD: {
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitOrdersOnHold.ashx";
+                postLink = activity.getString(R.string.sync_enabler_submitordersonhold);
                 entity = xml.synchOrders(true).toString();
                 isPost = true;
 
                 break;
             }
             case Global.S_SUBMIT_PAYMENTS: {
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitPayments.aspx";
+                postLink = activity.getString(R.string.sync_enabler_submitpayments);
                 entity = xml.synchPayments().toString();
                 isPost = true;
                 break;
             }
             case Global.S_SUBMIT_TIME_CLOCK: {
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitTimeClock.ashx";
+                postLink = activity.getString(R.string.sync_enabler_submittimeclock);
                 entity = xml.synchTimeClock();
                 isPost = true;
                 break;
             }
             case Global.S_SUBMIT_VOID_TRANSACTION: {
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitVoidTrans.aspx";
+                postLink = activity.getString(R.string.sync_enabler_submitvoidtrans);
                 entity = xml.syncVoidTransactions();
                 isPost = true;
 
@@ -171,47 +171,47 @@ public class Post {
                 break;
             }
             case Global.S_SUBMIT_CUSTOMER:
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitCustomer.aspx";
+                postLink = activity.getString(R.string.sync_enabler_submitcustomer);
                 entity = xml.synchNewCustomer();
                 isPost = true;
                 break;
             case 13:
-                postLink = "https://epay.enablermobile.com/index.ashx";
+                postLink = activity.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
                 isPost = true;
                 break;
             case Global.S_SUBMIT_TUPYX:
-                postLink = "https://epay.enablermobile.com/tupyx.ashx";
+                postLink = activity.getString(R.string.epay_enablermobile_tupix);
                 entity = varyingVariable;
                 isPost = true;
                 break;
             case Global.S_SUBMIT_TEMPLATES:
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/subitTemplates.aspx";
+                postLink = activity.getString(R.string.sync_enabler_submittempletes);
                 entity = xml.synchTemplates();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_CONSIGNMENT_TRANSACTION:
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitConsignmentTransaction.aspx";
+                postLink = activity.getString(R.string.sync_enablersubmitconsignmenttransaction);
                 entity = xml.synchConsignmentTransaction();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_CUSTOMER_INVENTORY:
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitCustomerInventory.aspx";
+                postLink = activity.getString(R.string.sync_enabler_submitcustomerinventory);
                 entity = xml.synchCustomerInventory();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_SHIFT:
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitShiftPeriods.aspx";
+                postLink = activity.getString(R.string.sync_enabler_submitshiftperiods);
                 entity = xml.synchShift();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_LOCATIONS_INVENTORY:
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx";
+                postLink = activity.getString(R.string.sync_enabler_submitlocationinventory);
                 entity = xml.synchInventoryTransfer();
                 isPost = true;
                 break;
             case Global.S_SUBMIT_WALLET_RECEIPTS:
-                postLink = "https://sync.enablermobile.com/deviceASXMLTrans/submitwalletReceipt.ashx";
+                postLink = activity.getString(R.string.sync_enabler_submitwalletreceipt);
                 entity = xml.synchWalletReceipts();
                 isPost = true;
                 break;
@@ -278,13 +278,13 @@ public class Post {
 
         HttpsURLConnection urlConnection;
         try {
-//           if (sslContext==null){
-//               initSSL();
-//           }
+            if (sslContext == null) {
+                initSSL();
+            }
             HttpsURLConnection.setFollowRedirects(false);
             urlConnection = (HttpsURLConnection) url.openConnection();
-//            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
-            // urlConnection.setRequestMethod("GET");
+            urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+            urlConnection.setRequestMethod("GET");
             urlConnection.setRequestProperty("Connection", "close");
             urlConnection.setUseCaches(false);
             urlConnection.setConnectTimeout(50 * 1000);
@@ -352,11 +352,11 @@ public class Post {
             URL url = new URL(Url);
 
             try {
-//                if (sslContext == null) {
-//                    initSSL();
-//                }
+                if (sslContext == null) {
+                    initSSL();
+                }
                 urlConnection = (HttpsURLConnection) url.openConnection();
-//                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                 urlConnection.setRequestMethod("POST");
                 HttpURLConnection.setFollowRedirects(true);
 

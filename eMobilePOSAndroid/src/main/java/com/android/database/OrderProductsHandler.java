@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -30,6 +29,8 @@ public class OrderProductsHandler {
     private final String ordprod_id = "ordprod_id";
 
     private final String prod_id = "prod_id";
+    private final String prod_sku = "prod_sku";
+    private final String prod_upc = "prod_upc";
     private final String ordprod_qty = "ordprod_qty";
     private final String overwrite_price = "overwrite_price";
     private final String reason_id = "reason_id";
@@ -61,11 +62,11 @@ public class OrderProductsHandler {
     private final String addon_position = "addon_position";
     private final String hasAddons = "hasAddons";
 
-    public final List<String> attr = Arrays.asList(new String[]{addon, isAdded, isPrinted, item_void, ordprod_id,
-            ord_id, prod_id, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
+    public final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
+            ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
-            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id});
+            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id);
 
     public StringBuilder sb1, sb2, sb3;
     public final String empStr = "";
@@ -140,6 +141,8 @@ public class OrderProductsHandler {
                 insert.bindString(index(ordprod_id), prod.ordprod_id == null ? "" : prod.ordprod_id); // ordprod_id
                 insert.bindString(index(ord_id), prod.ord_id == null ? "" : prod.ord_id); // ord_id
                 insert.bindString(index(prod_id), prod.prod_id == null ? "" : prod.prod_id); // prod_id
+                insert.bindString(index(prod_sku), prod.prod_sku == null ? "" : prod.prod_sku); // prod_sku
+                insert.bindString(index(prod_upc), prod.prod_upc == null ? "" : prod.prod_upc); // prod_upc
                 insert.bindString(index(ordprod_qty), TextUtils.isEmpty(prod.ordprod_qty) ? "0" : prod.ordprod_qty); // ordprod_qty
                 insert.bindString(index(overwrite_price),
                         TextUtils.isEmpty(prod.overwrite_price) ? "0" : prod.overwrite_price); // overwrite_price
@@ -295,6 +298,8 @@ public class OrderProductsHandler {
                     insert.bindString(index(ordprod_id), getData(ordprod_id, i)); // cust_id
                     insert.bindString(index(ord_id), getData(ord_id, i)); // cust_id
                     insert.bindString(index(prod_id), getData(prod_id, i)); // cust_id
+                    insert.bindString(index(prod_sku), getData(prod_sku, i)); // cust_id
+                    insert.bindString(index(prod_upc), getData(prod_upc, i)); // cust_id
                     insert.bindString(index(ordprod_qty), getData(ordprod_qty, i)); // cust_id
                     insert.bindString(index(overwrite_price), getData(overwrite_price, i)); // cust_id
                     insert.bindString(index(reason_id), getData(reason_id, i)); // cust_id
@@ -649,7 +654,7 @@ public class OrderProductsHandler {
         List<OrderProducts> list = new ArrayList<OrderProducts>();
         // SQLiteDatabase db = dbManager.openReadableDB();
 
-        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id,ordprod_qty,overwrite_price FROM OrderProducts WHERE ord_id = '";
+        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM OrderProducts WHERE ord_id = '";
         // String subquery2="'";
 
         Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
@@ -665,6 +670,12 @@ public class OrderProductsHandler {
 
                 data = cursor.getString(cursor.getColumnIndex(prod_id));
                 products.prod_id = data;
+
+                data = cursor.getString(cursor.getColumnIndex(prod_sku));
+                products.prod_sku = data;
+
+                data = cursor.getString(cursor.getColumnIndex(prod_upc));
+                products.prod_upc = data;
 
                 data = cursor.getString(cursor.getColumnIndex(ordprod_qty));
                 products.ordprod_qty = data;
@@ -686,7 +697,7 @@ public class OrderProductsHandler {
         List<OrderProducts> listOrdProd = new ArrayList<OrderProducts>();
 
         query.append(
-                "SELECT ordprod_name, prod_id,sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' FROM OrderProducts op ");
+                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' FROM OrderProducts op ");
         query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.ord_type IN ");
 
         if (isSales)
@@ -714,6 +725,8 @@ public class OrderProductsHandler {
         if (c.moveToFirst()) {
             int i_ordprod_name = c.getColumnIndex(ordprod_name);
             int i_prod_id = c.getColumnIndex(prod_id);
+            int i_prod_sku = c.getColumnIndex(prod_sku);
+            int i_prod_upc = c.getColumnIndex(prod_upc);
             int i_ordprod_qty = c.getColumnIndex(ordprod_qty);
             int i_overwrite_price = c.getColumnIndex(overwrite_price);
 
@@ -722,6 +735,8 @@ public class OrderProductsHandler {
 
                 ordProd.ordprod_name = c.getString(i_ordprod_name);
                 ordProd.prod_id = c.getString(i_prod_id);
+                ordProd.prod_sku = c.getString(i_prod_sku);
+                ordProd.prod_upc = c.getString(i_prod_upc);
                 ordProd.ordprod_qty = c.getString(i_ordprod_qty);
                 ordProd.overwrite_price = c.getString(i_overwrite_price);
 

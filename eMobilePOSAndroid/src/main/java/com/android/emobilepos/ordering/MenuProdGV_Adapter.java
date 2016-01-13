@@ -42,7 +42,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 	private boolean isRestMode = false;
 
 	public interface ProductClickedCallback {
-		public void productClicked(int position);
+		void productClicked(int position);
 	}
 
 	public MenuProdGV_Adapter(Catalog_FR _this, Activity context, Cursor c, int flags, ImageLoader _imageLoader) {
@@ -50,7 +50,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 		// TODO Auto-generated constructor stub
 		activity = context;
 		inflater = LayoutInflater.from(context);
-		callBack = (ProductClickedCallback) _this;
+		callBack = _this;
 		isPortrait = Global.isPortrait(context);
 		imageLoader = _imageLoader;
 		MyPreferences myPref = new MyPreferences(context);

@@ -2,7 +2,6 @@ package com.android.database;
 
 import android.app.Activity;
 
-import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -25,8 +24,8 @@ public class DeviceDefaultValuesHandler {
 	
 	
 	
-	private final List<String> attr = Arrays.asList(new String[] { df_id,posAdminPassword,loyaltyPointFeature,
-			pointsType,defaultPointsPricePercentage,globalDiscountID});
+	private final List<String> attr = Arrays.asList(df_id,posAdminPassword,loyaltyPointFeature,
+			pointsType,defaultPointsPricePercentage,globalDiscountID);
 	
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.GroupTax;
-import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -33,7 +32,6 @@ public class TaxesHandler {
             isactive, tax_update, prTax, tax_default, tax_account);
 
     private StringBuilder sb1, sb2;
-    private final String empStr = "";
     private HashMap<String, Integer> attrHash;
     private List<String[]> addrData;
     private MyPreferences myPref;
@@ -69,7 +67,7 @@ public class TaxesHandler {
         if (i != null) {
             return addrData.get(record)[i];
         }
-        return empStr;
+        return "";
     }
 
 

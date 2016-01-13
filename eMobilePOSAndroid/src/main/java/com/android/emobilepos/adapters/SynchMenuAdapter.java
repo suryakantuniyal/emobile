@@ -26,7 +26,7 @@ import com.android.database.TemplateHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 

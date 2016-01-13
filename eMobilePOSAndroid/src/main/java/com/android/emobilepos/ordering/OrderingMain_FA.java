@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
+import com.android.database.DBManager;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
@@ -49,7 +50,7 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
-import com.android.support.DBManager;
+import com.android.support.CustomKeyboard;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -124,13 +125,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static boolean returnItem = false;
     private Bundle extras;
 
+
+//    CustomKeyboard mCustomKeyboard;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
         activity = this;
         instance = this;
-        callBackMSR = (EMSCallBack) this;
+        callBackMSR = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
         catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
@@ -183,7 +187,76 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (Global.btSled != null && Global.btSled.currentDevice != null)
                 Global.btSled.currentDevice.loadScanner(callBackMSR);
         }
+
+
         hasBeenCreated = true;
+    }
+
+    private Handler ScanResultHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case DecodeManager.MESSAGE_DECODER_COMPLETE:
+                    String strDecodeResult = "";
+                    DecodeResult decodeResult = (DecodeResult) msg.obj;
+
+                    strDecodeResult = decodeResult.barcodeData.trim();
+                    if (!strDecodeResult.isEmpty()) {
+                        SoundManager.playSound(1, 1);
+                        scanAddItem(strDecodeResult);
+                    }
+                    break;
+
+                case DecodeManager.MESSAGE_DECODER_FAIL: {
+                    SoundManager.playSound(2, 1);
+                }
+                break;
+                case DecodeManager.MESSAGE_DECODER_READY: {
+                    if (mDecodeManager != null) {
+                        SymConfigActivityOpeartor operator = mDecodeManager.getSymConfigActivityOpeartor();
+                        operator.removeAllSymFromConfigActivity();
+                        SymbologyConfigCodeUPCA upca = new SymbologyConfigCodeUPCA();
+                        upca.enableSymbology(true);
+                        upca.enableCheckTransmit(true);
+                        upca.enableSendNumSys(true);
+
+                        SymbologyConfigs symconfig = new SymbologyConfigs();
+                        symconfig.addSymbologyConfig(upca);
+
+                        try {
+                            mDecodeManager.setSymbologyConfigs(symconfig);
+                        } catch (RemoteException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                break;
+                default:
+                    super.handleMessage(msg);
+                    break;
+            }
+        }
+    };
+
+    private Handler SearchFieldHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            Bundle theBundle = msg.getData();
+            if (theBundle.getString("message").equals("PerformSearch")) {
+                //call performSearch
+                String text = theBundle.getString("searchfield");
+                if (!text.isEmpty()) {
+                    rightFragment.performSearch(text);
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+//        mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.upcskunumbersfirstrow);
+//        mCustomKeyboard.registerEditText(R.id.catalogSearchField);
+//        mCustomKeyboard.setHandler(SearchFieldHandler);
     }
 
     private void setupTitle() {
@@ -343,6 +416,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             else
                 showDlog(false);
         }
+
+        // NOTE Trap the back key: when the CustomKeyboard is still visible hide it, only when it is invisible, finish activity
+//        if (mCustomKeyboard.isCustomKeyboardVisible()) {
+//            mCustomKeyboard.hideCustomKeyboard();
+//        }
     }
 
     @Override
@@ -605,7 +683,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                         if (validAutomaticAddQty(product)) {
                             if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                int foundPosition = global.checkIfGroupBySKU(this,product.getId(), "1");
+                                int foundPosition = global.checkIfGroupBySKU(this, product.getId(), "1");
                                 if (foundPosition != -1) // product already
                                 // exist in list
                                 {
@@ -704,7 +782,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
                     upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
-                    Product product= handler.getUPCProducts(upc);
+                    Product product = handler.getUPCProducts(upc);
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                             if (validAutomaticAddQty(product)) {
@@ -794,51 +872,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private Handler ScanResultHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case DecodeManager.MESSAGE_DECODER_COMPLETE:
-                    String strDecodeResult = "";
-                    DecodeResult decodeResult = (DecodeResult) msg.obj;
-
-                    strDecodeResult = decodeResult.barcodeData.trim();
-                    if (!strDecodeResult.isEmpty()) {
-                        SoundManager.playSound(1, 1);
-                        scanAddItem(strDecodeResult);
-                    }
-                    break;
-
-                case DecodeManager.MESSAGE_DECODER_FAIL: {
-                    SoundManager.playSound(2, 1);
-                }
-                break;
-                case DecodeManager.MESSAGE_DECODER_READY: {
-                    if (mDecodeManager != null) {
-                        SymConfigActivityOpeartor operator = mDecodeManager.getSymConfigActivityOpeartor();
-                        operator.removeAllSymFromConfigActivity();
-                        SymbologyConfigCodeUPCA upca = new SymbologyConfigCodeUPCA();
-                        upca.enableSymbology(true);
-                        upca.enableCheckTransmit(true);
-                        upca.enableSendNumSys(true);
-
-                        SymbologyConfigs symconfig = new SymbologyConfigs();
-                        symconfig.addSymbologyConfig(upca);
-
-                        try {
-                            mDecodeManager.setSymbologyConfigs(symconfig);
-                        } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                break;
-                default:
-                    super.handleMessage(msg);
-                    break;
-            }
-        }
-    };
 
     private void scanAddItem(String upc) {
         ProductsHandler handler = new ProductsHandler(this);
@@ -873,15 +906,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String addedQty = global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());
-        if ((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
+        return !((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
                 && (((Global.ord_type == Global.OrderType.SALES_RECEIPT || Global.ord_type == Global.OrderType.INVOICE)
                 && (newQty > onHandQty))))
                 || (Global.isConsignment && !product.getProdType().equals("Service")
-                && !validConsignment(newQty, onHandQty, product.getId()))) {
-            return false;
-        } else {
-            return true;
-        }
+                && !validConsignment(newQty, onHandQty, product.getId())));
     }
 
     private boolean validConsignment(double selectedQty, double onHandQty, String prodID) {
@@ -1117,9 +1146,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         PayMethodsHandler payHandler = new PayMethodsHandler(activity);
 
         if (isLoyaltyCard)
-            payment.paymethod_id = payHandler.getPayMethodID("LoyaltyCard");
+            payment.paymethod_id = PayMethodsHandler.getPayMethodID("LoyaltyCard");
         else
-            payment.paymethod_id = payHandler.getPayMethodID("Reward");
+            payment.paymethod_id = PayMethodsHandler.getPayMethodID("Reward");
 
         payment.pay_name = cardInfoManager.getCardOwnerName();
         payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
@@ -1361,5 +1390,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         // TODO Auto-generated method stub
 
     }
+
 
 }

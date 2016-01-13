@@ -13,7 +13,7 @@ import android.os.Process;
 import android.os.StatFs;
 import android.util.Log;
 
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -295,11 +295,14 @@ public class ExceptionHandler implements
 		if(oldHandler!=null)
 		{
 			oldHandler.uncaughtException(thread, exception);
+			Process.killProcess(Process.myPid());
+			System.exit(10);
 		}
 		else
 		{
 			Process.killProcess(Process.myPid());
 			System.exit(10);
 		}
+
 	}
 }

@@ -54,8 +54,8 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 	private Global global;
 	
 
-	public static interface OnGridItemClickListener {
-		public void onGridItemClicked(String sectionName, int position, View v);
+	public interface OnGridItemClickListener {
+		void onGridItemClicked(String sectionName, int position, View v);
 	}
 
 	private OnGridItemClickListener listener = null;

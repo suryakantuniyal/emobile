@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
 import com.android.support.Global;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -20,7 +19,7 @@ public class ShipMethodHandler {
 	private final String isactive = "isactive";
 	private final String shipmethod_update = "shipmethod_update";
 
-	public final List<String> attr = Arrays.asList(new String[] { shipmethod_id, shipmethod_name, isactive, shipmethod_update });
+	public final List<String> attr = Arrays.asList(shipmethod_id, shipmethod_name, isactive, shipmethod_update);
 
 	public StringBuilder sb1, sb2;
 	public final String empStr = "";
@@ -28,8 +27,7 @@ public class ShipMethodHandler {
 	public Global global;
 	private List<String[]> addrData;
 
-	private Activity activity;
-	
+
 	private List<String>dataList;
 	private HashMap<String,Integer>dictionaryMap;
 	private List<HashMap<String,Integer>>dictionaryListMap;
@@ -38,7 +36,6 @@ public class ShipMethodHandler {
 
 	public ShipMethodHandler(Activity activity) {
 		global = (Global) activity.getApplication();
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();

@@ -85,7 +85,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
     @Override
     public void onCreate(Bundle savedInstanceState) {
         activity = this;
-        callBack = (EMSCallBack) this;
+        callBack = this;
         global = (Global) getApplication();
         myPref = new MyPreferences(this);
         Global.isEncryptSwipe = false; // will not encrypt number of card after
@@ -295,7 +295,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
                 checkBox.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             checkBox.setChecked(true);
         }
     }

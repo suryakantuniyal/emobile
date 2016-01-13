@@ -20,6 +20,7 @@ import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSEM100;
 import drivers.EMSIngenico;
+import drivers.EMSKDC500;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSOT310;
 import drivers.EMSOneil4te;
@@ -124,6 +125,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSOT310();
                 aDevice.connect(activity, -1, true, instance);
                 break;
+            case Global.KDC500:
+                aDevice = new EMSKDC500();
+                aDevice.connect(activity, -1, true, instance);
+                break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
                 aDevice.connect(activity, -1, true, instance);
@@ -174,6 +179,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.OT310:
                 aDevice = new EMSOT310();
+                break;
+            case Global.KDC500:
+                aDevice = new EMSKDC500();
                 break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();

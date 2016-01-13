@@ -697,16 +697,14 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-//    public int printerType(boolean isGet, int value) {
-//        String printer_type = "printer_type";
-//        if (isGet)
-//            return prefs.getInt(printer_type, -1);
-//        else {
-//            prefEditor.putInt(printer_type, value);
-//            prefEditor.commit();
-//        }
-//        return -1;
-//    }
+	public void setPrinterName(String value) {
+		prefEditor.putString("printer_name", value);
+		prefEditor.commit();
+	}
+
+	public String getPrinterName() {
+		return prefs.getString("printer_name", "");
+	}
 
     public int sledType(boolean isGet, int value) {
         String sled_type = "sled_type";
@@ -724,6 +722,7 @@ public class MyPreferences {
         String printer_type = "printer_type";
         String swiper_type = "swiper_type";
 
+		setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
         prefEditor.putInt(swiper_type, -1);
@@ -818,6 +817,17 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isKDC5000() {
+        String device_kdc500 = "device_kdc500";
+        return prefs.getBoolean(device_kdc500, false);
+    }
+
+    public boolean setIsKDC500(boolean value) {
+        String device_kdc500 = "device_kdc500";
+        prefEditor.putBoolean(device_kdc500, value);
+        prefEditor.commit();
+        return false;
+    }
 
     public boolean isESY13P1() {
         String device_ESY13P1 = "device_ESY13P1";
@@ -939,10 +949,7 @@ public class MyPreferences {
             List<String> list = Arrays.asList(selected);
 
             for (int i = 0; i < NUM_OF_ITEMS; i++) {
-                if (list.contains(Integer.toString(i)))
-                    values[i] = true;
-                else
-                    values[i] = false;
+                values[i] = list.contains(Integer.toString(i));
             }
         } else
             values = new boolean[]{true, true, true, true, true, true, true, true, true, true, true, true, true,

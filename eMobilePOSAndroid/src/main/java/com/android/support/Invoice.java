@@ -29,11 +29,9 @@ public class Invoice {
 	private String txnID = empstr;
 	private String inv_update = empstr;
 
-	private MyPreferences myPref;
-
 	public Invoice(Activity activity) {
 
-		myPref = new MyPreferences(activity);
+		MyPreferences myPref = new MyPreferences(activity);
 
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm a");
 		inv_timecreated = sdf.format(new Date());

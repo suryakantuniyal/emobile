@@ -61,13 +61,13 @@ public class ViewProductDetails_FA  extends BaseFragmentActivityActionBar implem
 		activity = this;
 		
 		
-		infoTitle = Arrays.asList(new String[]{getAString(R.string.catalog_name),getAString(R.string.catalog_description),
+		infoTitle = Arrays.asList(getAString(R.string.catalog_name),getAString(R.string.catalog_description),
 				getAString(R.string.cat_details_extra_desc),getAString(R.string.cat_details_prod_det_type),getAString(R.string.cat_details_tax_code),
 				getAString(R.string.cat_details_price),getAString(R.string.cat_details_dis_type)
-				,(getAString(R.string.redeem)+" Points"),(getAString(R.string.accumulable)+" Points")});
-		inventTitle = Arrays.asList(new String[]{getAString(R.string.cat_picker_onhand)});
-		identTitle = Arrays.asList(new String[]{getAString(R.string.cat_details_sku),getAString(R.string.cat_details_cat_id),
-				getAString(R.string.cat_details_upc)});
+				,(getAString(R.string.redeem)+" Points"),(getAString(R.string.accumulable)+" Points"));
+		inventTitle = Arrays.asList(getAString(R.string.cat_picker_onhand));
+		identTitle = Arrays.asList(getAString(R.string.cat_details_sku),getAString(R.string.cat_details_cat_id),
+				getAString(R.string.cat_details_upc));
 		
 		adapter = new ListViewAdapter(this);
 		global = (Global)getApplication();
@@ -92,7 +92,7 @@ public class ViewProductDetails_FA  extends BaseFragmentActivityActionBar implem
 		infoInfo = prodHandler.getProdInformation(prod_id);
 		inventInfo = prodHandler.getProdInventory(prod_id);
 		identInfo = prodHandler.getProdIdentification(prod_id);
-		attributes = Arrays.asList(new String[] { "" });
+		attributes = Arrays.asList("");
 		ProductsImagesHandler imgHandler = new ProductsImagesHandler(this);
 		vidLink = imgHandler.getSpecificLink("V", prod_id);
 

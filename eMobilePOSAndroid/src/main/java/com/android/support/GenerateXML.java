@@ -10,6 +10,7 @@ import com.android.database.AddressHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
+import com.android.database.DBManager;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsAttr_DB;
@@ -42,13 +43,11 @@ public class GenerateXML {
 	private StringBuilder ending = new StringBuilder();
 	private Activity thisActivity;
 	private static String empstr = "";
-	private DBManager dbManager;
 	private MyPreferences myPref;
 
 	public GenerateXML(Activity activity) {
 		info = new MyPreferences(activity);
 		thisActivity = activity;
-		dbManager = new DBManager(activity);
 		myPref = new MyPreferences(activity);
 		if (thisActivity instanceof ClockInOut_FA)
 			try {

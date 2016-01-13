@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.emobilepos.holders.TransferInventory_Holder;
-import com.android.support.DBManager;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -19,17 +18,15 @@ public class TransferInventory_DB {
 	public static final String prod_qty = "prod_qty";
 	
 	
-	private static final List<String> attr = Arrays.asList(new String[] {trans_id,prod_id,prod_qty});
+	private static final List<String> attr = Arrays.asList(trans_id,prod_id,prod_qty);
 
 	private static final String TABLE_NAME = "TransferInventory";
 	private StringBuilder sb1, sb2;
 	private HashMap<String, Integer> attrHash;
-	private Activity activity;
-	
+
 	
 	public TransferInventory_DB(Activity activity) {
 		attrHash = new HashMap<String, Integer>();
-		this.activity = activity;
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		initDictionary();

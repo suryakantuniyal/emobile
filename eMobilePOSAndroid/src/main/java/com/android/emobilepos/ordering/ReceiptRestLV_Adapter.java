@@ -39,7 +39,7 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
         super();
         this.activity = activity;
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        divIndexList = Arrays.asList(new Integer[]{0,1});
+        divIndexList = Arrays.asList(0,1);
         global = (Global)activity.getApplication();
         myPref = new MyPreferences(activity);
     }

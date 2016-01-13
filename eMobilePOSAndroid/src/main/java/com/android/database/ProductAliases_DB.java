@@ -2,8 +2,6 @@ package com.android.database;
 
 import android.app.Activity;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -15,18 +13,15 @@ public class ProductAliases_DB {
 	public final static String prod_id = "prod_id";
 	public final static String prod_alias = "prod_alias";
 	
-	private final List<String> attr = Arrays.asList(new String[] {prod_id,prod_alias});
+	private final List<String> attr = Arrays.asList(prod_id,prod_alias);
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 
 	private static final String table_name = "ProductAliases";
 
 	public ProductAliases_DB(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -54,7 +49,7 @@ public class ProductAliases_DB {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {

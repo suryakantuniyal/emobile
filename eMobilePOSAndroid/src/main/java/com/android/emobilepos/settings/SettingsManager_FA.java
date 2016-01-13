@@ -45,7 +45,7 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.shifts.OpenShift_FA;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import koamtac.kdc.sdk.KDCReader;
 import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends BaseFragmentActivityActionBar {
@@ -146,7 +147,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     prefManager.findPreference("pref_attribute_to_display").setOnPreferenceClickListener(this);
 
-                    openShiftPref = (Preference) getPreferenceManager().findPreference("pref_open_shift");
+                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
                         CharSequence c = new String(
                                 "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
@@ -156,7 +157,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
 
-                    defaultCountry = (Preference) prefManager.findPreference("pref_default_country");
+                    defaultCountry = prefManager.findPreference("pref_default_country");
                     CharSequence temp = new String("\t\t" + myPref.defaultCountryName(true, null));
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
@@ -164,7 +165,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     CheckBoxPreference _cbp_use_location_inv = (CheckBoxPreference) prefManager
                             .findPreference("pref_enable_location_inventory");
 
-                    storeForwardTransactions = (Preference) prefManager
+                    storeForwardTransactions = prefManager
                             .findPreference("pref_store_and_forward_transactions");
                     storeForwardFlag = (CheckBoxPreference) prefManager.findPreference("pref_use_store_and_forward");
                     storeForwardTransactions.setOnPreferenceClickListener(this);
@@ -201,7 +202,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
-                    openShiftPref = (Preference) getPreferenceManager().findPreference("pref_open_shift");
+                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
                         CharSequence c = new String(
                                 "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
@@ -453,7 +454,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         myPref.cdtLine2(false, value2);
 
 //                        if (myPref.isSam4s(true, true)) {
-                            Global.showCDTDefault(activity);
+                        Global.showCDTDefault(activity);
 //                        }
 
                         globalDlog.dismiss();
@@ -674,11 +675,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (lastCount < count) {
-                        deleting = false;
-                    } else {
-                        deleting = true;
-                    }
+                    deleting = lastCount >= count;
                 }
 
                 @Override
@@ -774,6 +771,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         public void onClick(DialogInterface dialog, int which) {
                             // TODO Auto-generated method stub
                             MyPreferences myPref = new MyPreferences(activity);
+                            String strDeviceName;
+                            strDeviceName = val[pos].toUpperCase(Locale.getDefault());
+
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
                             {
@@ -789,6 +789,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.printerMACAddress(false, "BT:" + macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -798,6 +799,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.BAMBOO);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -815,6 +817,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
@@ -823,10 +826,20 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.ONEIL);
                                 myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.ONEIL, false);
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) // KDC500
+                            {
+                                myPref.setPrinterType(Global.KDC500);
+                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
                             } else {
                                 Toast.makeText(activity, R.string.err_invalid_device, Toast.LENGTH_LONG).show();
                             }

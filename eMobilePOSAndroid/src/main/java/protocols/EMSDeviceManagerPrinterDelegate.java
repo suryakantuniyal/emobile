@@ -3,7 +3,9 @@ package protocols;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 
@@ -12,47 +14,48 @@ import java.util.List;
 
 public interface EMSDeviceManagerPrinterDelegate {
 
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
+    boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer);
 
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint);
+    boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
 
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature);
+    boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer);
 
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature);
+    boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature);
 
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup);
+    boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature);
 
-    public void printStationPrinter(List<Orders> orderProducts, String ordID);
+    boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup);
 
+    void printStationPrinter(List<Orders> orderProducts, String ordID);
 
-    public boolean printOpenInvoices(String invID);
+    boolean printOpenInvoices(String invID);
 
-    public boolean printOnHold(Object onHold);
+    boolean printOnHold(Object onHold);
 
-    public void setBitmap(Bitmap bmp);
+    void setBitmap(Bitmap bmp);
 
-    public void playSound();
+    void playSound();
 
-    public boolean printReport(String curDate);
+    boolean printReport(String curDate);
 
-    public void printEndOfDayReport(String date, String clerk_id);
+	void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
 
-    public void registerPrinter();
+    void registerPrinter();
 
-    public void unregisterPrinter();
+    void unregisterPrinter();
 
-    public void loadCardReader(EMSCallBack callBack, boolean isDebitCard);
+    void loadCardReader(EMSCallBack callBack, boolean isDebitCard);
 
-    public void loadScanner(EMSCallBack _callBack);
+    void loadScanner(EMSCallBack _callBack);
 
-    public void releaseCardReader();
+    void releaseCardReader();
 
-    public void openCashDrawer();
+    void openCashDrawer();
 
-    public void printHeader();
+    void printHeader();
 
-    public void printFooter();
+    void printFooter();
 
-    public boolean isUSBConnected();
+    boolean isUSBConnected();
 
 }

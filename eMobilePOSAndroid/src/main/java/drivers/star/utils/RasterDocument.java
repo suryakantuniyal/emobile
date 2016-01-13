@@ -4,9 +4,11 @@ public class RasterDocument
 {
 	// Represaent a star raster mode page
 
-    public enum RasTopMargin { Default, Small, Standard };
-    public enum RasSpeed {Full, Medium, Low };
-    public enum RasPageEndMode {Default, None, FeedToCutter, FeedToTearbar, FullCut, FeedAndFullCut, PartialCut, FeedAndPartialCut, Eject, FeedAndEject};
+    public enum RasTopMargin { Default, Small, Standard }
+
+    public enum RasSpeed {Full, Medium, Low }
+
+    public enum RasPageEndMode {Default, None, FeedToCutter, FeedToTearbar, FullCut, FeedAndFullCut, PartialCut, FeedAndPartialCut, Eject, FeedAndEject}
 
     RasTopMargin mTopMargin = RasTopMargin.Default;
     RasSpeed mSpeed = RasSpeed.Full;

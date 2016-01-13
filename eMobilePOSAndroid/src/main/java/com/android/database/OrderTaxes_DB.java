@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.DataTaxes;
-import com.android.support.DBManager;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -23,16 +22,14 @@ public class OrderTaxes_DB {
 	public final static String tax_amount = "tax_amount";
 	public final static String tax_rate = "tax_rate";
 	
-	private final List<String> attr = Arrays.asList(new String[] {ord_tax_id,ord_id,tax_name,tax_amount,tax_rate});
+	private final List<String> attr = Arrays.asList(ord_tax_id,ord_id,tax_name,tax_amount,tax_rate);
 	private HashMap<String, Integer> attrHash;
 	private StringBuilder mainSB1,mainSB2;
 	private static final String TABLE_NAME = "OrderTaxes";
-	private Activity activity;
 
 	
 	public OrderTaxes_DB(Activity activity)
 	{
-		this.activity = activity;
 		attrHash = new HashMap<String,Integer>();
 		
 		mainSB1 = new StringBuilder();

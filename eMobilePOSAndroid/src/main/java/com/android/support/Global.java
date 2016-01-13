@@ -125,6 +125,7 @@ public class Global extends MultiDexApplication {
     public static final int EM70 = 11;
     public static final int OT310 = 12;
     public static final int ESY13P1 = 13;
+    public static final int KDC500 = 14;
 
 
     public enum BuildModel {
@@ -234,8 +235,6 @@ public class Global extends MultiDexApplication {
             }
         }
     }
-
-    ;
 
 
     public final static int S_CUSTOMERS = 1;
@@ -768,7 +767,7 @@ public class Global extends MultiDexApplication {
 
     public static Map<String, String> paymentIconsMap = paymentIconMap();
 
-    private static final Map<String, String> paymentIconMap() {
+    private static Map<String, String> paymentIconMap() {
         HashMap<String, String> result = new HashMap<String, String>();
 
         result.put("AmericanExpress", "amex");
@@ -789,6 +788,9 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatToDisplayDate(String date, Activity activity, int type) {
+        if (date == null) {
+            return "";
+        }
         Calendar cal = Calendar.getInstance();
         TimeZone tz = cal.getTimeZone();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
@@ -816,8 +818,7 @@ public class Global extends MultiDexApplication {
             StringBuilder sb = new StringBuilder();
             sb.append(e.getMessage()).append(" [")
                     .append("com.android.support.Global (at Class.formatToDisplayDate) ]");
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+            formatedDate = "";
         }
         return formatedDate;
     }
@@ -922,7 +923,6 @@ public class Global extends MultiDexApplication {
     public static String formatNumToLocale(double val) {
 
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.getDefault());
-        ;
         nf.setParseIntegerOnly(false);
         DecimalFormat df = (DecimalFormat) nf;
         return df.format(val);
@@ -1116,22 +1116,11 @@ public class Global extends MultiDexApplication {
         orderedProducts.overwrite_price = prLevTotal;
         orderedProducts.prod_price_updated = "0";
 
-        if (myPref.isSam4s(true, true)) {
-            StringBuilder sb = new StringBuilder();
-            String row1 = product.getProdName();
-            String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
-            uart uart_tool = new uart();
-            uart_tool.config(3, 9600, 8, 1);
-            uart_tool.write(3, Global.emptySpaces(40, 0, false));
-            uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
-        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
+
             StringBuilder sb = new StringBuilder();
             String row1 = product.getProdName();
             String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-//            EMSPAT100.getTerminalDisp().clearText();
-//            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
-        }
 
     }
 
@@ -1614,7 +1603,7 @@ public class Global extends MultiDexApplication {
         if (val == null || val.isEmpty())
             val = "0";
         try {
-            double valDbl = Global.formatNumFromLocale(val.toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            double valDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(val));
             DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
             df.setParseBigDecimal(true);
             df.setMaximumFractionDigits(4);
@@ -1732,13 +1721,13 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
-                || _printer_type == Global.EM70 || _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
+                || _printer_type == Global.KDC500 || _printer_type == Global.EM70 || _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.OT310 || _device_type == Global.ESY13P1);
+                || _device_type == Global.KDC500|| _device_type == Global.OT310 || _device_type == Global.ESY13P1);
     }
 
     // Handle application transition for background

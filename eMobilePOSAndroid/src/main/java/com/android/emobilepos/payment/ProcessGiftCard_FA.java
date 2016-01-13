@@ -39,6 +39,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 
 import org.xml.sax.InputSource;
@@ -316,7 +317,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         }
     }
@@ -360,10 +361,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void processPayment() {
-        amountTendered = Global.formatNumFromLocale(fieldAmountTendered.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
-        totalAmount = Global.formatNumFromLocale(fieldAmountDue.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+        amountTendered = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountTendered));
+        totalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountDue));
         if (Global.isIvuLoto) {
-            Global.subtotalAmount = Global.formatNumFromLocale(subtotal.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+            Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         }
         populateCardInfo();
 
@@ -436,10 +437,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 payment.Tax2_amount = extras.getString("Tax2_amount");
                 payment.Tax2_name = extras.getString("Tax2_name");
             } else {
-                payment.Tax1_amount = Double.toString(Global.formatNumFromLocale(tax1.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                payment.Tax1_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
                 if (groupTaxRate.size() > 0)
                     payment.Tax1_name = groupTaxRate.get(0).getTaxName();
-                payment.Tax2_amount = Double.toString(Global.formatNumFromLocale(tax2.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()));
+                payment.Tax2_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
                 if (groupTaxRate.size() > 1)
                     payment.Tax2_name = groupTaxRate.get(1).getTaxName();
             }
@@ -717,13 +718,13 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         fieldCardNum.setBackgroundResource(android.R.drawable.edit_text);
         boolean isValid = true;
         if (TextUtils.isEmpty(fieldAmountDue.getText().toString())
-                || Double.parseDouble(fieldAmountDue.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()) <= 0) {
+                || Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountDue)) <= 0) {
             isValid = false;
             fieldAmountDue.setBackgroundResource(R.drawable.edittext_wrong_input);
         }
 
         if (TextUtils.isEmpty(fieldAmountTendered.getText().toString())
-                || Double.parseDouble(fieldAmountTendered.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim()) <= 0) {
+                || Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountTendered)) <= 0) {
             isValid = false;
             fieldAmountTendered.setBackgroundResource(R.drawable.edittext_wrong_input);
             errorMsg = activity.getString(R.string.error_wrong_amount);
@@ -734,9 +735,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         }
 
         double amountDue = TextUtils.isEmpty(fieldAmountDue.getText().toString()) ? 0
-                : Double.parseDouble(fieldAmountDue.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                : Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountDue));
         double amountPaid = TextUtils.isEmpty(fieldAmountTendered.getText().toString()) ? 0
-                : Double.parseDouble(fieldAmountTendered.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim());
+                : Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountTendered));
 
         if (amountPaid > amountDue) {
             isValid = false;

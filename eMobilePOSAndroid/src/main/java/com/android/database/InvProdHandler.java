@@ -3,8 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -27,21 +25,18 @@ public class InvProdHandler {
 	private final String uom_name = "uom_name";
 	private final String uom_conversion = "uom_conversion";
 
-	private final List<String> attr = Arrays.asList(new String[] { ordprod_id, prod_id, ord_id, ordprod_qty, overwrite_price, reason_id, ordprod_desc,
-			pricelevel_id, prod_seq, uom_name, uom_conversion });
+	private final List<String> attr = Arrays.asList(ordprod_id, prod_id, ord_id, ordprod_qty, overwrite_price, reason_id, ordprod_desc,
+			pricelevel_id, prod_seq, uom_name, uom_conversion);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 	public static final String table_name = "InvProducts";
 
 	public InvProdHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -69,7 +64,7 @@ public class InvProdHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {

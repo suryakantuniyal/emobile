@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.android.emobilepos.models.Order;
 import com.android.support.Customer;
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -67,12 +66,12 @@ public class OrdersHandler {
     private final String is_stored_fwd = "is_stored_fwd";
     private final String VAT = "VAT";
 
-    private final List<String> attr = Arrays.asList(new String[]{ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
+    private final List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
-            isOnHold, ord_HoldName, is_stored_fwd, VAT});
+            isOnHold, ord_HoldName, is_stored_fwd, VAT);
 
     private StringBuilder sb1, sb2;
     private final String empStr = "";
@@ -549,9 +548,7 @@ public class OrdersHandler {
         SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        if (count == 0)
-            return false;
-        return true;
+        return count != 0;
     }
 
     private String getOrderTypesAsSQLArray(Global.OrderType[] orderTypes){
@@ -832,10 +829,7 @@ public class OrdersHandler {
 
         boolean offline = false;
         if (c.moveToFirst()) {
-            if (c.getString(c.getColumnIndex("ord_issync")).equals("0"))
-                offline = true;
-            else
-                offline = false;
+            offline = c.getString(c.getColumnIndex("ord_issync")).equals("0");
         }
         c.close();
         return offline;

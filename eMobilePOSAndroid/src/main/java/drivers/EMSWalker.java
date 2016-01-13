@@ -128,13 +128,10 @@ public class EMSWalker implements CoreAPIListener {
 				e.printStackTrace();
 			}
 		}
-		;
 	}
 
 	public boolean deviceConnected() {
-		if (terminal.getDevice().equals(DeviceEnum.NODEVICE))
-			return false;
-		return true;
+		return !terminal.getDevice().equals(DeviceEnum.NODEVICE);
 	}
 
 	public void submitSignature() {

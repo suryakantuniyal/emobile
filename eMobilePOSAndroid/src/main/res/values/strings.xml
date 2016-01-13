@@ -53,6 +53,8 @@
 
 	<string name = "err_invalid_device">Device is not compatible</string>
 
+	<string name = "dlog_title_print_details">Print details</string>
+	<string name = "dlog_msg_print_details">Include details on receipt?</string>
 
 	<string name = "dlog_title_error">Error</string>
 	<string name = "dlog_msg_select_customer">Select a customer before proceeding</string>
@@ -163,13 +165,13 @@
 	<string name = "invoices">Invoices</string>
 	<string name = "no_customer">No customer selected</string>
 	<string name = "sales_receipt">Sales Receipt</string>
-	<string name="order">Orders</string>
-	<string name= "return_tag" >Return</string>
+	<string name = "order">Order</string>
+	<string name = "return_tag" >Return</string>
 	<string name = "invoice">Invoice</string>
 	<string name = "estimate">Estimate</string>
-	<string name ="payment">Payment</string>
-	<string name ="refund">Refund</string>
-	<string name ="route">Route</string>
+	<string name = "payment">Payment</string>
+	<string name = "refund">Refund</string>
+	<string name = "route">Route</string>
 	<string name = "on_hold">On Hold</string>
 	<string name = "master_counter">Master Counter</string>
 	<string name = "consignment">Consignment</string>
@@ -1114,6 +1116,20 @@
 	<string name="sync_send_btn">Send</string>
 	<string name="sync_receive_btn">Receive</string>
 	<string name="pay_button">Pay</string>
+	<string name="sync_enabler_submitlocationinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx</string>
+	<string name="genius_aid">AID:</string>
+	<string name="cryptogram_type">Cryptogram Type:</string>
+	<string name="cryptogram">Cryptogram:</string>
+	<string name="pin_statement">PIN Statement:</string>
+	<string name="payment_save_declined">Payment was declined.</string>
+	<string name="credit_approval_status">Status:</string>
+	<string name="approved">Approved</string>
 	<string name="error_reading_card">Card swipe read error.</string>
+	<string name="endofdayBtn">End of day</string>
+	<string name="declined">DECLINED</string>
+	<string name="ten_percent">10%</string>
+	<string name="fifteen_percent">15%</string>
+	<string name="twenty_percent">20%</string>
+	<string name="other">Other:</string>
 
 </resources>

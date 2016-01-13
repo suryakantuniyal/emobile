@@ -60,11 +60,12 @@ import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
@@ -85,7 +86,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private AddProductBtnCallback callBackAddProd;
 
     public interface AddProductBtnCallback {
-        public void addProductServices();
+        void addProductServices();
     }
 
     private final int REMOVE_ITEM = 0, OVERWRITE_PRICE = 1,
@@ -128,11 +129,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private String order_email = "";
 
     public interface RecalculateCallback {
-        public void recalculateTotal();
+        void recalculateTotal();
     }
 
     public interface UpdateHeaderTitleCallback {
-        public void updateHeaderTitle(String val);
+        void updateHeaderTitle(String val);
     }
 
     @Override
@@ -412,14 +413,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             public void onClick(DialogInterface thisDialog,
                                                 int which) {
                                 // TODO Auto-generated method stub
-                                String value = input.getText().toString()
-                                        .replaceAll("[^\\d\\,\\.]", "");
+                                String value = NumberUtils.cleanCurrencyFormatedNumber(input);
                                 if (!value.isEmpty()) {
-                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global
-                                            .formatNumFromLocale(value))));
+                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
                                     BigDecimal prod_qty = new BigDecimal("0");
-                                    BigDecimal new_subtotal = new BigDecimal(
-                                            "0");
+                                    BigDecimal new_subtotal = new BigDecimal("0");
                                     try {
                                         prod_qty = new BigDecimal(
                                                 global.orderProducts

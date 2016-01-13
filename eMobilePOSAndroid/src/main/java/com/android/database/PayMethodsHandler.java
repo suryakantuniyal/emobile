@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -17,7 +16,7 @@ public class PayMethodsHandler {
 
 	
 
-	private final String paymethod_id = "paymethod_id";
+	private final static String paymethod_id = "paymethod_id";
 	private final String paymethod_name = "paymethod_name";
 	private final String paymentmethod_type = "paymentmethod_type";
 	private final String paymethod_update = "paymethod_update";
@@ -26,20 +25,17 @@ public class PayMethodsHandler {
 	private final String image_url = "image_url";
 	private final String OriginalTransid = "OriginalTransid";
 
-	private final List<String> attr = Arrays.asList(new String[] { paymethod_id, paymethod_name, paymentmethod_type, paymethod_update,
-			isactive, paymethod_showOnline,image_url, OriginalTransid });
+	private final List<String> attr = Arrays.asList(paymethod_id, paymethod_name, paymentmethod_type, paymethod_update,
+			isactive, paymethod_showOnline,image_url, OriginalTransid);
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
 	private MyPreferences myPref;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 
 	private static final String table_name = "PayMethods";
 
 	public PayMethodsHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -67,7 +63,7 @@ public class PayMethodsHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 	private int index(String tag) {
@@ -210,7 +206,7 @@ public class PayMethodsHandler {
 	}
 	
 	
-	public String getPayMethodID(String methodType)
+	public static String getPayMethodID(String methodType)
 	{
 		//SQLiteDatabase db = dbManager.openReadableDB();
 		
@@ -228,8 +224,7 @@ public class PayMethodsHandler {
 		}
 		
 		cursor.close();
-		//db.close();
-		
+
 		return data;
 	}
 	

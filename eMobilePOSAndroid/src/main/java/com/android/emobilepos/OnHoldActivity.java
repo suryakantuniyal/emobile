@@ -32,7 +32,7 @@ import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXdownloadHandler;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -442,7 +442,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
-        ((Button) dlog.findViewById(R.id.btnDlogCancel)).setVisibility(View.GONE);
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
 
@@ -548,7 +548,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 {
                     validPassword = true;
                     isUpdateOnHold = true;
-                    ;
                     new checkHoldStatus().execute();
                 } else {
                     validPassword = false;

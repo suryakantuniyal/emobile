@@ -27,6 +27,16 @@ public class PaymentDetails {
     private String Tax1_name;
     private String Tax2_name;
     private String pay_tip;
+    private String pay_comment;
+    private String group_pay_id;
+    private String pay_latitude;
+    private String pay_longitude;
+    private String isVoid;
+    private String authcode;
+    private String clerk_id;
+
+    private EMVContainer emvContainer;
+
 
     public String getPaymethod_name() {
         return paymethod_name;
@@ -210,5 +220,69 @@ public class PaymentDetails {
 
     public void setPay_tip(String pay_tip) {
         this.pay_tip = pay_tip;
+    }
+
+    public EMVContainer getEmvContainer() {
+        return emvContainer;
+    }
+
+    public void setEmvContainer(EMVContainer emvContainer) {
+        this.emvContainer = emvContainer;
+    }
+
+    public String getPay_comment() {
+        return pay_comment;
+    }
+
+    public void setPay_comment(String pay_comment) {
+        this.pay_comment = pay_comment;
+    }
+
+    public String getGroup_pay_id() {
+        return group_pay_id;
+    }
+
+    public void setGroup_pay_id(String group_pay_id) {
+        this.group_pay_id = group_pay_id;
+    }
+
+    public String getPay_latitude() {
+        return pay_latitude;
+    }
+
+    public void setPay_latitude(String pay_latitude) {
+        this.pay_latitude = pay_latitude;
+    }
+
+    public String getPay_longitude() {
+        return pay_longitude;
+    }
+
+    public void setPay_longitude(String pay_longitude) {
+        this.pay_longitude = pay_longitude;
+    }
+
+    public String getIsVoid() {
+        return isVoid;
+    }
+
+    public void setIsVoid(String isVoid) {
+        this.isVoid = isVoid;
+    }
+
+    public String getAuthcode() {
+        return authcode;
+    }
+
+    public void setAuthcode(String authcode) {
+        this.authcode = authcode;
+    }
+
+    public String getClerk_id() {
+        return clerk_id;
+    }
+
+    public void setClerk_id(String clerk_id) {
+        this.clerk_id = clerk_id;
     }
 }

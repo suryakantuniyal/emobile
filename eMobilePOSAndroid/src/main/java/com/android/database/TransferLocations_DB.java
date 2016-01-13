@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.android.emobilepos.holders.TransferLocations_Holder;
-import com.android.support.DBManager;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -26,17 +25,15 @@ public class TransferLocations_DB {
 	public static final String issync = "issync";
 
 	private static final List<String> attr = Arrays
-			.asList(new String[] { trans_id, loc_key_from, loc_key_to, emp_id, trans_timecreated });
+			.asList(trans_id, loc_key_from, loc_key_to, emp_id, trans_timecreated);
 
 	private static final String TABLE_NAME = "TransferLocations";
 	private StringBuilder sb1, sb2;
 	private HashMap<String, Integer> attrHash;
 	private MyPreferences myPref;
-	private Activity activity;
 
 	public TransferLocations_DB(Activity activity) {
 		attrHash = new HashMap<String, Integer>();
-		this.activity = activity;
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);

@@ -25,8 +25,7 @@ public class ShiftPeriods
 	public String shift_issync = "0";
 	public String total_expenses = "0";
 	public String total_ending_cash = "0";
-	
-	
+	public String over_short = "0";
 	
 	public ShiftPeriods(boolean isOpen)
 	{

@@ -112,7 +112,7 @@
             android:layout_marginBottom="20dp"
             android:background="@drawable/blue_btn_selector"
             android:text="@string/button_none"
-            android:textColor="@style/black_text_appearance"
+            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/button_text_size"
             android:paddingLeft="5dp"
             android:paddingRight="14dp" />

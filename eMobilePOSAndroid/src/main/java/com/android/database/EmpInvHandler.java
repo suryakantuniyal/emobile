@@ -2,8 +2,6 @@ package com.android.database;
 
 import android.app.Activity;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -24,19 +22,16 @@ public class EmpInvHandler {
 	private final String issync = "issync";
 	private final String loc_id = "loc_id";
 	
-	private final List<String> attr = Arrays.asList(new String[] {emp_inv_id,emp_id,prod_id,prod_onhand,emp_update,issync,loc_id});
+	private final List<String> attr = Arrays.asList(emp_inv_id,emp_id,prod_id,prod_onhand,emp_update,issync,loc_id);
 	
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	
 	private List<String[]> data;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String TABLE_NAME = "EmpInv";
 
 	public EmpInvHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		data = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -66,7 +61,7 @@ public class EmpInvHandler {
 		if (i != null) {
 			return data.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 

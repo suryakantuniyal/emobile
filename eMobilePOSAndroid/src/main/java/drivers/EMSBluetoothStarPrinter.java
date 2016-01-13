@@ -1,33 +1,20 @@
 package drivers;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
-import com.StarMicronics.jasura.JAException;
-import com.android.database.InvProdHandler;
-import com.android.database.InvoicesHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
-import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
-import com.android.support.DBManager;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -52,7 +39,6 @@ import drivers.star.utils.Communication;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.PrinterSetting;
 import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import protocols.EMSCallBack;
 import protocols.EMSDeviceManagerPrinterDelegate;
 import util.RasterDocument;
@@ -179,7 +165,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
 
         } catch (StarIOPortException e) {
-		} finally {
+        } finally {
 
         }
 
@@ -246,7 +232,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             } catch (StarIOPortException e) {
                 msg = "Failed: \n" + e.getMessage();
-			} finally {
+            } finally {
 
             }
 
@@ -271,7 +257,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public void registerAll() {
         this.registerPrinter();
     }
+
     int connectionRetries = 0;
+
     private void verifyConnectivity() throws StarIOPortException, InterruptedException {
         try {
             connectionRetries++;
@@ -283,16 +271,17 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             port = null;
             if (connectionRetries <= 3) {
                 verifyConnectivity();
-            }else{
+            } else {
                 throw e;
             }
             verifyConnectivity();
         }
     }
 
+
+
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
-        // TODO Auto-generated method stub
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
 
             verifyConnectivity();
@@ -305,7 +294,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
                 // windows-1252
             }
-            printReceipt(ordID, LINE_WIDTH, fromOnHold, type, isFromHistory);
+            printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
 
         } catch (StarIOPortException e) {
             return false;
@@ -313,16 +302,19 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-		} finally {
+        } finally {
 
         }
         return true;
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
-        // TODO Auto-generated method stub
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        return printTransaction(ordID, type, isFromHistory, fromOnHold, null);
+    }
 
+    @Override
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         try {
 
             verifyConnectivity();
@@ -336,7 +328,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-			printPaymentDetailsReceipt(payID,type, isReprint, LINE_WIDTH);
+            printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
         } catch (StarIOPortException e) {
             return false;
@@ -344,7 +336,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-		} finally {
+        } finally {
 
         }
         return true;
@@ -412,8 +404,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override
@@ -433,14 +425,14 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-			printReportReceipt(curDate, LINE_WIDTH);
+            printReportReceipt(curDate, LINE_WIDTH);
 
         } catch (StarIOPortException e) {
             return false;
         } catch (InterruptedException e) {
             return false;
             // TODO Auto-generated catch block
-		} finally {
+        } finally {
 
         }
         return true;
@@ -450,6 +442,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public void registerPrinter() {
         // TODO Auto-generated method stub
         edm.currentDevice = this;
+
     }
 
     @Override
@@ -474,7 +467,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-			printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+            printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         } catch (StarIOPortException e) {
             return false;
@@ -482,7 +475,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-		} finally {
+        } finally {
 
         }
         return true;
@@ -658,14 +651,14 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-			printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+            printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         } catch (StarIOPortException e) {
             return false;
         } catch (InterruptedException e) {
             return false;
             // TODO Auto-generated catch block
-		} finally {
+        } finally {
         }
         return true;
     }
@@ -685,14 +678,14 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-			printOpenInvoicesReceipt(invID, LINE_WIDTH);
+            printOpenInvoicesReceipt(invID, LINE_WIDTH);
 
         } catch (StarIOPortException e) {
             return false;
         } catch (InterruptedException e) {
             return false;
             // TODO Auto-generated catch block
-		} finally {
+        } finally {
         }
         return true;
     }
@@ -723,20 +716,22 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // center
             }
 
-            printStationPrinterReceipt(orders, ordID,LINE_WIDTH);
+            printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
 
             // db.close();
         } catch (StarIOPortException e) {
 
-		} finally {
+        } finally {
 
         }
     }
 
     @Override
     public void openCashDrawer() {
-
+        String printerName;
         byte[] data;
+        printerName = myPref.getPrinterName();
+
 //	     releasePrinter();
         data = PrinterFunctions.createCommandsOpenCashDrawer();
 
@@ -744,13 +739,14 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         Communication.Result result;
 
+        if (printerName.toUpperCase().contains("MPOP")) {
         try {
             result = Communication.sendCommands(data, getStarIOPort(), this.activity);
         } catch (StarIOPortException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }   // 10000mS!!!
-
+    }
     }
 
     @Override
@@ -769,7 +765,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-			printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+            printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
         } catch (StarIOPortException e) {
             return false;
@@ -777,7 +773,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-		} finally {
+        } finally {
 
         }
         return true;

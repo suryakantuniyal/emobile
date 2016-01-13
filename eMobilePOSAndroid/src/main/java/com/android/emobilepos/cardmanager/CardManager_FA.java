@@ -70,7 +70,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
         private int code;
 
-        private GiftCardActions(int code) {
+        GiftCardActions(int code) {
             this.code = code;
         }
 
@@ -401,7 +401,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         }
     }

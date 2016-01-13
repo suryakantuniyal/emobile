@@ -10,7 +10,9 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
 
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -63,14 +65,21 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
+    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        return false;
+    }
+
+    @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
         return false;
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint) {
+    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         return false;
     }
+
+
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
@@ -118,9 +127,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id) {
+    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
 
     }
+
+
 
 
     @Override

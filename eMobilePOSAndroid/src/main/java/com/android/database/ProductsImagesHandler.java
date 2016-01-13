@@ -3,8 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -20,18 +18,16 @@ public class ProductsImagesHandler {
 	private static final String prod_default = "prod_default";
 	private static final String type = "type";
 
-	private static final List<String> attr = Arrays.asList(new String[] { img_id, prod_id, prod_img_name, prod_default, type });
+	private static final List<String> attr = Arrays.asList(img_id, prod_id, prod_img_name, prod_default, type);
 
 	private final String table_name = "Products_Images";
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> prodData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 	public ProductsImagesHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		prodData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();

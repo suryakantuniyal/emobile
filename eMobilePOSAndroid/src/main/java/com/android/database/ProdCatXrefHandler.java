@@ -2,8 +2,6 @@ package com.android.database;
 
 import android.app.Activity;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -19,19 +17,16 @@ public class ProdCatXrefHandler {
 	private final String _update = "_update";
 	private final String isactive = "isactive";
 
-	public final List<String> attr = Arrays.asList(new String[] { idKey, prod_id, cat_id, _update, isactive });
+	public final List<String> attr = Arrays.asList(idKey, prod_id, cat_id, _update, isactive);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String, Integer>> dictionaryListMap;
 
 	public static final String table_name = "ProdCatXref";
 
 	public ProdCatXrefHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -58,7 +53,7 @@ public class ProdCatXrefHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 
 	private int index(String tag) {

@@ -2,10 +2,10 @@ package protocols;
 
 public interface EMSPrintingDelegate {
 
-	public void printerDidFinish();
+	void printerDidFinish();
 
-	public void printerDidDisconnect(Error err);
+	void printerDidDisconnect(Error err);
 
-	public void printerDidBegin();
+	void printerDidBegin();
 
 }

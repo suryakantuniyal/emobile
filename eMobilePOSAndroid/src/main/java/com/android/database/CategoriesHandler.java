@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -23,19 +22,16 @@ public class CategoriesHandler {
 	private static final String parentID = "parentID";
 	private static final String url_icon = "url_icon";
 
-	private final List<String> attr = Arrays.asList(new String[] { cat_id, cat_name, cat_update, isactive, parentID ,url_icon});
+	private final List<String> attr = Arrays.asList(cat_id, cat_name, cat_update, isactive, parentID,url_icon);
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	
 	private List<String[]> catData;
 	private MyPreferences myPref;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String table_name = "Categories";
 
 	public CategoriesHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		catData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -64,7 +60,7 @@ public class CategoriesHandler {
 		if (i != null) {
 			return catData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	
 
@@ -233,9 +229,6 @@ public class CategoriesHandler {
 			sb.append("  WHERE c1.cat_id ='").append(Global.cat_id).append("' ");
 		else if(myPref.getPreferences(MyPreferences.pref_enable_multi_category))
 			sb.append("  WHERE c1.parentID='' AND c1.cat_id !='' ");
-		
-		
-			
 		
 		sb.append(" ORDER BY c1.cat_name");
 		

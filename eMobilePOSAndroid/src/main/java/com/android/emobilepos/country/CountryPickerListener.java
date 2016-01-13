@@ -5,5 +5,5 @@ package com.android.emobilepos.country;
  *
  */
 public interface CountryPickerListener {
-	public void onSelectCountry(String name, String code);
+	void onSelectCountry(String name, String code);
 }

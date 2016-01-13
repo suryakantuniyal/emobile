@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.TimeClock;
-import com.android.support.DBManager;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -25,17 +24,15 @@ public class TimeClockHandler
 	private final String issync = "issync";
 
 	public final List<String> attr = Arrays
-			.asList(new String[] { timeclockid, emp_id, status, punchtime, updated, issync });
+			.asList(timeclockid, emp_id, status, punchtime, updated, issync);
 
 	private StringBuilder sb1, sb2;
 	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private static final String table_name = "TimeClock";
-	private Activity activity;
 
 	public TimeClockHandler(Activity activity) {
 
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();

@@ -3,8 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.DBManager;
-
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -24,20 +22,17 @@ public class TaxesGroupHandler {
 	private final static String taxgroup_update = "taxgroup_update";
 	private final static String isactive = "isactive";
 
-	private static final List<String> attr = Arrays.asList(new String[] { taxGroupKey, taxGroupId, taxId, taxcode_id, tax_rate, taxLowRange,
-			taxHighRange, taxgroup_update, isactive });
+	private static final List<String> attr = Arrays.asList(taxGroupKey, taxGroupId, taxId, taxcode_id, tax_rate, taxLowRange,
+			taxHighRange, taxgroup_update, isactive);
 
 	private StringBuilder sb1, sb2;
-	private final String empStr = "";
 	private HashMap<String, Integer> attrHash;
 	private List<String[]> addrData;
-	private Activity activity;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 	private static final String table_name = "Taxes_Group";
 
 	public TaxesGroupHandler(Activity activity) {
-		this.activity = activity;
 		attrHash = new HashMap<String, Integer>();
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
@@ -64,7 +59,7 @@ public class TaxesGroupHandler {
 		if (i != null) {
 			return addrData.get(record)[i];
 		}
-		return empStr;
+		return "";
 	}
 	private int index(String tag) {
 

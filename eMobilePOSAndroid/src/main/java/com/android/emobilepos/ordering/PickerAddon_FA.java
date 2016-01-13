@@ -14,7 +14,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -26,7 +25,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Product;
-import com.android.support.DBManager;
+import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -54,10 +53,8 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 	private GridView myGridView;
 	private Activity activity;
 	private Cursor c;
-	//private SQLiteDatabase db;
-	private DBManager dbManager;
 	private PickerAddonLV_Adapter adapter;
-	
+
 	private final int SELECT_EMPTY = 0, SELECT_CHECKED = 1, SELECT_CROSS = 2;
 	private Bundle extras;
 	private Global global;
@@ -72,8 +69,7 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 	private DisplayImageOptions options;
 	
 	private ProductAddonsHandler prodAddonsHandler;
-	
-	private int tempSize = 0;
+
 	public static PickerAddon_FA instance;
 	
 	@Override
@@ -109,7 +105,6 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 		extras =activity.getIntent().getExtras();
         global = (Global) activity.getApplication();
         prodAddonsHandler = new ProductAddonsHandler(activity);
-		dbManager = new DBManager(activity);
 		//db = dbManager.openReadableDB();
 		_prod_id = extras.getString("prod_id");
 		//c = prodAddonsHandler.getChildAddons2(db,_prod_id,Global.productParentAddons);
@@ -224,7 +219,7 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 	private int index_selected_parent = 0;
 	
 	private void createParentAddons() {
-		tempSize = Global.productParentAddons.size();
+		int tempSize = Global.productParentAddons.size();
 		LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		LinearLayout addonParentLL = (LinearLayout) findViewById(R.id.addonParentHolder);
 		
@@ -385,6 +380,8 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 		ordProd.itemSubtotal = Global.getRoundBigDecimal(temp);
 		ordProd.itemTotal = Global.getRoundBigDecimal(temp);
 		ordProd.ordprod_desc = itemData[3] + _ord_desc.toString();
+		ordProd.prod_sku = itemData[13];
+		ordProd.prod_upc = itemData[14];
 		global.orderProducts.set(position, ordProd);
 	}
 
