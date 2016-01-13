@@ -283,6 +283,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
+            setPaperWidth(LINE_WIDTH);
 
             verifyConnectivity();
 
@@ -310,13 +311,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        setPaperWidth(LINE_WIDTH);
+
         return printTransaction(ordID, type, isFromHistory, fromOnHold, null);
     }
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         try {
-
+            setPaperWidth(LINE_WIDTH);
             verifyConnectivity();
 
             Thread.sleep(1000);
@@ -824,15 +827,15 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             protected void onPostExecute(Boolean result) {
                 if (!EMSBluetoothStarPrinter.this.activity.isFinishing()) {
                     mProgressDialog.dismiss();
-                    if (!result) {
-                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
-                                EMSBluetoothStarPrinter.this.activity);
-
-                        dialogBuilder.setTitle("Communication Result");
-                        dialogBuilder.setMessage("failure.\nPrinter is offline.");
-                        dialogBuilder.setPositiveButton("OK", null);
-                        dialogBuilder.show();
-                    }
+//                    if (!result) {
+//                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
+//                                EMSBluetoothStarPrinter.this.activity);
+//
+//                        dialogBuilder.setTitle("Communication Result");
+//                        dialogBuilder.setMessage("failure.\nPrinter is offline.");
+//                        dialogBuilder.setPositiveButton("OK", null);
+//                        dialogBuilder.show();
+//                    }
                 }
             }
         };
