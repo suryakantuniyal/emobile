@@ -168,19 +168,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
 
-        if (myPref.isSam4s(true, true)) {
             String row1 = "Grand Total";
             String row2 = Global.formatDoubleStrToCurrency(total);
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        } else if (myPref.isPAT100()) {
-            String row1 = "Grand Total";
-            String row2 = Global.formatDoubleStrToCurrency(total);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        } else if (myPref.isESY13P1()) {
-            String row1 = "Grand Total";
-            String row2 = Global.formatDoubleStrToCurrency(total);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        }
 
         if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()
                 && !myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).equals("0")) {

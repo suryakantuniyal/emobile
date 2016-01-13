@@ -210,7 +210,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
 
-
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         try {
@@ -347,8 +346,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
 
-
-
     @Override
     public void registerAll() {
         this.registerPrinter();
@@ -363,7 +360,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public void unregisterPrinter() {
         // TODO Auto-generated method stub
         edm.currentDevice = null;
-        TurnOffBCR();
+       TurnOffBCR();
     }
 
     @Override
@@ -399,9 +396,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         if (handler == null)
             handler = new Handler();
         if (callBack != null) {
-            if (!barcodereader.isBcrOn()) {
-                readBarcode();
-            }
+           TurnOnBCR();
         } else {
             TurnOffBCR();
         }
@@ -462,17 +457,18 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
          *
          * */
     private void readBarcode() {
-        barcodereader.turnOnLaser();
+      TurnOnBCR();
     }
 
     public void TurnOnBCR() {
-        barcodereader.turnOnLaser();
+        if (!barcodereader.isBcrOn()) {
+            barcodereader.turnOnLaser();
+        }
     }
 
     public void TurnOffBCR() {
-
-        barcodereader.turnOnLaser();
+        if (barcodereader.isBcrOn()) {
+            barcodereader.turnOnLaser();
+        }
     }
-
-
 }

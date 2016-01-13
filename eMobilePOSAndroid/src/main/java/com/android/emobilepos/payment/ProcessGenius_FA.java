@@ -276,11 +276,23 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
                     response.getStatus().equalsIgnoreCase("DECLINED"))) {
                 payment.pay_transid = response.getToken();
-                payment.tipAmount = response.getAdditionalParameters().getAmountDetails().getUserTip();
-                payment.pay_tip = response.getAdditionalParameters().getAmountDetails().getUserTip();
-
-                BigDecimal tip = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getUserTip());
-                BigDecimal cashBack = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getCashback());
+                BigDecimal tip = new BigDecimal(0.00);
+                BigDecimal cashBack = new BigDecimal(0.00);
+                String signa = "";
+                if (response.getAdditionalParameters() != null) {
+                    if (response.getAdditionalParameters().getAmountDetails() != null) {
+                        payment.tipAmount = response.getAdditionalParameters().getAmountDetails().getUserTip();
+                        payment.pay_tip = response.getAdditionalParameters().getAmountDetails().getUserTip();
+                        tip = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getUserTip());
+                        cashBack = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getCashback());
+                    } else {
+                        payment.tipAmount = "0.00";
+                        payment.pay_tip = "0.00";
+                        tip = new BigDecimal(0.00);
+                        cashBack = new BigDecimal(0.00);
+                    }
+                    signa = response.getAdditionalParameters().getSignatureData();
+                }
 
                 BigDecimal aprovedAmount = new BigDecimal(response.getAmountApproved());
                 BigDecimal payAmount = aprovedAmount.subtract(tip).subtract(cashBack);
@@ -289,7 +301,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 payment.ccnum_last4 = response.getAccountNumber();
                 payment.pay_name = response.getCardholder();
                 payment.pay_date = DateUtils.getDateStringAsString(response.getTransactionDate(), "MM/dd/yyyy HH:mm:ss a");
-                String signa = response.getAdditionalParameters().getSignatureData();
                 if (signa.contains("^"))
                     parseSignature(signa);
                 payment.card_type = payMethodDictionary(response.getPaymentType());
