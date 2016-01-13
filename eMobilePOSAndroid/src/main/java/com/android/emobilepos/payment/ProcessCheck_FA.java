@@ -92,6 +92,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
     private TextView tvCheckChange;
     private EditText subtotal, tax1, tax2, amountField;//,tipAmount,promptTipField
     private List<GroupTax> groupTaxRate;
+    private NumberUtils numberUtils = new NumberUtils();
 
 
     @Override
@@ -245,7 +246,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                ProcessCash_FA.parseInputedCurrency(s, subtotal);
+                numberUtils.parseInputedCurrency(s, subtotal);
                 if (!isFromSalesReceipt) {
                     ProcessCash_FA.calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                     ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
@@ -258,7 +259,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, subtotal);
+                numberUtils.parseInputedCurrency(s, subtotal);
             }
         });
         tax1.addTextChangedListener(new TextWatcher() {
@@ -271,7 +272,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, tax1);
+                numberUtils.parseInputedCurrency(s, tax1);
             }
         });
         tax2.addTextChangedListener(new TextWatcher() {
@@ -285,7 +286,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, tax2);
+                numberUtils.parseInputedCurrency(s, tax2);
             }
         });
 
@@ -306,47 +307,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             tvCheckChange.setText(Global.formatDoubleToCurrency(0.00));
         }
 
-    }
-
-    private void parseInputedCurrency(CharSequence s, int type) {
-        DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-        DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-        StringBuilder sb = new StringBuilder();
-        sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator()).append("\\d{3})*|(\\d+))(");
-        sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
-
-        if (!s.toString().matches(sb.toString())) {
-            String userInput = "" + s.toString().replaceAll("[^\\d]", "");
-            StringBuilder cashAmountBuilder = new StringBuilder(userInput);
-
-            while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
-                cashAmountBuilder.deleteCharAt(0);
-            }
-            while (cashAmountBuilder.length() < 3) {
-                cashAmountBuilder.insert(0, '0');
-            }
-
-            cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
-            cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-            switch (type) {
-                case 0:
-                    field[CHECK_AMOUNT].setText(cashAmountBuilder.toString());
-                    break;
-                case 1:
-                    field[CHECK_AMOUNT_PAID].setText(cashAmountBuilder.toString());
-                    break;
-            }
-        }
-
-        // keeps the cursor always to the right
-        switch (type) {
-            case 0:
-                Selection.setSelection(field[CHECK_AMOUNT].getText(), field[CHECK_AMOUNT].getText().length());
-                break;
-            case 1:
-                Selection.setSelection(field[CHECK_AMOUNT_PAID].getText(), field[CHECK_AMOUNT_PAID].getText().length());
-                break;
-        }
     }
 
 

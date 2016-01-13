@@ -46,6 +46,7 @@ import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.database.DBManager;
+import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -208,6 +209,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         openShiftPref.setSummary(c);
                     }
                     openShiftPref.setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
 
                     break;
                 case SettingsTab_FR.CASE_GENERAL:
@@ -285,6 +287,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         promptCloseShift(true, 0);
                     break;
                 case R.string.config_expenses:
+                    intent = new Intent(activity, ShiftExpensesList_FA.class);
+                    startActivity(intent);
                     break;
                 case R.string.config_default_country:
                     CountryPicker picker = new CountryPicker();

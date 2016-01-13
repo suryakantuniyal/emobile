@@ -22,7 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-	public static final int VERSION = 34;
+	public static final int VERSION = 35;
 	private static final String DB_NAME_OLD = "emobilepos.sqlite";
 	private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -561,6 +561,9 @@ public class DBManager {
 			+ "[endTime][datetime],[endTimeLocal][datetime],[beginning_petty_cash][decimal],[ending_petty_cash][decimal],[entered_close_amount][decimal],"
 			+ "[total_transaction_cash][decimal],[shift_issync] [int] DEFAULT 0)";
 
+	private final String CREATE_EXPENSES = "CREATE TABLE [Expenses] ([expenseID] [varchar](50) PRIMARY KEY NOT NULL,[shiftPeriodID] [varchar](50) NOT NULL,[cashAmount][decimal],"
+			+ "[productID][varchar](50),[productName][varchar](255))";
+
 	private final String CREATE_ORDER_PRODUCTS_ATTR = "CREATE TABLE OrderProductsAttr (ordprodattr_id INTEGER PRIMARY KEY AUTOINCREMENT,"
 			+ "ordprod_id varchar(50), attribute_id varchar(50),name varchar,value varchar)";
 
@@ -591,7 +594,7 @@ public class DBManager {
 			"ConsignmentTransaction", "CustomerInventory", "ProductsAttr", "TermsAndConditions", "Clerks", "TimeClock",
 			"ShiftPeriods", "ConsignmentSignatures", "OrderProductsAttr", "OrdProdAttrList", "ProductAliases",
 			"OrderTaxes", "Locations", "LocationsInventory", "TransferLocations", "TransferInventory", "PaymentsXML",
-			"StoredPayments" };
+			"StoredPayments", "Expenses" };
 
 	private final String[] CREATE_TABLE = new String[] { CREATE_ADDRESS, CREATE_CATEGORIES, CREATE_CUSTOMERS,
 			CREATE_DRAWDATEINFO, CREATE_EMPINV, CREATE_EMPLOYEES, CREATE_INVPRODUCTS, CREATE_INVOICEPAYMENTS,
@@ -605,6 +608,6 @@ public class DBManager {
 			CREATE_TERMS_AND_CONDITIONS, CREATE_CLERKS, CREATE_TIMECLOCK, CREATE_SHIFTPERIODS,
 			CREATE_CONSIGNMENT_SIGNATURES, CREATE_ORDER_PRODUCTS_ATTR, CREATE_ORD_PROD_ATTR_LIST, CREATE_PRODUCTALIASES,
 			CREATE_ORDER_TAXES, CREATE_LOCATIONS, CREATE_LOCATIONS_INVENTORY, CREATE_TRANSFER_LOCATIONS,
-			CREATE_TRANSFER_INVENTORY, CREATE_PAYMENTS_XML, CREATE_STORED_PAYMENTS };
+			CREATE_TRANSFER_INVENTORY, CREATE_PAYMENTS_XML, CREATE_STORED_PAYMENTS, CREATE_EXPENSES };
 
 }

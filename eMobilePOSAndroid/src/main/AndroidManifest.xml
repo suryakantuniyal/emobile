@@ -336,6 +336,18 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"></activity>
         <activity
+            android:name="com.android.emobilepos.shifts.ShiftExpensesList_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:theme="@style/LightTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+        <activity
+        android:name="com.android.emobilepos.shifts.ShiftExpense_FA"
+        android:configChanges="orientation|screenSize"
+        android:exported="false"
+        android:theme="@style/LightTheme"
+        android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+        <activity
             android:name="com.android.emobilepos.shifts.OpenShift_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"

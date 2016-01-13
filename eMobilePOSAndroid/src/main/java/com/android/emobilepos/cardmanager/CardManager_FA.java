@@ -32,6 +32,7 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
+import com.android.support.NumberUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
@@ -62,6 +63,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private EditText hiddenField;
+    private NumberUtils numberUtils = new NumberUtils();
 
     // public static final int CASE_ACTIVATE = 0,CASE_ADD_BALANCE =
     // 1,CASE_BALANCE_INQUIRY = 2,CASE_MANUAL_ADD = 3;
@@ -454,7 +456,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, editText);
+                numberUtils.parseInputedCurrency(s, editText);
             }
         };
     }

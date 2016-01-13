@@ -154,6 +154,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EMSIDTechUSB _msrUsbSams;
 
     private EMSWalker walkerReader;
+    private NumberUtils numberUtils = new NumberUtils();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -412,7 +414,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, editText);
+                numberUtils.parseInputedCurrency(s, editText);
                 //parseInputedCurrency(s, type_id);
             }
         };
@@ -918,7 +920,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, promptTipField);
+                numberUtils.parseInputedCurrency(s, promptTipField);
             }
         });
 

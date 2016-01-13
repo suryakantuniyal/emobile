@@ -68,6 +68,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     private MyPreferences myPref;
     private boolean hasBeenCreated = false;
     private boolean isRefund = false;
+    private NumberUtils numberUtils = new NumberUtils();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,7 +127,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, editText);
+                numberUtils.parseInputedCurrency(s, editText);
             }
         };
     }
