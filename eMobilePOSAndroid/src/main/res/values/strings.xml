@@ -1127,5 +1127,9 @@
 	<string name="error_reading_card">Card swipe read error.</string>
 	<string name="endofdayBtn">End of day</string>
 	<string name="declined">DECLINED</string>
+	<string name="ten_percent">10%</string>
+	<string name="fifteen_percent">15%</string>
+	<string name="twenty_percent">20%</string>
+	<string name="other">Other:</string>
 
 </resources>

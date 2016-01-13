@@ -1116,22 +1116,11 @@ public class Global extends MultiDexApplication {
         orderedProducts.overwrite_price = prLevTotal;
         orderedProducts.prod_price_updated = "0";
 
-        if (myPref.isSam4s(true, true)) {
-            StringBuilder sb = new StringBuilder();
-            String row1 = product.getProdName();
-            String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
-            uart uart_tool = new uart();
-            uart_tool.config(3, 9600, 8, 1);
-            uart_tool.write(3, Global.emptySpaces(40, 0, false));
-            uart_tool.write(3, Global.formatSam4sCDT(row1, row2));
-        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
+
             StringBuilder sb = new StringBuilder();
             String row1 = product.getProdName();
             String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-//            EMSPAT100.getTerminalDisp().clearText();
-//            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(row1.toString(), row2.toString()));
-        }
 
     }
 
