@@ -360,7 +360,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public void unregisterPrinter() {
         // TODO Auto-generated method stub
         edm.currentDevice = null;
-       TurnOffBCR();
+        TurnOffBCR();
     }
 
     @Override
@@ -396,7 +396,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         if (handler == null)
             handler = new Handler();
         if (callBack != null) {
-           TurnOnBCR();
+            TurnOnBCR();
         } else {
             TurnOffBCR();
         }
@@ -437,6 +437,13 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         return false;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+        if (barcodereader != null) {
+            barcodereader.turnOnLaser();
+        }
+    }
+
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {
@@ -457,7 +464,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
          *
          * */
     private void readBarcode() {
-      TurnOnBCR();
+        TurnOnBCR();
     }
 
     public void TurnOnBCR() {

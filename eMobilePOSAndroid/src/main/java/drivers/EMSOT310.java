@@ -251,6 +251,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         return true;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
     private class MtHandlerCallback implements Handler.Callback {
         public boolean handleMessage(Message msg) {
 

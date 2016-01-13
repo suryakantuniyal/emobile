@@ -181,5 +181,10 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         return false;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
 
 }
