@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import util.*;
+import util.RasterDocument;
+
 public class MiniPrinterFunctions 
 {
 	enum BarcodeWidth {_125, _250, _375, _500, _625, _750, _875, _1_0}
@@ -1047,13 +1050,13 @@ public class MiniPrinterFunctions
 		}
 		catch (StarIOPortException e)
 		{
-			Builder dialog = new AlertDialog.Builder(context);
-			dialog.setNegativeButton("Ok", null);
-			AlertDialog alert = dialog.create();
-			alert.setTitle("Failure");
-			alert.setMessage(e.getMessage());
-			alert.setCancelable(false);
-			alert.show();
+//			Builder dialog = new AlertDialog.Builder(context);
+//			dialog.setNegativeButton("Ok", null);
+//			AlertDialog alert = dialog.create();
+//			alert.setTitle("Failure");
+//			alert.setMessage(e.getMessage());
+//			alert.setCancelable(false);
+//			alert.show();
 		}
 		finally
 		{
