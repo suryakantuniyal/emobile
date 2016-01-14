@@ -104,6 +104,13 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+    private boolean closeUSBPort() {
+//        misccommManager.setMsrDefault();
+        int ret = misccommManager.getDefault().setMsrDisable();
+        return 0 == 0;
+
+    }
+
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         return false;
@@ -182,7 +189,9 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     public void unregisterPrinter() {
+        closeUSBPort();
         edm.currentDevice = null;
+
     }
 
     @Override
@@ -260,7 +269,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         public boolean handleMessage(Message msg) {
 
             boolean ret = false;
-            Log.d("MSR Handler:"+msg.what, msg.obj.toString());
+            Log.d("MSR Handler:" + msg.what, msg.obj.toString());
             switch (msg.what) {
                 case DEVICE_MESSAGE_CARDDATA_CHANGE:
                     scannedData = (String) msg.obj;
