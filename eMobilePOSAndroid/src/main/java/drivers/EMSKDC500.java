@@ -439,7 +439,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private void HandleBarcodeScannedEvent(KPOSData pData) {
         try {
             scannedData = new String(pData.GetBarcodeBytes());
-            scannerCallBack.scannerWasRead(scannedData.substring(1));
+            scannerCallBack.scannerWasRead(scannedData);
         } catch (Exception e) {
             e.printStackTrace();
         }
