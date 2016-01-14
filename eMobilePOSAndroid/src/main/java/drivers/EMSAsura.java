@@ -1278,6 +1278,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
     public void msrError() {
         // TODO Auto-generated method stub
 

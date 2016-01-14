@@ -634,5 +634,10 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 	{
 		return false;
 	}
+
+	@Override
+	public void toggleBarcodeReader() {
+
+	}
 }
 

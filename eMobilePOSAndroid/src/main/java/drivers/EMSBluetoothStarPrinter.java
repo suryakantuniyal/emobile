@@ -807,6 +807,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return false;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
     private void starIoExtManagerConnect() {
         final Dialog mProgressDialog = new ProgressDialog(EMSBluetoothStarPrinter.this.activity);
         AsyncTask<Void, Void, Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {

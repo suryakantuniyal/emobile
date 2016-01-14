@@ -288,6 +288,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         return false;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
 
     @Override
     public void BarcodeDataReceived(KDCData kdcData) {
