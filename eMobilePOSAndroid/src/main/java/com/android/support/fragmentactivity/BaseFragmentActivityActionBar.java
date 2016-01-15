@@ -25,7 +25,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 myBar.setDisplayShowTitleEnabled(Build.MODEL.equalsIgnoreCase("PayPoint ESY13P1"));
                 myBar.setDisplayShowHomeEnabled(Build.MODEL.equalsIgnoreCase("PayPoint ESY13P1"));
                 myBar.setHomeButtonEnabled(Build.MODEL.equalsIgnoreCase("PayPoint ESY13P1"));
-                myBar.setStackedBackgroundDrawable(getResources().getDrawable(R.drawable.blue_gradient_header_horizontal));
+                myBar.setStackedBackgroundDrawable(getResources().getDrawable(R.drawable.tabbar));
             }
         } else {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
