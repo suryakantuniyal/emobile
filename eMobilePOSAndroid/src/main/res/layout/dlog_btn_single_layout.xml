@@ -25,14 +25,13 @@
         android:textSize="@dimen/dlog_msg_size" />
 
     <Button
+        style="@style/action_button_text_appearance"
         android:id="@+id/btnDlogSingle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:background="@drawable/white_btn_selector"
+        android:background="@drawable/action_button_selector"
         android:ems="6"
-        android:textAppearance="@style/black_text_appearance_unbold"
-        android:textColor="#000000"
         android:textSize="@dimen/dlog_btn_size" />
 
 </LinearLayout>

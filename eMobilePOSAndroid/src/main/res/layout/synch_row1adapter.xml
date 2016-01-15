@@ -12,6 +12,7 @@
         android:layout_marginRight="10dp" >
 
         <Button
+            style="@style/tiles_text_appearance"
             android:id="@+id/synchButton1"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
@@ -20,11 +21,11 @@
             android:layout_weight="1"
             android:background="@drawable/blue_btn_selector"
             android:text="@string/sync_send_btn"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/large_button_text_size"
             android:padding="15dp" />
 
         <Button
+            style="@style/tiles_text_appearance"
             android:id="@+id/synchButton2"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
@@ -33,7 +34,6 @@
             android:layout_weight="1"
             android:background="@drawable/blue_btn_selector"
             android:text="@string/sync_receive_btn"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/large_button_text_size"
             android:padding="15dp" />
     </LinearLayout>

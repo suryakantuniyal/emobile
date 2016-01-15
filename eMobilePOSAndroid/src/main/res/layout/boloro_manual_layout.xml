@@ -21,6 +21,7 @@
             android:textSize="@dimen/header_txt_size" />
 
         <Button
+            style="@style/black_text_appearance"
             android:id="@+id/processButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/ordering_checkout_btn_height_size"
@@ -29,7 +30,6 @@
             android:layout_margin="5dp"
             android:background="@drawable/action_button_selector"
             android:text="@string/card_button_process"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:paddingLeft="5dp"
             android:paddingRight="14dp" />
@@ -173,12 +173,12 @@
                 android:orientation="horizontal" >
 
                 <Button
+                    style="@style/black_text_appearance"
                     android:id="@+id/btnExact"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/ordering_checkout_btn_height_size"
                     android:background="@drawable/action_button_selector"
                     android:text="@string/cash_exact"
-                    android:textAppearance="@style/blue_text_appearance"
                     android:textSize="@dimen/ordering_checkout_btn_txt_size"
                     android:layout_margin="5dp"
                     android:paddingLeft="5dp"

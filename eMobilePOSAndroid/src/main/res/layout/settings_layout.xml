@@ -12,7 +12,7 @@
         android:gravity="center_horizontal">
 
     <Button
-        style="@style/black_text_appearance"
+        style="@style/tiles_text_appearance"
         android:id="@+id/btnAdminSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
         android:text="@string/config_administrator_settings" />
 
     <Button
-        style="@style/black_text_appearance"
+        style="@style/tiles_text_appearance"
         android:id="@+id/btnManagerSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
         android:text="@string/config_manager_settings" />
 
     <Button
-        style="@style/black_text_appearance"
+        style="@style/tiles_text_appearance"
         android:id="@+id/btnGeneralSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

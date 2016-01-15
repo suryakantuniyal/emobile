@@ -21,16 +21,16 @@
             android:textSize="@dimen/header_txt_size" />
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/processCheckBut"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_margin="5dp"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
             android:text="@string/check_button_process"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/large_button_text_size" />
     </RelativeLayout>
 
@@ -196,13 +196,13 @@
                     android:orientation="horizontal" >
 
                     <Button
+                        style="@style/action_button_text_appearance"
                         android:id="@+id/exactAmountBut"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="10dp"
-                        android:background="@drawable/blue_btn_selector"
+                        android:background="@drawable/action_button_selector"
                         android:text="@string/cash_exact"
-                        android:textAppearance="@style/black_text_appearance"
                         android:textSize="@dimen/ordering_checkout_btn_txt_size"
                         android:layout_margin="5dp"
                         android:paddingLeft="5dp"

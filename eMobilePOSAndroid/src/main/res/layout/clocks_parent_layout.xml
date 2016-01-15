@@ -19,14 +19,14 @@
     </com.android.support.MyEditText>
 
     <Button
-        style="@style/black_text_appearance_unbold"
+        style="@style/black_text_appearance"
         android:id="@+id/clockSubmitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_submit"
         android:ems="5"
         android:layout_below="@+id/clockPasswordField"
-        android:background="@drawable/blue_btn_selector"
+        android:background="@drawable/action_button_selector"
         android:textSize="@dimen/large_button_text_size"
         android:layout_marginTop="10dp"
         android:layout_alignRight="@+id/clockPasswordField"

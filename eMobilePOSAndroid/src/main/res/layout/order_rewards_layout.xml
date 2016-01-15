@@ -11,14 +11,15 @@
         android:paddingRight="5dp" >
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/btnPayWithRewards"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:text="@string/button_pay_with_rewards"
-            android:textColor="#FFFFFF" />
+           />
 
         <LinearLayout
             android:layout_width="match_parent"

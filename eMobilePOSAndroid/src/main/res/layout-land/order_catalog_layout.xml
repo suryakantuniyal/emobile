@@ -14,7 +14,7 @@
             android:id="@+id/filterButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:textAppearance="@style/black_text_appearance"
             android:layout_weight="0.40" />
 
@@ -35,12 +35,12 @@
         </com.android.support.MyEditText>
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/categoryButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:background="@drawable/action_button_selector"
             android:text="Category"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:layout_weight="0.40" />
     </LinearLayout>
@@ -69,12 +69,12 @@
         android:paddingLeft="20dp">
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/buttonAllCategories"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/action_button_selector"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
-            android:textAppearance="@style/black_text_appearance"
             android:text="All"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>

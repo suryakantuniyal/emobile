@@ -24,12 +24,12 @@
             android:textSize="@dimen/header_bar_text_size" />
 
         <Button
+            style="@style/black_text_appearance"
             android:id="@+id/addonDoneButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/ordering_checkout_btn_height_size"
             android:background="@drawable/action_button_selector"
             android:text="@string/button_done"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
