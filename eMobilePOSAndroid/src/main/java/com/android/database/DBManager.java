@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 35;
+    public static final int VERSION = 36;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -370,7 +370,8 @@ public class DBManager {
             + "[isAdded] [bit] NULL, [ordprod_name][varchar](50) NULL, [prod_taxId][varchar](50) NULL, [prod_taxValue][varchar](50) NULL , "
             + "[uom_id] [varchar],[prod_istaxable][tinyint] NULL,[discount_is_taxable][tinyint],[discount_is_fixed][tinyint],[onHand][double],"
             + "[imgURL][varchar],[prod_price][money],[prod_type][varchar],[cardIsActivated][tinyint] DEFAULT 0,[itemTotal][money],[itemSubtotal][money],[addon_section_name][varchar],"
-            + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL)";
+            + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, " +
+            " [prod_upc] [varchar](50) NULL, [assignedSeat] [varchar](10))";
 
     private final String CREATE_ORDERS = "CREATE TABLE [Orders]( [ord_id] [varchar](50) PRIMARY KEY NOT NULL, [qbord_id] [varchar](50) NULL, "
             + "[qbtxid] [varchar](255) NULL, [emp_id] [int] NULL, [cust_id] [varchar](50) NULL,[custidkey] [varchar], [ord_po] [varchar](50) NULL, [total_lines] [int] NULL, "
@@ -386,7 +387,8 @@ public class DBManager {
             + "[addr_s_str2] [varchar](41) NULL, [addr_s_str3] [varchar](41) NULL, [addr_s_city] [varchar](31) NULL, [addr_s_state] [varchar](21) NULL, "
             + "[addr_s_country] [varchar](31) NULL, [addr_s_zipcode] [varchar](13) NULL, [c_email] [varchar](100) NULL, [loc_id] [varchar](50) NULL, "
             + "[ord_HoldName] [varchar](50) NULL,[isOnHold] [tinyint] NULL, [clerk_id][varchar](50) NULL, [ord_discount_id][varchar](50) NULL, [ord_latitude][varchar](50) NULL, "
-            + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint)";
+            + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint," +
+            " [assignedTabler [varchar](10)] NULL, [numberOfSeats] [int] NULL)";
 
     private final String CREATE_PAYMETHODS = "CREATE TABLE [PayMethods]( [paymethod_id] [varchar](50) PRIMARY KEY NOT NULL, "
             + "[paymethod_name] [varchar](255) NOT NULL, [paymentmethod_type] [varchar](50) NULL, [paymethod_update] [datetime] NOT NULL, "
