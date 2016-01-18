@@ -279,7 +279,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
 
-
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
@@ -344,7 +343,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         }
         return true;
     }
-
 
 
     public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable) throws StarIOPortException {
@@ -742,14 +740,14 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         Communication.Result result;
 
-        if (printerName.toUpperCase().contains("MPOP")) {
-        try {
-            result = Communication.sendCommands(data, getStarIOPort(), this.activity);
-        } catch (StarIOPortException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }   // 10000mS!!!
-    }
+      //  if (printerName.toUpperCase().contains("MPOP")) {
+            try {
+                result = Communication.sendCommands(data, getStarIOPort(), this.activity);
+            } catch (StarIOPortException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }   // 10000mS!!!
+//        }
     }
 
     @Override
