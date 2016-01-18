@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private ProgressDialog myProgressDialog;
@@ -906,17 +907,22 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
         @Override
         protected void onPostExecute(Payment payment) {
-            myProgressDialog.dismiss();
-            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+            try {
+                if (myProgressDialog.isShowing()) {
+                    myProgressDialog.dismiss();
+                }
+                double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
-            if (printSuccessful) {
-                if (amountToBePaid <= actualAmount)
-                    finish();
-            } else {
-                showPrintDlg(true, payment);
+                if (printSuccessful) {
+                    if (amountToBePaid <= actualAmount)
+                        finish();
+                } else {
+                    showPrintDlg(true, payment);
+                }
+            } catch (Exception e) {
+
             }
-
 //			if(amountToBePaid<=actualAmount)
 //				finish();
         }
