@@ -393,12 +393,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         return new Catalog_Loader(activity);
     }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        myCursor.close();
-    }
+    
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
