@@ -395,9 +395,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        myCursor.close();
+    public void onDestroy() {
+        super.onDestroy();
+         myCursor.close();
     }
 
     @Override
