@@ -19,13 +19,13 @@
         style="@style/text_shadow"/>
 
     <Button
+        style="@style/action_button_text_appearance"
         android:id="@+id/reloadButton"
         android:layout_width="@dimen/large_button_width"
        	android:layout_height="@dimen/large_button_height"
         android:layout_gravity="center"
         android:text="Reload"
-        android:background="@drawable/blue_btn_selector"
-        android:textAppearance="@style/black_text_appearance_unbold"
+        android:background="@drawable/action_button_selector"
                 android:textSize="@dimen/large_button_text_size"/>
 
     <ListView

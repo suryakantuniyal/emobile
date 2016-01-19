@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/routes_but_subtitle"
-            android:textAppearance="@style/black_text_appearance"
+            android:textAppearance="@style/tiles_text_appearance"
             android:textSize="@dimen/text_default" />
     </LinearLayout>
 

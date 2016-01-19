@@ -29,7 +29,9 @@
     </RadioGroup>
 
     <Button
+        style="@style/action_button_text_appearance"
         android:id="@+id/btnConnect"
+        android:background="@drawable/action_button_selector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"

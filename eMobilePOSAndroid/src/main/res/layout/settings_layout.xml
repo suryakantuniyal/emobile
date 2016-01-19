@@ -12,33 +12,33 @@
         android:gravity="center_horizontal">
 
     <Button
+        style="@style/tiles_text_appearance"
         android:id="@+id/btnAdminSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="25dp"
         android:layout_marginTop="10dp"
         android:textSize="@dimen/sales_tab_lv_text_size"
-        android:textAppearance="@style/black_text_appearance"
         android:background="@drawable/blue_btn_selector"
         android:text="@string/config_administrator_settings" />
 
     <Button
+        style="@style/tiles_text_appearance"
         android:id="@+id/btnManagerSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="25dp"
         android:textSize="@dimen/sales_tab_lv_text_size"
-        android:textAppearance="@style/black_text_appearance"
         android:background="@drawable/blue_btn_selector"
         android:text="@string/config_manager_settings" />
 
     <Button
+        style="@style/tiles_text_appearance"
         android:id="@+id/btnGeneralSetting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="25dp"
         android:textSize="@dimen/sales_tab_lv_text_size"
-        android:textAppearance="@style/black_text_appearance"
         android:background="@drawable/blue_btn_selector"
         android:text="@string/config_general_settings" />
 

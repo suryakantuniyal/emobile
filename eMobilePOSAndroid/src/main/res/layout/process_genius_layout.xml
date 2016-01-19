@@ -25,16 +25,16 @@
             android:textStyle="bold" />
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/processGeniusButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_margin="5dp"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
             android:text="Process"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/large_button_text_size" />
     </RelativeLayout>
 

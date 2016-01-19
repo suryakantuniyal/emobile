@@ -13,6 +13,7 @@
         android:paddingRight="20dp">
 
         <Button
+            style="@style/tiles_text_appearance"
             android:id="@+id/btnReportDaySummary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,27 +21,26 @@
             android:background="@drawable/blue_btn_selector"
             android:padding="25dp"
             android:text="@string/report_but_title"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/sales_tab_lv_text_size" />
 
         <Button
+            style="@style/tiles_text_appearance"
             android:id="@+id/btnReportPerShift"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/blue_btn_selector"
             android:padding="25dp"
             android:text="@string/report_per_shift"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/sales_tab_lv_text_size" />
 
         <Button
+            style="@style/tiles_text_appearance"
             android:id="@+id/btnEndOfDay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/blue_btn_selector"
             android:padding="25dp"
             android:text="@string/endofdayBtn"
-            android:textAppearance="@style/black_text_appearance"
             android:textSize="@dimen/sales_tab_lv_text_size" />
 
     </LinearLayout>
