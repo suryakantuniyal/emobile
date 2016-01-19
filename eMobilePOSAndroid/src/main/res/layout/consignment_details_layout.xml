@@ -26,12 +26,12 @@
         	style="@style/text_shadow"/>
 
     <Button
+        style="@style/action_button_text_appearance"
         android:id="@+id/printButton"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/header_bar_button_height"
-        android:background="@drawable/blue_btn_selector"
+        android:background="@drawable/action_button_selector"
         android:text="Print"
-        android:textAppearance="@style/black_text_appearance"
         android:textSize="@dimen/ordering_checkout_btn_txt_size"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="false"

@@ -25,15 +25,14 @@
             android:textStyle="bold" />
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/saveModifyButton"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:text="Save"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:textStyle="bold"
-            android:textAppearance="@style/black_text_appearance"
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="false"
             android:layout_alignParentRight="true"

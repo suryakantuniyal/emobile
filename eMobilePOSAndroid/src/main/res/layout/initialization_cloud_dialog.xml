@@ -19,15 +19,19 @@
         android:layout_marginTop="10dp"
         android:orientation="vertical">
     <Button
+        style="@style/black_text_appearance"
         android:id="@+id/conucoButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/action_button_selector"
         android:text="Conuco (default)" />
 
     <Button
+        style="@style/action_button_text_appearance"
         android:id="@+id/bateyButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/action_button_selector"
         android:text="Batey" />
 </LinearLayout>
 </LinearLayout>

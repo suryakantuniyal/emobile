@@ -49,7 +49,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/add_orders_button_height"
-                android:background="@drawable/blue_btn_selector"
+                android:background="@drawable/action_button_selector"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:text="@string/button_add_prod_serv"

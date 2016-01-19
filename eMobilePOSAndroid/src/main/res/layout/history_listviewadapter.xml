@@ -15,6 +15,6 @@
         android:gravity="center"
         style="@style/text_shadow"
         android:textSize="@dimen/sales_tab_lv_text_size"
-        android:textAppearance="@style/black_text_appearance"/>
+        android:textAppearance="@style/tiles_text_appearance"/>
 
 </LinearLayout>

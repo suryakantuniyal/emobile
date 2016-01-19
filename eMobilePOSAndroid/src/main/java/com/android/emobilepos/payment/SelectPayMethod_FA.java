@@ -619,7 +619,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected void onPreExecute() {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadScanner(null);
+                    Global.mainPrinterManager.currentDevice.loadScanner(null);
             }
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage("Printing...");
@@ -650,7 +650,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
             if (printSuccessful) {
                 if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
@@ -658,6 +657,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
                 showPrintDlg(wasReprint, true, null);
             }
+            myProgressDialog.dismiss();
         }
     }
 

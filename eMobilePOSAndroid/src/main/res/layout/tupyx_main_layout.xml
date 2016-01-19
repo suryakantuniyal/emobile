@@ -29,15 +29,15 @@
                 android:textSize="@dimen/header_bar_text_size" />
 
             <Button
+                style="@style/action_button_text_appearance"
                 android:id="@+id/processButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/ordering_checkout_btn_height_size"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="5dp"
-                android:background="@drawable/blue_btn_selector"
+                android:background="@drawable/action_button_selector"
                 android:text="@string/card_button_process"
-                android:textAppearance="@style/black_text_appearance"
                 android:textSize="@dimen/ordering_checkout_btn_txt_size"
                 android:paddingLeft="5dp"
                 android:paddingRight="14dp" />
@@ -94,14 +94,14 @@
                     android:gravity="center"
                     android:orientation="horizontal" >
                     <Button
+                        style="@style/action_button_text_appearance"
                         android:id="@+id/btnExact"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/ordering_checkout_btn_height_size"
-                        android:background="@drawable/blue_btn_selector"
+                        android:background="@drawable/action_button_selector"
                         android:nextFocusDown="@+id/fieldTipAmount"
                         android:singleLine="true"
                         android:text="@string/cash_exact"
-                        android:textAppearance="@style/black_text_appearance"
                         android:textSize="@dimen/ordering_checkout_btn_txt_size"
                         android:layout_margin="5dp"
                         android:paddingLeft="5dp"
@@ -128,17 +128,17 @@
 
             
             <Button
+                style="@style/action_button_text_appearance"
                 android:id="@+id/readQRButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/blue_btn_selector"
+                android:background="@drawable/action_button_selector"
                 android:ems="5"
                 android:paddingBottom="10dp"
                 android:paddingTop="10dp"
                 android:text="@string/tupyx_read_qr"
-                android:textAppearance="@style/black_text_appearance"
                 android:textSize="@dimen/large_button_text_size"
                 android:paddingLeft="5dp"
                 android:paddingRight="14dp" />

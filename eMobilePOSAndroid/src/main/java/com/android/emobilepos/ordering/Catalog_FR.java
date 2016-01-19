@@ -395,6 +395,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+         myCursor.close();
+    }
+
+    @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
 
         myCursor = c;

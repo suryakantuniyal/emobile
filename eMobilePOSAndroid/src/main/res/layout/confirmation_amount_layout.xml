@@ -131,25 +131,25 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/cancelButton"
+				style="@style/action_button_text_appearance"
+				android:id="@+id/cancelButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/blue_btn_selector"
+                android:background="@drawable/action_button_selector"
                 android:text="@string/button_cancel"
                 android:textSize="@dimen/button_text_size"
-                android:textAppearance="@style/black_text_appearance"
                 android:padding="20dp" />
 
             <Button
-                android:id="@+id/nextButton"
+				style="@style/action_button_text_appearance"
+				android:id="@+id/nextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:background="@drawable/blue_btn_selector"
+                android:background="@drawable/action_button_selector"
                 android:text="@string/button_accept"
                 android:textSize="@dimen/button_text_size"
-                android:textAppearance="@style/black_text_appearance"
                 android:padding="20dp" />
         </LinearLayout>
     </LinearLayout>
