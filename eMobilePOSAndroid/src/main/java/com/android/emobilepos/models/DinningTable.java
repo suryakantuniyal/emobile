@@ -1,0 +1,43 @@
+package com.android.emobilepos.models;
+
+/**
+ * Created by Guarionex on 1/19/2016.
+ */
+public class DinningTable {
+    private int number;
+    private int seats;
+    private String style;
+    private Location location;
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public int getSeats() {
+        return seats;
+    }
+
+    public void setSeats(int seats) {
+        this.seats = seats;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+
+    public void setStyle(String style) {
+        this.style = style;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+}

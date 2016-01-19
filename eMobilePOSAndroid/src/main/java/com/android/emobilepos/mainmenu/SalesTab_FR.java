@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -52,7 +53,7 @@ public class SalesTab_FR extends Fragment {
     private SalesMenuAdapter myAdapter;
     private GridView myListview;
     private Context thisContext;
-    private boolean isSelected = false;
+    private boolean isCustomerSelected = false;
     private TextView selectedCust;
     private MyPreferences myPref;
     private Button salesInvoices;
@@ -85,14 +86,14 @@ public class SalesTab_FR extends Fragment {
 
 
         if (myPref.isCustSelected()) {
-            isSelected = true;
+            isCustomerSelected = true;
             selectedCust.setText(myPref.getCustName());
         } else {
             salesInvoices.setVisibility(View.GONE);
-            isSelected = false;
+            isCustomerSelected = false;
             selectedCust.setText(getString(R.string.no_customer));
         }
-        myAdapter = new SalesMenuAdapter(getActivity(), isSelected);
+        myAdapter = new SalesMenuAdapter(getActivity(), isCustomerSelected);
 
         LinearLayout customersBut = (LinearLayout) view.findViewById(R.id.salesCustomerBut);
 
@@ -117,7 +118,7 @@ public class SalesTab_FR extends Fragment {
                 myPref.resetCustInfo(getString(R.string.no_customer));
 
 
-                isSelected = false;
+                isCustomerSelected = false;
                 selectedCust.setText(getString(R.string.no_customer));
                 myAdapter = new SalesMenuAdapter(getActivity(), false);
                 myListview.setAdapter(myAdapter);
@@ -144,19 +145,20 @@ public class SalesTab_FR extends Fragment {
 
     }
 
+
     @Override
     public void onResume() {
 
 
         if (myPref.isCustSelected()) {
-            isSelected = true;
+            isCustomerSelected = true;
             selectedCust.setText(myPref.getCustName());
             myAdapter = new SalesMenuAdapter(getActivity(), true);
             myListview.setAdapter(myAdapter);
             myListview.setOnItemClickListener(new MyListener());
             myListview.invalidateViews();
         } else {
-            isSelected = false;
+            isCustomerSelected = false;
             selectedCust.setText(getString(R.string.no_customer));
             myAdapter = new SalesMenuAdapter(getActivity(), false);
             myListview.setAdapter(myAdapter);
@@ -181,7 +183,7 @@ public class SalesTab_FR extends Fragment {
             myPref.setCustName(extras.getString("customer_name"));
             myPref.setCustSelected(true);
 
-            isSelected = true;
+            isCustomerSelected = true;
             myAdapter = new SalesMenuAdapter(getActivity(), true);
             myListview.setAdapter(myAdapter);
 
@@ -189,7 +191,7 @@ public class SalesTab_FR extends Fragment {
 
         } else if (resultCode == 2) {
             salesInvoices.setVisibility(View.GONE);
-            isSelected = false;
+            isCustomerSelected = false;
             selectedCust.setText(getString(R.string.no_customer));
             myAdapter = new SalesMenuAdapter(getActivity(), false);
             myListview.setAdapter(myAdapter);
@@ -219,7 +221,7 @@ public class SalesTab_FR extends Fragment {
 
     public static void startDefault(Activity activity, String type) {
         if (activity != null) {
-            int transType = -1;
+            int transType;
             try {
                 if (type == null || type.isEmpty())
                     type = "-1";
@@ -228,7 +230,7 @@ public class SalesTab_FR extends Fragment {
                 transType = -1;
             }
 
-            Intent intent = null;
+            Intent intent;
             if (transType != -1) {
                 switch (transType) {
                     case 0:
@@ -252,15 +254,12 @@ public class SalesTab_FR extends Fragment {
         Global global = (Global) activity.getApplication();
         global.resetOrderDetailsValues();
         global.clearListViewData();
-        Intent intent = null;
-        if (isSelected) // customer is currently selected
+        Intent intent;
+        if (isCustomerSelected) // customer is currently selected
         {
-            //EasyTracker.getInstance().setContext(activity);
             switch (Global.TransactionType.getByCode(pos)) {
                 case SALE_RECEIPT: // Sales Receipt
                 {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Sales Receipt", null);
-
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         intent = new Intent(activity, OrderingMain_FA.class);
                         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
@@ -316,7 +315,7 @@ public class SalesTab_FR extends Fragment {
                     intent.putExtra("paid", "0.00");
                     intent.putExtra("isFromMainMenu", true);
 
-                    if (isSelected) {
+                    if (isCustomerSelected) {
                         intent.putExtra("cust_id", myPref.getCustID());
                         intent.putExtra("custidkey", myPref.getCustIDKey());
                     }
@@ -378,14 +377,16 @@ public class SalesTab_FR extends Fragment {
             switch (pos) {
                 case 0: // Sales Receipt
                 {
-                    //EasyTracker.getTracker().sendEvent("ui_action", "button_press", "Sales Receipt", null);
-
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                     } else {
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        startActivityForResult(intent, 0);
+                        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+                            askEatInToGo();
+                        } else {
+                            intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                            startActivityForResult(intent, 0);
+                        }
                     }
 
                     break;
@@ -454,6 +455,37 @@ public class SalesTab_FR extends Fragment {
         }
     }
 
+    private void askEatInToGo() {
+        final Dialog popDlog = new Dialog(activity, R.style.TransparentDialog);
+        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        popDlog.setCancelable(true);
+        popDlog.setCanceledOnTouchOutside(true);
+        popDlog.setContentView(R.layout.dlog_ask_togo_eatin_layout);
+        Button toGoBtn = (Button) popDlog.findViewById(R.id.toGobutton);
+        Button eatInBtn = (Button) popDlog.findViewById(R.id.eatInbutton);
+        toGoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popDlog.dismiss();
+                Intent intent = new Intent(activity, OrderingMain_FA.class);
+                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                startActivityForResult(intent, 0);
+            }
+        });
+        eatInBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popDlog.dismiss();
+                Intent intent = new Intent(activity, OrderingMain_FA.class);
+                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+                startActivityForResult(intent, 0);
+            }
+        });
+        popDlog.show();
+    }
+
 
     private void pickLocations(final boolean showOrigin) {
         LocationsPickerDlog_FR picker = new LocationsPickerDlog_FR();
@@ -485,7 +517,7 @@ public class SalesTab_FR extends Fragment {
         Activity activity = getActivity();
 
         if (activity != null) {
-            myAdapter = new SalesMenuAdapter(activity, isSelected);
+            myAdapter = new SalesMenuAdapter(activity, isCustomerSelected);
 
             if (myListview != null) {
                 myListview.setAdapter(myAdapter);
@@ -510,11 +542,10 @@ public class SalesTab_FR extends Fragment {
         TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Locations selected for transfer:\n");
-        sb.append("From: ").append(Global.locationFrom.get(Locations_DB.loc_name)).append("\n");
-        sb.append("To: ").append(Global.locationTo.get(Locations_DB.loc_name));
-        viewMsg.setText(sb.toString());
+        String sb = "Locations selected for transfer:\n" +
+                "From: " + Global.locationFrom.get(Locations_DB.loc_name) + "\n" +
+                "To: " + Global.locationTo.get(Locations_DB.loc_name);
+        viewMsg.setText(sb);
         globalDlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
         Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogLeft);
@@ -620,7 +651,7 @@ public class SalesTab_FR extends Fragment {
                 intent.putExtra("option_number", Global.TransactionType.RETURN);
                 myPref.resetCustInfo(getString(R.string.no_customer));
 
-                isSelected = false;
+                isCustomerSelected = false;
 
                 startActivityForResult(intent, 0);
                 dialog.dismiss();
@@ -675,10 +706,9 @@ public class SalesTab_FR extends Fragment {
             myPref.setIsESY13P1(true);
             return true;
         } else {
-            boolean isTablet = (activity.getResources().getConfiguration().screenLayout
+            return (activity.getResources().getConfiguration().screenLayout
                     & Configuration.SCREENLAYOUT_SIZE_MASK)
                     >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-            return isTablet;
         }
     }
 
@@ -717,14 +747,14 @@ public class SalesTab_FR extends Fragment {
                         selectedCust.setText(map.get("cust_name"));
 
                         salesInvoices.setVisibility(View.VISIBLE);
-                        isSelected = true;
+                        isCustomerSelected = true;
                         myAdapter = new SalesMenuAdapter(getActivity(), true);
                         myListview.setAdapter(myAdapter);
 
                         myListview.setOnItemClickListener(new MyListener());
 
                     } else {
-                        isSelected = false;
+                        isCustomerSelected = false;
                         myPref.resetCustInfo(getString(R.string.no_customer));
                         myPref.setCustSelected(false);
 

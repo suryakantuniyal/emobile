@@ -142,7 +142,9 @@ public class Global extends MultiDexApplication {
     public static final String AUDIO_MSR_ROVER = "2";
     public static final String AUDIO_MSR_WALKER = "3";
 
-
+    public enum RestaurantSaleType{
+        EAT_IN, TO_GO
+    }
     public enum TransactionType {
         SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
         PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
@@ -809,7 +811,7 @@ public class Global extends MultiDexApplication {
         else
             sdf2 = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
-        String formatedDate = new String();
+        String formatedDate;
         try {
             formatedDate = sdf2.format(sdf1.parse(date));
 

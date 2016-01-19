@@ -25,8 +25,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,8 +43,10 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
@@ -90,7 +94,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private int orientation;
     private LinearLayout catalogContainer, receiptContainer;
     public static OrderingMain_FA instance;
-
+    private DinningTable selectedDinningTable;
     private Catalog_FR rightFragment;
     private Receipt_FR leftFragment;
     private MyPreferences myPref;
@@ -105,7 +109,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private DecodeManager mDecodeManager = null;
     private final int SCANTIMEOUT = 500000;
     private boolean scannerInDecodeMode = false;
-    private Activity activity;
 
     public EMSIDTechUSB _msrUsbSams;
     public EMSCallBack callBackMSR;
@@ -124,6 +127,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static Global.TransactionType mTransType = null;
     public static boolean returnItem = false;
     private Bundle extras;
+    private Global.RestaurantSaleType restaurantSaleType = Global.RestaurantSaleType.EAT_IN;
+    private boolean isToGo;
 
 
 //    CustomKeyboard mCustomKeyboard;
@@ -132,7 +137,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
-        activity = this;
         instance = this;
         callBackMSR = this;
         handler = new ProductsHandler(this);
@@ -146,6 +150,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         myPref = new MyPreferences(this);
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
+        restaurantSaleType = (Global.RestaurantSaleType) extras.get("RestaurantSaleType");
+        isToGo = restaurantSaleType == Global.RestaurantSaleType.TO_GO;
         returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.getIsTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -188,8 +194,28 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.btSled.currentDevice.loadScanner(callBackMSR);
         }
 
-
+        if (!isToGo) {
+            askForSeatsAmount();
+        }
         hasBeenCreated = true;
+    }
+
+    public void askForSeatsAmount() {
+        final Dialog popDlog = new Dialog(this, R.style.TransparentDialog);
+        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        popDlog.setCancelable(true);
+        popDlog.setCanceledOnTouchOutside(true);
+        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
+        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
+        final DinningTablesAdapter adapter = new DinningTablesAdapter(this);
+        gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedDinningTable = (DinningTable) view.getTag();
+            }
+        });
+        popDlog.show();
     }
 
     private Handler ScanResultHandler = new Handler() {
@@ -487,7 +513,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.clearListViewData();
 
             if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
-                Global.showCDTDefault(activity);
+                Global.showCDTDefault(this);
             }
 
             reloadDefaultTransaction();
@@ -534,7 +560,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onResume() {
 
-        if (global.isApplicationSentToBackground(activity))
+        if (global.isApplicationSentToBackground(this))
             global.loggedIn = false;
         global.stopActivityTransitionTimer();
         if (hasBeenCreated && !global.loggedIn) {
@@ -622,7 +648,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private void setCustomerShipToAddress() {
-        AddressHandler addressHandler = new AddressHandler(activity);
+        AddressHandler addressHandler = new AddressHandler(this);
         List<String[]> addressDownloadedItems = addressHandler.getAddress();
         int size = addressDownloadedItems.size();
         if (size == 1) {
@@ -694,8 +720,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                 Catalog_FR.instance.automaticAddOrder(product);
                             refreshView();
                         } else {
-                            Global.showPrompt(activity, R.string.dlog_title_error,
-                                    activity.getString(R.string.limit_onhand));
+                            Global.showPrompt(this, R.string.dlog_title_error,
+                                    this.getString(R.string.limit_onhand));
                         }
                     } else {
                         Catalog_FR.instance.searchUPC(data);
@@ -787,7 +813,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                             if (validAutomaticAddQty(product)) {
                                 if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-                                    int foundPosition = global.checkIfGroupBySKU(activity, product.getId(), "1");
+                                    int foundPosition = global.checkIfGroupBySKU(OrderingMain_FA.this, product.getId(), "1");
                                     if (foundPosition != -1 && !OrderingMain_FA.returnItem) // product
                                     // already
                                     // exist
@@ -805,14 +831,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                     OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
                                 }
                             } else {
-                                Global.showPrompt(activity, R.string.dlog_title_error,
-                                        activity.getString(R.string.limit_onhand));
+                                Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
+                                        OrderingMain_FA.this.getString(R.string.limit_onhand));
                             }
                         } else {
                             Catalog_FR.instance.searchUPC(upc);
                         }
                     } else {
-                        Global.showPrompt(activity, R.string.dlog_title_error,
+                        Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error,
                                 getString(R.string.dlog_msg_item_not_found));
                     }
                     invisibleSearchMain.setText("");
@@ -893,7 +919,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         Catalog_FR.instance.automaticAddOrder(product);
                     refreshView();
                 } else {
-                    Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.limit_onhand));
+                    Global.showPrompt(this, R.string.dlog_title_error, this.getString(R.string.limit_onhand));
                 }
 
             } else {
@@ -968,9 +994,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
                 if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
                     uniMagReader = new EMSUniMagDriver();
-                    uniMagReader.initializeReader(activity);
+                    uniMagReader.initializeReader(this);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK)) {
-                    magtekReader = new EMSMagtekAudioCardReader(activity);
+                    magtekReader = new EMSMagtekAudioCardReader(this);
                     new Thread(new Runnable() {
                         public void run() {
                             magtekReader.connectMagtek(true, callBackMSR);
@@ -978,7 +1004,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     }).start();
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
                     roverReader = new EMSRover();
-                    roverReader.initializeReader(activity, false);
+                    roverReader.initializeReader(this, false);
                 }
             }
             // if
@@ -1018,7 +1044,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             swiperLabel.setTextColor(Color.BLUE);
             msrWasLoaded = true;
         } else if (myPref.isSam4s(true, false)) {
-            _msrUsbSams = new EMSIDTechUSB(activity, callBackMSR);
+            _msrUsbSams = new EMSIDTechUSB(this, callBackMSR);
             _msrUsbSams.OpenDevice();
             if (_msrUsbSams.isDeviceOpen() && !_msrUsbSams.isDeviceReading())
                 _msrUsbSams.StartReadingThread();
@@ -1093,7 +1119,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     doneScanning = false;
                     String data = hiddenField.getText().toString().replace("\n", "");
                     hiddenField.setText("");
-                    cardInfoManager = Global.parseSimpleMSR(activity, data);
+                    cardInfoManager = Global.parseSimpleMSR(OrderingMain_FA.this, data);
                     swiperField.setText(cardInfoManager.getCardNumUnencrypted());
                 }
             }
@@ -1122,7 +1148,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     private void populateCardInfo() {
         if (!wasReadFromReader) {
-            Encrypt encrypt = new Encrypt(activity);
+            Encrypt encrypt = new Encrypt(this);
             cardInfoManager = new CreditCardInfo();
             int size = swiperField.getText().toString().length();
             if (size > 4) {
@@ -1140,10 +1166,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private void processBalanceInquiry(boolean isLoyaltyCard) {
-        Payment payment = new Payment(activity);
+        Payment payment = new Payment(this);
         populateCardInfo();
 
-        PayMethodsHandler payHandler = new PayMethodsHandler(activity);
+        PayMethodsHandler payHandler = new PayMethodsHandler(this);
 
         if (isLoyaltyCard)
             payment.paymethod_id = PayMethodsHandler.getPayMethodID("LoyaltyCard");
@@ -1186,7 +1212,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
             myProgressDialog.setMessage("Processing Balance Inquiry...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -1216,7 +1242,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
             myProgressDialog.setMessage("Processing Balance Inquiry...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -1234,11 +1260,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(OrderingMain_FA.this);
             urlToPost = params[0];
 
             try {
-                String xml = httpClient.postData(13, activity, urlToPost);
+                String xml = httpClient.postData(13, OrderingMain_FA.this, urlToPost);
                 if (xml.equals(Global.TIME_OUT)) {
                     errorMsg = "TIME OUT, would you like to try again?";
                 } else if (xml.equals(Global.NOT_VALID_URL)) {
@@ -1292,7 +1318,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             } else // payment processing failed
             {
-                Global.showPrompt(activity, R.string.dlog_title_error, errorMsg);
+                Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error, errorMsg);
             }
         }
     }
@@ -1346,9 +1372,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (!Global.lastOrdID.isEmpty()) {
             OrdersHandler dbOrders = new OrdersHandler(this);
             if (global.order.ord_id.isEmpty()) {
-                global.order = Receipt_FR.buildOrder(activity, global, myPref, "");
+                global.order = Receipt_FR.buildOrder(this, global, myPref, "");
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-                OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
+                OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
                 dbOrders.insert(global.order);
                 dbOrdProd.insert(global.orderProducts);
                 dbOrdAttr.insert(global.ordProdAttr);
@@ -1356,7 +1382,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             dbOrders.updateIsVoid(Global.lastOrdID);
 
-            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
+            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(this);
             /*
              * HashMap<String,String> voidedTrans = new
 			 * HashMap<String,String>(); voidedTrans.put("ord_id",
@@ -1364,7 +1390,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 			 * global.order.ord_type);
 			 */
 
-            Order order = new Order(activity);
+            Order order = new Order(this);
             order.ord_id = Global.lastOrdID;
             order.ord_type = global.order.ord_type;
             voidHandler.insert(order);
@@ -1376,7 +1402,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (!Global.lastOrdID.isEmpty()) {
             OrdersHandler dbOrders = new OrdersHandler(this);
             OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
+            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
 
             dbOrders.deleteOrder(Global.lastOrdID);
             dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
