@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.database.CategoriesHandler;
+import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PrintersHandler;
 import com.android.database.ShiftPeriodsDBHandler;
@@ -45,7 +46,6 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.shifts.OpenShift_FA;
-import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import koamtac.kdc.sdk.KDCReader;
 import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends BaseFragmentActivityActionBar {
@@ -118,7 +117,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             myPref = new MyPreferences(activity);
-            PreferenceManager prefManager = null;
+            PreferenceManager prefManager;
             // Load the preferences from an XML resource
             switch (settingsType) {
                 case SettingsTab_FR.CASE_ADMIN:
@@ -149,8 +148,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
-                        CharSequence c = new String(
-                                "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
+                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                         openShiftPref.setSummary(c);
                     }
                     openShiftPref.setOnPreferenceClickListener(this);
@@ -158,7 +156,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
 
                     defaultCountry = prefManager.findPreference("pref_default_country");
-                    CharSequence temp = new String("\t\t" + myPref.defaultCountryName(true, null));
+                    CharSequence temp = "\t\t" + myPref.defaultCountryName(true, null);
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
 
@@ -204,8 +202,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
                     openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
-                        CharSequence c = new String(
-                                "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
+                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                         openShiftPref.setSummary(c);
                     }
                     openShiftPref.setOnPreferenceClickListener(this);
@@ -227,8 +224,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            // TODO Auto-generated method stub
-            Intent intent = null;
+            Intent intent;
             switch (preference.getTitleRes()) {
                 case R.string.config_toggle_elo_bcr:
                     if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
@@ -303,7 +299,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             myPref.defaultCountryCode(false, code);
                             myPref.defaultCountryName(false, name);
 
-                            CharSequence temp = new String("\t\t" + name);
+                            CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
 
                             newFrag.dismiss();
@@ -649,8 +645,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             return "";
                         } else {
                             String[] splits = resultingTxt.split("\\.");
-                            for (int i = 0; i < splits.length; i++) {
-                                if (Integer.valueOf(splits[i]) > 255) {
+                            for (String split : splits) {
+                                if (Integer.valueOf(split) > 255) {
                                     return "";
                                 }
                             }
@@ -673,7 +669,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         if (string.length() == 3 || string.equalsIgnoreCase("0")
                                 || (string.length() == 2 && Character.getNumericValue(string.charAt(0)) > 1)) {
                             s.append('.');
-                            return;
                         }
                     }
                 }
@@ -921,7 +916,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     return nameList;
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 StringBuilder sb = new StringBuilder();
                 sb.append(e.getMessage())
                         .append(" [com.android.emobilepos.SettingsMenuActiv (at Class.getPairedDevices)]");
@@ -957,7 +951,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 int size = c.getCount();
 
-                if (c != null && size > 0) {
+                if (size > 0) {
                     Global.multiPrinterManager.clear();
                     Global.multiPrinterMap.clear();
                     int i = 0;
@@ -988,7 +982,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     } while (c.moveToNext());
                 }
 
-                String _portName = "";
+                String _portName;
                 String _peripheralName = "";
                 if ((myPref.swiperType(true, -2) != -1)
                         && (Global.btSwiper == null || Global.btSwiper.currentDevice == null)) {
@@ -1045,8 +1039,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
             if (resultCode == 1) {
                 if (!myPref.getShiftIsOpen()) {
-                    CharSequence c = new String(
-                            "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
+                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                     openShiftPref.setSummary(c);
                 }
             }

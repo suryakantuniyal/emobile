@@ -85,6 +85,13 @@ public class MyPreferences {
     private final String aes_iv = "aes_iv";
 
     public static final String pref_restaurant_mode = "pref_restaurant_mode";
+    public static final String pref_disable_togo_eatin = "pref_disable_togo_eatin";
+    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
+    public static final String pref_disable_table_selection = "pref_disable_table_selection";
+    public static final String pref_ask_seats = "pref_ask_seats";
+    public static final String pref_ask_split_equally = "pref_ask_split_equally";
+
+
     public static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
@@ -686,25 +693,25 @@ public class MyPreferences {
         return "eMobilePOS";
     }
 
-    public int getPrinterType(){
+    public int getPrinterType() {
         String printer_type = "printer_type";
         return prefs.getInt(printer_type, -1);
     }
 
-    public void setPrinterType(int value){
+    public void setPrinterType(int value) {
         String printer_type = "printer_type";
         prefEditor.putInt(printer_type, value);
         prefEditor.commit();
     }
 
-	public void setPrinterName(String value) {
-		prefEditor.putString("printer_name", value);
-		prefEditor.commit();
-	}
+    public void setPrinterName(String value) {
+        prefEditor.putString("printer_name", value);
+        prefEditor.commit();
+    }
 
-	public String getPrinterName() {
-		return prefs.getString("printer_name", "");
-	}
+    public String getPrinterName() {
+        return prefs.getString("printer_name", "");
+    }
 
     public int sledType(boolean isGet, int value) {
         String sled_type = "sled_type";
@@ -722,7 +729,7 @@ public class MyPreferences {
         String printer_type = "printer_type";
         String swiper_type = "swiper_type";
 
-		setPrinterName(""); //clean the printer name
+        setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
         prefEditor.putInt(swiper_type, -1);

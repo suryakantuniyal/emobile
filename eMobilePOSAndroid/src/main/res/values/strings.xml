@@ -1132,5 +1132,11 @@
 	<string name="twenty_percent">20%</string>
 	<string name="other">Other:</string>
 	<string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
+	<string name="config_restaurant_settings">Restaurant Settings</string>
+	<string name="config_disable_togo_eatin">Disable section of \"To Go\"/\"Eat In\"</string>
+	<string name="config_require_waiter_signin">Require waiter to sign in</string>
+	<string name="config_disable_table_selection">Disable table selection</string>
+	<string name="config_ask_numbers_seats">Ask number of seats</string>
+	<string name="config_ask_split_equally">Ask to split payment equally</string>
 
 </resources>
