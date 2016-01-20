@@ -85,9 +85,9 @@ public class MyPreferences {
     private final String aes_iv = "aes_iv";
 
     public static final String pref_restaurant_mode = "pref_restaurant_mode";
-    public static final String pref_disable_togo_eatin = "pref_disable_togo_eatin";
+    public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
     public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
-    public static final String pref_disable_table_selection = "pref_disable_table_selection";
+    public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_ask_split_equally = "pref_ask_split_equally";
 

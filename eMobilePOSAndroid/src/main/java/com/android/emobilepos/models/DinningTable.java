@@ -8,6 +8,7 @@ public class DinningTable {
     private int seats;
     private String style;
     private Location location;
+    private boolean wheelAccessibility;
 
     public int getNumber() {
         return number;
@@ -39,5 +40,13 @@ public class DinningTable {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public boolean isWheelAccessibility() {
+        return wheelAccessibility;
+    }
+
+    public void setWheelAccessibility(boolean wheelAccessibility) {
+        this.wheelAccessibility = wheelAccessibility;
     }
 }

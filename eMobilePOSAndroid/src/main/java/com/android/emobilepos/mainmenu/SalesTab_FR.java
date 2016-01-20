@@ -380,7 +380,8 @@ public class SalesTab_FR extends Fragment {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
                     } else {
-                        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+                        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                             askEatInToGo();
                         } else {
                             intent = new Intent(activity, OrderingMain_FA.class);

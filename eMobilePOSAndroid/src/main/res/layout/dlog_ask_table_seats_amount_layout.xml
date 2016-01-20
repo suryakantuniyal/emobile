@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:ems="15"
         android:gravity="center"
-        android:text="@string/select_table_number"
+        android:text="@string/select_table_seats_amount"
         android:background="@drawable/blue_gradient_header_horizontal"
         android:textAppearance="@style/white_text_appearance"
         android:textSize="@dimen/header_bar_text_size"

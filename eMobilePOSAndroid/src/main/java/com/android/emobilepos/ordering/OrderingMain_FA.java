@@ -1,6 +1,5 @@
 package com.android.emobilepos.ordering;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -43,6 +42,7 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.DinningTableSeatsAdapter;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
@@ -54,12 +54,13 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
-import com.android.support.CustomKeyboard;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -72,6 +73,7 @@ import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,6 +131,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Bundle extras;
     private Global.RestaurantSaleType restaurantSaleType = Global.RestaurantSaleType.EAT_IN;
     private boolean isToGo;
+    private List<DinningTable> dinningTables;
+    private String selectedSeatsAmount;
 
 
 //    CustomKeyboard mCustomKeyboard;
@@ -195,24 +199,54 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         if (!isToGo) {
-            askForSeatsAmount();
+            if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
+                selectDinnerTable();
+            } else{
+                selectSeatAmount();
+            }
         }
         hasBeenCreated = true;
     }
 
-    public void askForSeatsAmount() {
-        final Dialog popDlog = new Dialog(this, R.style.TransparentDialog);
+    private void selectSeatAmount() {
+        final String[] seats = this.getResources().getStringArray(R.array.dinningTableSeatsArray);
+        final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         popDlog.setCancelable(true);
         popDlog.setCanceledOnTouchOutside(true);
         popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
         GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
-        final DinningTablesAdapter adapter = new DinningTablesAdapter(this);
+        final DinningTableSeatsAdapter adapter = new DinningTableSeatsAdapter(this, seats);
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedDinningTable = (DinningTable) view.getTag();
+                selectedSeatsAmount = seats[position];
+                popDlog.dismiss();
+            }
+        });
+        popDlog.show();
+    }
+
+    public void selectDinnerTable() {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<ArrayList<DinningTable>>() {
+        }.getType();
+        dinningTables = gson.fromJson(this.getResources().getString(R.string.dinningTables), listType);
+        final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
+        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        popDlog.setCancelable(true);
+        popDlog.setCanceledOnTouchOutside(true);
+        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
+        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
+        final DinningTablesAdapter adapter = new DinningTablesAdapter(this, dinningTables);
+        gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedDinningTable = dinningTables.get(position);
+                popDlog.dismiss();
+                selectSeatAmount();
             }
         });
         popDlog.show();

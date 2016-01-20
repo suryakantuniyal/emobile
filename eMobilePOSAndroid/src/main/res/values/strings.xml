@@ -1133,14 +1133,15 @@
 	<string name="other">Other:</string>
 	<string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
 	<string name="config_restaurant_settings">Restaurant Settings</string>
-	<string name="config_disable_togo_eatin">Disable section of \"To Go\"/\"Eat In\"</string>
+	<string name="config_enable_togo_eatin">Enable section of \"To Go\"/\"Eat In\"</string>
 	<string name="config_require_waiter_signin">Require waiter to sign in</string>
-	<string name="config_disable_table_selection">Disable table selection</string>
+	<string name="config_enable_table_selection">Enable table selection</string>
 	<string name="config_ask_numbers_seats">Ask number of seats</string>
 	<string name="config_ask_split_equally">Ask to split payment equally</string>
 	<string name="select_togo_eatin">Select To-Go or Eat-In</string>
 	<string name="eatin_btn">Eat-In</string>
 	<string name="toGo_btn">To-Go</string>
 	<string name="select_table_number">Select table number</string>
+	<string name="select_table_seats_amount">Select the amount of seats</string>
 
 </resources>

@@ -11,23 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.DinningTable;
 import com.android.support.MyPreferences;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
-public class DinningTablesAdapter extends BaseAdapter implements Filterable {
+public class DinningTableSeatsAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
-    private List<DinningTable> dinningTables;
+    private String[] dinningTableSeats;
 
 
-    public DinningTablesAdapter(Activity activity, List<DinningTable> dinningTables) {
+    public DinningTableSeatsAdapter(Activity activity, String[] dinningTableSeats) {
         mInflater = LayoutInflater.from(activity);
-        this.dinningTables = dinningTables;
+        this.dinningTableSeats = dinningTableSeats;
     }
 
 
@@ -47,9 +42,8 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.iconLine.setImageResource(R.drawable.dinning_table);
-        holder.textLine.setText(String.valueOf(dinningTables.get(position).getNumber()));
-        holder.dinningTable = dinningTables.get(position);
+        holder.iconLine.setImageResource(R.drawable.chair);
+        holder.textLine.setText(dinningTableSeats[position]);
         return convertView;
     }
 
@@ -57,7 +51,6 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
     public class ViewHolder {
         TextView textLine;
         ImageView iconLine;
-        public DinningTable dinningTable;
     }
 
 
@@ -73,12 +66,12 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
 
     @Override
     public int getCount() {
-        return dinningTables.size();
+        return dinningTableSeats.length;
     }
 
     @Override
     public Object getItem(int position) {
-        return dinningTables.get(position);
+        return dinningTableSeats[position];
     }
 
 }

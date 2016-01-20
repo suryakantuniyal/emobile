@@ -31,17 +31,17 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_restaurant_mode" />
         <CheckBoxPreference
-            android:key="pref_disable_togo_eatin"
+            android:key="pref_enable_togo_eatin"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_disable_togo_eatin" />
+            android:title="@string/config_enable_togo_eatin" />
         <CheckBoxPreference
             android:key="pref_require_waiter_signin"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_require_waiter_signin" />
         <CheckBoxPreference
-            android:key="pref_disable_table_selection"
+            android:key="pref_enable_table_selection"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_disable_table_selection" />
+            android:title="@string/config_enable_table_selection" />
         <CheckBoxPreference
             android:key="pref_ask_seats"
             android:layout="@layout/settings_custom_layout"
