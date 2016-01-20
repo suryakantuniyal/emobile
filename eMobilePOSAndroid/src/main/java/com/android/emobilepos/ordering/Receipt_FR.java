@@ -1722,10 +1722,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
-
-            if (OrderingMain_FA.instance._msrUsbSams != null
-                    && OrderingMain_FA.instance._msrUsbSams.isDeviceOpen()) {
-                OrderingMain_FA.instance._msrUsbSams.CloseTheDevice();
+            OrderingMain_FA orderingMain = (OrderingMain_FA) getActivity();
+            if (orderingMain._msrUsbSams != null
+                    && orderingMain._msrUsbSams.isDeviceOpen()) {
+                orderingMain._msrUsbSams.CloseTheDevice();
             }
 
         }

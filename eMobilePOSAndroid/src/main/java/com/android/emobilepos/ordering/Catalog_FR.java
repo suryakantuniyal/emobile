@@ -694,7 +694,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             startActivityForResult(intent, 0);
         } else {
-            if (!OrderingMain_FA.instance.validAutomaticAddQty(product)) {
+            OrderingMain_FA orderingMain = (OrderingMain_FA) getActivity();
+            if (!orderingMain.validAutomaticAddQty(product)) {
                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.limit_onhand));
             } else {
                 if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {

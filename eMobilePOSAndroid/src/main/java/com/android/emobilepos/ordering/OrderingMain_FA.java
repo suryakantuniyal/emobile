@@ -95,7 +95,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private int orientation;
     private LinearLayout catalogContainer, receiptContainer;
-    public static OrderingMain_FA instance;
     private DinningTable selectedDinningTable;
     private Catalog_FR rightFragment;
     private Receipt_FR leftFragment;
@@ -141,7 +140,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
-        instance = this;
         callBackMSR = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
@@ -212,8 +210,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         final String[] seats = this.getResources().getStringArray(R.array.dinningTableSeatsArray);
         final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        popDlog.setCancelable(true);
-        popDlog.setCanceledOnTouchOutside(true);
+        popDlog.setCancelable(false);
+        popDlog.setCanceledOnTouchOutside(false);
         popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
         GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
         final DinningTableSeatsAdapter adapter = new DinningTableSeatsAdapter(this, seats);
@@ -235,8 +233,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         dinningTables = gson.fromJson(this.getResources().getString(R.string.dinningTables), listType);
         final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        popDlog.setCancelable(true);
-        popDlog.setCanceledOnTouchOutside(true);
+        popDlog.setCancelable(false);
+        popDlog.setCanceledOnTouchOutside(false);
         popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
         GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
         final DinningTablesAdapter adapter = new DinningTablesAdapter(this, dinningTables);
