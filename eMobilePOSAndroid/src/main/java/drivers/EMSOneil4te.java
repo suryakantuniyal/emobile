@@ -727,6 +727,13 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 	}
 
 	@Override
+	public void printShiftDetailsReport(String shiftID) {
+	//	printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+	}
+
+
+
+	@Override
 	public boolean printReport(String curDate) {
 		// TODO Auto-generated method stub
 		try {

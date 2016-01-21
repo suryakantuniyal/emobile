@@ -106,7 +106,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+    public class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -287,8 +287,14 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         promptCloseShift(true, 0);
                     break;
                 case R.string.config_expenses:
-                    intent = new Intent(activity, ShiftExpensesList_FA.class);
-                    startActivity(intent);
+                    String spID = myPref.getShiftID();
+                    //if shift is open then show the expenses option
+                    if (spID.isEmpty()) {
+                        Toast.makeText(activity, "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
+                    } else {
+                        intent = new Intent(activity, ShiftExpensesList_FA.class);
+                        startActivity(intent);
+                    }
                     break;
                 case R.string.config_default_country:
                     CountryPicker picker = new CountryPicker();
@@ -736,6 +742,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         handler.updateShift(myPref.getShiftID(), "endTimeLocal", Global.getCurrentDate());
 
                         myPref.setShiftIsOpen(true);
+                        myPref.setShiftID(""); //erase the shift ID
                         openShiftPref.setSummary("");
                     }
                 }

@@ -34,7 +34,9 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     public boolean printReport(String curDate);
 
-	public void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
+    public void printShiftDetailsReport(String shiftID);
+
+    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
 
     public void registerPrinter();
 

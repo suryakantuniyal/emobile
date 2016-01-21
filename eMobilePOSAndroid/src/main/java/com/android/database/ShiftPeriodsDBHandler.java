@@ -205,7 +205,7 @@ public class ShiftPeriodsDBHandler {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append(
-				"SELECT assignee_name,beginning_petty_cash,ending_petty_cash,total_transaction_cash,ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash',entered_close_amount, CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type' FROM ")
+				"SELECT assignee_name,beginning_petty_cash,ending_petty_cash,total_transaction_cash,ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash', startTime, endTime, entered_close_amount, CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type' FROM ")
 				.append(table_name).append(" WHERE shift_id = ?");
 
 		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[] { shiftID });
@@ -244,7 +244,9 @@ public class ShiftPeriodsDBHandler {
 			} else {
 				map.put(6, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(entered_close_amount))));
 			}
-
+			map.put(7, c.getString(c.getColumnIndex(startTime)));
+			map.put(8, c.getString(c.getColumnIndex(endTime)));
+			map.put(9, c.getString(c.getColumnIndex("end_type")));
 		}
 		c.close();
 		// db.close();

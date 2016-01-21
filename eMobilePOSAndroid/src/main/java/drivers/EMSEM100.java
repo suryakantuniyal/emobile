@@ -118,6 +118,9 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
 
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+    }
 
 
     @Override

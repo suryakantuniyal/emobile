@@ -248,6 +248,12 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 	}
 
 	@Override
+	public void printShiftDetailsReport(String shiftID) {
+		printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+	}
+
+
+	@Override
 	public boolean printPaymentDetails(String payID, int type, boolean isReprint) {
 
 		printPaymentDetailsReceipt(payID,type, isReprint, LINE_WIDTH);

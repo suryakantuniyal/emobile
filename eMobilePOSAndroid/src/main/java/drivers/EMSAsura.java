@@ -1050,6 +1050,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void printShiftDetailsReport(String shiftID) {
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+    }
+
+    @Override
     public boolean printReport(String curDate) {
         // TODO Auto-generated method stub
 

@@ -637,6 +637,12 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public void printShiftDetailsReport(String shiftID) {
+ //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+    }
+
+
+    @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
     }
