@@ -31,6 +31,8 @@ import com.android.database.CustomersHandler;
 import com.android.database.Locations_DB;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.DinningTableSeatsAdapter;
+import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.adapters.SalesMenuAdapter;
 import com.android.emobilepos.cardmanager.GiftCard_FA;
 import com.android.emobilepos.cardmanager.LoyaltyCard_FA;
@@ -41,13 +43,19 @@ import com.android.emobilepos.history.HistoryOpenInvoices_FA;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
+import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SalesTab_FR extends Fragment {
     private SalesMenuAdapter myAdapter;
@@ -59,6 +67,8 @@ public class SalesTab_FR extends Fragment {
     private Button salesInvoices;
     public static Activity activity;
     private EditText hiddenField;
+    private DinningTable selectedDinningTable;
+    private String selectedSeatsAmount;
 //    GridView gridView;
 
 
@@ -478,15 +488,65 @@ public class SalesTab_FR extends Fragment {
             @Override
             public void onClick(View v) {
                 popDlog.dismiss();
+                if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
+                    selectDinnerTable();
+                } else {
+                    selectSeatAmount();
+                }
                 Intent intent = new Intent(activity, OrderingMain_FA.class);
                 intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                 intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+                intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
+                intent.putExtra("selectedDinningTableNumber", selectedDinningTable.getNumber());
                 startActivityForResult(intent, 0);
             }
         });
         popDlog.show();
     }
 
+    private void selectSeatAmount() {
+        final String[] seats = this.getResources().getStringArray(R.array.dinningTableSeatsArray);
+        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
+        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        popDlog.setCancelable(false);
+        popDlog.setCanceledOnTouchOutside(false);
+        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
+        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
+        final DinningTableSeatsAdapter adapter = new DinningTableSeatsAdapter(getActivity(), seats);
+        gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedSeatsAmount = seats[position];
+                popDlog.dismiss();
+            }
+        });
+        popDlog.show();
+    }
+
+    public void selectDinnerTable() {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<ArrayList<DinningTable>>() {
+        }.getType();
+        final List<DinningTable> dinningTables = gson.fromJson(this.getResources().getString(R.string.dinningTables), listType);
+        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
+        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        popDlog.setCancelable(false);
+        popDlog.setCanceledOnTouchOutside(false);
+        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
+        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
+        final DinningTablesAdapter adapter = new DinningTablesAdapter(getActivity(), dinningTables);
+        gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectedDinningTable = dinningTables.get(position);
+                popDlog.dismiss();
+                selectSeatAmount();
+            }
+        });
+        popDlog.show();
+    }
 
     private void pickLocations(final boolean showOrigin) {
         LocationsPickerDlog_FR picker = new LocationsPickerDlog_FR();

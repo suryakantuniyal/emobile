@@ -1,12 +1,20 @@
 package com.android.emobilepos.ordering;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.android.database.ProductAddonsHandler;
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +35,19 @@ public class OrderProductListAdapter extends BaseAdapter {
             return code;
         }
     }
+
     private LayoutInflater mInflater;
     List<OrderProduct> orderProducts;
     int seatsAmount;
     List<OrderSeatProduct> list;
+    private MyPreferences myPref;
+    Activity activity;
 
-    public OrderProductListAdapter(Context context, List<OrderProduct> orderProducts, int seatsAmount) {
-        mInflater = (LayoutInflater) context
+    public OrderProductListAdapter(Activity activity, List<OrderProduct> orderProducts, int seatsAmount) {
+        mInflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        myPref = new MyPreferences(activity);
+        this.activity = activity;
         this.orderProducts = orderProducts;
         this.seatsAmount = seatsAmount;
         list = new ArrayList<OrderSeatProduct>();
@@ -68,7 +81,41 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+        ViewHolder holder;
+        int type = getItemViewType(position);
+        if (convertView == null) {
+            holder = new ViewHolder();
+
+            switch (type) {
+                case 0:
+                    convertView = mInflater.inflate(R.layout.seat_receipt_adapter, null);
+                    break;
+                case 1:
+                    convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
+                    holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
+                    holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
+                    holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
+                    holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
+                    holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
+                    holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
+
+                    holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
+                    if (holder.addonButton != null)
+                        holder.addonButton.setFocusable(false);
+                    if (list.get(position).rowType == RowType.TYPE_ITEM) {
+                        setHolderValues(holder, position);
+                    }
+                    convertView.setTag(holder);
+                    break;
+            }
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+            if (list.get(position).rowType == RowType.TYPE_ITEM) {
+                setHolderValues(holder, position);
+            }
+        }
+
+        return convertView;
     }
 
     public class OrderSeatProduct {
@@ -85,6 +132,66 @@ public class OrderProductListAdapter extends BaseAdapter {
             this.orderProduct = orderProduct;
             this.rowType = RowType.TYPE_ITEM;
         }
+    }
+
+
+    public void setHolderValues(ViewHolder holder, final int pos) {
+        final OrderProduct product = list.get(pos).orderProduct;
+        final String tempId = product.ordprod_id;
+
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {
+            if (holder.addonButton != null)
+                holder.addonButton.setVisibility(View.INVISIBLE);
+        } else {
+            if (holder.addonButton != null) {
+                holder.addonButton.setVisibility(View.VISIBLE);
+                holder.addonButton.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(activity, PickerAddon_FA.class);
+                        String prodID = product.prod_id;
+//                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
+
+                        intent.putExtra("addon_map_key", tempId);
+                        intent.putExtra("isEditAddon", true);
+                        intent.putExtra("prod_id", prodID);
+                        intent.putExtra("item_position", pos);
+
+
+                        ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
+                        Global.productParentAddons = prodAddonsHandler.getParentAddons(prodID);
+
+                        activity.startActivityForResult(intent, 0);
+                    }
+                });
+            }
+        }
+
+        holder.itemQty.setText(product.ordprod_qty);
+        holder.itemName.setText(product.ordprod_name);
+
+        String temp = Global.formatNumToLocale(Double.parseDouble(product.overwrite_price));
+        holder.itemAmount.setText(Global.getCurrencyFormat(temp));
+
+
+        holder.distQty.setText(product.disAmount);
+        temp = Global.formatNumToLocale(Double.parseDouble(product.disTotal));
+        holder.distAmount.setText(Global.getCurrencyFormat(temp));
+
+        temp = Global.formatNumToLocale(Double.parseDouble(product.itemTotal));
+        holder.granTotal.setText(Global.getCurrencyFormat(temp));
+
+    }
+
+    public class ViewHolder {
+        TextView itemQty;
+        TextView itemName;
+        TextView itemAmount;
+        TextView distQty;
+        TextView distAmount;
+        TextView granTotal;
+        Button addonButton;
     }
 }
 

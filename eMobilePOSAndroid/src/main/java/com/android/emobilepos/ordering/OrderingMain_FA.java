@@ -131,8 +131,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Bundle extras;
     private Global.RestaurantSaleType restaurantSaleType = Global.RestaurantSaleType.EAT_IN;
     private boolean isToGo;
-    private List<DinningTable> dinningTables;
     private String selectedSeatsAmount;
+    private String selectedDinningTableNumber;
 
 
 //    CustomKeyboard mCustomKeyboard;
@@ -155,6 +155,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
         restaurantSaleType = (Global.RestaurantSaleType) extras.get("RestaurantSaleType");
+        selectedSeatsAmount = extras.getString("selectedSeatsAmount");
+        selectedDinningTableNumber = extras.getString("selectedDinningTableNumber");
+
         isToGo = restaurantSaleType == Global.RestaurantSaleType.TO_GO;
         returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.getIsTablet())
@@ -198,59 +201,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.btSled.currentDevice.loadScanner(callBackMSR);
         }
 
-        if (!isToGo) {
-            if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
-                selectDinnerTable();
-            } else {
-                selectSeatAmount();
-            }
-        }
+
         hasBeenCreated = true;
     }
 
-    private void selectSeatAmount() {
-        final String[] seats = this.getResources().getStringArray(R.array.dinningTableSeatsArray);
-        final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
-        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        popDlog.setCancelable(false);
-        popDlog.setCanceledOnTouchOutside(false);
-        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
-        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
-        final DinningTableSeatsAdapter adapter = new DinningTableSeatsAdapter(this, seats);
-        gridView.setAdapter(adapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedSeatsAmount = seats[position];
-                popDlog.dismiss();
-            }
-        });
-        popDlog.show();
-    }
 
-    public void selectDinnerTable() {
-        Gson gson = new Gson();
-        Type listType = new TypeToken<ArrayList<DinningTable>>() {
-        }.getType();
-        dinningTables = gson.fromJson(this.getResources().getString(R.string.dinningTables), listType);
-        final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
-        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        popDlog.setCancelable(false);
-        popDlog.setCanceledOnTouchOutside(false);
-        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
-        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
-        final DinningTablesAdapter adapter = new DinningTablesAdapter(this, dinningTables);
-        gridView.setAdapter(adapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectedDinningTable = dinningTables.get(position);
-                popDlog.dismiss();
-                selectSeatAmount();
-            }
-        });
-        popDlog.show();
-    }
 
     private Handler ScanResultHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -1240,6 +1195,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         new processAsync().execute(generatedURL);
+    }
+
+    public int getSelectedSeatsAmount() {
+        return Integer.parseInt(selectedSeatsAmount);
     }
 
     private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {

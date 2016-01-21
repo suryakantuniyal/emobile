@@ -94,7 +94,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private Activity activity;
     private SemiClosedSlidingDrawer slidingDrawer;
     public TextView custName;
-    public static ReceiptMainLV_Adapter mainLVAdapter;
+    public static OrderProductListAdapter mainLVAdapter;
     private ReceiptRestLV_Adapter restLVAdapter;
     // private ListViewAdapter myAdapter;
     public static ListView receiptListView;
@@ -377,7 +377,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void setupListView() {
-        mainLVAdapter = new ReceiptMainLV_Adapter(activity);
+        OrderingMain_FA orderingMain_fa = (OrderingMain_FA) getActivity();
+        mainLVAdapter = new OrderProductListAdapter(getActivity(), global.orderProducts, orderingMain_fa.getSelectedSeatsAmount()); //new ReceiptMainLV_Adapter(activity);
         receiptListView.setAdapter(mainLVAdapter);
 //		reCalculate();
     }
