@@ -29,7 +29,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXdownloadHandler;
 import com.android.database.DBManager;
@@ -622,7 +622,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     public void addOrder(Cursor c) {
         int size = c.getCount();
-        OrderProducts ord = new OrderProducts();
+        OrderProduct ord = new OrderProduct();
         ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
         ProductsHandler prodHandler = new ProductsHandler(activity);
         String[] discountInfo;
@@ -741,7 +741,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
             if (global.orderProducts == null) {
-                global.orderProducts = new ArrayList<OrderProducts>();
+                global.orderProducts = new ArrayList<OrderProduct>();
             }
 
 
@@ -768,7 +768,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
                 int pos = global.orderProducts.size();
-                OrderProducts temp = null;
+                OrderProduct temp = null;
                 if (pos > 0)
                     temp = global.orderProducts.get(pos - 1);
 
@@ -779,21 +779,21 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{isAdded, tempVal[1]});
 
 
-                global.orderProductsAddons.add(ord);
+                global.orderProductAddons.add(ord);
 
 
                 if (i + 1 >= size) {
                     if (Global.addonSelectionMap == null)
                         Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
                     if (Global.orderProductAddonsMap == null)
-                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
+                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
                     if (global.addonSelectionType.size() > 0 && temp != null) {
                         Global.addonSelectionMap.put(temp.ordprod_id, global.addonSelectionType);
-                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductsAddons);
+                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductAddons);
 
 
-                        global.orderProductsAddons = new ArrayList<OrderProducts>();
+                        global.orderProductAddons = new ArrayList<OrderProduct>();
                         global.addonSelectionType = new HashMap<String, String[]>();
                     }
                 }
@@ -801,7 +801,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
                 if (isAddon) {
                     int pos = global.orderProducts.size();
-                    OrderProducts temp = null;
+                    OrderProduct temp = null;
                     if (pos > 0)
                         temp = global.orderProducts.get(pos - 1);
 
@@ -809,14 +809,14 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     if (Global.addonSelectionMap == null)
                         Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
                     if (Global.orderProductAddonsMap == null)
-                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
+                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
                     if (global.addonSelectionType.size() > 0 && temp != null) {
                         Global.addonSelectionMap.put(temp.ordprod_id, global.addonSelectionType);
-                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductsAddons);
+                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductAddons);
 
 
-                        global.orderProductsAddons = new ArrayList<OrderProducts>();
+                        global.orderProductAddons = new ArrayList<OrderProduct>();
                         global.addonSelectionType = new HashMap<String, String[]>();
 
                     }
@@ -826,7 +826,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 global.orderProducts.add(ord);
 
             }
-            ord = new OrderProducts();
+            ord = new OrderProduct();
             c.moveToNext();
         }
     }

@@ -45,7 +45,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -104,7 +104,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     private static List<String> allInfoLeft;
     private String order_id;
-    private List<OrderProducts> orderedProd;
+    private List<OrderProduct> orderedProd;
     private Drawable mapDrawable;
     private ProgressDialog myProgressDialog;
 

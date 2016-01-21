@@ -297,14 +297,14 @@ public class OrdersHandler {
 
     public void emptyTableOnHold() {
         StringBuilder sb = new StringBuilder();
-        // sb.append("DELETE FROM OrderProducts WHERE OrderProducts.ord_id IN
+        // sb.append("DELETE FROM OrderProduct WHERE OrderProduct.ord_id IN
         // ");
-        // sb.append("(SELECT op.ord_id FROM OrderProducts op LEFT JOIN Orders o
+        // sb.append("(SELECT op.ord_id FROM OrderProduct op LEFT JOIN Orders o
         // ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)");
         // DBManager._db.rawQuery(sb.toString(), new
         // String[]{myPref.getEmpID()});
-        DBManager._db.delete("OrderProducts",
-                "OrderProducts.ord_id IN (SELECT op.ord_id FROM OrderProducts op LEFT JOIN Orders o ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)",
+        DBManager._db.delete("OrderProduct",
+                "OrderProduct.ord_id IN (SELECT op.ord_id FROM OrderProduct op LEFT JOIN Orders o ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)",
                 new String[]{myPref.getEmpID()});
         // sb.setLength(0);
         // sb.append("DELETE FROM ").append(table_name).append(" WHERE isOnHold
@@ -686,10 +686,10 @@ public class OrdersHandler {
             dateCreated = c.getString(c.getColumnIndex(ord_timecreated));
 
         sb.append("DELETE FROM ").append(table_name).append(" WHERE ord_id = '").append(ordID).append("'");
-        sb2.append("DELETE FROM OrderProducts WHERE ord_id = '").append(ordID).append("'");
+        sb2.append("DELETE FROM OrderProduct WHERE ord_id = '").append(ordID).append("'");
 
         DBManager._db.delete(table_name, "ord_id = ?", new String[]{ordID});
-        DBManager._db.delete("OrderProducts", "ord_id = ?", new String[]{ordID});
+        DBManager._db.delete("OrderProduct", "ord_id = ?", new String[]{ordID});
         // db.rawQuery(sb.toString(), null);
         // db.rawQuery(sb2.toString(), null);
         c.close();

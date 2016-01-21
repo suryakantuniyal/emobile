@@ -362,7 +362,7 @@ public class DBManager {
             + "[inv_ispaid] [int] NULL, [inv_paiddate] [datetime] NULL, [mod_date] [datetime] NULL, [txnID] [varchar](255) NULL, "
             + "[inv_update] [datetime] NULL)";
 
-    private final String CREATE_ORDERPRODUCTS = "CREATE TABLE [OrderProducts]( [ordprod_id] [uniqueidentifier] PRIMARY KEY NOT NULL, "
+    private final String CREATE_ORDERPRODUCTS = "CREATE TABLE [OrderProduct]( [ordprod_id] [uniqueidentifier] PRIMARY KEY NOT NULL, "
             + "[prod_id] [varchar](50) NOT NULL, [ord_id] [varchar](50) NOT NULL, [ordprod_qty] [real] NOT NULL, [overwrite_price] [money] NOT NULL, "
             + "[reason_id] [int] NULL, [ordprod_desc] [varchar](4095) NULL, [pricelevel_id] [varchar](50) NULL, [prod_seq] [int] NULL, "
             + "[uom_name] [varchar](50) NULL, [uom_conversion] [real] NULL, [discount_id] [varchar](50) NULL, [discount_value] [money] NULL, "
@@ -590,7 +590,7 @@ public class DBManager {
     private final String CREATE_PAYMENTS_XML = "CREATE TABLE [PaymentsXML]([app_id] [varchar](100) PRIMARY KEY NOT NULL, [payment_xml] [varchar] NOT NULL)";
 
     private final String[] TABLE_NAME = new String[]{"Address", "Categories", "Customers", "DrawDateInfo", "EmpInv",
-            "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProducts", "Orders", "PayMethods",
+            "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProduct", "Orders", "PayMethods",
             "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXRef",
             "ProductChainXRef", "Product_addons", "Products", "Products_Images", "PublicVariables", "Reasons",
             "Refunds", "SalesTaxCodes", "ShipMethod", "Taxes", "Taxes_Group", "Templates", "Terms", "UOM",

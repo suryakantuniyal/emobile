@@ -71,7 +71,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public static String search_text = "", search_type = "";
     public static List<String> btnListID = new ArrayList<String>();
     public static List<String> btnListName = new ArrayList<String>();
-    private Activity activity;
     private AbsListView catalogList;
     //private SQLiteDatabase db;
     private DBManager dbManager;
@@ -106,31 +105,30 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_catalog_layout, container, false);
-        activity = getActivity();
         instance = this;
         catButLayout = (LinearLayout) view.findViewById(R.id.categoriesButtonLayoutHolder);
         searchField = (MyEditText) view.findViewById(R.id.catalogSearchField);
-        searchField.setIsForSearching(activity, OrderingMain_FA.invisibleSearchMain);
+        searchField.setIsForSearching(getActivity(), OrderingMain_FA.invisibleSearchMain);
         // searchField.setText("58187869354"); //test upc
         catalogList = (AbsListView) view.findViewById(R.id.catalogListview);
         catalogList.setOnItemClickListener(this);
-        catalogIsPortrait = Global.isPortrait(activity);
-        callBackRefreshView = (RefreshReceiptViewCallback) activity;
+        catalogIsPortrait = Global.isPortrait(getActivity());
+        callBackRefreshView = (RefreshReceiptViewCallback) getActivity();
         dbManager = new DBManager(getActivity());
         //db = dbManager.openReadableDB();
-        volPriceHandler = new VolumePricesHandler(activity);
-        myPref = new MyPreferences(activity);
+        volPriceHandler = new VolumePricesHandler(getActivity());
+        myPref = new MyPreferences(getActivity());
         imageLoader = ImageLoader.getInstance();
         File cacheDir = new File(myPref.getCacheDir());
         if (!cacheDir.exists())
             cacheDir.mkdirs();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity).memoryCacheExtraOptions(100, 100)
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity()).memoryCacheExtraOptions(100, 100)
                 .discCacheExtraOptions(1000, 1000, CompressFormat.JPEG, 100, null).discCache(new UnlimitedDiscCache(cacheDir)).build();
         imageLoader.init(config);
         imageLoader.handleSlowNetwork(true);
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
 
-        global = (Global) activity.getApplication();
+        global = (Global) getActivity().getApplication();
 
 
         if (Global.cat_id.equals("0"))
@@ -233,10 +231,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             btnCategory.setOnClickListener(this);
 
 
-        catHandler = new CategoriesHandler(activity);
+        catHandler = new CategoriesHandler(getActivity());
         Spinner spinnerFilter = (Spinner) v.findViewById(R.id.filterButton);
 
-        Resources resources = activity.getResources();
+        Resources resources = getActivity().getResources();
         searchFilters = new String[]{resources.getString(R.string.catalog_name), resources.getString(R.string.catalog_description),
                 resources.getString(R.string.catalog_type), resources.getString(R.string.catalog_upc), resources.getString(R.string.catalog_sku)};
 
@@ -316,8 +314,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final ListView list = new ListView(activity);
-        tempLVAdapter = new ListViewAdapter(activity);
+        final ListView list = new ListView(getActivity());
+        tempLVAdapter = new ListViewAdapter(getActivity());
         list.setCacheColorHint(Color.TRANSPARENT);
         list.setAdapter(tempLVAdapter);
         builder.setView(list);
@@ -391,7 +389,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(activity);
+        return new Catalog_Loader(getActivity());
     }
 
     @Override
@@ -405,12 +403,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         myCursor = c;
         if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
-            categoryListAdapter = new MenuCatGV_Adapter(this, activity, c, CursorAdapter.NO_SELECTION, imageLoader);
+            categoryListAdapter = new MenuCatGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
             catalogList.setAdapter(categoryListAdapter);
             if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && myCursor.getCount() == 1 && _typeCase == CASE_CATEGORY)
                 itemClicked(false);
         } else {
-            prodListAdapter = new MenuProdGV_Adapter(this, activity, c, CursorAdapter.NO_SELECTION, imageLoader);
+            prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
             catalogList.setAdapter(prodListAdapter);
         }
 
@@ -543,16 +541,16 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     private void addCategoryButton(String categoryName, String cat_id) {
-        Button btn = new Button(activity);
+        Button btn = new Button(getActivity());
         btn.setTag(cat_id);
         btn.setText(categoryName);
         //btn.setPadding(18, 0, 18, 0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         catButLayout.addView(btn, params);
-        btn.setTextAppearance(activity, R.style.black_text_appearance);
+        btn.setTextAppearance(getActivity(), R.style.black_text_appearance);
         btn.setPadding(5, 0, 5, 0);
-        btn.setTextSize(TypedValue.COMPLEX_UNIT_PX, activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
+        btn.setTextSize(TypedValue.COMPLEX_UNIT_PX, getActivity().getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
         //btn.setEms(6);
         btn.setBackgroundResource(R.drawable.blue_btn_selector);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -670,7 +668,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         Product product = populateDataForIntent(myCursor);
 
         if (!isFastScanning) {
-            Intent intent = new Intent(activity, PickerProduct_FA.class);
+            Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
             intent.putExtra("prod_id", product.getId());
             intent.putExtra("prod_name", product.getProdName());
             intent.putExtra("prod_on_hand", product.getProdOnHand());
@@ -701,7 +699,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
                     int orderIndex = global.checkIfGroupBySKU(getActivity(), product.getId(), "1");
                     if (orderIndex != -1 && !OrderingMain_FA.returnItem) {
-                        global.refreshParticularOrder(myPref, orderIndex, product);
+                        global.refreshParticularOrder(getActivity(), orderIndex, product);
                         refreshListView();
                         callBackRefreshView.refreshView();
                     } else
@@ -872,8 +870,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             // we know that simple_spinner_item has android.R.id.text1 TextView:
 
             TextView text = (TextView) view.findViewById(android.R.id.text1);
-            text.setTextAppearance(activity, R.style.black_text_appearance);// choose your color
-            text.setTextSize(TypedValue.COMPLEX_UNIT_PX, activity.getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
+            text.setTextAppearance(getActivity(), R.style.black_text_appearance);// choose your color
+            text.setTextSize(TypedValue.COMPLEX_UNIT_PX, getActivity().getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
             return view;
         }
 

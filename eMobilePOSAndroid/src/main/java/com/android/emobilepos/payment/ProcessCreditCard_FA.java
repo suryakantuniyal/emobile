@@ -44,7 +44,7 @@ import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -220,9 +220,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         tax1.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax1_amount")));
         tax2.setText(Global.formatDoubleStrToCurrency(extras.getString("Tax2_amount")));
-        List<OrderProducts> orderProducts = global.orderProducts;
+        List<OrderProduct> orderProducts = global.orderProducts;
         double subtotalDbl = 0;
-        for (OrderProducts products : orderProducts) {
+        for (OrderProduct products : orderProducts) {
             subtotalDbl += Double.parseDouble(products.itemSubtotal);
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));

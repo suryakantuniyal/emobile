@@ -56,7 +56,7 @@ import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
@@ -438,10 +438,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                                     .subtract(
                                                             new BigDecimal(
                                                                     map.get("discount_price")));
-                                            // global.orderProducts.get(position).getSetData("disAmount",
+                                            // global.orderProduct.get(position).getSetData("disAmount",
                                             // false, new
                                             // BigDecimal(map.get("discount_price")));
-                                            // global.orderProducts.get(position).getSetData("disTotal",
+                                            // global.orderProduct.get(position).getSetData("disTotal",
                                             // false, new
                                             // BigDecimal(map.get("discount_price")));
                                         } else {
@@ -454,7 +454,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                                             new_subtotal = new_price.multiply(
                                                     prod_qty).subtract(rate);
-                                            // global.orderProducts.get(position).getSetData("disAmount",
+                                            // global.orderProduct.get(position).getSetData("disAmount",
                                             // false,
                                             // Global.getRoundBigDecimal(rate));
                                             global.orderProducts.get(position).disTotal = Global
@@ -467,7 +467,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                         new_subtotal = new_price
                                                 .multiply(prod_qty);
                                     // double
-                                    // global.orderProducts.get(position).getSetData("ordprod_qty",
+                                    // global.orderProduct.get(position).getSetData("ordprod_qty",
                                     // true, temp);
 
                                     global.orderProducts.get(position).overwrite_price = temp;
@@ -1048,7 +1048,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     break;
                 }
             }
-            // global.orderProducts = new ArrayList<OrderProducts>();
+            // global.orderProduct = new ArrayList<OrderProduct>();
             // global.qtyCounter.clear();
         }
     }
@@ -1081,7 +1081,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
 
         int totalLines = global.orderProducts.size();
-        for (OrderProducts orderProduct : global.orderProducts) {
+        for (OrderProduct orderProduct : global.orderProducts) {
             order.ord_lineItemDiscount += orderProduct.discount_value;
         }
         if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
@@ -1450,7 +1450,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
         }
 
-        global.orderProducts = new ArrayList<OrderProducts>();
+        global.orderProducts = new ArrayList<OrderProduct>();
         global.qtyCounter = new HashMap<String, String>();
         if (mainLVAdapter != null)
             mainLVAdapter.notifyDataSetChanged();
@@ -1596,7 +1596,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                     new printAsync().execute(true);
 
-                    global.orderProducts = new ArrayList<OrderProducts>();
+                    global.orderProducts = new ArrayList<OrderProduct>();
                     global.qtyCounter.clear();
                     global.resetOrderDetailsValues();
 
@@ -1722,10 +1722,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             myProgressDialog.setCancelable(false);
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
-            OrderingMain_FA orderingMain = (OrderingMain_FA) getActivity();
-            if (orderingMain._msrUsbSams != null
-                    && orderingMain._msrUsbSams.isDeviceOpen()) {
-                orderingMain._msrUsbSams.CloseTheDevice();
+
+            if (OrderingMain_FA.instance._msrUsbSams != null
+                    && OrderingMain_FA.instance._msrUsbSams.isDeviceOpen()) {
+                OrderingMain_FA.instance._msrUsbSams.CloseTheDevice();
             }
 
         }
@@ -1934,9 +1934,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void proceedToRemove(int pos, int removePos) {
-        // String quant = global.orderProducts.get(pos).ordprod_qty;
-        // String prodID = global.orderProducts.get(pos).prod_id;
-        OrderProducts product = global.orderProducts.get(pos);
+        // String quant = global.orderProduct.get(pos).ordprod_qty;
+        // String prodID = global.orderProduct.get(pos).prod_id;
+        OrderProduct product = global.orderProducts.get(pos);
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             double totalQty = (Double) Global.getFormatedNumber(true,
                     global.qtyCounter.get(product.prod_id));
@@ -1968,7 +1968,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             if (Global.orderProductAddonsMap != null
                     && !Global.orderProductAddonsMap.isEmpty()) {
                 if (Global.orderProductAddonsMap.get(product.ordprod_id) != null)
-                    for (OrderProducts op : Global.orderProductAddonsMap
+                    for (OrderProduct op : Global.orderProductAddonsMap
                             .get(product.ordprod_id)) {
                         ordProdDB.deleteOrderProduct(op.ordprod_id);
                     }
@@ -2100,9 +2100,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     List<HashMap<String, String>> mapList = handleTemplate
                             .getTemplate(myPref.getCustID());
                     int size = mapList.size();
-                    global.orderProducts = new ArrayList<OrderProducts>();
+                    global.orderProducts = new ArrayList<OrderProduct>();
 
-                    OrderProducts ordProd = new OrderProducts();
+                    OrderProduct ordProd = new OrderProduct();
                     Orders anOrder = new Orders();
                     for (int i = 0; i < size; i++) {
                         ordProd.ordprod_id = mapList.get(i).get("ordprod_id");
@@ -2132,7 +2132,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         global.qtyCounter.put(mapList.get(i).get("prod_id"),
                                 mapList.get(i).get("ordprod_qty"));
 
-                        ordProd = new OrderProducts();
+                        ordProd = new OrderProduct();
                         anOrder = new Orders();
                     }
                     receiptListView.invalidateViews();

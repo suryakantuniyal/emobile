@@ -40,13 +40,12 @@ import com.android.database.UOMHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TerminalDisplay;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -58,8 +57,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
-
-import drivers.EMSELO;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
@@ -631,7 +628,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
     private void modifyProduct(int position) {
-        OrderProducts orderedProducts = global.orderProducts.get(position);
+        OrderProduct orderedProducts = global.orderProducts.get(position);
 
         String val = qty_picked;
         BigDecimal sum = Global.getBigDecimalNum(val);
@@ -906,7 +903,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void generateNewProduct() {
-        OrderProducts ord = new OrderProducts();
+        OrderProduct ord = new OrderProduct();
 
         String val = qty_picked;
         BigDecimal num = new BigDecimal(val);
@@ -1021,7 +1018,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
         if (global.orderProducts == null) {
-            global.orderProducts = new ArrayList<OrderProducts>();
+            global.orderProducts = new ArrayList<OrderProduct>();
         }
 
         UUID uuid = UUID.randomUUID();
@@ -1044,29 +1041,29 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if (Global.addonSelectionMap == null)
                 Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
             if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
+                Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
             if (global.addonSelectionType.size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductsAddons);
+                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
 
 
                 sb.append(ord.ordprod_desc);
-                int tempSize = global.orderProductsAddons.size();
+                int tempSize = global.orderProductAddons.size();
                 for (int i = 0; i < tempSize; i++) {
 
                     sb.append("<br/>");
-                    if (global.orderProductsAddons.get(i).isAdded.equals("0"))//Not added
-                        sb.append("[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
+                    if (global.orderProductAddons.get(i).isAdded.equals("0"))//Not added
+                        sb.append("[NO ").append(global.orderProductAddons.get(i).ordprod_name).append("]");
                     else
-                        sb.append("[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
+                        sb.append("[").append(global.orderProductAddons.get(i).ordprod_name).append("]");
 
                 }
                 ord.ordprod_desc = sb.toString();
                 ord.hasAddons = "1";
 
-                global.orderProductsAddons = new ArrayList<OrderProducts>();
+                global.orderProductAddons = new ArrayList<OrderProduct>();
 
             }
         }
@@ -1212,7 +1209,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void updateSKUProduct(int position) {
-        OrderProducts orderedProducts = global.orderProducts.get(position);
+        OrderProduct orderedProducts = global.orderProducts.get(position);
 
         String newPickedOrders = orderedProducts.ordprod_qty;
         BigDecimal sum = new BigDecimal("1");

@@ -4,11 +4,10 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -107,7 +106,7 @@ public class TemplateHandler {
 
 			int size = global.orderProducts.size();
 			for (int i = 0; i < size; i++) {
-				OrderProducts prod = global.orderProducts.get(i);
+				OrderProduct prod = global.orderProducts.get(i);
 				insert.bindString(index(_id), empStr); // _id
 				insert.bindString(index(cust_id), custID); // cust_id
                 insert.bindString(index(product_id), prod.prod_id == null ? "" : prod.prod_id); // product_id
@@ -205,7 +204,7 @@ public class TemplateHandler {
 		// SQLiteDatabase db = dbManager.openReadableDB();
 
 		List<HashMap<String, String>> orderList = new ArrayList<HashMap<String, String>>();
-		// OrderProducts anOrder = new OrderProducts();
+		// OrderProduct anOrder = new OrderProduct();
 		HashMap<String, String> map = new HashMap<String, String>();
 
 		GenerateNewID generator = new GenerateNewID(activity);

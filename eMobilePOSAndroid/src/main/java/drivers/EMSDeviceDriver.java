@@ -34,7 +34,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
@@ -53,16 +53,11 @@ import POSSDK.POSSDK;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.util.Base64;
 import android.util.Log;
 
@@ -1959,14 +1954,14 @@ public class EMSDeviceDriver {
         sb.append(sb_ord_types);
 
 
-        List<OrderProducts> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
+        List<OrderProduct> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
         if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Items Sold", lineWidth));
 
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
 
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
@@ -2053,7 +2048,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Items Returned", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
@@ -2068,7 +2063,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Sales", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
             }
             listProd.clear();
@@ -2079,7 +2074,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Returns", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
             }
             listProd.clear();

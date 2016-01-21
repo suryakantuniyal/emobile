@@ -812,7 +812,7 @@ public class GenerateXML {
 
 				serializer.endTag(empstr, "Shipping");
 
-				serializer.startTag(empstr, "OrderProducts");
+				serializer.startTag(empstr, "OrderProduct");
 				if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
 					if (cursor.getString(cursor.getColumnIndex("isOnHold")).equals("0")) // not
 																							// on
@@ -824,7 +824,7 @@ public class GenerateXML {
 					buildOrderProducts(serializer, cursor.getString(cursor.getColumnIndex("ord_id")), false, false);
 				}
 
-				serializer.endTag(empstr, "OrderProducts");
+				serializer.endTag(empstr, "OrderProduct");
 
 				serializer.endTag(empstr, "Order");
 
@@ -1011,10 +1011,10 @@ public class GenerateXML {
 		serializer.text(Boolean.toString(order.VAT.equals("1") ? true : false));
 		serializer.endTag(empstr, "VAT");
 
-		serializer.startTag(empstr, "OrderProducts");
+		serializer.startTag(empstr, "OrderProduct");
 		buildOrderProducts(serializer, order.ord_id, myPref.getPreferences(MyPreferences.pref_restaurant_mode),
 				isOnHold);
-		serializer.endTag(empstr, "OrderProducts");
+		serializer.endTag(empstr, "OrderProduct");
 		serializer.endTag(empstr, "Order");
 
 	}
@@ -2487,9 +2487,9 @@ public class GenerateXML {
 					serializer.endTag(empstr, "Shipping");
 				}
 
-				serializer.startTag(empstr, "OrderProducts");
+				serializer.startTag(empstr, "OrderProduct");
 				walletOrderProducts(serializer, c.getString(c.getColumnIndex("ord_id")));
-				serializer.endTag(empstr, "OrderProducts");
+				serializer.endTag(empstr, "OrderProduct");
 
 				serializer.startTag(empstr, "Payments");
 				serializer.startTag(empstr, "Payment");

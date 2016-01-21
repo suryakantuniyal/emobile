@@ -7,7 +7,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.ShiftPeriods;
 import com.android.support.Global;
@@ -345,12 +345,12 @@ public class EMSReceiptHelper {
 
         sb.append(newLines(2));
 
-        List<OrderProducts> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
+        List<OrderProduct> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
         if (listProd.size() > 0) {
             sb.append(centerText("Items Sold"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
 
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
             }
             listProd.clear();
@@ -362,7 +362,7 @@ public class EMSReceiptHelper {
         if (listProd.size() > 0) {
             sb.append(centerText("Items Returned"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
             }
             listProd.clear();
@@ -374,7 +374,7 @@ public class EMSReceiptHelper {
         if (listProd.size() > 0) {
             sb.append(centerText("Department Sales"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
             }
             listProd.clear();
@@ -386,7 +386,7 @@ public class EMSReceiptHelper {
         if (listProd.size() > 0) {
             sb.append(centerText("Department Returns"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
             }
             listProd.clear();

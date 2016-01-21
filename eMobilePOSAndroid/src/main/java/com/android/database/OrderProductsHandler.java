@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -74,7 +74,7 @@ public class OrderProductsHandler {
     public Global global;
     private List<String[]> data;
     private List<HashMap<String, Integer>> dictionaryListMap;
-    public static final String table_name = "OrderProducts";
+    public static final String table_name = "OrderProduct";
     private Activity activity;
     private MyPreferences myPref;
 
@@ -117,7 +117,7 @@ public class OrderProductsHandler {
         return attrHash.get(tag);
     }
 
-    public void insert(List<OrderProducts> order) {
+    public void insert(List<OrderProduct> order) {
 
         // SQLiteDatabase db = dbManager.openWritableDB();
         DBManager._db.beginTransaction();
@@ -133,7 +133,7 @@ public class OrderProductsHandler {
             int size = order.size();
 
             for (int i = 0; i < size; i++) {
-                OrderProducts prod = order.get(i);
+                OrderProduct prod = order.get(i);
                 insert.bindString(index(addon), TextUtils.isEmpty(prod.addon) ? "0" : prod.addon); // addon
                 insert.bindString(index(isAdded), prod.isAdded == null ? "" : prod.isAdded); // isAdded
                 insert.bindString(index(isPrinted), TextUtils.isEmpty(prod.isPrinted) ? "0" : prod.isPrinted); // isPrinted
@@ -209,10 +209,10 @@ public class OrderProductsHandler {
     }
 
     private void insertAddon(SQLiteStatement insert, String ordID) {
-        global.orderProductsAddons = Global.orderProductAddonsMap.get(ordID);
-        int size = global.orderProductsAddons.size();
+        global.orderProductAddons = Global.orderProductAddonsMap.get(ordID);
+        int size = global.orderProductAddons.size();
         for (int i = 0; i < size; i++) {
-            OrderProducts prod = global.orderProductsAddons.get(i);
+            OrderProduct prod = global.orderProductAddons.get(i);
             insert.bindString(index(addon), TextUtils.isEmpty(prod.addon) ? "0" : prod.addon); // addon
             insert.bindString(index(isAdded), prod.isAdded == null ? "" : prod.isAdded); // isAdded
             insert.bindString(index(isPrinted), TextUtils.isEmpty(prod.isPrinted) ? "0" : prod.isPrinted); // isPrinted
@@ -413,12 +413,12 @@ public class OrderProductsHandler {
         return cursor;
     }
 
-    public List<OrderProducts> getOrderProducts(String orderId) {
-        List<OrderProducts> products = new ArrayList<OrderProducts>();
+    public List<OrderProduct> getOrderProducts(String orderId) {
+        List<OrderProduct> products = new ArrayList<OrderProduct>();
         Cursor cursor = getCursorData(orderId);
         if (cursor.moveToFirst()) {
             do {
-                OrderProducts prod = new OrderProducts();
+                OrderProduct prod = new OrderProduct();
 
                 products.add(prod);
             } while (cursor.moveToNext());
@@ -429,7 +429,7 @@ public class OrderProductsHandler {
     public Cursor getWalletOrdProd(String ordID) {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "SELECT op.*,pi.prod_img_name FROM OrderProducts op LEFT OUTER JOIN Products_Images pi ON op.prod_id = pi.prod_id ");
+                "SELECT op.*,pi.prod_img_name FROM OrderProduct op LEFT OUTER JOIN Products_Images pi ON op.prod_id = pi.prod_id ");
         sb.append("AND pi.type = 'I' WHERE ord_id = ?");
         Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{ordID});
         return c;
@@ -463,10 +463,10 @@ public class OrderProductsHandler {
         StringBuilder sb = new StringBuilder();
         // sb.append("SELECT
         // ordprod_name,ordprod_desc,overwrite_price,(overwrite_price*ordprod_qty)
-        // AS 'total', ordprod_qty,addon,isAdded,hasAddons FROM OrderProducts
+        // AS 'total', ordprod_qty,addon,isAdded,hasAddons FROM OrderProduct
         // WHERE ord_id = '");
         sb.append(
-                "SELECT ordprod_name,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM OrderProducts WHERE ord_id = '");
+                "SELECT ordprod_name,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM OrderProduct WHERE ord_id = '");
         sb.append(ordID).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
@@ -504,14 +504,14 @@ public class OrderProductsHandler {
 
 		/*
 		 * sb.append(
-		 * "SELECT ordprod_id,ordprod_name,ordprod_desc,overwrite_price,(overwrite_price*ordprod_qty) AS 'total', ordprod_qty,addon,isAdded,hasAddons,cat_id FROM OrderProducts WHERE ord_id = '"
+		 * "SELECT ordprod_id,ordprod_name,ordprod_desc,overwrite_price,(overwrite_price*ordprod_qty) AS 'total', ordprod_qty,addon,isAdded,hasAddons,cat_id FROM OrderProduct WHERE ord_id = '"
 		 * ); sb.append(ordID).append("' AND isPrinted = '0'");
 		 */
 
         sb.append(
                 "SELECT op.ordprod_id,op.ordprod_name,op.ordprod_desc,op.overwrite_price,(op.overwrite_price*op.ordprod_qty) AS 'total', ");
         sb.append(
-                "op.ordprod_qty,op.ordprod_comment,op.addon,op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' FROM OrderProducts op ");
+                "op.ordprod_qty,op.ordprod_comment,op.addon,op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' FROM OrderProduct op ");
         sb.append("LEFT OUTER JOIN ProductsAttr pa ON op.prod_id = pa.prod_id WHERE ord_id = '");
         sb.append(ordID).append("' AND isPrinted = '0'");
         Cursor c = DBManager._db.rawQuery(sb.toString(), null);
@@ -650,18 +650,18 @@ public class OrderProductsHandler {
         // db.close();
     }
 
-    public List<OrderProducts> getOrderedProducts(String ordID) {
-        List<OrderProducts> list = new ArrayList<OrderProducts>();
+    public List<OrderProduct> getOrderedProducts(String ordID) {
+        List<OrderProduct> list = new ArrayList<OrderProduct>();
         // SQLiteDatabase db = dbManager.openReadableDB();
 
-        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM OrderProducts WHERE ord_id = '";
+        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM OrderProduct WHERE ord_id = '";
         // String subquery2="'";
 
         Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
-        OrderProducts products;
+        OrderProduct products;
         if (cursor.moveToFirst()) {
             do {
-                products = new OrderProducts();
+                products = new OrderProduct();
                 String data = cursor.getString(cursor.getColumnIndex(ordprod_name));
                 products.ordprod_name = data;
 
@@ -692,12 +692,12 @@ public class OrderProductsHandler {
         return list;
     }
 
-    public List<OrderProducts> getProductsDayReport(boolean isSales, String clerk_id, String date) {
+    public List<OrderProduct> getProductsDayReport(boolean isSales, String clerk_id, String date) {
         StringBuilder query = new StringBuilder();
-        List<OrderProducts> listOrdProd = new ArrayList<OrderProducts>();
+        List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
 
         query.append(
-                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' FROM OrderProducts op ");
+                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' FROM OrderProduct op ");
         query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.ord_type IN ");
 
         if (isSales)
@@ -731,7 +731,7 @@ public class OrderProductsHandler {
             int i_overwrite_price = c.getColumnIndex(overwrite_price);
 
             do {
-                OrderProducts ordProd = new OrderProducts();
+                OrderProduct ordProd = new OrderProduct();
 
                 ordProd.ordprod_name = c.getString(i_ordprod_name);
                 ordProd.prod_id = c.getString(i_prod_id);
@@ -748,12 +748,12 @@ public class OrderProductsHandler {
         return listOrdProd;
     }
 
-    public List<OrderProducts> getDepartmentDayReport(boolean isSales, String clerk_id, String date) {
+    public List<OrderProduct> getDepartmentDayReport(boolean isSales, String clerk_id, String date) {
         StringBuilder query = new StringBuilder();
-        List<OrderProducts> listOrdProd = new ArrayList<OrderProducts>();
+        List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
 
         query.append(
-                "SELECT c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date'  FROM OrderProducts op ");
+                "SELECT c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date'  FROM OrderProduct op ");
         query.append(
                 "LEFT JOIN Categories c ON op.cat_id = c.cat_id LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE  o.ord_type IN ");
 
@@ -786,7 +786,7 @@ public class OrderProductsHandler {
             int i_overwrite_price = c.getColumnIndex(overwrite_price);
 
             do {
-                OrderProducts ordProd = new OrderProducts();
+                OrderProduct ordProd = new OrderProduct();
 
                 ordProd.cat_name = c.getString(i_cat_name);
                 ordProd.cat_id = c.getString(i_cat_id);

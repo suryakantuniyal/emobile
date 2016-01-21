@@ -273,9 +273,9 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
         });
 
-//        List<OrderProducts> orderProducts = global.orderProducts;
+//        List<OrderProduct> orderProducts = global.orderProducts;
 //        double subtotalDbl = 0;
-//        for (OrderProducts products : orderProducts) {
+//        for (OrderProduct products : orderProducts) {
 //            subtotalDbl += Double.parseDouble(products.itemSubtotal);
 //        }
 //        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));

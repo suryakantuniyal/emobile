@@ -397,7 +397,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP));
                     _new_prod_price = _new_prod_price.setScale(4, RoundingMode.HALF_UP);
                     tempSubTotal = _new_prod_price.multiply(prodQty).setScale(2, RoundingMode.HALF_UP);
-                    // global.orderProducts.get(i).getSetData("itemSubtotal",
+                    // global.orderProduct.get(i).getSetData("itemSubtotal",
 
                     global.orderProducts.get(i).price_vat_exclusive = _new_prod_price.setScale(2, RoundingMode.HALF_UP)
                             .toString();
@@ -413,11 +413,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         disc = new BigDecimal(global.orderProducts.get(i).disAmount);
                     }
                     // BigDecimal disc = new
-                    // BigDecimal(global.orderProducts.get(i).getSetData("discount_value",
+                    // BigDecimal(global.orderProduct.get(i).getSetData("discount_value",
                     // true, null));
                     global.orderProducts.get(i).discount_value = Global.getRoundBigDecimal(disc);
                     global.orderProducts.get(i).disTotal = Global.getRoundBigDecimal(disc);
-                    // global.orderProducts.get(i).getSetData("itemTotal",
+                    // global.orderProduct.get(i).getSetData("itemTotal",
                     // false,
                     // Global.getRoundBigDecimal(tempSubTotal.subtract(disc)));
                     global.orderProducts.get(i).itemTotalVatExclusive = Global
@@ -652,7 +652,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
                 prodPrice = new BigDecimal(val);
 
-                // val = global.orderProducts.get(i).getSetData("prod_taxValue",
+                // val = global.orderProduct.get(i).getSetData("prod_taxValue",
                 // true, null);
 
                 if (!global.orderProducts.get(i).isReturned)
@@ -666,7 +666,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 }
                 amount = amount.add(prodPrice);
                 // amount = amount.add(new
-                // BigDecimal(global.orderProducts.get(i).item));
+                // BigDecimal(global.orderProduct.get(i).item));
                 pointsSubTotal += Double.parseDouble(global.orderProducts.get(i).prod_price_points);
                 pointsAcumulable += Double.parseDouble(global.orderProducts.get(i).prod_value_points);
 

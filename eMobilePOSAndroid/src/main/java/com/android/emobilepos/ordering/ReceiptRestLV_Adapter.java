@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.mobeta.android.dslv.DragSortListView;
@@ -48,7 +48,7 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
     public void drop(int from, int to) {
         if (from != to) {
         	
-            OrderProducts data = global.orderProducts.remove(dataPosition(from));
+            OrderProduct data = global.orderProducts.remove(dataPosition(from));
             shiftDivision(from,to);
             global.orderProducts.add(dataPosition(to), data);
             

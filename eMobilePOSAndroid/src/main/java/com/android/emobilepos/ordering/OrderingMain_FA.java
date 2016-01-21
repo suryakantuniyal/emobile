@@ -95,6 +95,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private int orientation;
     private LinearLayout catalogContainer, receiptContainer;
+    public static OrderingMain_FA instance;
     private DinningTable selectedDinningTable;
     private Catalog_FR rightFragment;
     private Receipt_FR leftFragment;
@@ -141,6 +142,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
         callBackMSR = this;
+        instance = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
         catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
@@ -199,7 +201,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (!isToGo) {
             if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
                 selectDinnerTable();
-            } else{
+            } else {
                 selectSeatAmount();
             }
         }
@@ -745,7 +747,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                 if (foundPosition != -1) // product already
                                 // exist in list
                                 {
-                                    global.refreshParticularOrder(myPref, foundPosition, product);
+                                    global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                 } else
                                     Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                             } else
@@ -852,7 +854,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                     // in
                                     // list
                                     {
-                                        global.refreshParticularOrder(myPref, foundPosition, product);
+                                        global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                     } else
                                         Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                                 } else
@@ -944,7 +946,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         if (foundPosition != -1) // product already exist in
                         // list
                         {
-                            global.refreshParticularOrder(myPref, foundPosition, product);
+                            global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                         } else
                             Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                     } else

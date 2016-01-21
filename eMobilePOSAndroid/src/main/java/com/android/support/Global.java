@@ -27,13 +27,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.ordering.Catalog_FR;
@@ -76,7 +77,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import drivers.EMSPAT100;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -351,7 +351,7 @@ public class Global extends MultiDexApplication {
     public static HashMap<String, Integer> productParentAddonsDictionary;
     public HashMap<String, String[]> addonSelectionType;
     public static Map<String, HashMap<String, String[]>> addonSelectionMap;
-    public static HashMap<String, List<OrderProducts>> orderProductAddonsMap;
+    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
 
     public static Locations_Holder locationFrom, locationTo;
     public static TransferLocations_Holder transferLocation;
@@ -374,9 +374,9 @@ public class Global extends MultiDexApplication {
 
     public HashMap<String, String> ordProdAttrPending = new HashMap<String, String>();
     public List<OrdProdAttrHolder> ordProdAttr = new ArrayList<OrdProdAttrHolder>();
-    public List<OrderProducts> orderProducts = new ArrayList<OrderProducts>();
-    public List<OrderProducts> orderProductsAddons = new ArrayList<OrderProducts>();
-    // public static HashMap<String,List<OrderProducts>>orderProductsAddonsMap;
+    public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
+    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
+    // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
     // public List<Orders> cur_orders = new ArrayList<Orders>();
     public HashMap<String, String> qtyCounter = new HashMap<String, String>();
@@ -389,24 +389,24 @@ public class Global extends MultiDexApplication {
 
     public static List<String> consignMapKey;
     public static HashMap<String, HashMap<String, String>> consignSummaryMap;
-    public static List<OrderProducts> consignment_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> consignment_products = new ArrayList<OrderProduct>();
     public static Order consignment_order;
     // public static List<Orders>consignment_cur_order = new
     // ArrayList<Orders>();
     public static HashMap<String, String> consignment_qtyCounter = new HashMap<String, String>();
 
-    public static List<OrderProducts> cons_fillup_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> cons_fillup_products = new ArrayList<OrderProduct>();
     public static Order cons_fillup_order;
     // public static List<Orders>cons_fillup_cur_order = new
     // ArrayList<Orders>();
     public static HashMap<String, String> cons_fillup_qtyCounter = new HashMap<String, String>();
 
-    public static List<OrderProducts> cons_issue_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> cons_issue_products = new ArrayList<OrderProduct>();
     public static Order cons_issue_order;
     // public static List<Orders>cons_issue_cur_order = new ArrayList<Orders>();
     public static HashMap<String, String> cons_issue_qtyCounter = new HashMap<String, String>();
 
-    public static List<OrderProducts> cons_return_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> cons_return_products = new ArrayList<OrderProduct>();
     public static Order cons_return_order;
     // public static List<Orders>cons_return_cur_order = new
     // ArrayList<Orders>();
@@ -537,8 +537,8 @@ public class Global extends MultiDexApplication {
         if (ordProdAttrPending != null)
             ordProdAttrPending.clear();
 
-        if (this.orderProductsAddons != null)
-            this.orderProductsAddons.clear();
+        if (this.orderProductAddons != null)
+            this.orderProductAddons.clear();
 
         if (this.listOrderTaxes != null)
             this.listOrderTaxes.clear();
@@ -956,7 +956,7 @@ public class Global extends MultiDexApplication {
         result.put("Employees", "RequestEmployees.aspx");
         result.put("InvProducts", "getXMLInvoicesDetails.aspx");
         result.put("Invoices", "getXMLInvoices.aspx");
-        // result.put("OrderProducts", "getXMLOrdersOnHoldDetail.ashx");
+        // result.put("OrderProduct", "getXMLOrdersOnHoldDetail.ashx");
         // Orders
         result.put("PayMethods", "getXMLPayMethods.aspx");
         result.put("PriceLevel", "getXMLPriceLevel.aspx");
@@ -1079,50 +1079,58 @@ public class Global extends MultiDexApplication {
         return orderIndex;
     }
 
-    public void refreshParticularOrder(MyPreferences myPref, int position, Product product) {
-        OrderProducts orderedProducts = this.orderProducts.get(position);
-
+    public void refreshParticularOrder(Activity activity, int position, Product product) {
+        OrderProduct orderedProducts = this.orderProducts.get(position);
+        MyPreferences myPref = new MyPreferences(activity);
         String newPickedOrders = orderedProducts.ordprod_qty;
-        double sum = 1.0;
+        double sum;
 
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
             sum = Double.parseDouble(newPickedOrders);
         else
             sum = Integer.parseInt(newPickedOrders);
+        VolumePricesHandler volPriceHandler = new VolumePricesHandler(activity);
+        String[] volumePrice = volPriceHandler.getVolumePrice(String.valueOf(newPickedOrders), product.getId());
 
-        String prLevTotal = product.getPriceLevelPrice();// orderedProducts.getSetData("overwrite_price",
-        // true, null);
+        String prLevTotal;
+        if (volumePrice[1] != null && !volumePrice[1].isEmpty()) {
+            prLevTotal = Global.formatNumToLocale(Double.parseDouble(volumePrice[1]));
+        }else {
+            prLevTotal = product.getProdPrice();
+        }
+        BigDecimal priceLevel = new BigDecimal(prLevTotal).setScale(2, RoundingMode.HALF_UP);
 
-        double total = 0;// = sum*Double.parseDouble(prLevTotal);
+        BigDecimal total = new BigDecimal(0);// = sum*Double.parseDouble(prLevTotal);
 
         try {
-            total = sum * Double.parseDouble(prLevTotal);
+
+            total = priceLevel.multiply(new BigDecimal(sum));
         } catch (NumberFormatException e) {
         }
 
-        double itemTotal = total;
+        double itemTotal = total.doubleValue();
 
         if (itemTotal < 0)
             itemTotal = 0.00;
 
-        orderedProducts.itemSubtotal = Double.toString(total);
+        orderedProducts.itemSubtotal = Double.toString(itemTotal);
         double discountRate = 0;
         if (orderedProducts.discount_is_fixed.equals("1")) {
             discountRate = Double.parseDouble(orderedProducts.discount_value);
         } else {
-            double val = total * Global.formatNumFromLocale(orderedProducts.discount_value);
+            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.discount_value))).doubleValue();
             discountRate = (val / 100);
         }
 
-        orderedProducts.itemTotal = Double.toString(total - discountRate);
-        orderedProducts.overwrite_price = prLevTotal;
+        orderedProducts.itemTotal = Double.toString(total.doubleValue() - discountRate);
+        orderedProducts.overwrite_price = priceLevel.toString();
         orderedProducts.prod_price_updated = "0";
 
 
-            StringBuilder sb = new StringBuilder();
-            String row1 = product.getProdName();
-            String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+        StringBuilder sb = new StringBuilder();
+        String row1 = product.getProdName();
+        String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
     }
 
@@ -1295,7 +1303,7 @@ public class Global extends MultiDexApplication {
 
     public void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product) {
         Orders order = new Orders();
-        OrderProducts ord = new OrderProducts();
+        OrderProduct ord = new OrderProduct();
 
         int sum = 0;
         if (this.qtyCounter.containsKey(product.getId()))
@@ -1340,7 +1348,7 @@ public class Global extends MultiDexApplication {
         ord.prod_taxcode = product.getProdTaxCode();
 
         // add order to db
-        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType!=TransactionType.RETURN ? "-1" : "1";
+        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != TransactionType.RETURN ? "-1" : "1";
         ord.ordprod_name = product.getProdName();
         ord.ordprod_desc = product.getProdDesc();
         ord.prod_id = product.getId();
@@ -1394,7 +1402,7 @@ public class Global extends MultiDexApplication {
         ord.ord_id = Global.lastOrdID;
 
         if (global.orderProducts == null) {
-            global.orderProducts = new ArrayList<OrderProducts>();
+            global.orderProducts = new ArrayList<OrderProduct>();
         }
 
         UUID uuid = UUID.randomUUID();
@@ -1408,29 +1416,29 @@ public class Global extends MultiDexApplication {
             if (Global.addonSelectionMap == null)
                 Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
             if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
+                Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
             if (global.addonSelectionType.size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductsAddons);
+                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
 
                 sb.append(ord.ordprod_desc);
-                int tempSize = global.orderProductsAddons.size();
+                int tempSize = global.orderProductAddons.size();
                 for (int i = 0; i < tempSize; i++) {
 
                     sb.append("<br/>");
-                    if (global.orderProductsAddons.get(i).isAdded.equals("0")) // Not
+                    if (global.orderProductAddons.get(i).isAdded.equals("0")) // Not
                         // added
-                        sb.append("[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
+                        sb.append("[NO ").append(global.orderProductAddons.get(i).ordprod_name).append("]");
                     else
-                        sb.append("[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
+                        sb.append("[").append(global.orderProductAddons.get(i).ordprod_name).append("]");
 
                 }
                 ord.ordprod_desc = sb.toString();
                 ord.hasAddons = "1";
 
-                global.orderProductsAddons = new ArrayList<OrderProducts>();
+                global.orderProductAddons = new ArrayList<OrderProduct>();
 
             }
         }
@@ -1729,7 +1737,7 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.KDC500|| _device_type == Global.OT310 || _device_type == Global.ESY13P1);
+                || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ESY13P1);
     }
 
     // Handle application transition for background

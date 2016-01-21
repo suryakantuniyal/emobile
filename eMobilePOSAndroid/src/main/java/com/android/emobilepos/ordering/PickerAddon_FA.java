@@ -8,7 +8,6 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.CursorAdapter;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -23,9 +22,8 @@ import android.widget.TextView;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
-import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -274,7 +272,7 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 	private void generateAddon(int pos,String _cat_id, boolean isAdded) {
 		c = prodAddonsHandler.getSpecificChildAddons(_prod_id, _cat_id);
 		if (c != null && c.moveToPosition(pos)) {
-			OrderProducts ord = new OrderProducts();
+			OrderProduct ord = new OrderProduct();
 			ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
 			ord.ordprod_qty = "1";
 			ord.ordprod_name = c.getString(c.getColumnIndex("prod_name"));
@@ -349,21 +347,21 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 
 			ord.ord_id = Global.lastOrdID;
 
-			if (global.orderProductsAddons == null) {
-				global.orderProductsAddons = new ArrayList<OrderProducts>();
+			if (global.orderProductAddons == null) {
+				global.orderProductAddons = new ArrayList<OrderProduct>();
 			}
 
 			UUID uuid = UUID.randomUUID();
 			String randomUUIDString = uuid.toString();
 
 			ord.ordprod_id = randomUUIDString;
-			global.orderProductsAddons.add(ord);
+			global.orderProductAddons.add(ord);
 
 		}
 	}
 
 	private void updateLineItem(int position) {
-		OrderProducts ordProd = global.orderProducts.get(position);
+		OrderProduct ordProd = global.orderProducts.get(position);
 
 		// BigDecimal temp = new
 		// BigDecimal(ordProd.getSetData("overwrite_price", true, null));
@@ -428,9 +426,9 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 		} else {
 			updateLineItem(item_position);
 			Global.addonSelectionMap.put(extras.getString("addon_map_key"), global.addonSelectionType);
-			Global.orderProductAddonsMap.put(extras.getString("addon_map_key"), global.orderProductsAddons);
+			Global.orderProductAddonsMap.put(extras.getString("addon_map_key"), global.orderProductAddons);
 			global.addonSelectionType = new HashMap<String, String[]>();
-			global.orderProductsAddons = new ArrayList<OrderProducts>();
+			global.orderProductAddons = new ArrayList<OrderProduct>();
 
 			if (Receipt_FR.fragInstance != null)
 				Receipt_FR.fragInstance.reCalculate();
