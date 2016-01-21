@@ -165,6 +165,26 @@ public class ShiftPeriodsDBHandler {
 		}
 	}
 
+	public void decreaseEndingPettyCash(String shiftID, double amount) {
+		// SQLiteDatabase db = dbManager.openWritableDB();
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("SELECT ending_petty_cash FROM ").append(table_name)
+				.append(" WHERE shift_id=?");
+		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[] { shiftID });
+
+		if (c.moveToFirst()) {
+			double endingPettyCash = c.getDouble(c.getColumnIndex("ending_petty_cash"));
+			endingPettyCash -= amount;
+			sb.setLength(0);
+			sb.append(shift_id).append(" = ?");
+			ContentValues args = new ContentValues();
+			args.put(ending_petty_cash, Double.toString(endingPettyCash));
+			DBManager._db.update(table_name, args, sb.toString(), new String[] { shiftID });
+			c.close();
+		}
+	}
+
 	public void updateShift(String shiftID, String attr, String val) {
 		// SQLiteDatabase db = dbManager.openWritableDB();
 		StringBuilder sb = new StringBuilder();
@@ -190,11 +210,16 @@ public class ShiftPeriodsDBHandler {
 
 		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[] { shiftID });
 
+		ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
+		String theTotalExpenses;
+		//find out the total expenses for the shift
+		theTotalExpenses = shiftExpensesDBHandler.getShiftTotalExpenses(shiftID);
+
 		if (c.moveToFirst()) {
 
 			map.put(0, c.getString(c.getColumnIndex(assignee_name)));
 			map.put(1, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(beginning_petty_cash))));
-			map.put(2, Global.formatDoubleStrToCurrency("0"));
+			map.put(2, Global.formatDoubleStrToCurrency(theTotalExpenses));
 			map.put(3, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(ending_petty_cash))));
 			map.put(4, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(total_transaction_cash))));
 			map.put(5, Global.formatDoubleStrToCurrency(c.getString(c.getColumnIndex(total_ending_cash))));
@@ -299,7 +324,7 @@ public class ShiftPeriodsDBHandler {
 		List<ShiftPeriods> listShifts = new ArrayList<ShiftPeriods>();
 
 		query.append(
-				"SELECT assignee_name,beginning_petty_cash,'0' as 'total_expenses',ending_petty_cash,total_transaction_cash,");
+				"SELECT shift_id, assignee_name,beginning_petty_cash,'0' as 'total_expenses',ending_petty_cash,total_transaction_cash,");
 		query.append(
 				"ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash',entered_close_amount, startTime,");
 		query.append(
@@ -320,8 +345,13 @@ public class ShiftPeriodsDBHandler {
 		}
 
 		Cursor c = DBManager._db.rawQuery(query.toString(), where_values);
+		//use this to find the expenses for each shift
+		ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
+		String theTotalExpenses;
+		String theShiftID;
 
 		if (c.moveToFirst()) {
+			int i_shift_id = c.getColumnIndex(shift_id);
 			int i_assignee_name = c.getColumnIndex(assignee_name);
 			int i_beginning_petty_cash = c.getColumnIndex(beginning_petty_cash);
 			int i_total_expenses = c.getColumnIndex("total_expenses");
@@ -335,11 +365,15 @@ public class ShiftPeriodsDBHandler {
 			do {
 				ShiftPeriods shift = new ShiftPeriods(true);
 
+				//find out the total expenses for the shift
+				theShiftID = c.getString(i_shift_id);
+				theTotalExpenses = shiftExpensesDBHandler.getShiftTotalExpenses(theShiftID);
+
 				shift.assignee_name = c.getString(i_assignee_name);
 				shift.startTime = c.getString(i_start_time);
 				shift.endTime = c.getString(i_end_type);
 				shift.beginning_petty_cash = c.getString(i_beginning_petty_cash);
-				shift.total_expenses = c.getString(i_total_expenses);
+				shift.total_expenses = theTotalExpenses;
 				shift.ending_petty_cash = c.getString(i_ending_petty_cash);
 				shift.total_transaction_cash = c.getString(i_total_transaction_cash);
 				shift.total_ending_cash = c.getString(i_total_ending_cash);

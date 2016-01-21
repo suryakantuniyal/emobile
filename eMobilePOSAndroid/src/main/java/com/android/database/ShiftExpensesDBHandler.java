@@ -73,7 +73,7 @@ public class ShiftExpensesDBHandler {
         //cAmount the cash amount of the expense
         //spID the shift period ID
 
-
+//insert the expense section
         String expID; //need to create a new expID
         Long milliseconds = (Long) System.currentTimeMillis();
         expID = milliseconds.toString(); //use time stamp as expenseID
@@ -107,7 +107,11 @@ public class ShiftExpensesDBHandler {
         } finally {
             DBManager._db.endTransaction();
         }
-        // db.close();
+
+        //update the ending petty cash due to the expense section
+        ShiftPeriodsDBHandler shiftPeriodsDBHandler = new ShiftPeriodsDBHandler(activity);
+        shiftPeriodsDBHandler.decreaseEndingPettyCash(spID,cAmount);
+
     }
 
     public void emptyTable() {
@@ -183,6 +187,29 @@ public class ShiftExpensesDBHandler {
 
     }
 
+    //get total expenses for a shift
+    public String getShiftTotalExpenses(String spID) {
+
+        String[] parameters = null;
+        String query = empStr;
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("SELECT total(cashAmount) as total_expenses FROM ");
+        sb.append(table_name);
+        sb.append(" WHERE shiftPeriodID = '");
+        sb.append(spID).append("'");
+
+        query = sb.toString();
+
+        Cursor cursor = DBManager._db.rawQuery(query, parameters);
+        cursor.moveToFirst();
+
+        String theTotalExpenses = cursor.getString(0); //get the computed total
+        // db.close();
+
+        return theTotalExpenses;
+
+    }
 
 
 

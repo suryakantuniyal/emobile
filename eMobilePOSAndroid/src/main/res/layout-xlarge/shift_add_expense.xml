@@ -58,18 +58,10 @@
 
                 <Spinner
                     android:id="@+id/expenseSpinner"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
 
-
-            </TableRow>
-
-            <TableRow
-                android:id="@+id/Row2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false">
 
                 <TextView
                     android:id="@+id/textCashAmount"
@@ -84,7 +76,7 @@
 
                 <com.android.support.MyEditText
                     android:id="@+id/cashAmount"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
                     android:digits="0123456789"
@@ -98,12 +90,7 @@
                     android:textSize="@dimen/field_general_txt_size"
                     android:text="@string/amount_zero_lbl" >
                 </com.android.support.MyEditText>
-</TableRow>
-            <TableRow
-                android:id="@+id/Row3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:baselineAligned="false">
+
                 <Button
                     android:id="@+id/buttonSubmit"
                     android:layout_width="wrap_content"

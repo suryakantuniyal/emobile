@@ -2064,7 +2064,7 @@ public class GenerateXML {
 			serializer.endTag(empstr, "ShiftPeriods");
 			serializer.endDocument();
 
-			String mySTR = writer.toString();
+			String myString = writer.toString();
 			return writer.toString();
 
 		} catch (Exception e) {

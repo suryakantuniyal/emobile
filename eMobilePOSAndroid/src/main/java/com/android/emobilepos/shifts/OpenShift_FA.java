@@ -48,7 +48,7 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
     private Activity activity;
     private int selectedPos = -1;
     private EditText pettyCashField;
-    private double pettyCash = 0;
+//    private double pettyCash = 0;
     private MyPreferences myPref;
     private NumberUtils numberUtils = new NumberUtils();
 
@@ -178,8 +178,8 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                EditText processCardAmount = (EditText) findViewById(R.id.processCardAmount);
-                numberUtils.parseInputedCurrency(s, processCardAmount);
+                //EditText pettyCashField = (EditText) findViewById(R.id.pettyCashAmount);
+                numberUtils.parseInputedCurrency(s, pettyCashField);
             }
         };
 
@@ -198,9 +198,11 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
             ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             sp.assignee_id = myCursor.getString(myCursor.getColumnIndex("_id"));
             sp.assignee_name = myCursor.getString(myCursor.getColumnIndex("emp_name"));
-            sp.beginning_petty_cash = Double.toString(pettyCash);
-            sp.ending_petty_cash = Double.toString(pettyCash);
-            sp.total_ending_cash = Double.toString(pettyCash);
+            String theBPC = this.pettyCashField.getText().toString();
+            theBPC = NumberUtils.cleanCurrencyFormatedNumber(theBPC);
+            sp.beginning_petty_cash = theBPC;
+            sp.ending_petty_cash = theBPC; //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
+            sp.total_ending_cash = "0";
 
             handler.insert(sp);
 
