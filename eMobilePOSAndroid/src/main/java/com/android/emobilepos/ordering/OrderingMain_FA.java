@@ -286,7 +286,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     headerTitle.setText(R.string.estimate);
                     break;
                 }
-                case REFUND: {
+                case CONSIGNMENT: {
                     if (!Global.isConsignment) {
                         custInventoryHandler = new CustomerInventoryHandler(this);
                         custInventoryHandler.getCustomerInventory();
