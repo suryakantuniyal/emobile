@@ -365,14 +365,14 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
                     new printAsync().execute("");
                 } else {
                     Intent intent = new Intent(getActivity(), SelectPayMethod_FA.class);
-                    intent.putExtra("typeOfProcedure", Integer.parseInt(Global.OrderType.INVOICE.getCodeString()));
+                    intent.putExtra("typeOfProcedure", Global.OrderType.INVOICE);
                     intent.putExtra("salesinvoice", true);
                     intent.putExtra("ord_subtotal", Double.toString(ordTotal));
                     intent.putExtra("ord_taxID", "");
                     intent.putExtra("amount", Double.toString(ordTotal));
                     intent.putExtra("paid", "0.00");
                     intent.putExtra("job_id", Global.lastOrdID);
-                    intent.putExtra("ord_type", Global.OrderType.INVOICE.getCodeString());
+                    intent.putExtra("ord_type", Global.OrderType.INVOICE);
 
                     intent.putExtra("cust_id", myPref.getCustID());
                     intent.putExtra("custidkey", myPref.getCustIDKey());

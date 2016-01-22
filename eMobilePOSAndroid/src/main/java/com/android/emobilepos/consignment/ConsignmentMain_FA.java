@@ -103,7 +103,7 @@ public class ConsignmentMain_FA extends BaseFragmentActivityActionBar implements
 		global.resetOrderDetailsValues();
 		global.clearListViewData();
 		Intent intent = new Intent(this,OrderingMain_FA.class);
-		intent.putExtra("option_number", Global.TransactionType.REFUND);
+		intent.putExtra("option_number", Global.TransactionType.CONSIGNMENT);
 		intent.putExtra("consignmentType", Global.OrderType.ORDER);
 		startActivity(intent);
 	}
@@ -114,7 +114,7 @@ public class ConsignmentMain_FA extends BaseFragmentActivityActionBar implements
 		global.clearListViewData();
 		Intent intent = new Intent(this,OrderingMain_FA.class);
 		//Intent intent = new Intent(arg0.getContext(), SalesReceiptSplitActivity.class);
-		intent.putExtra("option_number", Global.TransactionType.REFUND);
+		intent.putExtra("option_number", Global.TransactionType.CONSIGNMENT);
 		intent.putExtra("consignmentType", Global.OrderType.CONSIGNMENT_PICKUP);
 		startActivity(intent);
 	}
