@@ -345,6 +345,10 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         super.printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
     }
 
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+        super.printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+    }
 
     @Override
     public void registerAll() {

@@ -304,22 +304,24 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
 	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
 		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
-    }
+	}
+
+	@Override
+	public void printShiftDetailsReport(String shiftID) {
+		printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+	}
+
 
 
     @Override
     public boolean printReport(String curDate) {
-        // TODO Auto-generated method stub
-
         printReportReceipt(curDate, LINE_WIDTH);
-
         return true;
     }
 
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
     }
 

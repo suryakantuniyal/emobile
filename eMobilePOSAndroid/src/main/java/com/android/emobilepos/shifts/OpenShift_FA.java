@@ -48,8 +48,10 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
     private Activity activity;
     private int selectedPos = -1;
     private EditText pettyCashField;
-    private double pettyCash = 0;
+//    private double pettyCash = 0;
     private MyPreferences myPref;
+    private NumberUtils numberUtils = new NumberUtils();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -176,7 +178,8 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, R.id.processCardAmount);
+                //EditText pettyCashField = (EditText) findViewById(R.id.pettyCashAmount);
+                numberUtils.parseInputedCurrency(s, pettyCashField);
             }
         };
 
@@ -195,9 +198,11 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
             ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             sp.assignee_id = myCursor.getString(myCursor.getColumnIndex("_id"));
             sp.assignee_name = myCursor.getString(myCursor.getColumnIndex("emp_name"));
-            sp.beginning_petty_cash = Double.toString(pettyCash);
-            sp.ending_petty_cash = Double.toString(pettyCash);
-            sp.total_ending_cash = Double.toString(pettyCash);
+            String theBPC = this.pettyCashField.getText().toString();
+            theBPC = NumberUtils.cleanCurrencyFormatedNumber(theBPC);
+            sp.beginning_petty_cash = theBPC;
+            sp.ending_petty_cash = theBPC; //set the ending petty cash equal to the beginning petty cash, decrease the ending petty cash every time there is an expense
+            sp.total_ending_cash = "0";
 
             handler.insert(sp);
 
@@ -208,32 +213,4 @@ public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnCli
         }
     }
 
-    private void parseInputedCurrency(CharSequence s, int type) {
-        DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-        DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-        StringBuilder sb = new StringBuilder();
-        sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator())
-                .append("\\d{3})*|(\\d+))(");
-        sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
-
-        if (!s.toString().matches(sb.toString())) {
-            String userInput = "" + s.toString().replaceAll("[^\\d]", "");
-            StringBuilder cashAmountBuilder = new StringBuilder(userInput);
-
-            while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
-                cashAmountBuilder.deleteCharAt(0);
-            }
-            while (cashAmountBuilder.length() < 3) {
-                cashAmountBuilder.insert(0, '0');
-            }
-
-            cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
-            cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-
-            this.pettyCashField.setText(cashAmountBuilder.toString());
-			pettyCash = (float) (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(cashAmountBuilder)));
-
-        }
-        Selection.setSelection(this.pettyCashField.getText(), this.pettyCashField.getText().length());
-    }
 }

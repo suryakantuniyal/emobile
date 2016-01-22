@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
@@ -28,6 +29,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
+import com.android.database.ShiftExpensesDBHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
@@ -65,6 +67,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Base64;
 import android.util.Log;
+import android.util.SparseArray;
 
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
@@ -1849,7 +1852,6 @@ public class EMSDeviceDriver {
 
     }
 
-
     protected void printEndOfDayReportReceipt(String curDate, int lineWidth, boolean printDetails) {
 
         String mDate = Global.formatToDisplayDate(curDate, activity, 4);
@@ -2091,6 +2093,60 @@ public class EMSDeviceDriver {
         print(sb.toString(), FORMAT);
     }
 
+    protected void printShiftDetailsReceipt(int lineWidth, String shiftID) {
+        StringBuilder sb = new StringBuilder();
+        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+
+        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
+        SparseArray<String> shift = shiftHandler.getShiftDetails(shiftID);
+
+        sb.append(textHandler.centeredString("Shift Details", lineWidth));
+
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk:", shift.get(0), lineWidth, 0));
+        MyPreferences myPreferences = new MyPreferences(activity);
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", myPreferences.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.newLines(2));
+        sb.append("From: " + shift.get(7)); //startTime
+        sb.append(textHandler.newLines(1));
+        if (shift.get(8).isEmpty()) {
+            sb.append("To: " + shift.get(9)); //display Open
+        } else {
+            sb.append("To: " + shift.get(8)); //show endTime
+
+        }
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Beginning Petty Cash", shift.get(1), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Expenses", "(" + shift.get(2) + ")", lineWidth, 0));
+
+        ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
+        Cursor expensesByShift;
+        expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
+
+        int i = 0;
+        while (!expensesByShift.isAfterLast()) {
+           // expName = expensesByShift.getString(0); //get the expense id
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(expensesByShift.getString(4),Global.formatDoubleStrToCurrency(expensesByShift.getString(2)), lineWidth, 3));
+            //theSpinnerNames[i] = productExpensesCursor.getString(2); //get if expense
+            i++;
+            expensesByShift.moveToNext();
+        }
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", shift.get(3), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Transactions Cash", shift.get(4), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Ending Cash", shift.get(5), lineWidth, 0));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Refunds", "(" + "?????" + ")", lineWidth, 3));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Entered Close Amount", shift.get(6), lineWidth, 0));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Over (Short)", shift.over_short, lineWidth, 3));
+
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.centeredString("** End of shift report **", lineWidth));
+        sb.append(textHandler.newLines(4));
+        print(sb.toString(), FORMAT);
+    }
 
     protected void printReportReceipt(String curDate, int lineWidth) {
         // TODO Auto-generated method stub

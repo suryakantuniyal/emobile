@@ -780,6 +780,37 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return true;
     }
 
+
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+
+        try {
+            // port = StarIOPort.getPort(portName, portSettings, 10000,
+            // this.activity);
+            verifyConnectivity();
+
+            Thread.sleep(1000);
+            if (!isPOSPrinter) {
+                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+                // windows-1252
+            }
+
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+    } catch (StarIOPortException e) {
+//        return false;
+
+    } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } finally {
+
+    }
+
+    }
+
+
     @Override
     public void loadScanner(EMSCallBack _callBack) {
         if (myPref.getPrinterName().toUpperCase().contains("MPOP")) {

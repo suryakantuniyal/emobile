@@ -78,9 +78,11 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     
 	private Global global;
 	private boolean hasBeenCreated = false;
-    
-    
-    public void onCreate(Bundle savedInstanceState) {
+	private NumberUtils numberUtils = new NumberUtils();
+
+
+
+	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
         Bundle extras = this.getIntent().getExtras();
@@ -135,7 +137,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				ProcessCash_FA.parseInputedCurrency(s, editText);
+				numberUtils.parseInputedCurrency(s, editText);
 			}
 		};
 	}

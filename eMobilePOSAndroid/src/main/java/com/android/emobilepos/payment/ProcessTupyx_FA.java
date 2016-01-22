@@ -55,8 +55,10 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
     private Payment payment;
 	private Global global;
 	private boolean hasBeenCreated = false;
-	
-	
+	private NumberUtils numberUtils = new NumberUtils();
+
+
+
 	public void onCreate(Bundle savedInstanceState) 
 	{
         super.onCreate(savedInstanceState);
@@ -110,7 +112,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 			}
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				ProcessCash_FA.parseInputedCurrency(s, editText);
+				numberUtils.parseInputedCurrency(s, editText);
 			}
 		};
 	}
