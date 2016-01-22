@@ -248,7 +248,6 @@ public class Post {
 //			this.getRequest(
 //					new URL("https://bo.enablermobile.com/App_Themes/BONewDesign/images/login/EMobileLogo_login.png"));
 //		} catch (MalformedURLException e1) {
-//			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
         if (!isPost) {
@@ -258,10 +257,8 @@ public class Post {
                 else
                     response = getRequestUnsecure(new URI(url.toString()));
             } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (URISyntaxException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else {
