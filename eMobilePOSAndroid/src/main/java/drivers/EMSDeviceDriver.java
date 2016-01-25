@@ -1127,10 +1127,10 @@ public class EMSDeviceDriver {
 //            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
 //                    Global.formatDoubleStrToCurrency(payArray.getOrd_total()), lineWidth, 0));
             if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
                         Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
             } else {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
                         Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
             }
 
