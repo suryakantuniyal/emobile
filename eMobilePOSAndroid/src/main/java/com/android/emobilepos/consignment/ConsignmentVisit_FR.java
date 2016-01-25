@@ -130,49 +130,27 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             else
                 Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 
-//			if (Global.lastOrdID.isEmpty()&&ordersHandler.getDBSize() == 0)
-//				Global.lastOrdID = generator.generate("",0);
-//			else
-//			{
-//				if(Global.lastOrdID.isEmpty())
-//					Global.lastOrdID = generator.generate(ordersHandler.getLastOrdID(),0);
-//				else
-//					Global.lastOrdID = generator.generate(Global.lastOrdID,0);
-//			}
-
             custInventoryHandler.insertUpdate(Global.custInventoryList);
             consTransaction = new ConsignmentTransaction();
             int size = Global.consignMapKey.size();
-            String temp = new String();
-            int index = 0;
-            double tempQty = 0.0;
+            String temp;
+            int index;
+            double tempQty;
             double returnQty = 0, fillupQty = 0;
 
             String consTransID = "";
             double onHandQty = -1;
 
-//			if(consTransDBHandler.getDBSize()>0)
-//				consTransID = consTransDBHandler.getLastConsTransID();
-//			else if(!myPref.getLastConsTransID().isEmpty())
-//				consTransID = myPref.getLastConsTransID();
-            //myPref.setLastConsTransID(generator.getNextID(myPref.getLastConsTransID()));
+
             consTransID = generator.getNextID(IdType.ORDER_ID);
 
-
-            //consTransID = generator.generate(consTransID, 3);
-            //consTransID = generator.getNextID(consTransID);
             signatureMap.put("ConsTrans_ID", consTransID);
 
-
             for (int i = 0; i < size; i++) {
-
-
                 consTransaction.ConsEmp_ID = myPref.getEmpID();
                 consTransaction.ConsCust_ID = myPref.getCustID();
                 consTransaction.ConsProd_ID = Global.consignMapKey.get(i);
-
                 consTransaction.ConsTrans_ID = consTransID;
-
                 temp = Global.consignSummaryMap.get(Global.consignMapKey.get(i)).get("original_qty");
                 if (temp == null)
                     temp = "0.0";
@@ -220,22 +198,17 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
                 temp = Global.consignSummaryMap.get(Global.consignMapKey.get(i)).get("invoice");
                 if (temp != null) {
                     tempQty = Double.parseDouble(temp);
-
                     consTransaction.ConsInvoice_Qty = temp;
                     consTransaction.invoice_total = Global.consignSummaryMap.get(Global.consignMapKey.get(i)).get("invoice_total");
-
                     if (tempQty > 0) {
                         ifInvoice = true;
-                        consTransaction.ConsInvoice_ID = Global.lastOrdID;
+                        consTransaction.ConsInvoice_ID = Global.consignment_order.ord_id;
                         generateOrder(i, consTransaction);
                     }
-
                 }
-
                 consTransactionList.add(consTransaction);
                 consTransaction = new ConsignmentTransaction();
             }
-
             return null;
         }
 
@@ -444,8 +417,15 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         global.encodedImage = "";
         signatureMap.put("encoded_signature", encodedImage);
 
-        if (ifInvoice)
-            processOrder();
+        if (ifInvoice) {
+            Global.consignment_order.processed = "1";
+            Global.consignment_order.ord_signature = encodedImage;
+            Global.consignment_order.ord_type = Global.OrderType.CONSIGNMENT_INVOICE.getCodeString();
+            ordersHandler.insert(Global.consignment_order);
+            orderProductsHandler.insert(Global.consignment_products);
+
+//            processOrder();
+        }
         if (Global.cons_return_products.size() > 0) {
             Global.cons_return_order.processed = "1";
             Global.cons_return_order.ord_signature = encodedImage;
