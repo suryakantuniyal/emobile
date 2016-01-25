@@ -335,8 +335,13 @@ public class EMSDeviceDriver {
     private void printEMVSection(EMVContainer emvContainer, int lineWidth) {
         if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
             StringBuffer sb = new StringBuffer();
-            if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
+            if (emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
                     emvContainer.getGeniusResponse().getAdditionalParameters().getEMV() != null) {
+                String applicationLabel = emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getApplicationLabel();
+                if (applicationLabel != null && !applicationLabel.isEmpty()) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_application_label),
+                            applicationLabel, lineWidth, 0));
+                }
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
                         emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
                 if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
@@ -1060,19 +1065,15 @@ public class EMSDeviceDriver {
 
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-//			port.writePort(enableCenter, 0, enableCenter.length); // enable
-            // center
+
 
             sb.append("* ").append(payArray.getPaymethod_name());
             if (payArray.getIs_refund().equals("1"))
                 sb.append(" Refund *\n\n\n");
             else
                 sb.append(" Sale *\n\n\n");
-
-//			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.length());
             print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
-//			port.writePort(disableCenter, 0, disableCenter.length); // disable
-            // center
+
             sb.setLength(0);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     getString(R.string.receipt_time), lineWidth, 0));
@@ -1123,15 +1124,15 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
                         Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
             }
-
-
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                    Global.formatDoubleStrToCurrency(payArray.getOrd_total()), lineWidth, 0));
-
-//            addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
-
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-                    Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
+//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+//                    Global.formatDoubleStrToCurrency(payArray.getOrd_total()), lineWidth, 0));
+            if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
+                        Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
+            } else {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
+                        Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
+            }
 
             String change = payArray.getChange();
 
@@ -1143,12 +1144,10 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
                         Global.formatDoubleStrToCurrency(change), lineWidth, 0));
 
-//			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-//			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
-//            print(textHandler.newLines(1), FORMAT);
+
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                     sb.append(textHandler.newLines(1));
@@ -1156,46 +1155,18 @@ public class EMSDeviceDriver {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
-//				port.writePort(enableCenter, 0, enableCenter.length); // center
                 sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
                 sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
-//				port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
             }
 
             if (Global.isIvuLoto) {
                 sb = new StringBuilder();
-//                port.writePort(enableCenter, 0, enableCenter.length); // enable
-                // center
 
                 if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-//                    sb.append("\n");
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//                    sb.append(textHandler.centeredString("CONTROL: " + payArray.getIvuLottoNumber(), lineWidth));
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-////                    sb.append(textHandler.centeredString(payArray[12], lineWidth));
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//                    sb.append("\n");
-//
-////					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-//                    print(sb.toString(), FORMAT);
                     printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
                 } else {
-//                    encodedQRCode = payArray[14];
-
-//                    this.printImage(2);
-
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//                    sb.append("\t").append("CONTROL: ").append(payArray.getIvuLottoNumber()).append("\n");
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-////                    sb.append(payArray[12]).append("\n");
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//
-////					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-//                    print(sb.toString(), FORMAT);
 
                     printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
 
@@ -1211,21 +1182,16 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
             sb.setLength(0);
 
-//            port.writePort(enableCenter, 0, enableCenter.length); // center
             String temp = new String();
             if (!isCashPayment && !isCheckPayment) {
-
-                //port.writePort(creditCardFooting.getBytes(FORMAT), 0, creditCardFooting.length());
                 print(creditCardFooting.toString(), FORMAT);
                 temp = textHandler.newLines(1);
-                //port.writePort(temp.getBytes(FORMAT), 0, temp.length());
                 print(temp.toString(), FORMAT);
             }
 
             sb.setLength(0);
             if (isReprint) {
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
-                //port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                 print(sb.toString(), FORMAT);
             }
             printEnablerWebSite(lineWidth);
