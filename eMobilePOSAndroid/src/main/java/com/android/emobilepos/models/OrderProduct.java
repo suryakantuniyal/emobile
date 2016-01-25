@@ -69,6 +69,7 @@ public class OrderProduct {
 	public String prod_price_updated = "0";
 	
 	public boolean isReturned = false;
+	public String assignedSeat;
 	public BigDecimal global_discount_total = new BigDecimal("0");
 	
 

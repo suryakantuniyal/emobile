@@ -271,9 +271,15 @@ public class SalesTab_FR extends Fragment {
                 case SALE_RECEIPT: // Sales Receipt
                 {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
-                        intent = new Intent(activity, OrderingMain_FA.class);
-                        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                        startActivityForResult(intent, 0);
+                        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                                myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                            askEatInToGo();
+                        } else {
+                            intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                            startActivityForResult(intent, 0);
+                        }
+
                     } else {
                         promptWithCustomer();
                     }
@@ -493,12 +499,7 @@ public class SalesTab_FR extends Fragment {
                 } else {
                     selectSeatAmount();
                 }
-                Intent intent = new Intent(activity, OrderingMain_FA.class);
-                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
-                intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
-                intent.putExtra("selectedDinningTableNumber", selectedDinningTable.getNumber());
-                startActivityForResult(intent, 0);
+
             }
         });
         popDlog.show();
@@ -519,6 +520,13 @@ public class SalesTab_FR extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedSeatsAmount = seats[position];
                 popDlog.dismiss();
+                startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedSeatsAmount, selectedDinningTable.getNumber());
+//                Intent intent = new Intent(activity, OrderingMain_FA.class);
+//                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+//                intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
+//                intent.putExtra("selectedDinningTableNumber", selectedDinningTable.getNumber());
+//                startActivityForResult(intent, 0);
             }
         });
         popDlog.show();
@@ -678,6 +686,16 @@ public class SalesTab_FR extends Fragment {
         globalDlog.show();
     }
 
+    private void startSaleRceipt(Global.RestaurantSaleType restaurantSaleType, String selectedSeatsAmount, int tableNumber) {
+        Intent intent = new Intent(activity, OrderingMain_FA.class);
+        intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+        intent.putExtra("RestaurantSaleType", restaurantSaleType);
+        if (restaurantSaleType == Global.RestaurantSaleType.EAT_IN) {
+            intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
+            intent.putExtra("selectedDinningTableNumber", tableNumber);
+        }
+        startActivityForResult(intent, 0);
+    }
 
     private void promptWithCustomer() {
         //final Intent intent = new Intent(activity, SalesReceiptSplitActivity.class);
@@ -695,9 +713,7 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-                startActivityForResult(intent, 0);
+                askEatInToGo();
                 dialog.dismiss();
             }
         });
@@ -705,9 +721,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                //MyPreferences myPref = new MyPreferences(getActivity());
-
                 salesInvoices.setVisibility(View.GONE);
                 intent.putExtra("option_number", Global.TransactionType.RETURN);
                 myPref.resetCustInfo(getString(R.string.no_customer));

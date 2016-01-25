@@ -1,5 +1,6 @@
 package com.android.emobilepos.ordering;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,10 +25,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -42,12 +41,12 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.adapters.DinningTableSeatsAdapter;
-import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
 import com.android.payments.EMSPayGate_Default;
@@ -55,12 +54,12 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
+import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -73,10 +72,12 @@ import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -133,6 +134,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private boolean isToGo;
     private String selectedSeatsAmount;
     private String selectedDinningTableNumber;
+    private static String selectedSeatNumber = "1";
 
 
 //    CustomKeyboard mCustomKeyboard;
@@ -204,7 +206,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         hasBeenCreated = true;
     }
-
 
 
     private Handler ScanResultHandler = new Handler() {
@@ -1201,6 +1202,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         return Integer.parseInt(selectedSeatsAmount);
     }
 
+    public String getSelectedDinningTableNumber() {
+        return selectedDinningTableNumber;
+    }
+
+    public static String getSelectedSeatNumber() {
+        return selectedSeatNumber;
+    }
+
     private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
 
         @Override
@@ -1406,9 +1415,153 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void startSignature() {
-        // TODO Auto-generated method stub
-
     }
 
+    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product) {
+        Orders order = new Orders();
+        OrderProduct ord = new OrderProduct();
+
+        int sum = 0;
+        if (global.qtyCounter.containsKey(product.getId()))
+            sum = Integer.parseInt(global.qtyCounter.get(product.getId()));
+
+        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
+            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
+        else
+            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
+        if (OrderingMain_FA.returnItem)
+            ord.isReturned = true;
+
+        order.setName(product.getProdName());
+        order.setValue(product.getProdPrice());
+        order.setProdID(product.getId());
+        order.setDiscount("0.00");
+        order.setTax("0.00");
+        order.setDistQty("0");
+        order.setTaxQty("0");
+
+        String val = product.getProdPrice();
+        if (val.isEmpty() || val == null)
+            val = "0.00";
+
+        BigDecimal total = Global.getBigDecimalNum(Global.formatNumToLocale(Double.parseDouble(val)));
+        // double total = 1 * Double.parseDouble(val);
+        if (isFromAddon) {
+            total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
+            // total+=Global.addonTotalAmount;
+        }
+
+        ord.overwrite_price = total.toString();
+        ord.prod_price = total.toString();
+        ord.assignedSeat= getSelectedSeatNumber();
+        total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
+
+        DecimalFormat frmt = new DecimalFormat("0.00");
+        order.setTotal(frmt.format(total));
+
+        ord.prod_istaxable = product.getProdIstaxable();
+        ord.prod_taxtype = product.getProdTaxType();
+        ord.prod_taxcode = product.getProdTaxCode();
+
+        // add order to db
+        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? "-1" : "1";
+        ord.ordprod_name = product.getProdName();
+        ord.ordprod_desc = product.getProdDesc();
+        ord.prod_id = product.getId();
+
+        ord.onHand = product.getProdOnHand();
+        ord.imgURL = product.getProdImgName();
+        ord.cat_id = product.getCatId();
+        try {
+            ord.prod_price_points = product.getProdPricePoints();
+            ord.prod_value_points = product.getProdValuePoints();
+        } catch (Exception e) {
+
+        }
+
+        // Still need to do add the appropriate tax/discount value
+        ord.prod_taxValue = "0.00";
+        ord.discount_value = "0.00";
+
+        ord.taxAmount = "0";
+        ord.taxTotal = "0.00";
+        ord.disAmount = "0";
+        ord.disTotal = "0.00";
+        ord.itemTotal = total.toString();
+        ord.itemSubtotal = total.toString();
+
+        ord.tax_position = "0";
+        ord.discount_position = "0";
+        ord.pricelevel_position = "0";
+        ord.uom_position = "0";
+
+        ord.prod_price_updated = "0";
+        // OrdersHandler handler = new OrdersHandler(activity);
+
+        GenerateNewID generator = new GenerateNewID(activity);
+
+        MyPreferences myPref = new MyPreferences(activity);
+        // myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
+
+        // if(!Global.isFromOnHold)
+        // {
+        // if (handler.getDBSize() == 0)
+        // Global.lastOrdID = generator.generate("",0);
+        // else
+        // Global.lastOrdID = generator.generate(handler.getLastOrdID(),0);
+        // }
+
+        if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
+            Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
+        }
+
+        ord.ord_id = Global.lastOrdID;
+
+        if (global.orderProducts == null) {
+            global.orderProducts = new ArrayList<OrderProduct>();
+        }
+
+        UUID uuid = UUID.randomUUID();
+        String randomUUIDString = uuid.toString();
+
+        ord.ordprod_id = randomUUIDString;
+
+        if (isFromAddon) {
+            Global.addonTotalAmount = 0;
+
+            if (Global.addonSelectionMap == null)
+                Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
+            if (Global.orderProductAddonsMap == null)
+                Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
+
+            if (global.addonSelectionType.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
+                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
+
+                sb.append(ord.ordprod_desc);
+                int tempSize = global.orderProductAddons.size();
+                for (int i = 0; i < tempSize; i++) {
+
+                    sb.append("<br/>");
+                    if (global.orderProductAddons.get(i).isAdded.equals("0")) // Not
+                        // added
+                        sb.append("[NO ").append(global.orderProductAddons.get(i).ordprod_name).append("]");
+                    else
+                        sb.append("[").append(global.orderProductAddons.get(i).ordprod_name).append("]");
+
+                }
+                ord.ordprod_desc = sb.toString();
+                ord.hasAddons = "1";
+
+                global.orderProductAddons = new ArrayList<OrderProduct>();
+
+            }
+        }
+        String row1 = ord.ordprod_name;
+        String row2 = Global.formatDoubleStrToCurrency(product.getProdPrice());
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+        global.orderProducts.add(ord);
+    }
 
 }

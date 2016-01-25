@@ -578,116 +578,111 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        // TODO Auto-generated method stub
         final int removePos = position;
         if (restLVAdapter != null)
             position = restLVAdapter.dataPosition(position);
-        String isVoidedItem = global.orderProducts.get(position).item_void;
+        OrderProductListAdapter.OrderSeatProduct item = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
+        if (item.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
 
-        if (!isVoidedItem.equals("1")) {
-            final Dialog dialog = new Dialog(activity,
-                    R.style.Theme_TransparentTest);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(true);
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.setContentView(R.layout.picked_item_dialog);
+        } else {
+            String isVoidedItem = global.orderProducts.get(position).item_void;
 
-            TextView itemName = (TextView) dialog.findViewById(R.id.itemName);
-            itemName.setText(global.orderProducts.get(position).ordprod_name);
+            if (!isVoidedItem.equals("1")) {
+                final Dialog dialog = new Dialog(activity,
+                        R.style.Theme_TransparentTest);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCancelable(true);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setContentView(R.layout.picked_item_dialog);
 
-            Button remove = (Button) dialog.findViewById(R.id.removeButton);
-            Button cancel = (Button) dialog.findViewById(R.id.cancelButton);
-            Button modify = (Button) dialog.findViewById(R.id.modifyButton);
-            Button overridePrice = (Button) dialog
-                    .findViewById(R.id.overridePriceButton);
-            Button payWithLoyalty = (Button) dialog
-                    .findViewById(R.id.btnPayWithLoyalty);
+                TextView itemName = (TextView) dialog.findViewById(R.id.itemName);
+                itemName.setText(global.orderProducts.get(position).ordprod_name);
 
-            final int pos = position;
-            remove.setOnClickListener(new View.OnClickListener() {
+                Button remove = (Button) dialog.findViewById(R.id.removeButton);
+                Button cancel = (Button) dialog.findViewById(R.id.cancelButton);
+                Button modify = (Button) dialog.findViewById(R.id.modifyButton);
+                Button overridePrice = (Button) dialog
+                        .findViewById(R.id.overridePriceButton);
+                Button payWithLoyalty = (Button) dialog
+                        .findViewById(R.id.btnPayWithLoyalty);
 
-                @Override
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    if (myPref
-                            .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
-                        showPromptManagerPassword(REMOVE_ITEM, pos, removePos);
-                    } else {
-                        proceedToRemove(pos, removePos);
+                final int pos = position;
+                remove.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if (myPref
+                                .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
+                            showPromptManagerPassword(REMOVE_ITEM, pos, removePos);
+                        } else {
+                            proceedToRemove(pos, removePos);
+                        }
+
+                        dialog.dismiss();
                     }
+                });
 
-                    dialog.dismiss();
-                }
-            });
+                cancel.setOnClickListener(new View.OnClickListener() {
 
-            cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
 
-                @Override
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    dialog.dismiss();
-
-                }
-            });
-
-            modify.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    Intent intent = new Intent(getActivity(),
-                            PickerProduct_FA.class);
-                    intent.putExtra("isModify", true);
-                    intent.putExtra("modify_position", pos);
-                    startActivityForResult(intent, 0);
-
-                    dialog.dismiss();
-                }
-            });
-
-            overridePrice.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-
-                    dialog.dismiss();
-
-                    if (myPref
-                            .getPreferences(MyPreferences.pref_skip_manager_price_override)) {
-                        overridePrice(pos);
-                    } else {
-                        showPromptManagerPassword(OVERWRITE_PRICE, pos, pos);
                     }
-                }
-            });
+                });
 
-            payWithLoyalty.setOnClickListener(new View.OnClickListener() {
+                modify.setOnClickListener(new View.OnClickListener() {
 
-                @Override
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    dialog.dismiss();
-                    if (!Boolean.parseBoolean(global.orderProducts.get(pos).payWithPoints)) {
-                        String price = global.orderProducts.get(pos).prod_price_points;
-                        if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                            global.orderProducts.get(pos).overwrite_price = "0.00";
-                            global.orderProducts.get(pos).itemTotal = "0.00";
-                            global.orderProducts.get(pos).itemSubtotal = "0.00";
-                            global.orderProducts.get(pos).payWithPoints = "true";
-                            refreshView();
-                        } else
-                            Global.showPrompt(activity,
-                                    R.string.dlog_title_error,
-                                    "Not enough points available");
-                    } else {
-                        Global.showPrompt(activity, R.string.dlog_title_error,
-                                "Points claimed");
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(),
+                                PickerProduct_FA.class);
+                        intent.putExtra("isModify", true);
+                        intent.putExtra("modify_position", pos);
+                        startActivityForResult(intent, 0);
+
+                        dialog.dismiss();
                     }
-                }
-            });
+                });
 
-            dialog.show();
+                overridePrice.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+
+                        if (myPref
+                                .getPreferences(MyPreferences.pref_skip_manager_price_override)) {
+                            overridePrice(pos);
+                        } else {
+                            showPromptManagerPassword(OVERWRITE_PRICE, pos, pos);
+                        }
+                    }
+                });
+
+                payWithLoyalty.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        if (!Boolean.parseBoolean(global.orderProducts.get(pos).payWithPoints)) {
+                            String price = global.orderProducts.get(pos).prod_price_points;
+                            if (OrderLoyalty_FR.isValidPointClaim(price)) {
+                                global.orderProducts.get(pos).overwrite_price = "0.00";
+                                global.orderProducts.get(pos).itemTotal = "0.00";
+                                global.orderProducts.get(pos).itemSubtotal = "0.00";
+                                global.orderProducts.get(pos).payWithPoints = "true";
+                                refreshView();
+                            } else
+                                Global.showPrompt(activity,
+                                        R.string.dlog_title_error,
+                                        "Not enough points available");
+                        } else {
+                            Global.showPrompt(activity, R.string.dlog_title_error,
+                                    "Points claimed");
+                        }
+                    }
+                });
+                dialog.show();
+            }
         }
     }
 

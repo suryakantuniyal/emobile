@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class OrderProductListAdapter extends BaseAdapter {
     public enum RowType {
-        TYPE_ITEM(0), TYPE_HEADER(1);
+        TYPE_HEADER(0), TYPE_ITEM(1);
         int code;
 
         RowType(int code) {
@@ -50,13 +50,31 @@ public class OrderProductListAdapter extends BaseAdapter {
         this.activity = activity;
         this.orderProducts = orderProducts;
         this.seatsAmount = seatsAmount;
-        list = new ArrayList<OrderSeatProduct>();
-        for (OrderProduct product : orderProducts) {
-            list.add(new OrderSeatProduct(product));
-        }
+        refreshList();
+    }
+
+    public List<OrderSeatProduct> getOrderSeatProductList() {
+        ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
         for (int i = 0; i < seatsAmount; i++) {
-            list.add(new OrderSeatProduct(i));
+            l.add(new OrderSeatProduct(i));
+            for (OrderProduct product : orderProducts) {
+                if (product != null & product.assignedSeat != null &&
+                        product.assignedSeat.equalsIgnoreCase(String.valueOf(i+1))) {
+                    l.add(new OrderSeatProduct(product));
+                }
+            }
         }
+        return l;
+    }
+
+    private void refreshList() {
+        list = getOrderSeatProductList();
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        refreshList();
+        super.notifyDataSetChanged();
     }
 
     @Override
@@ -82,15 +100,14 @@ public class OrderProductListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        int type = getItemViewType(position);
-        if (convertView == null) {
+        RowType type = list.get(position).rowType;
+        if (convertView == null || (type == RowType.TYPE_ITEM && convertView.getTag() == null)) {
             holder = new ViewHolder();
-
             switch (type) {
-                case 0:
+                case TYPE_HEADER:
                     convertView = mInflater.inflate(R.layout.seat_receipt_adapter, null);
                     break;
-                case 1:
+                case TYPE_ITEM:
                     convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
                     holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
                     holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
@@ -111,6 +128,22 @@ public class OrderProductListAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
             if (list.get(position).rowType == RowType.TYPE_ITEM) {
+                if (holder == null) {
+                    holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
+                    holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
+                    holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
+                    holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
+                    holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
+                    holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
+
+                    holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
+                    if (holder.addonButton != null)
+                        holder.addonButton.setFocusable(false);
+                    if (list.get(position).rowType == RowType.TYPE_ITEM) {
+                        setHolderValues(holder, position);
+                    }
+                    convertView.setTag(holder);
+                }
                 setHolderValues(holder, position);
             }
         }

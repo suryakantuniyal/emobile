@@ -589,9 +589,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void automaticAddOrder(Product product) {
-
-
-        global.automaticAddOrder(getActivity(), false, global, product);
+        ((OrderingMain_FA)getActivity()).automaticAddOrder(getActivity(), false, global, product);
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -744,8 +742,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             if (tempListMap != null && tempListMap.size() > 0) {
                 Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
 
-
                 Product product = populateDataForIntent(myCursor);
+                intent.putExtra("selectedSeatNumber", ((OrderingMain_FA)getActivity()).getSelectedSeatNumber());
                 intent.putExtra("prod_id", product.getId());
                 intent.putExtra("prod_name", product.getProdName());
                 intent.putExtra("prod_on_hand", product.getProdOnHand());
@@ -797,6 +795,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
                     Product product = populateDataForIntent(myCursor);
+                    intent.putExtra("selectedSeatNumber", ((OrderingMain_FA)getActivity()).getSelectedSeatNumber());
                     intent.putExtra("prod_id", product.getId());
                     intent.putExtra("prod_name", product.getProdName());
                     intent.putExtra("prod_on_hand", product.getProdOnHand());

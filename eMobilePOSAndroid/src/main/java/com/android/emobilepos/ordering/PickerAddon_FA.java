@@ -65,11 +65,9 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 	
 	private ImageLoader imageLoader;
 	private DisplayImageOptions options;
-	
 	private ProductAddonsHandler prodAddonsHandler;
-
 	public static PickerAddon_FA instance;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -111,7 +109,6 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
         isEditAddon = extras.getBoolean("isEditAddon",false);
         item_position = extras.getInt("item_position");
 
-        
 		File cacheDir = new File(myPref.getCacheDir());
 		if(!cacheDir.exists())
 			cacheDir.mkdirs();
@@ -418,7 +415,7 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 				intent.putExtra("cat_id", extras.getString("cat_id"));
 				startActivityForResult(intent, 0);
 			} else {
-				global.automaticAddOrder(activity, true, global, product);
+				OrderingMain_FA.automaticAddOrder(activity, true, global, product);
 				activity.setResult(2);
 				// activity.finish();
 			}
