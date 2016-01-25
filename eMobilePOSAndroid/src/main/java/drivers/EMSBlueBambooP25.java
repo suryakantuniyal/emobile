@@ -674,6 +674,11 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
     }

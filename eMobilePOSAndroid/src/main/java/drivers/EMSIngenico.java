@@ -385,6 +385,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
     public void PinPadMessageCallBack(MESSAGE_ID msgID) {
         // TODO Auto-generated method stub
         switch (msgID) {

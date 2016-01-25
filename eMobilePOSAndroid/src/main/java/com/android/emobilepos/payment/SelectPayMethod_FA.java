@@ -128,7 +128,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
-            typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
+            if(extras.get("typeOfProcedure")instanceof Global.OrderType) {
+                typeOfProcedure = ((Global.OrderType) extras.get("typeOfProcedure")).getCode();
+            }else{
+                typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
+            }
         }
         orderType = (Global.OrderType) extras.get("ord_type");
         paymentHandlerDB = new PaymentsHandler(this);
@@ -168,9 +172,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             }
         }
 
-            String row1 = "Grand Total";
-            String row2 = Global.formatDoubleStrToCurrency(total);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+        String row1 = "Grand Total";
+        String row2 = Global.formatDoubleStrToCurrency(total);
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
         if (!myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).isEmpty()
                 && !myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).equals("0")) {
@@ -642,7 +646,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id,orderType,
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, orderType,
                             wasReprint, false, emvContainer);
             }
             return null;
@@ -650,7 +654,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
             if (printSuccessful) {
                 if (overAllRemainingBalance <= 0 || (typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString())))
@@ -658,6 +661,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else {
                 showPrintDlg(wasReprint, true, null);
             }
+            myProgressDialog.dismiss();
         }
     }
 

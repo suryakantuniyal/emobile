@@ -219,6 +219,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
                     break;
 
             }
@@ -229,6 +230,10 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             // TODO Auto-generated method stub
             Intent intent = null;
             switch (preference.getTitleRes()) {
+                case R.string.config_toggle_elo_bcr:
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
+                        Global.mainPrinterManager.currentDevice.toggleBarcodeReader();
+                    break;
                 case R.string.config_change_password:
                     changePassword(false, null);
                     break;

@@ -244,6 +244,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public void toggleBarcodeReader() {
+
+    }
+
+    @Override
     public void registerAll() {
         this.registerPrinter();
     }

@@ -36,7 +36,6 @@ import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCDataReceivedListener;
 import koamtac.kdc.sdk.KDCGPSDataReceivedListener;
 import koamtac.kdc.sdk.KDCMSRDataReceivedListener;
-import koamtac.kdc.sdk.KDCNFCDataReceivedListener;
 import koamtac.kdc.sdk.KDCReader;
 import koamtac.kdc.sdk.KPOSConstants;
 import koamtac.kdc.sdk.KPOSData;
@@ -54,7 +53,6 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         KDCBarcodeDataReceivedListener,  // required for KDC Barcode Solution models
         KDCGPSDataReceivedListener,        // required for KDC Barcode Solution models
         KDCMSRDataReceivedListener,        // required for KDC Barcode Solution models
-        KDCNFCDataReceivedListener,        // required for KDC Barcode Solution models
         KPOSDataReceivedListener,        // required for KDC Payment Solution models
         KDCConnectionListener            // required for all
 {
@@ -237,7 +235,6 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             handler = new Handler();
         scannerCallBack = callBack;
         kdcReader.EnableMSR_POS();
-        kdcReader.EnableNFC_POS();
         handler.post(doUpdateDidConnect);
     }
 
@@ -288,6 +285,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         return false;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
 
     @Override
     public void BarcodeDataReceived(KDCData kdcData) {
@@ -330,17 +332,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     }
 
-    @Override
-    public void NFCDataReceived(KDCData kdcData) {
 
-    }
-
-
-    private void HandleNFCCardReadEvent(KPOSData pData)
-    {
-        String nfcUID = pData.GetNFCUID();
-
-    }
 
     @Override
     public void POSDataReceived(final KPOSData pData) {
@@ -353,9 +345,6 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                             HandleBarcodeScannedEvent(pData);
                         }
                     });
-                    break;
-                case KPOSConstants.EVT_NFC_CARD_TAPPED:
-                    HandleNFCCardReadEvent(pData);
                     break;
                 case KPOSConstants.EVT_CARD_SWIPED: // an user swiped a card, and EMSKDC500 read it successfully
                     activity.runOnUiThread(new Runnable() {
@@ -434,7 +423,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private void HandleBarcodeScannedEvent(KPOSData pData) {
         try {
             scannedData = new String(pData.GetBarcodeBytes());
-            scannerCallBack.scannerWasRead(scannedData.substring(1));
+            scannerCallBack.scannerWasRead(scannedData);
         } catch (Exception e) {
             e.printStackTrace();
         }

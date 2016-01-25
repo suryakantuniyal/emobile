@@ -58,4 +58,5 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     boolean isUSBConnected();
 
+    void toggleBarcodeReader();
 }

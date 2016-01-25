@@ -582,6 +582,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         // TODO Auto-generated method stub
         return false;
     }
+
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
     //
     // protected void printImage(int type) {
     // Bitmap myBitmap = null;

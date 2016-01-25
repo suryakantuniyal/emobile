@@ -708,4 +708,9 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         return false;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
 }

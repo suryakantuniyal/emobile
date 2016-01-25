@@ -205,6 +205,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return false;
     }
 
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
+
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {

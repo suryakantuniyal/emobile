@@ -645,4 +645,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         }
         return false;
     }
+
+    @Override
+    public void toggleBarcodeReader() {
+
+    }
 }
