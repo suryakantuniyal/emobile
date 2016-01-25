@@ -99,54 +99,60 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
+        ViewHolder holder = null;
         RowType type = list.get(position).rowType;
-        if (convertView == null || (type == RowType.TYPE_ITEM && convertView.getTag() == null)) {
+        if (convertView == null) {
             holder = new ViewHolder();
-            switch (type) {
-                case TYPE_HEADER:
-                    convertView = mInflater.inflate(R.layout.seat_receipt_adapter, null);
-                    break;
-                case TYPE_ITEM:
-                    convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
-                    holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
-                    holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
-                    holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
-                    holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
-                    holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
-                    holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
-
-                    holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
-                    if (holder.addonButton != null)
-                        holder.addonButton.setFocusable(false);
-                    if (list.get(position).rowType == RowType.TYPE_ITEM) {
-                        setHolderValues(holder, position);
-                    }
-                    convertView.setTag(holder);
-                    break;
-            }
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-            if (list.get(position).rowType == RowType.TYPE_ITEM) {
-                if (holder == null) {
-                    holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
-                    holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
-                    holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
-                    holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
-                    holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
-                    holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
-
-                    holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
-                    if (holder.addonButton != null)
-                        holder.addonButton.setFocusable(false);
-                    if (list.get(position).rowType == RowType.TYPE_ITEM) {
-                        setHolderValues(holder, position);
-                    }
-                    convertView.setTag(holder);
-                }
-                setHolderValues(holder, position);
-            }
+            convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
         }
+
+        switch (type) {
+            case TYPE_HEADER:
+                convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
+                convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
+                ((TextView)convertView.findViewById(R.id.seatNumbertextView)).setText("Seat "+list.get(position).seatNumber);
+                break;
+            case TYPE_ITEM:
+                convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.GONE);
+                convertView.findViewById(R.id.itemSection).setVisibility(View.VISIBLE);
+                holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
+                holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
+                holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
+                holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
+                holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
+                holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
+
+                holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
+                if (holder.addonButton != null)
+                    holder.addonButton.setFocusable(false);
+                if (list.get(position).rowType == RowType.TYPE_ITEM) {
+                    setHolderValues(holder, position);
+                }
+                convertView.setTag(holder);
+                break;
+        }
+//        else {
+//            holder = (ViewHolder) convertView.getTag();
+//            if (list.get(position).rowType == RowType.TYPE_ITEM) {
+//                if (holder == null) {
+//                    holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
+//                    holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
+//                    holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
+//                    holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
+//                    holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
+//                    holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
+//
+//                    holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
+//                    if (holder.addonButton != null)
+//                        holder.addonButton.setFocusable(false);
+//                    if (list.get(position).rowType == RowType.TYPE_ITEM) {
+//                        setHolderValues(holder, position);
+//                    }
+//                    convertView.setTag(holder);
+//                }
+//                setHolderValues(holder, position);
+//            }
+//        }
 
         return convertView;
     }

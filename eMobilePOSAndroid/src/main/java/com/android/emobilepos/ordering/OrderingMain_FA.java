@@ -270,9 +270,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-//        mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.xml.upcskunumbersfirstrow);
-//        mCustomKeyboard.registerEditText(R.id.catalogSearchField);
-//        mCustomKeyboard.setHandler(SearchFieldHandler);
     }
 
     private void setupTitle() {
@@ -441,10 +438,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void addProductServices() {
-        // TODO Auto-generated method stub
-
-        // receiptContainer.startAnimation(AnimationUtils.loadAnimation(this,
-        // R.anim.anim_right_left));
 
         catalogContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_right_left));
         catalogContainer.setVisibility(View.VISIBLE);
@@ -519,13 +512,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             fragOnKeyDown(keyCode);
             return true;
         }
-        // else if (keyCode == 4)
-        // {
-        // Receipt_FR.mainLVAdapter.notifyDataSetChanged();
-        // Receipt_FR.receiptListView.setSelection(0);
-        // Receipt_FR.receiptListView.setSelected(false);
-        // Receipt_FR.receiptListView.invalidateViews();
-        // }
+
         return super.onKeyUp(keyCode, event);
     }
 
@@ -535,7 +522,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         else {
             DBManager dbManager = new DBManager(MainMenu_FA.activity, Global.FROM_SYNCH_ACTIVITY);
             if (myPref.getPreferences(MyPreferences.pref_automatic_sync)) {
-                // SQLiteDatabase db = dbManager.openWritableDB();
                 dbManager.synchSend(false, true);
             }
 
@@ -572,10 +558,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 e.printStackTrace();
             }
         }
-
-        // SoundManager.getInstance();
-        // SoundManager.initSounds(this);
-        // SoundManager.loadSounds();
 
         super.onResume();
     }
@@ -892,7 +874,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private void scanAddItem(String upc) {
         ProductsHandler handler = new ProductsHandler(this);
         Product product = handler.getUPCProducts(upc);
-        // SoundManager.playSound(1, 1);
         if (product.getId() != null) {
 
             if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
@@ -997,19 +978,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     roverReader.initializeReader(this, false);
                 }
             }
-            // if
-            // (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
-            // {
-            // uniMagReader = new EMSUniMagDriver();
-            // uniMagReader.initializeReader(activity);
-            // } else {
-            // magtekReader = new EMSMagtekAudioCardReader(activity);
-            // new Thread(new Runnable() {
-            // public void run() {
-            // magtekReader.connectMagtek(true,callBackMSR);
-            // }
-            // }).start();
-            // }
+
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
             int _printer_type = myPref.getPrinterType();
@@ -1027,9 +996,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
         // }
         if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
-            // ourIntentAction = getString(R.string.intentAction2);
-            // Intent i = getIntent();
-            // handleDecodeData(i);
             swiperLabel.setText(R.string.connected);
             swiperLabel.setTextColor(Color.BLUE);
             msrWasLoaded = true;
@@ -1042,7 +1008,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             swiperLabel.setText(R.string.connected);
             swiperLabel.setTextColor(Color.BLUE);
             msrWasLoaded = true;
-            // }
         }
     }
 
@@ -1123,11 +1088,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // TODO Auto-generated method stub
                 temp = s.toString();
-                // if
-                // (temp.contains("\n")&&temp.split("\n").length>=2&&temp.substring(temp.length()-1).contains("\n"))
-                // {
-                // doneScanning = true;
-                // }
                 if (temp.contains(";") && temp.contains("?") && temp.contains("\n"))
                     doneScanning = true;
 
@@ -1185,7 +1145,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         payment.pay_type = "0";
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
-        String generatedURL = new String();
+        String generatedURL;
 
         if (isLoyaltyCard) {
             generatedURL = payGate.paymentWithAction("BalanceLoyaltyCardAction", wasReadFromReader, cardType,
@@ -1257,8 +1217,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -1292,9 +1250,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
             }
 
             return null;
@@ -1327,8 +1283,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
-
         wasReadFromReader = true;
         this.cardInfoManager = cardManager;
         cardInfoManager.setWasSwiped(true);
@@ -1342,12 +1296,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                 && Global.mainPrinterManager != null)
             Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
-        // new DeviceLoad().execute(callBackMSR);
     }
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         if (didConnect) {
             msrWasLoaded = true;
             cardReaderConnected = true;
@@ -1364,7 +1316,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
         if (!data.isEmpty()) {
             scanAddItem(data);
         }
@@ -1385,12 +1336,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             dbOrders.updateIsVoid(Global.lastOrdID);
 
             VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(this);
-            /*
-             * HashMap<String,String> voidedTrans = new
-			 * HashMap<String,String>(); voidedTrans.put("ord_id",
-			 * Global.lastOrdID); voidedTrans.put("ord_type",
-			 * global.order.ord_type);
-			 */
 
             Order order = new Order(this);
             order.ord_id = Global.lastOrdID;
@@ -1445,10 +1390,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             val = "0.00";
 
         BigDecimal total = Global.getBigDecimalNum(Global.formatNumToLocale(Double.parseDouble(val)));
-        // double total = 1 * Double.parseDouble(val);
         if (isFromAddon) {
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
-            // total+=Global.addonTotalAmount;
         }
 
         ord.overwrite_price = total.toString();
