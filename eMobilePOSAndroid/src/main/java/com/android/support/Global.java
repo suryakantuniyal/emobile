@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
@@ -1077,50 +1078,58 @@ public class Global extends MultiDexApplication {
         return orderIndex;
     }
 
-    public void refreshParticularOrder(MyPreferences myPref, int position, Product product) {
+    public void refreshParticularOrder(Activity activity, int position, Product product) {
         OrderProducts orderedProducts = this.orderProducts.get(position);
-
+        MyPreferences myPref = new MyPreferences(activity);
         String newPickedOrders = orderedProducts.ordprod_qty;
-        double sum = 1.0;
+        double sum;
 
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
             sum = Double.parseDouble(newPickedOrders);
         else
             sum = Integer.parseInt(newPickedOrders);
+        VolumePricesHandler volPriceHandler = new VolumePricesHandler(activity);
+        String[] volumePrice = volPriceHandler.getVolumePrice(String.valueOf(newPickedOrders), product.getId());
 
-        String prLevTotal = product.getPriceLevelPrice();// orderedProducts.getSetData("overwrite_price",
-        // true, null);
+        String prLevTotal;
+        if (volumePrice[1] != null && !volumePrice[1].isEmpty()) {
+            prLevTotal = Global.formatNumToLocale(Double.parseDouble(volumePrice[1]));
+        }else {
+            prLevTotal = product.getProdPrice();
+        }
+        BigDecimal priceLevel = new BigDecimal(prLevTotal).setScale(2, RoundingMode.HALF_UP);
 
-        double total = 0;// = sum*Double.parseDouble(prLevTotal);
+        BigDecimal total = new BigDecimal(0);// = sum*Double.parseDouble(prLevTotal);
 
         try {
-            total = sum * Double.parseDouble(prLevTotal);
+
+            total = priceLevel.multiply(new BigDecimal(sum));
         } catch (NumberFormatException e) {
         }
 
-        double itemTotal = total;
+        double itemTotal = total.doubleValue();
 
         if (itemTotal < 0)
             itemTotal = 0.00;
 
-        orderedProducts.itemSubtotal = Double.toString(total);
+        orderedProducts.itemSubtotal = Double.toString(itemTotal);
         double discountRate = 0;
         if (orderedProducts.discount_is_fixed.equals("1")) {
             discountRate = Double.parseDouble(orderedProducts.discount_value);
         } else {
-            double val = total * Global.formatNumFromLocale(orderedProducts.discount_value);
+            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.discount_value))).doubleValue();
             discountRate = (val / 100);
         }
 
-        orderedProducts.itemTotal = Double.toString(total - discountRate);
-        orderedProducts.overwrite_price = prLevTotal;
+        orderedProducts.itemTotal = Double.toString(total.doubleValue() - discountRate);
+        orderedProducts.overwrite_price = priceLevel.toString();
         orderedProducts.prod_price_updated = "0";
 
 
-            StringBuilder sb = new StringBuilder();
-            String row1 = product.getProdName();
-            String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+        StringBuilder sb = new StringBuilder();
+        String row1 = product.getProdName();
+        String row2 = sb.append(Global.formatDoubleStrToCurrency(product.getProdPrice())).toString();
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
     }
 
@@ -1338,7 +1347,7 @@ public class Global extends MultiDexApplication {
         ord.prod_taxcode = product.getProdTaxCode();
 
         // add order to db
-        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType!=TransactionType.RETURN ? "-1" : "1";
+        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != TransactionType.RETURN ? "-1" : "1";
         ord.ordprod_name = product.getProdName();
         ord.ordprod_desc = product.getProdDesc();
         ord.prod_id = product.getId();
@@ -1727,7 +1736,7 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.KDC500|| _device_type == Global.OT310 || _device_type == Global.ESY13P1);
+                || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ESY13P1);
     }
 
     // Handle application transition for background

@@ -24,7 +24,8 @@ public class ConsignmentCheckout_FA extends BaseFragmentActivityActionBar {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = this.getIntent().getExtras();
-        if (extras.getInt("consignmentType") == 2)
+        Global.OrderType consignmentType = (Global.OrderType) extras.get("consignmentType");
+        if (consignmentType == Global.OrderType.CONSIGNMENT_FILLUP)
             setContentView(R.layout.consign_fragment_container);
         else
             setContentView(R.layout.consign_pickup_fragment_container);

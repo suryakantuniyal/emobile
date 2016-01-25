@@ -35,21 +35,24 @@ android {
         ems {
             minSdkVersion 14
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.0.14"
+            versionName "1.1.0.17"
+            versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
         }
         emsblue {
             minSdkVersion 14
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.0.14"
+            versionName "1.1.0.17"
+            versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
         }
         ivupos {
             minSdkVersion 14
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.1.0.14"
+            versionName "1.1.0.17"
+            versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
         }

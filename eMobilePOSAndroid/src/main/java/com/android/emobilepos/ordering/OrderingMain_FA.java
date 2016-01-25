@@ -286,7 +286,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     headerTitle.setText(R.string.estimate);
                     break;
                 }
-                case REFUND: {
+                case CONSIGNMENT: {
                     if (!Global.isConsignment) {
                         custInventoryHandler = new CustomerInventoryHandler(this);
                         custInventoryHandler.getCustomerInventory();
@@ -687,7 +687,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                 if (foundPosition != -1) // product already
                                 // exist in list
                                 {
-                                    global.refreshParticularOrder(myPref, foundPosition, product);
+                                    global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                 } else
                                     Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                             } else
@@ -794,7 +794,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                                     // in
                                     // list
                                     {
-                                        global.refreshParticularOrder(myPref, foundPosition, product);
+                                        global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                                     } else
                                         Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                                 } else
@@ -886,7 +886,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         if (foundPosition != -1) // product already exist in
                         // list
                         {
-                            global.refreshParticularOrder(myPref, foundPosition, product);
+                            global.refreshParticularOrder(OrderingMain_FA.this, foundPosition, product);
                         } else
                             Catalog_FR.instance.automaticAddOrder(product);// temp.automaticAddOrder(listData);
                     } else
