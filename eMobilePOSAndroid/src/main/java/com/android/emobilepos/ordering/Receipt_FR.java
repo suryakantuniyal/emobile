@@ -266,6 +266,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     consignmentType = Global.consignmentType;
                     switch (Global.consignmentType) {
                         case ORDER:
+                            Global.ord_type = Global.OrderType.CONSIGNMENT_INVOICE;
                             // title.setText("Rack");
                             break;
                         case CONSIGNMENT_RETURN:
