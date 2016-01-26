@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_white_page"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/header_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/add_main_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical"
+            android:text="@string/shift_expenses"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_txt_size"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/processAddExpenseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/blue_btn_selector"
+            android:paddingLeft="5dp"
+            android:paddingRight="14dp"
+            android:text="@string/shift_add_expense"
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/large_button_text_size" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/shiftExpensesListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFFFF"
+            android:cacheColorHint="#FFFFFF"
+            android:divider="@color/listview_divider"
+            android:dividerHeight="0.1dp"
+            android:padding="5dp" >
+        </ListView>
+
+    </LinearLayout>
+</LinearLayout>

@@ -372,6 +372,27 @@ public class ProductsHandler {
 
     }
 
+    //get list of products configured as an expense
+    public Cursor getProductsTypeExpense() {
+
+        String[] parameters = null;
+        String query = empStr;
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("SELECT  prod_id, prod_name, prod_expense FROM ");
+        sb.append(table_name);
+        sb.append(" WHERE prod_expense = 'true'");
+
+        query = sb.toString();
+
+        Cursor cursor = DBManager._db.rawQuery(query, parameters);
+        cursor.moveToFirst();
+        // db.close();
+
+        return cursor;
+
+    }
+
     public Cursor viewOtherTypes(String prodName) {
         // if(!db.isOpen())
         // db = dbManager.openReadableDB();

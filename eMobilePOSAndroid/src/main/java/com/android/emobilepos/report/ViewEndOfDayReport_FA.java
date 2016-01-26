@@ -224,9 +224,10 @@ public class ViewEndOfDayReport_FA  extends BaseFragmentActivityActionBar implem
 			
 		}
 	}
-	
-	
-	public  class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+
+
+
+		public class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -252,16 +253,16 @@ public class ViewEndOfDayReport_FA  extends BaseFragmentActivityActionBar implem
 			sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear+1)).append(Integer.toString(dayOfMonth));
 			Calendar cal = Calendar.getInstance();
 			cal.set(year, monthOfYear, dayOfMonth);
-			
-			
-			
+
+
+
 			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.getDefault());
-			
+
 			curDate = sdf2.format(cal.getTime());
 			adapter.setNewDate(Global.formatToDisplayDate(curDate, activity, 4));
 			mDate = Global.formatToDisplayDate(curDate, activity, 0);
 			btnDate.setText(mDate);
-			
+
 //			dates[0]=Global.formatToDisplayDate(curDate, activity, 0);
 //			dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
 //			if(activity!=null)
@@ -277,7 +278,7 @@ public class ViewEndOfDayReport_FA  extends BaseFragmentActivityActionBar implem
 //					myListview.setAdapter(shiftAdapter);
 //				}
 //			}
-			
+
 		}
 	}
 	

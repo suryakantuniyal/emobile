@@ -79,6 +79,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     private Bundle extras;
     private Button btnProcess;
     private List<GroupTax> groupTaxRate;
+    private NumberUtils numberUtils = new NumberUtils();
 
 
     @Override
@@ -255,7 +256,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, amountDue);
+                numberUtils.parseInputedCurrency(s, amountDue);
             }
         });
 
@@ -269,7 +270,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, paid);
+                numberUtils.parseInputedCurrency(s, paid);
             }
         });
 
@@ -358,7 +359,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                parseInputedCurrency(s, subtotal);
+                numberUtils.parseInputedCurrency(s, subtotal);
                 if (!isFromSalesReceipt) {
                     calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                     calculateAmountDue(subtotal, tax1, tax2, amountDue);
@@ -479,7 +480,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                parseInputedCurrency(s, promptTipField);
+                numberUtils.parseInputedCurrency(s, promptTipField);
             }
         });
 
@@ -573,30 +574,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     }
 
 
-    public static void parseInputedCurrency(CharSequence s, EditText editText) {
-        DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-        DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-        StringBuilder sb = new StringBuilder();
-        sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator()).append("\\d{3})*|(\\d+))(");
-        sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
 
-        if (!s.toString().matches(sb.toString())) {
-            String userInput = "" + s.toString().replaceAll("[^\\d]", "");
-            StringBuilder cashAmountBuilder = new StringBuilder(userInput);
-
-            while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
-                cashAmountBuilder.deleteCharAt(0);
-            }
-            while (cashAmountBuilder.length() < 3) {
-                cashAmountBuilder.insert(0, '0');
-            }
-
-            cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
-            cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-            editText.setText(cashAmountBuilder.toString());
-        }
-        Selection.setSelection(editText.getText(), editText.getText().length());
-    }
 
     public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
         double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));

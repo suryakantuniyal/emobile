@@ -553,6 +553,10 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 	}
 
 	@Override
+	public void printShiftDetailsReport(String shiftID) {
+	}
+
+	@Override
 	public boolean printReport(String curDate) {
 		// TODO Auto-generated method stub
 		return true;

@@ -391,6 +391,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         return new Catalog_Loader(getActivity());
     }
+    
 
     @Override
     public void onDestroy() {

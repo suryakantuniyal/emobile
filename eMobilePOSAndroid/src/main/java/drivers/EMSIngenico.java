@@ -588,8 +588,12 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 		//printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
-    public void getAcctNum() {
-        String retValue = MSG29_GetVariable("00398");
+	@Override
+	public void printShiftDetailsReport(String shiftID) {
+	}
+
+	public void getAcctNum() {
+		String retValue = MSG29_GetVariable("00398");
 
         if (retValue == null) {
             // For Testing This Value Will Be Hardcoded

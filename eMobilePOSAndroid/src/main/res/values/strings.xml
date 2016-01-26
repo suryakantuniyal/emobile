@@ -858,7 +858,9 @@
 
 	<string name = "shift_close_shift">Close Shift</string>
 	<string name = "shift_open_shift">Open Shift</string>
-	<string name = "shift_expenses">Expenses</string>
+	<string name = "shift_expenses">Shift Expenses</string>
+	<string name = "shift_expense">Expense</string>
+	<string name = "shift_add_expense">Add Expense</string>
 	<string name = "shift_title">Shift</string>
 
 	<string name = "report_per_shift">Per-Shift</string>
@@ -1132,6 +1134,8 @@
 	<string name="twenty_percent">20%</string>
 	<string name="other">Other:</string>
 	<string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
+	<string name="genius_application_label">Application Label:</string>
+	<string name="receipt_amount">Amount:</string>
 	<string name="config_restaurant_settings">Restaurant Settings</string>
 	<string name="config_enable_togo_eatin">Enable section of \"To Go\"/\"Eat In\"</string>
 	<string name="config_require_waiter_signin">Require waiter to sign in</string>

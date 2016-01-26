@@ -208,6 +208,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public void printShiftDetailsReport(String shiftID) {
+
+    }
+
+    @Override
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
 
     }

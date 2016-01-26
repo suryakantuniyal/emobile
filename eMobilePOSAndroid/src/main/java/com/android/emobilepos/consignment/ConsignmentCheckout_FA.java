@@ -103,7 +103,6 @@ public class ConsignmentCheckout_FA extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 finish();
             }
@@ -112,7 +111,6 @@ public class ConsignmentCheckout_FA extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });

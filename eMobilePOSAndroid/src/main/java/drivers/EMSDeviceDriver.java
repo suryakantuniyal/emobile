@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
@@ -28,6 +29,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
+import com.android.database.ShiftExpensesDBHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
@@ -60,6 +62,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.util.Base64;
 import android.util.Log;
+import android.util.SparseArray;
 
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
@@ -330,8 +333,13 @@ public class EMSDeviceDriver {
     private void printEMVSection(EMVContainer emvContainer, int lineWidth) {
         if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
             StringBuffer sb = new StringBuffer();
-            if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
+            if (emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
                     emvContainer.getGeniusResponse().getAdditionalParameters().getEMV() != null) {
+                String applicationLabel = emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getApplicationLabel();
+                if (applicationLabel != null && !applicationLabel.isEmpty()) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_application_label),
+                            applicationLabel, lineWidth, 0));
+                }
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.genius_aid),
                         emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getAid(), lineWidth, 0));
                 if (emvContainer.getGeniusResponse().getPaymentType().equalsIgnoreCase(ProcessGenius_FA.Limiters.DISCOVER.name()) ||
@@ -1055,19 +1063,15 @@ public class EMSDeviceDriver {
 
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-//			port.writePort(enableCenter, 0, enableCenter.length); // enable
-            // center
+
 
             sb.append("* ").append(payArray.getPaymethod_name());
             if (payArray.getIs_refund().equals("1"))
                 sb.append(" Refund *\n\n\n");
             else
                 sb.append(" Sale *\n\n\n");
-
-//			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.length());
             print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
-//			port.writePort(disableCenter, 0, disableCenter.length); // disable
-            // center
+
             sb.setLength(0);
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     getString(R.string.receipt_time), lineWidth, 0));
@@ -1118,15 +1122,15 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
                         Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
             }
-
-
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                    Global.formatDoubleStrToCurrency(payArray.getOrd_total()), lineWidth, 0));
-
-//            addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
-
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_paid),
-                    Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
+//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+//                    Global.formatDoubleStrToCurrency(payArray.getOrd_total()), lineWidth, 0));
+            if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
+                        Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
+            } else {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
+                        Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
+            }
 
             String change = payArray.getChange();
 
@@ -1138,12 +1142,10 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
                         Global.formatDoubleStrToCurrency(change), lineWidth, 0));
 
-//			port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-//			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
-//            print(textHandler.newLines(1), FORMAT);
+
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                     sb.append(textHandler.newLines(1));
@@ -1151,46 +1153,18 @@ public class EMSDeviceDriver {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
-//				port.writePort(enableCenter, 0, enableCenter.length); // center
                 sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
                 sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
-//				port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
             }
 
             if (Global.isIvuLoto) {
                 sb = new StringBuilder();
-//                port.writePort(enableCenter, 0, enableCenter.length); // enable
-                // center
 
                 if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-//                    sb.append("\n");
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//                    sb.append(textHandler.centeredString("CONTROL: " + payArray.getIvuLottoNumber(), lineWidth));
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-////                    sb.append(textHandler.centeredString(payArray[12], lineWidth));
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//                    sb.append("\n");
-//
-////					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-//                    print(sb.toString(), FORMAT);
                     printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
                 } else {
-//                    encodedQRCode = payArray[14];
-
-//                    this.printImage(2);
-
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//                    sb.append("\t").append("CONTROL: ").append(payArray.getIvuLottoNumber()).append("\n");
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-////                    sb.append(payArray[12]).append("\n");
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//
-////					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-//                    print(sb.toString(), FORMAT);
 
                     printIVULoto(payArray.getIvuLottoNumber(), lineWidth);
 
@@ -1206,21 +1180,16 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
             sb.setLength(0);
 
-//            port.writePort(enableCenter, 0, enableCenter.length); // center
             String temp = new String();
             if (!isCashPayment && !isCheckPayment) {
-
-                //port.writePort(creditCardFooting.getBytes(FORMAT), 0, creditCardFooting.length());
                 print(creditCardFooting.toString(), FORMAT);
                 temp = textHandler.newLines(1);
-                //port.writePort(temp.getBytes(FORMAT), 0, temp.length());
                 print(temp.toString(), FORMAT);
             }
 
             sb.setLength(0);
             if (isReprint) {
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
-                //port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                 print(sb.toString(), FORMAT);
             }
             printEnablerWebSite(lineWidth);
@@ -1844,7 +1813,6 @@ public class EMSDeviceDriver {
 
     }
 
-
     protected void printEndOfDayReportReceipt(String curDate, int lineWidth, boolean printDetails) {
 
         String mDate = Global.formatToDisplayDate(curDate, activity, 4);
@@ -2086,6 +2054,60 @@ public class EMSDeviceDriver {
         print(sb.toString(), FORMAT);
     }
 
+    protected void printShiftDetailsReceipt(int lineWidth, String shiftID) {
+        StringBuilder sb = new StringBuilder();
+        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+
+        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
+        SparseArray<String> shift = shiftHandler.getShiftDetails(shiftID);
+
+        sb.append(textHandler.centeredString("Shift Details", lineWidth));
+
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk:", shift.get(0), lineWidth, 0));
+        MyPreferences myPreferences = new MyPreferences(activity);
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", myPreferences.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.newLines(2));
+        sb.append("From: " + shift.get(7)); //startTime
+        sb.append(textHandler.newLines(1));
+        if (shift.get(8).isEmpty()) {
+            sb.append("To: " + shift.get(9)); //display Open
+        } else {
+            sb.append("To: " + shift.get(8)); //show endTime
+
+        }
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Beginning Petty Cash", shift.get(1), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Expenses", "(" + shift.get(2) + ")", lineWidth, 0));
+
+        ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
+        Cursor expensesByShift;
+        expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
+
+        int i = 0;
+        while (!expensesByShift.isAfterLast()) {
+           // expName = expensesByShift.getString(0); //get the expense id
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(expensesByShift.getString(4),Global.formatDoubleStrToCurrency(expensesByShift.getString(2)), lineWidth, 3));
+            //theSpinnerNames[i] = productExpensesCursor.getString(2); //get if expense
+            i++;
+            expensesByShift.moveToNext();
+        }
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", shift.get(3), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Transactions Cash", shift.get(4), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Ending Cash", shift.get(5), lineWidth, 0));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Refunds", "(" + "?????" + ")", lineWidth, 3));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Entered Close Amount", shift.get(6), lineWidth, 0));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Over (Short)", shift.over_short, lineWidth, 3));
+
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.centeredString("** End of shift report **", lineWidth));
+        sb.append(textHandler.newLines(4));
+        print(sb.toString(), FORMAT);
+    }
 
     protected void printReportReceipt(String curDate, int lineWidth) {
         // TODO Auto-generated method stub

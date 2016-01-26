@@ -127,6 +127,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public static Receipt_FR fragInstance;
 
     private String order_email = "";
+    private NumberUtils numberUtils = new NumberUtils();
+
 
     public interface RecalculateCallback {
         void recalculateTotal();
@@ -264,6 +266,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     consignmentType = Global.consignmentType;
                     switch (Global.consignmentType) {
                         case ORDER:
+                            Global.ord_type = Global.OrderType.CONSIGNMENT_INVOICE;
                             // title.setText("Rack");
                             break;
                         case CONSIGNMENT_RETURN:
@@ -400,7 +403,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
-                parseInputedCurrency(s, input);
+                numberUtils.parseInputedCurrency(s, input);
             }
         });
 
@@ -717,39 +720,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
-    private void parseInputedCurrency(CharSequence s, EditText field) {
-        DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale
-                .getDefault());
-        DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-        StringBuilder sb = new StringBuilder();
-        sb.append("^\\").append(sym.getCurrencySymbol())
-                .append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator())
-                .append("\\d{3})*|(\\d+))(");
-        sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
 
-        if (!s.toString().matches(sb.toString())) {
-            String userInput = "" + s.toString().replaceAll("[^\\d]", "");
-            StringBuilder cashAmountBuilder = new StringBuilder(userInput);
-
-            while (cashAmountBuilder.length() > 3
-                    && cashAmountBuilder.charAt(0) == '0') {
-                cashAmountBuilder.deleteCharAt(0);
-            }
-            while (cashAmountBuilder.length() < 3) {
-                cashAmountBuilder.insert(0, '0');
-            }
-
-            cashAmountBuilder.insert(cashAmountBuilder.length() - 2,
-                    sym.getDecimalSeparator());
-            cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-
-            field.setText(cashAmountBuilder.toString());
-
-        }
-        // keeps the cursor always to the right
-
-        Selection.setSelection(field.getText(), field.getText().length());
-    }
 
     public void showEmailDlog() {
 

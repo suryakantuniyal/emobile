@@ -203,7 +203,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.btSled.currentDevice.loadScanner(callBackMSR);
         }
 
-
         hasBeenCreated = true;
     }
 
@@ -309,7 +308,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
                         // consignmentType 0 = Rack, 1 = Returns, 2 = Fill-up, 3 =
                         // Pick-up
-                        Global.OrderType consignmentType = Global.OrderType.getByCode(extras.getInt("consignmentType", 0));
+                        Global.OrderType consignmentType = (Global.OrderType) extras.get("consignmentType");
 
                         if (Global.custInventoryKey == null || Global.custInventoryKey.size() <= 0) {
                             consignmentType = Global.OrderType.CONSIGNMENT_FILLUP;

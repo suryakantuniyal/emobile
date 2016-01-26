@@ -37,11 +37,12 @@ public interface EMSDeviceManagerPrinterDelegate {
     void playSound();
 
     boolean printReport(String curDate);
+    public void printShiftDetailsReport(String shiftID);
 
-	void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
+    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
 
-    void registerPrinter();
-
+    public void registerPrinter();
+    
     void unregisterPrinter();
 
     void loadCardReader(EMSCallBack callBack, boolean isDebitCard);
