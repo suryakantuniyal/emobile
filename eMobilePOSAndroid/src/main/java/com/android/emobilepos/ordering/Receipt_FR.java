@@ -581,11 +581,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         final int removePos = position;
         if (restLVAdapter != null)
             position = restLVAdapter.dataPosition(position);
-        OrderProductListAdapter.OrderSeatProduct item = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
+        final OrderProductListAdapter.OrderSeatProduct item = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
         if (item.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-
+            ((OrderingMain_FA)getActivity()).setSelectedSeatNumber(item.seatNumber);
         } else {
-            String isVoidedItem = global.orderProducts.get(position).item_void;
+            String isVoidedItem =item.orderProduct.item_void;
 
             if (!isVoidedItem.equals("1")) {
                 final Dialog dialog = new Dialog(activity,
@@ -596,7 +596,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 dialog.setContentView(R.layout.picked_item_dialog);
 
                 TextView itemName = (TextView) dialog.findViewById(R.id.itemName);
-                itemName.setText(global.orderProducts.get(position).ordprod_name);
+                itemName.setText(item.orderProduct.ordprod_name);
 
                 Button remove = (Button) dialog.findViewById(R.id.removeButton);
                 Button cancel = (Button) dialog.findViewById(R.id.cancelButton);
@@ -616,6 +616,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             showPromptManagerPassword(REMOVE_ITEM, pos, removePos);
                         } else {
                             proceedToRemove(pos, removePos);
+                            mainLVAdapter.notifyDataSetChanged();
                         }
 
                         dialog.dismiss();
@@ -664,12 +665,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     public void onClick(View v) {
                         dialog.dismiss();
                         if (!Boolean.parseBoolean(global.orderProducts.get(pos).payWithPoints)) {
-                            String price = global.orderProducts.get(pos).prod_price_points;
+                            String price =item.orderProduct.prod_price_points;
                             if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                                global.orderProducts.get(pos).overwrite_price = "0.00";
-                                global.orderProducts.get(pos).itemTotal = "0.00";
-                                global.orderProducts.get(pos).itemSubtotal = "0.00";
-                                global.orderProducts.get(pos).payWithPoints = "true";
+                                item.orderProduct.overwrite_price = "0.00";
+                                item.orderProduct.itemTotal = "0.00";
+                                item.orderProduct.itemSubtotal = "0.00";
+                                item.orderProduct.payWithPoints = "true";
                                 refreshView();
                             } else
                                 Global.showPrompt(activity,
@@ -1948,7 +1949,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void proceedToRemove(int pos, int removePos) {
         // String quant = global.orderProduct.get(pos).ordprod_qty;
         // String prodID = global.orderProduct.get(pos).prod_id;
-        OrderProduct product = global.orderProducts.get(pos);
+        OrderProduct product = mainLVAdapter.list.get(removePos).orderProduct;
+//        OrderProduct product = global.orderProducts.get(pos);
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             double totalQty = (Double) Global.getFormatedNumber(true,
                     global.qtyCounter.get(product.prod_id));
@@ -1967,7 +1969,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (myPref
                 .getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
             product.item_void = "1";
-            String val = global.orderProducts.get(pos).ordprod_name;
+            String val = product.ordprod_name;
 
             product.ordprod_name = val + " [VOIDED]";
             product.overwrite_price = "0";
@@ -1987,7 +1989,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 Global.orderProductAddonsMap.remove(product.ordprod_id);
             }
-            global.orderProducts.remove(pos);
+            int idx = global.orderProducts.indexOf(product);
+            global.orderProducts.remove(idx);
         }
 
         receiptListView.invalidateViews();

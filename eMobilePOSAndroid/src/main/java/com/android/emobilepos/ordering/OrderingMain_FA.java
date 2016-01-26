@@ -1162,12 +1162,17 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         return Integer.parseInt(selectedSeatsAmount);
     }
 
+
     public String getSelectedDinningTableNumber() {
         return selectedDinningTableNumber;
     }
 
     public static String getSelectedSeatNumber() {
         return selectedSeatNumber;
+    }
+
+    public void setSelectedSeatNumber(String seatNumber) {
+        selectedSeatNumber = seatNumber;
     }
 
     private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
@@ -1365,7 +1370,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
-
         int sum = 0;
         if (global.qtyCounter.containsKey(product.getId()))
             sum = Integer.parseInt(global.qtyCounter.get(product.getId()));
@@ -1376,7 +1380,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
         if (OrderingMain_FA.returnItem)
             ord.isReturned = true;
-
         order.setName(product.getProdName());
         order.setValue(product.getProdPrice());
         order.setProdID(product.getId());
@@ -1396,7 +1399,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         ord.overwrite_price = total.toString();
         ord.prod_price = total.toString();
-        ord.assignedSeat= getSelectedSeatNumber();
+        ord.assignedSeat = getSelectedSeatNumber();
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
 
         DecimalFormat frmt = new DecimalFormat("0.00");
@@ -1439,20 +1442,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ord.uom_position = "0";
 
         ord.prod_price_updated = "0";
-        // OrdersHandler handler = new OrdersHandler(activity);
-
         GenerateNewID generator = new GenerateNewID(activity);
 
         MyPreferences myPref = new MyPreferences(activity);
-        // myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-
-        // if(!Global.isFromOnHold)
-        // {
-        // if (handler.getDBSize() == 0)
-        // Global.lastOrdID = generator.generate("",0);
-        // else
-        // Global.lastOrdID = generator.generate(handler.getLastOrdID(),0);
-        // }
 
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);

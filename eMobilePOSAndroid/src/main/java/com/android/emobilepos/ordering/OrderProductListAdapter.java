@@ -56,10 +56,10 @@ public class OrderProductListAdapter extends BaseAdapter {
     public List<OrderSeatProduct> getOrderSeatProductList() {
         ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
         for (int i = 0; i < seatsAmount; i++) {
-            l.add(new OrderSeatProduct(i));
+            l.add(new OrderSeatProduct(String.valueOf(i+1)));
             for (OrderProduct product : orderProducts) {
                 if (product != null & product.assignedSeat != null &&
-                        product.assignedSeat.equalsIgnoreCase(String.valueOf(i+1))) {
+                        product.assignedSeat.equalsIgnoreCase(String.valueOf(i + 1))) {
                     l.add(new OrderSeatProduct(product));
                 }
             }
@@ -104,13 +104,15 @@ public class OrderProductListAdapter extends BaseAdapter {
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
         switch (type) {
             case TYPE_HEADER:
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
-                ((TextView)convertView.findViewById(R.id.seatNumbertextView)).setText("Seat "+list.get(position).seatNumber);
+                ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText("Seat " + list.get(position).seatNumber);
                 break;
             case TYPE_ITEM:
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.GONE);
@@ -128,9 +130,10 @@ public class OrderProductListAdapter extends BaseAdapter {
                 if (list.get(position).rowType == RowType.TYPE_ITEM) {
                     setHolderValues(holder, position);
                 }
-                convertView.setTag(holder);
                 break;
         }
+        convertView.setTag(holder);
+
 //        else {
 //            holder = (ViewHolder) convertView.getTag();
 //            if (list.get(position).rowType == RowType.TYPE_ITEM) {
@@ -159,10 +162,10 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public class OrderSeatProduct {
         RowType rowType;
-        int seatNumber;
+        String seatNumber;
         OrderProduct orderProduct;
 
-        public OrderSeatProduct(int seatNumber) {
+        public OrderSeatProduct(String seatNumber) {
             this.seatNumber = seatNumber;
             this.rowType = RowType.TYPE_HEADER;
         }
