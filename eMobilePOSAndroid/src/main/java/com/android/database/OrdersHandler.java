@@ -131,7 +131,7 @@ public class OrdersHandler {
         // SQLiteDatabase db = dbManager.openWritableDB();
         DBManager._db.beginTransaction();
         try {
-
+            Order o = getOrder(order.ord_id);
             SQLiteStatement insert = null;
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT OR REPLACE INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
@@ -183,7 +183,7 @@ public class OrdersHandler {
 
             insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
             insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
-
+            Order order1 = getOrder(order.ord_id);
             insert.execute();
             insert.clearBindings();
             insert.close();
