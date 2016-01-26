@@ -142,7 +142,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             double onHandQty = -1;
 
 
-            consTransID = generator.getNextID(IdType.ORDER_ID);
+            consTransID = generator.getNextID(IdType.CONSIGNMENT_ID);
 
             signatureMap.put("ConsTrans_ID", consTransID);
 

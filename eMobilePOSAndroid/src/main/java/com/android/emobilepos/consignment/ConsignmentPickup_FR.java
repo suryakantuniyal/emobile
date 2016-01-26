@@ -109,7 +109,6 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
 
             ordersHandler = new OrdersHandler(activity);
             orderProductsHandler = new OrderProductsHandler(activity);
@@ -130,7 +129,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
 //				consTransID = cih.getLastConsTransID();
 //			else if(!myPref.getLastConsTransID().isEmpty())
 //				consTransID = myPref.getLastConsTransID();
-            consTransID = generator.getNextID(IdType.ORDER_ID);
+            consTransID = generator.getNextID(IdType.CONSIGNMENT_ID);
 
             //consTransID = generator.generate(consTransID, 3);
             signatureData.put("ConsTrans_ID", consTransID);
