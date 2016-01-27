@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 35;
+    public static final int VERSION = 36;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -245,10 +245,10 @@ public class DBManager {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-
-
             for (String tblName : CREATE_TABLE) db.execSQL(tblName);
-
+            for (String sql : CREATE_INDEX) {
+                db.execSQL(sql);
+            };
             if (_db != null && _db.isOpen())
                 _db.close();
 
@@ -314,6 +314,21 @@ public class DBManager {
     public boolean isSendAndReceive() {
         return this.sendAndReceive;
     }
+
+    private final String[] CREATE_INDEX = {
+            "CREATE INDEX prod_id_index ON EmpInv (prod_id)",
+            "CREATE INDEX VolumePrices_prod_id_index ON VolumePrices (prod_id)",
+            "CREATE INDEX minQty_index ON VolumePrices (minQty)",
+            "CREATE INDEX pricelevel_id_index ON VolumePrices (pricelevel_id)",
+            "CREATE INDEX Products_Images_prod_id_index ON Products_Images (prod_id)",
+            "CREATE INDEX type_index ON Products_Images (type)",
+            "CREATE INDEX prod_sku_index ON Products (prod_sku)",
+            "CREATE INDEX prod_upc_index ON Products (prod_upc)",
+            "CREATE INDEX prod_name_index ON Products (prod_name)",
+            "CREATE INDEX prod_type_index ON Products (prod_type)",
+            "CREATE INDEX ProductChainXRef_prod_id_index ON ProductChainXRef (prod_id)",
+            "CREATE INDEX cust_chain_index ON ProductChainXRef (cust_chain)"
+    };
 
     private final String CREATE_ADDRESS = "CREATE TABLE [Address] ([addr_id] varchar NOT NULL ,[cust_id]varchar NOT NULL ,[addr_b_str1]varchar,"
             + "[addr_b_str2]varchar,[addr_b_str3]varchar,[addr_b_city]varchar,[addr_b_state]varchar,[addr_b_country]varchar,[addr_b_zipcode]varchar,"
@@ -566,8 +581,8 @@ public class DBManager {
             + "[endTime][datetime],[endTimeLocal][datetime],[beginning_petty_cash][decimal],[ending_petty_cash][decimal],[entered_close_amount][decimal],"
             + "[total_transaction_cash][decimal],[shift_issync] [int] DEFAULT 0)";
 
-	private final String CREATE_EXPENSES = "CREATE TABLE [Expenses] ([expenseID] [varchar](50) PRIMARY KEY NOT NULL,[shiftPeriodID] [varchar](50) NOT NULL,[cashAmount][decimal],"
-			+ "[productID][varchar](50),[productName][varchar](255))";
+    private final String CREATE_EXPENSES = "CREATE TABLE [Expenses] ([expenseID] [varchar](50) PRIMARY KEY NOT NULL,[shiftPeriodID] [varchar](50) NOT NULL,[cashAmount][decimal],"
+            + "[productID][varchar](50),[productName][varchar](255))";
 
     private final String CREATE_ORDER_PRODUCTS_ATTR = "CREATE TABLE OrderProductsAttr (ordprodattr_id INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "ordprod_id varchar(50), attribute_id varchar(50),name varchar,value varchar)";
@@ -599,7 +614,7 @@ public class DBManager {
             "ConsignmentTransaction", "CustomerInventory", "ProductsAttr", "TermsAndConditions", "Clerks", "TimeClock",
             "ShiftPeriods", "ConsignmentSignatures", "OrderProductsAttr", "OrdProdAttrList", "ProductAliases",
             "OrderTaxes", "Locations", "LocationsInventory", "TransferLocations", "TransferInventory", "PaymentsXML",
-			"StoredPayments", "Expenses" };
+            "StoredPayments", "Expenses"};
 
     private final String[] CREATE_TABLE = new String[]{CREATE_ADDRESS, CREATE_CATEGORIES, CREATE_CUSTOMERS,
             CREATE_DRAWDATEINFO, CREATE_EMPINV, CREATE_EMPLOYEES, CREATE_INVPRODUCTS, CREATE_INVOICEPAYMENTS,
@@ -614,6 +629,6 @@ public class DBManager {
             CREATE_TERMS_AND_CONDITIONS, CREATE_CLERKS, CREATE_TIMECLOCK, CREATE_SHIFTPERIODS,
             CREATE_CONSIGNMENT_SIGNATURES, CREATE_ORDER_PRODUCTS_ATTR, CREATE_ORD_PROD_ATTR_LIST, CREATE_PRODUCTALIASES,
             CREATE_ORDER_TAXES, CREATE_LOCATIONS, CREATE_LOCATIONS_INVENTORY, CREATE_TRANSFER_LOCATIONS,
-			CREATE_TRANSFER_INVENTORY, CREATE_PAYMENTS_XML, CREATE_STORED_PAYMENTS, CREATE_EXPENSES };
+            CREATE_TRANSFER_INVENTORY, CREATE_PAYMENTS_XML, CREATE_STORED_PAYMENTS, CREATE_EXPENSES};
 
 }

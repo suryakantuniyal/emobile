@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -146,7 +147,27 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 _typeCase = CASE_PRODUCTS;
         }
 
+//        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
+//        catalogList.setAdapter(prodListAdapter);
+        catalogList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
 
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (totalItemCount > 0) {
+                    int lastInScreen = firstVisibleItem + visibleItemCount;
+                    if (lastInScreen == totalItemCount) {
+                        Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), totalItemCount + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+                        Cursor cursor = catalog_loader.loadInBackground();
+                        prodListAdapter.swapCursor(cursor);
+                        prodListAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
         setupSpinners(view);
         setupCategoriesButtons();
 
@@ -157,7 +178,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.categoryButton:
                 categories = new ArrayList<String[]>(spinnerCategories);
@@ -176,7 +196,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // TODO Auto-generated method stub
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String text = v.getText().toString().trim();
                     if (!text.isEmpty()) {
@@ -195,17 +214,14 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
                 String test = s.toString().trim();
                 if (test.isEmpty() && _typeCase == CASE_SEARCH_PROD) {
                     if (onRestaurantMode) {
@@ -358,7 +374,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     int size = btnListID.size();
                     if (size > 0) {
                         for (int i = 0; i < size; i++)
@@ -389,14 +404,14 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(getActivity());
+        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 1);
     }
-    
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-         myCursor.close();
+        myCursor.close();
     }
 
     @Override
@@ -685,7 +700,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             intent.putExtra("prod_value_points", product.getProdValuePoints());
             intent.putExtra("prod_sku", product.getProd_sku());
             intent.putExtra("prod_upc", product.getProd_upc());
-
 
 
             if (Global.isConsignment)
