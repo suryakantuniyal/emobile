@@ -14,43 +14,43 @@
         android:layout_weight="1.2">
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/cancelBut"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/draw_receipt_cancel"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:paddingLeft="10dp"
             android:paddingRight="15dp"
             android:layout_margin="2dp"
             android:textSize="30sp"
-            android:textAppearance="@style/black_text_appearance" />
+         />
 
         <Button
             android:id="@+id/clearBut"
-            style="?android:attr/buttonStyleSmall"
+            style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/draw_receipt_clear" 
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
 			android:paddingLeft="10dp"
             android:paddingRight="15dp"
             android:layout_margin="2dp"
             android:textSize="30sp"
-            android:textAppearance="@style/black_text_appearance" />
+           />
 
         <Button
             android:id="@+id/acceptBut"
-            style="?android:attr/buttonStyleSmall"
+            style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/draw_receipt_accept" 
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
 			android:paddingLeft="10dp"
             android:paddingRight="15dp"
             android:layout_margin="2dp"
             android:textSize="30sp"
-            android:textAppearance="@style/black_text_appearance" />
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -61,7 +61,8 @@
         android:layout_weight="1.5"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="30dp"
+        android:orientation="horizontal">
      </LinearLayout>
 
 </LinearLayout>

@@ -29,6 +29,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -72,6 +73,8 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
     private static final String DATA_STRING_TAG = "com.motorolasolutions.emdk.datawedge.data_string";
     private ProgressDialog myProgressDialog;
     private Activity activity;
+    private NumberUtils numberUtils = new NumberUtils();
+
 
 
     @Override
@@ -115,7 +118,7 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, editText);
+                numberUtils.parseInputedCurrency(s, editText);
             }
         };
     }

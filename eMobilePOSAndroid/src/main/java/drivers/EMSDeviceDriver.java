@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
@@ -28,6 +29,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
+import com.android.database.ShiftExpensesDBHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
@@ -65,6 +67,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Base64;
 import android.util.Log;
+import android.util.SparseArray;
 
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
@@ -1196,14 +1199,11 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
@@ -1211,7 +1211,6 @@ public class EMSDeviceDriver {
     }
 
     protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             try {
@@ -1335,7 +1334,7 @@ public class EMSDeviceDriver {
                 characterExpansion[3] = (byte) (0 + '0');
 
                 port.writePort(characterExpansion, 0, characterExpansion.length);
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
+                cutPaper();
             }
 
             // db.close();
@@ -1349,7 +1348,6 @@ public class EMSDeviceDriver {
             // Toast.makeText(activity, e.getMessage(),
             // Toast.LENGTH_LONG).show();
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
 
@@ -1357,7 +1355,6 @@ public class EMSDeviceDriver {
     }
 
     protected void printOpenInvoicesReceipt(String invID, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -1441,14 +1438,11 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(1), FORMAT);
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
 
@@ -1457,7 +1451,6 @@ public class EMSDeviceDriver {
 
 
     protected void printConsignmentReceipt(List<ConsignmentTransaction> myConsignment, String encodedSig, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             encodedSignature = encodedSig;
@@ -1566,26 +1559,21 @@ public class EMSDeviceDriver {
             try {
                 printImage(1);
             } catch (StarIOPortException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (JAException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             printEnablerWebSite(lineWidth);
 
 //			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
             print(textHandler.newLines(1), FORMAT);
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
             // db.close();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
@@ -1594,7 +1582,6 @@ public class EMSDeviceDriver {
 
 
     protected void printConsignmentHistoryReceipt(HashMap<String, String> map, Cursor c, boolean isPickup, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
 
@@ -1712,14 +1699,11 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(3), FORMAT);
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
@@ -1727,7 +1711,6 @@ public class EMSDeviceDriver {
 
 
     protected void printConsignmentPickupReceipt(List<ConsignmentTransaction> myConsignment, String encodedSig, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             printPref = myPref.getPrintingPreferences();
@@ -1799,22 +1782,18 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+           cutPaper();
 
             // db.close();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
 
     }
-
 
     protected void printEndOfDayReportReceipt(String curDate, int lineWidth, boolean printDetails) {
 
@@ -2055,11 +2034,66 @@ public class EMSDeviceDriver {
         sb.append(textHandler.centeredString("** End of report **", lineWidth));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);
+        cutPaper();
     }
 
+    protected void printShiftDetailsReceipt(int lineWidth, String shiftID) {
+        StringBuilder sb = new StringBuilder();
+        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
+
+        ShiftPeriodsDBHandler shiftHandler = new ShiftPeriodsDBHandler(activity);
+        SparseArray<String> shift = shiftHandler.getShiftDetails(shiftID);
+
+        sb.append(textHandler.centeredString("Shift Details", lineWidth));
+
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk:", shift.get(0), lineWidth, 0));
+        MyPreferences myPreferences = new MyPreferences(activity);
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", myPreferences.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.newLines(2));
+        sb.append("From: " + shift.get(7)); //startTime
+        sb.append(textHandler.newLines(1));
+        if (shift.get(8).isEmpty()) {
+            sb.append("To: " + shift.get(9)); //display Open
+        } else {
+            sb.append("To: " + shift.get(8)); //show endTime
+
+        }
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Beginning Petty Cash", shift.get(1), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Expenses", "(" + shift.get(2) + ")", lineWidth, 0));
+
+        ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
+        Cursor expensesByShift;
+        expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
+
+        int i = 0;
+        while (!expensesByShift.isAfterLast()) {
+            // expName = expensesByShift.getString(0); //get the expense id
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(expensesByShift.getString(4), Global.formatDoubleStrToCurrency(expensesByShift.getString(2)), lineWidth, 3));
+            //theSpinnerNames[i] = productExpensesCursor.getString(2); //get if expense
+            i++;
+            expensesByShift.moveToNext();
+        }
+
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", shift.get(3), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Transactions Cash", shift.get(4), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Ending Cash", shift.get(5), lineWidth, 0));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Refunds", "(" + "?????" + ")", lineWidth, 3));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Entered Close Amount", shift.get(6), lineWidth, 0));
+//                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Over (Short)", shift.over_short, lineWidth, 3));
+
+        sb.append(textHandler.newLines(2));
+
+        sb.append(textHandler.centeredString("** End of shift report **", lineWidth));
+        sb.append(textHandler.newLines(4));
+        print(sb.toString(), FORMAT);
+        cutPaper();
+    }
 
     protected void printReportReceipt(String curDate, int lineWidth) {
-        // TODO Auto-generated method stub
 
         try {
 
@@ -2133,6 +2167,7 @@ public class EMSDeviceDriver {
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
             }
+            cutPaper();
 
         } catch (StarIOPortException e) {
         } finally {

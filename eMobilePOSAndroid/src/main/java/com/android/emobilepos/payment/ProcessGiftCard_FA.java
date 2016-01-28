@@ -93,6 +93,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private EMSIDTechUSB _msrUsbSams;
     private double amountTendered;
     private double totalAmount;
+    private NumberUtils numberUtils = new NumberUtils();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -217,7 +219,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ProcessCash_FA.parseInputedCurrency(s, editText);
+                numberUtils.parseInputedCurrency(s, editText);
                 //parseInputedCurrency(s, type_id);
             }
         };

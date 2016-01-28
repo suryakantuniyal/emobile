@@ -3,13 +3,16 @@ package com.android.emobilepos.ordering;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.MergeCursor;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
@@ -44,6 +47,7 @@ import android.widget.TextView;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.ProductAddonsHandler;
+import com.android.database.VoidTransactionsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Product;
@@ -101,6 +105,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private boolean catalogIsPortrait = false;
     private boolean isFastScanning = false;
     private long lastClickTime = 0;
+    private int page = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -146,7 +151,30 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 _typeCase = CASE_PRODUCTS;
         }
 
+//        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
+//        catalogList.setAdapter(prodListAdapter);
+        catalogList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
 
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (totalItemCount > 0 && myCursor.getCount() >= page * 200) {
+                    int lastInScreen = firstVisibleItem + visibleItemCount;
+                    if (lastInScreen == totalItemCount) {
+                        page++;
+                        new CatalogProductLoader().execute(totalItemCount);
+//                        myCursor.close();
+//                        Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), totalItemCount + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+//                        myCursor = catalog_loader.loadInBackground();
+//                        prodListAdapter.swapCursor(myCursor);
+//                        prodListAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
         setupSpinners(view);
         setupCategoriesButtons();
 
@@ -155,9 +183,39 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         return view;
     }
 
+
+    public class CatalogProductLoader extends AsyncTask<Integer, Void, Catalog_Loader> {
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Catalog_FR.this.getActivity());
+            progressDialog.setMessage("Loading...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Catalog_Loader doInBackground(Integer... params) {
+            Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), (int) params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+            return catalog_loader;
+        }
+
+        @Override
+        protected void onPostExecute(Catalog_Loader catalog_loader) {
+            myCursor.close();
+            myCursor = catalog_loader.loadInBackground();
+            prodListAdapter.swapCursor(myCursor);
+            prodListAdapter.notifyDataSetChanged();
+            progressDialog.dismiss();
+        }
+    }
+
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.categoryButton:
                 categories = new ArrayList<String[]>(spinnerCategories);
@@ -176,7 +234,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // TODO Auto-generated method stub
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String text = v.getText().toString().trim();
                     if (!text.isEmpty()) {
@@ -195,17 +252,14 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
                 String test = s.toString().trim();
                 if (test.isEmpty() && _typeCase == CASE_SEARCH_PROD) {
                     if (onRestaurantMode) {
@@ -358,7 +412,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     int size = btnListID.size();
                     if (size > 0) {
                         for (int i = 0; i < size; i++)
@@ -389,9 +442,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(getActivity());
+        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 1);
     }
-    
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        myCursor.close();
+    }
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
@@ -440,8 +499,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void itemClicked(int position, boolean showAllProducts) {
-        // TODO Auto-generated method stub
-
         myCursor.moveToPosition(position);
         itemClicked(showAllProducts);
     }
@@ -679,7 +736,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             intent.putExtra("prod_value_points", product.getProdValuePoints());
             intent.putExtra("prod_sku", product.getProd_sku());
             intent.putExtra("prod_upc", product.getProd_upc());
-
 
 
             if (Global.isConsignment)

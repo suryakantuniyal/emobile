@@ -24,14 +24,14 @@
         	style="@style/text_shadow" />
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/invPaymentButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/ordering_checkout_btn_height_size"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:text="Pay"
-            android:textAppearance="@style/black_text_appearance"
                 android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:layout_margin="5dp"
             android:paddingLeft="5dp"

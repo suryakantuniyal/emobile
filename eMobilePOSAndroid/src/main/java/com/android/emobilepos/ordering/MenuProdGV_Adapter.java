@@ -31,11 +31,8 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 	private Activity activity;
 	private boolean isPortrait;
 	private ViewHolder holder;
-	private String prod_id;
 
-	private String urlLink;
 	private VolumePricesHandler volPriceHandler;
-	private String tempVal;
 	private String attrToDisplay = "";
 	private long lastClickTime = 0;
 	private boolean isFastScanning = false;
@@ -47,7 +44,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
 	public MenuProdGV_Adapter(Catalog_FR _this, Activity context, Cursor c, int flags, ImageLoader _imageLoader) {
 		super(context, c, flags);
-		// TODO Auto-generated constructor stub
 		activity = context;
 		inflater = LayoutInflater.from(context);
 		callBack = _this;
@@ -70,7 +66,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
 	@Override
 	public void bindView(View view, Context context, final Cursor cursor) {
-		// TODO Auto-generated method stub
 		final int position = cursor.getPosition();
 
 		holder = (ViewHolder) view.getTag();
@@ -78,7 +73,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
 			holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
 
-			urlLink = cursor.getString(holder.i_prod_img_name);
+			String urlLink = cursor.getString(holder.i_prod_img_name);
 			if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
 				holder.itemImage.setTag(urlLink);
 				imageLoader.displayImage(urlLink, holder.itemImage, options);
@@ -88,7 +83,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 			holder.itemImage.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 					if ((!isFastScanning||(isFastScanning&&isRestMode))&&SystemClock.elapsedRealtime() - lastClickTime < 1000) {
 						return;
 					}
@@ -105,7 +99,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 			});
 
 			if (isPortrait) {
-				prod_id = cursor.getString(holder.i_id);
+				String prod_id = cursor.getString(holder.i_id);
 				holder.qty.setText(getQty(prod_id));
 				String tempPrice = cursor.getString(holder.i_volume_price);
 				if (tempPrice == null || tempPrice.isEmpty()) {
@@ -126,7 +120,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 				holder.detail.setText(prod_desc);
 
 				if (Global.isConsignment && holder.i_consignment_qty != -1) {
-					tempVal = cursor.getString(holder.i_consignment_qty);
+					String tempVal = cursor.getString(holder.i_consignment_qty);
 					tempVal = tempVal == null ? "0" : tempVal;
 					holder.consignment_qty.setText("Orig. Qty: " + tempVal);
 					holder.consignment_qty.setVisibility(View.VISIBLE);
@@ -138,7 +132,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
 						Intent intent = new Intent(activity, ViewProductDetails_FA.class);
 						cursor.moveToPosition(position);
 						intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
@@ -147,17 +140,14 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 					}
 				});
 
-			} else {
-
 			}
 		}
 	}
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		// TODO Auto-generated method stub
 
-		View retView = null;
+		View retView;
 		ViewHolder holder = new ViewHolder();
 
 		if (isPortrait) {

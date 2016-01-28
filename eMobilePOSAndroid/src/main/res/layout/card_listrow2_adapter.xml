@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Payment Name"
-        android:textAppearance="@style/black_text_appearance"
+        android:textAppearance="@style/tiles_text_appearance"
       	style="@style/text_shadow"
       	android:textSize="@dimen/listview_text_size"
         android:gravity="right|center_vertical"/>

@@ -1,30 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="#FFFFFF"
+android:orientation="vertical" >
+
+<RelativeLayout
+    android:id="@+id/headerContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/blue_gradient_header_horizontal"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/headerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/shift_details"
+        android:gravity="center"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:padding="10dp"
+        android:textSize="@dimen/header_bar_text_size"
+        android:textAppearance="@style/white_text_appearance"
+        style="@style/text_shadow"/>
+
+    <Button
+        android:id="@+id/btnPrint"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/ordering_checkout_btn_height_size"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:background="@drawable/blue_btn_selector"
+        android:text="Print"
+        android:textAppearance="@style/black_text_appearance"
+        android:textSize="@dimen/ordering_checkout_btn_txt_size"
+        android:paddingLeft="5dp"
+        android:paddingRight="14dp" />
+</RelativeLayout>
+
+
+
+<ListView
+    android:id="@+id/shiftDetailsListView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    <TextView
-            android:id="@+id/headerTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/shift_details"
-            android:gravity="center"
-            android:background="@drawable/blue_gradient_header_horizontal"
-            android:padding="10dp"
-            android:textSize="@dimen/header_bar_text_size"
-       		android:textAppearance="@style/white_text_appearance"
-       		style="@style/text_shadow"/>
-    
-    
-            <ListView
-            android:id="@+id/shiftDetailsListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFFFFF"
-            android:cacheColorHint="#FFFFFF"
-            android:divider="@color/listview_divider"
-       	android:dividerHeight="0.1dp"
-            android:padding="5dp" >
-        </ListView>
+    android:background="#FFFFFF"
+    android:cacheColorHint="#FFFFFF"
+    android:divider="@color/listview_divider"
+    android:dividerHeight="0.1dp"
+    android:padding="5dp" >
+</ListView>
 
 </LinearLayout>

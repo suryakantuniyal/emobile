@@ -134,21 +134,21 @@ public class Post {
 
             case Global.S_GET_XML_ORDERS: {
                 postLink = activity.getString(R.string.sync_enablermobile_getxmlorders);
-                entity = xml.synchOrders(false).toString();
+                entity = xml.synchOrders(false);
                 isPost = true;
 
                 break;
             }
             case Global.S_SUBMIT_ON_HOLD: {
                 postLink = activity.getString(R.string.sync_enabler_submitordersonhold);
-                entity = xml.synchOrders(true).toString();
+                entity = xml.synchOrders(true);
                 isPost = true;
 
                 break;
             }
             case Global.S_SUBMIT_PAYMENTS: {
                 postLink = activity.getString(R.string.sync_enabler_submitpayments);
-                entity = xml.synchPayments().toString();
+                entity = xml.synchPayments();
                 isPost = true;
                 break;
             }
@@ -166,7 +166,7 @@ public class Post {
                 break;
             }
             case 11: {
-                url.append(varyingVariable).toString();
+                url.append(varyingVariable);
                 isPost = false;
                 break;
             }
@@ -248,7 +248,6 @@ public class Post {
 //			this.getRequest(
 //					new URL("https://bo.enablermobile.com/App_Themes/BONewDesign/images/login/EMobileLogo_login.png"));
 //		} catch (MalformedURLException e1) {
-//			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
         if (!isPost) {
@@ -258,16 +257,14 @@ public class Post {
                 else
                     response = getRequestUnsecure(new URI(url.toString()));
             } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (URISyntaxException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else {
-            Log.d("Request XMKL: ", entity.toString());
-            response = this.postRequest(postLink, entity.toString());
-            Log.d("Request XMKL: ", response.toString());
+            Log.d("Request XMKL: ", entity);
+            response = this.postRequest(postLink, entity);
+            Log.d("Request XMKL: ", response);
 
         }
 
@@ -305,7 +302,7 @@ public class Post {
                 if (!tempFile.exists())
                     tempFile.createNewFile();
                 OutputStream outStream = new FileOutputStream(tempFile);
-                int read = 0;
+                int read;
                 byte[] bytes = new byte[1024];
 
                 InputStream inStream = urlConnection.getInputStream();
@@ -317,7 +314,6 @@ public class Post {
             }
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return "";
@@ -389,13 +385,8 @@ public class Post {
             }
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             return Global.NOT_VALID_URL;
         }
     }
 
-    private void handleGoogleAnalytic(String stack) {
-//		Tracker tracker = EasyTracker.getInstance(activity);
-//		tracker.send(MapBuilder.createException(stack, false).build());
-    }
 }

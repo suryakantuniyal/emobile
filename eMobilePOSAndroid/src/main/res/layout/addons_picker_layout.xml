@@ -35,13 +35,13 @@
             android:layout_centerInParent="true">
 
             <Button
+                style="@style/black_text_appearance"
                 android:id="@+id/addonDoneButton"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/ordering_checkout_btn_height_size"
-                android:background="@drawable/blue_btn_selector"
+                android:background="@drawable/action_button_selector"
                 android:text="@string/button_done"
                 android:layout_margin="5dp"
-                android:textAppearance="@style/black_text_appearance"
                 android:textSize="@dimen/ordering_checkout_btn_txt_size"
                 android:paddingLeft="5dp"
                 android:paddingRight="14dp" />

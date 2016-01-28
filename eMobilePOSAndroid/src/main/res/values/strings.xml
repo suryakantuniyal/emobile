@@ -858,7 +858,9 @@
 
 	<string name = "shift_close_shift">Close Shift</string>
 	<string name = "shift_open_shift">Open Shift</string>
-	<string name = "shift_expenses">Expenses</string>
+	<string name = "shift_expenses">Shift Expenses</string>
+	<string name = "shift_expense">Expense</string>
+	<string name = "shift_add_expense">Add Expense</string>
 	<string name = "shift_title">Shift</string>
 
 	<string name = "report_per_shift">Per-Shift</string>

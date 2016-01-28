@@ -731,10 +731,17 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 //		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
-    @Override
-    public boolean printReport(String curDate) {
-        // TODO Auto-generated method stub
-        try {
+	@Override
+	public void printShiftDetailsReport(String shiftID) {
+	//	printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+	}
+
+
+
+	@Override
+	public boolean printReport(String curDate) {
+		// TODO Auto-generated method stub
+		try {
 
             if (!device.getIsOpen())
                 device.open();

@@ -55,7 +55,6 @@ public class ProductsHandler {
             prod_value_points);
 
     private static final String table_name = "Products";
-    private final String empStr = "";
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private List<String[]> prodData;
@@ -90,7 +89,7 @@ public class ProductsHandler {
         if (i != null) {
             return prodData.get(record)[i];
         }
-        return empStr;
+        return "";
     }
 
     private int index(String tag) {
@@ -148,9 +147,6 @@ public class ProductsHandler {
             StringBuilder sb = new StringBuilder();
             sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductsHandler (at Class.insert)]");
 
-            // Tracker tracker = EasyTracker.getInstance(activity);
-            // tracker.send(MapBuilder.createException(sb.toString(),
-            // false).build());
         } finally {
             DBManager._db.endTransaction();
         }
@@ -161,9 +157,7 @@ public class ProductsHandler {
     }
 
     public List<String> getColumn(String tag) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
         List<String> list = new ArrayList<String>();
-
         Cursor cursor = DBManager._db.rawQuery("SELECT " + tag + " FROM " + table_name + " ORDER BY " + "prod_name " + "COLLATE NOCASE", null);
 
         if (cursor.moveToFirst()) {
@@ -178,13 +172,10 @@ public class ProductsHandler {
         return list;
     }
 
-    public Cursor getCatalogData() {
-        // db = dbManager.openReadableDB();
-        // if(db==null||!db.isOpen())
-        // db = dbManager.openReadableDB();
+    public Cursor getCatalogData(int limit, int offset) {
 
         String[] parameters;
-        String query = empStr;
+        String query;
         StringBuilder sb = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
         String priceLevelID;
@@ -200,7 +191,7 @@ public class ProductsHandler {
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
             sb.append(
-					"ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc, p.prod_sku, p.prod_upc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
+                    "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc, p.prod_sku, p.prod_upc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
             sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
 
             if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
@@ -364,9 +355,23 @@ public class ProductsHandler {
             query = sb.toString();
         }
 
-        Cursor cursor = DBManager._db.rawQuery(query, parameters);
+        Cursor cursor = DBManager._db.rawQuery(query + " LIMIT " + limit + " OFFSET " + offset, parameters);
         cursor.moveToFirst();
         // db.close();
+
+        return cursor;
+
+    }
+
+    //get list of products configured as an expense
+    public Cursor getProductsTypeExpense() {
+
+        String query = "SELECT  prod_id, prod_name, prod_expense FROM " +
+                table_name +
+                " WHERE prod_expense = 'true'";
+
+        Cursor cursor = DBManager._db.rawQuery(query, null);
+        cursor.moveToFirst();
 
         return cursor;
 
@@ -558,7 +563,7 @@ public class ProductsHandler {
         if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
             sb.append(" GROUP BY p.prod_name ORDER BY p.prod_name LIMIT 1");
         } else {
-            sb.append(" ORDER BY p.prod_name LIMIT 1");
+            sb.append(" LIMIT 1");
         }
 
         String[] parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), value, value,
@@ -751,8 +756,8 @@ public class ProductsHandler {
 
             data[11] = cursor.getString(cursor.getColumnIndex("prod_taxtype"));
             data[12] = cursor.getString(cursor.getColumnIndex("prod_taxcode"));
-			data[13] = cursor.getString(cursor.getColumnIndex("prod_sku"));
-			data[14] = cursor.getString(cursor.getColumnIndex("prod_upc"));
+            data[13] = cursor.getString(cursor.getColumnIndex("prod_sku"));
+            data[14] = cursor.getString(cursor.getColumnIndex("prod_upc"));
 
         }
 
@@ -766,13 +771,10 @@ public class ProductsHandler {
         // SQLiteDatabase db = dbManager.openReadableDB();
         List<String> list = new ArrayList<String>();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT p.prod_name, p.prod_desc, p.prod_extradesc, p.prod_type, t.taxcode_name as 'prod_taxcode', p.prod_price, p.prod_disc_type ");
-        sb.append(
-                ",p.prod_price_points,p.prod_value_points FROM Products p LEFT OUTER JOIN SalesTaxCodes t ON p.prod_taxcode = t.taxcode_id WHERE p.prod_id = ?");
+        String sb = "SELECT p.prod_name, p.prod_desc, p.prod_extradesc, p.prod_type, t.taxcode_name as 'prod_taxcode', p.prod_price, p.prod_disc_type " +
+                ",p.prod_price_points,p.prod_value_points FROM Products p LEFT OUTER JOIN SalesTaxCodes t ON p.prod_taxcode = t.taxcode_id WHERE p.prod_id = ?";
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{id});
+        Cursor cursor = DBManager._db.rawQuery(sb, new String[]{id});
 
         DecimalFormat frmt = new DecimalFormat("0.00");
 

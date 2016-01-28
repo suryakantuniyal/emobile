@@ -21,7 +21,6 @@
         android:id="@+id/pickerLV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_white_page"
-         >
+        android:background="@drawable/bg_white_page">
     </ListView>
 </LinearLayout>

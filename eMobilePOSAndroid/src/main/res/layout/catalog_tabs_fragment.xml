@@ -27,15 +27,14 @@
             android:textStyle="bold" />
 
         <Button
+            style="@style/black_text_appearance"
             android:id="@+id/categoryButton"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:text="Category"
             android:textSize="@dimen/large_button_text_size"
-            android:textAppearance="@style/black_text_appearance"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
             android:layout_margin="5dp" />

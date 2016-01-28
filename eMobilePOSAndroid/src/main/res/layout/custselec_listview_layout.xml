@@ -22,16 +22,16 @@
             android:textSize="@dimen/header_txt_size" />
 
         <Button
+            style="@style/action_button_text_appearance"
             android:id="@+id/addCustButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/ordering_checkout_btn_height_size"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
-            android:background="@drawable/blue_btn_selector"
+            android:background="@drawable/action_button_selector"
             android:ems="1"
             android:text="+"
-            android:textAppearance="@style/blue_text_appearance"
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:paddingLeft="5dp"
             android:paddingRight="14dp" />
