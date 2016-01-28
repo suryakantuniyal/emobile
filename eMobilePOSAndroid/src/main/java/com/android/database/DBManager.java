@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 36;
+    public static final int VERSION = 37;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -47,7 +47,6 @@ public class DBManager {
             digester.update(android_id.getBytes());
             md5 = Base64.encode(digester.digest());
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return PASSWORD;
         }
@@ -61,7 +60,6 @@ public class DBManager {
             _db = SQLiteDatabase.openDatabase(activity.getDatabasePath(CIPHER_DB_NAME).getAbsolutePath(), getPassword(),
                     null, SQLiteDatabase.OPEN_READWRITE);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -181,7 +179,6 @@ public class DBManager {
 //                originalFile.delete();
 //                newFile.renameTo(ctxt.getDatabasePath(CIPHER_DB_NAME));
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -327,7 +324,9 @@ public class DBManager {
             "CREATE INDEX prod_name_index ON Products (prod_name)",
             "CREATE INDEX prod_type_index ON Products (prod_type)",
             "CREATE INDEX ProductChainXRef_prod_id_index ON ProductChainXRef (prod_id)",
-            "CREATE INDEX cust_chain_index ON ProductChainXRef (cust_chain)"
+            "CREATE INDEX cust_chain_index ON ProductChainXRef (cust_chain)",
+            "CREATE INDEX prod_alias_index ON ProductAliases (prod_alias)"
+
     };
 
     private final String CREATE_ADDRESS = "CREATE TABLE [Address] ([addr_id] varchar NOT NULL ,[cust_id]varchar NOT NULL ,[addr_b_str1]varchar,"
