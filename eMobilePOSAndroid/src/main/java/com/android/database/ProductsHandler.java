@@ -563,7 +563,7 @@ public class ProductsHandler {
         if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
             sb.append(" GROUP BY p.prod_name ORDER BY p.prod_name LIMIT 1");
         } else {
-            sb.append(" ORDER BY p.prod_name LIMIT 1");
+            sb.append(" LIMIT 1");
         }
 
         String[] parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), value, value,

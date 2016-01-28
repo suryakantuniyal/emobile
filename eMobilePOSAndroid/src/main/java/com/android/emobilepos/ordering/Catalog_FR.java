@@ -105,6 +105,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private boolean catalogIsPortrait = false;
     private boolean isFastScanning = false;
     private long lastClickTime = 0;
+    private int page = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -160,9 +161,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (totalItemCount > 0) {
+                if (totalItemCount > 0 && myCursor.getCount() >= page * 200) {
                     int lastInScreen = firstVisibleItem + visibleItemCount;
                     if (lastInScreen == totalItemCount) {
+                        page++;
                         new CatalogProductLoader().execute(totalItemCount);
 //                        myCursor.close();
 //                        Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), totalItemCount + Integer.parseInt(getString(R.string.sqlLimit)), 1);
@@ -198,7 +200,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         protected Catalog_Loader doInBackground(Integer... params) {
-            Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), (int)params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+            Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), (int) params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
             return catalog_loader;
         }
 
@@ -497,8 +499,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void itemClicked(int position, boolean showAllProducts) {
-        // TODO Auto-generated method stub
-
         myCursor.moveToPosition(position);
         itemClicked(showAllProducts);
     }
