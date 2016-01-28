@@ -14,4 +14,5 @@
     <string name="sync_enabler_submitcustomerinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitCustomerInventory.aspx</string>
     <string name="sync_enabler_submitshiftperiods">https://sync.enablermobile.com/deviceASXMLTrans/submitShiftPeriods.aspx</string>
     <string name="sync_enabler_submitwalletreceipt">https://sync.enablermobile.com/deviceASXMLTrans/submitwalletReceipt.ashx</string>
+    <string name="sqlLimit">200</string>
 </resources>
