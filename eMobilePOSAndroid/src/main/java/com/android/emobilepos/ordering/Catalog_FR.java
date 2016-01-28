@@ -3,6 +3,7 @@ package com.android.emobilepos.ordering;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -183,23 +184,31 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     public class CatalogProductLoader extends AsyncTask<Integer, Void, Catalog_Loader> {
 
+        private ProgressDialog progressDialog;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressDialog = new ProgressDialog(Catalog_FR.this.getActivity());
+            progressDialog.setMessage("Loading...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
         protected Catalog_Loader doInBackground(Integer... params) {
-            myCursor.close();
             Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), (int)params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
             return catalog_loader;
         }
 
         @Override
         protected void onPostExecute(Catalog_Loader catalog_loader) {
+            myCursor.close();
             myCursor = catalog_loader.loadInBackground();
             prodListAdapter.swapCursor(myCursor);
             prodListAdapter.notifyDataSetChanged();
+            progressDialog.dismiss();
         }
     }
 
