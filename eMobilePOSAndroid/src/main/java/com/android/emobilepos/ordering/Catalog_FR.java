@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.database.MergeCursor;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
@@ -45,6 +46,7 @@ import android.widget.TextView;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.ProductAddonsHandler;
+import com.android.database.VoidTransactionsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Product;
@@ -160,10 +162,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 if (totalItemCount > 0) {
                     int lastInScreen = firstVisibleItem + visibleItemCount;
                     if (lastInScreen == totalItemCount) {
-                        Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), totalItemCount + Integer.parseInt(getString(R.string.sqlLimit)), 1);
-                        Cursor cursor = catalog_loader.loadInBackground();
-                        prodListAdapter.swapCursor(cursor);
-                        prodListAdapter.notifyDataSetChanged();
+                        new CatalogProductLoader().execute(totalItemCount);
+//                        myCursor.close();
+//                        Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), totalItemCount + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+//                        myCursor = catalog_loader.loadInBackground();
+//                        prodListAdapter.swapCursor(myCursor);
+//                        prodListAdapter.notifyDataSetChanged();
                     }
                 }
             }
@@ -174,6 +178,29 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         setupSearchField();
         loadCursor();
         return view;
+    }
+
+
+    public class CatalogProductLoader extends AsyncTask<Integer, Void, Catalog_Loader> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Catalog_Loader doInBackground(Integer... params) {
+            myCursor.close();
+            Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), (int)params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
+            return catalog_loader;
+        }
+
+        @Override
+        protected void onPostExecute(Catalog_Loader catalog_loader) {
+            myCursor = catalog_loader.loadInBackground();
+            prodListAdapter.swapCursor(myCursor);
+            prodListAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
