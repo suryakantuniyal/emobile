@@ -442,7 +442,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 1);
+        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
     }
 
 

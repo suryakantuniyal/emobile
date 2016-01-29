@@ -223,7 +223,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             ord.ordprod_desc = Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("ordprod_desc");
             ord.prod_id = Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_id");
             ord.overwrite_price = Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_price");
-            ord.ord_id = Global.lastOrdID;
+            ord.ord_id = Global.consignment_order.ord_id;
 
 
             if (global.orderProducts == null) {
@@ -276,7 +276,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         ordTotal = _order_total.setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-        global.order.ord_id = Global.lastOrdID;
+        global.order.ord_id = Global.consignment_order.ord_id;
         global.order.qbord_id = Global.lastOrdID.replace("-", "");
 
         global.order.cust_id = myPref.getCustID();
@@ -401,17 +401,21 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         signatureMap.put("encoded_signature", encodedImage);
 
         if (ifInvoice) {
-            Global.consignment_order.processed = "1";
-            Global.consignment_order.ord_signature = encodedImage;
-            Global.consignment_order.ord_type = Global.OrderType.CONSIGNMENT_INVOICE.getCodeString();
-            for (OrderProducts op : Global.consignment_products) {
-                HashMap<String, String> summary = Global.consignSummaryMap.get(op.prod_id);
-                op.ordprod_qty = summary.get("invoice");
-            }
-            ordersHandler.insert(Global.consignment_order);
-            orderProductsHandler.insert(Global.consignment_products);
+            processOrder();
+//            Global.consignment_order.ord_id = global.order.ord_id;
+//            Global.consignment_order.qbord_id = global.order.ord_id.replace("-", "");
+//            Global.consignment_order.processed = "1";
+//            Global.consignment_order.ord_id = global.order.ord_id;
+//            Global.consignment_order.total_lines = Integer.toString(Global.consignment_products.size());
+//            Global.consignment_order.ord_signature = encodedImage;
+//            Global.consignment_order.ord_type = Global.OrderType.CONSIGNMENT_INVOICE.getCodeString();
+//            for (OrderProducts op : Global.consignment_products) {
+//                HashMap<String, String> summary = Global.consignSummaryMap.get(op.prod_id);
+//                op.ordprod_qty = summary.get("invoice");
+//            }
+//            ordersHandler.insert(Global.consignment_order);
+//            orderProductsHandler.insert(Global.consignment_products);
 
-//            processOrder();
         }
         if (Global.cons_return_products.size() > 0) {
             Global.cons_return_order.processed = "1";

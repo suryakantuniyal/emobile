@@ -336,15 +336,8 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 			
 
 			if (!Global.isFromOnHold) {
-				
 				GenerateNewID generator = new GenerateNewID(activity);
-				//myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
 				Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-//				if (handler.getDBSize() == 0)
-//					Global.lastOrdID = generator.generate("", 0);
-//				else
-//					Global.lastOrdID = generator.generate(handler.getLastOrdID(), 0);
-
 			}
 
 			ord.ord_id = Global.lastOrdID;

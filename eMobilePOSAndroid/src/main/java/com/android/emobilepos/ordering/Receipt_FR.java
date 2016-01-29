@@ -724,7 +724,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
 
-
     public void showEmailDlog() {
 
         final Dialog dialog = new Dialog(activity,
@@ -745,7 +744,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dialog.dismiss();
 
                 if (!input.getText().toString().isEmpty()) {
@@ -1034,6 +1032,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
         order.ord_subtotal = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.sub_total.subtract(OrderTotalDetails_FR.itemsDiscountTotal));
+        if (Global.lastOrdID == null || Global.lastOrdID.isEmpty()) {
+            GenerateNewID generator = new GenerateNewID(activity);
+            Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
+        }
 
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
