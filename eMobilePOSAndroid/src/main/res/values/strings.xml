@@ -1136,5 +1136,6 @@
 	<string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
 	<string name="genius_application_label">Application Label:</string>
 	<string name="receipt_amount">Amount:</string>
+	<string name="modify">Modify</string>
 
 </resources>
