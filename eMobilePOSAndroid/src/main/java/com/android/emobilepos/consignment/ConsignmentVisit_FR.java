@@ -114,22 +114,12 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             ordersHandler = new OrdersHandler(activity);
             orderProductsHandler = new OrderProductsHandler(activity);
             consTransDBHandler = new ConsignmentTransactionHandler(activity);
             ProductsHandler prodHandler = new ProductsHandler(activity);
-
             GenerateNewID generator = new GenerateNewID(activity);
-
-            //myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-
-            if (Global.lastOrdID.isEmpty())
-                Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-            else
-                Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-
+            Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
             custInventoryHandler.insertUpdate(Global.custInventoryList);
             consTransaction = new ConsignmentTransaction();
             int size = Global.consignMapKey.size();
@@ -137,15 +127,10 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             int index;
             double tempQty;
             double returnQty = 0, fillupQty = 0;
-
             String consTransID = "";
             double onHandQty = -1;
-
-
             consTransID = generator.getNextID(IdType.CONSIGNMENT_ID);
-
             signatureMap.put("ConsTrans_ID", consTransID);
-
             for (int i = 0; i < size; i++) {
                 consTransaction.ConsEmp_ID = myPref.getEmpID();
                 consTransaction.ConsCust_ID = myPref.getCustID();
@@ -332,7 +317,6 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (isPrintPrompt) {
                     new printAsync().execute("");
@@ -359,7 +343,6 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (isPrintPrompt) {
                     finishConsignment();
@@ -421,6 +404,10 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             Global.consignment_order.processed = "1";
             Global.consignment_order.ord_signature = encodedImage;
             Global.consignment_order.ord_type = Global.OrderType.CONSIGNMENT_INVOICE.getCodeString();
+            for (OrderProducts op : Global.consignment_products) {
+                HashMap<String, String> summary = Global.consignSummaryMap.get(op.prod_id);
+                op.ordprod_qty = summary.get("invoice");
+            }
             ordersHandler.insert(Global.consignment_order);
             orderProductsHandler.insert(Global.consignment_products);
 

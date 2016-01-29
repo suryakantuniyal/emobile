@@ -46,7 +46,6 @@ public class MenuCatGV_Adapter extends CursorAdapter
 	public MenuCatGV_Adapter(Catalog_FR _this,Activity context, Cursor c, int flags,ImageLoader _imageLoader) 
 	{
 		super(context, c, flags);
-		// TODO Auto-generated constructor stub
 		activity = context;
 		inflater = LayoutInflater.from(context);
 		callBack = _this;
@@ -68,7 +67,6 @@ public class MenuCatGV_Adapter extends CursorAdapter
 	@Override
 	public void bindView(View view, Context context, final Cursor c) 
 	{
-		// TODO Auto-generated method stub
 		final int position = c.getPosition();
 
 		holder = (ViewHolder)view.getTag();
@@ -87,7 +85,6 @@ public class MenuCatGV_Adapter extends CursorAdapter
 		holder.itemImage.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				if (!isFastScanning&&SystemClock.elapsedRealtime() - lastClickTime < 1000) {
 					return;
 				}
@@ -119,7 +116,6 @@ public class MenuCatGV_Adapter extends CursorAdapter
 				
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 					callBack.itemClicked(position,true);
 				}
 			});
@@ -132,7 +128,6 @@ public class MenuCatGV_Adapter extends CursorAdapter
 				
 				@Override
 				public boolean onLongClick(View v) {
-					// TODO Auto-generated method stub
 					callBack.itemClicked(position,true);
 					return true;
 				}
@@ -144,7 +139,6 @@ public class MenuCatGV_Adapter extends CursorAdapter
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		// TODO Auto-generated method stub
 
 		View retView = null;
 		ViewHolder holder = new ViewHolder();
@@ -181,10 +175,7 @@ public class MenuCatGV_Adapter extends CursorAdapter
 			holder.i_num_subcategories = cursor.getColumnIndex("num_subcategories");
 
 		}
-		
-		
-		
-		
+
 		retView.setTag(holder);
 		return retView;
 	}
@@ -197,6 +188,4 @@ public class MenuCatGV_Adapter extends CursorAdapter
 		
 		int i_id,i_cat_name,i_url_icon,i_num_subcategories,i_consignment_qty;
 	}
-	
-	
 }

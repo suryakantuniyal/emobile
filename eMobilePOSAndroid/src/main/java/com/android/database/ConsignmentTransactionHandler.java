@@ -323,7 +323,7 @@ public class ConsignmentTransactionHandler {
         }
 
         if (getIdFromDB) {
-            sb.append("select max(pay_id) from ").append(TABLE_NAME).append(" WHERE ConsTrans_ID like '").append(deviceId)
+            sb.append("select max(ConsTrans_ID) from ").append(TABLE_NAME).append(" WHERE ConsTrans_ID like '").append(deviceId)
                     .append("-%-").append(year).append("'");
 
             SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());

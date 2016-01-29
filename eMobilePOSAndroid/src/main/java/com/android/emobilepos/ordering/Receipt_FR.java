@@ -1006,6 +1006,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                     if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
                         processConsignment();
+                        global.orderProducts = new ArrayList<OrderProducts>();
+                        global.qtyCounter = new HashMap<String, String>();
                         Intent intent = new Intent(activity,
                                 ConsignmentCheckout_FA.class);
                         intent.putExtra("consignmentType", consignmentType);
