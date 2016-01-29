@@ -494,7 +494,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             @Override
                             public void onClick(DialogInterface thisDialog,
                                                 int which) {
-                                // TODO Auto-generated method stub
                                 thisDialog.dismiss();
                             }
                         }).show();
@@ -505,7 +504,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         Intent intent;
         if (SystemClock.elapsedRealtime() - lastClickTime < 500) {
             return;
@@ -580,7 +578,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        // TODO Auto-generated method stub
         final int removePos = position;
         if (restLVAdapter != null)
             position = restLVAdapter.dataPosition(position);
@@ -610,7 +607,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     if (myPref
                             .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
                         showPromptManagerPassword(REMOVE_ITEM, pos, removePos);
@@ -626,7 +622,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     dialog.dismiss();
 
                 }
@@ -636,7 +631,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     Intent intent = new Intent(getActivity(),
                             PickerProduct_FA.class);
                     intent.putExtra("isModify", true);
@@ -651,8 +645,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
-
                     dialog.dismiss();
 
                     if (myPref

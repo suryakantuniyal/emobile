@@ -1182,7 +1182,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
-
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
@@ -1207,7 +1206,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private class processAsync extends AsyncTask<String, String, String> {
-
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
         private String urlToPost;
         private boolean wasProcessed = false;
@@ -1228,10 +1226,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
-
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
             urlToPost = params[0];
@@ -1263,9 +1258,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
 
             return null;
@@ -1298,8 +1290,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
-
         wasReadFromReader = true;
         this.cardInfoManager = cardManager;
         cardInfoManager.setWasSwiped(true);
@@ -1318,7 +1308,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         if (didConnect) {
             msrWasLoaded = true;
             cardReaderConnected = true;
@@ -1335,7 +1324,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
         if (!data.isEmpty()) {
             scanAddItem(data);
         }
@@ -1352,17 +1340,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdProd.insert(global.orderProducts);
                 dbOrdAttr.insert(global.ordProdAttr);
             }
-
             dbOrders.updateIsVoid(Global.lastOrdID);
-
             VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
-            /*
-             * HashMap<String,String> voidedTrans = new
-			 * HashMap<String,String>(); voidedTrans.put("ord_id",
-			 * Global.lastOrdID); voidedTrans.put("ord_type",
-			 * global.order.ord_type);
-			 */
-
             Order order = new Order(activity);
             order.ord_id = Global.lastOrdID;
             order.ord_type = global.order.ord_type;
@@ -1376,7 +1355,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             OrdersHandler dbOrders = new OrdersHandler(this);
             OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
             OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
-
             dbOrders.deleteOrder(Global.lastOrdID);
             dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
             for (OrdProdAttrHolder val : global.ordProdAttr)
@@ -1386,8 +1364,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void startSignature() {
-        // TODO Auto-generated method stub
-
     }
 
 

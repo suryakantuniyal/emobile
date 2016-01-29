@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -47,7 +46,6 @@ import android.widget.TextView;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.ProductAddonsHandler;
-import com.android.database.VoidTransactionsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Product;
@@ -442,7 +440,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 1);
+        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
     }
 
 
