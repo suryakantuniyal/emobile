@@ -388,7 +388,6 @@ public class SynchMethods
 
 		@Override
 		protected String doInBackground(String... params) {
-			// TODO Auto-generated method stub
 
 			updateProgress("Please Wait...");
 			if (Global.isConnectedToInternet(activity)) {
