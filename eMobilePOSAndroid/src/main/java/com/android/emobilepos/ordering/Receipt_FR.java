@@ -893,10 +893,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
             } else {
                 handler.insert(global.order);
-
-                handler2.insert(global.orderProducts);
-                handler3.insert(global.ordProdAttr);
-
+                if(!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
+                    handler2.insert(global.orderProducts);
+                    handler3.insert(global.ordProdAttr);
+                }
                 if (global.listOrderTaxes != null
                         && global.listOrderTaxes.size() > 0
                         && typeOfProcedure != Global.TransactionType.REFUND)
@@ -1255,6 +1255,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     Global.consignSummaryMap.put(
                             Global.cons_return_products.get(i).prod_id, tempMap);
                 }
+                Global.lastOrdID = "";
 
                 break;
 
