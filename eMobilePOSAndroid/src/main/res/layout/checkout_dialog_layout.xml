@@ -20,6 +20,32 @@
             android:textAppearance="@style/dark_blue_text_appearance"
             android:textSize="@dimen/dlog_title_size" />
 
+        <TextView
+            android:id="@+id/textLabelComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/dark_blue_text_appearance"
+            android:textSize="@dimen/dlog_title_size"
+            android:text="@string/dlog_msg_comments" />
+
+        <com.android.support.MyEditText
+            android:id="@+id/fieldComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="20dp"
+            android:ems="12"
+            android:imeOptions="flagNoExtractUi|actionNext"
+            android:inputType="textMultiLine"
+            android:lines="4"
+            android:minLines="4"
+            android:gravity="top|left"
+            android:maxLines="10"
+            android:hint="@string/dlog_msg_comments"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textColor="#000000"
+            android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
+
         <com.android.support.MyEditText
             android:id="@+id/emailTxt"
             android:layout_width="wrap_content"
@@ -47,6 +73,9 @@
             android:textAppearance="@style/black_text_appearance_unbold"
             android:textColor="#000000"
             android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
+
+
+
 
 
         <Button
