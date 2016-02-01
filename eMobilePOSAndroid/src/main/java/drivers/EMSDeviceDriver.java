@@ -1194,14 +1194,11 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
@@ -1209,7 +1206,6 @@ public class EMSDeviceDriver {
     }
 
     protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             try {
@@ -1333,7 +1329,7 @@ public class EMSDeviceDriver {
                 characterExpansion[3] = (byte) (0 + '0');
 
                 port.writePort(characterExpansion, 0, characterExpansion.length);
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
+                cutPaper();
             }
 
             // db.close();
@@ -1347,7 +1343,6 @@ public class EMSDeviceDriver {
             // Toast.makeText(activity, e.getMessage(),
             // Toast.LENGTH_LONG).show();
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
 
@@ -1355,7 +1350,6 @@ public class EMSDeviceDriver {
     }
 
     protected void printOpenInvoicesReceipt(String invID, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -1439,14 +1433,11 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(1), FORMAT);
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
 
@@ -1455,7 +1446,6 @@ public class EMSDeviceDriver {
 
 
     protected void printConsignmentReceipt(List<ConsignmentTransaction> myConsignment, String encodedSig, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             encodedSignature = encodedSig;
@@ -1564,26 +1554,21 @@ public class EMSDeviceDriver {
             try {
                 printImage(1);
             } catch (StarIOPortException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (JAException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             printEnablerWebSite(lineWidth);
 
 //			port.writePort(textHandler.newLines(1).getBytes(FORMAT), 0, textHandler.newLines(1).length());
             print(textHandler.newLines(1), FORMAT);
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
             // db.close();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
@@ -1592,7 +1577,6 @@ public class EMSDeviceDriver {
 
 
     protected void printConsignmentHistoryReceipt(HashMap<String, String> map, Cursor c, boolean isPickup, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
 
@@ -1710,14 +1694,11 @@ public class EMSDeviceDriver {
             print(textHandler.newLines(3), FORMAT);
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+            cutPaper();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
@@ -1725,7 +1706,6 @@ public class EMSDeviceDriver {
 
 
     protected void printConsignmentPickupReceipt(List<ConsignmentTransaction> myConsignment, String encodedSig, int lineWidth) {
-        // TODO Auto-generated method stub
         try {
 
             printPref = myPref.getPrintingPreferences();
@@ -1797,16 +1777,13 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
-                port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
-            }
+           cutPaper();
 
             // db.close();
 
         } catch (StarIOPortException e) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
         }
@@ -2052,6 +2029,7 @@ public class EMSDeviceDriver {
         sb.append(textHandler.centeredString("** End of report **", lineWidth));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);
+        cutPaper();
     }
 
     protected void printShiftDetailsReceipt(int lineWidth, String shiftID) {
@@ -2088,8 +2066,8 @@ public class EMSDeviceDriver {
 
         int i = 0;
         while (!expensesByShift.isAfterLast()) {
-           // expName = expensesByShift.getString(0); //get the expense id
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(expensesByShift.getString(4),Global.formatDoubleStrToCurrency(expensesByShift.getString(2)), lineWidth, 3));
+            // expName = expensesByShift.getString(0); //get the expense id
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(expensesByShift.getString(4), Global.formatDoubleStrToCurrency(expensesByShift.getString(2)), lineWidth, 3));
             //theSpinnerNames[i] = productExpensesCursor.getString(2); //get if expense
             i++;
             expensesByShift.moveToNext();
@@ -2107,10 +2085,10 @@ public class EMSDeviceDriver {
         sb.append(textHandler.centeredString("** End of shift report **", lineWidth));
         sb.append(textHandler.newLines(4));
         print(sb.toString(), FORMAT);
+        cutPaper();
     }
 
     protected void printReportReceipt(String curDate, int lineWidth) {
-        // TODO Auto-generated method stub
 
         try {
 
@@ -2184,6 +2162,7 @@ public class EMSDeviceDriver {
             if (isPOSPrinter) {
                 port.writePort(new byte[]{0x1b, 0x64, 0x02}, 0, 3); // Cut
             }
+            cutPaper();
 
         } catch (StarIOPortException e) {
         } finally {

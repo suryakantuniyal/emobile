@@ -495,7 +495,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             @Override
                             public void onClick(DialogInterface thisDialog,
                                                 int which) {
-                                // TODO Auto-generated method stub
                                 thisDialog.dismiss();
                             }
                         }).show();
@@ -506,7 +505,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         Intent intent;
         if (SystemClock.elapsedRealtime() - lastClickTime < 500) {
             return;
@@ -1003,6 +1001,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                     if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
                         processConsignment();
+                        global.orderProducts = new ArrayList<OrderProduct>();
+                        global.qtyCounter = new HashMap<String, String>();
                         Intent intent = new Intent(activity,
                                 ConsignmentCheckout_FA.class);
                         intent.putExtra("consignmentType", consignmentType);

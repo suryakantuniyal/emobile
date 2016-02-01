@@ -132,7 +132,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private Bundle extras;
     private Global.RestaurantSaleType restaurantSaleType = Global.RestaurantSaleType.EAT_IN;
     private boolean isToGo;
-    private String selectedSeatsAmount;
+    private int selectedSeatsAmount;
     private String selectedDinningTableNumber;
     private static String selectedSeatNumber = "1";
 
@@ -157,7 +157,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
         restaurantSaleType = (Global.RestaurantSaleType) extras.get("RestaurantSaleType");
-        selectedSeatsAmount = extras.getString("selectedSeatsAmount");
+        selectedSeatsAmount = extras.getInt("selectedSeatsAmount");
         selectedDinningTableNumber = extras.getString("selectedDinningTableNumber");
 
         isToGo = restaurantSaleType == Global.RestaurantSaleType.TO_GO;
@@ -1158,7 +1158,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public int getSelectedSeatsAmount() {
-        return Integer.parseInt(selectedSeatsAmount);
+        return selectedSeatsAmount;
     }
 
 
@@ -1175,7 +1175,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
-
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
@@ -1200,7 +1199,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private class processAsync extends AsyncTask<String, String, String> {
-
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
         private String urlToPost;
         private boolean wasProcessed = false;
@@ -1222,7 +1220,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         @Override
         protected String doInBackground(String... params) {
             Post httpClient = new Post();
-
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(OrderingMain_FA.this);
             urlToPost = params[0];
@@ -1245,16 +1242,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                         wasProcessed = true;
                     else if (parsedMap != null && parsedMap.size() > 0) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("statusCode = ").append(parsedMap.get("statusCode")).append("\n");
-                        sb.append(parsedMap.get("statusMessage"));
-                        errorMsg = sb.toString();
+                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                     } else
                         errorMsg = xml;
                 }
 
             } catch (Exception e) {
-
             }
 
             return null;
@@ -1336,9 +1329,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdProd.insert(global.orderProducts);
                 dbOrdAttr.insert(global.ordProdAttr);
             }
-
             dbOrders.updateIsVoid(Global.lastOrdID);
-
             VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(this);
 
             Order order = new Order(this);
@@ -1354,7 +1345,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             OrdersHandler dbOrders = new OrdersHandler(this);
             OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
             OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
-
             dbOrders.deleteOrder(Global.lastOrdID);
             dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
             for (OrdProdAttrHolder val : global.ordProdAttr)

@@ -124,19 +124,14 @@ public class OrdersHandler {
     }
 
     public void insert(Order order) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
+
         DBManager._db.beginTransaction();
         try {
             Order o = getOrder(order.ord_id);
-            SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT OR REPLACE INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            SQLiteStatement insert;
+            String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
+                    "VALUES (" + sb2.toString() + ")";
+            insert = DBManager._db.compileStatement(sb);
 
             insert.bindString(index(ord_id), order.ord_id == null ? "" : order.ord_id); // cust_id
             insert.bindString(index(qbord_id), order.qbord_id == null ? "" : order.qbord_id); // cust_id
@@ -206,10 +201,9 @@ public class OrdersHandler {
             this.data = data;
             dictionaryListMap = dictionary;
             SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+                    "VALUES (" + sb2.toString() + ")";
+            insert = DBManager._db.compileStatement(sb);
 
             int size = this.data.size();
 
@@ -277,49 +271,28 @@ public class OrdersHandler {
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
     public void deleteOrder(String _ord_id) {
         DBManager._db.delete(table_name, "ord_id = ?", new String[]{_ord_id});
     }
 
-    // public void emptyTable()
-    // {
-    // StringBuilder sb = new StringBuilder();
-    // SQLiteDatabase db = dbManager.openWritableDB();
-    // sb.append("DELETE FROM ").append(table_name);
-    // db.execSQL(sb.toString());
-    // db.close();
-    // }
-
     public void emptyTableOnHold() {
         StringBuilder sb = new StringBuilder();
-        // sb.append("DELETE FROM OrderProduct WHERE OrderProduct.ord_id IN
-        // ");
-        // sb.append("(SELECT op.ord_id FROM OrderProduct op LEFT JOIN Orders o
-        // ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)");
-        // DBManager._db.rawQuery(sb.toString(), new
-        // String[]{myPref.getEmpID()});
+
         DBManager._db.delete("OrderProduct",
                 "OrderProduct.ord_id IN (SELECT op.ord_id FROM OrderProduct op LEFT JOIN Orders o ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)",
                 new String[]{myPref.getEmpID()});
-        // sb.setLength(0);
-        // sb.append("DELETE FROM ").append(table_name).append(" WHERE isOnHold
-        // = '1' AND emp_id != ?");
-        // DBManager._db.rawQuery(sb.toString(), new
-        // String[]{myPref.getEmpID()});
+
 
         DBManager._db.delete(table_name, "isOnHold = '1' AND emp_id != ?", new String[]{myPref.getEmpID()});
     }
 
     private boolean checkIfExist(String ordID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT 1 FROM ").append(table_name).append(" WHERE ord_id = '");
-        sb.append(ordID).append("'");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        String sb = "SELECT 1 FROM " + table_name + " WHERE ord_id = '" +
+                ordID + "'";
+        Cursor c = DBManager._db.rawQuery(sb, null);
         boolean exists = (c.getCount() > 0);
         c.close();
 
@@ -330,16 +303,10 @@ public class OrdersHandler {
     // orders
     // for XML post
     {
-        StringBuilder sb = new StringBuilder();
+        String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
+                orderId + "'";
 
-        sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name).append(" WHERE ord_id = '")
-                .append(orderId).append("'");
-        // sb.append("SELECT o.*, Count(p.pay_id) AS 'pay_count' FROM
-        // ").append(table_name).append(" o LEFT JOIN Payments p ");
-        // sb.append("ON p.job_id = o.ord_id AND p.pay_issync = '1' WHERE
-        // o.ord_issync = '0' AND o.processed != '0' AND o.is_stored_fwd = '0'
-        // GROUP BY o.ord_id ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery(sb, null);
         Order order = new Order(this.activity);
         if (cursor.moveToFirst()) {
 
@@ -384,8 +351,7 @@ public class OrdersHandler {
             order.VAT = Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1") ? true : false);
 
             CustomersHandler custHandler = new CustomersHandler(this.activity);
-            Customer customer = custHandler.getCustomer(order.cust_id);
-            order.customer = customer;
+            order.customer = custHandler.getCustomer(order.cust_id);
 
         }
         cursor.close();
@@ -401,34 +367,19 @@ public class OrdersHandler {
         else
             sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
                     .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0'");
-        // sb.append("SELECT o.*, Count(p.pay_id) AS 'pay_count' FROM
-        // ").append(table_name).append(" o LEFT JOIN Payments p ");
-        // sb.append("ON p.job_id = o.ord_id AND p.pay_issync = '1' WHERE
-        // o.ord_issync = '0' AND o.processed != '0' AND o.is_stored_fwd = '0'
-        // GROUP BY o.ord_id ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-        return cursor;
+
+        return DBManager._db.rawQuery(sb.toString(), null);
     }
 
     public Cursor getTupyxOrders() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT * FROM Orders o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE p.paymethod_id = 'Wallet' AND ord_issync = '0'");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager._db.rawQuery("SELECT * FROM Orders o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE p.paymethod_id = 'Wallet' AND ord_issync = '0'", null);
         return c;
     }
 
     public long getNumUnsyncTupyxOrders() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(
-                " o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id WHERE p.paymethod_id = 'Wallet' AND o.ord_issync = '0'");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id WHERE p.paymethod_id = 'Wallet' AND o.ord_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         // db.close();
@@ -436,51 +387,30 @@ public class OrdersHandler {
     }
 
     public Cursor getUnsyncOrdersOnHold() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM ").append(table_name).append(" WHERE ord_issync = '0' AND isOnHold = '1'");
-        // sb.append("SELECT o.*, Count(p.pay_id) AS 'pay_count' FROM
-        // ").append(table_name).append(" o LEFT JOIN Payments p ");
-        // sb.append("ON p.job_id = o.ord_id AND p.pay_issync = '1' WHERE
-        // o.ord_issync = '0' AND isOnHold = '1' GROUP BY o.ord_id ");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-        return cursor;
+
+        return DBManager._db.rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'", null);
     }
 
     public long getNumUnsyncOrdersOnHold() {
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE ord_issync = '0' AND isOnHold = '1'");
-
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
     }
 
     public Cursor getOrderOnHold() {
-        // if(db==null||!db.isOpen())
-        // db = dbManager.openReadableDB();
-
         Cursor c = DBManager._db
                 .rawQuery("SELECT ord_id as '_id',* FROM Orders WHERE isOnHold = '1' ORDER BY ord_id ASC", null);
         c.moveToFirst();
-        // db.close();
         return c;
     }
 
     public long getNumUnsyncOrders() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        /// SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE ord_issync = '0'");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
@@ -518,43 +448,32 @@ public class OrdersHandler {
     }
 
     public long getNumUnsyncProcessedOrders() {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE ord_issync = '0' AND processed != '0'");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND processed != '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public long getNumUnsyncOrdersStoredFwd() {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE is_stored_fwd = '1'");
-
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE is_stored_fwd = '1'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public boolean unsyncOrdersLeft() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE ord_issync = '0' AND processed != '0'");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND processed != '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;
     }
 
     private String getOrderTypesAsSQLArray(Global.OrderType[] orderTypes){
-        StringBuffer sb=new StringBuffer();
+        StringBuilder sb=new StringBuilder();
         for (Global.OrderType orderType : orderTypes) {
-            sb.append("'"+orderType.getCode()+"',");
+            sb.append("'").append(orderType.getCode()).append("',");
         }
         sb.deleteCharAt(sb.length()-1);
         return sb.toString();
@@ -562,39 +481,23 @@ public class OrdersHandler {
     public Cursor getReceipts1Data(Global.OrderType[] orderTypes) // Transactions Receipts first
     // listview
     {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
+
 
         String subquery1 = "SELECT ord_id as _id,ord_total,ord_issync,cust_id,isVoid,ord_type FROM Orders WHERE ord_type IN (";
         String subquery2 = ") AND isOnHold = '0' ORDER BY rowid DESC";
-        StringBuilder sb = new StringBuilder();
-        sb.append(subquery1).append(getOrderTypesAsSQLArray(orderTypes)).append(subquery2);
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
+        Cursor cursor = DBManager._db.rawQuery(subquery1 + getOrderTypesAsSQLArray(orderTypes) + subquery2, null);
         cursor.moveToFirst();
-        // db.close();
         return cursor;
     }
 
     public Cursor getReceipts1CustData(Global.OrderType[] orderTypes, String custID) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         String subquery1 = "SELECT ord_id as _id,ord_total,ord_issync,cust_id,isVoid,ord_type FROM Orders WHERE ord_type IN (";
         String subquery2 = ") AND cust_id = ?";
         String subquery3 = " AND isOnHold = '0' ORDER BY rowid DESC";
-        StringBuilder sb = new StringBuilder();
-        sb.append(subquery1).append(getOrderTypesAsSQLArray(orderTypes)).append(subquery2).append(subquery3);
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{custID});
+        Cursor cursor = DBManager._db.rawQuery(subquery1 + getOrderTypesAsSQLArray(orderTypes) + subquery2 + subquery3, new String[]{custID});
 
         cursor.moveToFirst();
-        // db.close();
         return cursor;
 
     }
@@ -604,11 +507,6 @@ public class OrdersHandler {
     // first
     // listview
     {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         String subqueries[] = new String[4];
         StringBuilder sb = new StringBuilder();
@@ -627,26 +525,12 @@ public class OrdersHandler {
             params = new String[]{customerID, "%" + search + "%"};
         }
 
-		/*
-         * String subquery1 =
-		 * "SELECT Orders.ord_id as _id,Orders.ord_total,Orders.ord_issync,Customers.cust_id,Orders.isVoid FROM Orders JOIN Customers WHERE Orders.ord_type='"
-		 * ; String subquery2 =
-		 * "' AND Orders.cust_id = Customers.cust_id AND Orders.ord_id LIKE '%";
-		 * String subquery3 = "%' ORDER BY Orders.rowid DESC";
-		 */
-
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), params);
         cursor.moveToFirst();
-        // db.close();
         return cursor;
     }
 
     public void updateIsSync(List<String[]> list) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
 
         StringBuilder sb = new StringBuilder();
         sb.append(ord_id).append(" = ?");
@@ -661,20 +545,16 @@ public class OrdersHandler {
                 args.put(ord_issync, "0");
             DBManager._db.update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
         }
-        // db.close();
     }
 
     private void updateOnHoldSync(String ordID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ord_id).append(" = ?");
         ContentValues args = new ContentValues();
 
         args.put(ord_issync, "1");
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{ordID});
+        DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{ordID});
     }
 
     public String updateFinishOnHold(String ordID) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
         StringBuilder sb2 = new StringBuilder();
         StringBuilder sb = new StringBuilder();
 
@@ -690,113 +570,50 @@ public class OrdersHandler {
 
         DBManager._db.delete(table_name, "ord_id = ?", new String[]{ordID});
         DBManager._db.delete("OrderProduct", "ord_id = ?", new String[]{ordID});
-        // db.rawQuery(sb.toString(), null);
-        // db.rawQuery(sb2.toString(), null);
         c.close();
-        // db.close();
-
         return dateCreated;
     }
 
     public void updateIsProcessed(String orderID, String updateValue) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(ord_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         args.put(processed, updateValue);
-
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{orderID});
-
-        // db.close();
+        DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{orderID});
     }
 
     public void updateOrderTypeToInvoice(String orderID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ord_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         args.put(ord_type, Global.OrderType.INVOICE.getCodeString());
-
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{orderID});
+        DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{orderID});
     }
 
     public void updateOrderComment(String orderID, String value) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ord_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         args.put(ord_comment, value);
-
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{orderID});
+        DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{orderID});
     }
 
     public void updateOrderStoredFwd(String _order_id, String value) {
-        // if(db==null)
-        // db = dbManager.openWritableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(ord_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         args.put(is_stored_fwd, value);
-
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{_order_id});
+        DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{_order_id});
     }
 
     public void updateIsTotalLinesPay(String orderID, String updateValue) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(ord_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         args.put(total_lines_pay, updateValue);
-
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{orderID});
-
-        // db.close();
+        DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{orderID});
     }
 
     public void updateIsVoid(String param) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(ord_id).append(" = ?");
-
         ContentValues args = new ContentValues();
-
         args.put(isVoid, "1");
         args.put(ord_issync, "0");
         args.put(processed, "9");
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{param});
-
-        // db.close();
+        DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{param});
     }
 
     public String getColumnValue(String key, String _ord_id) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ").append(key).append(" FROM ").append(table_name).append(" WHERE ord_id = ?");
-
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{_ord_id});
+        Cursor c = DBManager._db.rawQuery("SELECT " + key + " FROM " + table_name + " WHERE ord_id = ?", new String[]{_ord_id});
         String value = "";
         if (c.moveToFirst()) {
             value = c.getString(c.getColumnIndex(key));
@@ -806,26 +623,15 @@ public class OrdersHandler {
     }
 
     public long getDBSize() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name);
-
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public boolean isOrderOffline(String ordID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ord_issync FROM Orders WHERE ord_id = ?");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{ordID});
+        Cursor c = DBManager._db.rawQuery("SELECT ord_issync FROM Orders WHERE ord_id = ?", new String[]{ordID});
 
         boolean offline = false;
         if (c.moveToFirst()) {
@@ -836,57 +642,14 @@ public class OrdersHandler {
 
     }
 
-    // public String getLastOrdID() {
-    // //NOTE: Any update here should be a similar update done to Load Template
-    // and Payments
-    //
-    // SQLiteDatabase db = dbManager.openReadableDB();
-    //
-    // StringBuilder sb = new StringBuilder();
-    // //sb.append("SELECT ord_id FROM ").append(table_name).append(" WHERE
-    // ord_id = (select max(ord_id) FROM ").append(table_name).append(")");
-    // SimpleDateFormat sdf = new SimpleDateFormat("yyyy",Locale.getDefault());
-    // String currYear = sdf.format(new Date());
-    // sb.append("SELECT max(ord_id) FROM Orders WHERE ord_id LIKE
-    // \"").append(myPref.getEmpID()).append("-%-").append(currYear).append("\"");
-    //
-    // SQLiteStatement stmt = db.compileStatement(sb.toString());
-    //
-    // String val = stmt.simpleQueryForString();
-    // db.close();
-    // return val;
-    // }
+
 
     public HashMap<String, String> getOrderDetails(String ordID) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
         HashMap<String, String> map = new HashMap<String, String>();
-
-		/*
-         * String subquery1 =
-		 * "SELECT o.ord_id as _id,o.ord_total,p.pay_amount,p.pay_tip,o.ord_timecreated,o.clerk_id,"
-		 * +
-		 * "o.ord_comment,o.ord_shipvia,o.ord_terms,o.ord_delivery,o.c_email,o.cust_id, o.ord_signature,p.paymethod_id,p.pay_id FROM Orders o "
-		 * +
-		 * "LEFT OUTER JOIN Payments p  ON o.ord_id = p.inv_id OR o.ord_id = p.job_id WHERE o.ord_id = '"
-		 * ;
-		 */
-
         String subquery1 = "SELECT o.ord_id as _id,o.ord_total ,o.ord_timecreated,o.ord_type,o.isVoid,o.clerk_id,o.ord_comment,o.ord_shipvia,o.ord_terms,o.ord_delivery,"
                 + "o.c_email,o.cust_id, o.ord_signature,o.ord_po,o.ord_latitude,o.ord_longitude FROM Orders o  WHERE o.ord_id ='";
-
-        // String subquery1 = "SELECT ord_id as
-        // _id,ord_total,ord_timecreated,clerk_id,ord_comment,ord_shipvia,ord_terms,ord_delivery,c_email,cust_id,
-        // ord_signature FROM Orders WHERE ord_id ='";
         String subquery2 = "'";
-        StringBuilder sb = new StringBuilder();
-        sb.append(subquery1).append(ordID).append(subquery2);
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
+        Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + subquery2, null);
         if (cursor.moveToFirst()) {
             do {
                 String data = cursor.getString(cursor.getColumnIndex(ord_total));
@@ -934,43 +697,20 @@ public class OrdersHandler {
 
                 data = cursor.getString(cursor.getColumnIndex(isVoid));
                 map.put(isVoid, data);
-
             } while (cursor.moveToNext());
         }
-
         cursor.close();
-        // db.close();
         return map;
     }
 
     public Order getPrintedOrder(String ordID) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
         Order anOrder = new Order(activity);
+        String sb = ("SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name,c.AccountNumnber,o.cust_id, "
+                + "(o.ord_subtotal+o.ord_taxamount-o.ord_discount) AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid FROM Orders o LEFT OUTER JOIN Customers c ON "
+                + "o.cust_id = c.cust_id WHERE o.ord_id = '") +
+                ordID + "'";
 
-        StringBuilder sb = new StringBuilder();
-
-		/*
-         * sb.append(
-		 * "SELECT ord_id,ord_timecreated,ord_total,ord_subtotal,ord_discount,ord_taxamount, (ord_subtotal+ord_taxamount-ord_discount) AS 'gran_total',tipAmount FROM Orders WHERE ord_id = '"
-		 * ); sb.append(ordID).append("'");
-		 */
-
-        sb.append(
-                "SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name,c.AccountNumnber,o.cust_id, "
-                        + "(o.ord_subtotal+o.ord_taxamount-o.ord_discount) AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid FROM Orders o LEFT OUTER JOIN Customers c ON "
-                        + "o.cust_id = c.cust_id WHERE o.ord_id = '");
-        sb.append(ordID).append("'");
-        // SELECT
-        // o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name,
-        // (o.ord_subtotal+o.ord_taxamount-o.ord_discount) AS 'gran_total' FROM
-        // Orders o LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE
-        // o.ord_id = '50-00000-2012'
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
+        Cursor cursor = DBManager._db.rawQuery(sb, null);
         if (cursor.moveToFirst()) {
             do {
                 anOrder.ord_id = getValue(cursor.getString(cursor.getColumnIndex(ord_id)));
@@ -991,7 +731,6 @@ public class OrdersHandler {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        // db.close();
         return anOrder;
     }
 

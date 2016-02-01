@@ -1,10 +1,8 @@
 package com.android.emobilepos.ordering;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +34,6 @@ import java.util.List;
 public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.RecalculateCallback {
     private Spinner taxSpinner, discountSpinner;
     private List<String[]> taxList, discountList;
-    private MySpinnerAdapter taxAdapter, discountAdapter;
     private int taxSelected, discountSelected;
     private EditText globalDiscount, globalTax, subTotal;
     private TextView granTotal, itemCount;
@@ -153,8 +150,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         }
 
-        taxAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxList, true);
-        discountAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, discount, discountList,
+        MySpinnerAdapter taxAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxList, true);
+        MySpinnerAdapter discountAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, discount, discountList,
                 false);
 
         taxSpinner.setAdapter(taxAdapter);
@@ -252,7 +249,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private OnItemSelectedListener setSpinnerListener(final boolean isDiscount) {
-        OnItemSelectedListener listener = new OnItemSelectedListener() {
+        return new OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long arg3) {
@@ -277,7 +274,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             }
 
         };
-        return listener;
     }
 
     public void setTaxValue(int position) {
@@ -403,7 +399,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             .toString();
                     global.orderProducts.get(i).prod_price_updated = "1";
 
-                    BigDecimal disc = new BigDecimal("0");
+                    BigDecimal disc;
                     if (global.orderProducts.get(i).discount_is_fixed.equals("0")) {
                         BigDecimal val = tempSubTotal
                                 .multiply(Global.getBigDecimalNum(global.orderProducts.get(i).disAmount))
@@ -488,34 +484,34 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 tempTaxTotal = tax1;
                 taxTotal = tax1.toString();
 
-                if (!global.orderProducts.get(i).isReturned) {
-                    if (discountSelected > 0) {
-                        if (discountList.get(discountSelected - 1)[1].equals("Fixed")) {
-                            if (discount_rate.compareTo(tempSubTotal) == -1) {
-                                taxableSubtotal = taxableSubtotal.add(tempSubTotal.subtract(discount_rate)
-                                        .multiply(temp).setScale(4, RoundingMode.HALF_UP));
-                                // discount_rate = new BigDecimal("0");
-                                if (discountList.get(discountSelected - 1)[3].equals("1")) {
-                                    _temp_subtotal = tempSubTotal.subtract(discount_rate);
-                                }
-                            } else {
-                                // discount_amount = tempSubTotal;
-                                taxableSubtotal = new BigDecimal("0");
-                                _temp_subtotal = taxableSubtotal;
+//                if (!global.orderProducts.get(i).isReturned) {
+                if (discountSelected > 0) {
+                    if (discountList.get(discountSelected - 1)[1].equals("Fixed")) {
+                        if (discount_rate.compareTo(tempSubTotal) == -1) {
+                            taxableSubtotal = taxableSubtotal.add(tempSubTotal.subtract(discount_rate)
+                                    .multiply(temp).setScale(4, RoundingMode.HALF_UP));
+                            // discount_rate = new BigDecimal("0");
+                            if (discountList.get(discountSelected - 1)[3].equals("1")) {
+                                _temp_subtotal = tempSubTotal.subtract(discount_rate);
                             }
                         } else {
-                            BigDecimal temp2 = tempSubTotal.multiply(discount_rate).setScale(4, RoundingMode.HALF_UP);
-                            taxableSubtotal = taxableSubtotal
-                                    .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP));
-                            if (discountList.get(discountSelected - 1)[3].equals("1")) {
-                                _temp_subtotal = tempSubTotal.subtract(temp2);
-                            }
+                            // discount_amount = tempSubTotal;
+                            taxableSubtotal = new BigDecimal("0");
+                            _temp_subtotal = taxableSubtotal;
                         }
                     } else {
+                        BigDecimal temp2 = tempSubTotal.multiply(discount_rate).setScale(4, RoundingMode.HALF_UP);
                         taxableSubtotal = taxableSubtotal
-                                .add(tempSubTotal.multiply(temp).setScale(4, RoundingMode.HALF_UP));
+                                .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP));
+                        if (discountList.get(discountSelected - 1)[3].equals("1")) {
+                            _temp_subtotal = tempSubTotal.subtract(temp2);
+                        }
                     }
+                } else {
+                    taxableSubtotal = taxableSubtotal
+                            .add(tempSubTotal.multiply(temp).setScale(4, RoundingMode.HALF_UP));
                 }
+//                }
             }
 
             if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
@@ -535,8 +531,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     private BigDecimal getProductPrice(BigDecimal prod_with_tax_price, BigDecimal tax) {
         BigDecimal denom = new BigDecimal(1).add(tax);
-        BigDecimal prodPrice = prod_with_tax_price.divide(denom, 2, RoundingMode.HALF_UP);
-        return prodPrice;
+        return prod_with_tax_price.divide(denom, 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal tempTaxableAmount = new BigDecimal("0");
@@ -655,8 +650,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 // val = global.orderProduct.get(i).getSetData("prod_taxValue",
                 // true, null);
 
-                if (!global.orderProducts.get(i).isReturned)
-                    discountableAmount = discountableAmount.add(prodPrice);
+//                if (!global.orderProducts.get(i).isReturned)
+                discountableAmount = discountableAmount.add(prodPrice);
                 try {
                     if (global.orderProducts.get(i).discount_value != null
                             && !global.orderProducts.get(i).discount_value.isEmpty())
@@ -675,7 +670,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             }
 
             if (itemCount != null)
-                itemCount.setText(Integer.toString(size));
+                itemCount.setText(String.valueOf(size));
 
             discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
             // discountable_sub_total = discountable_sub_total.subtract(new
@@ -688,8 +683,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             globalDiscount.setText(Global.getCurrencyFrmt(discount_amount.toString()));
             globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount)));
 
-            gran_total = sub_total.abs().subtract(discount_amount.abs()).add(tax_amount.abs())
-                    .subtract(itemsDiscountTotal.abs());
+            gran_total = sub_total.subtract(discount_amount).add(tax_amount)
+                    .subtract(itemsDiscountTotal);
             if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
                 gran_total = gran_total.negate();
             }

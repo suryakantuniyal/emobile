@@ -108,7 +108,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private VolumePricesHandler volPriceHandler;
     private ProductsAttrHandler prodAttrHandler;
     private AlertDialog promptDialog;
-    private AlertDialog.Builder dialogBuilder;
 
     private LinkedHashMap<String, List<String>> attributesMap;
     private String[] attributesKey;
@@ -130,7 +129,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         myPref = new MyPreferences(this);
         if (!myPref.getIsTablet())                        //reset to default layout (not as dialog)
+        {
             super.setTheme(R.style.AppTheme);
+        }
 
 
         super.onCreate(savedInstanceState);
@@ -314,7 +315,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void verifyIfModify(Button headerAddButton, View header) {
         if (isModify) {
-            headerAddButton.setText("Modify");
+            headerAddButton.setText(R.string.modify);
             modifyOrderPosition = extras.getInt("modify_position");
             imgURL = global.orderProducts.get(modifyOrderPosition).imgURL;
             prodID = global.orderProducts.get(modifyOrderPosition).prod_id;
@@ -392,14 +393,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         UOMHandler uomHandler = new UOMHandler(activity);
 
         List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
-        /*if (myPref.isCustSelected()) {
-            PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
-			List<String[]> tempList = handler.getPriceLevel(prodID);
-			int size = tempList.size();
-			for (int i = 0; i < size; i++) {
-				_listPriceLevel.add(tempList.get(i));
-			}
-		}*/
 
         List<String[]> _listDiscounts = prodHandler.getDiscounts();
         List<String[]> _listUOM = uomHandler.getUOMList(prodID);
@@ -458,7 +451,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 generateAttributePrompt(v);
             }
         });
@@ -471,7 +463,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         final TextView attributeValue = (TextView) view.findViewById(R.id.attribute_value);
 
         ListView listView = new ListView(activity);
-        dialogBuilder = new AlertDialog.Builder(activity);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
 
         final String[] val = attributesMap.get(key).toArray(new String[attributesMap.get(key).size()]);
 
@@ -494,7 +486,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                // TODO Auto-generated method stub
 
                 attributeValue.setText(val[position]);
                 attributesSelected.put(key, val[position]);
@@ -631,7 +622,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         OrderProduct orderedProducts = global.orderProducts.get(position);
 
         String val = qty_picked;
-        BigDecimal sum = Global.getBigDecimalNum(val);
+        BigDecimal sum = new BigDecimal(val);
 
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
             global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
@@ -643,7 +634,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         orderedProducts.ordprod_qty = val;
-        orderedProducts.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier)).toString();
+        orderedProducts.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
 
         orderedProducts.prod_taxValue = taxTotal;
         orderedProducts.discount_value = disTotal;
@@ -667,7 +658,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderedProducts.ordprod_comment = _ordprod_comment;
         orderedProducts.prod_price_updated = "0";
 
-        BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
+        BigDecimal itemTotal = total.subtract(new BigDecimal(disTotal));
 
 
         if (discountIsTaxable) {
@@ -724,7 +715,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 String txt = viewField.getText().toString();
                 if (!txt.isEmpty() && Double.parseDouble(txt) > 0) {
                     qty.setText(txt);
@@ -757,14 +747,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 if (!myPref.getPreferences(MyPreferences.pref_block_price_level_change)) {
                     PriceLevelHandler handler1 = new PriceLevelHandler(activity);
                     listData_LV = handler1.getFixedPriceLevel(prodID);
-                /*if (myPref.isCustSelected()) {
-                    PriceLevelItemsHandler handler = new PriceLevelItemsHandler(activity);
-					List<String[]> temp = handler.getPriceLevel(prodID);
-					int size = temp.size();
-					for (int i = 0; i < size; i++) {
-						listData_LV.add(temp.get(i));
-					}
-				}*/
+
                 } else {
                     listData_LV.clear();
                     Toast.makeText(activity, "Changing the Price Level is currently not allowed.", Toast.LENGTH_LONG).show();
@@ -785,7 +768,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                // TODO Auto-generated method stub
                 setTextView(position, type);
                 lView.invalidateViews();
                 dlg.dismiss();
@@ -807,7 +789,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
                 rightTitle[INDEX_CMT] = curComment.getText().toString();
                 _ordprod_comment = curComment.getText().toString().trim();
@@ -819,7 +800,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 EditText curComment = (EditText) dialog.findViewById(R.id.commentEditText);
                 curComment.setText("");
                 rightTitle[INDEX_CMT] = curComment.getText().toString();
@@ -938,7 +918,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.ordprod_name = extrasMap.get("prod_name");
         ord.ordprod_desc = extrasMap.get("prod_desc");
         ord.prod_id = prodID;
-        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier)).toString();
+        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
         ord.onHand = extrasMap.get("prod_on_hand");
         ord.imgURL = extrasMap.get("prod_img_url");
         ord.cat_id = extrasMap.get("cat_id");
@@ -1007,12 +987,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         GenerateNewID generator = new GenerateNewID(activity);
 
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
-            //myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-//			if (handler.getDBSize() == 0)
-//				Global.lastOrdID = generator.generate("",0);
-//			else
-//				Global.lastOrdID = generator.generate(handler.getLastOrdID(),0);
+
         }
         ord.ord_id = Global.lastOrdID;
 
@@ -1280,25 +1256,21 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return listData_LV.size() + 1;
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
             final ViewHolder holder;
             int type = getItemViewType(position);
 
@@ -1357,12 +1329,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                             holder.rightText.setText(listData_LV.get(position - 1)[2] + "%");
                         }
 
-                    } /*else if(listType == TAX_IND+OFFSET) // tax
-				{
-					StringBuilder sb = new StringBuilder();
-					sb.append(dialogText.get(position - 1)[2]).append("%");
-					holder.rightText.setText(sb.toString());
-				}*/ else if (listType == INDEX_UOM + OFFSET) {
+                    } else if (listType == INDEX_UOM + OFFSET) {
                         String multiplier = listData_LV.get(position - 1)[2];
 
                         uomName = listData_LV.get(position - 1)[0];
@@ -1417,7 +1384,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 disAmount = global.orderProducts.get(pos).disAmount;
                 taxAmount = global.orderProducts.get(pos).taxAmount;
                 rightTitle[INDEX_DISCOUNT] = disAmount;
-                //rightTitle[TAX_IND] = taxAmount;
             }
         }
 
@@ -1446,25 +1412,21 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return leftTitle.length + leftTitle2.length + MAIN_OFFSET;
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
             final ViewHolder holder;
             int type = getItemViewType(position);
             if (convertView == null) {
@@ -1514,12 +1476,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                             @Override
                             public void onClick(View v) {
-                                // TODO Auto-generated method stub
                                 String val = holder.rightText.getText().toString();
                                 int qty = Integer.parseInt(val);
                                 qty += 1;
                                 qty_picked = Integer.toString(qty);
-                                holder.rightText.setText(Integer.toString(qty));
+                                holder.rightText.setText(String.valueOf(qty));
                                 BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
                                 updateVolumePrice(newQty);
                                 notifyDataSetChanged();
@@ -1529,13 +1490,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                             @Override
                             public void onClick(View v) {
-                                // TODO Auto-generated method stub
                                 String val = holder.rightText.getText().toString();
                                 int qty = Integer.parseInt(val);
                                 qty -= 1;
                                 if (qty >= 1) {
                                     qty_picked = Integer.toString(qty);
-                                    holder.rightText.setText(Integer.toString(qty));
+                                    holder.rightText.setText(String.valueOf(qty));
                                     BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
 
                                     updateVolumePrice(newQty);
@@ -1593,12 +1553,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                             @Override
                             public void onClick(View v) {
-                                // TODO Auto-generated method stub
                                 String val = holder.rightText.getText().toString();
                                 int qty = Integer.parseInt(val);
                                 qty += 1;
                                 qty_picked = Integer.toString(qty);
-                                holder.rightText.setText(Integer.toString(qty));
+                                holder.rightText.setText(String.valueOf(qty));
                                 BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
 
                                 updateVolumePrice(newQty);
@@ -1609,13 +1568,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                             @Override
                             public void onClick(View v) {
-                                // TODO Auto-generated method stub
                                 String val = holder.rightText.getText().toString();
                                 int qty = Integer.parseInt(val);
                                 qty -= 1;
                                 if (qty >= 1) {
                                     qty_picked = Integer.toString(qty);
-                                    holder.rightText.setText(Integer.toString(qty));
+                                    holder.rightText.setText(String.valueOf(qty));
                                     BigDecimal newQty = Global.getBigDecimalNum(holder.rightText.getText().toString());
 
                                     updateVolumePrice(newQty);
@@ -1644,7 +1602,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         @Override
         public Filter getFilter() {
-            // TODO Auto-generated method stub
             return null;
         }
 

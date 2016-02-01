@@ -46,11 +46,7 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.shifts.OpenShift_FA;
-<<<<<<< HEAD
-=======
-import com.android.database.DBManager;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
->>>>>>> develop
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
