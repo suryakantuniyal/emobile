@@ -1426,12 +1426,12 @@ public class Global extends MultiDexApplication {
                 int tempSize = global.orderProductsAddons.size();
                 for (int i = 0; i < tempSize; i++) {
 
-                    sb.append("<br/>");
+//                    sb.append("<br/>");
                     if (global.orderProductsAddons.get(i).isAdded.equals("0")) // Not
                         // added
-                        sb.append("[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
+                        sb.append("\n[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
                     else
-                        sb.append("[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
+                        sb.append("\n[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
 
                 }
                 ord.ordprod_desc = sb.toString();
