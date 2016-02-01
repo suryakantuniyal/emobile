@@ -1289,16 +1289,18 @@ public class EMSDeviceDriver {
                     sb.append(orders.get(m).getQty()).append("x ").append(orders.get(m).getName()).append("\n");
                     if (!orders.get(m).getAttrDesc().isEmpty())
                         sb.append("  [").append(orders.get(m).getAttrDesc()).append("]\n");
-                    for (int j = i + 1; j < size; j++) {
-                        ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
-                        if (orders.get(j).getIsAdded().equals("1"))
-                            sb.append("  ").append(orders.get(j).getName()).append("\n");
-                        else
-                            sb.append("  NO ").append(orders.get(j).getName()).append("\n");
+                    if (orders.get(m + 1).getAddon().equals("1")) {
+                        for (int j = i + 1; j < size; j++) {
+                            ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
+                            if (orders.get(j).getIsAdded().equals("1"))
+                                sb.append("  ").append(orders.get(j).getName()).append("\n");
+                            else
+                                sb.append("  NO ").append(orders.get(j).getName()).append("\n");
 
-                        if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-                            i = j;
-                            break;
+                            if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
+                                i = j;
+                                break;
+                            }
                         }
                     }
 
@@ -1782,7 +1784,7 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
 
-           cutPaper();
+            cutPaper();
 
             // db.close();
 
