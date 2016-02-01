@@ -716,7 +716,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
 
-
     public void showEmailDlog() {
 
         final Dialog dialog = new Dialog(activity,
@@ -737,7 +736,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dialog.dismiss();
 
                 if (!input.getText().toString().isEmpty()) {
@@ -887,10 +885,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
             } else {
                 handler.insert(global.order);
-
-                handler2.insert(global.orderProducts);
-                handler3.insert(global.ordProdAttr);
-
+                if(!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
+                    handler2.insert(global.orderProducts);
+                    handler3.insert(global.ordProdAttr);
+                }
                 if (global.listOrderTaxes != null
                         && global.listOrderTaxes.size() > 0
                         && typeOfProcedure != Global.TransactionType.REFUND)
@@ -1026,6 +1024,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
         order.ord_subtotal = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.sub_total.subtract(OrderTotalDetails_FR.itemsDiscountTotal));
+        if (Global.lastOrdID == null || Global.lastOrdID.isEmpty()) {
+            GenerateNewID generator = new GenerateNewID(activity);
+            Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
+        }
 
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
@@ -1245,6 +1247,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     Global.consignSummaryMap.put(
                             Global.cons_return_products.get(i).prod_id, tempMap);
                 }
+                Global.lastOrdID = "";
 
                 break;
 
