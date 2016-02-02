@@ -87,7 +87,7 @@ import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverte
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = false;
+    public static final boolean PRINT_TO_LOG = true;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
@@ -409,8 +409,11 @@ public class EMSDeviceDriver {
                             lineWidth, 0));
                     break;
                 case INVOICE: // Invoice
-                case CONSIGNMENT_INVOICE:// Consignment Invoice
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
+                            lineWidth, 0));
+                    break;
+                case CONSIGNMENT_INVOICE:// Consignment Invoice
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", Global.consignment_order.ord_id,
                             lineWidth, 0));
                     break;
                 case ESTIMATE: // Estimate
