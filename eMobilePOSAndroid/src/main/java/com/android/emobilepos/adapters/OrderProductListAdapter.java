@@ -1,4 +1,4 @@
-package com.android.emobilepos.ordering;
+package com.android.emobilepos.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -39,7 +40,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     List<OrderProduct> orderProducts;
     int seatsAmount;
-    List<OrderSeatProduct> list;
+    public List<OrderSeatProduct> orderSeatProductList;
     private MyPreferences myPref;
     Activity activity;
 
@@ -53,10 +54,10 @@ public class OrderProductListAdapter extends BaseAdapter {
         refreshList();
     }
 
-    public List<OrderSeatProduct> getOrderSeatProductList() {
+    private List<OrderSeatProduct> getOrderSeatProductList() {
         ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
         for (int i = 0; i < seatsAmount; i++) {
-            l.add(new OrderSeatProduct(String.valueOf(i+1)));
+            l.add(new OrderSeatProduct(String.valueOf(i + 1)));
             for (OrderProduct product : orderProducts) {
                 if (product != null & product.assignedSeat != null &&
                         product.assignedSeat.equalsIgnoreCase(String.valueOf(i + 1))) {
@@ -68,7 +69,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     private void refreshList() {
-        list = getOrderSeatProductList();
+        orderSeatProductList = getOrderSeatProductList();
     }
 
     @Override
@@ -79,17 +80,17 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return list.size();
+        return orderSeatProductList.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return orderSeatProductList.get(position);
     }
 
     @Override
     public int getItemViewType(int position) {
-        return list.get(position).rowType.code;
+        return orderSeatProductList.get(position).rowType.code;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        RowType type = list.get(position).rowType;
+        RowType type = orderSeatProductList.get(position).rowType;
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
@@ -112,7 +113,7 @@ public class OrderProductListAdapter extends BaseAdapter {
             case TYPE_HEADER:
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
-                ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText("Seat " + list.get(position).seatNumber);
+                ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText("Seat " + orderSeatProductList.get(position).seatNumber);
                 break;
             case TYPE_ITEM:
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.GONE);
@@ -127,7 +128,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                 holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
                 if (holder.addonButton != null)
                     holder.addonButton.setFocusable(false);
-                if (list.get(position).rowType == RowType.TYPE_ITEM) {
+                if (orderSeatProductList.get(position).rowType == RowType.TYPE_ITEM) {
                     setHolderValues(holder, position);
                 }
                 break;
@@ -161,9 +162,9 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public class OrderSeatProduct {
-        RowType rowType;
-        String seatNumber;
-        OrderProduct orderProduct;
+        public RowType rowType;
+        public String seatNumber;
+        public OrderProduct orderProduct;
 
         public OrderSeatProduct(String seatNumber) {
             this.seatNumber = seatNumber;
@@ -178,7 +179,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
 
     public void setHolderValues(ViewHolder holder, final int pos) {
-        final OrderProduct product = list.get(pos).orderProduct;
+        final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
         final String tempId = product.ordprod_id;
 
         if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {

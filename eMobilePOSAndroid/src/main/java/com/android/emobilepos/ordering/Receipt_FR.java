@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -50,6 +49,7 @@ import com.android.database.TransferLocations_DB;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.OrderDetailsActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
@@ -73,8 +73,6 @@ import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1938,7 +1936,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void proceedToRemove(int pos, int removePos) {
         // String quant = global.orderProduct.get(pos).ordprod_qty;
         // String prodID = global.orderProduct.get(pos).prod_id;
-        OrderProduct product = mainLVAdapter.list.get(removePos).orderProduct;
+        OrderProduct product = mainLVAdapter.orderSeatProductList.get(removePos).orderProduct;
 //        OrderProduct product = global.orderProducts.get(pos);
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             double totalQty = (Double) Global.getFormatedNumber(true,

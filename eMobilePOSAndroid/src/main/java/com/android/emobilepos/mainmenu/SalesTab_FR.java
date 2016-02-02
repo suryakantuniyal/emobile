@@ -713,7 +713,10 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                askEatInToGo();
+                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                    askEatInToGo();
+                }
                 dialog.dismiss();
             }
         });
