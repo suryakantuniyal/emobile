@@ -88,6 +88,7 @@
 	<string name = "dlog_title_enter_email">Enter Info (optional)</string>
 	<string name = "dlog_msg_email">eMail</string>
 	<string name = "dlog_msg_phone">Phone</string>
+	<string name = "dlog_msg_comments">Order comments</string>
 	<string name = "dlog_msg_nfc_scanned">NFC Scanned Successfully</string>
 	<string name = "dlog_msg_error_no_avail_license">Error,there were no available license\u002E\u002E\u002E</string>
 	<string name = "dlog_msg_error_downloading_employee_data">Failed to download employee data, Please try again\u002E\u002E\u002E</string>

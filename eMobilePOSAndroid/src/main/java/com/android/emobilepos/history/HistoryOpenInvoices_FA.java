@@ -228,6 +228,9 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         intent.putExtra("cust_id", myCursor.getString(myCursor.getColumnIndex("cust_id")));
         intent.putExtra("custidkey", myCursor.getString(myCursor.getColumnIndex("custidkey")));
         intent.putExtra("inv_id", txnIDChosen);
+        intent.putExtra("job_id", txnIDChosen);
+        intent.putExtra("typeOfProcedure", Global.OrderType.INVOICE);
+        intent.putExtra("ord_type", Global.OrderType.INVOICE);
 
         String temp = myCursor.getString(myCursor
                 .getColumnIndex("inv_balance"));
