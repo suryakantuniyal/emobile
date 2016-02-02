@@ -71,6 +71,7 @@ public class OrderProduct {
 	public boolean isReturned = false;
 	public String assignedSeat;
 	public BigDecimal global_discount_total = new BigDecimal("0");
-	
 
+
+	public String consignment_qty;
 }

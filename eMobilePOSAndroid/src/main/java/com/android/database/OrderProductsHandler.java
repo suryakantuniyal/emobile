@@ -429,7 +429,7 @@ public class OrderProductsHandler {
     public Cursor getWalletOrdProd(String ordID) {
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "SELECT op.*,pi.prod_img_name FROM OrderProduct op LEFT OUTER JOIN Products_Images pi ON op.prod_id = pi.prod_id ");
+                "SELECT op.*,pi.prod_img_name FROM " + table_name + " op LEFT OUTER JOIN Products_Images pi ON op.prod_id = pi.prod_id ");
         sb.append("AND pi.type = 'I' WHERE ord_id = ?");
         Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{ordID});
         return c;
@@ -466,7 +466,7 @@ public class OrderProductsHandler {
         // AS 'total', ordprod_qty,addon,isAdded,hasAddons FROM OrderProduct
         // WHERE ord_id = '");
         sb.append(
-                "SELECT ordprod_name,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM OrderProduct WHERE ord_id = '");
+                "SELECT ordprod_name,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM " + table_name + " WHERE ord_id = '");
         sb.append(ordID).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
@@ -503,7 +503,7 @@ public class OrderProductsHandler {
         StringBuilder sb = new StringBuilder();
 
 		/*
-		 * sb.append(
+         * sb.append(
 		 * "SELECT ordprod_id,ordprod_name,ordprod_desc,overwrite_price,(overwrite_price*ordprod_qty) AS 'total', ordprod_qty,addon,isAdded,hasAddons,cat_id FROM OrderProduct WHERE ord_id = '"
 		 * ); sb.append(ordID).append("' AND isPrinted = '0'");
 		 */
@@ -511,7 +511,7 @@ public class OrderProductsHandler {
         sb.append(
                 "SELECT op.ordprod_id,op.ordprod_name,op.ordprod_desc,op.overwrite_price,(op.overwrite_price*op.ordprod_qty) AS 'total', ");
         sb.append(
-                "op.ordprod_qty,op.ordprod_comment,op.addon,op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' FROM OrderProduct op ");
+                "op.ordprod_qty,op.ordprod_comment,op.addon,op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' FROM " + table_name + " op ");
         sb.append("LEFT OUTER JOIN ProductsAttr pa ON op.prod_id = pa.prod_id WHERE ord_id = '");
         sb.append(ordID).append("' AND isPrinted = '0'");
         Cursor c = DBManager._db.rawQuery(sb.toString(), null);
@@ -654,7 +654,7 @@ public class OrderProductsHandler {
         List<OrderProduct> list = new ArrayList<OrderProduct>();
         // SQLiteDatabase db = dbManager.openReadableDB();
 
-        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM OrderProduct WHERE ord_id = '";
+        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
         // String subquery2="'";
 
         Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
@@ -697,7 +697,7 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
 
         query.append(
-                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' FROM OrderProduct op ");
+                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' FROM " + table_name + " op ");
         query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.ord_type IN ");
 
         if (isSales)
@@ -753,7 +753,7 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
 
         query.append(
-                "SELECT c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date'  FROM OrderProduct op ");
+                "SELECT c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date'  FROM " + table_name + " op ");
         query.append(
                 "LEFT JOIN Categories c ON op.cat_id = c.cat_id LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE  o.ord_type IN ");
 

@@ -56,11 +56,19 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     private List<OrderSeatProduct> getOrderSeatProductList() {
         ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
-        for (int i = 0; i < seatsAmount; i++) {
-            l.add(new OrderSeatProduct(String.valueOf(i + 1)));
+        if (seatsAmount > 0) {
+            for (int i = 0; i < seatsAmount; i++) {
+                l.add(new OrderSeatProduct(String.valueOf(i + 1)));
+                for (OrderProduct product : orderProducts) {
+                    if (product != null && product.assignedSeat != null &&
+                            product.assignedSeat.equalsIgnoreCase(String.valueOf(i + 1))) {
+                        l.add(new OrderSeatProduct(product));
+                    }
+                }
+            }
+        } else {
             for (OrderProduct product : orderProducts) {
-                if (product != null & product.assignedSeat != null &&
-                        product.assignedSeat.equalsIgnoreCase(String.valueOf(i + 1))) {
+                if (product != null) {
                     l.add(new OrderSeatProduct(product));
                 }
             }

@@ -68,7 +68,7 @@ public class SalesTab_FR extends Fragment {
     public static Activity activity;
     private EditText hiddenField;
     private DinningTable selectedDinningTable;
-    private String selectedSeatsAmount;
+    private int selectedSeatsAmount;
 //    GridView gridView;
 
 
@@ -506,7 +506,7 @@ public class SalesTab_FR extends Fragment {
     }
 
     private void selectSeatAmount() {
-        final String[] seats = this.getResources().getStringArray(R.array.dinningTableSeatsArray);
+        final int[] seats = this.getResources().getIntArray(R.array.dinningTableSeatsArray);
         final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         popDlog.setCancelable(false);
@@ -521,12 +521,7 @@ public class SalesTab_FR extends Fragment {
                 selectedSeatsAmount = seats[position];
                 popDlog.dismiss();
                 startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedSeatsAmount, selectedDinningTable.getNumber());
-//                Intent intent = new Intent(activity, OrderingMain_FA.class);
-//                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-//                intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
-//                intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
-//                intent.putExtra("selectedDinningTableNumber", selectedDinningTable.getNumber());
-//                startActivityForResult(intent, 0);
+
             }
         });
         popDlog.show();
@@ -686,7 +681,7 @@ public class SalesTab_FR extends Fragment {
         globalDlog.show();
     }
 
-    private void startSaleRceipt(Global.RestaurantSaleType restaurantSaleType, String selectedSeatsAmount, int tableNumber) {
+    private void startSaleRceipt(Global.RestaurantSaleType restaurantSaleType, int selectedSeatsAmount, String tableNumber) {
         Intent intent = new Intent(activity, OrderingMain_FA.class);
         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
         intent.putExtra("RestaurantSaleType", restaurantSaleType);

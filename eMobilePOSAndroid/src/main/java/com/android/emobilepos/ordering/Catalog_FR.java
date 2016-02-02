@@ -951,7 +951,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return catName.size();
         }
 

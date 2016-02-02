@@ -17,10 +17,10 @@ import java.util.List;
 
 public class DinningTableSeatsAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
-    private String[] dinningTableSeats;
+    private int[] dinningTableSeats;
 
 
-    public DinningTableSeatsAdapter(Activity activity, String[] dinningTableSeats) {
+    public DinningTableSeatsAdapter(Activity activity, int[] dinningTableSeats) {
         mInflater = LayoutInflater.from(activity);
         this.dinningTableSeats = dinningTableSeats;
     }
@@ -43,7 +43,7 @@ public class DinningTableSeatsAdapter extends BaseAdapter implements Filterable 
         }
 
         holder.iconLine.setImageResource(R.drawable.chair);
-        holder.textLine.setText(dinningTableSeats[position]);
+        holder.textLine.setText(String.valueOf(dinningTableSeats[position]));
         return convertView;
     }
 

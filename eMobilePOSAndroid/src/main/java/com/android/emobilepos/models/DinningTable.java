@@ -4,17 +4,17 @@ package com.android.emobilepos.models;
  * Created by Guarionex on 1/19/2016.
  */
 public class DinningTable {
-    private int number;
+    private String number;
     private int seats;
     private String style;
     private Location location;
     private boolean wheelAccessibility;
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
