@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
@@ -56,16 +54,11 @@ import POSSDK.POSSDK;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
@@ -87,7 +80,7 @@ import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverte
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = true;
+    public static final boolean PRINT_TO_LOG = false;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
@@ -181,19 +174,19 @@ public class EMSDeviceDriver {
         double taxAmtTotal = 0;
         if (num_taxes > 0) {
             for (int i = 0; i < num_taxes; i++) {
-                double taxAmt = Double.parseDouble(taxes.get(i).get(OrderTaxes_DB.tax_amount));
-                taxAmtTotal += Double.parseDouble(taxes.get(i).get(OrderTaxes_DB.tax_amount));
+                double taxAmt = Double.parseDouble(taxes.get(i).getTax_amount());
+                taxAmtTotal += Double.parseDouble(taxes.get(i).getTax_amount());
                 if (i == num_taxes - 1) {
                     BigDecimal rndDifference = new BigDecimal(orderTaxAmount).subtract(new BigDecimal(taxAmtTotal))
                             .setScale(2, RoundingMode.HALF_UP);
                     taxAmt += Double.parseDouble(String.valueOf(rndDifference));
 
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).get(OrderTaxes_DB.tax_name),
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).getTax_name(),
                             Global.getCurrencyFormat(String.valueOf(taxAmt)), lineWidth, 2));
 
                 } else {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).get(OrderTaxes_DB.tax_name),
-                            Global.getCurrencyFormat(taxes.get(i).get(OrderTaxes_DB.tax_amount)), lineWidth, 2));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).getTax_name(),
+                            Global.getCurrencyFormat(taxes.get(i).getTax_amount()), lineWidth, 2));
                 }
             }
         }
@@ -376,7 +369,7 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
 
             OrderProductsHandler handler = new OrderProductsHandler(activity);
-            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
             List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
             List<Orders> orders = handler.getPrintOrderedProducts(ordID);
@@ -409,9 +402,6 @@ public class EMSDeviceDriver {
                             lineWidth, 0));
                     break;
                 case INVOICE: // Invoice
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
-                            lineWidth, 0));
-                    break;
                 case CONSIGNMENT_INVOICE:// Consignment Invoice
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", Global.consignment_order.ord_id,
                             lineWidth, 0));

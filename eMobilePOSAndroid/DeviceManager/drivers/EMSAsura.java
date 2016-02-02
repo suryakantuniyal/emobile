@@ -322,7 +322,7 @@ public class EMSAsura extends EMSDeviceDriver
 			EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 
 			OrderProductsHandler handler = new OrderProductsHandler(activity);
-			OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+			OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
 			List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
 			List<Orders> orders = handler.getPrintOrderedProducts(ordID);

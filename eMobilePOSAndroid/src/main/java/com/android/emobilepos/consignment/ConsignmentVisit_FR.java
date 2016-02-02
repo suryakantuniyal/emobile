@@ -328,8 +328,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
                     intent.putExtra("ord_taxID", "");
                     intent.putExtra("amount", Double.toString(ordTotal));
                     intent.putExtra("paid", "0.00");
-                    intent.putExtra("job_id", Global.lastOrdID);
-                    intent.putExtra("ord_type", Global.OrderType.INVOICE);
+                    intent.putExtra("job_id", Global.consignment_order.ord_id);
+                    intent.putExtra("ord_type", Global.OrderType.CONSIGNMENT_INVOICE);
 
                     intent.putExtra("cust_id", myPref.getCustID());
                     intent.putExtra("custidkey", myPref.getCustIDKey());

@@ -351,10 +351,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             listOrderTaxesTotal.add(tempBD);
 
             tempTaxes = new DataTaxes();
-            tempTaxes.set("tax_name", listMapTaxes.get(i).get("tax_name"));
-            tempTaxes.set("ord_id", "");
-            tempTaxes.set("tax_amount", "0");
-            tempTaxes.set("tax_rate", listMapTaxes.get(i).get("tax_rate"));
+            tempTaxes.setTax_name(listMapTaxes.get(i).get("tax_name"));
+            tempTaxes.setOrd_id("");
+            tempTaxes.setTax_amount("0");
+            tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
             global.listOrderTaxes.add(tempTaxes);
         }
     }
@@ -561,7 +561,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             listOrderTaxesTotal.get(j).add(tax_amount).setScale(4, RoundingMode.HALF_UP));
             }
             DataTaxes tempTaxes = global.listOrderTaxes.get(j);
-            tempTaxes.set("tax_amount", listOrderTaxesTotal.get(j).toString());
+            tempTaxes.setTax_amount(listOrderTaxesTotal.get(j).toString());
             global.listOrderTaxes.set(j, tempTaxes);
         }
 
@@ -595,7 +595,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 // listOrderTaxesTotal.get(j).add(tax_amount).setScale(2,RoundingMode.HALF_UP));
             }
             DataTaxes tempTaxes = global.listOrderTaxes.get(j);
-            tempTaxes.set("tax_amount", listOrderTaxesTotal.get(j).toString());
+            tempTaxes.setTax_amount(listOrderTaxesTotal.get(j).toString());
             global.listOrderTaxes.set(j, tempTaxes);
         }
 
