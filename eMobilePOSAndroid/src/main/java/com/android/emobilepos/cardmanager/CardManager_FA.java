@@ -64,6 +64,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private EditText hiddenField;
     private NumberUtils numberUtils = new NumberUtils();
+    private String pay_id, finalMessage;
 
     // public static final int CASE_ACTIVATE = 0,CASE_ADD_BALANCE =
     // 1,CASE_BALANCE_INQUIRY = 2,CASE_MANUAL_ADD = 3;
@@ -514,6 +515,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             tempPay_id = generator.getNextID(GenerateNewID.IdType.PAYMENT_ID);
             payment.pay_id = tempPay_id;
+            pay_id = tempPay_id;
 
             payment.cust_id = myPref.getCustID();
             payment.custidkey = myPref.getCustIDKey();
@@ -659,7 +661,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 else
                     sb.append("Card Balance: ").append(Global.getCurrencyFrmt(temp));
 
-                showBalancePrompt(sb.toString());
+                finalMessage = sb.toString();
+//                showBalancePrompt(finalMessage);
+                showPrintDlg();
 
             } else // payment processing failed
             {
@@ -667,6 +671,47 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             }
         }
     }
+
+    private void showPrintDlg() {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+        viewMsg.setText(R.string.dlog_msg_print_cust_copy);
+
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
+        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        btnYes.setText(R.string.button_yes);
+        btnNo.setText(R.string.button_no);
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                dlog.dismiss();
+                new printAsync().execute();
+
+            }
+        });
+        btnNo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                dlog.dismiss();
+                showBalancePrompt(finalMessage);
+            }
+        });
+        dlog.show();
+    }
+
 
     public void showBalancePrompt(String msg) {
         final Dialog dlog = new Dialog(this, R.style.Theme_TransparentTest);
@@ -762,5 +807,39 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     public void startSignature() {
         // TODO Auto-generated method stub
 
+    }
+
+
+
+    private class printAsync extends AsyncTask<String, String, String> {
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(pay_id, 1, true, null);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+            showPrintDlg();
+//            if (!printSuccessful)
+//                showPrintDlg();
+        }
     }
 }
