@@ -1822,6 +1822,8 @@ public class EMSDeviceDriver {
 //        sb.append(textHandler.twoColumnLineWithLeftAlignedText( , ,lineWidth, 3));
 
         sb.append(textHandler.newLines(2));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", myPref.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.newLines(2));
 
         sb.append(textHandler.centeredString("Summary", lineWidth));
         sb.append(textHandler.newLines(1));
