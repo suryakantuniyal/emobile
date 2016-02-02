@@ -1264,11 +1264,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 double invoiceTotalTemp;
                 size = Global.cons_fillup_products.size();
 
-                if (Global.cons_return_products.size() > 0 && size > 0) {
-                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
-                }
+//                if (Global.cons_return_products.size() > 0 && size > 0) {
+//                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
+//                }
 
-                Global.cons_fillup_order.ord_id = Global.lastOrdID;
+//                Global.cons_fillup_order.ord_id = Global.lastOrdID;
 
                 for (int i = 0; i < size; i++) {
                     tempMap = Global.consignSummaryMap
