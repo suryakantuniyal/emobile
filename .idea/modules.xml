@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/eMobilePOS-Studio.iml" filepath="$PROJECT_DIR$/eMobilePOS-Studio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" filepath="$PROJECT_DIR$/eMobilePOSAndroid/eMobilePOSAndroid.iml" />
     </modules>
   </component>
 </project>
