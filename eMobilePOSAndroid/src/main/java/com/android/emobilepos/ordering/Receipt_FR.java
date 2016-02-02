@@ -884,17 +884,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 }
             } else {
-                handler.insert(global.order);
-                if(!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
-                    handler2.insert(global.orderProducts);
-                    handler3.insert(global.ordProdAttr);
-                }
-                if (global.listOrderTaxes != null
-                        && global.listOrderTaxes.size() > 0
-                        && typeOfProcedure != Global.TransactionType.REFUND)
-                    ordTaxesDB.insert(global.listOrderTaxes,
-                            global.order.ord_id);
+                if (global.orderProducts.size() > 0) {
+                    handler.insert(global.order);
+                    if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
+                        handler2.insert(global.orderProducts);
+                        handler3.insert(global.ordProdAttr);
+                    }
 
+                    if (global.listOrderTaxes != null
+                            && global.listOrderTaxes.size() > 0
+                            && typeOfProcedure != Global.TransactionType.REFUND) {
+                        ordTaxesDB.insert(global.listOrderTaxes,
+                                global.order.ord_id);
+                    }
+                }
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode))
                     new printAsync().execute(true);
 
@@ -1261,11 +1264,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 double invoiceTotalTemp;
                 size = Global.cons_fillup_products.size();
 
-                if (Global.cons_return_products.size() > 0 && size > 0) {
-                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
-                }
+//                if (Global.cons_return_products.size() > 0 && size > 0) {
+//                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
+//                }
 
-                Global.cons_fillup_order.ord_id = Global.lastOrdID;
+//                Global.cons_fillup_order.ord_id = Global.lastOrdID;
 
                 for (int i = 0; i < size; i++) {
                     tempMap = Global.consignSummaryMap
