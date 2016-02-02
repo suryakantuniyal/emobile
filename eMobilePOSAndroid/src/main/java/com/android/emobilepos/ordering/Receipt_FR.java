@@ -719,7 +719,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
 
-
     public void showEmailDlog() {
 
         final Dialog dialog = new Dialog(activity,
@@ -740,7 +739,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dialog.dismiss();
 
                 if (!input.getText().toString().isEmpty()) {
@@ -889,17 +887,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 }
             } else {
-                handler.insert(global.order);
+                if (global.orderProducts.size() > 0) {
+                    handler.insert(global.order);
+                    if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
+                        handler2.insert(global.orderProducts);
+                        handler3.insert(global.ordProdAttr);
+                    }
 
-                handler2.insert(global.orderProducts);
-                handler3.insert(global.ordProdAttr);
-
-                if (global.listOrderTaxes != null
-                        && global.listOrderTaxes.size() > 0
-                        && typeOfProcedure != Global.TransactionType.REFUND)
-                    ordTaxesDB.insert(global.listOrderTaxes,
-                            global.order.ord_id);
-
+                    if (global.listOrderTaxes != null
+                            && global.listOrderTaxes.size() > 0
+                            && typeOfProcedure != Global.TransactionType.REFUND) {
+                        ordTaxesDB.insert(global.listOrderTaxes,
+                                global.order.ord_id);
+                    }
+                }
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode))
                     new printAsync().execute(true);
 
@@ -1029,6 +1030,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
         order.ord_subtotal = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.sub_total.subtract(OrderTotalDetails_FR.itemsDiscountTotal));
+        if (Global.lastOrdID == null || Global.lastOrdID.isEmpty()) {
+            GenerateNewID generator = new GenerateNewID(activity);
+            Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
+        }
 
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
@@ -1248,6 +1253,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     Global.consignSummaryMap.put(
                             Global.cons_return_products.get(i).prod_id, tempMap);
                 }
+                Global.lastOrdID = "";
 
                 break;
 
@@ -1261,11 +1267,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 double invoiceTotalTemp;
                 size = Global.cons_fillup_products.size();
 
-                if (Global.cons_return_products.size() > 0 && size > 0) {
-                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
-                }
+//                if (Global.cons_return_products.size() > 0 && size > 0) {
+//                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
+//                }
 
-                Global.cons_fillup_order.ord_id = Global.lastOrdID;
+//                Global.cons_fillup_order.ord_id = Global.lastOrdID;
 
                 for (int i = 0; i < size; i++) {
                     tempMap = Global.consignSummaryMap

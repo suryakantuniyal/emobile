@@ -178,7 +178,7 @@ public class OrdersHandler {
 
             insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
             insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
-            Order order1 = getOrder(order.ord_id);
+
             insert.execute();
             insert.clearBindings();
             insert.close();
@@ -470,14 +470,15 @@ public class OrdersHandler {
         return count != 0;
     }
 
-    private String getOrderTypesAsSQLArray(Global.OrderType[] orderTypes){
-        StringBuilder sb=new StringBuilder();
+    private String getOrderTypesAsSQLArray(Global.OrderType[] orderTypes) {
+        StringBuilder sb = new StringBuilder();
         for (Global.OrderType orderType : orderTypes) {
             sb.append("'").append(orderType.getCode()).append("',");
         }
-        sb.deleteCharAt(sb.length()-1);
+        sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
     }
+
     public Cursor getReceipts1Data(Global.OrderType[] orderTypes) // Transactions Receipts first
     // listview
     {
@@ -641,7 +642,6 @@ public class OrdersHandler {
         return offline;
 
     }
-
 
 
     public HashMap<String, String> getOrderDetails(String ordID) {

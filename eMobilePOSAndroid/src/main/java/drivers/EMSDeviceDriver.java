@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -157,7 +158,7 @@ public class EMSDeviceDriver {
                 itemDiscTotal = 0;
             }
         }
-        saveAmount = itemDiscTotal + Double.parseDouble(anOrder.ord_discount);
+        saveAmount = itemDiscTotal + (anOrder.ord_discount.isEmpty() ? 0.0 : Double.parseDouble(anOrder.ord_discount));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_subtotal),
                 Global.formatDoubleStrToCurrency(anOrder.ord_subtotal), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_discount_line_item),
@@ -566,7 +567,7 @@ public class EMSDeviceDriver {
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
             sb.append("\n\n");
-            String granTotal = new BigDecimal(anOrder.gran_total).subtract(new BigDecimal(itemDiscTotal)).toString();
+            String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).subtract(new BigDecimal(itemDiscTotal)).toString();
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.formatDoubleStrToCurrency(granTotal), lineWidth, 0));
 
@@ -1777,7 +1778,7 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
 
-           cutPaper();
+            cutPaper();
 
             // db.close();
 
