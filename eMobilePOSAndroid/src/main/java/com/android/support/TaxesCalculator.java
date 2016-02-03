@@ -253,7 +253,7 @@ public class TaxesCalculator {
         int size = listMapTaxes.size();
 
         List<BigDecimal> listOrderTaxesTotal = new ArrayList<BigDecimal>();
-        ;
+
         String val = "0";
         BigDecimal temp = new BigDecimal("0");
         BigDecimal _total_tax = new BigDecimal("0");

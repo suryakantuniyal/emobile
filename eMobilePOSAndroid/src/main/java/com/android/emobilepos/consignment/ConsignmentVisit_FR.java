@@ -24,6 +24,7 @@ import com.android.database.ConsignmentSignaturesDBHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.OrderProductsHandler;
+import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesHandler;
@@ -38,6 +39,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TaxesCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -259,22 +261,46 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         global.order = new Order(activity);
 
         TaxesHandler taxHandler = new TaxesHandler(activity);
+        List<String[]> taxList = taxHandler.getTaxes();
+        HashMap<String, String> mapTax = new HashMap<String, String>();
 
         BigDecimal _order_total = BigDecimal.valueOf(ordTotal);
+
+        BigDecimal _tax_amount = new BigDecimal(0);
         if (!myPref.getCustTaxCode().isEmpty()) {
             String _tax_id = myPref.getCustTaxCode();
-            BigDecimal _tax_rate = new BigDecimal(taxHandler.getTaxRate(_tax_id, "", 0)).divide(BigDecimal.valueOf(100)).setScale(4, RoundingMode.HALF_UP);
+            BigDecimal _tax_rate = new BigDecimal(taxHandler.getTaxRate(_tax_id, "", 0)).
+                    divide(BigDecimal.valueOf(100)).setScale(4, RoundingMode.HALF_UP);
             global.order.tax_id = _tax_id;
-            BigDecimal _tax_amount = BigDecimal.valueOf(ordTotal).multiply(_tax_rate).setScale(4, RoundingMode.HALF_UP);
+            _tax_amount = BigDecimal.valueOf(ordTotal).multiply(_tax_rate).setScale(4, RoundingMode.HALF_UP);
             global.order.ord_taxamount = _tax_amount.setScale(2, RoundingMode.HALF_UP).toString();
             //_order_total+=_tax_amount;
             _order_total = _order_total.add(_tax_amount).setScale(4, RoundingMode.HALF_UP);
         } else {
             global.order.ord_taxamount = "0.00";
             for (DataTaxes taxes : global.listOrderTaxes) {
-                _order_total = _order_total.add(new BigDecimal(taxes.getTax_rate()).divide(new BigDecimal(100)).multiply(new BigDecimal(ordTotal))).setScale(4, RoundingMode.HALF_UP);
+                _tax_amount = _tax_amount.add(new BigDecimal(taxes.getTax_rate()).
+                        divide(new BigDecimal(100)).multiply(new BigDecimal(ordTotal))).setScale(4, RoundingMode.HALF_UP);
+                taxes.setTax_amount(new BigDecimal(taxes.getTax_rate()).
+                        divide(new BigDecimal(100)).multiply(new BigDecimal(ordTotal)).setScale(2, RoundingMode.HALF_UP).toString());
+                _order_total = _order_total.add(new BigDecimal(taxes.getTax_rate()).
+                        divide(new BigDecimal(100)).multiply(new BigDecimal(ordTotal))).setScale(4, RoundingMode.HALF_UP);
             }
+            global.order.ord_taxamount = _tax_amount.setScale(2, RoundingMode.HALF_UP).toString();
         }
+
+
+//        TaxesCalculator calculator;
+//        List<HashMap<String, String>> listMapTaxes = new ArrayList<HashMap<String, String>>();
+//        for (OrderProducts ordProd : global.orderProducts) {
+//            listMapTaxes.clear();
+//            mapTax.put("tax_id", global.listOrderTaxes.get(0).getOrd_tax_id());
+//            mapTax.put("tax_name", global.listOrderTaxes.get(0).getTax_name());
+//            mapTax.put("tax_rate", global.listOrderTaxes.get(0).getTax_rate());
+//            listMapTaxes.add(mapTax);
+//            calculator = new TaxesCalculator(activity, myPref, ordProd, Global.taxID,
+//                    0, 0, new BigDecimal(ordProd.disTotal), new BigDecimal(ordProd.disAmount), listMapTaxes);
+//        }
         global.order.ord_total = _order_total.setScale(2, RoundingMode.HALF_UP).toString();
         global.order.ord_subtotal = Double.toString(ordTotal);
 
@@ -297,6 +323,12 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         ordersHandler.insert(global.order);
 
         orderProductsHandler.insert(global.orderProducts);
+        if (global.listOrderTaxes != null
+                && global.listOrderTaxes.size() > 0
+                ) {
+            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+            ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+        }
     }
 
 

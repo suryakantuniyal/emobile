@@ -294,6 +294,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     setupTaxesHolder();
                 }
             } else {
+                listMapTaxes.clear();
                 HashMap<String, String> mapTax = new HashMap<String, String>();
                 mapTax.put("tax_id", taxID);
                 mapTax.put("tax_name", taxList.get(taxSelected - 1)[0]);
