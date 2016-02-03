@@ -176,7 +176,7 @@ public class EMSDeviceDriver {
             for (int i = 0; i < num_taxes; i++) {
                 double taxAmt = Double.parseDouble(taxes.get(i).getTax_amount());
                 taxAmtTotal += Double.parseDouble(taxes.get(i).getTax_amount());
-                if (i == num_taxes - 1) {
+                if (num_taxes>1 && i == num_taxes - 1) {
                     BigDecimal rndDifference = new BigDecimal(orderTaxAmount).subtract(new BigDecimal(taxAmtTotal))
                             .setScale(2, RoundingMode.HALF_UP);
                     taxAmt += Double.parseDouble(String.valueOf(rndDifference));

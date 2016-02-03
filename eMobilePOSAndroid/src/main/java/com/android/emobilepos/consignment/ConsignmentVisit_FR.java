@@ -29,6 +29,7 @@ import com.android.database.ProductsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -46,14 +47,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
-    private ListView myListview;
     private CustomAdapter_LV myAdapter;
     private ProgressDialog myProgressDialog;
     private CustomerInventoryHandler custInventoryHandler;
     private MyPreferences myPref;
     private Global global;
     private Activity activity;
-    private int orientation;
 
     private List<ConsignmentTransaction> consTransactionList = new ArrayList<ConsignmentTransaction>();
     private OrdersHandler ordersHandler;
@@ -62,14 +61,14 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
     private double ordTotal = 0;
     private ConsignmentTransactionHandler consTransDBHandler;
     private HashMap<String, String> signatureMap = new HashMap<String, String>();
-    private String encodedImage = new String();
+    private String encodedImage = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.consign_fragment_layout, container, false);
         activity = getActivity();
-        myListview = (ListView) view.findViewById(R.id.consignSummaryListView);
+        ListView myListview = (ListView) view.findViewById(R.id.consignSummaryListView);
         myAdapter = new CustomAdapter_LV(activity);
 
         custInventoryHandler = new CustomerInventoryHandler(activity);
@@ -202,7 +201,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
 
-            orientation = getResources().getConfiguration().orientation;
+            int orientation = getResources().getConfiguration().orientation;
             Intent intent = new Intent(getActivity(), DrawReceiptActivity.class);
             if (orientation == Configuration.ORIENTATION_PORTRAIT)
                 intent.putExtra("inPortrait", true);
@@ -270,6 +269,11 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             global.order.ord_taxamount = _tax_amount.setScale(2, RoundingMode.HALF_UP).toString();
             //_order_total+=_tax_amount;
             _order_total = _order_total.add(_tax_amount).setScale(4, RoundingMode.HALF_UP);
+        } else {
+            global.order.ord_taxamount = "0.00";
+            for (DataTaxes taxes : global.listOrderTaxes) {
+                _order_total = _order_total.add(new BigDecimal(taxes.getTax_rate()).divide(new BigDecimal(100)).multiply(new BigDecimal(ordTotal))).setScale(4, RoundingMode.HALF_UP);
+            }
         }
         global.order.ord_total = _order_total.setScale(2, RoundingMode.HALF_UP).toString();
         global.order.ord_subtotal = Double.toString(ordTotal);
@@ -402,20 +406,6 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         if (ifInvoice) {
             processOrder();
-//            Global.consignment_order.ord_id = global.order.ord_id;
-//            Global.consignment_order.qbord_id = global.order.ord_id.replace("-", "");
-//            Global.consignment_order.processed = "1";
-//            Global.consignment_order.ord_id = global.order.ord_id;
-//            Global.consignment_order.total_lines = Integer.toString(Global.consignment_products.size());
-//            Global.consignment_order.ord_signature = encodedImage;
-//            Global.consignment_order.ord_type = Global.OrderType.CONSIGNMENT_INVOICE.getCodeString();
-//            for (OrderProducts op : Global.consignment_products) {
-//                HashMap<String, String> summary = Global.consignSummaryMap.get(op.prod_id);
-//                op.ordprod_qty = summary.get("invoice");
-//            }
-//            ordersHandler.insert(Global.consignment_order);
-//            orderProductsHandler.insert(Global.consignment_products);
-
         }
         if (Global.cons_return_products.size() > 0) {
             Global.cons_return_order.processed = "1";
@@ -500,7 +490,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
 
         private String getContentValues(int position, int type) {
-            String value = new String();
+            String value = "";
             String empStr = "";
             switch (type) {
                 case 0://Name
