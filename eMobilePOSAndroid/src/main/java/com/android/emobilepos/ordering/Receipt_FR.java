@@ -764,7 +764,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         });
         dialog.show();
     }
+    private void showSplitedOrderPreview(){
 
+    }
     private void showAddMoreProductsDlg() {
 
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -788,7 +790,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -796,9 +797,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
-
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone))
                     processOrder("", false);
                 else

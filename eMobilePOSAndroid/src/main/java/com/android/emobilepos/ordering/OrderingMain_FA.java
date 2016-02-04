@@ -49,6 +49,7 @@ import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
@@ -185,7 +186,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         handleFragments();
         setupTitle();
         setCustomerShipToAddress();
-
+        setBillSplitSelection();
         invisibleSearchMain.addTextChangedListener(textWatcher());
         invisibleSearchMain.requestFocus();
 
@@ -204,6 +205,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         hasBeenCreated = true;
+    }
+
+    private void setBillSplitSelection() {
+        if (isToGo) {
+            findViewById(R.id.splitBillSection).setVisibility(View.INVISIBLE);
+        }
     }
 
 
@@ -274,7 +281,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private void setupTitle() {
         headerTitle = (TextView) findViewById(R.id.headerTitle);
 
-        headerContainer = (RelativeLayout) findViewById(R.id.headerTitleContainer);
+        headerContainer = (LinearLayout) findViewById(R.id.headerTitleContainer);
         if (myPref.isCustSelected()) {
 
             switch (mTransType) {
@@ -358,7 +365,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private static String savedHeaderTitle = "";
-    private static RelativeLayout headerContainer;
+    private static LinearLayout headerContainer;
 
     public static void switchHeaderTitle(boolean newTitle, String title) {
         if (mTransType == Global.TransactionType.RETURN || newTitle) {
@@ -453,12 +460,33 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         switch (v.getId()) {
             case R.id.btnCheckOut:
                 btnCheckout.setEnabled(false);
+                List<SplitedOrder> splitedOrders = splitBySeats(global.order, global.orderProducts);
                 if (leftFragment != null) {
                     leftFragment.checkoutOrder();
                 }
                 btnCheckout.setEnabled(true);
                 break;
         }
+    }
+
+    private List<SplitedOrder> splitBySeats(Order order, List<OrderProduct> orderProducts) {
+        List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
+        GenerateNewID generateNewID = new GenerateNewID(this);
+        String prevOrderId = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
+        for (int i = 0; i < selectedSeatsAmount; i++) {
+            SplitedOrder splitedOrder = new SplitedOrder(this, order);
+            splitedOrder.ord_id = prevOrderId;
+            prevOrderId = generateNewID.getNextID(prevOrderId);
+            ArrayList<OrderProduct> products = new ArrayList<OrderProduct>();
+            for (OrderProduct op : orderProducts) {
+                if (Integer.parseInt(op.assignedSeat) == i + 1) {
+                    products.add(op);
+                }
+            }
+            splitedOrder.setOrderProducts(products);
+            splitedOrders.add(splitedOrder);
+        }
+        return splitedOrders;
     }
 
     @Override

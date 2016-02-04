@@ -18,6 +18,14 @@
         <item name="menu_transfer_inventory">Inventory Transfer</item>
     </string-array>
 
+    <string-array name="salesReceiptSplitTypes">
+        <item name="split_by_Seats">@string/split_by_seats</item>
+        <item name="split_equally">@string/split_equally</item>
+        <item name="split_group_seats">@string/split_by_group_seats</item>
+    </string-array>
+
+
+
     <integer-array name="dinningTableSeatsArray">
         <item name="1">1</item>
         <item name="2">2</item>
