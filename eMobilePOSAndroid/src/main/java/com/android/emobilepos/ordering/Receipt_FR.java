@@ -127,6 +127,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public static Receipt_FR fragInstance;
 
     private String order_email = "";
+    private String order_comments = "";
     private NumberUtils numberUtils = new NumberUtils();
 
 
@@ -705,7 +706,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             if (myPref
                     .getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone))
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
                     processOrder("", false);
                 else
                     showEmailDlog();
@@ -724,29 +725,51 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setContentView(R.layout.checkout_dialog_layout);
-        final EditText input = (EditText) dialog.findViewById(R.id.emailTxt);
+
+        //edit text comments of dialog box
+        final EditText editTextDialogComments = (EditText) dialog.findViewById(R.id.fieldComments);
+        //set the comments to previously entered comments in details section
+        if (!global.getSelectedComments().isEmpty()) {
+            editTextDialogComments.setText(global.getSelectedComments());
+        }
+
+        final EditText emailInput = (EditText) dialog.findViewById(R.id.emailTxt);
         final EditText phoneNum = (EditText) dialog
                 .findViewById(R.id.phoneNumField);
         Button done = (Button) dialog.findViewById(R.id.OKButton);
+        //if skip email phone enabled then hide fields
+        if (myPref.getPreferences(MyPreferences.pref_skip_email_phone)){
+            emailInput.setVisibility(View.GONE);
+            phoneNum.setVisibility(View.GONE);
+        }
+        //if not asking for order comments then hide field
+        if(!myPref.getPreferences(MyPreferences.pref_ask_order_comments)){
+            editTextDialogComments.setVisibility(View.GONE);
+        }
+
 
         if (myPref.isCustSelected())
-            input.setText(myPref.getCustEmail());
+            emailInput.setText(myPref.getCustEmail());
 
         done.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                //if we have comments set the global comments field
+                if(!editTextDialogComments.getText().toString().isEmpty()){
+                    global.setSelectedComments(editTextDialogComments.getText().toString());
+                }
 
-                if (!input.getText().toString().isEmpty()) {
-                    if (checkEmail(input.getText().toString()))
-                        processOrder(input.getText().toString(), false);
+                if (!emailInput.getText().toString().isEmpty()) {
+                    if (checkEmail(emailInput.getText().toString()))
+                        processOrder(emailInput.getText().toString(), false);
                     else
                         Toast.makeText(activity,
                                 getString(R.string.warning_email_invalid),
                                 Toast.LENGTH_LONG).show();
                 } else
-                    processOrder(input.getText().toString(), false);
+                    processOrder(emailInput.getText().toString(), false);
             }
         });
         dialog.show();
@@ -786,7 +809,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 // TODO Auto-generated method stub
                 dlog.dismiss();
 
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone))
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
                     processOrder("", false);
                 else
                     showEmailDlog();
@@ -884,17 +907,23 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 }
             } else {
-                handler.insert(global.order);
-                if(!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
-                    handler2.insert(global.orderProducts);
-                    handler3.insert(global.ordProdAttr);
+                if (global.orderProducts.size() > 0 ||
+                        !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString())) {
+                    handler.insert(global.order);
                 }
-                if (global.listOrderTaxes != null
-                        && global.listOrderTaxes.size() > 0
-                        && typeOfProcedure != Global.TransactionType.REFUND)
-                    ordTaxesDB.insert(global.listOrderTaxes,
-                            global.order.ord_id);
+                if (global.orderProducts.size() > 0) {
+                    if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
+                        handler2.insert(global.orderProducts);
+                        handler3.insert(global.ordProdAttr);
+                    }
 
+                    if (global.listOrderTaxes != null
+                            && global.listOrderTaxes.size() > 0
+                            && typeOfProcedure != Global.TransactionType.REFUND) {
+                        ordTaxesDB.insert(global.listOrderTaxes,
+                                global.order.ord_id);
+                    }
+                }
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode))
                     new printAsync().execute(true);
 
@@ -1261,11 +1290,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 double invoiceTotalTemp;
                 size = Global.cons_fillup_products.size();
 
-                if (Global.cons_return_products.size() > 0 && size > 0) {
-                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
-                }
+//                if (Global.cons_return_products.size() > 0 && size > 0) {
+//                    Global.lastOrdID = idGenerator.getNextID(IdType.ORDER_ID);
+//                }
 
-                Global.cons_fillup_order.ord_id = Global.lastOrdID;
+//                Global.cons_fillup_order.ord_id = Global.lastOrdID;
 
                 for (int i = 0; i < size; i++) {
                     tempMap = Global.consignSummaryMap
