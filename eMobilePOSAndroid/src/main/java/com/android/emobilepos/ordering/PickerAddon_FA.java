@@ -72,6 +72,7 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 
 	public static PickerAddon_FA instance;
 	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -322,11 +323,10 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 			else
 				ord.isAdded = "0";
 
-			_ord_desc.append("<br/>");
 			if (!isAdded)// Not added
-				_ord_desc.append("[NO ").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
+				_ord_desc.append("\n[NO ").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
 			else
-				_ord_desc.append("[").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
+				_ord_desc.append("\n[").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
 
 			ord.itemTotal = tempPrice;
 			ord.itemSubtotal = tempPrice;

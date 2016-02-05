@@ -703,7 +703,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             if (myPref
                     .getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone))
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
                     processOrder("", false);
                 else
                     showEmailDlog();
@@ -729,10 +729,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (!global.getSelectedComments().isEmpty()) {
             editTextDialogComments.setText(global.getSelectedComments());
         }
+
         final EditText emailInput = (EditText) dialog.findViewById(R.id.emailTxt);
         final EditText phoneNum = (EditText) dialog
                 .findViewById(R.id.phoneNumField);
         Button done = (Button) dialog.findViewById(R.id.OKButton);
+        //if skip email phone enabled then hide fields
+        if (myPref.getPreferences(MyPreferences.pref_skip_email_phone)){
+            emailInput.setVisibility(View.GONE);
+            phoneNum.setVisibility(View.GONE);
+        }
+        //if not asking for order comments then hide field
+        if(!myPref.getPreferences(MyPreferences.pref_ask_order_comments)){
+            editTextDialogComments.setVisibility(View.GONE);
+        }
+
 
         if (myPref.isCustSelected())
             emailInput.setText(myPref.getCustEmail());
@@ -795,7 +806,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 // TODO Auto-generated method stub
                 dlog.dismiss();
 
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone))
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
                     processOrder("", false);
                 else
                     showEmailDlog();
