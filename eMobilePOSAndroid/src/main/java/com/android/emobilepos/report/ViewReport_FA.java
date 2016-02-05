@@ -180,7 +180,6 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 		
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
 						if(!isShiftReport)
 							new printAsync().execute();
 					}

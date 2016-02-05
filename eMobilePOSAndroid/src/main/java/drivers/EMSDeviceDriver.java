@@ -2117,6 +2117,11 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), lineWidth,
                     0));
+
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", myPref.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.newLines(2));
+
             sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),
                     lineWidth, 0));
 
@@ -2131,6 +2136,8 @@ public class EMSDeviceDriver {
 //            port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
             sb.setLength(0);
+
+
 
             for (int i = 0; i < size; i++) {
                 if (paymentMap.containsKey(payMethodsNames.get(i)[0])) {
