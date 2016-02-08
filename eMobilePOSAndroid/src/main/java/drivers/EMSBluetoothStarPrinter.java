@@ -918,8 +918,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     private StarIOPort getStarIOPort() throws StarIOPortException {
-        releasePrinter();
-        port = null;
+        if (!portName.toUpperCase().contains("TCP")) {
+            releasePrinter();
+            port = null;
+        }
         if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline) {
             if (portName.toUpperCase().contains("TCP")) {
                 String ip = portName.replace("TCP:", "");

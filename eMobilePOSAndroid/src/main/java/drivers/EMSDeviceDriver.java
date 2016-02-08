@@ -87,7 +87,7 @@ import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverte
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = true;
+    public static final boolean PRINT_TO_LOG = false;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
@@ -1293,16 +1293,18 @@ public class EMSDeviceDriver {
                     sb.append(orders.get(m).getQty()).append("x ").append(orders.get(m).getName()).append("\n");
                     if (!orders.get(m).getAttrDesc().isEmpty())
                         sb.append("  [").append(orders.get(m).getAttrDesc()).append("]\n");
-                    for (int j = i + 1; j < size; j++) {
-                        ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
-                        if (orders.get(j).getIsAdded().equals("1"))
-                            sb.append("  ").append(orders.get(j).getName()).append("\n");
-                        else
-                            sb.append("  NO ").append(orders.get(j).getName()).append("\n");
+                    if (orders.get(m + 1).getAddon().equals("1")) {
+                        for (int j = i + 1; j < size; j++) {
+                            ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
+                            if (orders.get(j).getIsAdded().equals("1"))
+                                sb.append("  ").append(orders.get(j).getName()).append("\n");
+                            else
+                                sb.append("  NO ").append(orders.get(j).getName()).append("\n");
 
-                        if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-                            i = j;
-                            break;
+                            if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
+                                i = j;
+                                break;
+                            }
                         }
                     }
 
@@ -2115,6 +2117,11 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), lineWidth,
                     0));
+
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", myPref.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.newLines(2));
+
             sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),
                     lineWidth, 0));
 
@@ -2129,6 +2136,8 @@ public class EMSDeviceDriver {
 //            port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
             sb.setLength(0);
+
+
 
             for (int i = 0; i < size; i++) {
                 if (paymentMap.containsKey(payMethodsNames.get(i)[0])) {
