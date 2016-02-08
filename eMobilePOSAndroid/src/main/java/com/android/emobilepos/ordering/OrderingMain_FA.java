@@ -436,7 +436,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         if (SystemClock.elapsedRealtime() - Receipt_FR.lastClickTime < 1000) {
             return;
         }
@@ -492,7 +491,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             reloadDefaultTransaction();
         } else if (resultCode == 9) {
 
-        } else if (resultCode == 2)
+        } else if (resultCode == 2 || resultCode == 0)
             this.refreshView();
     }
 

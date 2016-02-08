@@ -46,7 +46,7 @@
 	<string name = "dlog_title_enter_email">Entre info\u002E (opcional)</string>
 	<string name = "dlog_msg_email">eMail</string>
 	<string name = "dlog_msg_phone">Tel\u00E9fono</string>
-	
+	<string name = "dlog_msg_comments">Comentarios de la orden</string>
 	<!-- Sales Main tab -->
 	<string name = "sales_title">Ventas</string>
 	<string name = "invoices">Facturas</string>

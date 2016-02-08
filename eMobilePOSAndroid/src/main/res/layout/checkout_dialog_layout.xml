@@ -1,66 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    >
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:background="@drawable/bg_dlog"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        >
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/dlog_title_enter_email"
-            android:textAppearance="@style/dark_blue_text_appearance"
-            android:textSize="@dimen/dlog_title_size" />
-
-        <com.android.support.MyEditText
-            android:id="@+id/emailTxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="20dp"
-            android:ems="12"
-            android:hint="@string/dlog_msg_email"
-            android:imeOptions="flagNoExtractUi|actionNext"
-            android:inputType="textEmailAddress"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textColor="#000000"
-            android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
-
-        <com.android.support.MyEditText
-            android:id="@+id/phoneNumField"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="20dp"
-            android:ems="12"
-            android:hint="@string/dlog_msg_phone"
-            android:imeOptions="flagNoExtractUi|actionNext"
-            android:inputType="phone"
-            android:textAppearance="@style/black_text_appearance_unbold"
-            android:textColor="#000000"
-            android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dlog_title_enter_email"
+                android:textAppearance="@style/dark_blue_text_appearance"
+                android:textSize="@dimen/dlog_title_size" />
 
 
-        <Button
-            android:id="@+id/OKButton"
-            style="@style/action_button_text_appearance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:ems="7"
-            android:background="@drawable/action_button_selector"
+            <com.android.support.MyEditText
+                android:id="@+id/fieldComments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="20dp"
+                android:ems="12"
+                android:gravity="top|left"
+                android:hint="@string/dlog_msg_comments"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="textMultiLine"
+                android:lines="4"
+                android:maxLines="10"
+                android:minLines="4"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
 
-            android:text="@string/button_ok"
-            android:textSize="@dimen/dlog_btn_size" />
-    </LinearLayout>
+            <com.android.support.MyEditText
+                android:id="@+id/emailTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="20dp"
+                android:ems="12"
+                android:hint="@string/dlog_msg_email"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="textEmailAddress"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
+
+            <com.android.support.MyEditText
+                android:id="@+id/phoneNumField"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="20dp"
+                android:ems="12"
+                android:hint="@string/dlog_msg_phone"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:inputType="phone"
+                android:textAppearance="@style/black_text_appearance_unbold"
+                android:textColor="#000000"
+                android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
 
 
-</LinearLayout>
+            <Button
+                android:id="@+id/OKButton"
+                style="@style/action_button_text_appearance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/action_button_selector"
+                android:ems="7"
+
+                android:text="@string/button_ok"
+                android:textSize="@dimen/dlog_btn_size" />
+
+
+        </LinearLayout>
+
+    </ScrollView>

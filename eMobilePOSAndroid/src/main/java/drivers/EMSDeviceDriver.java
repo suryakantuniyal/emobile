@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -162,7 +163,7 @@ public class EMSDeviceDriver {
                 itemDiscTotal = 0;
             }
         }
-        saveAmount = itemDiscTotal + Double.parseDouble(anOrder.ord_discount);
+        saveAmount = itemDiscTotal + (anOrder.ord_discount.isEmpty() ? 0.0 : Double.parseDouble(anOrder.ord_discount));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_subtotal),
                 Global.formatDoubleStrToCurrency(anOrder.ord_subtotal), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(context.getString(R.string.receipt_discount_line_item),
@@ -408,8 +409,11 @@ public class EMSDeviceDriver {
                             lineWidth, 0));
                     break;
                 case INVOICE: // Invoice
-                case CONSIGNMENT_INVOICE:// Consignment Invoice
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
+                            lineWidth, 0));
+                    break;
+                case CONSIGNMENT_INVOICE:// Consignment Invoice
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", Global.consignment_order.ord_id,
                             lineWidth, 0));
                     break;
                 case ESTIMATE: // Estimate
@@ -571,7 +575,7 @@ public class EMSDeviceDriver {
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
             sb.append("\n\n");
-            String granTotal = new BigDecimal(anOrder.gran_total).subtract(new BigDecimal(itemDiscTotal)).toString();
+            String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).subtract(new BigDecimal(itemDiscTotal)).toString();
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.formatDoubleStrToCurrency(granTotal), lineWidth, 0));
 
@@ -1289,16 +1293,18 @@ public class EMSDeviceDriver {
                     sb.append(orders.get(m).getQty()).append("x ").append(orders.get(m).getName()).append("\n");
                     if (!orders.get(m).getAttrDesc().isEmpty())
                         sb.append("  [").append(orders.get(m).getAttrDesc()).append("]\n");
-                    for (int j = i + 1; j < size; j++) {
-                        ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
-                        if (orders.get(j).getIsAdded().equals("1"))
-                            sb.append("  ").append(orders.get(j).getName()).append("\n");
-                        else
-                            sb.append("  NO ").append(orders.get(j).getName()).append("\n");
+                    if (orders.get(m + 1).getAddon().equals("1")) {
+                        for (int j = i + 1; j < size; j++) {
+                            ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
+                            if (orders.get(j).getIsAdded().equals("1"))
+                                sb.append("  ").append(orders.get(j).getName()).append("\n");
+                            else
+                                sb.append("  NO ").append(orders.get(j).getName()).append("\n");
 
-                        if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-                            i = j;
-                            break;
+                            if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
+                                i = j;
+                                break;
+                            }
                         }
                     }
 
@@ -1782,7 +1788,7 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
 
-           cutPaper();
+            cutPaper();
 
             // db.close();
 
@@ -1819,6 +1825,8 @@ public class EMSDeviceDriver {
 
 //        sb.append(textHandler.twoColumnLineWithLeftAlignedText( , ,lineWidth, 3));
 
+        sb.append(textHandler.newLines(2));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", myPref.getEmpName(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
 
         sb.append(textHandler.centeredString("Summary", lineWidth));
@@ -2109,6 +2117,11 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), lineWidth,
                     0));
+
+            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", myPref.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.newLines(2));
+
             sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),
                     lineWidth, 0));
 
@@ -2123,6 +2136,8 @@ public class EMSDeviceDriver {
 //            port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
             sb.setLength(0);
+
+
 
             for (int i = 0; i < size; i++) {
                 if (paymentMap.containsKey(payMethodsNames.get(i)[0])) {
