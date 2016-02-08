@@ -733,7 +733,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (isFromOnHold)
                     leftFragment.voidCancelOnHold(1);
@@ -741,8 +740,22 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
                     if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
                         voidTransaction();
-                    else
-                        deleteTransaction();
+                    else if (mTransType == Global.TransactionType.CONSIGNMENT) {
+                        if (global.consignment_order != null && !global.consignment_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.consignment_order.ord_id);
+                        }
+                        if (global.cons_return_order != null && !global.cons_return_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.cons_return_order.ord_id);
+                        }
+                        if (global.cons_fillup_order != null && !global.cons_fillup_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.cons_fillup_order.ord_id);
+                        }
+                        if (global.consignment_order != null && !global.consignment_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.consignment_order.ord_id);
+                        }
+                    } else {
+                        OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.order.ord_id);
+                    }
                     global.resetOrderDetailsValues();
                     global.clearListViewData();
                     msrWasLoaded = false;
@@ -757,7 +770,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (isFromOnHold)
                     leftFragment.voidCancelOnHold(2);
@@ -1349,17 +1361,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private void deleteTransaction() {
-        if (!Global.lastOrdID.isEmpty()) {
-            OrdersHandler dbOrders = new OrdersHandler(this);
-            OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
-            dbOrders.deleteOrder(Global.lastOrdID);
-            dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
-            for (OrdProdAttrHolder val : global.ordProdAttr)
-                dbOrdAttr.deleteOrderProduct(val.ordprod_id);
-        }
-    }
+
 
     @Override
     public void startSignature() {

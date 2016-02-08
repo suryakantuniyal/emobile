@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -73,8 +72,6 @@ import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -832,7 +829,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                               boolean buttonOnHold) {
 
         OrdersHandler handler = new OrdersHandler(activity);
-        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         global.order = buildOrder(activity, global, myPref, emailHolder);
 
         order_email = emailHolder;
@@ -915,13 +912,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
                         handler2.insert(global.orderProducts);
                         handler3.insert(global.ordProdAttr);
-                    }
-
-                    if (global.listOrderTaxes != null
-                            && global.listOrderTaxes.size() > 0
-                            && typeOfProcedure != Global.TransactionType.REFUND) {
-                        ordTaxesDB.insert(global.listOrderTaxes,
-                                global.order.ord_id);
+                        if (global.listOrderTaxes != null
+                                && global.listOrderTaxes.size() > 0
+                                && typeOfProcedure != Global.TransactionType.REFUND) {
+                            ordTaxesDB.insert(global.listOrderTaxes,
+                                    global.order.ord_id);
+                        }
                     }
                 }
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode))

@@ -470,6 +470,10 @@ public class Global extends MultiDexApplication {
         isConsignment = false;
         isInventoryTransfer = false;
         consignmentType = OrderType.ORDER;
+        consignment_order = null;
+        cons_issue_order = null;
+        cons_return_order = null;
+        cons_fillup_order = null;
         if (productParentAddons != null)
             productParentAddons.clear();
         if (productParentAddonsDictionary != null)
@@ -1094,7 +1098,7 @@ public class Global extends MultiDexApplication {
         String prLevTotal;
         if (volumePrice[1] != null && !volumePrice[1].isEmpty()) {
             prLevTotal = Global.formatNumToLocale(Double.parseDouble(volumePrice[1]));
-        }else {
+        } else {
             prLevTotal = product.getProdPrice();
         }
         BigDecimal priceLevel = new BigDecimal(prLevTotal).setScale(2, RoundingMode.HALF_UP);

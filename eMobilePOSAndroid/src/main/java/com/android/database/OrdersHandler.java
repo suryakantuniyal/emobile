@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -272,6 +273,19 @@ public class OrdersHandler {
 
     public void emptyTable() {
         DBManager._db.execSQL("DELETE FROM " + table_name);
+    }
+
+    public static void deleteTransaction(Activity activity, String orderId) {
+        if (!orderId.isEmpty()) {
+            Global global = (Global) activity.getApplication();
+            OrdersHandler dbOrders = new OrdersHandler(activity);
+            OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
+            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
+            dbOrders.deleteOrder(orderId);
+            dbOrdProd.deleteAllOrdProd(orderId);
+            for (OrdProdAttrHolder val : global.ordProdAttr)
+                dbOrdAttr.deleteOrderProduct(val.ordprod_id);
+        }
     }
 
     public void deleteOrder(String _ord_id) {
