@@ -251,16 +251,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                         boProcessed = true;
                         MyPreferences myPref = new MyPreferences(activity);
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("http://").append(myPref.getGeniusIP()).append(":8080/v2/pos?TransportKey=").append(geniusTransportToken.getTransportkey());
-                        sb.append("&Format=JSON");
-                        String json = post.postData(11, activity, sb.toString());
+                        String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
                         geniusResponse = gson.fromJson(json, GeniusResponse.class);
 
                     }
-
                 } catch (Exception e) {
-
                 }
 
             }
@@ -299,6 +294,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 BigDecimal aprovedAmount = new BigDecimal(response.getAmountApproved());
                 BigDecimal payAmount = aprovedAmount.subtract(tip).subtract(cashBack);
                 payment.pay_amount = Global.getRoundBigDecimal(payAmount);
+                Global.amountPaid = payment.pay_amount;
                 payment.authcode = response.getAuthorizationCode();
                 payment.ccnum_last4 = response.getAccountNumber();
                 payment.pay_name = response.getCardholder();
@@ -323,9 +319,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 result.putExtra("total_amount", paid_amount);
 
                 result.putExtra("emvcontainer", new Gson().toJson(emvContainer, EMVContainer.class));
-                Global.amountPaid = paid_amount;
-                setResult(-2, result);
-
+                if (response.getStatus().equalsIgnoreCase("APPROVED")) {
+                    setResult(-2, result);
+                } else {
+                    setResult(0, result);
+                }
                 if (myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
                     showPrintDlg(false);
                 else
