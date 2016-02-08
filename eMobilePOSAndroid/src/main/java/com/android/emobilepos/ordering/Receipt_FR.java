@@ -583,9 +583,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             position = restLVAdapter.dataPosition(position);
         final OrderProductListAdapter.OrderSeatProduct item = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
         if (item.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-            ((OrderingMain_FA)getActivity()).setSelectedSeatNumber(item.seatNumber);
+            ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(item.seatNumber);
         } else {
-            String isVoidedItem =item.orderProduct.item_void;
+            String isVoidedItem = item.orderProduct.item_void;
 
             if (!isVoidedItem.equals("1")) {
                 final Dialog dialog = new Dialog(activity,
@@ -665,7 +665,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     public void onClick(View v) {
                         dialog.dismiss();
                         if (!Boolean.parseBoolean(global.orderProducts.get(pos).payWithPoints)) {
-                            String price =item.orderProduct.prod_price_points;
+                            String price = item.orderProduct.prod_price_points;
                             if (OrderLoyalty_FR.isValidPointClaim(price)) {
                                 item.orderProduct.overwrite_price = "0.00";
                                 item.orderProduct.itemTotal = "0.00";
@@ -707,7 +707,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             if (myPref
                     .getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone))
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
                     processOrder("", false);
                 else
                     showEmailDlog();
@@ -733,10 +733,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (!global.getSelectedComments().isEmpty()) {
             editTextDialogComments.setText(global.getSelectedComments());
         }
+
         final EditText emailInput = (EditText) dialog.findViewById(R.id.emailTxt);
         final EditText phoneNum = (EditText) dialog
                 .findViewById(R.id.phoneNumField);
         Button done = (Button) dialog.findViewById(R.id.OKButton);
+        //if skip email phone enabled then hide fields
+        if (myPref.getPreferences(MyPreferences.pref_skip_email_phone)) {
+            emailInput.setVisibility(View.GONE);
+            phoneNum.setVisibility(View.GONE);
+        }
+        //if not asking for order comments then hide field
+        if (!myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+            editTextDialogComments.setVisibility(View.GONE);
+        }
+
 
         if (myPref.isCustSelected())
             emailInput.setText(myPref.getCustEmail());
@@ -747,7 +758,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             public void onClick(View v) {
                 dialog.dismiss();
                 //if we have comments set the global comments field
-                if(!editTextDialogComments.getText().toString().isEmpty()){
+                if (!editTextDialogComments.getText().toString().isEmpty()) {
                     global.setSelectedComments(editTextDialogComments.getText().toString());
                 }
 
@@ -764,9 +775,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         });
         dialog.show();
     }
-    private void showSplitedOrderPreview(){
+
+    private void showSplitedOrderPreview() {
 
     }
+
     private void showAddMoreProductsDlg() {
 
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -798,7 +811,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone))
+
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
                     processOrder("", false);
                 else
                     showEmailDlog();
@@ -821,7 +835,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                               boolean buttonOnHold) {
 
         OrdersHandler handler = new OrdersHandler(activity);
-        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         global.order = buildOrder(activity, global, myPref, emailHolder);
 
         order_email = emailHolder;
@@ -896,18 +910,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 }
             } else {
-                if (global.orderProducts.size() > 0) {
+                if (global.orderProducts.size() > 0 ||
+                        !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString())) {
                     handler.insert(global.order);
+                }
+                if (global.orderProducts.size() > 0) {
                     if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
                         handler2.insert(global.orderProducts);
                         handler3.insert(global.ordProdAttr);
-                    }
-
-                    if (global.listOrderTaxes != null
-                            && global.listOrderTaxes.size() > 0
-                            && typeOfProcedure != Global.TransactionType.REFUND) {
-                        ordTaxesDB.insert(global.listOrderTaxes,
-                                global.order.ord_id);
+                        if (global.listOrderTaxes != null
+                                && global.listOrderTaxes.size() > 0
+                                && typeOfProcedure != Global.TransactionType.REFUND) {
+                            ordTaxesDB.insert(global.listOrderTaxes,
+                                    global.order.ord_id);
+                        }
                     }
                 }
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode))

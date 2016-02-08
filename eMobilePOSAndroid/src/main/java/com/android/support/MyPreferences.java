@@ -97,6 +97,7 @@ public class MyPreferences {
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
     public static final String pref_qr_code_reading = "pref_qr_code_reading";
     public static final String pref_enable_multi_category = "pref_enable_multi_category";
+    public static final String pref_ask_order_comments = "pref_ask_order_comments";
     public static final String pref_skip_email_phone = "pref_skip_email_phone";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     public static final String pref_retail_taxes = "pref_retail_taxes";

@@ -14,3 +14,7 @@ eMobilePOSAndroid/eMobilePOSAndroid.iml
 .idea/libraries/
 .idea/misc.xml
 .idea/workspace.xml
+eMobilePOSAndroid/.idea/libraries/
+eMobilePOSAndroid/.idea/
+.gradle/2.8/taskArtifacts/cache.properties
+.idea/

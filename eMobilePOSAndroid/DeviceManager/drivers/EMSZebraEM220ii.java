@@ -169,7 +169,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 		
 		
 		OrderProductsHandler handler = new OrderProductsHandler(activity);
-		OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+		OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 		
 		List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
 		List<Orders> orders = handler.getPrintOrderedProducts(ordID);

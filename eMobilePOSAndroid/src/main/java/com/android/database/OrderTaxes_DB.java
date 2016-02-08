@@ -28,7 +28,7 @@ public class OrderTaxes_DB {
 	private static final String TABLE_NAME = "OrderTaxes";
 
 	
-	public OrderTaxes_DB(Activity activity)
+	public OrderTaxes_DB()
 	{
 		attrHash = new HashMap<String,Integer>();
 		
@@ -57,26 +57,22 @@ public class OrderTaxes_DB {
 	
 
 	public void insert(List<DataTaxes> _data,String _ord_id) {
-		//SQLiteDatabase db = dbManager.openWritableDB();
 
 		DBManager._db.beginTransaction();
 
 		try {
-			SQLiteStatement insert = null;
-			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT OR REPLACE INTO ").append(TABLE_NAME).append(" (").append(mainSB1.toString()).append(") ").append("VALUES (")
-					.append(mainSB2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			SQLiteStatement insert;
+			insert = DBManager._db.compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " (" + mainSB1.toString() + ") " + "VALUES (" + mainSB2.toString() + ")");
 
 			int size = _data.size();
 
 			for (int j = 0; j < size; j++) {
 				
-				insert.bindString(index(ord_tax_id),_data.get(j).get(ord_tax_id));
+				insert.bindString(index(ord_tax_id),_data.get(j).getOrd_tax_id());
 				insert.bindString(index(ord_id), _ord_id);
-				insert.bindString(index(tax_name), _data.get(j).get(tax_name));
-				insert.bindString(index(tax_amount), _data.get(j).get(tax_amount));
-				insert.bindString(index(tax_rate), _data.get(j).get(tax_rate));
+				insert.bindString(index(tax_name), _data.get(j).getTax_name());
+				insert.bindString(index(tax_amount), _data.get(j).getTax_amount());
+				insert.bindString(index(tax_rate), _data.get(j).getTax_rate());
 				
 				insert.execute();
 				insert.clearBindings();
@@ -93,9 +89,7 @@ public class OrderTaxes_DB {
 	
 	public void emptyTable() 
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("DELETE FROM ").append(TABLE_NAME);
-		DBManager._db.execSQL(sb.toString());
+		DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
 	}
 	
 	public List<DataTaxes> getOrderTaxes(String _ord_id)
@@ -103,11 +97,8 @@ public class OrderTaxes_DB {
 		//SQLiteDatabase db = dbManager.openReadableDB();
 		List<DataTaxes>list = new ArrayList<DataTaxes>();
 		DataTaxes dataTaxes;
-		
-		StringBuilder query = new StringBuilder();
-		query.append("SELECT * FROM ").append(TABLE_NAME).append(" WHERE ord_id = ?");
-		
-		Cursor c = DBManager._db.rawQuery(query.toString(), new String[]{_ord_id});
+
+		Cursor c = DBManager._db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE ord_id = ?", new String[]{_ord_id});
 		
 		if(c.moveToFirst())
 		{
@@ -118,9 +109,9 @@ public class OrderTaxes_DB {
 			{
 				dataTaxes = new DataTaxes();
 				
-				dataTaxes.set(tax_name, c.getString(i_tax_name));
-				dataTaxes.set(tax_rate, c.getString(i_tax_rate));
-				dataTaxes.set(tax_amount, new BigDecimal(c.getString(i_tax_amount)).setScale(2, RoundingMode.HALF_UP).toString());
+				dataTaxes.setTax_name(c.getString(i_tax_name));
+				dataTaxes.setTax_rate(c.getString(i_tax_rate));
+				dataTaxes.setTax_amount(new BigDecimal(c.getString(i_tax_amount)).setScale(2, RoundingMode.HALF_UP).toString());
 				
 				list.add(dataTaxes);
 			}while(c.moveToNext());

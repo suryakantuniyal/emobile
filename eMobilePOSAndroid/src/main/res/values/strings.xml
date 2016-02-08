@@ -932,6 +932,7 @@
 	<string name = "config_retail_taxes">Retail Taxes</string>
 	<string name = "config_require_customer">Require Customer</string>
 	<string name = "config_show_confirmation_screen">Show Confirmation Screen</string>
+	<string name = "config_ask_order_comments">Ask for order comments</string>
 	<string name = "config_direct_customer_selection">Direct Customer Selection</string>
 	<string name = "config_display_customer_account_number">Display Customer Account Number</string>
 	<string name = "config_skip_want_add_more_products">Skip Want Add More Prod.</string>
