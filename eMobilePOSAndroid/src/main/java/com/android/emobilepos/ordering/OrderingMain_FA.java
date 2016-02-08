@@ -459,7 +459,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         switch (v.getId()) {
             case R.id.btnCheckOut:
                 btnCheckout.setEnabled(false);
-                List<SplitedOrder> splitedOrders = splitBySeats(global.order, global.orderProducts);
                 if (leftFragment != null) {
                     leftFragment.checkoutOrder();
                 }
@@ -468,7 +467,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private List<SplitedOrder> splitBySeats(Order order, List<OrderProduct> orderProducts) {
+    public List<SplitedOrder> splitBySeats(Order order, List<OrderProduct> orderProducts) {
         List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
         GenerateNewID generateNewID = new GenerateNewID(this);
         String prevOrderId = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);

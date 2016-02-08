@@ -1,6 +1,8 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.android.support.Customer;
 
@@ -9,11 +11,20 @@ import java.util.List;
 /**
  * Created by guari_000 on 2/4/2016.
  */
-public class SplitedOrder extends Order {
+public class SplitedOrder extends Order implements Parcelable {
     private List<OrderProduct> orderProducts;
+    private int mData;
+
+    public SplitedOrder() {
+
+    }
 
     public SplitedOrder(Activity activity, Order order) {
         super(activity);
+        init(order);
+    }
+
+    private void init(Order order) {
         ord_id = order.ord_id;
         qbord_id = order.qbord_id;
         emp_id = order.emp_id;
@@ -72,5 +83,30 @@ public class SplitedOrder extends Order {
 
     public void setOrderProducts(List<OrderProduct> orderProducts) {
         this.orderProducts = orderProducts;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(mData);
+    }
+
+    public static final Parcelable.Creator<SplitedOrder> CREATOR
+            = new Parcelable.Creator<SplitedOrder>() {
+        public SplitedOrder createFromParcel(Parcel in) {
+            return new SplitedOrder(in);
+        }
+
+        public SplitedOrder[] newArray(int size) {
+            return new SplitedOrder[size];
+        }
+    };
+
+    private SplitedOrder(Parcel in) {
+        super();
+        mData = in.readInt();
     }
 }

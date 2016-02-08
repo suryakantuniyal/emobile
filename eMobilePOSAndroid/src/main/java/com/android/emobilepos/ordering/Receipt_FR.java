@@ -58,6 +58,7 @@ import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
 import com.android.database.DBManager;
@@ -769,15 +770,23 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         Toast.makeText(activity,
                                 getString(R.string.warning_email_invalid),
                                 Toast.LENGTH_LONG).show();
-                } else
-                    processOrder(emailInput.getText().toString(), false);
+                } else {
+                    showSplitedOrderPreview();
+//                    processOrder(emailInput.getText().toString(), false);
+                }
             }
         });
         dialog.show();
     }
 
     private void showSplitedOrderPreview() {
-
+        ArrayList<SplitedOrder> splitedOrders = (ArrayList<SplitedOrder>) ((OrderingMain_FA) getActivity()).splitBySeats(global.order, global.orderProducts);
+        Intent intent = new Intent(activity,
+                SplittedOrderSummary_FA.class);
+        Bundle b = new Bundle();
+        b.putParcelableArrayList("SplittedOrder", splitedOrders);
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     private void showAddMoreProductsDlg() {
