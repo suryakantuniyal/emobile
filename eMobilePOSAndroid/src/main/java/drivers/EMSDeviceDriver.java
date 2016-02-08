@@ -403,7 +403,7 @@ public class EMSDeviceDriver {
                     break;
                 case INVOICE: // Invoice
                 case CONSIGNMENT_INVOICE:// Consignment Invoice
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", Global.consignment_order.ord_id,
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
                             lineWidth, 0));
                     break;
                 case ESTIMATE: // Estimate
