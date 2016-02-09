@@ -128,9 +128,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
-            if(extras.get("typeOfProcedure")instanceof Global.OrderType) {
+            if (extras.get("typeOfProcedure") instanceof Global.OrderType) {
                 typeOfProcedure = ((Global.OrderType) extras.get("typeOfProcedure")).getCode();
-            }else{
+            } else {
                 typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
             }
         }
@@ -642,7 +642,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                if (isFromMainMenu || extras.getBoolean("histinvoices"))
+                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
+                        (emvContainer!=null && emvContainer.getGeniusResponse()!=null &&
+                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
@@ -897,6 +899,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 String temp = Global.formatDoubleStrToCurrency(Double.toString(overAllRemainingBalance));
                 previous_pay_id = pay_id;
+                showPaymentSuccessDlog(true, emvContainer);
+            }
+        } else {
+            if (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                    emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
                 showPaymentSuccessDlog(true, emvContainer);
             }
         }

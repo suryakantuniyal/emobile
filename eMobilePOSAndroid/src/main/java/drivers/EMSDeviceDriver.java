@@ -1065,7 +1065,7 @@ public class EMSDeviceDriver {
 
 
             sb.append("* ").append(payArray.getPaymethod_name());
-            if (payArray.getIs_refund().equals("1"))
+            if (payArray.getIs_refund()!=null && payArray.getIs_refund().equals("1"))
                 sb.append(" Refund *\n\n\n");
             else
                 sb.append(" Sale *\n\n\n");
@@ -1148,7 +1148,7 @@ public class EMSDeviceDriver {
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                     sb.append(textHandler.newLines(1));
-                } else if (!payArray.getPay_signature().isEmpty()) {
+                } else if (payArray.getPay_signature()!=null && !payArray.getPay_signature().isEmpty()) {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
@@ -1179,7 +1179,7 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
             sb.setLength(0);
 
-            String temp = new String();
+            String temp;
             if (!isCashPayment && !isCheckPayment) {
                 print(creditCardFooting.toString(), FORMAT);
                 temp = textHandler.newLines(1);

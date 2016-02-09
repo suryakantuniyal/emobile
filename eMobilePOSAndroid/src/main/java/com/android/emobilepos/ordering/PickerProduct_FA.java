@@ -1606,7 +1606,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if (global.qtyCounter != null && global.qtyCounter.containsKey(prodID)) {
                 BigDecimal origQty = new BigDecimal(global.qtyCounter.get(prodID));
                 BigDecimal newQty = origQty.add(qty);
-                temp = volPriceHandler.getVolumePrice(newQty.toString(), prodID);
+                temp = volPriceHandler.getVolumePrice(qty.toString(), prodID);
             } else
                 temp = volPriceHandler.getVolumePrice(String.valueOf(qty), prodID);
             if (temp[1] != null && !temp[1].isEmpty()) {
