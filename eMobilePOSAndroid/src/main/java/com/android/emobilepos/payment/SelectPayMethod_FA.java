@@ -642,7 +642,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                if (isFromMainMenu || extras.getBoolean("histinvoices"))
+                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
+                        (emvContainer!=null && emvContainer.getGeniusResponse()!=null &&
+                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else

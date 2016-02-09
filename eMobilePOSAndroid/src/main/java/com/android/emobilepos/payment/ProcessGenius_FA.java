@@ -269,7 +269,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             if (!geniusConnected) {
                 Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.failed_genius_connectivity));
             } else if (!boProcessed) {
-                Global.showPrompt(activity, R.string.dlog_title_error, temp);
+                Global.showPrompt(activity, R.string.dlog_title_error, response.getErrorMessage());
             } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
                     response.getStatus().equalsIgnoreCase("DECLINED"))) {
                 payment.pay_transid = response.getToken();
