@@ -33,7 +33,7 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         ViewHolder holder;
 
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.main_menu_listviewadapter, null);
+            convertView = mInflater.inflate(R.layout.splited_order_summary_listitem, null);
             holder = new ViewHolder();
             convertView.setTag(holder);
 

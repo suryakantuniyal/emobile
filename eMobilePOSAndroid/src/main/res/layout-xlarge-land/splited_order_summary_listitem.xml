@@ -127,7 +127,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/black_text_appearance_unbold"
         android:textSize="@dimen/about_main_text_size"
-        android:text="sdfgfdsgdsfg gfdsgsdfg gfdsgsdfg gfdsgsdfg gfdsgsdfgsd gfdsgsdfg gfdsgdfg sdfgdfsgf gfdsgsdfg gfdsgsdfgds gfdsgsdfg gfdsgsdfg gfdsgsdfg gfdsgsdfg gfdsgsdfg gfdsgsdfg gfdsgsdfg gfdsg"
+        android:text="Mozzarella Sticks, Hotwings"
         android:id="@+id/splited_order_productsTextView"
         android:layout_span="1"
         android:padding="5dp" />
@@ -137,7 +137,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/action_button_selector"
-        android:text="@string/button_checkout"
+        android:text="@string/pay_button"
         android:id="@+id/splited_order_pay_button"
         android:layout_margin="5dp" />
 </LinearLayout>

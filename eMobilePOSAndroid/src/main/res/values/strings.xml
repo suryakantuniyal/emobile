@@ -1150,14 +1150,16 @@
 	<string name="toGo_btn">To-Go</string>
 	<string name="select_table_number">Select table number</string>
 	<string name="select_table_seats_amount">Select the amount of seats</string>
-	<string name="split_by_seats">By Seats</string>
-	<string name="split_equally">Equally</string>
-	<string name="split_by_group_seats">Group Seats</string>
+	<string name="split_by_seats">Split bill by seats</string>
+	<string name="split_equally">Split bill equally</string>
+	<string name="split_by_group_seats">Split bill seats group</string>
 	<string name="split_bill_by">Split Bill:</string>
 	<string name="splited_order_summary">Split Order Summary</string>
 	<string name="table_number">Table Number</string>
 	<string name="seatNumber">Seat Number</string>
 	<string name="splited_order_total_items">Items</string>
 	<string name="splited_order_price">Price</string>
+	<string name="addseat_btn">Add Seat</string>
+	<string name="elipses">...</string>
 
 </resources>

@@ -20,7 +20,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -28,8 +30,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -464,8 +468,28 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
                 btnCheckout.setEnabled(true);
                 break;
+            case R.id.headerMenubutton:
+                showPopMenu(v);
+                break;
         }
     }
+
+    private void showPopMenu(View v) {
+        //Creating the instance of PopupMenu
+        PopupMenu popup = new PopupMenu(this, v);
+        //Inflating the Popup using xml file
+        popup.getMenuInflater().inflate(R.menu.receiptlist_header_menu, popup.getMenu());
+
+        //registering popup with OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(OrderingMain_FA.this, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+        popup.show();//showing popup menu
+    }
+
 
     public List<SplitedOrder> splitBySeats(Order order, List<OrderProduct> orderProducts) {
         List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
@@ -1212,6 +1236,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         selectedSeatNumber = seatNumber;
     }
 
+
     private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -1314,6 +1339,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error, errorMsg);
             }
         }
+
     }
 
     @Override

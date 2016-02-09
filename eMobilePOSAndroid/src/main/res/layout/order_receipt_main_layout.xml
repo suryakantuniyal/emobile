@@ -46,17 +46,31 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/addProdButton"
+            android:id="@+id/addProdButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_orders_button_height"
+            android:background="@drawable/action_button_selector"
+            android:text="@string/button_add_prod_serv"
+            android:textAppearance="@style/black_text_appearance"
+            android:textSize="@dimen/add_orders_button_text_size"
+            android:layout_margin="5dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/addSeatButton"
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="@dimen/add_orders_button_height"
                 android:background="@drawable/action_button_selector"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:text="@string/button_add_prod_serv"
+
+                android:text="@string/addseat_btn"
                 android:textAppearance="@style/black_text_appearance"
                 android:textSize="@dimen/add_orders_button_text_size"
-                android:layout_margin="5dp" />
+                android:layout_margin="5dp"
+                android:layout_weight="1" />
+
+
         </LinearLayout>
     </LinearLayout>
 

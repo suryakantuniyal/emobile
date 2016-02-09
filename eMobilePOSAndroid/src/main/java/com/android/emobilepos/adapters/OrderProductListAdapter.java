@@ -1,18 +1,24 @@
 package com.android.emobilepos.adapters;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -52,6 +58,11 @@ public class OrderProductListAdapter extends BaseAdapter {
         this.orderProducts = orderProducts;
         this.seatsAmount = seatsAmount;
         refreshList();
+    }
+
+    public void addSeat() {
+        seatsAmount++;
+        notifyDataSetChanged();
     }
 
     private List<OrderSeatProduct> getOrderSeatProductList() {
@@ -119,11 +130,18 @@ public class OrderProductListAdapter extends BaseAdapter {
 
         switch (type) {
             case TYPE_HEADER:
+                Button menuButton = (Button) convertView.findViewById(R.id.headerMenubutton);
+                menuButton.setOnClickListener((OrderingMain_FA) activity);
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
                 ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText("Seat " + orderSeatProductList.get(position).seatNumber);
+                if (OrderingMain_FA.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
+                    convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_flat_button));
+                } else
+                    convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_gradient_header_horizontal));
                 break;
             case TYPE_ITEM:
+                convertView.setBackgroundDrawable(null);
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.GONE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.VISIBLE);
                 holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
@@ -142,29 +160,6 @@ public class OrderProductListAdapter extends BaseAdapter {
                 break;
         }
         convertView.setTag(holder);
-
-//        else {
-//            holder = (ViewHolder) convertView.getTag();
-//            if (list.get(position).rowType == RowType.TYPE_ITEM) {
-//                if (holder == null) {
-//                    holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
-//                    holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
-//                    holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
-//                    holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
-//                    holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
-//                    holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
-//
-//                    holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
-//                    if (holder.addonButton != null)
-//                        holder.addonButton.setFocusable(false);
-//                    if (list.get(position).rowType == RowType.TYPE_ITEM) {
-//                        setHolderValues(holder, position);
-//                    }
-//                    convertView.setTag(holder);
-//                }
-//                setHolderValues(holder, position);
-//            }
-//        }
 
         return convertView;
     }
@@ -244,6 +239,8 @@ public class OrderProductListAdapter extends BaseAdapter {
         TextView granTotal;
         Button addonButton;
     }
+
+
 }
 
 

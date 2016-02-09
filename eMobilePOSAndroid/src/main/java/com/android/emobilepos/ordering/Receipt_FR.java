@@ -18,7 +18,9 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Patterns;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -178,7 +180,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 && orientation == Configuration.ORIENTATION_LANDSCAPE) {
             addProd.setVisibility(View.GONE);
         }
-
+        Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
+        addSeatButton.setOnClickListener(this);
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
         plusBut.setOnClickListener(this);
 
@@ -511,7 +514,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         lastClickTime = SystemClock.elapsedRealtime();
         switch (v.getId()) {
-
+            case R.id.addSeatButton:
+                mainLVAdapter.addSeat();
+                break;
             case R.id.plusButton:
                 intent = new Intent(getActivity(), ViewCustomers_FA.class);
                 startActivityForResult(intent, 0);
@@ -585,6 +590,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         final OrderProductListAdapter.OrderSeatProduct item = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
         if (item.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
             ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(item.seatNumber);
+            mainLVAdapter.notifyDataSetChanged();
         } else {
             String isVoidedItem = item.orderProduct.item_void;
 
@@ -688,6 +694,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
+
+
     public void checkoutOrder() {
         if (receiptListView.getCount() == 0 && caseSelected != Global.TransactionType.CONSIGNMENT) {
             Toast.makeText(activity,
@@ -771,8 +779,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 getString(R.string.warning_email_invalid),
                                 Toast.LENGTH_LONG).show();
                 } else {
-                    showSplitedOrderPreview();
-//                    processOrder(emailInput.getText().toString(), false);
+//                    showSplitedOrderPreview();
+                    processOrder(emailInput.getText().toString(), false);
                 }
             }
         });

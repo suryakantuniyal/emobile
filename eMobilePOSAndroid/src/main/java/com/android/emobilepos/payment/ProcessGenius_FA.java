@@ -310,7 +310,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     payHandler.insert(payment);
                 } else {
                     payHandler.insertDeclined(payment);
-
                 }
                 EMVContainer emvContainer = new EMVContainer(response);
 

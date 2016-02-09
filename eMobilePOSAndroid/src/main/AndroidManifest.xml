@@ -49,8 +49,8 @@
 
     <application
         android:name="com.android.support.Global"
-        android:label="@string/app_name"
         android:icon="@drawable/icon"
+        android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="android.nfc.disable_beam_default"
@@ -147,6 +147,10 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"></activity>
         <activity
+            android:name="com.android.emobilepos.ordering.SplittedOrderSummary_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"></activity>
+        <activity
             android:name="com.android.emobilepos.OrderDetailsActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"></activity>
@@ -164,10 +168,16 @@
                 <action android:name="com.android.emobilepos.RECVR3" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" android:resource="@xml/ot310_device_filter" />
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" android:resource="@xml/ot310_device_filter" />
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/ot310_device_filter" />
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
+                android:resource="@xml/ot310_device_filter" />
         </activity>
         <activity
             android:name="com.android.emobilepos.payment.ProcessGiftCard_FA"
@@ -346,11 +356,11 @@
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <activity
-        android:name="com.android.emobilepos.shifts.ShiftExpense_FA"
-        android:configChanges="orientation|screenSize"
-        android:exported="false"
-        android:theme="@style/LightTheme"
-        android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+            android:name="com.android.emobilepos.shifts.ShiftExpense_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:theme="@style/LightTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
         <activity
             android:name="com.android.emobilepos.shifts.OpenShift_FA"
             android:configChanges="orientation|screenSize"

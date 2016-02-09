@@ -2,15 +2,55 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
- >
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/seatHeaderSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:id="@+id/seatNumbertextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seat #"
+                android:textAppearance="@style/black_text_appearance"
+                android:textSize="@dimen/grid_item_text_view_size"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true" />
+
+            <Button
+                android:id="@+id/headerMenubutton"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/action_button_selector"
+                android:focusable="false"
+                android:text="@string/elipses"
+                android:layout_alignParentTop="false"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/itemSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -135,23 +175,6 @@
                 android:textSize="@dimen/txt_receipt_large"
                 android:textStyle="bold" />
         </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/seatHeaderSection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/blue_gradient_header_horizontal"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/seatNumbertextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Seat #"
-            android:textAppearance="@style/black_text_appearance"
-            android:textSize="@dimen/grid_item_text_view_size"
-            android:layout_margin="5dp" />
     </LinearLayout>
 
 
