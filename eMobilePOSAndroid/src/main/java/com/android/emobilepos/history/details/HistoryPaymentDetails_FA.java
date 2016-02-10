@@ -69,14 +69,12 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
     private Global global;
     private Activity activity;
 
-    private ListViewAdapter myAdapter;
-
     private List<String> allInfoLeft;
     private List<String> allInfoRight = Arrays.asList("56-00021-2012", "Jul 20,2012 1:05PM",
             "Cash", "Not Specified", "56-00027-2012", "56-00061-2012");
 
-    private ListView myListView;
-    private String pay_id, pay_amount, cust_name, paymethod_name;
+    private String pay_id;
+    private String paymethod_name;
     private ProgressDialog myProgressDialog;
     private PaymentsHandler payHandler;
 
@@ -84,7 +82,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
     private Drawable mapDrawable;
     private Button voidButton, printButton;
     private MyPreferences myPref;
-    private boolean isDeclined;
+    private boolean isVoid;
 
 
     @Override
@@ -98,15 +96,17 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         myPref = new MyPreferences(activity);
 
         pay_id = extras.getString("pay_id");
-        pay_amount = extras.getString("pay_amount");
-        cust_name = extras.getString("cust_name");
+        isVoid = extras.getBoolean("isVoid");
+
+        String pay_amount = extras.getString("pay_amount");
+        String cust_name = extras.getString("cust_name");
         paymethod_name = extras.getString("paymethod_name");
-        isDeclined = Boolean.parseBoolean(extras.getString("isDeclined"));
+        boolean isDeclined = Boolean.parseBoolean(extras.getString("isDeclined"));
 
 
         printButton = (Button) findViewById(R.id.printButton);
         voidButton = (Button) findViewById(R.id.histpayVoidBut);
-        voidButton.setEnabled(!isDeclined);
+        voidButton.setEnabled(!isDeclined && !isVoid);
 
         allInfoLeft = Arrays.asList(getString(R.string.pay_details_id), getString(R.string.pay_details_date),
                 getString(R.string.pay_details_method), getString(R.string.pay_details_comment), getString(R.string.pay_details_inv_num),
@@ -135,7 +135,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             allInfoRight = Arrays.asList("", "", "", "", "", "");
         }
 
-        myListView = (ListView) findViewById(R.id.payDetailsLV);
+        ListView myListView = (ListView) findViewById(R.id.payDetailsLV);
         TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
         headerTitle.setText(getString(R.string.pay_details_title));
 
@@ -166,7 +166,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         loadMapImage(mapImg, paymentDetails.getPay_latitude(), paymentDetails.getPay_longitude());
         myListView.addFooterView(footerView);
-        myAdapter = new ListViewAdapter(activity);
+        ListViewAdapter myAdapter = new ListViewAdapter(activity);
         myListView.setAdapter(myAdapter);
 
 
@@ -416,13 +416,13 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         //private String[]returnedPost;
         boolean wasProcessed = false;
         HashMap<String, String> parsedMap = new HashMap<String, String>();
-        private String errorMsg = "Could not process the payment.";
+        private String errorMsg = getString(R.string.coundnot_proceess_payment);
 
 
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Processing Refund...");
+            myProgressDialog.setMessage(getString(R.string.processing_refund));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -431,7 +431,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
 
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -450,23 +449,13 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                     wasProcessed = true;
                 else if (parsedMap != null && parsedMap.size() > 0) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("statusCode = ").append(parsedMap.get("statusCode")).append("\n");
-                    sb.append(parsedMap.get("statusMessage"));
-                    errorMsg = sb.toString();
+                    errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                 } else
                     errorMsg = xml;
-                /*returnedPost = new String[handler.getEmpData().length];
-                returnedPost = handler.getEmpData();*/
-                //String val = "";
+
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                StringBuilder sb = new StringBuilder();
-                sb.append(e.getMessage()).append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
             }
             return null;
         }
@@ -474,8 +463,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-
-
+            voidButton.setEnabled(false);
             if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED")) //Void was successful
             {
                 payHandler.createVoidPayment(paymentToBeRefunded, true, parsedMap);
@@ -494,18 +482,9 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             image = Drawable.createFromStream(is, "src");
         } catch (MalformedURLException e) {
             image = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.createDrawableFromURL)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } catch (IOException e) {
             image = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.createDrawableFromURL)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         }
         return image;
     }
@@ -515,32 +494,27 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         private LayoutInflater myInflater;
 
         public ListViewAdapter(Context context) {
-            //this.context = context;
             myInflater = LayoutInflater.from(context);
         }
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return (allInfoLeft.size() + 2); // the +2 is to include the
             // dividers
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
             ViewHolder holder;
             int type = getItemViewType(position);
 
@@ -575,7 +549,9 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                         break;
                     }
                 }
-                convertView.setTag(holder);
+                if (convertView != null) {
+                    convertView.setTag(holder);
+                }
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
@@ -596,7 +572,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         @Override
         public Filter getFilter() {
-            // TODO Auto-generated method stub
             return null;
         }
 
