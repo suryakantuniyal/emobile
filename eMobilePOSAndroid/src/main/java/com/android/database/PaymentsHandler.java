@@ -1183,6 +1183,7 @@ public class PaymentsHandler {
             Log.d("Exception", e.getMessage() + " [com.android.emobilepos.PaymentsHandler (at Class.insertDeclined)]");
         } finally {
             myPref.setLastPayID(payment.pay_id);
+            lastPaymentInserted = payment;
             DBManager._db.endTransaction();
         }
     }
