@@ -49,6 +49,7 @@ public class TaxesCalculator {
         this.taxID = taxID;
         this.taxSelected = taxSelected;
         this.discountSelected = discountSelected;
+        setDiscountValue();
         calculateTaxes();
     }
 
@@ -244,6 +245,10 @@ public class TaxesCalculator {
                 BigDecimal total = getDiscountable_sub_total().subtract(getItemsDiscountTotal());
                 setDiscount_amount(total.multiply(getDiscount_rate()).setScale(2, RoundingMode.HALF_UP));
             }
+        } else {
+            discount_rate = new BigDecimal("0");
+            discount_amount = new BigDecimal("0");
+            discountID = "";
         }
 
         Global.discountAmount = getDiscount_amount();
@@ -270,9 +275,9 @@ public class TaxesCalculator {
             BigDecimal orderTaxesTotal = tempTaxes.getTax_amount().isEmpty() ? new BigDecimal(0.00) : new BigDecimal(tempTaxes.getTax_amount());
             if (_subtotal.compareTo(new BigDecimal("0.00")) != 0) {
                 if (isVat)
-                    orderTaxesTotal= orderTaxesTotal.add(tax_amount.multiply(qty.abs()).setScale(2, RoundingMode.HALF_UP));
+                    orderTaxesTotal = orderTaxesTotal.add(tax_amount.multiply(qty.abs()).setScale(2, RoundingMode.HALF_UP));
                 else
-                    orderTaxesTotal= orderTaxesTotal.add(tax_amount).setScale(4, RoundingMode.HALF_UP);
+                    orderTaxesTotal = orderTaxesTotal.add(tax_amount).setScale(4, RoundingMode.HALF_UP);
             }
             tempTaxes.setTax_amount(orderTaxesTotal.toString());
             global.listOrderTaxes.set(j, tempTaxes);
@@ -302,9 +307,9 @@ public class TaxesCalculator {
             BigDecimal orderTaxesTotal = tempTaxes.getTax_amount().isEmpty() ? new BigDecimal(0.00) : new BigDecimal(tempTaxes.getTax_amount());
             if (_sub_total.compareTo(new BigDecimal("0.00")) != 0) {
                 if (isVat)
-                    orderTaxesTotal= orderTaxesTotal.add(tax_amount.multiply(qty)).setScale(2, RoundingMode.HALF_UP);
+                    orderTaxesTotal = orderTaxesTotal.add(tax_amount.multiply(qty)).setScale(2, RoundingMode.HALF_UP);
                 else
-                    orderTaxesTotal= orderTaxesTotal.add(tax_amount).setScale(4, RoundingMode.HALF_UP);
+                    orderTaxesTotal = orderTaxesTotal.add(tax_amount).setScale(4, RoundingMode.HALF_UP);
 
             }
             tempTaxes.setTax_amount(orderTaxesTotal.toString());

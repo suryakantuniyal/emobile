@@ -41,8 +41,7 @@ public class MenuCatGV_Adapter extends CursorAdapter
 	public interface ItemClickedCallback{
 		void itemClicked(int position, boolean showAllProducts);
 	}
-	
-	
+
 	public MenuCatGV_Adapter(Catalog_FR _this,Activity context, Cursor c, int flags,ImageLoader _imageLoader) 
 	{
 		super(context, c, flags);
@@ -57,7 +56,6 @@ public class MenuCatGV_Adapter extends CursorAdapter
 			options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true).
 				imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
 		else
-
 			options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true).
 				imageScaleType(ImageScaleType.IN_SAMPLE_INT).showImageOnLoading(R.drawable.loading_image)
 				.showImageForEmptyUri(R.drawable.no_image).build();
