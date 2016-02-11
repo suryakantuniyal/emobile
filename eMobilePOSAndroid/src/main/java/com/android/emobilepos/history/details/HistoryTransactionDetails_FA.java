@@ -242,6 +242,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         if (orderHashMap.get("isVoid") != null && (orderHashMap.get("isVoid").equals("1") || !curDate.equals(getOrderData("ord_timecreated")))) {
             btnVoid.setEnabled(false);
             btnVoid.setClickable(false);
+        }else{
+            btnVoid.setEnabled(true);
+            btnVoid.setClickable(true);
         }
 
 
@@ -297,27 +300,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     promptManagerPassword();
                 } else {
                     confirmVoid();
-//				btnVoid.setBackgroundResource(R.drawable.disabled_gloss_button_selector);
-//				btnVoid.setClickable(false);
-//				if(myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
-//				{
-//					StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
-//					if(dbStoredPayments.getRetryTransCount(order_id)>0)
-//					{
-//						//there are pending stored&forward cannot void
-//						Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_pending_stored_forward));
-//						btnVoid.setClickable(true);
-//						btnVoid.setBackgroundResource(R.drawable.blue_button_selector);
-//						
-//					}
-//					else
-//					{
-//						voidTransaction();
-//					}
-//					
-//				}
-//				else
-//					voidTransaction();
                 }
                 break;
         }
@@ -614,7 +596,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 startVoidingTransaction();
             }
@@ -623,7 +604,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -702,17 +682,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
 
-        //private String[]returnedPost;
-        boolean wasProcessed = false;
         HashMap<String, String> parsedMap = new HashMap<String, String>();
-        private String errorMsg = "Could not process the payment.";
-        private int errCount = 0;
 
 
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Voiding Payments...");
+            myProgressDialog.setMessage(getString(R.string.voiding_payments));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -721,7 +697,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
 
             int size = listVoidPayments.size();
             EMSPayGate_Default payGate;
@@ -752,7 +727,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                             payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
                         else
-                            errCount++;
+                            ;
                         parsedMap.clear();
                     } else if (paymentType.equals("CASH")) {
 
@@ -770,18 +745,15 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                             payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
                         else
-                            errCount++;
+                            ;
 
                         parsedMap.clear();
                     }
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 StringBuilder sb = new StringBuilder();
                 sb.append(e.getMessage()).append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
             }
 
 
@@ -791,7 +763,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         @Override
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
-
+            btnVoid.setEnabled(false);
+            btnVoid.setClickable(false);
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
         }
     }

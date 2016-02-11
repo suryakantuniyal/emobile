@@ -643,7 +643,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices") ||
-                        (emvContainer!=null && emvContainer.getGeniusResponse()!=null &&
+                        (emvContainer != null && emvContainer.getGeniusResponse() != null &&
                                 emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
@@ -881,7 +881,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if (overAllRemainingBalance > 0) {
 
                 GenerateNewID generator = new GenerateNewID(this);
-                previous_pay_id = pay_id;
+                previous_pay_id = PaymentsHandler.getLastPaymentInserted().pay_id;
                 // pay_id = generator.generate(pay_id,1);
                 pay_id = generator.getNextID(IdType.PAYMENT_ID);
                 String temp = Global.formatDoubleStrToCurrency("0.00");
@@ -904,6 +904,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         } else {
             if (emvContainer != null && emvContainer.getGeniusResponse() != null &&
                     emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
+                previous_pay_id = PaymentsHandler.getLastPaymentInserted().pay_id;
                 showPaymentSuccessDlog(true, emvContainer);
             }
         }

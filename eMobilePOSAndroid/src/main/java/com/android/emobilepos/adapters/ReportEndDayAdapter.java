@@ -79,7 +79,8 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         getPayments();
         getARTransactions();
 
-        listSize = listSummary.size() + listOrdTypes.size() + listARTrans.size() + listSold.size() + listReturned.size() + listDeptSales.size() + listDeptReturns.size() + listPayment.size()
+        listSize = listSummary.size() + listOrdTypes.size() + listARTrans.size() + listSold.size() +
+                listReturned.size() + listDeptSales.size() + listDeptReturns.size() + listPayment.size()
                 + listVoid.size() + listRefund.size() + listShifts.size();
 
     }
@@ -182,25 +183,21 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     private void getARTransactions() {
         listARTrans = ordHandler.getARTransactionsDayReport(clerk_id, mDate);
-
         i_ar_trans = i_refund + listARTrans.size();
     }
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
         return listSize;
     }
 
     @Override
     public Object getItem(int position) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -226,7 +223,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
             return TYPE_VOID;
         else if (position >= i_void && position < i_refund)
             return TYPE_REFUND;
-        else if (position >= i_refund && position < i_ar_trans)
+        else if (position >= i_refund)
             return TYPE_AR_TRANS;
         else
             return 0;
@@ -234,12 +231,11 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     @Override
     public int getViewTypeCount() {
-        return 10;
+        return 11;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
         int viewType = getItemViewType(position);
 
         if (convertView == null) {
@@ -296,7 +292,6 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
             case TYPE_PAYMENT:
             case TYPE_VOID:
             case TYPE_REFUND:
-
             case TYPE_AR_TRANS:
                 convertView = inflater.inflate(R.layout.adapter_report_payment, parent, false);
                 mHolder.tvPayType = (TextView) convertView.findViewById(R.id.tvPayType);
@@ -375,9 +370,9 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listRefund.get(position - i_void).pay_tip));
                 break;
             case TYPE_AR_TRANS:
-            /*mHolder.tvPayType.setText(listPayment.get(position-i_refund).card_type);
-			mHolder.tvPayAmount.setText(listPayment.get(position-i_refund).pay_amount);
-			mHolder.tvPayTip.setText(listPayment.get(position-i_refund).pay_tip);*/
+                mHolder.tvPayType.setText(listARTrans.get(position - i_refund).ord_timecreated);
+                mHolder.tvPayAmount.setText(listARTrans.get(position - i_refund).cust_name);
+                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listARTrans.get(position - i_refund).ord_total));
                 break;
         }
 
@@ -386,7 +381,6 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
 
         if (convertView == null) {
             mHeaderHolder = new HeaderViewHolder();
@@ -438,7 +432,6 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     @Override
     public long getHeaderId(int position) {
-        // TODO Auto-generated method stub
         if (position < i_summary)
             return TYPE_SUMMARY;
         else if (position >= i_summary && position < i_shifts)

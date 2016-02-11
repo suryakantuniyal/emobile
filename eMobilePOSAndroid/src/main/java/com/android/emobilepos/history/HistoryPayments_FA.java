@@ -78,7 +78,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                // TODO Auto-generated method stub
                 Intent intent = new Intent(arg0.getContext(), HistoryPaymentDetails_FA.class);
                 intent.putExtra("histpay", true);
                 CustomCursorAdapter.ViewHolder myHolder = (CustomCursorAdapter.ViewHolder) view.getTag();
@@ -89,7 +88,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
                 intent.putExtra("pay_amount", myCursor.getString(myCursor.getColumnIndex("pay_amount")));
                 intent.putExtra("cust_name", myCursor.getString(myCursor.getColumnIndex("cust_name")));
                 intent.putExtra("isDeclined", myHolder.isDeclined);
-
+                intent.putExtra("isVoid", myCursor.getString(myHolder.i_isVoid).equalsIgnoreCase("1"));
                 intent.putExtra("paymethod_name", paymethod_name);
 
                 startActivity(intent);
@@ -102,7 +101,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // TODO Auto-generated method stub
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String text = v.getText().toString().trim();
                     if (!text.isEmpty())
@@ -118,19 +116,16 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
                 String test = s.toString().trim();
                 if (test.isEmpty()) {
                     if (myCursor != null)
@@ -159,9 +154,10 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onResume() {
-
-        if (global.isApplicationSentToBackground(activity))
+        getCursorData(currSelectedTab);
+        if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
+        }
         global.stopActivityTransitionTimer();
 
         if (hasBeenCreated && !global.loggedIn) {
@@ -241,6 +237,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
         }
         adapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         lView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private void updateMyTabs(String tabID, int placeHolder) {
@@ -328,31 +325,27 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
     public class CustomCursorAdapter extends CursorAdapter {
         LayoutInflater inflater;
         ViewHolder myHolder;
-        String temp = new String();
-        String empStr = "";
+        String temp = "";
 
         public CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
-            // TODO Auto-generated constructor stub
             inflater = LayoutInflater.from(context);
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            // TODO Auto-generated method stubs
-
             myHolder = (ViewHolder) view.getTag();
 
             temp = cursor.getString(myHolder.i_cust_name);
             if (temp == null)
-                temp = empStr;
+                temp = "";
             if (!temp.isEmpty())
                 temp = " (" + temp + ")";
             myHolder.title.setText(cursor.getString(myHolder.i_id) + temp);
 
             temp = cursor.getString(myHolder.i_pay_amount);
             if (temp == null && !temp.isEmpty())
-                temp = empStr;
+                temp = "";
             else
                 temp = Global.formatDoubleStrToCurrency(temp);
 
@@ -380,7 +373,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            // TODO Auto-generated method stub
 
             View retView = inflater.inflate(R.layout.histpay_lvadapter, parent, false);
 

@@ -1161,5 +1161,9 @@
 	<string name="splited_order_price">Price</string>
 	<string name="addseat_btn">Add Seat</string>
 	<string name="elipses">...</string>
+	<string name="voiding_payments">Voiding Payments...</string>
+	<string name="processing_refund">Processing Refund...</string>
+	<string name="coundnot_proceess_payment">Could not process the payment.</string>
+	<string name="endofday_report">End of day report</string>
 
 </resources>

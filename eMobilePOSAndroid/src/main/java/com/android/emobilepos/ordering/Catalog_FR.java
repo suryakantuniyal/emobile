@@ -74,8 +74,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public static List<String> btnListID = new ArrayList<String>();
     public static List<String> btnListName = new ArrayList<String>();
     private AbsListView catalogList;
-    //private SQLiteDatabase db;
-    private DBManager dbManager;
     private ImageLoader imageLoader;
     private Cursor myCursor;
     private LinearLayout catButLayout;
@@ -83,7 +81,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private Global global;
     private boolean onRestaurantMode = false;
     private boolean restModeViewingProducts = false;
-
 
     private VolumePricesHandler volPriceHandler;
     private MenuCatGV_Adapter categoryListAdapter;
@@ -117,8 +114,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         catalogList.setOnItemClickListener(this);
         catalogIsPortrait = Global.isPortrait(getActivity());
         callBackRefreshView = (RefreshReceiptViewCallback) getActivity();
-        dbManager = new DBManager(getActivity());
-        //db = dbManager.openReadableDB();
         volPriceHandler = new VolumePricesHandler(getActivity());
         myPref = new MyPreferences(getActivity());
         imageLoader = ImageLoader.getInstance();
@@ -434,20 +429,20 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void loadCursor() {
-        //OrderingMain_FA.invisibleSearchMain.requestFocus();
         getLoaderManager().initLoader(THE_LOADER, null, this).forceLoad();
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
+        Catalog_Loader loader = new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
+        return loader;
     }
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        myCursor.close();
+
     }
 
     @Override
@@ -465,6 +460,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         }
 
     }
+
 
     public int measureCellWidth(Context context, View cell) {
         // We need a fake parent
@@ -484,8 +480,13 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-        // TODO Auto-generated method stub
-        catalogList.setAdapter(null);
+        myCursor.close();
+        if (categoryListAdapter != null) {
+            categoryListAdapter.swapCursor(null);
+        }
+        if (catalogList != null) {
+            catalogList.setAdapter(null);
+        }
     }
 
     @Override

@@ -359,7 +359,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         TaxesCalculator taxesCalculator = new TaxesCalculator(activity, myPref, global.orderProducts.get(i), Global.taxID,
                 taxSelected, discountSelected, discountable_sub_total, itemsDiscountTotal, listMapTaxes);
-        tempTaxableAmount = taxesCalculator.getTaxableAmount();
+        tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
 //
 //        String taxAmount = "0.00";
 //        String prod_taxId = "";
