@@ -45,6 +45,7 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DinningTable;
@@ -190,7 +191,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         handleFragments();
         setupTitle();
         setCustomerShipToAddress();
-        setBillSplitSelection();
         invisibleSearchMain.addTextChangedListener(textWatcher());
         invisibleSearchMain.requestFocus();
 
@@ -209,12 +209,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         hasBeenCreated = true;
-    }
-
-    private void setBillSplitSelection() {
-        if (isToGo) {
-            findViewById(R.id.splitBillSection).setVisibility(View.INVISIBLE);
-        }
     }
 
 
@@ -475,19 +469,32 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private void showPopMenu(View v) {
-        //Creating the instance of PopupMenu
+        final OrderProductListAdapter.OrderSeatProduct orderSeatProduct = (OrderProductListAdapter.OrderSeatProduct) v.getTag();
         PopupMenu popup = new PopupMenu(this, v);
-        //Inflating the Popup using xml file
         popup.getMenuInflater().inflate(R.menu.receiptlist_header_menu, popup.getMenu());
-
-        //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(OrderingMain_FA.this, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+
+                switch (item.getItemId()) {
+                    case R.id.deleteSeat:
+                        String seatNumber = orderSeatProduct.seatNumber;
+                        removeSeat(seatNumber);
+                        break;
+                    case R.id.moveSeatItems:
+
+                        break;
+                    case R.id.joinSeats:
+
+                        break;
+                }
                 return true;
             }
         });
-        popup.show();//showing popup menu
+        popup.show();
+    }
+
+    private void removeSeat(String seatNumber) {
+        leftFragment.mainLVAdapter.removeSeat(seatNumber);
     }
 
 

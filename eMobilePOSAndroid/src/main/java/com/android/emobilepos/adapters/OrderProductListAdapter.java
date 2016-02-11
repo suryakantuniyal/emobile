@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +63,22 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public void addSeat() {
         seatsAmount++;
+        notifyDataSetChanged();
+    }
+
+    public void removeSeat(String seatNumber) {
+        List<OrderSeatProduct> seatsToRemove = new ArrayList<OrderSeatProduct>();
+        List<OrderProduct> productsToRemove = new ArrayList<OrderProduct>();
+
+        for (OrderSeatProduct seatProduct : orderSeatProductList) {
+            if (seatProduct.rowType == RowType.TYPE_HEADER && seatProduct.seatNumber.equalsIgnoreCase(seatNumber)) {
+                seatsToRemove.add(seatProduct);
+            } else if (seatProduct.rowType == RowType.TYPE_ITEM && seatProduct.orderProduct.assignedSeat.equalsIgnoreCase(seatNumber)) {
+                productsToRemove.add(seatProduct.orderProduct);
+            }
+        }
+        orderSeatProductList.removeAll(seatsToRemove);
+        orderProducts.removeAll(productsToRemove);
         notifyDataSetChanged();
     }
 
@@ -132,6 +149,7 @@ public class OrderProductListAdapter extends BaseAdapter {
             case TYPE_HEADER:
                 Button menuButton = (Button) convertView.findViewById(R.id.headerMenubutton);
                 menuButton.setOnClickListener((OrderingMain_FA) activity);
+                menuButton.setTag(orderSeatProductList.get(position));
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
                 ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText("Seat " + orderSeatProductList.get(position).seatNumber);

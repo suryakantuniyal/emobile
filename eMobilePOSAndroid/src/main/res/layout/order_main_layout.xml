@@ -12,50 +12,23 @@
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical">
 
-        <LinearLayout
-            android:id="@+id/splitBillSection"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="0.4"
-            android:orientation="horizontal"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp">
-
-            <Spinner
-                android:id="@+id/splitBillOptionsSpinner"
-                style="@style/action_button_text_appearance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_weight="0.40"
-                android:background="@drawable/action_button_selector"
-                android:entries="@array/salesReceiptSplitTypes"
-                android:paddingLeft="5dp"
-                android:paddingRight="14dp"
-                android:textSize="@dimen/large_button_text_size" />
-
-
-        </LinearLayout>
-
         <TextView
             android:id="@+id/headerTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal"
             android:padding="@dimen/header_txt_padding"
             android:text="@string/sales_receipt_title"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_bar_text_size" />
+            android:textSize="@dimen/header_bar_text_size"
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/btnCheckOut"
             style="@style/action_button_text_appearance"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:layout_weight="0.40"
             android:background="@drawable/action_button_selector"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
@@ -64,11 +37,10 @@
 
         <EditText
             android:id="@+id/invisibleSearchMain"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_weight="0"></EditText>
+            android:layout_centerVertical="true"></EditText>
 
 
     </LinearLayout>

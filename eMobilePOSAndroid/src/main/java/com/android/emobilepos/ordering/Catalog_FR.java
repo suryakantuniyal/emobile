@@ -144,8 +144,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 _typeCase = CASE_PRODUCTS;
         }
 
-//        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
-//        catalogList.setAdapter(prodListAdapter);
         catalogList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -159,11 +157,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     if (lastInScreen == totalItemCount) {
                         page++;
                         new CatalogProductLoader().execute(totalItemCount);
-//                        myCursor.close();
-//                        Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), totalItemCount + Integer.parseInt(getString(R.string.sqlLimit)), 1);
-//                        myCursor = catalog_loader.loadInBackground();
-//                        prodListAdapter.swapCursor(myCursor);
-//                        prodListAdapter.notifyDataSetChanged();
                     }
                 }
             }

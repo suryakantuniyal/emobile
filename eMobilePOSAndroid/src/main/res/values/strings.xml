@@ -1165,5 +1165,6 @@
 	<string name="processing_refund">Processing Refund...</string>
 	<string name="coundnot_proceess_payment">Could not process the payment.</string>
 	<string name="endofday_report">End of day report</string>
+	<string name="subtotal_receipt">Sub Total:</string>
 
 </resources>
