@@ -490,11 +490,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 return true;
             }
         });
+        popup.getMenu().findItem(R.id.deleteSeat).setEnabled(!orderSeatProduct.isDeleted);
         popup.show();
     }
 
     private void removeSeat(String seatNumber) {
         leftFragment.mainLVAdapter.removeSeat(seatNumber);
+        leftFragment.reCalculate();
     }
 
 
@@ -887,12 +889,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
                 if (s.toString().contains("\n") || s.toString().contains("\r"))
                     doneScanning = true;
             }
@@ -902,7 +902,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void updateHeaderTitle(String val) {
-        // TODO Auto-generated method stub
         headerTitle.setText(val);
         if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && rightFragment != null) {
             rightFragment.loadCursor();
@@ -917,7 +916,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     scannerInDecodeMode = false;
                     DoScan();
                 } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             } else
@@ -933,7 +931,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 scannerInDecodeMode = true;
             }
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

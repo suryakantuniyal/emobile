@@ -712,10 +712,11 @@ public class SalesTab_FR extends Fragment {
             @Override
             public void onClick(View v) {
                 salesInvoices.setVisibility(View.GONE);
-                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                 myPref.resetCustInfo(getString(R.string.no_customer));
                 isCustomerSelected = false;
-                startActivityForResult(intent, 0);
+                askEatInToGo();
+//                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+//                startActivityForResult(intent, 0);
                 dialog.dismiss();
             }
         });

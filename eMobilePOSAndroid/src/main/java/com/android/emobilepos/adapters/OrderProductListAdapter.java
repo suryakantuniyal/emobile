@@ -46,7 +46,6 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     List<OrderProduct> orderProducts;
-    int seatsAmount;
     public List<OrderSeatProduct> orderSeatProductList;
     private MyPreferences myPref;
     Activity activity;
@@ -57,40 +56,61 @@ public class OrderProductListAdapter extends BaseAdapter {
         myPref = new MyPreferences(activity);
         this.activity = activity;
         this.orderProducts = orderProducts;
-        this.seatsAmount = seatsAmount;
-        refreshList();
+        initSeats(seatsAmount);
+    }
+
+    private void initSeats(int seatsAmount) {
+        orderSeatProductList = new ArrayList<OrderSeatProduct>();
+        if (seatsAmount > 0) {
+            for (int i = 0; i < seatsAmount; i++) {
+                orderSeatProductList.add(new OrderSeatProduct(String.valueOf(i + 1)));
+            }
+        }
     }
 
     public void addSeat() {
-        seatsAmount++;
+        orderSeatProductList.add(new OrderSeatProduct(String.valueOf(orderSeatProductList.size())));
         notifyDataSetChanged();
     }
+
+//    private void reorderSeatsProducts() {
+//        List<OrderSeatProduct> list = new ArrayList<OrderSeatProduct>();
+//        int seat = 1;
+//        for (OrderSeatProduct seatProduct : orderSeatProductList) {
+//            if (seatProduct.rowType == RowType.TYPE_HEADER) {
+//                list.add(new OrderSeatProduct(String.valueOf(seat)));
+//                for (OrderProduct product : orderProducts) {
+//                    if (product.assignedSeat.equalsIgnoreCase(seatProduct.seatNumber)) {
+//                        product.assignedSeat = String.valueOf(seat);
+//                        list.add(new OrderSeatProduct(product));
+//                    }
+//                }
+//                seat++;
+//            }
+//        }
+//        orderSeatProductList = list;
+//        super.notifyDataSetChanged();
+//    }
 
     public void removeSeat(String seatNumber) {
-        List<OrderSeatProduct> seatsToRemove = new ArrayList<OrderSeatProduct>();
-        List<OrderProduct> productsToRemove = new ArrayList<OrderProduct>();
-
         for (OrderSeatProduct seatProduct : orderSeatProductList) {
             if (seatProduct.rowType == RowType.TYPE_HEADER && seatProduct.seatNumber.equalsIgnoreCase(seatNumber)) {
-                seatsToRemove.add(seatProduct);
-            } else if (seatProduct.rowType == RowType.TYPE_ITEM && seatProduct.orderProduct.assignedSeat.equalsIgnoreCase(seatNumber)) {
-                productsToRemove.add(seatProduct.orderProduct);
+                seatProduct.isDeleted = true;
             }
         }
-        orderSeatProductList.removeAll(seatsToRemove);
-        orderProducts.removeAll(productsToRemove);
-        notifyDataSetChanged();
     }
 
-    private List<OrderSeatProduct> getOrderSeatProductList() {
+    private List<OrderSeatProduct> getValidOrderSeatProductList() {
         ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
-        if (seatsAmount > 0) {
-            for (int i = 0; i < seatsAmount; i++) {
-                l.add(new OrderSeatProduct(String.valueOf(i + 1)));
-                for (OrderProduct product : orderProducts) {
-                    if (product != null && product.assignedSeat != null &&
-                            product.assignedSeat.equalsIgnoreCase(String.valueOf(i + 1))) {
-                        l.add(new OrderSeatProduct(product));
+        if (orderSeatProductList.size() > 0) {
+            for (OrderSeatProduct seatProduct : orderSeatProductList) {
+                if (!seatProduct.isDeleted) {
+                    l.add(new OrderSeatProduct(seatProduct.seatNumber));
+                    for (OrderProduct product : orderProducts) {
+                        if (product != null && product.assignedSeat != null &&
+                                product.assignedSeat.equalsIgnoreCase(seatProduct.seatNumber)) {
+                            l.add(new OrderSeatProduct(product));
+                        }
                     }
                 }
             }
@@ -105,7 +125,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     private void refreshList() {
-        orderSeatProductList = getOrderSeatProductList();
+        orderSeatProductList = getValidOrderSeatProductList();
     }
 
     @Override
@@ -157,6 +177,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                     convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_flat_button));
                 } else
                     convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_gradient_header_horizontal));
+                convertView.setVisibility(orderSeatProductList.get(position).isDeleted ? View.GONE : View.VISIBLE);
                 break;
             case TYPE_ITEM:
                 convertView.setBackgroundDrawable(null);
@@ -183,6 +204,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public class OrderSeatProduct {
+        public boolean isDeleted;
         public RowType rowType;
         public String seatNumber;
         public OrderProduct orderProduct;
