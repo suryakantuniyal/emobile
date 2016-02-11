@@ -424,8 +424,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void addProductServices() {
-        // TODO Auto-generated method stub
-
         // receiptContainer.startAnimation(AnimationUtils.loadAnimation(this,
         // R.anim.anim_right_left));
 
@@ -453,7 +451,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void refreshView() {
-        // TODO Auto-generated method stub
         if (leftFragment != null)
             leftFragment.refreshView();
         if (rightFragment != null)
@@ -550,7 +547,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 mDecodeManager.disableSymbology(CommonDefine.SymbologyID.SYM_CODE39);
                 mDecodeManager.setSymbologyDefaults(CommonDefine.SymbologyID.SYM_UPCA);
             } catch (RemoteException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -573,7 +569,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     mDecodeManager.release();
                     mDecodeManager = null;
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -831,12 +826,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
                 if (s.toString().contains("\n") || s.toString().contains("\r"))
                     doneScanning = true;
             }
@@ -846,7 +839,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void updateHeaderTitle(String val) {
-        // TODO Auto-generated method stub
         headerTitle.setText(val);
         if ((Global.consignmentType == Global.OrderType.CONSIGNMENT_FILLUP || Global.consignmentType == Global.OrderType.CONSIGNMENT_RETURN) && rightFragment != null) {
             rightFragment.loadCursor();
@@ -861,7 +853,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     scannerInDecodeMode = false;
                     DoScan();
                 } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             } else
@@ -877,7 +868,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 scannerInDecodeMode = true;
             }
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -957,14 +947,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void startLoyaltySwiper() {
-        // TODO Auto-generated method stub
         showMSRprompt(true);
         loyaltySwiped = true;
     }
 
     @Override
     public void startRewardSwiper() {
-        // TODO Auto-generated method stub
         showMSRprompt(false);
         loyaltySwiped = false;
     }
