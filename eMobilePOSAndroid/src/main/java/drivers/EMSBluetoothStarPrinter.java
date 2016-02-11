@@ -411,7 +411,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printReport(String curDate) {
-        // TODO Auto-generated method stub
 
         try {
             // port = StarIOPort.getPort(portName, portSettings, 10000,

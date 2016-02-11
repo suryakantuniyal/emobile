@@ -46,7 +46,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
-    private EMSCallBack callBack, scannerCallBack;
+    private EMSCallBack scannerCallBack;
     private boolean isAutoConnect = false;
     private Global global;
     private PowaHidScanner powaHidDecoderScanner;
@@ -166,7 +166,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-
         this.edm = edm;
         thisInstance = this;
 
@@ -190,13 +189,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
-
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-
         this.edm = edm;
         thisInstance = this;
-
         isAutoConnect = true;
         global = (Global) activity.getApplication();
 
@@ -213,7 +209,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
                     @Override
                     public void run() {
                         Looper.prepare();
-
                         powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);
                         powaPOS.initializeMCU(true);
                         powaPOS.initializeScanner();
@@ -236,16 +231,13 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public boolean isUSBConnected() {
         UsbManager manager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
-
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
         Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
         return !deviceList.isEmpty();
-
     }
 
     @Override
     public void toggleBarcodeReader() {
-
     }
 
     @Override
@@ -267,10 +259,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
-
-
         return true;
     }
 
@@ -281,29 +270,25 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void setBitmap(Bitmap bmp) {
-
     }
 
     @Override
     public void playSound() {
-
     }
 
     @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
-//        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-        //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
     public boolean printReport(String curDate) {
-
         printReportReceipt(curDate, LINE_WIDTH);
-
         return true;
     }
 
@@ -319,21 +304,16 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-
         printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
-
-
         return true;
     }
 
     @Override
     public void releaseCardReader() {
-        callBack = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        callBack = _callBack;
     }
 
     @Override
