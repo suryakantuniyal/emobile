@@ -226,10 +226,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
             } catch (Exception e) {
             }
+            this.edm.driverDidConnectToDevice(thisInstance, false);
         } else {
             global.promptForMandatoryLogin(activity);
         }
-        this.edm.driverDidConnectToDevice(thisInstance, false);
         return true;
     }
 
@@ -276,13 +276,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public boolean printOnHold(Object onHold) {
-        // TODO Auto-generated method stub
         return true;
     }
 
     @Override
     public void setBitmap(Bitmap bmp) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -298,12 +296,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
- //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
     public boolean printReport(String curDate) {
-        // TODO Auto-generated method stub
 
         printReportReceipt(curDate, LINE_WIDTH);
 
@@ -312,13 +309,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
     }
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = null;
     }
 
@@ -333,20 +328,16 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void releaseCardReader() {
-        // TODO Auto-generated method stu
         callBack = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        // TODO Auto-generated method stub
         callBack = _callBack;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-        // TODO Auto-generated method stub
-
         printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         return true;
@@ -354,8 +345,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        // TODO Auto-generated method stub
-
         printOpenInvoicesReceipt(invID, LINE_WIDTH);
 
         return true;
@@ -363,26 +352,24 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void printStationPrinter(List<Orders> orders, String ordID) {
-        // TODO Auto-generated method stub
-
         printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
 
     }
 
     @Override
     public void openCashDrawer() {
-        // TODO Auto-generated method stub
 
         new Thread(new Runnable() {
             public void run() {
-                powaPOS.openCashDrawer();
+                if (powaPOS != null) {
+                    powaPOS.openCashDrawer();
+                }
             }
         }).start();
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        // TODO Auto-generated method stub
         printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
         return true;
@@ -390,7 +377,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
-        // TODO Auto-generated method stub
         scannerCallBack = _callBack;
         if (handler == null)
             handler = new Handler();
@@ -431,7 +417,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         @Override
         protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
 
             try {
                 powaPOS = new PowaPOS(EMSPowaPOS.this.activity, mPowaPOSCallback);

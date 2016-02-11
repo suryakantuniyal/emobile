@@ -481,8 +481,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
         myCursor.close();
-        categoryListAdapter.swapCursor(null);
-        catalogList.setAdapter(null);
+        if (categoryListAdapter != null) {
+            categoryListAdapter.swapCursor(null);
+        }
+        if (catalogList != null) {
+            catalogList.setAdapter(null);
+        }
     }
 
     @Override

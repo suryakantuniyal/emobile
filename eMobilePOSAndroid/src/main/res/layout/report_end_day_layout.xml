@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/blue_gradient_header_horizontal"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/invoicesHeaderTitle"
@@ -19,35 +19,32 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="End of day report"
+            android:text="@string/endofday_report"
             android:textAppearance="@style/white_text_appearance"
             android:textSize="@dimen/header_bar_text_size" />
 
         <Button
-            style="@style/action_button_text_appearance"
             android:id="@+id/btnPrint"
+            style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/ordering_checkout_btn_height_size"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:background="@drawable/action_button_selector"
-            android:text="Print"
-            android:textSize="@dimen/ordering_checkout_btn_txt_size"
-            android:paddingLeft="5dp"
-            android:paddingRight="14dp" />
+            android:text="@string/button_print" />
     </RelativeLayout>
 
     <Button
-        style="@style/action_button_text_appearance"
         android:id="@+id/btnDate"
+        style="@style/action_button_text_appearance"
         android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:background="@drawable/action_button_selector"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:textSize="@dimen/sales_tab_lv_text_size"
-        android:text="" />
+        android:background="@drawable/action_button_selector"
+        android:text=""
+        android:textSize="@dimen/sales_tab_lv_text_size" />
 
     <se.emilsjolander.stickylistheaders.StickyListHeadersListView
         android:id="@+id/listView"
@@ -55,7 +52,6 @@
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:divider="#B8B8B8"
-        android:dividerHeight="0.1dp" >
-    </se.emilsjolander.stickylistheaders.StickyListHeadersListView>
+        android:dividerHeight="0.1dp"></se.emilsjolander.stickylistheaders.StickyListHeadersListView>
 
 </LinearLayout>

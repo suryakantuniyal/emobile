@@ -806,7 +806,8 @@ public class OrdersHandler {
 
         StringBuilder query = new StringBuilder();
         query.append(
-                "SELECT o.ord_id, c.cust_name , sum(o.ord_total) as 'ord_total',date(o.ord_timecreated,'localtime') as 'date' FROM Orders o LEFT JOIN Customers c ");
+                "SELECT o.ord_id, c.cust_name , sum(o.ord_total) as 'ord_total'," +
+                        "date(o.ord_timecreated,'localtime') as 'date' FROM Orders o LEFT JOIN Customers c ");
         query.append("ON o.cust_id = c.cust_id WHERE o.ord_type = '2' ");
 
         String[] where_values = null;
@@ -828,13 +829,15 @@ public class OrdersHandler {
             int i_ord_id = c.getColumnIndex(ord_id);
             int i_cust_name = c.getColumnIndex("cust_name");
             int i_ord_total = c.getColumnIndex(ord_total);
+            int i_ord_timecreated = c.getColumnIndex("date");
+
             do {
                 if (c.getString(i_ord_id) != null) {
                     Order ord = new Order(activity);
                     ord.ord_id = c.getString(i_ord_id);
                     ord.cust_name = c.getString(i_cust_name);
                     ord.ord_total = c.getString(i_ord_total);
-
+                    ord.ord_timecreated = c.getString(i_ord_timecreated);
                     listOrder.add(ord);
                 }
             } while (c.moveToNext());
