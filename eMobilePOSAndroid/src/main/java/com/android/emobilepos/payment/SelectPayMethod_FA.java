@@ -255,7 +255,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                     @Override
                     public void onClick(View v) {
-                        // TODO Auto-generated method stub
 
                         if (myPref.getPreferences(MyPreferences.pref_require_manager_pass_to_void_trans)) {
                             dialog.dismiss();
@@ -270,7 +269,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                     @Override
                     public void onClick(View v) {
-                        // TODO Auto-generated method stub
                         dialog.dismiss();
                     }
                 });
@@ -451,7 +449,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
 
             ViewHolder holder;
             int type = getItemViewType(position);
@@ -541,25 +538,21 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return payType.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public Filter getFilter() {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -596,7 +589,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(isReprint, emvContainer);
 
@@ -606,7 +598,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))))
@@ -635,8 +626,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected String doInBackground(Object... params) {
-            // TODO Auto-generated method stub
-
             wasReprint = (Boolean) params[0];
 
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
@@ -693,7 +682,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
@@ -746,8 +734,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
-
-        // private String[]returnedPost;
         HashMap<String, String> parsedMap = new HashMap<String, String>();
 
         @Override
@@ -762,8 +748,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             int size = listVoidPayments.size();
             EMSPayGate_Default payGate;
 
@@ -818,13 +802,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     }
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				StringBuilder sb = new StringBuilder();
-//				sb.append(e.getMessage())
-//						.append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
             }
 
             return null;
@@ -1112,8 +1090,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -1160,9 +1136,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
             return null;
         }
@@ -1201,8 +1174,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -1234,9 +1205,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
             }
             return null;
         }
@@ -1272,7 +1241,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
@@ -1289,9 +1257,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         Intent intent = new Intent(activity, ProcessBoloro_FA.class);
-        intent.putExtra("paymethod_id", payType.get(selectedPosition - 1)[0]);
+        intent.putExtra("paymethod_id", payType.get(selectedPosition)[0]);
         switch (v.getId()) {
             case R.id.btnDlogTop:
                 dlog.dismiss();
@@ -1323,18 +1290,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtra("paymethod_id", payType.get(position)[0]);
             initIntents(extras, intent);
         } else if (payType.get(position)[2].equals("Genius")) {
-            // if(extras.getBoolean("salesrefund"))
-            // {
-            // Toast.makeText(activity, "Can't process refund on Genius",
-            // Toast.LENGTH_LONG).show();
-            // }
-            // else
-            // {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
             intent.putExtra("paymethod_id", payType.get(position)[0]);
-
             initIntents(extras, intent);
-            // }
         } else if (payType.get(position)[2].equals("Wallet")) {
             Intent intent = new Intent(activity, ProcessTupyx_FA.class);
             intent.putExtra("paymethod_id", payType.get(position)[0]);
@@ -1355,7 +1313,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 intent.putExtra("isDebit", true);
             else
                 intent.putExtra("isDebit", false);
-
             initIntents(extras, intent);
         }
     }
