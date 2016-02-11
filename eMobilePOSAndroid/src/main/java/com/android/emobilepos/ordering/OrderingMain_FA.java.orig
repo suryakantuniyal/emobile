@@ -442,6 +442,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void addProductServices() {
+<<<<<<< HEAD
+=======
+        // receiptContainer.startAnimation(AnimationUtils.loadAnimation(this,
+        // R.anim.anim_right_left));
+>>>>>>> release/1.1.0.34
+
         catalogContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_right_left));
         catalogContainer.setVisibility(View.VISIBLE);
         receiptContainer.setVisibility(View.GONE);
@@ -480,7 +486,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         removeSeat(seatNumber);
                         break;
                     case R.id.moveSeatItems:
-                        moveSeatItems(leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber));
+
                         break;
                     case R.id.joinSeats:
 
@@ -489,18 +495,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 return true;
             }
         });
-        List<OrderProduct> orderProducts = leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber);
-        popup.getMenu().findItem(R.id.deleteSeat).setEnabled(orderProducts.isEmpty());
+        popup.getMenu().findItem(R.id.deleteSeat).setEnabled(!orderSeatProduct.isDeleted);
         popup.show();
-    }
-
-    private void moveSeatItems(List<OrderProduct> orderProducts) {
-
     }
 
     private void removeSeat(String seatNumber) {
         leftFragment.mainLVAdapter.removeSeat(seatNumber);
-        leftFragment.mainLVAdapter.notifyDataSetChanged();
         leftFragment.reCalculate();
     }
 

@@ -47,6 +47,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     List<OrderProduct> orderProducts;
     public List<OrderSeatProduct> orderSeatProductList;
+    public List<OrderSeatProduct> orderSeatProductFullList;
     private MyPreferences myPref;
     Activity activity;
 
@@ -60,51 +61,48 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     private void initSeats(int seatsAmount) {
+        orderSeatProductFullList = new ArrayList<OrderSeatProduct>();
         orderSeatProductList = new ArrayList<OrderSeatProduct>();
         if (seatsAmount > 0) {
             for (int i = 0; i < seatsAmount; i++) {
                 orderSeatProductList.add(new OrderSeatProduct(String.valueOf(i + 1)));
             }
         }
+        orderSeatProductFullList.addAll(orderSeatProductList);
+    }
+
+    public List<OrderProduct> getOrderProducts(String seatNumber) {
+        List<OrderProduct> l = new ArrayList<OrderProduct>();
+        for (OrderProduct product : orderProducts) {
+            if (product.assignedSeat.equalsIgnoreCase(seatNumber)) {
+                l.add(product);
+            }
+        }
+        return l;
     }
 
     public void addSeat() {
-        orderSeatProductList.add(new OrderSeatProduct(String.valueOf(orderSeatProductList.size())));
+        OrderSeatProduct product = new OrderSeatProduct(String.valueOf(orderSeatProductFullList.size()+1));
+        orderSeatProductList.add(product);
+        orderSeatProductFullList.add(product);
         notifyDataSetChanged();
     }
 
-//    private void reorderSeatsProducts() {
-//        List<OrderSeatProduct> list = new ArrayList<OrderSeatProduct>();
-//        int seat = 1;
-//        for (OrderSeatProduct seatProduct : orderSeatProductList) {
-//            if (seatProduct.rowType == RowType.TYPE_HEADER) {
-//                list.add(new OrderSeatProduct(String.valueOf(seat)));
-//                for (OrderProduct product : orderProducts) {
-//                    if (product.assignedSeat.equalsIgnoreCase(seatProduct.seatNumber)) {
-//                        product.assignedSeat = String.valueOf(seat);
-//                        list.add(new OrderSeatProduct(product));
-//                    }
-//                }
-//                seat++;
-//            }
-//        }
-//        orderSeatProductList = list;
-//        super.notifyDataSetChanged();
-//    }
 
     public void removeSeat(String seatNumber) {
-        for (OrderSeatProduct seatProduct : orderSeatProductList) {
+        for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
             if (seatProduct.rowType == RowType.TYPE_HEADER && seatProduct.seatNumber.equalsIgnoreCase(seatNumber)) {
                 seatProduct.isDeleted = true;
             }
         }
+        notifyDataSetChanged();
     }
 
     private List<OrderSeatProduct> getValidOrderSeatProductList() {
         ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
-        if (orderSeatProductList.size() > 0) {
-            for (OrderSeatProduct seatProduct : orderSeatProductList) {
-                if (!seatProduct.isDeleted) {
+        if (orderSeatProductFullList.size() > 0) {
+            for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
+                if (seatProduct.rowType == RowType.TYPE_HEADER && !seatProduct.isDeleted) {
                     l.add(new OrderSeatProduct(seatProduct.seatNumber));
                     for (OrderProduct product : orderProducts) {
                         if (product != null && product.assignedSeat != null &&
