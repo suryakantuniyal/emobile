@@ -294,7 +294,7 @@ public class SAXSynchHandler extends DefaultHandler {
 				priceLevelHandler.insert(dataList,dictionaryListMap);
 			else
 			{
-				priceLevelHandler = new PriceLevelHandler(activity);
+				priceLevelHandler = new PriceLevelHandler();
 				priceLevelHandler.emptyTable();
 			}
 			break;

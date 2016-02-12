@@ -117,11 +117,6 @@ public class VolumePricesHandler {
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
         String[] values = new String[2];
         if (cursor.moveToFirst()) {
-            int size = cursor.getCount();
-//            if (size == 1) {
-//                values[0] = cursor.getString(cursor.getColumnIndex(id_key));
-//                values[1] = cursor.getString(cursor.getColumnIndex(price));
-//            } else {
             do {
                 double minQTY = Double.parseDouble(cursor.getString(cursor.getColumnIndex("minQty")));
                 double maxQTY = Double.parseDouble(cursor.getString(cursor.getColumnIndex("maxQty")));
@@ -130,12 +125,7 @@ public class VolumePricesHandler {
                     values[1] = cursor.getString(cursor.getColumnIndex(price));
                     break;
                 }
-//                    else if (cursor.isLast()) {
-//                        values[0] = cursor.getString(cursor.getColumnIndex(id_key));
-//                        values[1] = cursor.getString(cursor.getColumnIndex(price));
-//                    }
             } while (cursor.moveToNext());
-//            }
         }
         cursor.close();
         return values;
