@@ -1316,10 +1316,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-
     @Override
     public void startSignature() {
     }
-
-
 }
