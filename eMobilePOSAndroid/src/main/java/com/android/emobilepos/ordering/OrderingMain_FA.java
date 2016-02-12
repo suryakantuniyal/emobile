@@ -157,7 +157,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         global = (Global) getApplication();
         btnCheckout = (Button) findViewById(R.id.btnCheckOut);
         btnCheckout.setOnClickListener(this);
-
         myPref = new MyPreferences(this);
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
@@ -1251,7 +1250,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         return selectedSeatNumber;
     }
 
-    public void setSelectedSeatNumber(String seatNumber) {
+    public static void setSelectedSeatNumber(String seatNumber) {
         selectedSeatNumber = seatNumber;
 
     }

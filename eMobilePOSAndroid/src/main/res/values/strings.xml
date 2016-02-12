@@ -1166,5 +1166,8 @@
 	<string name="coundnot_proceess_payment">Could not process the payment.</string>
 	<string name="endofday_report">End of day report</string>
 	<string name="subtotal_receipt">Sub Total:</string>
+	<string name="move_product_seat">Change product seat</string>
+	<string name="join_seats">Join Seats</string>
+	<string name="delete_seat">Delete Seat</string>
 
 </resources>

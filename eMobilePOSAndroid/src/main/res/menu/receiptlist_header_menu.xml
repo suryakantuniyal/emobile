@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/deleteSeat"
-        android:title="Delete Seat" />
+<item
+    android:id="@+id/deleteSeat"
+    android:title="@string/delete_seat" />
 
-    <item
-        android:id="@+id/joinSeats"
-        android:title="Join Seats">
-        <menu></menu>
-    </item>
+<item
+    android:id="@+id/joinSeats"
+    android:title="@string/join_seats">
+    <menu></menu>
+</item>
 
-    <item
-        android:id="@+id/moveSeatItems"
-        android:title="Move Seat Items">
-        <menu></menu>
-    </item>
+<item
+    android:id="@+id/moveSeatItems"
+    android:title="@string/move_product_seat">
+    <menu></menu>
+</item>
 </menu>

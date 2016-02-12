@@ -58,6 +58,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         this.activity = activity;
         this.orderProducts = orderProducts;
         initSeats(seatsAmount);
+        OrderingMain_FA.setSelectedSeatNumber(orderSeatProductList.get(0).seatNumber);
     }
 
     private void initSeats(int seatsAmount) {

@@ -19,6 +19,8 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,10 +98,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public TextView custName;
     public static OrderProductListAdapter mainLVAdapter;
     private ReceiptRestLV_Adapter restLVAdapter;
-    // private ListViewAdapter myAdapter;
     public static ListView receiptListView;
-    // private DragSortListView receiptListGuari123
-    // View;
+
 
     private Global.TransactionType caseSelected = Global.TransactionType.SALE_RECEIPT;
     private boolean custSelected;
@@ -582,116 +583,99 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        final int removePos = position;
+        final OrderProductListAdapter.OrderSeatProduct orderSeatProduct = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
+        final int orderProductIdx = orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProduct.orderProduct) : 0;
         if (restLVAdapter != null)
-            position = restLVAdapter.dataPosition(position);
-        final OrderProductListAdapter.OrderSeatProduct item = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
-        if (item.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-            ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(item.seatNumber);
+            position = restLVAdapter.dataPosition(orderProductIdx);
+        if (orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
+            ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(orderSeatProduct.seatNumber);
             mainLVAdapter.notifyDataSetChanged();
         } else {
-            String isVoidedItem = item.orderProduct.item_void;
-
+            String isVoidedItem = orderSeatProduct.orderProduct.item_void;
+            final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
             if (!isVoidedItem.equals("1")) {
-                final Dialog dialog = new Dialog(activity,
-                        R.style.Theme_TransparentTest);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCancelable(true);
-                dialog.setCanceledOnTouchOutside(false);
-                dialog.setContentView(R.layout.picked_item_dialog);
-
-                TextView itemName = (TextView) dialog.findViewById(R.id.itemName);
-                itemName.setText(item.orderProduct.ordprod_name);
-
-                Button remove = (Button) dialog.findViewById(R.id.removeButton);
-                Button cancel = (Button) dialog.findViewById(R.id.cancelButton);
-                Button modify = (Button) dialog.findViewById(R.id.modifyButton);
-                Button overridePrice = (Button) dialog
-                        .findViewById(R.id.overridePriceButton);
-                Button payWithLoyalty = (Button) dialog
-                        .findViewById(R.id.btnPayWithLoyalty);
-
-                final int pos = position;
-                remove.setOnClickListener(new View.OnClickListener() {
-
+                PopupMenu popup = new PopupMenu(getActivity(), view);
+                popup.getMenuInflater().inflate(R.menu.receiptlist_product_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        if (myPref
-                                .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
-                            showPromptManagerPassword(REMOVE_ITEM, pos, removePos);
-                        } else {
-                            proceedToRemove(pos, removePos);
-                            mainLVAdapter.notifyDataSetChanged();
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.modifyProduct:
+                                Intent intent = new Intent(getActivity(),
+                                        PickerProduct_FA.class);
+                                intent.putExtra("isModify", true);
+                                intent.putExtra("modify_position", orderProductIdx);
+                                startActivityForResult(intent, 0);
+
+                                break;
+                            case R.id.removeProduct:
+                                if (myPref
+                                        .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
+                                    showPromptManagerPassword(REMOVE_ITEM, orderProductIdx, orderProductIdx);
+                                } else {
+                                    proceedToRemove(orderProductIdx, orderProductIdx);
+                                    mainLVAdapter.notifyDataSetChanged();
+                                }
+                                break;
+                            case R.id.moveProductSeat:
+                                int i = 0;
+                                for (OrderProductListAdapter.OrderSeatProduct seatProduct : mainLVAdapter.orderSeatProductList) {
+                                    if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
+                                        if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.orderProduct.assignedSeat)) {
+                                            item.getSubMenu().add(0, i, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
+                                            subMenus.put(i, seatProduct.seatNumber);
+                                            i++;
+                                        }
+                                    }
+                                }
+                                break;
+                            case R.id.viewVariations:
+                                break;
+                            case R.id.payWithLoyalty:
+                                if (!Boolean.parseBoolean(global.orderProducts.get(orderProductIdx).payWithPoints)) {
+                                    String price = orderSeatProduct.orderProduct.prod_price_points;
+                                    if (OrderLoyalty_FR.isValidPointClaim(price)) {
+                                        orderSeatProduct.orderProduct.overwrite_price = "0.00";
+                                        orderSeatProduct.orderProduct.itemTotal = "0.00";
+                                        orderSeatProduct.orderProduct.itemSubtotal = "0.00";
+                                        orderSeatProduct.orderProduct.payWithPoints = "true";
+                                        refreshView();
+                                    } else
+                                        Global.showPrompt(activity,
+                                                R.string.dlog_title_error,
+                                                "Not enough points available");
+                                } else {
+                                    Global.showPrompt(activity, R.string.dlog_title_error,
+                                            "Points claimed");
+                                }
+                                break;
+                            case R.id.overridePrice:
+                                if (myPref
+                                        .getPreferences(MyPreferences.pref_skip_manager_price_override)) {
+                                    overridePrice(orderProductIdx);
+                                } else {
+                                    showPromptManagerPassword(OVERWRITE_PRICE, orderProductIdx, orderProductIdx);
+                                }
+                                break;
+                            case R.id.cancel:
+                                break;
+                            default:
+                                if (subMenus.containsKey(new Integer(item.getItemId()))) {
+                                    String targetSeat = subMenus.get(new Integer(item.getItemId()));
+                                    OrderingMain_FA.setSelectedSeatNumber(targetSeat);
+                                    orderSeatProduct.orderProduct.assignedSeat = targetSeat;
+                                    mainLVAdapter.notifyDataSetChanged();
+                                }
+                                break;
                         }
-
-                        dialog.dismiss();
+                        return true;
                     }
                 });
+                popup.show();
 
-                cancel.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-
-                    }
-                });
-
-                modify.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getActivity(),
-                                PickerProduct_FA.class);
-                        intent.putExtra("isModify", true);
-                        intent.putExtra("modify_position", pos);
-                        startActivityForResult(intent, 0);
-
-                        dialog.dismiss();
-                    }
-                });
-
-                overridePrice.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-
-                        if (myPref
-                                .getPreferences(MyPreferences.pref_skip_manager_price_override)) {
-                            overridePrice(pos);
-                        } else {
-                            showPromptManagerPassword(OVERWRITE_PRICE, pos, pos);
-                        }
-                    }
-                });
-
-                payWithLoyalty.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        if (!Boolean.parseBoolean(global.orderProducts.get(pos).payWithPoints)) {
-                            String price = item.orderProduct.prod_price_points;
-                            if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                                item.orderProduct.overwrite_price = "0.00";
-                                item.orderProduct.itemTotal = "0.00";
-                                item.orderProduct.itemSubtotal = "0.00";
-                                item.orderProduct.payWithPoints = "true";
-                                refreshView();
-                            } else
-                                Global.showPrompt(activity,
-                                        R.string.dlog_title_error,
-                                        "Not enough points available");
-                        } else {
-                            Global.showPrompt(activity, R.string.dlog_title_error,
-                                    "Points claimed");
-                        }
-                    }
-                });
-                dialog.show();
             }
         }
     }
-
 
 
     public void checkoutOrder() {
@@ -1964,10 +1948,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void proceedToRemove(int pos, int removePos) {
-        // String quant = global.orderProduct.get(pos).ordprod_qty;
-        // String prodID = global.orderProduct.get(pos).prod_id;
-        OrderProduct product = mainLVAdapter.orderSeatProductList.get(removePos).orderProduct;
-//        OrderProduct product = global.orderProducts.get(pos);
+        OrderProduct product = global.orderProducts.get(removePos);
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             double totalQty = (Double) Global.getFormatedNumber(true,
                     global.qtyCounter.get(product.prod_id));
@@ -2006,8 +1987,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 Global.orderProductAddonsMap.remove(product.ordprod_id);
             }
-            int idx = global.orderProducts.indexOf(product);
-            global.orderProducts.remove(idx);
+            global.orderProducts.remove(product);
         }
 
         receiptListView.invalidateViews();
@@ -2019,63 +1999,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
-//    private class SectionController extends DragSortController {
-//
-//        private ReceiptRestLV_Adapter mAdapter;
-//
-//        DragSortListView mDslv;
-//
-//        public SectionController(DragSortListView dslv,
-//                                 ReceiptRestLV_Adapter adapter) {
-//            super(dslv, R.id.dragDropIcon, DragSortController.ON_DOWN, 0);
-//            setRemoveEnabled(false);
-//            mDslv = dslv;
-//            mAdapter = adapter;
-//        }
-//
-//        @Override
-//        public int startDragPosition(MotionEvent ev) {
-//            int res = super.dragHandleHitPosition(ev);
-//            int width = mDslv.getWidth();
-//
-//            if ((int) ev.getX() > width / 2) {
-//                return res;
-//            } else {
-//                return DragSortController.MISS;
-//            }
-//        }
-//
-//        @Override
-//        public View onCreateFloatView(int position) {
-//            View v = mAdapter.getView(position, null, mDslv);
-//            v.setBackgroundResource(R.drawable.bg_handle_drag_selection);
-//            v.getBackground().setLevel(10000);
-//            return v;
-//        }
-//
-//        private int origHeight = -1;
-//
-//        @Override
-//        public void onDragFloatView(View floatView, Point floatPoint,
-//                                    Point touchPoint) {
-//            if (origHeight == -1) {
-//                origHeight = floatView.getHeight();
-//            }
-//
-//            if (touchPoint.x > mDslv.getWidth() / 2) {
-//                float scale = touchPoint.x - mDslv.getWidth() / 2;
-//                scale /= (float) (mDslv.getWidth() / 5);
-//                ViewGroup.LayoutParams lp = floatView.getLayoutParams();
-//                lp.height = Math.max(origHeight, (int) (scale * origHeight));
-//                floatView.setLayoutParams(lp);
-//            }
-//        }
-//
-//        @Override
-//        public void onDestroyFloatView(View floatView) {
-//            // do nothing; block super from crashing
-//        }
-//    }
 
     public void reCalculate() {
         pagerAdapter.getItem(0);
@@ -2097,7 +2020,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
             TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_choose_action);
-            // viewMsg.setText(R.string.dlog_msg_want_to_make_refund);
             viewMsg.setVisibility(View.GONE);
             Button btnSave = (Button) dlog.findViewById(R.id.btnDlogLeft);
             Button btnLoad = (Button) dlog.findViewById(R.id.btnDlogRight);
@@ -2114,7 +2036,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     handleTemplate.insert(myPref.getCustID());
                     dlog.dismiss();
                     Global.showPrompt(
@@ -2127,8 +2048,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-
-                    // TODO Auto-generated method stub
                     List<HashMap<String, String>> mapList = handleTemplate
                             .getTemplate(myPref.getCustID());
                     int size = mapList.size();
@@ -2182,7 +2101,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     @Override
     public void onDrawerClosed() {
-        // TODO Auto-generated method stub
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) receiptListView
                 .getLayoutParams();
 
