@@ -122,7 +122,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public EMSCallBack callBackMSR;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
-    private EMSRover roverReader;
     private static boolean msrWasLoaded = false;
     private static boolean cardReaderConnected = false;
     private TextView swiperLabel;
@@ -148,7 +147,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
-        callBackMSR = this;
         instance = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
@@ -214,7 +212,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case DecodeManager.MESSAGE_DECODER_COMPLETE:
-                    String strDecodeResult = "";
+                    String strDecodeResult;
                     DecodeResult decodeResult = (DecodeResult) msg.obj;
 
                     strDecodeResult = decodeResult.barcodeData.trim();
@@ -699,10 +697,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         int size = addressDownloadedItems.size();
         if (size == 1) {
             StringBuilder sb = new StringBuilder();
-            String temp = "";
+            String temp;
             for (int i = 0; i < size; i++) {
-                // sb.append("[").append(addressDownloadedItems.get(i)[0]).append("]
-                // ");
+
                 temp = addressDownloadedItems.get(i)[1];
                 if (!temp.isEmpty()) // address 1
                     sb.append(temp).append(" ");
@@ -815,17 +812,17 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
                         voidTransaction();
                     else if (mTransType == Global.TransactionType.CONSIGNMENT) {
-                        if (global.consignment_order != null && !global.consignment_order.ord_id.isEmpty()) {
-                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.consignment_order.ord_id);
+                        if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.consignment_order.ord_id);
                         }
-                        if (global.cons_return_order != null && !global.cons_return_order.ord_id.isEmpty()) {
-                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.cons_return_order.ord_id);
+                        if (Global.cons_return_order != null && !Global.cons_return_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.cons_return_order.ord_id);
                         }
-                        if (global.cons_fillup_order != null && !global.cons_fillup_order.ord_id.isEmpty()) {
-                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.cons_fillup_order.ord_id);
+                        if (Global.cons_fillup_order != null && !Global.cons_fillup_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.cons_fillup_order.ord_id);
                         }
-                        if (global.consignment_order != null && !global.consignment_order.ord_id.isEmpty()) {
-                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.consignment_order.ord_id);
+                        if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
+                            OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.consignment_order.ord_id);
                         }
                     } else {
                         OrdersHandler.deleteTransaction(OrderingMain_FA.this, global.order.ord_id);
@@ -1021,7 +1018,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     private boolean loyaltySwiped = false;
     private Dialog dlogMSR;
-    private EditText swiperHiddenField;
 
     @Override
     public void startLoyaltySwiper() {
@@ -1053,7 +1049,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         }
                     }).start();
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    roverReader = new EMSRover();
+                    EMSRover roverReader = new EMSRover();
                     roverReader.initializeReader(this, false);
                 }
             }
@@ -1104,7 +1100,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Button btnOK = (Button) dlogMSR.findViewById(R.id.btnDlogLeft);
         Button btnCancel = (Button) dlogMSR.findViewById(R.id.btnDlogRight);
         swiperField = (EditText) dlogMSR.findViewById(R.id.dlogFieldSingle);
-        swiperHiddenField = (EditText) dlogMSR.findViewById(R.id.hiddenField);
+        EditText swiperHiddenField = (EditText) dlogMSR.findViewById(R.id.hiddenField);
         swiperHiddenField.addTextChangedListener(hiddenTxtWatcher(swiperHiddenField));
         swiperLabel.setText(R.string.loading);
         swiperLabel.setTextColor(Color.DKGRAY);
@@ -1143,7 +1139,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
 
-        TextWatcher tw = new TextWatcher() {
+        return new TextWatcher() {
             boolean doneScanning = false;
             String temp;
 
@@ -1160,19 +1156,17 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
                 temp = s.toString();
+
                 if (temp.contains(";") && temp.contains("?") && temp.contains("\n"))
                     doneScanning = true;
 
             }
         };
-        return tw;
     }
 
     private void populateCardInfo() {
@@ -1197,8 +1191,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private void processBalanceInquiry(boolean isLoyaltyCard) {
         Payment payment = new Payment(this);
         populateCardInfo();
-
-        PayMethodsHandler payHandler = new PayMethodsHandler(this);
 
         if (isLoyaltyCard)
             payment.paymethod_id = PayMethodsHandler.getPayMethodID("LoyaltyCard");
@@ -1341,9 +1333,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             if (wasProcessed) // payment processing succeeded
             {
-                StringBuilder sb = new StringBuilder();
                 String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
-                sb.append("Card Balance: ").append(Global.getCurrencyFrmt(temp));
                 if (loyaltySwiped) {
                     OrderLoyalty_FR.getFrag().hideTapButton();
                     OrderLoyalty_FR.setPointBalance(temp);
@@ -1414,7 +1404,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
             dbOrders.updateIsVoid(Global.lastOrdID);
             VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(this);
-
             Order order = new Order(this);
             order.ord_id = Global.lastOrdID;
             order.ord_type = global.order.ord_type;
@@ -1434,7 +1423,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdAttr.deleteOrderProduct(val.ordprod_id);
         }
     }
-
 
     @Override
     public void startSignature() {
