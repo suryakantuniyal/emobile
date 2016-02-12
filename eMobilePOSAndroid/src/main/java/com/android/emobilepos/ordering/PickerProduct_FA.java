@@ -69,7 +69,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private String[] leftTitle, leftTitle2;
     private String[] rightTitle = new String[]{"ONE (Default)", "", "", "0.00 <No Discount>"};
     private final int INDEX_UOM = 0, INDEX_CMT = 1, INDEX_PRICE_LEVEL = 2, INDEX_DISCOUNT = 3, OFFSET = 4, MAIN_OFFSET = 3;
-    private List<String[]> listData_LV = new ArrayList<String[]>();
 
 
     private ListViewAdapter lv_adapter;
@@ -244,7 +243,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.itemHeaderImg: //View item image
                 Intent intent = new Intent(activity, ShowProductImageActivity.class);
@@ -259,7 +257,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // TODO Auto-generated method stub
         switch (position) {
             case SEC_QTY:
                 showQtyDlog(view);
@@ -352,7 +349,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
             if (myPref.isCustSelected()) {
-                PriceLevelHandler plHandler = new PriceLevelHandler(activity);
+                PriceLevelHandler plHandler = new PriceLevelHandler();
                 List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
 
                 int i = 0;
@@ -392,7 +389,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
     private void updateSavedDetails() {
-        PriceLevelHandler plHandler = new PriceLevelHandler(activity);
+        PriceLevelHandler plHandler = new PriceLevelHandler();
         ProductsHandler prodHandler = new ProductsHandler(activity);
         UOMHandler uomHandler = new UOMHandler(activity);
 
@@ -425,12 +422,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             }
         }
 
-        listData_LV = _listPriceLevel;
-        setTextView(_plIndex, INDEX_PRICE_LEVEL + OFFSET);
-        listData_LV = _listDiscounts;
-        setTextView(_disIndex, INDEX_DISCOUNT + OFFSET);
-        listData_LV = _listUOM;
-        setTextView(_uomIndex, INDEX_UOM + OFFSET);
+        setTextView(_plIndex, INDEX_PRICE_LEVEL + OFFSET, _listPriceLevel);
+        setTextView(_disIndex, INDEX_DISCOUNT + OFFSET, _listDiscounts);
+        setTextView(_uomIndex, INDEX_UOM + OFFSET, _listUOM);
     }
 
     private void addAttributeButton(View header, String tag) {
@@ -722,6 +716,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         View view = inflater.inflate(R.layout.dialog_listview_layout, null, false);
         dlg.setContentView(view);
         ListView dlgListView = (ListView) dlg.findViewById(R.id.dlgListView);
+        List<String[]> listData_LV = new ArrayList<String[]>();
         switch (type) {
             case SEC_UOM://UoM
             {
@@ -732,7 +727,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             case SEC_PRICE_LEV: // Price Level
             {
                 if (!myPref.getPreferences(MyPreferences.pref_block_price_level_change)) {
-                    PriceLevelHandler handler1 = new PriceLevelHandler(activity);
+                    PriceLevelHandler handler1 = new PriceLevelHandler();
                     listData_LV = handler1.getFixedPriceLevel(prodID);
 
                 } else {
@@ -748,14 +743,15 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 break;
             }
         }
-        DialogLVAdapter dlgAdapter = new DialogLVAdapter(activity, type);
+        DialogLVAdapter dlgAdapter = new DialogLVAdapter(activity, type, listData_LV);
         dlgListView.setAdapter(dlgAdapter);
         dlg.show();
+        final List<String[]> finalListData_LV = listData_LV;
         dlgListView.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                setTextView(position, type);
+                setTextView(position, type, finalListData_LV);
                 lView.invalidateViews();
                 dlg.dismiss();
             }
@@ -1092,7 +1088,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
 
-    public void setTextView(int position, int type) {
+    public void setTextView(int position, int type, List<String[]> listData_LV) {
         switch (type) {
             case INDEX_UOM + OFFSET: {
                 uom_position = position;
@@ -1174,7 +1170,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         OrderProduct orderedProducts = global.orderProducts.get(position);
 
         String newPickedOrders = orderedProducts.ordprod_qty;
-        BigDecimal sum = new BigDecimal("1");
+        BigDecimal sum;
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
             sum = Global.getBigDecimalNum(newPickedOrders);
         else
@@ -1234,8 +1230,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         private LayoutInflater myInflater;
         private int listType;
+        private List<String[]> listData_LV;
 
-        public DialogLVAdapter(Activity activity, int pos) {
+        public DialogLVAdapter(Activity activity, int pos, List<String[]> listData_lv) {
+            listData_LV = listData_lv;
             myInflater = LayoutInflater.from(activity);
             listType = pos;
         }
@@ -1506,8 +1504,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     case 3: {
                         convertView = myInflater.inflate(R.layout.catalog_picker_adapter4, null);
                         holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
-
-
                         holder.leftText.setText(leftTitle2[position - (leftTitle.length + MAIN_OFFSET)]);
                         break;
                     }
@@ -1601,18 +1597,13 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
         public void updateVolumePrice(BigDecimal qty) {
-
             String[] temp;
             if (global.qtyCounter != null && global.qtyCounter.containsKey(prodID)) {
-                BigDecimal origQty = new BigDecimal(global.qtyCounter.get(prodID));
-                BigDecimal newQty = origQty.add(qty);
                 temp = volPriceHandler.getVolumePrice(qty.toString(), prodID);
             } else
                 temp = volPriceHandler.getVolumePrice(String.valueOf(qty), prodID);
             if (temp[1] != null && !temp[1].isEmpty()) {
-
                 basePrice = temp[1];
-
                 rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";
                 prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
             } else if (pricelevel_position == 0) {
