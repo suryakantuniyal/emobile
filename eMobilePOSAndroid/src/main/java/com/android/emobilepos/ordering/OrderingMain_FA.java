@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,9 +21,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -31,9 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -462,28 +461,45 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 btnCheckout.setEnabled(true);
                 break;
             case R.id.headerMenubutton:
-                showPopMenu(v);
+                showSeatHeaderPopMenu(v);
                 break;
         }
     }
 
-    private void showPopMenu(View v) {
+    private void showSeatHeaderPopMenu(final View v) {
         final OrderProductListAdapter.OrderSeatProduct orderSeatProduct = (OrderProductListAdapter.OrderSeatProduct) v.getTag();
         PopupMenu popup = new PopupMenu(this, v);
         popup.getMenuInflater().inflate(R.menu.receiptlist_header_menu, popup.getMenu());
+        final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-
                 switch (item.getItemId()) {
                     case R.id.deleteSeat:
-                        String seatNumber = orderSeatProduct.seatNumber;
-                        removeSeat(seatNumber);
+                        removeSeat(orderSeatProduct.seatNumber);
+                        if (leftFragment.mainLVAdapter.orderSeatProductList.size() > 0) {
+                            setSelectedSeatNumber(leftFragment.mainLVAdapter.orderSeatProductList.get(0).seatNumber);
+                        }
                         break;
                     case R.id.moveSeatItems:
-                        moveSeatItems(leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber));
+                        int i = 0;
+                        for (OrderProductListAdapter.OrderSeatProduct seatProduct : leftFragment.mainLVAdapter.orderSeatProductList) {
+                            if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
+                                if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
+                                    item.getSubMenu().add(0, i, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
+                                    subMenus.put(i, seatProduct.seatNumber);
+                                    i++;
+                                }
+                            }
+                        }
                         break;
                     case R.id.joinSeats:
-
+                        break;
+                    default:
+                        if (subMenus.containsKey(new Integer(item.getItemId()))) {
+                            String targetSeat = subMenus.get(new Integer(item.getItemId()));
+                            setSelectedSeatNumber(targetSeat);
+                            leftFragment.mainLVAdapter.moveSeatItems(leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber), targetSeat);
+                        }
                         break;
                 }
                 return true;
@@ -491,12 +507,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         });
         List<OrderProduct> orderProducts = leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber);
         popup.getMenu().findItem(R.id.deleteSeat).setEnabled(orderProducts.isEmpty());
+        popup.getMenu().findItem(R.id.moveSeatItems).setEnabled(!orderProducts.isEmpty());
+
         popup.show();
     }
 
-    private void moveSeatItems(List<OrderProduct> orderProducts) {
-
-    }
 
     private void removeSeat(String seatNumber) {
         leftFragment.mainLVAdapter.removeSeat(seatNumber);
@@ -789,7 +804,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             btnRight.setText(R.string.button_no);
         }
 
-        btnLeft.setOnClickListener(new View.OnClickListener() {
+        btnLeft.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -820,13 +835,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     global.clearListViewData();
                     msrWasLoaded = false;
                     cardReaderConnected = false;
-                    Receipt_FR.mainLVAdapter.notifyDataSetChanged();
-                    Receipt_FR.receiptListView.invalidateViews();
+                    leftFragment.mainLVAdapter.notifyDataSetChanged();
+                    leftFragment.receiptListView.invalidateViews();
                     finish();
                 }
             }
         });
-        btnRight.setOnClickListener(new View.OnClickListener() {
+        btnRight.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -1095,7 +1110,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         swiperLabel.setText(R.string.loading);
         swiperLabel.setTextColor(Color.DKGRAY);
 
-        btnOK.setOnClickListener(new View.OnClickListener() {
+        btnOK.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -1108,7 +1123,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 }
             }
         });
-        btnCancel.setOnClickListener(new View.OnClickListener() {
+        btnCancel.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -1238,6 +1253,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public void setSelectedSeatNumber(String seatNumber) {
         selectedSeatNumber = seatNumber;
+
     }
 
 

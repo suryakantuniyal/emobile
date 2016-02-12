@@ -6,9 +6,13 @@
 
     <item
         android:id="@+id/joinSeats"
-        android:title="Join Seats" />
+        android:title="Join Seats">
+        <menu></menu>
+    </item>
 
     <item
         android:id="@+id/moveSeatItems"
-        android:title="Move Seat Items" />
+        android:title="Move Seat Items">
+        <menu></menu>
+    </item>
 </menu>

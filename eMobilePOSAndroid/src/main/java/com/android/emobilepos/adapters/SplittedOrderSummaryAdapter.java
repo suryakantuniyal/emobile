@@ -7,11 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.SplitedOrder;
 
 import java.util.List;
@@ -33,7 +30,7 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         ViewHolder holder;
 
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.splited_order_summary_listitem, null);
+            convertView = mInflater.inflate(R.layout.splitted_order_summary_listitem, null);
             holder = new ViewHolder();
             convertView.setTag(holder);
 

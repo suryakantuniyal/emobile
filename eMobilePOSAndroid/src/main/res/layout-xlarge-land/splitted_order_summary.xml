@@ -32,6 +32,6 @@
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
-        tools:listitem="@layout/splited_order_summary_listitem"
+        tools:listitem="@layout/splitted_order_summary_listitem"
         android:padding="5dp"></GridView>
 </LinearLayout>

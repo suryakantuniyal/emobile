@@ -23,7 +23,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splited_order_summary);
+        setContentView(R.layout.splitted_order_summary);
         Bundle extras = this.getIntent().getExtras();
         if (extras != null) {
             splittedOrder = extras.getParcelableArrayList("SplittedOrder");
