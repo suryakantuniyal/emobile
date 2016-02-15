@@ -30,16 +30,14 @@ public class TaxesCalculator {
     private final OrderProduct orderProduct;
     private final String taxID;
     private final int taxSelected;
-    private final int discountSelected;
     private BigDecimal taxableAmount = new BigDecimal(0.00);
-    private String[] discount;
+    private String[] discountSelected;
     private BigDecimal discountable_sub_total;
     private BigDecimal itemsDiscountTotal;
     private BigDecimal taxableDueAmount = new BigDecimal(0.00);
 
-    public TaxesCalculator(Activity activity, MyPreferences myPref, OrderProduct orderProduct, String taxID, int taxSelected, int discountSelected, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal, List<HashMap<String, String>> listMapTaxes) {
+    public TaxesCalculator(Activity activity, MyPreferences myPref, OrderProducts orderProduct, String taxID, int taxSelected, String[] discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal, List<HashMap<String, String>> listMapTaxes) {
         this.listMapTaxes = listMapTaxes;
-        this.setDiscount(getDiscount());
         this.setDiscountable_sub_total(discountable_sub_total);
         this.setItemsDiscountTotal(itemsDiscountTotal);
         global = (Global) activity.getApplication();
@@ -48,7 +46,7 @@ public class TaxesCalculator {
         this.orderProduct = orderProduct;
         this.taxID = taxID;
         this.taxSelected = taxSelected;
-        this.discountSelected = discountSelected;
+        this.discountSelected = discount;
         setDiscountValue();
         calculateTaxes();
     }
@@ -144,13 +142,13 @@ public class TaxesCalculator {
                 tempTaxTotal = tax1;
                 taxTotal = tax1.toString();
                 _temp_subtotal = tempSubTotal;
-                if (discountSelected > 0) {
-                    if (discountList.get(discountSelected - 1)[1].equals("Fixed")) {
+                if (discountSelected.length > 0) {
+                    if (discountSelected[1].equals("Fixed")) {
                         if (getDiscount_rate().compareTo(tempSubTotal) == -1) {
                             setTaxableSubtotal(getTaxableSubtotal().add(tempSubTotal.subtract(getDiscount_rate()).multiply(temp)
                                     .setScale(4, RoundingMode.HALF_UP)));
                             // discount_rate = new BigDecimal("0");
-                            if (discountList.get(discountSelected - 1)[3].equals("1")) {
+                            if (discountSelected[3].equals("1")) {
                                 _temp_subtotal = _temp_subtotal.subtract(getDiscount_rate());
                             }
                         } else {
@@ -162,7 +160,7 @@ public class TaxesCalculator {
                         BigDecimal temp2 = tempSubTotal.multiply(getDiscount_rate()).setScale(4, RoundingMode.HALF_UP);
                         setTaxableSubtotal(getTaxableSubtotal()
                                 .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP)));
-                        if (discountList.get(discountSelected - 1)[3].equals("1")) {
+                        if (discountSelected[3].equals("1")) {
                             _temp_subtotal = _temp_subtotal.subtract(temp2);
                         }
                     }
@@ -177,13 +175,13 @@ public class TaxesCalculator {
                 tempTaxTotal = tax1;
                 taxTotal = tax1.toString();
 
-                if (discountSelected > 0) {
-                    if (discountList.get(discountSelected - 1)[1].equals("Fixed")) {
+                if (discountSelected.length > 0) {
+                    if (discountSelected[1].equals("Fixed")) {
                         if (getDiscount_rate().compareTo(tempSubTotal) == -1) {
                             setTaxableSubtotal(getTaxableSubtotal().add(tempSubTotal.subtract(getDiscount_rate())
                                     .multiply(temp).setScale(4, RoundingMode.HALF_UP)));
                             // discount_rate = new BigDecimal("0");
-                            if (discountList.get(discountSelected - 1)[3].equals("1")) {
+                            if (discountSelected[3].equals("1")) {
                                 _temp_subtotal = tempSubTotal.subtract(getDiscount_rate());
                             }
                         } else {
@@ -195,7 +193,7 @@ public class TaxesCalculator {
                         BigDecimal temp2 = tempSubTotal.multiply(getDiscount_rate()).setScale(4, RoundingMode.HALF_UP);
                         setTaxableSubtotal(getTaxableSubtotal()
                                 .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP)));
-                        if (discountList.get(discountSelected - 1)[3].equals("1")) {
+                        if (discountSelected[3].equals("1")) {
                             _temp_subtotal = tempSubTotal.subtract(temp2);
                         }
                     }
@@ -233,14 +231,14 @@ public class TaxesCalculator {
 //            discount_amount = new BigDecimal("0");
 //            discountID = "";
 //        } else
-        if (getDiscount() != null && getDiscount().length > 0) {
-            setDiscountID(getDiscount()[4]);
-            if (getDiscount()[1].equals("Fixed")) {
-                setDiscount_rate(Global.getBigDecimalNum(getDiscount()[2]));
-                setDiscount_amount(Global.getBigDecimalNum(getDiscount()[2]));
+        if (discountSelected != null && discountSelected.length > 0) {
+            setDiscountID(discountSelected[4]);
+            if (discountSelected[1].equals("Fixed")) {
+                setDiscount_rate(Global.getBigDecimalNum(discountSelected[2]));
+                setDiscount_amount(Global.getBigDecimalNum(discountSelected[2]));
 
             } else {
-                setDiscount_rate(Global.getBigDecimalNum(getDiscount()[2])
+                setDiscount_rate(Global.getBigDecimalNum(discountSelected[2])
                         .divide(new BigDecimal("100")));
                 BigDecimal total = getDiscountable_sub_total().subtract(getItemsDiscountTotal());
                 setDiscount_amount(total.multiply(getDiscount_rate()).setScale(2, RoundingMode.HALF_UP));
@@ -361,12 +359,12 @@ public class TaxesCalculator {
         this.taxableAmount = taxableAmount;
     }
 
-    public String[] getDiscount() {
-        return discount;
+    public String[] getDiscountSelected() {
+        return discountSelected;
     }
 
-    public void setDiscount(String[] discount) {
-        this.discount = discount;
+    public void setDiscountSelected(String[] discount) {
+        this.discountSelected = discount;
     }
 
     public BigDecimal getDiscountable_sub_total() {
