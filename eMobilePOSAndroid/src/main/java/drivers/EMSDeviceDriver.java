@@ -597,20 +597,29 @@ public class EMSDeviceDriver {
 
                 double paidAmount = 0;
                 double tempTipAmount = 0;
+                double totalAmountTendered = 0;
+
                 StringBuilder tempSB = new StringBuilder();
                 for (int i = 0; i < size; i++) {
                     String _pay_type = detailsList.get(i).getPaymethod_name().toUpperCase(Locale.getDefault()).trim();
-                    tempAmount = tempAmount + detailsList.get(i).getAmountTender();
-                    paidAmount += detailsList.get(i).getAmountTender();
+                    tempAmount = tempAmount + formatStrToDouble(detailsList.get(i).getPay_amount());
+                    paidAmount += formatStrToDouble(detailsList.get(i).getPay_amount());
+                    totalAmountTendered += detailsList.get(i).getAmountTender();
                     tempTipAmount = tempTipAmount + formatStrToDouble(detailsList.get(i).getPay_tip());
                     tempSB.append(textHandler
-                            .oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(detailsList.get(i).getAmountTender().toString())
+                            .oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(detailsList.get(i).getPay_amount())
                                     + "[" + detailsList.get(i).getPaymethod_name() + "]", lineWidth, 1));
                     if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
                         tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + detailsList.get(i).getPay_transid(),
                                 lineWidth, 1));
                         tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("CC#: *" + detailsList.get(i).getCcnum_last4(),
                                 lineWidth, 1));
+                    } else {
+                        tempSB.append(textHandler
+                                .oneColumnLineWithLeftAlignedText(getString(R.string.amount_tendered) + Global.formatDoubleToCurrency(detailsList.get(i).getAmountTender()), lineWidth, 1));
+                        tempSB.append(textHandler
+                                .oneColumnLineWithLeftAlignedText(getString(R.string.changeLbl) +
+                                        Global.formatDoubleToCurrency(detailsList.get(i).getAmountTender() - formatStrToDouble(detailsList.get(i).getPay_amount())), lineWidth, 1));
                     }
                     if (!detailsList.get(i).getPay_signature().isEmpty())
                         receiptSignature = detailsList.get(i).getPay_signature();
@@ -620,7 +629,7 @@ public class EMSDeviceDriver {
                             Global.formatDoubleToCurrency(tempAmount), lineWidth, 0));
                 } else {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-                            Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0));
+                            Global.formatDoubleStrToCurrency(Double.toString(paidAmount)), lineWidth, 0));
                 }
                 sb.append(tempSB.toString());
                 if (type == Global.OrderType.INVOICE) // Invoice
@@ -634,11 +643,11 @@ public class EMSDeviceDriver {
 
                     if (type == Global.OrderType.RETURN) {
                         tempAmount = paidAmount;
-                    } else if (tempGrandTotal >= paidAmount) {
+                    } else if (tempGrandTotal >= totalAmountTendered) {
                         tempAmount = 0.00;
                     } else {
                         if (tempGrandTotal > 0) {
-                            tempAmount = paidAmount - tempGrandTotal;
+                            tempAmount = totalAmountTendered - tempGrandTotal;
                         } else {
                             tempAmount = Math.abs(tempGrandTotal);
                         }
@@ -656,29 +665,10 @@ public class EMSDeviceDriver {
                 printYouSave(String.valueOf(saveAmount), lineWidth);
             sb.setLength(0);
             if (Global.isIvuLoto && detailsList.size() > 0) {
-
                 if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-//                    sb.append("\n");
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//                    sb.append(textHandler.centeredString("CONTROL: " + detailsList.get(0).getIvuLottoNumber(), lineWidth));
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//
-//                    sb.append("\n");
-//                    print(sb.toString().getBytes());
                     printIVULoto(detailsList.get(0).getIvuLottoNumber(), lineWidth);
-
-//					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
                 } else {
-//					encodedQRCode = payArrayList.get(0)[8];
                     printImage(2);
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//                    sb.append("\t").append("CONTROL: ").append(detailsList.get(0).getIvuLottoNumber()).append("\n");
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//                    print(sb.toString().getBytes());
                     printIVULoto(detailsList.get(0).getIvuLottoNumber(), lineWidth);
                 }
                 sb.setLength(0);
