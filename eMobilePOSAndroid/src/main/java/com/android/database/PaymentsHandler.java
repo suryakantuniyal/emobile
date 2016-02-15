@@ -989,7 +989,7 @@ public class PaymentsHandler {
                 query.append("isVoid = '0' AND is_refund = '0' ");
                 break;
             case 1:// Voids
-                query.append("isVoid = '1' ");
+                query.append("isVoid = '1' AND pay_type = '1' ");
                 break;
             case 2:// Refunds
                 query.append("isVoid = '0' AND is_refund = '1' ");
@@ -1052,7 +1052,7 @@ public class PaymentsHandler {
                 query.append("isVoid = '0' AND is_refund = '0' ");
                 break;
             case 1:// Voids
-                query.append("isVoid = '1' ");
+                query.append("isVoid = '1' AND pay_type = '1' ");
                 break;
             case 2:// Refunds
                 query.append("isVoid = '0' AND is_refund = '1' ");
