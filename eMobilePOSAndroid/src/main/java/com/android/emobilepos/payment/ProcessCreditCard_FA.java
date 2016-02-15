@@ -549,11 +549,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             clerkId = myPref.getClerkID();
 
 
-        double amountToBePaid = Global
+        double amountTender = Global
                 .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
 
-        Global.amountPaid = Double.toString(amountToBePaid);
+        Global.amountPaid = Double.toString(amountTender);
 
 
         String taxAmnt1 = null;
@@ -584,7 +584,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String transactionId = null;
         String authcode = null;
         Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountToBePaid,
+                actualAmount, amountTender,
                 cardInfoManager.getCardOwnerName(), reference.getText().toString(), phoneNumberField.getText().toString(),
                 customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
                 isRef, paymentType, creditCardType, cardInfoManager.getCardNumAESEncrypted(), cardInfoManager.getCardLast4(),

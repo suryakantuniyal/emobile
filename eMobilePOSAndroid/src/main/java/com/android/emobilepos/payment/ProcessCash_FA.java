@@ -604,7 +604,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     private Payment processPayment() {
         PaymentsHandler payHandler = new PaymentsHandler(activity);
         double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+        double amountTender = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
         if (Global.isIvuLoto) {
             Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
@@ -660,8 +660,9 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         } else
             paymentType = "0";
 
-        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey, extras.getString("paymethod_id"),
-                actualAmount, amountToBePaid,
+        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId,
+                clerkId, custidkey, extras.getString("paymethod_id"),
+                actualAmount, amountTender,
                 customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(),
                 customerEmailField.getText().toString(), amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
                 isRef, paymentType, "Cash", null, null,
@@ -677,7 +678,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 //                isRef, paymentType, "Cash");
 
 
-        Global.amountPaid = Double.toString(amountToBePaid);
+        Global.amountPaid = Double.toString(amountTender);
 
         payHandler.insert(payment);
 

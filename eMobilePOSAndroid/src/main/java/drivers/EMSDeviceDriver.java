@@ -600,11 +600,11 @@ public class EMSDeviceDriver {
                 StringBuilder tempSB = new StringBuilder();
                 for (int i = 0; i < size; i++) {
                     String _pay_type = detailsList.get(i).getPaymethod_name().toUpperCase(Locale.getDefault()).trim();
-                    tempAmount = tempAmount + formatStrToDouble(detailsList.get(i).getPay_amount());
-                    paidAmount += formatStrToDouble(detailsList.get(i).getPay_amount());
+                    tempAmount = tempAmount + detailsList.get(i).getAmountTender();
+                    paidAmount += detailsList.get(i).getAmountTender();
                     tempTipAmount = tempTipAmount + formatStrToDouble(detailsList.get(i).getPay_tip());
                     tempSB.append(textHandler
-                            .oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(detailsList.get(i).getPay_amount())
+                            .oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(detailsList.get(i).getAmountTender().toString())
                                     + "[" + detailsList.get(i).getPaymethod_name() + "]", lineWidth, 1));
                     if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
                         tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + detailsList.get(i).getPay_transid(),
@@ -1066,7 +1066,7 @@ public class EMSDeviceDriver {
 
 
             sb.append("* ").append(payArray.getPaymethod_name());
-            if (payArray.getIs_refund()!=null && payArray.getIs_refund().equals("1"))
+            if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
                 sb.append(" Refund *\n\n\n");
             else
                 sb.append(" Sale *\n\n\n");
@@ -1149,7 +1149,7 @@ public class EMSDeviceDriver {
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                     sb.append(textHandler.newLines(1));
-                } else if (payArray.getPay_signature()!=null && !payArray.getPay_signature().isEmpty()) {
+                } else if (payArray.getPay_signature() != null && !payArray.getPay_signature().isEmpty()) {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
@@ -2127,7 +2127,6 @@ public class EMSDeviceDriver {
 //            port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-
 
 
             for (int i = 0; i < size; i++) {

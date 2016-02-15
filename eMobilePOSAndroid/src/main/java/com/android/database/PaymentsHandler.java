@@ -69,6 +69,7 @@ public class PaymentsHandler {
 
     // added
     private final String job_id = "job_id";
+    private final String amount_tender = "amount_tender";
     private final String user_ID = "user_ID";
     private final String pay_type = "pay_type";
     private final String pay_tip = "pay_tip";
@@ -109,7 +110,7 @@ public class PaymentsHandler {
             pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
             job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
             tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
-            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, EMVJson);
+            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, EMVJson, amount_tender);
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
@@ -153,7 +154,8 @@ public class PaymentsHandler {
         DBManager._db.beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ")" + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ")" +
+                    "VALUES (" + sb2.toString() + ")");
             insert.bindString(index(pay_id), payment.pay_id == null ? "" : payment.pay_id); // pay_id
             insert.bindString(index(group_pay_id), payment.group_pay_id == null ? "" : payment.group_pay_id); // group_pay_id
             insert.bindString(index(original_pay_id), payment.original_pay_id == null ? "" : payment.original_pay_id); // group_pay_id
@@ -197,6 +199,7 @@ public class PaymentsHandler {
             insert.bindString(index(authcode), payment.authcode == null ? "" : payment.authcode); // authcode
             insert.bindString(index(status), payment.status == null ? "" : payment.status); // status
             insert.bindString(index(job_id), payment.job_id == null ? "" : payment.job_id); // job_id
+            insert.bindDouble(index(amount_tender), payment.amountTender == null ? 0 : payment.amountTender); // user_ID
 
             insert.bindString(index(user_ID), payment.user_ID == null ? "" : payment.user_ID); // user_ID
             insert.bindString(index(pay_type), payment.pay_type == null ? "" : payment.pay_type); // pay_type
@@ -430,8 +433,8 @@ public class PaymentsHandler {
         String tableName = table_name;
         if (isDeclined)
             tableName = table_name_declined;
-        String sql = "SELECT pay_date,pay_comment,job_id, inv_id,group_pay_id,pay_signature,ccnum_last4," +
-                "pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id FROM " + tableName +
+        String sql = "SELECT pay_date,pay_comment, amount_tender, job_id, inv_id,group_pay_id,pay_signature,ccnum_last4," +
+                " amount_tender, pay_latitude,pay_longitude,isVoid,pay_transid," + "authcode,clerk_id FROM " + tableName +
                 " WHERE pay_id = ?";
 
         PaymentDetails paymentDetails = new PaymentDetails();
@@ -454,6 +457,7 @@ public class PaymentsHandler {
                 paymentDetails.setJob_id(cursor.getString(cursor.getColumnIndex(job_id)));
                 paymentDetails.setIsVoid(cursor.getString(cursor.getColumnIndex(isVoid)));
                 paymentDetails.setAuthcode(cursor.getString(cursor.getColumnIndex(authcode)));
+                paymentDetails.setAmountTender(cursor.getDouble(cursor.getColumnIndex(amount_tender)));
                 paymentDetails.setPay_transid(cursor.getString(cursor.getColumnIndex(pay_transid)));
                 paymentDetails.setClerk_id(cursor.getString(cursor.getColumnIndex(clerk_id)));
             } while (cursor.moveToNext());
@@ -551,6 +555,7 @@ public class PaymentsHandler {
         payment.card_type = c.getString(c.getColumnIndex(card_type));
         payment.custidkey = c.getString(c.getColumnIndex(custidkey));
         payment.original_pay_id = c.getString(c.getColumnIndex(original_pay_id));
+        payment.amountTender = c.getDouble(c.getColumnIndex(amount_tender));
     }
 
     public List<HashMap<String, String>> getPaymentDetailsForTransactions(String jobID) {
@@ -559,22 +564,22 @@ public class PaymentsHandler {
         HashMap<String, String> map = new HashMap<String, String>();
 
         Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "pm.paymentmethod_type AS 'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p," + "PayMethods pm " +
+                "pm.paymentmethod_type AS 'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p," + "PayMethods pm " +
                 "WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID + "' " +
-                "UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name'," +
+                "UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name', amount_tender," +
                 "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Wallet' " +
                 "AND p.job_id = '" + jobID + "' UNION " +
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name'," +
+                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name', amount_tender," +
                 "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" +
                 jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "'Reward' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Reward' " +
+                "'Reward' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Reward' " +
                 "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "'GiftCard' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p " +
+                "'GiftCard' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p " +
                 "WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " +
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name'," +
+                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name', amount_tender," +
                 "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" +
                 jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "'Genius' AS  'paymethod_name',p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = '' " +
+                "'Genius' AS  'paymethod_name', amount_tender, p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = '' " +
                 "AND p.job_id = '" + jobID + "'", null);
         if (cursor.moveToFirst()) {
             do {
@@ -741,7 +746,41 @@ public class PaymentsHandler {
 
         List<PaymentDetails> list = new ArrayList<PaymentDetails>();
 
-        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_amount AS 'pay_amount',pm.paymethod_name AS 'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p," + "PayMethods pm WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Wallet' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Reward' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount','GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p WHERE p.paymethod_id = '' " + "AND p.job_id = '" + jobID + "'", null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_amount AS 'pay_amount', amount_tender,pm.paymethod_name AS 'paymethod_name'," +
+                "p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid'," +
+                "p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' " +
+                "FROM Payments p," + "PayMethods pm WHERE p.paymethod_id = pm.paymethod_id " +
+                "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount', amount_tender, " +
+                "'Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature'," +
+                "p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
+                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' " +
+                "FROM Payments p WHERE p.paymethod_id = 'Wallet' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT" +
+                " p.pay_amount AS 'pay_amount', amount_tender,'LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature " +
+                "AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
+                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
+                "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
+                "WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
+                "p.pay_amount AS 'pay_amount', amount_tender,'Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
+                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
+                "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
+                "WHERE p.paymethod_id = 'Reward' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
+                "p.pay_amount AS 'pay_amount', amount_tender,'GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
+                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
+                "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
+                "WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
+                "p.pay_amount AS 'pay_amount', amount_tender,p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
+                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
+                "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
+                "WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
+                "p.pay_amount AS 'pay_amount', amount_tender,p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
+                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
+                "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
+                "WHERE p.paymethod_id = '' " + "AND p.job_id = '" + jobID + "'", null);
         PaymentDetails details = new PaymentDetails();
         if (cursor.moveToFirst()) {
 
@@ -756,6 +795,7 @@ public class PaymentsHandler {
                 details.setIvuLottoNumber(cursor.getString(cursor.getColumnIndex(IvuLottoNumber)));
                 details.setIvuLottoQR(cursor.getString(cursor.getColumnIndex(IvuLottoQR)));
                 details.setPay_dueamount(cursor.getString(cursor.getColumnIndex(pay_dueamount)));
+                details.setAmountTender(cursor.getDouble(cursor.getColumnIndex(amount_tender)));
 
                 list.add(details);
                 details = new PaymentDetails();
@@ -774,7 +814,7 @@ public class PaymentsHandler {
                 sb.append(
                         "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                 "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total as ord_total,p.pay_amount as pay_amount," +
-                                "p.pay_dueamount as pay_dueamount,"
+                                "p.pay_dueamount as pay_dueamount, amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                 "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
@@ -784,7 +824,7 @@ public class PaymentsHandler {
                                 " UNION " +
                                 "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                 "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated,IFNULL(c.cust_name,'Unknown') as 'cust_name', o.ord_total as ord_total,p.pay_amount as pay_amount," +
-                                "p.pay_dueamount as pay_dueamount,"
+                                "p.pay_dueamount as pay_dueamount, amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN (o.ord_total-p.pay_amount)  ELSE p.pay_tip END as 'change' ,p.pay_signature as pay_signature, "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                 "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
@@ -801,7 +841,7 @@ public class PaymentsHandler {
                 sb.append(
                         "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                 "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
-                                "p.pay_dueamount as pay_dueamount,"
+                                "p.pay_dueamount as pay_dueamount,amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                 "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
@@ -812,7 +852,7 @@ public class PaymentsHandler {
                                 " UNION " +
                                 "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                 "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total',p.pay_amount as pay_amount," +
-                                "p.pay_dueamount as pay_dueamount,"
+                                "p.pay_dueamount as pay_dueamount, amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund,p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                                 "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
@@ -829,7 +869,7 @@ public class PaymentsHandler {
                 sb.append(
                         "select * from (SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                 "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total'," +
-                                "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount,"
+                                "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount,amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
                                 "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
@@ -840,7 +880,7 @@ public class PaymentsHandler {
                                 " UNION " +
                                 "SELECT p.pay_id as pay_id, p.inv_id as inv_id,p.job_id as job_id,CASE WHEN p.paymethod_id IN ('Genius','') THEN p.card_type ELSE m.paymethod_name END AS 'paymethod_name'," +
                                 "p.pay_date as pay_date,p.pay_timecreated as pay_timecreated, IFNULL(c.cust_name,'Unknown') as 'cust_name',p.pay_amount AS 'ord_total'," +
-                                "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount,"
+                                "p.pay_amount as pay_amount,p.pay_dueamount as pay_dueamount, amount_tender,"
                                 + "CASE WHEN (m.paymethod_name = 'Cash') THEN SUM(p.pay_amount-p.pay_amount) ELSE p.pay_tip END AS 'change', p.pay_signature as pay_signature,  "
                                 + "p.pay_transid as pay_transid,p.ccnum_last4 as ccnum_last4,p.pay_check as pay_check,p.is_refund as is_refund," +
                                 "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR', "
@@ -883,6 +923,7 @@ public class PaymentsHandler {
                 payDetail.setPay_dueamount(cursor.getString(cursor.getColumnIndex(pay_dueamount)));
                 payDetail.setInv_id(cursor.getString(cursor.getColumnIndex(inv_id)));
                 payDetail.setJob_id(cursor.getString(cursor.getColumnIndex(job_id)));
+                payDetail.setAmountTender(cursor.getDouble(cursor.getColumnIndex(amount_tender)));
 
                 payDetail.setTax1_name(cursor.getString(cursor.getColumnIndex(Tax1_name)));
                 payDetail.setTax2_name(cursor.getString(cursor.getColumnIndex(Tax2_name)));

@@ -764,7 +764,7 @@ public class OrdersHandler {
 
         String[] where_values = null;
         if (clerk_id != null && !clerk_id.isEmpty()) {
-            query.append("WHERE clerk_id = ? ");
+            query.append("WHERE clerk_id = ? AND isVoid = '0' ");
             where_values = new String[]{clerk_id};
 
             if (date != null && !date.isEmpty()) {
@@ -772,11 +772,12 @@ public class OrdersHandler {
                 where_values = new String[]{clerk_id, date};
             }
         } else if (date != null && !date.isEmpty()) {
-            query.append(" WHERE date = ? ");
+            query.append(" WHERE  date = ? AND isVoid = '0' ");
             where_values = new String[]{date};
+        } else {
+            query.append(" WHERE  isVoid = '0' ");
         }
-
-        query.append("GROUP BY ord_type");
+        query.append(" GROUP BY ord_type");
 
         Cursor c = DBManager._db.rawQuery(query.toString(), where_values);
         if (c.moveToFirst()) {

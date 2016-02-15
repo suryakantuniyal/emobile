@@ -302,7 +302,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         spinnerFilter.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // TODO Auto-generated method stub
                 global.searchType = position;
                 //hide the keyboard
 
@@ -348,7 +347,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
             }
         });
 
@@ -536,12 +534,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             case 3: // search by UPC
             {
                 search_type = "prod_upc";
-                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
+//                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
             }
             case 4:
                 search_type = "prod_sku";
-                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
+//                searchField.setRawInputType(Configuration.KEYBOARD_QWERTY);
                 break;
         }
 
