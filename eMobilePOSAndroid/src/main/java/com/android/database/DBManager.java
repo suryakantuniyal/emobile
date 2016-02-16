@@ -418,7 +418,7 @@ public class DBManager {
             + "[ccnum_last4] varchar,[pay_phone] varchar,[pay_email] varchar,[isVoid] tinyint,[tipAmount] varchar,[clerk_id] varchar,"
             + "[pay_latitude] varchar,[pay_longitude] varchar,[is_refund] BOOL DEFAULT (0) ,[ref_num] varchar,[IvuLottoNumber] VARCHAR,"
             + "[IvuLottoDrawDate] VARCHAR,[IvuLottoQR] VARCHAR,[showPayment][tinyint] DEFAULT(1),[original_pay_id][varchar],[card_type] VARCHAR,[Tax1_amount] VARCHAR,[Tax1_name] VARCHAR,[Tax2_amount] VARCHAR,"
-            + "[Tax2_name] VARCHAR, [EMV_JSON] VARCHAR)";
+            + "[Tax2_name] VARCHAR, [EMV_JSON] VARCHAR, [amount_tender] money)";
 
     private final String CREATE_PAYMENTS_DECLINED = "CREATE TABLE [PaymentsDeclined] ([pay_id] varchar PRIMARY KEY  NOT NULL ,[group_pay_id] varchar,[cust_id] varchar,"
             + "[emp_id] int,[custidkey] [varchar],[tupyx_user_id][varchar](50),[inv_id] varchar,[paymethod_id] varchar,[pay_check] varchar,[pay_receipt] varchar,[pay_amount] money,[pay_comment] varchar,"
@@ -430,7 +430,7 @@ public class DBManager {
             + "[ccnum_last4] varchar,[pay_phone] varchar,[pay_email] varchar,[isVoid] tinyint,[tipAmount] varchar,[clerk_id] varchar,"
             + "[pay_latitude] varchar,[pay_longitude] varchar,[is_refund] BOOL DEFAULT (0) ,[ref_num] varchar,[IvuLottoNumber] VARCHAR,"
             + "[IvuLottoDrawDate] VARCHAR,[IvuLottoQR] VARCHAR,[showPayment][tinyint] DEFAULT(1),[original_pay_id][varchar],[card_type] VARCHAR,[Tax1_amount] VARCHAR,[Tax1_name] VARCHAR,[Tax2_amount] VARCHAR,"
-            + "[Tax2_name] VARCHAR, [EMV_JSON] VARCHAR)";
+            + "[Tax2_name] VARCHAR, [EMV_JSON] VARCHAR, [amount_tender] money)";
 
     private final String CREATE_STORED_PAYMENTS = "CREATE TABLE [StoredPayments] (pay_uuid varchar PRIMARY KEY NOT NULL, [pay_id] varchar (50) ,[group_pay_id] varchar,[cust_id] varchar,"
             + "[emp_id] int,[custidkey] [varchar],[tupyx_user_id][varchar](50),[inv_id] varchar,[paymethod_id] varchar,[pay_check] varchar,[pay_receipt] varchar,[pay_amount] money,[pay_comment] varchar,"
@@ -442,7 +442,7 @@ public class DBManager {
             + "[ccnum_last4] varchar,[pay_phone] varchar,[pay_email] varchar,[isVoid] tinyint,[tipAmount] varchar,[clerk_id] varchar,"
             + "[pay_latitude] varchar,[pay_longitude] varchar,[is_refund] BOOL DEFAULT (0) ,[ref_num] varchar,[IvuLottoNumber] VARCHAR,"
             + "[IvuLottoDrawDate] VARCHAR,[IvuLottoQR] VARCHAR,[showPayment][tinyint] DEFAULT(1),[original_pay_id][varchar],[card_type] VARCHAR,[Tax1_amount] VARCHAR,[Tax1_name] VARCHAR,[Tax2_amount] VARCHAR,"
-            + "[Tax2_name] VARCHAR, payment_xml varchar, is_retry BOOL DEFAULT (0) , [EMV_JSON] VARCHAR)";
+            + "[Tax2_name] VARCHAR, payment_xml varchar, is_retry BOOL DEFAULT (0) , [EMV_JSON] VARCHAR, [amount_tender] money)";
 
     private final String CREATE_PRICELEVEL = "CREATE TABLE [PriceLevel]( [pricelevel_id] [varchar](50) PRIMARY KEY NOT NULL, [pricelevel_name] [varchar](50) NULL, "
             + "[pricelevel_type] [varchar](50) NULL, [pricelevel_fixedpct] [float] NULL, [pricelevel_update] [datetime] NOT NULL, [isactive] [tinyint] NOT NULL)";

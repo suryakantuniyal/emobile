@@ -398,7 +398,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         Global.amountPaid = Double.toString(amountTendered);
         payment.pay_dueamount = Double.toString(totalAmount - amountTendered);
-
+        payment.amountTender=amountTendered;
         payment.pay_amount = Double.toString(amountTendered);
         payment.originalTotalAmount = Double.toString(totalAmount);
 

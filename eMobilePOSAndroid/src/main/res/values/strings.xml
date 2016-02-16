@@ -1169,5 +1169,6 @@
 	<string name="move_product_seat">Change product seat</string>
 	<string name="join_seats">Join Seats</string>
 	<string name="delete_seat">Delete Seat</string>
+	<string name="amount_tendered">Tendered:</string>
 
 </resources>

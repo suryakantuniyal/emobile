@@ -697,8 +697,10 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
 
         query.append(
-                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' FROM " + table_name + " op ");
-        query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.ord_type IN ");
+                "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty', " +
+                        " sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date' " +
+                        "FROM OrderProducts op ");
+        query.append("LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE o.isVoid = '0' AND o.ord_type IN ");
 
         if (isSales)
             query.append("('2','5') ");
@@ -753,9 +755,13 @@ public class OrderProductsHandler {
         List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
 
         query.append(
-                "SELECT c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price',date(o.ord_timecreated,'localtime') as 'date'  FROM " + table_name + " op ");
+                "SELECT c.cat_name,op.cat_id, sum(ordprod_qty) as 'ordprod_qty',  sum(overwrite_price) 'overwrite_price'," +
+                        "date(o.ord_timecreated,'localtime') as 'date'  " +
+                        "FROM OrderProducts op ");
         query.append(
-                "LEFT JOIN Categories c ON op.cat_id = c.cat_id LEFT JOIN Orders o ON op.ord_id = o.ord_id WHERE  o.ord_type IN ");
+                "LEFT JOIN Categories c ON op.cat_id = c.cat_id " +
+                        "LEFT JOIN Orders o ON op.ord_id = o.ord_id " +
+                        "WHERE o.isVoid = '0' AND o.ord_type IN ");
 
         if (isSales)
             query.append("('2','5') ");
