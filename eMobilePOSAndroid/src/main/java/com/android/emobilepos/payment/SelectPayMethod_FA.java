@@ -1299,7 +1299,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             initIntents(extras, intent);
         } else if (payType.get(position)[2].equals("Boloro")) {
             showBoloroDlog();
-        } else if (payType.get(position)[2].toUpperCase(Locale.getDefault()).contains("GIFT")) {
+        } else if (payType.get(position)[2].toUpperCase(Locale.getDefault()).contains("GIFT") ||
+                payType.get(position)[2].toUpperCase(Locale.getDefault()).contains("REWARD") ||
+                payType.get(position)[2].toUpperCase(Locale.getDefault()).contains("STADIS")) {
             Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
             intent.putExtra("paymethod_id", payType.get(position)[0]);
             intent.putExtra("paymentmethod_type", payType.get(position)[2]);

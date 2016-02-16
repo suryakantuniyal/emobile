@@ -262,9 +262,9 @@ public class Post {
                 e.printStackTrace();
             }
         } else {
-            Log.d("Request XMKL: ", entity);
+//            Log.d("Request XMKL: ", entity);
             response = this.postRequest(postLink, entity);
-            Log.d("Request XMKL: ", response);
+//            Log.d("Request XMKL: ", response);
 
         }
 
