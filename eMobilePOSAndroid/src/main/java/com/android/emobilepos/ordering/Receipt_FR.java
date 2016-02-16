@@ -115,8 +115,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private ProgressDialog myProgressDialog;
 
-    private Button btnTemplate, btnHold, btnDetails, btnSign, btnReturn;
-    private ImageButton btnScrollRight, btnScrollLeft;
+    private Button btnTemplate;
+    private Button btnHold;
+    private Button btnDetails;
+    private Button btnSign;
+    private Button btnReturn;
+    private ImageButton btnScrollRight;
+    private ImageButton btnScrollLeft;
 
     private MyPagerAdapter pagerAdapter;
     private RecalculateCallback callBackRecalculate;
@@ -124,8 +129,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public static Receipt_FR fragInstance;
 
     private String order_email = "";
-    private String order_comments = "";
-    private NumberUtils numberUtils = new NumberUtils();
 
 
     public interface RecalculateCallback {
@@ -400,7 +403,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
-                numberUtils.parseInputedCurrency(s, input);
+                NumberUtils.parseInputedCurrency(s, input);
             }
         });
 
@@ -417,8 +420,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 String value = NumberUtils.cleanCurrencyFormatedNumber(input);
                                 if (!value.isEmpty()) {
                                     BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
-                                    BigDecimal prod_qty = new BigDecimal("0");
-                                    BigDecimal new_subtotal = new BigDecimal("0");
+                                    BigDecimal prod_qty;
+                                    BigDecimal new_subtotal;
                                     try {
                                         prod_qty = new BigDecimal(
                                                 global.orderProducts
@@ -439,12 +442,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                                     .subtract(
                                                             new BigDecimal(
                                                                     map.get("discount_price")));
-                                            // global.orderProducts.get(position).getSetData("disAmount",
-                                            // false, new
-                                            // BigDecimal(map.get("discount_price")));
-                                            // global.orderProducts.get(position).getSetData("disTotal",
-                                            // false, new
-                                            // BigDecimal(map.get("discount_price")));
+
                                         } else {
                                             BigDecimal rate = new BigDecimal(
                                                     map.get("discount_price"))
@@ -455,9 +453,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                                             new_subtotal = new_price.multiply(
                                                     prod_qty).subtract(rate);
-                                            // global.orderProducts.get(position).getSetData("disAmount",
-                                            // false,
-                                            // Global.getRoundBigDecimal(rate));
+
                                             global.orderProducts.get(position).disTotal = Global
                                                     .getRoundBigDecimal(rate);
                                             global.orderProducts.get(position).discount_value = Global
@@ -467,9 +463,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     } else
                                         new_subtotal = new_price
                                                 .multiply(prod_qty);
-                                    // double
-                                    // global.orderProducts.get(position).getSetData("ordprod_qty",
-                                    // true, temp);
 
                                     global.orderProducts.get(position).overwrite_price = temp;
                                     global.orderProducts.get(position).prod_price = temp;
@@ -480,7 +473,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     global.orderProducts.get(position).pricelevel_id = "";
                                     global.orderProducts.get(position).prod_price_updated = "0";
 
-                                    // global.recalculateOrderProduct(position);
                                     receiptListView.invalidateViews();
                                     reCalculate();
                                 }
@@ -735,12 +727,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .findViewById(R.id.phoneNumField);
         Button done = (Button) dialog.findViewById(R.id.OKButton);
         //if skip email phone enabled then hide fields
-        if (myPref.getPreferences(MyPreferences.pref_skip_email_phone)){
+        if (myPref.getPreferences(MyPreferences.pref_skip_email_phone)) {
             emailInput.setVisibility(View.GONE);
             phoneNum.setVisibility(View.GONE);
         }
         //if not asking for order comments then hide field
-        if(!myPref.getPreferences(MyPreferences.pref_ask_order_comments)){
+        if (!myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
             editTextDialogComments.setVisibility(View.GONE);
         }
 
@@ -754,7 +746,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             public void onClick(View v) {
                 dialog.dismiss();
                 //if we have comments set the global comments field
-                if(!editTextDialogComments.getText().toString().isEmpty()){
+                if (!editTextDialogComments.getText().toString().isEmpty()) {
                     global.setSelectedComments(editTextDialogComments.getText().toString());
                 }
 
@@ -1145,7 +1137,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void processConsignment() {
-        GenerateNewID idGenerator = new GenerateNewID(activity);
         HashMap<String, HashMap<String, String>> summaryMap = new HashMap<String, HashMap<String, String>>();
         HashMap<String, String> tempMap = new HashMap<String, String>();
         CustomerInventory custInventory;
@@ -2193,7 +2184,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void reloadDefaultTransaction() {
         String type = myPref
                 .getPreferencesValue(MyPreferences.pref_default_transaction);
-        int transType = -1;
+        int transType;
         global.order = new Order(activity);
         try {
             if (type == null || type.isEmpty())
@@ -2204,7 +2195,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
 
         if (transType != -1) {
-            Intent intent = null;
+            Intent intent;
             switch (transType) {
                 case 0:// sales receipt
                     intent = new Intent(SalesTab_FR.activity, OrderingMain_FA.class);
