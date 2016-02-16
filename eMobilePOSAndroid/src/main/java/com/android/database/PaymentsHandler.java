@@ -746,41 +746,41 @@ public class PaymentsHandler {
 
         List<PaymentDetails> list = new ArrayList<PaymentDetails>();
 
-        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_amount AS 'pay_amount', amount_tender,pm.paymethod_name AS 'paymethod_name'," +
+        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_id, p.pay_amount AS 'pay_amount', amount_tender,pm.paymethod_name AS 'paymethod_name'," +
                 "p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid'," +
                 "p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                 "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' " +
                 "FROM Payments p," + "PayMethods pm WHERE p.paymethod_id = pm.paymethod_id " +
-                "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount', amount_tender, " +
+                "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_id, p.pay_amount AS 'pay_amount', amount_tender, " +
                 "'Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature'," +
                 "p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
                 "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' " +
-                "FROM Payments p WHERE p.paymethod_id = 'Wallet' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT" +
-                " p.pay_amount AS 'pay_amount', amount_tender,'LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature " +
+                "FROM Payments p WHERE p.paymethod_id = 'Wallet' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
+                "p.pay_id,  p.pay_amount AS 'pay_amount', amount_tender,'LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature " +
                 "AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
                 "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
                 "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
                 "WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
-                "p.pay_amount AS 'pay_amount', amount_tender,'Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_id, p.pay_amount AS 'pay_amount', amount_tender,'Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
                 "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
                 "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
                 "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
                 "WHERE p.paymethod_id = 'Reward' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
-                "p.pay_amount AS 'pay_amount', amount_tender,'GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_id, p.pay_amount AS 'pay_amount', amount_tender,'GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
                 "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
                 "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
                 "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
                 "WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
-                "p.pay_amount AS 'pay_amount', amount_tender,p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_id, p.pay_amount AS 'pay_amount', amount_tender,p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
                 "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
                 "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
                 "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
                 "WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" + jobID + "' UNION " + "SELECT " +
-                "p.pay_amount AS 'pay_amount', amount_tender,p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
+                "p.pay_id, p.pay_amount AS 'pay_amount', amount_tender,p.card_type AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
                 "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
                 "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
                 "p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM Payments p " +
-                "WHERE p.paymethod_id = '' " + "AND p.job_id = '" + jobID + "'", null);
+                "WHERE p.paymethod_id = '' " + "AND p.job_id = '" + jobID + "' ORDER BY p.pay_id", null);
         PaymentDetails details = new PaymentDetails();
         if (cursor.moveToFirst()) {
 
