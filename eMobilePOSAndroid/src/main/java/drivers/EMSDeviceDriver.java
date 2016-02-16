@@ -1889,7 +1889,7 @@ public class EMSDeviceDriver {
         }
 
         sb.append(textHandler.newLines(2));
-//???? what is this doing???
+
         sb.append(sb_ord_types);
 
 
@@ -2008,7 +2008,7 @@ public class EMSDeviceDriver {
             listProd.clear();
         }
 
-        listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
+        listProd = ordProdHandler.getDepartmentDayReport(false, null, mDate);
         if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Returns", lineWidth));
