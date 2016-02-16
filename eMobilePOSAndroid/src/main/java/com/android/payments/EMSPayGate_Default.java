@@ -105,21 +105,21 @@ public class EMSPayGate_Default {
         }
     }
 
-    public String paymentWithAction(String actionType, boolean isSwipe, String data, CreditCardInfo _cardManager) {
-        EAction actions = EAction.toAction(actionType);
+    public String paymentWithAction(EAction actionType, boolean isSwipe, String data, CreditCardInfo _cardManager) {
+//        EAction actions = EAction.toAction(actionType);
         this.cardManager = _cardManager;
         try {
             generateAccountInfo();
 
             serializer.startTag(empstr, "epay");
             serializer.startTag(empstr, "action");
-            serializer.text(Integer.toString(actions.getValue()));
+            serializer.text(Integer.toString(actionType.getValue()));
             serializer.endTag(empstr, "action");
             serializer.startTag(empstr, "app_id");
             serializer.text(UUID.randomUUID().toString());
             serializer.endTag(empstr, "app_id");
 
-            switch (actions) {
+            switch (actionType) {
                 case ChargeTupixAction:
                     serializer.startTag(empstr, "wToken");
                     serializer.text(data);
@@ -152,7 +152,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ChargeDebitAction)
+                    if (actionType == EAction.ChargeDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -181,7 +181,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ChargeDebitAction)
+                    if (actionType == EAction.ChargeDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -207,7 +207,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ChargeDebitAction)
+                    if (actionType == EAction.ChargeDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -250,7 +250,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ReturnDebitAction)
+                    if (actionType == EAction.ReturnDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -335,13 +335,10 @@ public class EMSPayGate_Default {
                     break;
             }
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

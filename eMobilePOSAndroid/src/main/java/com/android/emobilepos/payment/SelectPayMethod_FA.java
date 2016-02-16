@@ -767,7 +767,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
                     if (paymentType.equals("GIFTCARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction("VoidGiftCardAction", false,
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
                                 listVoidPayments.get(i).card_type, null));
                         inSource = new InputSource(new StringReader(xml));
 
@@ -786,7 +786,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction("VoidCreditCardAction", false,
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
                                 listVoidPayments.get(i).card_type, null));
                         inSource = new InputSource(new StringReader(xml));
 
@@ -1042,12 +1042,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
             boolean wasSwiped = cardInfoManager.getWasSwiped();
 
-            reqChargeLoyaltyReward = payGate.paymentWithAction("ChargeLoyaltyCardAction", wasSwiped, cardType,
+            reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeLoyaltyCardAction, wasSwiped, cardType,
                     cardInfoManager);
 
             loyaltyRewardPayment.pay_amount = Global.loyaltyAddAmount;
             payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
-            reqAddLoyalty = payGate.paymentWithAction("AddValueLoyaltyCardAction", wasSwiped, cardType,
+            reqAddLoyalty = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueLoyaltyCardAction, wasSwiped, cardType,
                     cardInfoManager);
             loyaltyRewardPayment.pay_amount = Global.loyaltyCharge;
 
@@ -1064,7 +1064,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             loyaltyRewardPayment.pay_amount = Global.rewardChargeAmount.toString();
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
             boolean wasSwiped = cardInfoManager.getWasSwiped();
-            reqChargeLoyaltyReward = payGate.paymentWithAction("ChargeRewardAction", wasSwiped, cardType,
+            reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, wasSwiped, cardType,
                     cardInfoManager);
 
             new processRewardAsync().execute();

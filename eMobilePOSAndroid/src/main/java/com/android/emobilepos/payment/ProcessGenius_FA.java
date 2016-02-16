@@ -201,9 +201,9 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         if (isRefund) {
             payment.is_refund = "1";
             payment.pay_type = "2";
-            generatedURL = payGate.paymentWithAction("ReturnGeniusAction", false, "", null);
+            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGeniusAction, false, "", null);
         } else
-            generatedURL = payGate.paymentWithAction("ChargeGeniusAction", false, "", null);
+            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGeniusAction, false, "", null);
         //generatedURL = payGate.defaultPaymentWithAction("ChargeGeniusAction", "0");
 
         new processLivePaymentAsync().execute(generatedURL);
