@@ -168,7 +168,7 @@ public class TaxesHandler {
         if (myPref.getPreferences(MyPreferences.pref_show_only_group_taxes))
             cursor = DBManager._db.query(false, table_name, fields, "tax_type = ? AND tax_id = ?", new String[]{"G", taxId}, null, null, tax_name, null);
         else
-            cursor = DBManager._db.query(false, table_name, fields, "tax_id = ?",  new String[]{taxId}, null, null, tax_name, null);
+            cursor = DBManager._db.query(false, table_name, fields, "tax_id = ?", new String[]{taxId}, null, null, tax_name, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -252,7 +252,7 @@ public class TaxesHandler {
             }
         }
         //db.close();
-
+        cursor.close();
         return taxRate;
     }
 

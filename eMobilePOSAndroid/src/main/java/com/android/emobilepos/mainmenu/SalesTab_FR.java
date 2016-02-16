@@ -270,6 +270,7 @@ public class SalesTab_FR extends Fragment {
                             askEatInToGo();
                         } else {
                             intent = new Intent(activity, OrderingMain_FA.class);
+                            intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                             intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                             startActivityForResult(intent, 0);
                         }
@@ -677,6 +678,7 @@ public class SalesTab_FR extends Fragment {
         Intent intent = new Intent(activity, OrderingMain_FA.class);
         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
         intent.putExtra("RestaurantSaleType", restaurantSaleType);
+
         if (restaurantSaleType == Global.RestaurantSaleType.EAT_IN) {
             intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
             intent.putExtra("selectedDinningTableNumber", tableNumber);
@@ -686,7 +688,6 @@ public class SalesTab_FR extends Fragment {
 
     private void promptWithCustomer() {
         //final Intent intent = new Intent(activity, SalesReceiptSplitActivity.class);
-        final Intent intent = new Intent(activity, OrderingMain_FA.class);
         final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);

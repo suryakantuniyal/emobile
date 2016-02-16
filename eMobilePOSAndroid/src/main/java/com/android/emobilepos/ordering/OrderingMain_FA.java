@@ -9,7 +9,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -134,8 +133,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static Global.TransactionType mTransType = null;
     public static boolean returnItem = false;
     private Bundle extras;
-    private Global.RestaurantSaleType restaurantSaleType = Global.RestaurantSaleType.EAT_IN;
-    private boolean isToGo;
+    private Global.RestaurantSaleType restaurantSaleType = Global.RestaurantSaleType.TO_GO;
+    public boolean isToGo = true;
     private int selectedSeatsAmount;
     private String selectedDinningTableNumber;
     private static String selectedSeatNumber = "1";
@@ -158,11 +157,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         myPref = new MyPreferences(this);
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
-        restaurantSaleType = (Global.RestaurantSaleType) extras.get("RestaurantSaleType");
+        setRestaurantSaleType((Global.RestaurantSaleType) extras.get("RestaurantSaleType"));
         selectedSeatsAmount = extras.getInt("selectedSeatsAmount");
         selectedDinningTableNumber = extras.getString("selectedDinningTableNumber");
 
-        isToGo = restaurantSaleType == Global.RestaurantSaleType.TO_GO;
+        isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
         returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.getIsTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -503,8 +502,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         });
         List<OrderProduct> orderProducts = leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber);
-        popup.getMenu().findItem(R.id.deleteSeat).setEnabled(orderProducts.isEmpty());
-        popup.getMenu().findItem(R.id.moveSeatItems).setEnabled(!orderProducts.isEmpty());
+        popup.getMenu().findItem(R.id.deleteSeat).setEnabled(orderProducts.isEmpty() && leftFragment.mainLVAdapter.getSeatsAmount() > 1);
+        popup.getMenu().findItem(R.id.moveSeatItems).setEnabled(!orderProducts.isEmpty() && leftFragment.mainLVAdapter.getSeatsAmount() > 1);
 
         popup.show();
     }
@@ -1245,6 +1244,18 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static void setSelectedSeatNumber(String seatNumber) {
         selectedSeatNumber = seatNumber;
 
+    }
+
+    public Global.RestaurantSaleType getRestaurantSaleType() {
+        return restaurantSaleType;
+    }
+
+    public void setRestaurantSaleType(Global.RestaurantSaleType restaurantSaleType) {
+        if (restaurantSaleType == null) {
+            this.restaurantSaleType = Global.RestaurantSaleType.TO_GO;
+        } else {
+            this.restaurantSaleType = restaurantSaleType;
+        }
     }
 
 

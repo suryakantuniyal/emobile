@@ -31,6 +31,8 @@ import java.util.List;
  * Created by Guarionex on 1/20/2016.
  */
 public class OrderProductListAdapter extends BaseAdapter {
+
+
     public enum RowType {
         TYPE_HEADER(0), TYPE_ITEM(1);
         int code;
@@ -58,7 +60,28 @@ public class OrderProductListAdapter extends BaseAdapter {
         this.activity = activity;
         this.orderProducts = orderProducts;
         initSeats(seatsAmount);
-        OrderingMain_FA.setSelectedSeatNumber(orderSeatProductList.get(0).seatNumber);
+        if (orderSeatProductList != null && !orderSeatProductList.isEmpty()) {
+            OrderingMain_FA.setSelectedSeatNumber(orderSeatProductList.get(0).seatNumber);
+        }
+    }
+
+    public int getSeatsAmount() {
+        int count = 0;
+        for (OrderSeatProduct seatProduct : orderSeatProductList) {
+            if (seatProduct.rowType == RowType.TYPE_HEADER) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public String getFirstSeat() {
+        for (OrderSeatProduct seatProduct : orderSeatProductList) {
+            if (seatProduct.rowType == RowType.TYPE_HEADER) {
+                return seatProduct.seatNumber;
+            }
+        }
+        return null;
     }
 
     private void initSeats(int seatsAmount) {

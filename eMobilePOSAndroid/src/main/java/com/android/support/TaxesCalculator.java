@@ -36,7 +36,7 @@ public class TaxesCalculator {
     private BigDecimal itemsDiscountTotal;
     private BigDecimal taxableDueAmount = new BigDecimal(0.00);
 
-    public TaxesCalculator(Activity activity, MyPreferences myPref, OrderProducts orderProduct, String taxID, int taxSelected, String[] discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal, List<HashMap<String, String>> listMapTaxes) {
+    public TaxesCalculator(Activity activity, MyPreferences myPref, OrderProduct orderProduct, String taxID, int taxSelected, String[] discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal, List<HashMap<String, String>> listMapTaxes) {
         this.listMapTaxes = listMapTaxes;
         this.setDiscountable_sub_total(discountable_sub_total);
         this.setItemsDiscountTotal(itemsDiscountTotal);

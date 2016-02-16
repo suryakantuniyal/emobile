@@ -86,6 +86,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
 
     private AddProductBtnCallback callBackAddProd;
+    private boolean isToGo;
 
     public interface AddProductBtnCallback {
         void addProductServices();
@@ -153,7 +154,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         global.order = new Order(activity);
         final Bundle extras = activity.getIntent().getExtras();
         typeOfProcedure = (Global.TransactionType) extras.get("option_number");
-
+        isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         prodHandler = new ProductsHandler(activity);
         callBackAddProd = (AddProductBtnCallback) activity;
         callBackUpdateHeaderTitle = (UpdateHeaderTitleCallback) activity;
@@ -179,6 +180,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 && orientation == Configuration.ORIENTATION_LANDSCAPE) {
             addProd.setVisibility(View.GONE);
         }
+
         Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
         addSeatButton.setOnClickListener(this);
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
@@ -515,6 +517,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         switch (v.getId()) {
             case R.id.addSeatButton:
                 mainLVAdapter.addSeat();
+                if (isToGo) {
+                    isToGo = false;
+                    ((OrderingMain_FA) getActivity()).isToGo = false;
+                    ((OrderingMain_FA) getActivity()).setRestaurantSaleType(Global.RestaurantSaleType.EAT_IN);
+                    String firstSeat = mainLVAdapter.getFirstSeat();
+                    OrderingMain_FA.setSelectedSeatNumber(firstSeat);
+                    mainLVAdapter.moveSeatItems(global.orderProducts, firstSeat);
+                    mainLVAdapter.notifyDataSetChanged();
+                }
                 break;
             case R.id.plusButton:
                 intent = new Intent(getActivity(), ViewCustomers_FA.class);
