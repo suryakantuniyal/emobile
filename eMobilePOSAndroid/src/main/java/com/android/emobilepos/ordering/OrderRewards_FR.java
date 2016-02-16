@@ -73,7 +73,6 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
         subTotalValue = (TextView) view.findViewById(R.id.subtotalValue);
 
         if (savedInstanceState == null && OrderTotalDetails_FR.getFrag() != null) {
-            Global global = (Global) getActivity().getApplication();
             OrderTotalDetails_FR.getFrag().reCalculate();
         }
 
@@ -85,7 +84,6 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.btnTapReward:
                 callBackRewardSwiper.startRewardSwiper();
@@ -102,7 +100,6 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                     Global.rewardChargeAmount = bdBalance;
                 }
                 if (OrderTotalDetails_FR.getFrag() != null) {
-                    Global global = (Global) getActivity().getApplication();
                     OrderTotalDetails_FR.getFrag().reCalculate();
                 }
                 btnPayRewards.setClickable(false);
