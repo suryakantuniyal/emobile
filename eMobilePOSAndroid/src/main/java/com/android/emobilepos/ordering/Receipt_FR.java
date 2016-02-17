@@ -591,7 +591,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (restLVAdapter != null)
             position = restLVAdapter.dataPosition(orderProductIdx);
         if (orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-            ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(orderSeatProduct.seatNumber);
+            OrderingMain_FA.setSelectedSeatNumber(orderSeatProduct.seatNumber);
             mainLVAdapter.notifyDataSetChanged();
         } else {
             String isVoidedItem = orderSeatProduct.orderProduct.item_void;
@@ -663,8 +663,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             case R.id.cancel:
                                 break;
                             default:
-                                if (subMenus.containsKey(new Integer(item.getItemId()))) {
-                                    String targetSeat = subMenus.get(new Integer(item.getItemId()));
+                                if (subMenus.containsKey(Integer.valueOf(item.getItemId()))) {
+                                    String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
                                     OrderingMain_FA.setSelectedSeatNumber(targetSeat);
                                     orderSeatProduct.orderProduct.assignedSeat = targetSeat;
                                     mainLVAdapter.notifyDataSetChanged();
@@ -678,6 +678,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             }
         }
+        receiptListView.smoothScrollToPosition(position);
+
     }
 
 
@@ -2126,8 +2128,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
-        if (mainLVAdapter != null)
+        if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
+            receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
+        }
         else
             restLVAdapter.notifyDataSetChanged();
         reCalculate();

@@ -3,6 +3,7 @@ package com.android.emobilepos.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     public List<OrderSeatProduct> orderSeatProductList;
     public List<OrderSeatProduct> orderSeatProductFullList;
     private MyPreferences myPref;
+    public int selectedPosition;
     Activity activity;
 
     public OrderProductListAdapter(Activity activity, List<OrderProduct> orderProducts, int seatsAmount) {
@@ -193,6 +195,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     @Override
     public void notifyDataSetChanged() {
         refreshList();
+
         super.notifyDataSetChanged();
     }
 
@@ -236,12 +239,12 @@ public class OrderProductListAdapter extends BaseAdapter {
                 convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
                 ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText(String.format("Seat %s", orderSeatProductList.get(position).seatNumber));
                 int colorId = activity.getResources().getIdentifier("seat" + orderSeatProductList.get(position).seatGroupId, "color", activity.getPackageName());
-                convertView.setBackgroundResource(colorId);
+                convertView.findViewById(R.id.seatHeaderSection).setBackgroundResource(colorId);
                 if (OrderingMain_FA.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
-                    convertView.findViewById(R.id.seatHeaderSection).requestFocus();
-                    convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_flat_button));
+                    selectedPosition = position;
+                    convertView.setBackgroundColor(Color.RED);
                 } else {
-                    convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_gradient_header_horizontal));
+                    convertView.setBackgroundResource(colorId);
                 }
                 convertView.setVisibility(orderSeatProductList.get(position).isDeleted ? View.GONE : View.VISIBLE);
                 break;

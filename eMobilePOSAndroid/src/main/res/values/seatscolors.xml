@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="seat1">#ff0303</color>
-    <color name="seat2">#f99500</color>
-    <color name="seat3">#0365f7</color>
-    <color name="seat4">#01aff9</color>
+    <color name="seat1">#656629</color>
+    <color name="seat2">#c69a5a</color>
+    <color name="seat3">#7e4e4e</color>
+    <color name="seat4">#eca168</color>
     <color name="seat5">#02660f</color>
+    <color name="seat6">#1f1297</color>
     <color name="seat7">#fdfd00</color>
-    <color name="seat8">#cc7474</color>
-    <color name="seat9">#ff8800</color>
+    <color name="seat8">#5d3e96</color>
+    <color name="seat9">#8536b6</color>
     <color name="seat10">#00ff9a</color>
     <color name="seat11">#7251b4</color>
     <color name="seat12">#0e4b53</color>
-    <color name="seat13">#ff07d4</color>
+    <color name="seat13">#08ccf9</color>
     <color name="seat14">#3b0663</color>
-    <color name="seat15">#f97686</color>
+    <color name="seat15">#8b7932</color>
     <color name="seat16">#408704</color>
     <color name="seat17">#6b6b04</color>
     <color name="seat18">#faa906</color>
-    <color name="seat19">#76c4ff</color>
+    <color name="seat19">#76ffad</color>
     <color name="seat20">#401b39</color>
 </resources>
