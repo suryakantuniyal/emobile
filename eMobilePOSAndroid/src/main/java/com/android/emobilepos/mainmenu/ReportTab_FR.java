@@ -32,7 +32,6 @@ public class ReportTab_FR extends Fragment implements OnClickListener
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		Intent intent= new Intent(getActivity(),ViewReport_FA.class);
 		switch(v.getId())
 		{
