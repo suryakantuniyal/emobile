@@ -482,7 +482,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void productClicked(int position) {
-        // TODO Auto-generated method stub
         myCursor.moveToPosition(position);
         itemClicked(false);
     }
@@ -724,6 +723,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             intent.putExtra("prod_value_points", product.getProdValuePoints());
             intent.putExtra("prod_sku", product.getProd_sku());
             intent.putExtra("prod_upc", product.getProd_upc());
+            intent.putExtra("selectedSeatNumber", ((OrderingMain_FA)getActivity()).getSelectedSeatNumber());
+
 
 
             if (Global.isConsignment)
@@ -812,7 +813,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-        // TODO Auto-generated method stub
 
         if (!isFastScanning && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
             return;

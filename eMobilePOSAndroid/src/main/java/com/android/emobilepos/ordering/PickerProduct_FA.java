@@ -304,7 +304,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderProduct.prod_taxcode = extras.getString("prod_taxcode");
         orderProduct.tax_type = extras.getString("prod_taxtype");
         orderProduct.cat_id = extras.getString("cat_id");
-        orderProduct.assignedSeat = extras.getString("assignedSeat");
+        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
         orderProduct.prod_price_points = extras.getString("prod_price_points") == null ? "0" : extras.getString("prod_price_points");
         orderProduct.prod_value_points = extras.getString("prod_value_points") == null ? "0" : extras.getString("prod_value_points");
 

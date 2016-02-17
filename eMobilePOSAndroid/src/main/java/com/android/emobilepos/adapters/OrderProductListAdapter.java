@@ -1,20 +1,14 @@
 package com.android.emobilepos.adapters;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
@@ -65,6 +59,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         }
     }
 
+
     public int getSeatsAmount() {
         int count = 0;
         for (OrderSeatProduct seatProduct : orderSeatProductList) {
@@ -73,6 +68,16 @@ public class OrderProductListAdapter extends BaseAdapter {
             }
         }
         return count;
+    }
+
+    public int getNextGroupId() {
+        int count = 0;
+        for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
+            if (seatProduct.rowType == RowType.TYPE_HEADER) {
+                count++;
+            }
+        }
+        return count + 1;
     }
 
     public String getFirstSeat() {
@@ -89,7 +94,9 @@ public class OrderProductListAdapter extends BaseAdapter {
         orderSeatProductList = new ArrayList<OrderSeatProduct>();
         if (seatsAmount > 0) {
             for (int i = 0; i < seatsAmount; i++) {
-                orderSeatProductList.add(new OrderSeatProduct(String.valueOf(i + 1)));
+                OrderSeatProduct seatProduct = new OrderSeatProduct(String.valueOf(i + 1));
+                seatProduct.seatGroupId = i + 1;
+                orderSeatProductList.add(seatProduct);
             }
         }
         orderSeatProductFullList.addAll(orderSeatProductList);
@@ -105,8 +112,20 @@ public class OrderProductListAdapter extends BaseAdapter {
         return l;
     }
 
+    public OrderSeatProduct getSeat(String seatNumber) {
+        for (OrderSeatProduct seatProduct : orderSeatProductList) {
+            if (seatProduct.rowType == RowType.TYPE_HEADER) {
+                if (seatProduct.seatNumber.equalsIgnoreCase(seatNumber)) {
+                    return seatProduct;
+                }
+            }
+        }
+        return null;
+    }
+
     public void addSeat() {
         OrderSeatProduct product = new OrderSeatProduct(String.valueOf(orderSeatProductFullList.size() + 1));
+        product.seatGroupId = getNextGroupId();
         orderSeatProductList.add(product);
         orderSeatProductFullList.add(product);
         notifyDataSetChanged();
@@ -129,18 +148,32 @@ public class OrderProductListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void joinSeatsGroupId(int sourceGroupId, int targetGroupId) {
+        for (OrderSeatProduct seatProduct : orderSeatProductList) {
+            if (seatProduct.rowType == RowType.TYPE_HEADER) {
+                if (seatProduct.seatGroupId == sourceGroupId) {
+                    seatProduct.seatGroupId = targetGroupId;
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     private List<OrderSeatProduct> getValidOrderSeatProductList() {
         ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
         if (orderSeatProductFullList.size() > 0) {
             for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
                 if (seatProduct.rowType == RowType.TYPE_HEADER && !seatProduct.isDeleted) {
-                    l.add(new OrderSeatProduct(seatProduct.seatNumber));
+                    OrderSeatProduct osp = new OrderSeatProduct(seatProduct.seatNumber);
+                    osp.seatGroupId = seatProduct.seatGroupId;
+                    l.add(osp);
                     for (OrderProduct product : orderProducts) {
                         if (product != null && product.assignedSeat != null &&
                                 product.assignedSeat.equalsIgnoreCase(seatProduct.seatNumber)) {
                             l.add(new OrderSeatProduct(product));
                         }
                     }
+                    orderSeatProductFullList.set(orderSeatProductFullList.indexOf(seatProduct), osp);
                 }
             }
         } else {
@@ -185,7 +218,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         RowType type = orderSeatProductList.get(position).rowType;
         if (convertView == null) {
             holder = new ViewHolder();
@@ -201,12 +234,15 @@ public class OrderProductListAdapter extends BaseAdapter {
                 menuButton.setTag(orderSeatProductList.get(position));
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
-                ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText("Seat " + orderSeatProductList.get(position).seatNumber);
+                ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText(String.format("Seat %s", orderSeatProductList.get(position).seatNumber));
+                int colorId = activity.getResources().getIdentifier("seat" + orderSeatProductList.get(position).seatGroupId, "color", activity.getPackageName());
+                convertView.setBackgroundResource(colorId);
                 if (OrderingMain_FA.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
-                    convertView.requestFocus();
+                    convertView.findViewById(R.id.seatHeaderSection).requestFocus();
                     convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_flat_button));
-                } else
+                } else {
                     convertView.findViewById(R.id.seatHeaderSection).setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.blue_gradient_header_horizontal));
+                }
                 convertView.setVisibility(orderSeatProductList.get(position).isDeleted ? View.GONE : View.VISIBLE);
                 break;
             case TYPE_ITEM:
@@ -237,10 +273,12 @@ public class OrderProductListAdapter extends BaseAdapter {
         public boolean isDeleted;
         public RowType rowType;
         public String seatNumber;
+        public int seatGroupId;
         public OrderProduct orderProduct;
 
         public OrderSeatProduct(String seatNumber) {
             this.seatNumber = seatNumber;
+            this.seatGroupId = getNextGroupId();
             this.rowType = RowType.TYPE_HEADER;
         }
 
@@ -249,7 +287,6 @@ public class OrderProductListAdapter extends BaseAdapter {
             this.rowType = RowType.TYPE_ITEM;
         }
     }
-
 
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;

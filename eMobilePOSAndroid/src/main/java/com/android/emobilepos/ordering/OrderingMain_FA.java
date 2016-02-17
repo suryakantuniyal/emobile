@@ -467,6 +467,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         PopupMenu popup = new PopupMenu(this, v);
         popup.getMenuInflater().inflate(R.menu.receiptlist_header_menu, popup.getMenu());
         final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
+        final HashMap<Integer, String> subMenusJoinSeat = new HashMap<Integer, String>();
+
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
@@ -477,25 +479,41 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         }
                         break;
                     case R.id.moveSeatItems:
-                        int i = 0;
+                        int id = 0;
                         for (OrderProductListAdapter.OrderSeatProduct seatProduct : leftFragment.mainLVAdapter.orderSeatProductList) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                 if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
-                                    item.getSubMenu().add(0, i, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
-                                    subMenus.put(i, seatProduct.seatNumber);
-                                    i++;
+                                    item.getSubMenu().add(0, id, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
+                                    subMenus.put(id, seatProduct.seatNumber);
+                                    id++;
                                 }
                             }
                         }
                         break;
                     case R.id.joinSeats:
+                        int jid = 100;
+                        for (OrderProductListAdapter.OrderSeatProduct seatProduct : leftFragment.mainLVAdapter.orderSeatProductList) {
+                            if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
+                                if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
+                                    item.getSubMenu().add(0, jid, SubMenu.NONE, "Group seats items" + seatProduct.seatNumber);
+                                    subMenusJoinSeat.put(jid, seatProduct.seatNumber);
+                                    jid++;
+                                }
+                            }
+                        }
                         break;
                     default:
                         if (subMenus.containsKey(new Integer(item.getItemId()))) {
                             String targetSeat = subMenus.get(new Integer(item.getItemId()));
                             setSelectedSeatNumber(targetSeat);
                             leftFragment.mainLVAdapter.moveSeatItems(leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber), targetSeat);
+                        } else if (subMenusJoinSeat.containsKey(new Integer(item.getItemId()))) {
+                            String targetSeatNumber = subMenusJoinSeat.get(new Integer(item.getItemId()));
+                            OrderProductListAdapter.OrderSeatProduct targetSeat = leftFragment.mainLVAdapter.getSeat(targetSeatNumber);
+                            leftFragment.mainLVAdapter.joinSeatsGroupId(orderSeatProduct.seatGroupId, targetSeat.seatGroupId);
+                            leftFragment.mainLVAdapter.notifyDataSetChanged();
                         }
+
                         break;
                 }
                 return true;
