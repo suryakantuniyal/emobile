@@ -32,7 +32,6 @@ import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.genius.GeniusTransportToken;
 import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXGetGeniusHandler;
 import com.android.saxhandler.SAXProcessGeniusHandler;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -55,7 +54,6 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
@@ -74,7 +72,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
     private MyPreferences myPref;
     private boolean hasBeenCreated = false;
     private boolean isRefund = false;
-    private NumberUtils numberUtils = new NumberUtils();
 
 
     @Override
@@ -140,7 +137,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, editText);
+                NumberUtils.parseInputedCurrency(s, editText);
             }
         };
     }
@@ -204,7 +201,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGeniusAction, false, "", null);
         } else
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGeniusAction, false, "", null);
-        //generatedURL = payGate.defaultPaymentWithAction("ChargeGeniusAction", "0");
 
         new processLivePaymentAsync().execute(generatedURL);
     }
@@ -213,12 +209,11 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         private boolean boProcessed = false;
         private boolean geniusConnected = false;
-        private String temp = "";
 
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Processing Payment...");
+            myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -227,7 +222,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         @Override
         protected GeniusResponse doInBackground(String... params) {
-            // TODO Auto-generated method stub
             Gson gson = new Gson();
             GeniusResponse geniusResponse = null;
             if (pingGeniusDevice()) {
@@ -238,7 +232,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 try {
                     String xml = post.postData(13, activity, params[0]);
-                    temp = xml;
                     InputSource inSource = new InputSource(new StringReader(xml));
 
                     SAXParser sp = spf.newSAXParser();
@@ -255,7 +248,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         geniusResponse = gson.fromJson(json, GeniusResponse.class);
 
                     }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
 
             }
@@ -398,7 +391,6 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
             @Override
             protected Void doInBackground(Void... params) {
-                // TODO Auto-generated method stub
 
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, true, payment.emvContainer);
@@ -426,7 +418,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 int code = connection.getResponseCode();
 
                 isReachable = code == 200 || code == 400;
-            } catch (IOException e) {
+            } catch (IOException ignored) {
 
             }
             return isReachable;
@@ -477,7 +469,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             int size = splitFirstSentinel.length;
 
             if (size > 0) {
-                String[] pairs = new String[2];
+                String[] pairs;
                 Bitmap myBitmap = Bitmap.createBitmap(150, 80, Config.ARGB_8888);
                 Canvas newCanvas = new Canvas();
                 newCanvas.setBitmap(myBitmap);
@@ -491,7 +483,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         newCanvas.drawPoint((float) Integer.parseInt(pairs[0]), (float) Integer.parseInt(pairs[1]), t);
                 }
 
-                OutputStream outStream = null;
+                OutputStream outStream;
                 MyPreferences myPref = new MyPreferences(activity);
                 File file = new File(myPref.getCacheDir(), "test.png");
 
@@ -510,14 +502,10 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     payment.pay_signature = global.encodedImage;
 
 
-                } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-//					Tracker tracker = EasyTracker.getInstance(activity);
-//					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-//					Tracker tracker = EasyTracker.getInstance(activity);
-//					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+                } catch (FileNotFoundException ignored) {
+
+                } catch (IOException ignored) {
+
                 }
             }
         }

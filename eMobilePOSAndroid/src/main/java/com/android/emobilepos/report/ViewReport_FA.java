@@ -66,13 +66,10 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				DialogFragment newFrag = new DateDialog();
 				FragmentManager fm = getSupportFragmentManager();
 				newFrag.show(fm, "dialog");
-				/*EMSReceiptHelper em = new EMSReceiptHelper(activity,42);
-				String t = em.getEndOfDayReportReceipt(null,Global.getCurrentDate());
-				t = "";*/
+
 			}
 		});
 		
@@ -85,8 +82,6 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
 						long arg3) {
-					// TODO Auto-generated method stub
-					
 					if(pos>=2)
 					{
 					Intent intent = new Intent(activity,ShiftReportDetails_FA.class);
@@ -149,10 +144,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
 		@Override
 		protected String doInBackground(Void... params) {
-			// TODO Auto-generated method stub
-
 			curDate = Global.getCurrentDate();
-						
 			dates[0]=Global.formatToDisplayDate(curDate, activity, 0);
 			dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
 			
@@ -160,7 +152,6 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 				mainAdapter = new ReportsMenuAdapter(activity, dates);
 			else
 				shiftAdapter = new ReportsShiftAdapter(activity,dates);
-			
 			return null;
 		}
 
@@ -216,7 +207,6 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				dlog.dismiss();
 				new printAsync().execute();
 			}
@@ -225,7 +215,6 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				dlog.dismiss();
 			}
 		});
@@ -247,8 +236,6 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			// TODO Auto-generated method stub
-
 			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
 				printSuccessful = Global.mainPrinterManager.currentDevice.printReport(curDate);
 			return null;
@@ -284,19 +271,13 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
 		@Override
 		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
 			// Do something after user selects the date...
 			StringBuilder sb = new StringBuilder();
 			sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear+1)).append(Integer.toString(dayOfMonth));
 			Calendar cal = Calendar.getInstance();
 			cal.set(year, monthOfYear, dayOfMonth);
-			
-			
-			
 			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.getDefault());
-			
 			curDate = sdf2.format(cal.getTime());
-			
 			dates[0]=Global.formatToDisplayDate(curDate, activity, 0);
 			dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
 			if(activity!=null)

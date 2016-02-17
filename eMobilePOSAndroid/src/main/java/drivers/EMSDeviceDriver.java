@@ -551,7 +551,7 @@ public class EMSDeviceDriver {
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
             sb.append("\n\n");
-            String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).subtract(new BigDecimal(itemDiscTotal)).toString();
+            String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).toString();
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.formatDoubleStrToCurrency(granTotal), lineWidth, 0));
 

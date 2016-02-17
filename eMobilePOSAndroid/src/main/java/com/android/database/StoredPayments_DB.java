@@ -103,7 +103,7 @@ public class StoredPayments_DB {
             job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
             tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
             Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, pay_uuid, is_retry,
-            payment_xml);
+            payment_xml,EMVJson);
 
     private StringBuilder sb1, sb2;
     private final String empStr = "";
@@ -162,7 +162,7 @@ public class StoredPayments_DB {
             insert.bindString(index(tupyx_user_id), payment.tupyx_user_id);
             insert.bindString(index(custidkey), payment.custidkey); // custidkey
             insert.bindString(index(emp_id), payment.emp_id); // emp_id
-            insert.bindString(index(inv_id), payment.inv_id); // inv_id
+            insert.bindString(index(inv_id), payment.inv_id == null ? "" : payment.inv_id); // inv_id
             insert.bindString(index(paymethod_id), payment.paymethod_id); // paymethod_id
             insert.bindString(index(pay_check), payment.pay_check); // pay_check
             insert.bindString(index(pay_receipt), payment.pay_receipt); // pay_receipt
@@ -174,7 +174,7 @@ public class StoredPayments_DB {
             insert.bindString(index(account_id), payment.account_id); // account_id
             insert.bindString(index(processed), payment.processed); // processed
             insert.bindString(index(pay_issync), payment.pay_issync); // pay_issync
-            insert.bindString(index(pay_transid), payment.pay_transid); // pay_transid
+            insert.bindString(index(pay_transid), payment.pay_transid == null ? "" : payment.pay_transid); // pay_transid
             insert.bindString(index(pay_refnum), payment.pay_refnum); // pay_refnum
             insert.bindString(index(pay_name), payment.pay_name); // pay_name
             insert.bindString(index(pay_addr), payment.pay_addr); // pay_addr
@@ -193,7 +193,7 @@ public class StoredPayments_DB {
             insert.bindString(index(pay_date), payment.pay_date); // pay_date
             insert.bindString(index(recordnumber), payment.recordnumber); // recordnumber
             insert.bindString(index(pay_signature), payment.pay_signature); // pay_signaute
-            insert.bindString(index(authcode), payment.authcode); // authcode
+            insert.bindString(index(authcode), payment.authcode == null ? "" : payment.authcode); // authcode
             insert.bindString(index(status), payment.status); // status
             insert.bindString(index(job_id), payment.job_id); // job_id
 
@@ -207,9 +207,9 @@ public class StoredPayments_DB {
             insert.bindString(index(pay_latitude), payment.pay_latitude); // pay_latitude
             insert.bindString(index(pay_longitude), payment.pay_longitude); // pay_longitude
             insert.bindString(index(tipAmount), payment.tipAmount); // tipAmount
-            insert.bindString(index(clerk_id), payment.clerk_id); // clerk_id
+            insert.bindString(index(clerk_id), payment.clerk_id==null?"":payment.clerk_id); // clerk_id
 
-            insert.bindString(index(is_refund), payment.is_refund); // is_refund
+            insert.bindString(index(is_refund), payment.is_refund==null?"":payment.is_refund); // is_refund
             insert.bindString(index(ref_num), payment.ref_num); // ref_num
             insert.bindString(index(card_type), payment.card_type); // card_type
 
@@ -239,6 +239,7 @@ public class StoredPayments_DB {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
+            PaymentsHandler.setLastPaymentInserted(payment);
             DBManager._db.endTransaction();
         }
         // db.close();
@@ -396,7 +397,7 @@ public class StoredPayments_DB {
                 paymentDetails.setTax2_amount(cursor.getString(cursor.getColumnIndex(Tax2_amount)));
                 paymentDetails.setTax1_name(cursor.getString(cursor.getColumnIndex(Tax1_name)));
                 paymentDetails.setTax2_name(cursor.getString(cursor.getColumnIndex(Tax2_name)));
-                paymentDetails.setEmvContainer(new Gson().fromJson(cursor.getString(cursor.getColumnIndex(EMVJson)),EMVContainer.class));
+                paymentDetails.setEmvContainer(new Gson().fromJson(cursor.getString(cursor.getColumnIndex(EMVJson)), EMVContainer.class));
 
             } while (cursor.moveToNext());
         }

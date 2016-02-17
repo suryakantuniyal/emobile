@@ -451,7 +451,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         public View getView(int position, View convertView, ViewGroup parent) {
 
             ViewHolder holder;
-            int type = getItemViewType(position);
             int iconId;
 
             if (convertView == null) {
@@ -860,9 +859,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 GenerateNewID generator = new GenerateNewID(this);
                 previous_pay_id = PaymentsHandler.getLastPaymentInserted().pay_id;
-                // pay_id = generator.generate(pay_id,1);
                 pay_id = generator.getNextID(IdType.PAYMENT_ID);
-                String temp = Global.formatDoubleStrToCurrency("0.00");
 
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
                     showPaymentSuccessDlog(true, emvContainer);
@@ -871,11 +868,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             } else {
                 if (job_id != null && !job_id.isEmpty()) {
-                    // OrdersHandler handler = new OrdersHandler(activity);
                     handler.updateIsProcessed(job_id, "1");
                 }
-
-                String temp = Global.formatDoubleStrToCurrency(Double.toString(overAllRemainingBalance));
                 previous_pay_id = pay_id;
                 showPaymentSuccessDlog(true, emvContainer);
             }
@@ -973,10 +967,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
                 processInquiry(false);
             } else {
-                new printAsync().execute(false);
+                if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                        emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
+                        emvContainer == null || emvContainer.getGeniusResponse() == null) {
+                    new printAsync().execute(false);
+                }
             }
         }
     }
+
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -1224,6 +1223,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 showBalancePrompt(errorMsg);
             }
         }
+
     }
 
     public void showBalancePrompt(String msg) {

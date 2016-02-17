@@ -20,7 +20,7 @@ public class PaymentDetails {
     private String IvuLottoNumber;
     private String IvuLottoQR;
     private String pay_dueamount;
-    private Double amountTender;
+    private double amountTender;
     private String inv_id;
     private String job_id;
     private String Tax1_amount;
@@ -287,11 +287,11 @@ public class PaymentDetails {
         this.clerk_id = clerk_id;
     }
 
-    public Double getAmountTender() {
+    public double getAmountTender() {
         return amountTender;
     }
 
-    public void setAmountTender(Double amountTender) {
+    public void setAmountTender(double amountTender) {
         this.amountTender = amountTender;
     }
 }

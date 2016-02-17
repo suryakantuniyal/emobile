@@ -666,9 +666,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount)));
             gran_total = sub_total.subtract(discount_amount).add(tax_amount)
                     .subtract(itemsDiscountTotal);
-            if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
-                gran_total = gran_total.negate();
-            }
+//            if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+//                gran_total = gran_total.negate();
+//            }
             OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),
                     Integer.toString(pointsAcumulable), gran_total.toString());
             OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
