@@ -125,10 +125,7 @@ public class OrderProductsHandler {
 
             boolean isRestaurantMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
             SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT OR REPLACE INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            insert = DBManager._db.compileStatement("INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = order.size();
 
