@@ -218,7 +218,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 
 		TaxesHandler handler = new TaxesHandler(this);
 		taxList = handler.getTaxes();
-		PriceLevelHandler handler2 = new PriceLevelHandler(this);
+		PriceLevelHandler handler2 = new PriceLevelHandler();
 		priceLevelList = handler2.getPriceLevel();
 
 		int size = taxList.size();

@@ -117,7 +117,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public class processConnectionAsync extends
             AsyncTask<Integer, String, String> {
 
-        String msg = new String();
+        String msg = "";
         boolean didConnect = false;
 
         @Override
@@ -231,58 +231,56 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
 
-    protected void printImage(int type) {
-
-        Bitmap myBitmap = null;
-        switch (type) {
-            case 0: // Logo
-            {
-                File imgFile = new File(myPref.getAccountLogoPath());
-                if (imgFile.exists()) {
-                    myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-
-                }
-                break;
-            }
-            case 1: // signature
-            {
-                if (!encodedSignature.isEmpty()) {
-                    byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
-                    myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-                }
-                break;
-            }
-            case 2: {
-                if (!encodedQRCode.isEmpty()) {
-                    byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
-                    myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-                }
-                break;
-            }
-        }
-
-        if (myBitmap != null) {
-            int PrinterWidth = 640;
-
-            // download bitmap
-            pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
-            pos_sdk.imageStandardModeRasterPrint(myBitmap, PrinterWidth);
-            pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
-        }
-
-    }
+//    protected void printImage(int type) {
+//
+//        Bitmap myBitmap = null;
+//        switch (type) {
+//            case 0: // Logo
+//            {
+//                File imgFile = new File(myPref.getAccountLogoPath());
+//                if (imgFile.exists()) {
+//                    myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+//
+//                }
+//                break;
+//            }
+//            case 1: // signature
+//            {
+//                if (!encodedSignature.isEmpty()) {
+//                    byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
+//                    myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+//                }
+//                break;
+//            }
+//            case 2: {
+//                if (!encodedQRCode.isEmpty()) {
+//                    byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
+//                    myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
+//                }
+//                break;
+//            }
+//        }
+//
+//        if (myBitmap != null) {
+//            int PrinterWidth = 640;
+//
+//            // download bitmap
+//            pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
+//            pos_sdk.imageStandardModeRasterPrint(myBitmap, PrinterWidth);
+//            pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
+//        }
+//
+//    }
 
 
     @Override
     public boolean printOnHold(Object onHold) {
-        // TODO Auto-generated method stub
         return true;
     }
 
 
     @Override
     public void setBitmap(Bitmap bmp) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -328,7 +326,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = null;
     }
 
@@ -508,89 +505,24 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void releaseCardReader() {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     public boolean printConsignmentPickup(
             List<ConsignmentTransaction> myConsignment, String encodedSig) {
-        printPref = myPref.getPrintingPreferences();
-        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-        StringBuilder sb = new StringBuilder();
-        //SQLiteDatabase db = new DBManager(activity).openReadableDB();
-        ProductsHandler productDBHandler = new ProductsHandler(activity);
-        HashMap<String, String> map = new HashMap<String, String>();
-        String prodDesc = "";
 
-
-        int size = myConsignment.size();
-
-
-        this.printImage(0);
-
-
-        if (printPref.contains(MyPreferences.print_header))
-            this.printHeader();
-
-
-        sb.append(textHandler.centeredString("Consignment Pickup Summary", LINE_WIDTH)).append("\n\n");
-
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), myPref.getCustName(), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee), myPref.getEmpName(), LINE_WIDTH, 0));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date), Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-        sb.append(textHandler.newLines(3));
-
-        for (int i = 0; i < size; i++) {
-            map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
-
-            sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_name"), LINE_WIDTH, 0));
-
-            if (printPref.contains(MyPreferences.print_descriptions)) {
-                prodDesc = map.get("prod_desc");
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "", LINE_WIDTH, 3)).append("\n");
-                if (!prodDesc.isEmpty())
-                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(prodDesc, LINE_WIDTH, 5)).append("\n");
-            }
-
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:", myConsignment.get(i).ConsOriginal_Qty, LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Picked up Qty:", myConsignment.get(i).ConsPickup_Qty, LINE_WIDTH, 3));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty, LINE_WIDTH, 3)).append("\n\n\n");
-
-            //port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
-            this.printString(sb.toString());
-            sb.setLength(0);
-        }
-
-
-        if (printPref.contains(MyPreferences.print_footer))
-            this.printFooter();
-
-        if (!encodedSig.isEmpty()) {
-            this.encodedSignature = encodedSig;
-            this.printImage(1);
-            pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
-            sb.setLength(0);
-            sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
-            sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(4));
-            this.printString(sb.toString());
-            pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
-        }
-
-        this.cutPaper();
-        //db.close();
+        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         return true;
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        // TODO Auto-generated method stub
         printOpenInvoicesReceipt(invID, LINE_WIDTH);
 
         return true;
@@ -605,7 +537,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void openCashDrawer() {
-        // TODO Auto-generated method stub
 
 
         new Thread(new Runnable() {
@@ -619,7 +550,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        // TODO Auto-generated method stub
 
         printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
@@ -628,7 +558,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
-        // TODO Auto-generated method stub
     }
 
     @Override

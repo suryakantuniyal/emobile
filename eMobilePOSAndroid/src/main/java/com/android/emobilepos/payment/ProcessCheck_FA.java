@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.Editable;
-import android.text.Selection;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,12 +40,9 @@ import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -61,7 +57,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
     private boolean timedOut = false;
     private boolean isFromSalesReceipt = false;
-    private boolean isFromMainMenu = false;
     private EditText[] field;
 
     private boolean isMultiInvoice = false, isOpenInvoice = false;
@@ -87,7 +82,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
     private final int INTENT_CAPTURE_CHECK = 100;
     private Bundle extras;
     private boolean checkWasCapture = false;
-    private double amountToBePaid = 0, actualAmount = 0;
+    private double amountTender = 0, actualAmount = 0;
     private Button btnProcess;
     private TextView tvCheckChange;
     private EditText subtotal, tax1, tax2, amountField;//,tipAmount,promptTipField
@@ -157,15 +152,14 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             CustomersHandler handler2 = new CustomersHandler(activity);
             customerInfo = handler2.getCustomerMap(extras.getString("cust_id"));
             if (customerInfo != null) {
-                if (customerInfo != null) {
-                    if (!customerInfo.get("cust_name").isEmpty())
-                        field[CHECK_NAME].setText(customerInfo.get("cust_name"));
-                    if (!customerInfo.get("cust_phone").isEmpty())
-                        field[CHECK_PHONE].setText(customerInfo.get("cust_phone"));
-                    if (!customerInfo.get("cust_email").isEmpty())
-                        field[CHECK_EMAIL].setText(customerInfo.get("cust_email"));
-                }
+                if (!customerInfo.get("cust_name").isEmpty())
+                    field[CHECK_NAME].setText(customerInfo.get("cust_name"));
+                if (!customerInfo.get("cust_phone").isEmpty())
+                    field[CHECK_PHONE].setText(customerInfo.get("cust_phone"));
+                if (!customerInfo.get("cust_email").isEmpty())
+                    field[CHECK_EMAIL].setText(customerInfo.get("cust_email"));
             }
+
         } else if (!extras.getString("order_email", "").isEmpty()) {
             field[CHECK_EMAIL].setText(extras.getString("order_email"));
         }
@@ -186,7 +180,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         field[CHECK_AMOUNT_PAID].setText(Global.formatDoubleToCurrency(0));
 
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
-        isFromMainMenu = extras.getBoolean("isFromMainMenu");
+        boolean isFromMainMenu = extras.getBoolean("isFromMainMenu");
 
         if (!isFromMainMenu) {
             this.field[this.CHECK_AMOUNT].setEnabled(false);
@@ -216,33 +210,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         if (custidkey == null)
             custidkey = "";
 
-
-//		field[CHECK_AMOUNT].addTextChangedListener(new TextWatcher() {
-//
-//			@Override
-//			public void afterTextChanged(Editable arg0) {
-//				recalculateChange();
-//			}
-//			@Override
-//			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
-//			@Override
-//			public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {parseInputedCurrency(s,0);}
-//		});
-//
-
-//
-//		field[CHECK_AMOUNT_PAID].addTextChangedListener(new TextWatcher() {
-//
-//			@Override
-//			public void afterTextChanged(Editable arg0) {
-//				if(!field[CHECK_AMOUNT_PAID].getText().toString().isEmpty())
-//					recalculateChange();
-//			}
-//			@Override
-//			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
-//			@Override
-//			public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {parseInputedCurrency(s,1);}
-//		});
 
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
@@ -369,14 +336,10 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
     private void processPayment() {
         MyPreferences myPref = new MyPreferences(activity);
         actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[this.CHECK_AMOUNT]));
-        amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
-
-
-        //custName = field[CHECK_NAME].getText().toString();
+        amountTender = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
         payHandler = new PaymentsHandler(activity);
         payment = new Payment(activity);
-
-
+        payment.amountTender=amountTender;
         payment.pay_id = extras.getString("pay_id");
 
         payment.emp_id = myPref.getEmpID();
@@ -399,14 +362,14 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         payment.ref_num = field[CHECK_REFERENCE].getText().toString();
         payment.paymethod_id = extras.getString("paymethod_id");
 
-        Global.amountPaid = Double.toString(amountToBePaid);
+        Global.amountPaid = Double.toString(amountTender);
 
-        payment.pay_dueamount = Double.toString(amountToBePaid);
+        payment.pay_dueamount = Double.toString(amountTender);
 
-        if (amountToBePaid > actualAmount)
+        if (amountTender > actualAmount)
             payment.pay_amount = Double.toString(actualAmount);
         else
-            payment.pay_amount = Double.toString(amountToBePaid);
+            payment.pay_amount = Double.toString(amountTender);
 
 
         payment.pay_name = field[CHECK_NAME].getText().toString();
@@ -469,17 +432,11 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             } else
                 setResult(-1);
 
-
-//			if(myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
-//				showPrintDlg();
-//			else
-//				finish();
-
             if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment)) {
-                if (amountToBePaid > actualAmount)
+                if (amountTender > actualAmount)
                     showChangeDlg();
                 new printAsync().execute();
-            } else if (amountToBePaid > actualAmount)
+            } else if (amountTender > actualAmount)
                 showChangeDlg();
             else
                 finish();
@@ -522,7 +479,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
 
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-            String generatedURL = new String();
+            String generatedURL;
 
             if (!isRefund) {
                 generatedURL = payGate.paymentWithAction("ChargeCheckAction", false, null, null);
@@ -537,14 +494,13 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
     private void processMultiInvoicePayment() {
         invPayHandler = new InvoicePaymentsHandler(activity);
-        List<Double> appliedAmount = new ArrayList<Double>();
         invPaymentList = new ArrayList<String[]>();
         String[] content = new String[4];
 
         int size = inv_id_array.length;
         String payID = extras.getString("pay_id");
 
-        double value = 0;
+        double value;
 
         for (int i = 0; i < size; i++) {
             value = invPayHandler.getTotalPaidAmount(inv_id_array[i]);
@@ -557,18 +513,17 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         }
 
         actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[this.CHECK_AMOUNT]));
-        amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
+        amountTender = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
 
-        Global.amountPaid = Double.toString(amountToBePaid);
+        Global.amountPaid = Double.toString(amountTender);
         boolean endBreak = false;
         for (int i = 0; i < size; i++) {
             if (balance_array[i] > 0) {
-                if (amountToBePaid >= balance_array[i]) {
+                if (amountTender >= balance_array[i]) {
                     content[2] = Double.toString(balance_array[i]);
-                    appliedAmount.add(balance_array[i]);
-                    amountToBePaid -= balance_array[i];
+                    amountTender -= balance_array[i];
                 } else {
-                    content[2] = Double.toString(amountToBePaid);
+                    content[2] = Double.toString(amountTender);
                     endBreak = true;
                 }
 
@@ -603,10 +558,10 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         payment.ref_num = field[CHECK_REFERENCE].getText().toString();
         payment.paymethod_id = extras.getString("paymethod_id");
 
-        if ((amountToBePaid - actualAmount) > 0)
+        if ((amountTender - actualAmount) > 0)
             payment.pay_dueamount = Double.toString(actualAmount);
         else
-            payment.pay_dueamount = Double.toString(amountToBePaid);
+            payment.pay_dueamount = Double.toString(amountTender);
 
         payment.pay_amount = Global.amountPaid;
         payment.pay_name = field[CHECK_NAME].getText().toString();
@@ -661,10 +616,10 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             setResult(-2);
 
             if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment)) {
-                if (amountToBePaid > actualAmount)
+                if (amountTender > actualAmount)
                     showChangeDlg();
                 new printAsync().execute();
-            } else if (amountToBePaid > actualAmount)
+            } else if (amountTender > actualAmount)
                 showChangeDlg();
             else
                 finish();
@@ -687,7 +642,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
                 payment.micrData = sb.toString();
             }
 
-
             payment.processed = "9";
 
             payment.check_account_number = encrypt.encryptWithAES(field[CHECK_ACCOUNT].getText().toString());
@@ -701,7 +655,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             payment.pay_poscode = field[CHECK_ZIPCODE].getText().toString();
 
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-            String generatedURL = new String();
+            String generatedURL;
 
             if (!isRefund) {
                 generatedURL = payGate.paymentWithAction("ChargeCheckAction", false, null, null);
@@ -737,10 +691,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
-            //MyHttpClient httpClient = new MyHttpClient(activity);
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCheckHandler handler = new SAXProcessCheckHandler();
             urlToPost = params[0];
@@ -759,25 +710,18 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
                 XMLReader xr = sp.getXMLReader();
                 xr.setContentHandler(handler);
                 xr.parse(inSource);
-                //returnedPost = new String[handler.getEmpData().length];
-                //returnedPost = handler.getEmpData();
+
                 responseMap = handler.getResponseMap();
-                //String val = "";
                 statusCode = responseMap.get("epayStatusCode");
                 if (statusCode != null && !statusCode.equals("APPROVED")) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(responseMap.get("epayStatusCode")).append("\nstatusCode = ");
-                    sb.append(responseMap.get("statusCode")).append("\n").append(responseMap.get("statusMessage"));
-                    errorMsg = sb.toString();
+                    errorMsg = responseMap.get("epayStatusCode") + "\nstatusCode = " + responseMap.get("statusCode") + "\n" + responseMap.get("statusMessage");
                 } else if (statusCode == null) {
                     errorMsg = xml;
                 }
 
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
             }
             return null;
         }
@@ -813,10 +757,10 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
                 setResult(-2);
 
                 if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment)) {
-                    if (amountToBePaid > actualAmount)
+                    if (amountTender > actualAmount)
                         showChangeDlg();
                     new printAsync().execute();
-                } else if (amountToBePaid > actualAmount)
+                } else if (amountTender > actualAmount)
                     showChangeDlg();
                 else
                     finish();
@@ -852,7 +796,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute();
 
@@ -862,10 +805,8 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
-                //activity.finish();
-                if (amountToBePaid <= actualAmount)
+                if (amountTender <= actualAmount)
                     finish();
             }
         });
@@ -882,11 +823,8 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
-        StringBuilder sb = new StringBuilder();
-        //sb.append(getString(R.string.dlog_msg_print_cust_copy)).append("\n\n");
 
-        sb.append("Change: ").append(Global.formatDoubleToCurrency(amountToBePaid - actualAmount));
-        viewMsg.setText(sb.toString());
+        viewMsg.setText("Change: " + Global.formatDoubleToCurrency(amountTender - actualAmount));
         Button btnOK = (Button) dlog.findViewById(R.id.btnDlogSingle);
         btnOK.setText(R.string.button_ok);
 
@@ -894,7 +832,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 finish();
             }
@@ -925,7 +862,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (timedOut)
                     new processLivePaymentAsync().execute(urlToPost);
@@ -935,7 +871,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 finish();
             }
@@ -961,7 +896,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, false, null);
@@ -973,7 +907,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
             if (printSuccessful) {
-                if (amountToBePaid <= actualAmount)
+                if (amountTender <= actualAmount)
                     finish();
             } else {
                 showPrintDlg(true);
@@ -1010,7 +944,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        // TODO Auto-generated method stub
         switch (checkedId) {
             case R.id.radioTypeSavings:
                 accountType = "Savings";
@@ -1030,7 +963,6 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.processCheckBut:
                 btnProcess.setEnabled(false);

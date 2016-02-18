@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -272,6 +273,19 @@ public class OrdersHandler {
 
     public void emptyTable() {
         DBManager._db.execSQL("DELETE FROM " + table_name);
+    }
+
+    public static void deleteTransaction(Activity activity, String orderId) {
+        if (!orderId.isEmpty()) {
+            Global global = (Global) activity.getApplication();
+            OrdersHandler dbOrders = new OrdersHandler(activity);
+            OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
+            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
+            dbOrders.deleteOrder(orderId);
+            dbOrdProd.deleteAllOrdProd(orderId);
+            for (OrdProdAttrHolder val : global.ordProdAttr)
+                dbOrdAttr.deleteOrderProduct(val.ordprod_id);
+        }
     }
 
     public void deleteOrder(String _ord_id) {
@@ -750,7 +764,7 @@ public class OrdersHandler {
 
         String[] where_values = null;
         if (clerk_id != null && !clerk_id.isEmpty()) {
-            query.append("WHERE clerk_id = ? ");
+            query.append("WHERE clerk_id = ? AND isVoid = '0' ");
             where_values = new String[]{clerk_id};
 
             if (date != null && !date.isEmpty()) {
@@ -758,11 +772,12 @@ public class OrdersHandler {
                 where_values = new String[]{clerk_id, date};
             }
         } else if (date != null && !date.isEmpty()) {
-            query.append(" WHERE date = ? ");
+            query.append(" WHERE  date = ? AND isVoid = '0' ");
             where_values = new String[]{date};
+        } else {
+            query.append(" WHERE  isVoid = '0' ");
         }
-
-        query.append("GROUP BY ord_type");
+        query.append(" GROUP BY ord_type");
 
         Cursor c = DBManager._db.rawQuery(query.toString(), where_values);
         if (c.moveToFirst()) {
@@ -792,7 +807,8 @@ public class OrdersHandler {
 
         StringBuilder query = new StringBuilder();
         query.append(
-                "SELECT o.ord_id, c.cust_name , sum(o.ord_total) as 'ord_total',date(o.ord_timecreated,'localtime') as 'date' FROM Orders o LEFT JOIN Customers c ");
+                "SELECT o.ord_id, c.cust_name , sum(o.ord_total) as 'ord_total'," +
+                        "date(o.ord_timecreated,'localtime') as 'date' FROM Orders o LEFT JOIN Customers c ");
         query.append("ON o.cust_id = c.cust_id WHERE o.ord_type = '2' ");
 
         String[] where_values = null;
@@ -814,13 +830,15 @@ public class OrdersHandler {
             int i_ord_id = c.getColumnIndex(ord_id);
             int i_cust_name = c.getColumnIndex("cust_name");
             int i_ord_total = c.getColumnIndex(ord_total);
+            int i_ord_timecreated = c.getColumnIndex("date");
+
             do {
                 if (c.getString(i_ord_id) != null) {
                     Order ord = new Order(activity);
                     ord.ord_id = c.getString(i_ord_id);
                     ord.cust_name = c.getString(i_cust_name);
                     ord.ord_total = c.getString(i_ord_total);
-
+                    ord.ord_timecreated = c.getString(i_ord_timecreated);
                     listOrder.add(ord);
                 }
             } while (c.moveToNext());

@@ -100,7 +100,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 Intent intent = new Intent(thisContext, ViewCustomers_FA.class);
                 startActivityForResult(intent, 0);
             }
@@ -111,8 +110,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-
                 salesInvoices.setVisibility(View.GONE);
                 myPref.resetCustInfo(getString(R.string.no_customer));
 
@@ -131,7 +128,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 if (myPref.isCustSelected()) {
                     Intent intent = new Intent(getActivity(), HistoryOpenInvoices_FA.class);
                     intent.putExtra("isFromMainMenu", true);
@@ -203,8 +199,6 @@ public class SalesTab_FR extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-            // TODO Auto-generated method stub
-
             final int adapterPos = (Integer) myAdapter.getItem(position);
 
             if (myPref.getPreferences(MyPreferences.pref_use_clerks)) {
@@ -464,7 +458,6 @@ public class SalesTab_FR extends Fragment {
         picker.setListener(new LocationsPicker_Listener() {
             @Override
             public void onSelectLocation(Locations_Holder location) {
-                // TODO Auto-generated method stub
                 newFrag.dismiss();
                 if (showOrigin) {
                     Global.locationFrom = location;
@@ -570,7 +563,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String enteredPass = viewField.getText().toString().trim();
                 ClerksHandler clerkHandler = new ClerksHandler(activity);
@@ -603,7 +595,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                 startActivityForResult(intent, 0);
                 dialog.dismiss();
@@ -613,15 +604,10 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                //MyPreferences myPref = new MyPreferences(getActivity());
-
                 salesInvoices.setVisibility(View.GONE);
-                intent.putExtra("option_number", Global.TransactionType.RETURN);
+                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                 myPref.resetCustInfo(getString(R.string.no_customer));
-
                 isSelected = false;
-
                 startActivityForResult(intent, 0);
                 dialog.dismiss();
             }
@@ -631,7 +617,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dialog.dismiss();
             }
         });
@@ -744,7 +729,6 @@ public class SalesTab_FR extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
                 if (s.toString().contains("\n")) {
                     val = s.toString();
                     doneScanning = true;

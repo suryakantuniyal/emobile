@@ -36,7 +36,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Base64;
 import android.util.Log;
@@ -301,7 +300,7 @@ public class EMSDeviceDriver {
 			printPref = myPref.getPrintingPreferences();
 
 			OrderProductsHandler handler = new OrderProductsHandler(activity);
-			OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+			OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
 			List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
 			List<Orders> orders = handler.getPrintOrderedProducts(ordID);

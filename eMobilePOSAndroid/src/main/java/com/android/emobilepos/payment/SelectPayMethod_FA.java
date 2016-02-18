@@ -128,9 +128,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
-            if(extras.get("typeOfProcedure")instanceof Global.OrderType) {
+            if (extras.get("typeOfProcedure") instanceof Global.OrderType) {
                 typeOfProcedure = ((Global.OrderType) extras.get("typeOfProcedure")).getCode();
-            }else{
+            } else {
                 typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
             }
         }
@@ -255,7 +255,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                     @Override
                     public void onClick(View v) {
-                        // TODO Auto-generated method stub
 
                         if (myPref.getPreferences(MyPreferences.pref_require_manager_pass_to_void_trans)) {
                             dialog.dismiss();
@@ -270,7 +269,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                     @Override
                     public void onClick(View v) {
-                        // TODO Auto-generated method stub
                         dialog.dismiss();
                     }
                 });
@@ -451,10 +449,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
 
             ViewHolder holder;
-            int type = getItemViewType(position);
             int iconId;
 
             if (convertView == null) {
@@ -541,25 +537,21 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return payType.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public Filter getFilter() {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -596,7 +588,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(isReprint, emvContainer);
 
@@ -606,7 +597,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (overAllRemainingBalance <= 0 || ((typeOfProcedure == Global.FROM_JOB_INVOICE
                         || typeOfProcedure == Integer.parseInt(Global.OrderType.INVOICE.getCodeString()))))
@@ -635,14 +625,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected String doInBackground(Object... params) {
-            // TODO Auto-generated method stub
-
             wasReprint = (Boolean) params[0];
 
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                if (isFromMainMenu || extras.getBoolean("histinvoices"))
+                if (isFromMainMenu || extras.getBoolean("histinvoices") ||
+                        (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                                emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
                     printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
@@ -691,7 +681,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
@@ -744,8 +733,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     }
 
     public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
-
-        // private String[]returnedPost;
         HashMap<String, String> parsedMap = new HashMap<String, String>();
 
         @Override
@@ -760,8 +747,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             int size = listVoidPayments.size();
             EMSPayGate_Default payGate;
 
@@ -816,13 +801,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     }
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				StringBuilder sb = new StringBuilder();
-//				sb.append(e.getMessage())
-//						.append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
             }
 
             return null;
@@ -879,10 +858,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             if (overAllRemainingBalance > 0) {
 
                 GenerateNewID generator = new GenerateNewID(this);
-                previous_pay_id = pay_id;
-                // pay_id = generator.generate(pay_id,1);
+                previous_pay_id = PaymentsHandler.getLastPaymentInserted().pay_id;
                 pay_id = generator.getNextID(IdType.PAYMENT_ID);
-                String temp = Global.formatDoubleStrToCurrency("0.00");
 
                 if (isFromMainMenu || extras.getBoolean("histinvoices"))
                     showPaymentSuccessDlog(true, emvContainer);
@@ -891,12 +868,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             } else {
                 if (job_id != null && !job_id.isEmpty()) {
-                    // OrdersHandler handler = new OrdersHandler(activity);
                     handler.updateIsProcessed(job_id, "1");
                 }
-
-                String temp = Global.formatDoubleStrToCurrency(Double.toString(overAllRemainingBalance));
                 previous_pay_id = pay_id;
+                showPaymentSuccessDlog(true, emvContainer);
+            }
+        } else {
+            if (emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                    emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
+                previous_pay_id = PaymentsHandler.getLastPaymentInserted().pay_id;
                 showPaymentSuccessDlog(true, emvContainer);
             }
         }
@@ -987,10 +967,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
                 processInquiry(false);
             } else {
-                new printAsync().execute(false);
+                if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
+                        emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
+                        emvContainer == null || emvContainer.getGeniusResponse() == null) {
+                    new printAsync().execute(false);
+                }
             }
         }
     }
+
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
@@ -1104,8 +1089,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -1152,9 +1135,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
             return null;
         }
@@ -1193,8 +1173,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -1226,9 +1204,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
             }
             return null;
         }
@@ -1247,6 +1223,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 showBalancePrompt(errorMsg);
             }
         }
+
     }
 
     public void showBalancePrompt(String msg) {
@@ -1264,7 +1241,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
@@ -1281,9 +1257,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         Intent intent = new Intent(activity, ProcessBoloro_FA.class);
-        intent.putExtra("paymethod_id", payType.get(selectedPosition - 1)[0]);
+        intent.putExtra("paymethod_id", payType.get(selectedPosition)[0]);
         switch (v.getId()) {
             case R.id.btnDlogTop:
                 dlog.dismiss();
@@ -1315,18 +1290,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtra("paymethod_id", payType.get(position)[0]);
             initIntents(extras, intent);
         } else if (payType.get(position)[2].equals("Genius")) {
-            // if(extras.getBoolean("salesrefund"))
-            // {
-            // Toast.makeText(activity, "Can't process refund on Genius",
-            // Toast.LENGTH_LONG).show();
-            // }
-            // else
-            // {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
             intent.putExtra("paymethod_id", payType.get(position)[0]);
-
             initIntents(extras, intent);
-            // }
         } else if (payType.get(position)[2].equals("Wallet")) {
             Intent intent = new Intent(activity, ProcessTupyx_FA.class);
             intent.putExtra("paymethod_id", payType.get(position)[0]);
@@ -1347,7 +1313,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 intent.putExtra("isDebit", true);
             else
                 intent.putExtra("isDebit", false);
-
             initIntents(extras, intent);
         }
     }

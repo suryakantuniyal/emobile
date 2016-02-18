@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
@@ -56,16 +54,11 @@ import POSSDK.POSSDK;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
@@ -181,19 +174,19 @@ public class EMSDeviceDriver {
         double taxAmtTotal = 0;
         if (num_taxes > 0) {
             for (int i = 0; i < num_taxes; i++) {
-                double taxAmt = Double.parseDouble(taxes.get(i).get(OrderTaxes_DB.tax_amount));
-                taxAmtTotal += Double.parseDouble(taxes.get(i).get(OrderTaxes_DB.tax_amount));
+                double taxAmt = Double.parseDouble(taxes.get(i).getTax_amount());
+                taxAmtTotal += Double.parseDouble(taxes.get(i).getTax_amount());
                 if (i == num_taxes - 1) {
                     BigDecimal rndDifference = new BigDecimal(orderTaxAmount).subtract(new BigDecimal(taxAmtTotal))
                             .setScale(2, RoundingMode.HALF_UP);
                     taxAmt += Double.parseDouble(String.valueOf(rndDifference));
 
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).get(OrderTaxes_DB.tax_name),
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).getTax_name(),
                             Global.getCurrencyFormat(String.valueOf(taxAmt)), lineWidth, 2));
 
                 } else {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).get(OrderTaxes_DB.tax_name),
-                            Global.getCurrencyFormat(taxes.get(i).get(OrderTaxes_DB.tax_amount)), lineWidth, 2));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(taxes.get(i).getTax_name(),
+                            Global.getCurrencyFormat(taxes.get(i).getTax_amount()), lineWidth, 2));
                 }
             }
         }
@@ -376,7 +369,7 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
 
             OrderProductsHandler handler = new OrderProductsHandler(activity);
-            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB(activity);
+            OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
             List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
             List<Orders> orders = handler.getPrintOrderedProducts(ordID);
@@ -409,11 +402,8 @@ public class EMSDeviceDriver {
                             lineWidth, 0));
                     break;
                 case INVOICE: // Invoice
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
-                            lineWidth, 0));
-                    break;
                 case CONSIGNMENT_INVOICE:// Consignment Invoice
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", Global.consignment_order.ord_id,
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.invoice) + ":", ordID,
                             lineWidth, 0));
                     break;
                 case ESTIMATE: // Estimate
@@ -575,7 +565,7 @@ public class EMSDeviceDriver {
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
             sb.append("\n\n");
-            String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).subtract(new BigDecimal(itemDiscTotal)).toString();
+            String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).toString();
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.formatDoubleStrToCurrency(granTotal), lineWidth, 0));
 
@@ -607,11 +597,14 @@ public class EMSDeviceDriver {
 
                 double paidAmount = 0;
                 double tempTipAmount = 0;
+                double totalAmountTendered = 0;
+
                 StringBuilder tempSB = new StringBuilder();
                 for (int i = 0; i < size; i++) {
                     String _pay_type = detailsList.get(i).getPaymethod_name().toUpperCase(Locale.getDefault()).trim();
                     tempAmount = tempAmount + formatStrToDouble(detailsList.get(i).getPay_amount());
                     paidAmount += formatStrToDouble(detailsList.get(i).getPay_amount());
+                    totalAmountTendered += detailsList.get(i).getAmountTender();
                     tempTipAmount = tempTipAmount + formatStrToDouble(detailsList.get(i).getPay_tip());
                     tempSB.append(textHandler
                             .oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(detailsList.get(i).getPay_amount())
@@ -621,6 +614,12 @@ public class EMSDeviceDriver {
                                 lineWidth, 1));
                         tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("CC#: *" + detailsList.get(i).getCcnum_last4(),
                                 lineWidth, 1));
+                    } else {
+                        tempSB.append(textHandler
+                                .oneColumnLineWithLeftAlignedText(getString(R.string.amount_tendered) + Global.formatDoubleToCurrency(detailsList.get(i).getAmountTender()), lineWidth, 1));
+                        tempSB.append(textHandler
+                                .oneColumnLineWithLeftAlignedText(getString(R.string.changeLbl) +
+                                        Global.formatDoubleToCurrency(detailsList.get(i).getAmountTender() - formatStrToDouble(detailsList.get(i).getPay_amount())), lineWidth, 1));
                     }
                     if (!detailsList.get(i).getPay_signature().isEmpty())
                         receiptSignature = detailsList.get(i).getPay_signature();
@@ -630,7 +629,7 @@ public class EMSDeviceDriver {
                             Global.formatDoubleToCurrency(tempAmount), lineWidth, 0));
                 } else {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountpaid),
-                            Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0));
+                            Global.formatDoubleStrToCurrency(Double.toString(paidAmount)), lineWidth, 0));
                 }
                 sb.append(tempSB.toString());
                 if (type == Global.OrderType.INVOICE) // Invoice
@@ -644,11 +643,11 @@ public class EMSDeviceDriver {
 
                     if (type == Global.OrderType.RETURN) {
                         tempAmount = paidAmount;
-                    } else if (tempGrandTotal >= paidAmount) {
+                    } else if (tempGrandTotal >= totalAmountTendered) {
                         tempAmount = 0.00;
                     } else {
                         if (tempGrandTotal > 0) {
-                            tempAmount = paidAmount - tempGrandTotal;
+                            tempAmount = totalAmountTendered - tempGrandTotal;
                         } else {
                             tempAmount = Math.abs(tempGrandTotal);
                         }
@@ -666,29 +665,10 @@ public class EMSDeviceDriver {
                 printYouSave(String.valueOf(saveAmount), lineWidth);
             sb.setLength(0);
             if (Global.isIvuLoto && detailsList.size() > 0) {
-
                 if (!printPref.contains(MyPreferences.print_ivuloto_qr)) {
-//                    sb.append("\n");
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//                    sb.append(textHandler.centeredString("CONTROL: " + detailsList.get(0).getIvuLottoNumber(), lineWidth));
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-//                    sb.append(textHandler.centeredString(textHandler.ivuLines(2 * lineWidth / 3), lineWidth));
-//
-//                    sb.append("\n");
-//                    print(sb.toString().getBytes());
                     printIVULoto(detailsList.get(0).getIvuLottoNumber(), lineWidth);
-
-//					port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
                 } else {
-//					encodedQRCode = payArrayList.get(0)[8];
                     printImage(2);
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//                    sb.append("\t").append("CONTROL: ").append(detailsList.get(0).getIvuLottoNumber()).append("\n");
-//                    sb.append(getString(R.string.enabler_prefix)+"\n");
-//
-//                    sb.append(textHandler.ivuLines(2 * lineWidth / 3)).append("\n");
-//                    print(sb.toString().getBytes());
                     printIVULoto(detailsList.get(0).getIvuLottoNumber(), lineWidth);
                 }
                 sb.setLength(0);
@@ -928,6 +908,7 @@ public class EMSDeviceDriver {
 
             } else if (this instanceof EMSPowaPOS) {
                 // powaPOS.printImage(scaleDown(myBitmap, 300, false));
+
                 powaPOS.printImage(myBitmap);
             } else if (this instanceof EMSsnbc) {
                 int PrinterWidth = 640;
@@ -1075,7 +1056,7 @@ public class EMSDeviceDriver {
 
 
             sb.append("* ").append(payArray.getPaymethod_name());
-            if (payArray.getIs_refund().equals("1"))
+            if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
                 sb.append(" Refund *\n\n\n");
             else
                 sb.append(" Sale *\n\n\n");
@@ -1158,7 +1139,7 @@ public class EMSDeviceDriver {
             if (!isCashPayment && !isCheckPayment) {
                 if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                     sb.append(textHandler.newLines(1));
-                } else if (!payArray.getPay_signature().isEmpty()) {
+                } else if (payArray.getPay_signature() != null && !payArray.getPay_signature().isEmpty()) {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
@@ -1189,7 +1170,7 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
             sb.setLength(0);
 
-            String temp = new String();
+            String temp;
             if (!isCashPayment && !isCheckPayment) {
                 print(creditCardFooting.toString(), FORMAT);
                 temp = textHandler.newLines(1);
@@ -1908,7 +1889,7 @@ public class EMSDeviceDriver {
         }
 
         sb.append(textHandler.newLines(2));
-//???? what is this doing???
+
         sb.append(sb_ord_types);
 
 
@@ -2027,7 +2008,7 @@ public class EMSDeviceDriver {
             listProd.clear();
         }
 
-        listProd = ordProdHandler.getDepartmentDayReport(true, null, mDate);
+        listProd = ordProdHandler.getDepartmentDayReport(false, null, mDate);
         if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Returns", lineWidth));
@@ -2136,7 +2117,6 @@ public class EMSDeviceDriver {
 //            port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
             sb.setLength(0);
-
 
 
             for (int i = 0; i < size; i++) {
