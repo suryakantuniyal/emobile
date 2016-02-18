@@ -61,6 +61,7 @@ import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -74,6 +75,7 @@ import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
+import com.google.gson.Gson;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.math.BigDecimal;
@@ -586,7 +588,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        final OrderProductListAdapter.OrderSeatProduct orderSeatProduct = (OrderProductListAdapter.OrderSeatProduct) mainLVAdapter.getItem(position);
+        final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) mainLVAdapter.getItem(position);
         final int orderProductIdx = orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProduct.orderProduct) : 0;
         if (restLVAdapter != null)
             position = restLVAdapter.dataPosition(orderProductIdx);
@@ -622,7 +624,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 break;
                             case R.id.moveProductSeat:
                                 int i = 0;
-                                for (OrderProductListAdapter.OrderSeatProduct seatProduct : mainLVAdapter.orderSeatProductList) {
+                                for (OrderSeatProduct seatProduct : mainLVAdapter.orderSeatProductList) {
                                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                         if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.orderProduct.assignedSeat)) {
                                             item.getSubMenu().add(0, i, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
@@ -766,8 +768,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 getString(R.string.warning_email_invalid),
                                 Toast.LENGTH_LONG).show();
                 } else {
-//                    showSplitedOrderPreview();
-                    processOrder(emailInput.getText().toString(), false);
+                    if (isToGo) {
+                        processOrder(emailInput.getText().toString(), false);
+                    } else {
+                        showSplitedOrderPreview();
+                    }
                 }
             }
         });
@@ -775,11 +780,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void showSplitedOrderPreview() {
-        ArrayList<SplitedOrder> splitedOrders = (ArrayList<SplitedOrder>) ((OrderingMain_FA) getActivity()).splitBySeats(global.order, global.orderProducts);
+//        ArrayList<SplitedOrder> splitedOrders = (ArrayList<SplitedOrder>) ((OrderingMain_FA) getActivity())
+//                .splitBySeats(global.order, global.orderProducts);
+        Gson gson = new Gson();
         Intent intent = new Intent(activity,
                 SplittedOrderSummary_FA.class);
         Bundle b = new Bundle();
-        b.putParcelableArrayList("SplittedOrder", splitedOrders);
+
+        b.putParcelableArrayList("SplittedOrder", gson.toJson(mainLVAdapter.orderSeatProductList,));
         intent.putExtras(b);
         startActivity(intent);
     }
@@ -2131,8 +2139,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
             receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
-        }
-        else
+        } else
             restLVAdapter.notifyDataSetChanged();
         reCalculate();
     }

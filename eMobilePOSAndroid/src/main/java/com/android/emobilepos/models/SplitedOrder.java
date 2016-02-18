@@ -11,13 +11,9 @@ import java.util.List;
 /**
  * Created by guari_000 on 2/4/2016.
  */
-public class SplitedOrder extends Order implements Parcelable {
+public class SplitedOrder extends Order {
     private List<OrderProduct> orderProducts;
-    private int mData;
 
-    public SplitedOrder() {
-
-    }
 
     public SplitedOrder(Activity activity, Order order) {
         super(activity);
@@ -74,7 +70,7 @@ public class SplitedOrder extends Order implements Parcelable {
         gran_total = order.gran_total;
         cust_name = order.cust_name;
         sync_id = order.sync_id;
-        Customer customer = order.customer;
+        customer = order.customer;
     }
 
     public List<OrderProduct> getOrderProducts() {
@@ -83,30 +79,5 @@ public class SplitedOrder extends Order implements Parcelable {
 
     public void setOrderProducts(List<OrderProduct> orderProducts) {
         this.orderProducts = orderProducts;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(mData);
-    }
-
-    public static final Parcelable.Creator<SplitedOrder> CREATOR
-            = new Parcelable.Creator<SplitedOrder>() {
-        public SplitedOrder createFromParcel(Parcel in) {
-            return new SplitedOrder(in);
-        }
-
-        public SplitedOrder[] newArray(int size) {
-            return new SplitedOrder[size];
-        }
-    };
-
-    private SplitedOrder(Parcel in) {
-        super();
-        mData = in.readInt();
     }
 }

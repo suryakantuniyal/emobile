@@ -44,11 +44,13 @@ import com.android.database.ProductsHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
+import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
@@ -461,8 +463,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
+
     private void showSeatHeaderPopMenu(final View v) {
-        final OrderProductListAdapter.OrderSeatProduct orderSeatProduct = (OrderProductListAdapter.OrderSeatProduct) v.getTag();
+        final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
         PopupMenu popup = new PopupMenu(this, v);
         popup.getMenuInflater().inflate(R.menu.receiptlist_header_menu, popup.getMenu());
         final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
@@ -479,7 +482,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         break;
                     case R.id.moveSeatItems:
                         int id = 0;
-                        for (OrderProductListAdapter.OrderSeatProduct seatProduct : Receipt_FR.mainLVAdapter.orderSeatProductList) {
+                        for (OrderSeatProduct seatProduct : Receipt_FR.mainLVAdapter.orderSeatProductList) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                 if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
                                     item.getSubMenu().add(0, id, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
@@ -491,7 +494,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         break;
                     case R.id.joinSeats:
                         int jid = 100;
-                        for (OrderProductListAdapter.OrderSeatProduct seatProduct : Receipt_FR.mainLVAdapter.orderSeatProductList) {
+                        for (OrderSeatProduct seatProduct : Receipt_FR.mainLVAdapter.orderSeatProductList) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                 if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
                                     item.getSubMenu().add(0, jid, SubMenu.NONE, "Group seats items" + seatProduct.seatNumber);
@@ -508,7 +511,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                             Receipt_FR.mainLVAdapter.moveSeatItems(Receipt_FR.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber), targetSeat);
                         } else if (subMenusJoinSeat.containsKey(Integer.valueOf(item.getItemId()))) {
                             String targetSeatNumber = subMenusJoinSeat.get(Integer.valueOf(item.getItemId()));
-                            OrderProductListAdapter.OrderSeatProduct targetSeat = Receipt_FR.mainLVAdapter.getSeat(targetSeatNumber);
+                            OrderSeatProduct targetSeat = Receipt_FR.mainLVAdapter.getSeat(targetSeatNumber);
                             Receipt_FR.mainLVAdapter.joinSeatsGroupId(orderSeatProduct.seatGroupId, targetSeat.seatGroupId);
                             Receipt_FR.mainLVAdapter.notifyDataSetChanged();
                         }
@@ -533,25 +536,25 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
 
-    public List<SplitedOrder> splitBySeats(Order order, List<OrderProduct> orderProducts) {
-        List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
-        GenerateNewID generateNewID = new GenerateNewID(this);
-        String prevOrderId = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
-        for (int i = 0; i < selectedSeatsAmount; i++) {
-            SplitedOrder splitedOrder = new SplitedOrder(this, order);
-            splitedOrder.ord_id = prevOrderId;
-            prevOrderId = generateNewID.getNextID(prevOrderId);
-            ArrayList<OrderProduct> products = new ArrayList<OrderProduct>();
-            for (OrderProduct op : orderProducts) {
-                if (Integer.parseInt(op.assignedSeat) == i + 1) {
-                    products.add(op);
-                }
-            }
-            splitedOrder.setOrderProducts(products);
-            splitedOrders.add(splitedOrder);
-        }
-        return splitedOrders;
-    }
+//    public List<SplitedOrder> splitBySeats(Order order, List<OrderSeatProduct> orderSeatProducts) {
+//        List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
+//        GenerateNewID generateNewID = new GenerateNewID(this);
+//        String prevOrderId = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
+//        for (int i = 0; i < selectedSeatsAmount; i++) {
+//            SplitedOrder splitedOrder = new SplitedOrder(this, order);
+//            splitedOrder.ord_id = prevOrderId;
+//            prevOrderId = generateNewID.getNextID(prevOrderId);
+//            ArrayList<OrderProduct> products = new ArrayList<OrderProduct>();
+//            for (OrderSeatProduct seatProduct : orderSeatProducts) {
+//                if (Integer.parseInt(op.assignedSeat) == i + 1) {
+//                    products.add(op);
+//                }
+//            }
+//            splitedOrder.setOrderProducts(products);
+//            splitedOrders.add(splitedOrder);
+//        }
+//        return splitedOrders;
+//    }
 
     @Override
     public void refreshView() {

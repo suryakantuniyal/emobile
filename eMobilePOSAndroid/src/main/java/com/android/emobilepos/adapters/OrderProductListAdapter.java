@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
@@ -96,7 +97,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         orderSeatProductList = new ArrayList<OrderSeatProduct>();
         if (seatsAmount > 0) {
             for (int i = 0; i < seatsAmount; i++) {
-                OrderSeatProduct seatProduct = new OrderSeatProduct(String.valueOf(i + 1));
+                OrderSeatProduct seatProduct = new OrderSeatProduct(String.valueOf(i + 1), getNextGroupId());
                 seatProduct.seatGroupId = i + 1;
                 orderSeatProductList.add(seatProduct);
             }
@@ -126,7 +127,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public void addSeat() {
-        OrderSeatProduct product = new OrderSeatProduct(String.valueOf(orderSeatProductFullList.size() + 1));
+        OrderSeatProduct product = new OrderSeatProduct(String.valueOf(orderSeatProductFullList.size() + 1), getNextGroupId());
         product.seatGroupId = getNextGroupId();
         orderSeatProductList.add(product);
         orderSeatProductFullList.add(product);
@@ -166,7 +167,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         if (orderSeatProductFullList.size() > 0) {
             for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
                 if (seatProduct.rowType == RowType.TYPE_HEADER && !seatProduct.isDeleted) {
-                    OrderSeatProduct osp = new OrderSeatProduct(seatProduct.seatNumber);
+                    OrderSeatProduct osp = new OrderSeatProduct(seatProduct.seatNumber, getNextGroupId());
                     osp.seatGroupId = seatProduct.seatGroupId;
                     l.add(osp);
                     for (OrderProduct product : orderProducts) {
@@ -272,24 +273,6 @@ public class OrderProductListAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public class OrderSeatProduct {
-        public boolean isDeleted;
-        public RowType rowType;
-        public String seatNumber;
-        public int seatGroupId;
-        public OrderProduct orderProduct;
-
-        public OrderSeatProduct(String seatNumber) {
-            this.seatNumber = seatNumber;
-            this.seatGroupId = getNextGroupId();
-            this.rowType = RowType.TYPE_HEADER;
-        }
-
-        public OrderSeatProduct(OrderProduct orderProduct) {
-            this.orderProduct = orderProduct;
-            this.rowType = RowType.TYPE_ITEM;
-        }
-    }
 
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
