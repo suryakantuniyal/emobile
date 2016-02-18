@@ -248,6 +248,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             ConsignmentSignaturesDBHandler signHandler = new ConsignmentSignaturesDBHandler(activity);
             signHandler.insert(signatureMap);
         }
+//        updateConsignmentTransactionIds(consTransactionList.get(0).ConsTrans_ID);
         consTransDBHandler.insert(consTransactionList);
         if (!ifInvoice)
             activity.finish();
@@ -255,6 +256,21 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             showYesNoPrompt(false, R.string.dlog_title_confirm, R.string.take_payment_now);
     }
 
+//    private void updateConsignmentTransactionIds(String consTrans_ID) {
+//        for (ConsignmentTransaction transaction : consTransactionList) {
+//            if (transaction.ConsTrans_ID.equalsIgnoreCase(consTrans_ID)) {
+//                if (Global.consignment_order != null) {
+//                    transaction.ConsInvoice_ID = Global.consignment_order.ord_id;
+//                }
+//                if (Global.cons_return_order != null) {
+//                    transaction.ConsReturn_ID = Global.cons_return_order.ord_id;
+//                }
+//                if (Global.cons_fillup_order != null) {
+//                    transaction.ConsDispatch_ID = Global.cons_fillup_order.ord_id;
+//                }
+//            }
+//        }
+//    }
 
     private void processOrder() {
         global.order = new Order(activity);
@@ -427,26 +443,36 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         encodedImage = global.encodedImage;
         global.encodedImage = "";
         signatureMap.put("encoded_signature", encodedImage);
+        GenerateNewID idGen = new GenerateNewID(activity);
 
         if (ifInvoice) {
             processOrder();
-        } else {
-            if (global.consignment_order != null) {
-                ordersHandler.deleteOrder(global.consignment_order.ord_id);
-            }
+            consTransactionList.get(0).ConsInvoice_ID = Global.consignment_order.ord_id;
         }
         if (Global.cons_return_products.size() > 0) {
             Global.cons_return_order.processed = "1";
+            Global.cons_return_order.ord_id = idGen.getNextID(IdType.ORDER_ID);
             Global.cons_return_order.ord_signature = encodedImage;
             Global.cons_return_order.ord_type = Global.OrderType.CONSIGNMENT_RETURN.getCodeString();
             ordersHandler.insert(Global.cons_return_order);
+            for (OrderProducts product : Global.cons_return_products) {
+                product.ord_id = Global.cons_return_order.ord_id;
+            }
             orderProductsHandler.insert(Global.cons_return_products);
+            consTransactionList.get(0).ConsReturn_ID = Global.cons_return_order.ord_id;
+
         }
         if (Global.cons_fillup_products.size() > 0) {
             Global.cons_fillup_order.processed = "1";
+            Global.cons_fillup_order.ord_id = idGen.getNextID(IdType.ORDER_ID);
             Global.cons_fillup_order.ord_signature = encodedImage;
             ordersHandler.insert(Global.cons_fillup_order);
+            for (OrderProducts product : Global.cons_fillup_products) {
+                product.ord_id = Global.cons_fillup_order.ord_id;
+            }
             orderProductsHandler.insert(Global.cons_fillup_products);
+            consTransactionList.get(0).ConsDispatch_ID = Global.cons_fillup_order.ord_id;
+
         }
 
 
