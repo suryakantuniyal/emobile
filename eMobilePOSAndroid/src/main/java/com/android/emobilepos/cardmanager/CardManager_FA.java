@@ -116,8 +116,8 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     private int cardTypeCase;
     private GiftCardActions giftCardActions;
-    private String PAYMENT_ACTION, LOADING_MSG;
-
+    private String LOADING_MSG;
+    EMSPayGate_Default.EAction PAYMENT_ACTION;
     private EMSCallBack msrCallBack;
     private Global global;
     private boolean hasBeenCreated = false, cardWasFound = false;
@@ -201,35 +201,35 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 headerTitle.setText(getString(R.string.activate));
                 switch (cardTypeCase) {
                     case CASE_GIFT:
-                        PAYMENT_ACTION = "ActivateGiftCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.ActivateGiftCardAction;
                         break;
                     case CASE_LOYALTY:
-                        PAYMENT_ACTION = "ActivateLoyaltyCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.ActivateLoyaltyCardAction;
                         break;
                     case CASE_REWARD:
-                        PAYMENT_ACTION = "ActivateRewardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.ActivateRewardAction;
                         break;
                 }
 
-                LOADING_MSG = "Activating...";
+                LOADING_MSG = getString(R.string.activating);
                 if (cardTypeCase == CASE_GIFT)
                     ll.setVisibility(View.VISIBLE);
                 break;
             case CASE_ADD_BALANCE:
                 headerTitle.setText(getString(R.string.add_balance));
-                PAYMENT_ACTION = "AddValueGiftCardAction";
+                PAYMENT_ACTION = EMSPayGate_Default.EAction.AddValueGiftCardAction;
                 switch (cardTypeCase) {
                     case CASE_GIFT:
-                        PAYMENT_ACTION = "AddValueGiftCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.AddValueGiftCardAction;
                         break;
                     case CASE_LOYALTY:
-                        PAYMENT_ACTION = "AddValueLoyaltyCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.AddValueLoyaltyCardAction;
                         break;
                     case CASE_REWARD:
-                        PAYMENT_ACTION = "AddValueRewardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.AddValueRewardAction;
                         break;
                 }
-                LOADING_MSG = "Adding Balance...";
+                LOADING_MSG = getString(R.string.adding_balance);
                 if (cardTypeCase == CASE_GIFT)
                     ll.setVisibility(View.VISIBLE);
                 break;
@@ -238,28 +238,28 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
                 switch (cardTypeCase) {
                     case CASE_GIFT:
-                        PAYMENT_ACTION = "BalanceGiftCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.BalanceGiftCardAction;
                         break;
                     case CASE_LOYALTY:
-                        PAYMENT_ACTION = "BalanceLoyaltyCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.BalanceLoyaltyCardAction;
                         break;
                     case CASE_REWARD:
-                        PAYMENT_ACTION = "BalanceRewardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.BalanceRewardAction;
                         break;
                 }
-                LOADING_MSG = "Retrieving Balance...";
+                LOADING_MSG = getString(R.string.retrieving_balance);
                 break;
             case CASE_MANUAL_ADD:
                 headerTitle.setText(getString(R.string.add_balance));
                 switch (cardTypeCase) {
                     case CASE_GIFT:
-                        PAYMENT_ACTION = "AddValueGiftCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.AddValueGiftCardAction;
                         break;
                     case CASE_LOYALTY:
-                        PAYMENT_ACTION = "AddValueLoyaltyCardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.AddValueLoyaltyCardAction;
                         break;
                     case CASE_REWARD:
-                        PAYMENT_ACTION = "AddValueRewardAction";
+                        PAYMENT_ACTION = EMSPayGate_Default.EAction.AddValueRewardAction;
                         break;
                 }
 

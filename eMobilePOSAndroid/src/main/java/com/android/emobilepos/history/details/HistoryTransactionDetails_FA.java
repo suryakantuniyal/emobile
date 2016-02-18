@@ -109,7 +109,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     private ProgressDialog myProgressDialog;
 
 
-    private ListView myListView;
     private HashMap<String, String> orderHashMap = new HashMap<String, String>();
     private List<HashMap<String, String>> paymentMapList = new ArrayList<HashMap<String, String>>();
     private String empstr = "";
@@ -117,7 +116,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
 
-    private String paymethodName = "";
     private int offsetForPayment = 0;
     private TextView custNameView;
     //private Button btnPrint;
@@ -134,7 +132,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
 
         myPref = new MyPreferences(activity);
-        myListView = (ListView) findViewById(R.id.orderDetailsLV);
+        ListView myListView = (ListView) findViewById(R.id.orderDetailsLV);
         btnPrint = (Button) findViewById(R.id.printButton);
         btnVoid = (Button) findViewById(R.id.btnVoid);
         btnVoid.setOnClickListener(this);
@@ -181,9 +179,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         }
 
         custNameView.setText(handler3.getSpecificValue("cust_name", getOrderData("cust_id")));
-        StringBuilder sb = new StringBuilder();
-        sb.append(getCaseData(CASE_TOTAL, 0)).append(" on ").append(getOrderData("ord_timecreated"));
-        date.setText(sb.toString());
+        date.setText(getCaseData(CASE_TOTAL, 0) + " on " + getOrderData("ord_timecreated"));
 
         myListView.addHeaderView(headerView);
 
@@ -242,7 +238,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         if (orderHashMap.get("isVoid") != null && (orderHashMap.get("isVoid").equals("1") || !curDate.equals(getOrderData("ord_timecreated")))) {
             btnVoid.setEnabled(false);
             btnVoid.setClickable(false);
-        }else{
+        } else {
             btnVoid.setEnabled(true);
             btnVoid.setClickable(true);
         }
@@ -342,8 +338,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             Bundle extras = activity.getIntent().getExtras();
             String trans_type = extras.getString("trans_type");
             int type = Integer.parseInt(trans_type);
@@ -355,14 +349,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 } else
                     printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
             }
-
             return null;
         }
 
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-
             if (!printSuccessful)
                 showPrintDlg();
         }
@@ -455,7 +447,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             case CASE_TIP_AMOUNT:                //Tip
                 int size1 = paymentMapList.size();
                 String temp1 = "0.00";
-                String storedVal = "0.00";
+                String storedVal;
                 if (size1 > 0) {
                     temp1 = paymentMapList.get(0).get("pay_tip");
                     if (temp1 == null || temp1.isEmpty())
@@ -521,18 +513,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         } catch (MalformedURLException e) {
             image = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.HistTransDetailsFragment (at Class.createDrawableFromURL)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } catch (IOException e) {
             image = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.HistTransDetailsFragment (at Class.createDrawableFromURL)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         }
         return image;
     }
@@ -634,7 +618,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     private PaymentsHandler payHandler;
 
     private void voidTransaction() {
-		double amountToBeSubstracted;
+        double amountToBeSubstracted;
 
         OrdersHandler handler = new OrdersHandler(activity);
         handler.updateIsVoid(order_id);
@@ -642,7 +626,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
         /*HashMap<String,String> voidedTrans = new HashMap<String,String>();
-		voidedTrans.put("ord_id", order_id);
+        voidedTrans.put("ord_id", order_id);
 		voidedTrans.put("ord_type",orderHashMap.get("ord_type") );
 		voidHandler.insert(voidedTrans);*/
 
@@ -651,16 +635,15 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         order.ord_type = orderHashMap.get("ord_type");
         voidHandler.insert(order);
 
-		//Section to update the local ShiftPeriods database to reflect the VOID
-		ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
+        //Section to update the local ShiftPeriods database to reflect the VOID
+        ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
 
-		amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(orderHashMap.get("ord_total"))); //find total to be credited
+        amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(orderHashMap.get("ord_total"))); //find total to be credited
 
         //update ShiftPeriods (isReturn set to true)
-		handlerSP.updateShiftAmounts(myPref.getShiftID(), amountToBeSubstracted, true);
-		
-		
-		
+        handlerSP.updateShiftAmounts(myPref.getShiftID(), amountToBeSubstracted, true);
+
+
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
@@ -704,7 +687,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-            String xml = "";
+            String xml;
             InputSource inSource;
             SAXParser sp;
             XMLReader xr;
@@ -712,12 +695,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             try {
                 sp = spf.newSAXParser();
                 xr = sp.getXMLReader();
-                String paymentType = "";
+                String paymentType;
                 for (int i = 0; i < size; i++) {
                     paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
                     if (paymentType.equals("GIFTCARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction("VoidGiftCardAction", false, listVoidPayments.get(i).card_type, null));
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).card_type, null));
                         inSource = new InputSource(new StringReader(xml));
 
                         xr.setContentHandler(handler);
@@ -726,8 +709,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                             payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-                        else
-                            ;
+
                         parsedMap.clear();
                     } else if (paymentType.equals("CASH")) {
 
@@ -735,7 +717,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction("VoidCreditCardAction", false, listVoidPayments.get(i).card_type, null));
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).card_type, null));
                         inSource = new InputSource(new StringReader(xml));
 
                         xr.setContentHandler(handler);
@@ -744,15 +726,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                             payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-                        else
-                            ;
+
 
                         parsedMap.clear();
                     }
                 }
             } catch (Exception e) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(e.getMessage()).append(" [com.android.emobilepos.HistPayDetailsFragment (at Class.processVoidCardAsync)]");
 
             }
 
@@ -784,25 +763,21 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return (allInfoLeft.size() + orderedProd.size() + paymentMapList.size() + 4); //the +4 is to include the dividers,+1 for the map
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
             ViewHolder holder;
             int type = getItemViewType(position);
             int iconId = 0;
@@ -818,13 +793,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         holder.textLine2 = (TextView) convertView.findViewById(R.id.orderDivRight);
 
                         if (position == 0)
-                            holder.textLine1.setText("Info");
+                            holder.textLine1.setText(R.string.info);
                         else if (position == allInfoLeft.size() + 1)
-                            holder.textLine1.setText("Items");
+                            holder.textLine1.setText(R.string.items);
                         else if (position == (orderedProd.size() + allInfoLeft.size() + 2))
-                            holder.textLine1.setText("Payments");
+                            holder.textLine1.setText(R.string.payments);
                         else
-                            holder.textLine1.setText("Map");
+                            holder.textLine1.setText(R.string.map);
                         break;
                     }
                     case 1: // content in info divider
@@ -869,7 +844,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         holder.textLine1 = (TextView) convertView.findViewById(R.id.paidAmount);
                         holder.moreDetails = (ImageView) convertView.findViewById(R.id.paymentMoreDetailsIcon);
                         int listIndex = position - offsetForPayment;
-                        paymethodName = getCaseData(CASE_PAYMETHOD_NAME, listIndex);
+                        String paymethodName = getCaseData(CASE_PAYMETHOD_NAME, listIndex);
                         if (paymethodName != null && !paymethodName.isEmpty()) {
                             holder.textLine1.setText(getCaseData(CASE_PAID_AMOUNT, listIndex));
 
@@ -896,13 +871,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
             if (type == 0) {
                 if (position == 0)
-                    holder.textLine1.setText("Info");
+                    holder.textLine1.setText(getString(R.string.info));
                 else if (position == allInfoLeft.size() + 1)
-                    holder.textLine1.setText("Items");
+                    holder.textLine1.setText(getString(R.string.items));
                 else if (position == (orderedProd.size() + allInfoLeft.size() + 2))
-                    holder.textLine1.setText("Payments");
+                    holder.textLine1.setText(getString(R.string.payments));
                 else
-                    holder.textLine1.setText("Map");
+                    holder.textLine1.setText(getString(R.string.map));
             } else if (type == 1) {
                 holder.textLine1.setText(allInfoLeft.get(position - 1));
                 holder.textLine2.setText(getCaseData((position - 1), 0));
@@ -924,7 +899,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
         @Override
         public Filter getFilter() {
-            // TODO Auto-generated method stub
             return null;
         }
 

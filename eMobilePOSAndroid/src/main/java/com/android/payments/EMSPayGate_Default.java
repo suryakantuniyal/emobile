@@ -105,21 +105,21 @@ public class EMSPayGate_Default {
         }
     }
 
-    public String paymentWithAction(String actionType, boolean isSwipe, String data, CreditCardInfo _cardManager) {
-        EAction actions = EAction.toAction(actionType);
+    public String paymentWithAction(EAction actionType, boolean isSwipe, String data, CreditCardInfo _cardManager) {
+//        EAction actions = EAction.toAction(actionType);
         this.cardManager = _cardManager;
         try {
             generateAccountInfo();
 
             serializer.startTag(empstr, "epay");
             serializer.startTag(empstr, "action");
-            serializer.text(Integer.toString(actions.getValue()));
+            serializer.text(Integer.toString(actionType.getValue()));
             serializer.endTag(empstr, "action");
             serializer.startTag(empstr, "app_id");
             serializer.text(UUID.randomUUID().toString());
             serializer.endTag(empstr, "app_id");
 
-            switch (actions) {
+            switch (actionType) {
                 case ChargeTupixAction:
                     serializer.startTag(empstr, "wToken");
                     serializer.text(data);
@@ -152,7 +152,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ChargeDebitAction)
+                    if (actionType == EAction.ChargeDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -181,7 +181,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ChargeDebitAction)
+                    if (actionType == EAction.ChargeDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -207,7 +207,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ChargeDebitAction)
+                    if (actionType == EAction.ChargeDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -250,7 +250,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateTrackData();
 
-                    if (actions == EAction.ReturnDebitAction)
+                    if (actionType == EAction.ReturnDebitAction)
                         generatePinBlock();
 
                     generateERP();
@@ -335,13 +335,10 @@ public class EMSPayGate_Default {
                     break;
             }
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -358,10 +355,8 @@ public class EMSPayGate_Default {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -401,18 +396,14 @@ public class EMSPayGate_Default {
             serializer.endTag(empstr, "epay");
             serializer.endDocument();
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        String test = writer.toString();
 
-        return test;
+        return writer.toString();
     }
 
     private void generateAccountInfo() throws IllegalArgumentException, IllegalStateException, IOException {
@@ -451,7 +442,7 @@ public class EMSPayGate_Default {
 
     private void generateCardBlock(String card_name, boolean isSwipe)
             throws IllegalArgumentException, IllegalStateException, IOException {
-        String value = new String();
+        String value;
         serializer.startTag(empstr, "CCardBlock");
 
         value = payment.pay_name;
@@ -512,8 +503,8 @@ public class EMSPayGate_Default {
     }
 
     private void generateTrackData() throws IllegalArgumentException, IllegalStateException, IOException {
-        String tr1 = new String();
-        String tr2 = new String();
+        String tr1;
+        String tr2;
         // TrackData
         tr1 = payment.track_one;
         tr2 = payment.track_two;
@@ -595,7 +586,7 @@ public class EMSPayGate_Default {
     }
 
     private void generateCheckBlock() throws IllegalArgumentException, IllegalStateException, IOException {
-        String value = new String();
+        String value;
         // ChecksBlock
         serializer.startTag(empstr, "ChecksBlock");
 
@@ -702,7 +693,7 @@ public class EMSPayGate_Default {
     }
 
     private void generateERP() throws IllegalArgumentException, IllegalStateException, IOException {
-        String value = new String();
+        String value;
         // ERP block
 
         serializer.startTag(empstr, "ERP");
@@ -713,7 +704,7 @@ public class EMSPayGate_Default {
 
         if (!isTupyx) {
             value = "0";
-            if (value != null && !value.isEmpty()) {
+            if (!value.isEmpty()) {
                 serializer.startTag(empstr, "CCAccount");
                 serializer.text(value);
                 serializer.endTag(empstr, "CCAccount");
@@ -735,7 +726,7 @@ public class EMSPayGate_Default {
         }
 
         value = "";
-        if (value != null && !value.isEmpty()) {
+        if (!value.isEmpty()) {
             serializer.startTag(empstr, "Comment");
             serializer.text(value);
             serializer.endTag(empstr, "Comment");

@@ -601,10 +601,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 paymentType = "0";
                 payment.pay_type = paymentType;
                 if (isDebit)
-                    generatedURL = payGate.paymentWithAction("ChargeDebitAction", wasReadFromReader, creditCardType,
+                    generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeDebitAction, wasReadFromReader, creditCardType,
                             cardInfoManager);
                 else
-                    generatedURL = payGate.paymentWithAction("ChargeCreditCardAction", wasReadFromReader,
+                    generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeCreditCardAction, wasReadFromReader,
                             creditCardType, cardInfoManager);
 
 
@@ -618,10 +618,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 payment.pay_transid = transactionId;
                 payment.authcode = authcode;
                 if (isDebit)
-                    generatedURL = payGate.paymentWithAction("ReturnDebitAction", wasReadFromReader, creditCardType,
+                    generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnDebitAction, wasReadFromReader, creditCardType,
                             cardInfoManager);
                 else
-                    generatedURL = payGate.paymentWithAction("ReturnCreditCardAction", wasReadFromReader,
+                    generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnCreditCardAction, wasReadFromReader,
                             creditCardType, cardInfoManager);
 
 
@@ -753,10 +753,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (!isRefund) {
             payment.pay_type = "0";
             if (isDebit)
-                generatedURL = payGate.paymentWithAction("ChargeDebitAction", wasReadFromReader, creditCardType,
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeDebitAction, wasReadFromReader, creditCardType,
                         cardInfoManager);
             else
-                generatedURL = payGate.paymentWithAction("ChargeCreditCardAction", wasReadFromReader, creditCardType,
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeCreditCardAction, wasReadFromReader, creditCardType,
                         cardInfoManager);
         } else {
             payment.is_refund = "1";
@@ -764,10 +764,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             payment.pay_transid = authIDField.getText().toString();
             payment.authcode = transIDField.getText().toString();
             if (isDebit)
-                generatedURL = payGate.paymentWithAction("ReturnDebitAction", wasReadFromReader, creditCardType,
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnDebitAction, wasReadFromReader, creditCardType,
                         cardInfoManager);
             else
-                generatedURL = payGate.paymentWithAction("ReturnCreditCardAction", wasReadFromReader, creditCardType,
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnCreditCardAction, wasReadFromReader, creditCardType,
                         cardInfoManager);
         }
 
