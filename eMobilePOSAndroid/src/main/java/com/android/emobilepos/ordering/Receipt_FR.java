@@ -59,6 +59,7 @@ import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -76,8 +77,10 @@ import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -783,11 +786,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //        ArrayList<SplitedOrder> splitedOrders = (ArrayList<SplitedOrder>) ((OrderingMain_FA) getActivity())
 //                .splitBySeats(global.order, global.orderProducts);
         Gson gson = new Gson();
-        Intent intent = new Intent(activity,
-                SplittedOrderSummary_FA.class);
+        Type listType = new TypeToken<List<OrderSeatProduct>>() {
+        }.getType();
+        Intent intent = new Intent(activity, SplittedOrderSummary_FA.class);
         Bundle b = new Bundle();
-
-        b.putParcelableArrayList("SplittedOrder", gson.toJson(mainLVAdapter.orderSeatProductList,));
+        String json = gson.toJson(mainLVAdapter.orderSeatProductList, listType);
+        b.putString("orderSeatProductList", json);
         intent.putExtras(b);
         startActivity(intent);
     }

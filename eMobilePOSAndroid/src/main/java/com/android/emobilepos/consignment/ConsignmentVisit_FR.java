@@ -455,7 +455,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             Global.cons_return_order.ord_signature = encodedImage;
             Global.cons_return_order.ord_type = Global.OrderType.CONSIGNMENT_RETURN.getCodeString();
             ordersHandler.insert(Global.cons_return_order);
-            for (OrderProducts product : Global.cons_return_products) {
+            for (OrderProduct product : Global.cons_return_products) {
                 product.ord_id = Global.cons_return_order.ord_id;
             }
             orderProductsHandler.insert(Global.cons_return_products);
@@ -467,7 +467,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             Global.cons_fillup_order.ord_id = idGen.getNextID(IdType.ORDER_ID);
             Global.cons_fillup_order.ord_signature = encodedImage;
             ordersHandler.insert(Global.cons_fillup_order);
-            for (OrderProducts product : Global.cons_fillup_products) {
+            for (OrderProduct product : Global.cons_fillup_products) {
                 product.ord_id = Global.cons_fillup_order.ord_id;
             }
             orderProductsHandler.insert(Global.cons_fillup_products);

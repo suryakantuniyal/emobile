@@ -18,7 +18,7 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
     private List<SplitedOrder> splitedOrders;
 
 
-    public SplittedOrderSummaryAdapter(Activity activity, List<SplitedOrder> splitedOrderss) {
+    public SplittedOrderSummaryAdapter(Activity activity, List<SplitedOrder> splitedOrders) {
         mInflater = LayoutInflater.from(activity);
         this.splitedOrders = splitedOrders;
     }

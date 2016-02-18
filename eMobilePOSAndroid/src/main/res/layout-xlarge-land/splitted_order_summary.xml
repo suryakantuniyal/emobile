@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <LinearLayout
         android:id="@+id/headerTitleContainer"
         android:layout_width="match_parent"
@@ -10,17 +12,32 @@
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical"
         android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/splitTypesSpinner"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:entries="@array/salesReceiptSplitTypes"
+            android:background="@drawable/action_button_selector"
+            android:textAppearance="@style/black_text_appearance"
+            android:layout_weight="0.40"
+            android:layout_margin="5dp" />
+
         <TextView
             android:id="@+id/headerTitle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal"
             android:padding="@dimen/header_txt_padding"
             android:text="@string/splited_order_summary"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_bar_text_size" />
-        </LinearLayout>
+            android:textSize="@dimen/header_bar_text_size"
+            android:layout_alignParentTop="false"
+            android:layout_centerInParent="true"
+            android:layout_weight="1" />
+
+
+    </LinearLayout>
 
     <GridView
         android:id="@+id/splitedOrderSummarygridView"
@@ -30,8 +47,8 @@
         android:gravity="center"
         android:horizontalSpacing="5dp"
         android:numColumns="auto_fit"
+        android:padding="5dp"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
-        tools:listitem="@layout/splitted_order_summary_listitem"
-        android:padding="5dp"></GridView>
+        tools:listitem="@layout/splitted_order_summary_listitem"></GridView>
 </LinearLayout>
