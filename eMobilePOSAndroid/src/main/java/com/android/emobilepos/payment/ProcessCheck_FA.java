@@ -482,9 +482,9 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             String generatedURL;
 
             if (!isRefund) {
-                generatedURL = payGate.paymentWithAction("ChargeCheckAction", false, null, null);
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeCheckAction, false, null, null);
             } else {
-                generatedURL = payGate.paymentWithAction("ReturnCheckAction", false, null, null);
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReverseCheckAction, false, null, null);
             }
 
             new processLivePaymentAsync().execute(generatedURL);
@@ -658,9 +658,9 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             String generatedURL;
 
             if (!isRefund) {
-                generatedURL = payGate.paymentWithAction("ChargeCheckAction", false, null, null);
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeCheckAction, false, null, null);
             } else {
-                generatedURL = payGate.paymentWithAction("ReturnCheckAction", false, null, null);
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReverseCheckAction, false, null, null);
             }
 
             new processLivePaymentAsync().execute(generatedURL);

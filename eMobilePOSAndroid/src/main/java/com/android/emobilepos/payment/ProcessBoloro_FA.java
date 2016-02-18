@@ -326,7 +326,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 				
 				EMSPayGate_Default payGate = new EMSPayGate_Default(activity,payment);
 				String generatedURL = new String();
-				generatedURL = payGate.paymentWithAction("GetMarketTelcos", false,null,null);
+				generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetMarketTelcos, false,null,null);
 				
 				Post httpClient = new Post();
 				String xml = httpClient.postData(13, activity,generatedURL);
@@ -398,7 +398,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 				
 				EMSPayGate_Default payGate = new EMSPayGate_Default(activity,payment);
 				String generatedURL = new String();
-				generatedURL = payGate.paymentWithAction("ProcessBoloroCheckout", false,null,null);
+				generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ProcessBoloroCheckout, false,null,null);
 				
 				Post httpClient = new Post();
 				String xml = httpClient.postData(13, activity,generatedURL);
@@ -467,7 +467,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 				
 				EMSPayGate_Default payGate = new EMSPayGate_Default(activity,payment);
 				String generatedURL = new String();
-				generatedURL = payGate.paymentWithAction("GetTelcoInfoByTag", false,null,null);
+				generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetTelcoInfoByTag, false,null,null);
 				
 				Post httpClient = new Post();
 				String xml = httpClient.postData(13, activity,generatedURL);
@@ -563,10 +563,10 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 				if(isPolling)//is Polling
 				{
 					isPolling = true;
-					generatedURL = payGate.paymentWithAction("BoloroPolling", false,null,null);
+					generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.BoloroPolling, false,null,null);
                 } else    //is Cancel
 				{
-					generatedURL = payGate.paymentWithAction("CancelBoloroTransaction", false,null,null);
+					generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.CancelBoloroTransaction, false,null,null);
 				}
 				
 				

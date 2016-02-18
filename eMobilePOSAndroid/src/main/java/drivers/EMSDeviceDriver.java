@@ -113,9 +113,6 @@ public class EMSDeviceDriver {
         return false;
     }
 
-    public void disconnect() {
-    }
-
     public void registerAll() {
     }
 
@@ -197,7 +194,7 @@ public class EMSDeviceDriver {
             if (port != null) {
                 try {
                     StarIOPort.releasePort(port);
-                } catch (StarIOPortException e) {
+                } catch (StarIOPortException ignored) {
                 }
             }
         } else if (this instanceof EMSOneil4te) {
@@ -215,9 +212,8 @@ public class EMSDeviceDriver {
             eloPrinterApi.print(str);
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                port.writePort(str.toString().getBytes(), 0, str.toString().length());
+                port.writePort(str.getBytes(), 0, str.length());
             } catch (StarIOPortException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPAT100) {
@@ -231,7 +227,6 @@ public class EMSDeviceDriver {
                 this.outputStream.write(lang);
                 this.outputStream.write(str.getBytes("UTF-8"));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if (this instanceof EMSOneil4te) {
@@ -239,13 +234,11 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSPowaPOS) {
             powaPOS.printText(str);
         } else if (this instanceof EMSsnbc) {
-            byte[] send_buf = null;
+            byte[] send_buf;
             try {
                 send_buf = str.getBytes("GB18030");
                 pos_sdk.textPrint(send_buf, send_buf.length);
-                send_buf = null;
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -263,7 +256,6 @@ public class EMSDeviceDriver {
             try {
                 port.writePort(byteArray, 0, byteArray.length);
             } catch (StarIOPortException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPAT100) {
@@ -272,7 +264,6 @@ public class EMSDeviceDriver {
             try {
                 outputStream.write(byteArray);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if (this instanceof EMSOneil4te) {
@@ -280,13 +271,11 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSPowaPOS) {
             powaPOS.printText(new String(byteArray));
         } else if (this instanceof EMSsnbc) {
-            byte[] send_buf = null;
+            byte[] send_buf;
             try {
                 send_buf = new String(byteArray).getBytes("GB18030");
                 pos_sdk.textPrint(send_buf, send_buf.length);
-                send_buf = null;
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -304,10 +293,8 @@ public class EMSDeviceDriver {
             try {
                 port.writePort(str.getBytes(FORMAT), 0, str.length());
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (StarIOPortException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPAT100) {
@@ -318,7 +305,6 @@ public class EMSDeviceDriver {
             try {
                 device.write(str.getBytes(FORMAT));
             } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPowaPOS) {
@@ -331,7 +317,7 @@ public class EMSDeviceDriver {
 
     private void printEMVSection(EMVContainer emvContainer, int lineWidth) {
         if (emvContainer != null && emvContainer.getGeniusResponse() != null) {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             if (emvContainer.getGeniusResponse().getAdditionalParameters() != null &&
                     emvContainer.getGeniusResponse().getAdditionalParameters().getEMV() != null) {
                 String applicationLabel = emvContainer.getGeniusResponse().getAdditionalParameters().getEMV().getApplicationInformation().getApplicationLabel();
@@ -454,7 +440,7 @@ public class EMSDeviceDriver {
             if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
                 boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
 
-                int m = 0;
+                int m;
                 for (int i = 0; i < size; i++) {
 
                     if (isRestMode) {
@@ -697,25 +683,17 @@ public class EMSDeviceDriver {
             }
             printEnablerWebSite(lineWidth);
             cutPaper();
-        } catch (StarIOPortException e) {
+        } catch (StarIOPortException ignored) {
 
         } catch (JAException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } finally {
         }
 
     }
 
     private void printIVULoto(String ivuLottoNumber, int lineWidth) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("\n");
-        sb.append(textHandler.ivuLines(2 * lineWidth / 3) + "\n");
-        sb.append(activity.getString(R.string.ivuloto_control_label) + ivuLottoNumber + "\n");
-        sb.append(getString(R.string.enabler_prefix) + "\n");
-        sb.append(getString(R.string.powered_by_enabler) + "\n");
-        sb.append(textHandler.ivuLines(2 * lineWidth / 3) + "\n");
-        print(sb.toString().getBytes());
+        print(("\n" + textHandler.ivuLines(2 * lineWidth / 3) + "\n" + activity.getString(R.string.ivuloto_control_label) + ivuLottoNumber + "\n" + getString(R.string.enabler_prefix) + "\n" + getString(R.string.powered_by_enabler) + "\n" + textHandler.ivuLines(2 * lineWidth / 3) + "\n").getBytes());
     }
 
     private void printEnablerWebSite(int lineWidth) {
@@ -729,13 +707,12 @@ public class EMSDeviceDriver {
         if (this instanceof EMSsnbc) {
             // ******************************************************************************************
             // print in page mode
-            int error_code = pos_sdk.pageModePrint();
-
-            error_code = pos_sdk.systemCutPaper(66, 0);
+            pos_sdk.pageModePrint();
+            pos_sdk.systemCutPaper(66, 0);
 
             // *****************************************************************************************
             // clear buffer in page mode
-            error_code = pos_sdk.pageModeClearBuffer();
+            pos_sdk.pageModeClearBuffer();
         } else if (isPOSPrinter)
             print(new byte[]{0x1b, 0x64, 0x02}); // Cut
     }
@@ -746,40 +723,40 @@ public class EMSDeviceDriver {
         }
     }
 
-    public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable, int lineWidth)
-            throws StarIOPortException {
-
-        if (PRINT_TO_LOG) {
-            Log.d("Print", "*******Image Print***********");
-            return;
-        }
-
-        ArrayList<Byte> commands = new ArrayList<Byte>();
-        Byte[] tempList;
-
-        RasterDocument rasterDoc = new RasterDocument(RasSpeed.Medium, RasPageEndMode.None, RasPageEndMode.None,
-                RasTopMargin.Standard, 0, lineWidth / 3, 0);
-        // Bitmap bm = BitmapFactory.decodeResource(res, source);
-        util.StarBitmap starbitmap = new util.StarBitmap(tempBitmap, false, 350, PAPER_WIDTH);
-
-        byte[] command = rasterDoc.BeginDocumentCommandData();
-        tempList = new Byte[command.length];
-        CopyArray(command, tempList);
-        commands.addAll(Arrays.asList(tempList));
-
-        command = starbitmap.getImageRasterDataForPrinting();
-        tempList = new Byte[command.length];
-        CopyArray(command, tempList);
-        commands.addAll(Arrays.asList(tempList));
-
-        command = rasterDoc.EndDocumentCommandData();
-        tempList = new Byte[command.length];
-        CopyArray(command, tempList);
-        commands.addAll(Arrays.asList(tempList));
-
-        byte[] commandToSendToPrinter = convertFromListByteArrayTobyteArray(commands);
-        port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-    }
+//    public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable, int lineWidth)
+//            throws StarIOPortException {
+//
+//        if (PRINT_TO_LOG) {
+//            Log.d("Print", "*******Image Print***********");
+//            return;
+//        }
+//
+//        ArrayList<Byte> commands = new ArrayList<Byte>();
+//        Byte[] tempList;
+//
+//        RasterDocument rasterDoc = new RasterDocument(RasSpeed.Medium, RasPageEndMode.None, RasPageEndMode.None,
+//                RasTopMargin.Standard, 0, lineWidth / 3, 0);
+//        // Bitmap bm = BitmapFactory.decodeResource(res, source);
+//        util.StarBitmap starbitmap = new util.StarBitmap(tempBitmap, false, 350, PAPER_WIDTH);
+//
+//        byte[] command = rasterDoc.BeginDocumentCommandData();
+//        tempList = new Byte[command.length];
+//        CopyArray(command, tempList);
+//        commands.addAll(Arrays.asList(tempList));
+//
+//        command = starbitmap.getImageRasterDataForPrinting();
+//        tempList = new Byte[command.length];
+//        CopyArray(command, tempList);
+//        commands.addAll(Arrays.asList(tempList));
+//
+//        command = rasterDoc.EndDocumentCommandData();
+//        tempList = new Byte[command.length];
+//        CopyArray(command, tempList);
+//        commands.addAll(Arrays.asList(tempList));
+//
+//        byte[] commandToSendToPrinter = convertFromListByteArrayTobyteArray(commands);
+//        port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+//    }
 
     private static byte[] convertFromListByteArrayTobyteArray(List<Byte> ByteArray) {
         byte[] byteArray = new byte[ByteArray.size()];
@@ -927,7 +904,7 @@ public class EMSDeviceDriver {
 
             try {
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
     }
@@ -938,8 +915,7 @@ public class EMSDeviceDriver {
         int width = Math.round(ratio * realImage.getWidth());
         int height = Math.round(ratio * realImage.getHeight());
 
-        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width, height, filter);
-        return newBitmap;
+        return Bitmap.createScaledBitmap(realImage, width, height, filter);
     }
 
     public void printHeader(int lineWidth) {
@@ -1172,9 +1148,9 @@ public class EMSDeviceDriver {
 
             String temp;
             if (!isCashPayment && !isCheckPayment) {
-                print(creditCardFooting.toString(), FORMAT);
+                print(creditCardFooting, FORMAT);
                 temp = textHandler.newLines(1);
-                print(temp.toString(), FORMAT);
+                print(temp, FORMAT);
             }
 
             sb.setLength(0);
@@ -1186,11 +1162,10 @@ public class EMSDeviceDriver {
 
             cutPaper();
 
-        } catch (StarIOPortException e) {
+        } catch (StarIOPortException ignored) {
 
         } catch (JAException e) {
             e.printStackTrace();
-        } finally {
         }
 
     }
@@ -1200,7 +1175,7 @@ public class EMSDeviceDriver {
 
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
             if (!isPOSPrinter) {
                 port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
@@ -1336,8 +1311,6 @@ public class EMSDeviceDriver {
             // Toast.LENGTH_LONG).show();
         } catch (ParseException e) {
             e.printStackTrace();
-        } finally {
-
         }
     }
 
@@ -1447,7 +1420,7 @@ public class EMSDeviceDriver {
             // SQLiteDatabase db = new DBManager(activity).openReadableDB();
             ProductsHandler productDBHandler = new ProductsHandler(activity);
             // String value = new String();
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map;
             double ordTotal = 0, totalSold = 0, totalReturned = 0, totalDispached = 0, totalLines = 0, returnAmount = 0,
                     subtotalAmount = 0;
 
@@ -1558,11 +1531,10 @@ public class EMSDeviceDriver {
 
             // db.close();
 
-        } catch (StarIOPortException e) {
+        } catch (StarIOPortException ignored) {
 
         } catch (JAException e) {
             e.printStackTrace();
-        } finally {
         }
 
     }
@@ -1688,11 +1660,10 @@ public class EMSDeviceDriver {
 
             cutPaper();
 
-        } catch (StarIOPortException e) {
+        } catch (StarIOPortException ignored) {
 
         } catch (JAException e) {
             e.printStackTrace();
-        } finally {
         }
     }
 
@@ -1705,7 +1676,7 @@ public class EMSDeviceDriver {
             StringBuilder sb = new StringBuilder();
             // SQLiteDatabase db = new DBManager(activity).openReadableDB();
             ProductsHandler productDBHandler = new ProductsHandler(activity);
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map;
             String prodDesc = "";
 
             int size = myConsignment.size();
@@ -1773,11 +1744,10 @@ public class EMSDeviceDriver {
 
             // db.close();
 
-        } catch (StarIOPortException e) {
+        } catch (StarIOPortException ignored) {
 
         } catch (JAException e) {
             e.printStackTrace();
-        } finally {
         }
 
     }
@@ -2058,12 +2028,10 @@ public class EMSDeviceDriver {
         Cursor expensesByShift;
         expensesByShift = shiftExpensesDBHandler.getShiftExpenses(shiftID);
 
-        int i = 0;
         while (!expensesByShift.isAfterLast()) {
             // expName = expensesByShift.getString(0); //get the expense id
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(expensesByShift.getString(4), Global.formatDoubleStrToCurrency(expensesByShift.getString(2)), lineWidth, 3));
             //theSpinnerNames[i] = productExpensesCursor.getString(2); //get if expense
-            i++;
             expensesByShift.moveToNext();
         }
 
@@ -2164,8 +2132,7 @@ public class EMSDeviceDriver {
             }
             cutPaper();
 
-        } catch (StarIOPortException e) {
-        } finally {
+        } catch (StarIOPortException ignored) {
         }
     }
 

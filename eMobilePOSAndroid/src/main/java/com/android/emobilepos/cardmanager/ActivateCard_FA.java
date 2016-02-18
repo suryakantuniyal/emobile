@@ -274,7 +274,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 
 			payment.pay_type = "0";
 			if (typeCase == CASE_GIFT)
-				generatedURL = payGate.paymentWithAction("ActivateGiftCardAction", wasReadFromReader, cardType,
+				generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ActivateGiftCardAction, wasReadFromReader, cardType,
 						cardInfoManager);
 
 			new processAsync().execute(generatedURL);

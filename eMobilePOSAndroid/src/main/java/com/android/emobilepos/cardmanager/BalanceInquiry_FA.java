@@ -257,11 +257,11 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 		payment.pay_type = "0";
 		
 		EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
-		String generatedURL = new String();
+		String generatedURL = "";
 
 		
 		if(typeCase == CASE_GIFT)
-			generatedURL = payGate.paymentWithAction("BalanceGiftCardAction", wasReadFromReader, cardType, cardInfoManager);
+			generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.BalanceGiftCardAction, wasReadFromReader, cardType, cardInfoManager);
 
 		new processAsync().execute(generatedURL);
 	}

@@ -1144,5 +1144,14 @@
 	<string name="coundnot_proceess_payment">Could not process the payment.</string>
 	<string name="endofday_report">End of day report</string>
 	<string name="amount_tendered">Tendered:</string>
+	<string name="timeout_tryagain">TIME OUT, would you like to try again?</string>
+	<string name="cannot_proceed">Can not proceed...</string>
+	<string name="activating">Activating...</string>
+	<string name="adding_balance">Adding Balance...</string>
+	<string name="retrieving_balance">Retrieving Balance...</string>
+	<string name="info">Info</string>
+	<string name="items">Items</string>
+	<string name="payments">Payments</string>
+	<string name="map">Map</string>
 
 </resources>
