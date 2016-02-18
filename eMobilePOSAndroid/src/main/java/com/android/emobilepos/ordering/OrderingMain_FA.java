@@ -1234,10 +1234,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String generatedURL;
 
         if (isLoyaltyCard) {
-            generatedURL = payGate.paymentWithAction("BalanceLoyaltyCardAction", wasReadFromReader, cardType,
+            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.BalanceLoyaltyCardAction, wasReadFromReader, cardType,
                     cardInfoManager);
         } else {
-            generatedURL = payGate.paymentWithAction("BalanceRewardAction", wasReadFromReader, cardType,
+            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.BalanceRewardAction, wasReadFromReader, cardType,
                     cardInfoManager);
         }
 

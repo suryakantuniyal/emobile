@@ -88,7 +88,6 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.saveConsignButton:
                 new processAsync().execute();
@@ -128,7 +127,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             int index;
             double tempQty;
             double returnQty = 0, fillupQty = 0;
-            String consTransID = "";
+            String consTransID;
             double onHandQty = -1;
             consTransID = generator.getNextID(IdType.CONSIGNMENT_ID);
             signatureMap.put("ConsTrans_ID", consTransID);
@@ -259,11 +258,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
     private void processOrder() {
         global.order = new Order(activity);
-
         TaxesHandler taxHandler = new TaxesHandler(activity);
-        List<String[]> taxList = taxHandler.getTaxes();
-        HashMap<String, String> mapTax = new HashMap<String, String>();
-
         BigDecimal _order_total = BigDecimal.valueOf(ordTotal);
 
         BigDecimal _tax_amount = new BigDecimal(0);
@@ -406,11 +401,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
                 printSuccessful = Global.mainPrinterManager.currentDevice.printConsignment(consTransactionList, encodedImage);
-
             return null;
         }
 
@@ -438,6 +430,10 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         if (ifInvoice) {
             processOrder();
+        } else {
+            if (global.consignment_order != null) {
+                ordersHandler.deleteOrder(global.consignment_order.ord_id);
+            }
         }
         if (Global.cons_return_products.size() > 0) {
             Global.cons_return_order.processed = "1";
@@ -568,19 +564,16 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return idList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return idList.get(position);
         }
     }

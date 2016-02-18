@@ -75,7 +75,6 @@ public class OrdersHandler {
             isOnHold, ord_HoldName, is_stored_fwd, VAT);
 
     private StringBuilder sb1, sb2;
-    private final String empStr = "";
     private HashMap<String, Integer> attrHash;
     private List<String[]> data;
     private List<HashMap<String, Integer>> dictionaryListMap;
@@ -121,7 +120,7 @@ public class OrdersHandler {
         if (i != null) {
             return data.get(record)[i];
         }
-        return empStr;
+        return "";
     }
 
     public void insert(Order order) {
@@ -750,7 +749,7 @@ public class OrdersHandler {
 
     private String getValue(String value) {
         if (value == null)
-            value = empStr;
+            value = "";
         return value;
     }
 

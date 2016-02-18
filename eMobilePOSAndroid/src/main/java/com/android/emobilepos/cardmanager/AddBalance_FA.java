@@ -304,7 +304,7 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
 
 		payment.pay_type = "0";
 		if(typeCase == CASE_GIFT)
-			generatedURL = payGate.paymentWithAction("AddValueGiftCardAction", wasReadFromReader, cardType, cardInfoManager);
+			generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueGiftCardAction, wasReadFromReader, cardType, cardInfoManager);
 
 		new processAsync().execute(generatedURL);
 		}else {

@@ -77,8 +77,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private static boolean cardReaderConnected = false;
     private EMSUniMagDriver uniMagReader;
     private EMSMagtekAudioCardReader magtekReader;
-    private EMSRover roverReader;
-    private TextView tax1Lbl, tax2Lbl;
     private EditText subtotal, tax1, tax2;
     private List<GroupTax> groupTaxRate;
 
@@ -91,8 +89,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private boolean hasBeenCreated = false;
     private EMSCallBack callBack;
     private EMSIDTechUSB _msrUsbSams;
-    private double amountTendered;
-    private double totalAmount;
     private NumberUtils numberUtils = new NumberUtils();
 
 
@@ -119,8 +115,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         subtotal = (EditText) findViewById(R.id.subtotalGiftAmount);
         tax1 = (EditText) findViewById(R.id.tax1GiftAmount);
         tax2 = (EditText) findViewById(R.id.tax2GiftAmount);
-        tax1Lbl = (TextView) findViewById(R.id.tax1GiftCardLbl);
-        tax2Lbl = (TextView) findViewById(R.id.tax2GiftCardLbl);
+        TextView tax1Lbl = (TextView) findViewById(R.id.tax1GiftCardLbl);
+        TextView tax2Lbl = (TextView) findViewById(R.id.tax2GiftCardLbl);
 
         if (!Global.isIvuLoto) {
             findViewById(R.id.row1Gift).setVisibility(View.GONE);
@@ -274,23 +270,11 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                         }
                     }).start();
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    roverReader = new EMSRover();
+                    EMSRover roverReader = new EMSRover();
                     roverReader.initializeReader(activity, false);
                 }
             }
-            // if
-            // (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader))
-            // {
-            // uniMagReader = new EMSUniMagDriver();
-            // uniMagReader.initializeReader(activity);
-            // } else {
-            // magtekReader = new EMSMagtekAudioCardReader(activity);
-            // new Thread(new Runnable() {
-            // public void run() {
-            // magtekReader.connectMagtek(true,callBack);
-            // }
-            // }).start();
-            // }
+
         } else {
             int _swiper_type = myPref.swiperType(true, -2);
             int _printer_type = myPref.getPrinterType();
@@ -363,20 +347,17 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     }
 
     private void processPayment() {
-        amountTendered = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountTendered));
-        totalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountDue));
+        double amountTendered = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountTendered));
+        double totalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldAmountDue));
         if (Global.isIvuLoto) {
             Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
         }
         populateCardInfo();
 
-        String cardType = "GiftCard";
         Bundle extras = activity.getIntent().getExtras();
-
         payHandler = new PaymentsHandler(activity);
-
         payment = new Payment(activity);
-
+        String cardType = extras.getString("paymentmethod_type");
         payment.pay_id = extras.getString("pay_id");
 
         payment.emp_id = myPref.getEmpID();
@@ -398,7 +379,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         Global.amountPaid = Double.toString(amountTendered);
         payment.pay_dueamount = Double.toString(totalAmount - amountTendered);
-        payment.amountTender=amountTendered;
+        payment.amountTender= amountTendered;
         payment.pay_amount = Double.toString(amountTendered);
         payment.originalTotalAmount = Double.toString(totalAmount);
 
@@ -456,17 +437,22 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         cardInfoManager.setRedeemType("Only");
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-        String generatedURL;
+        String generatedURL = null;
 
         if (!isRefund) {
             payment.pay_type = "0";
-            generatedURL = payGate.paymentWithAction("ChargeGiftCardAction", cardInfoManager.getWasSwiped(), cardType,
-                    cardInfoManager);
+            if(cardType.equalsIgnoreCase("GIFTCARD")) {
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGiftCardAction, cardInfoManager.getWasSwiped(), cardType,
+                        cardInfoManager);
+            }else  if(cardType.equalsIgnoreCase("REWARD")){
+                generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, cardInfoManager.getWasSwiped(), cardType,
+                        cardInfoManager);
+            }
 
         } else {
             payment.is_refund = "1";
             payment.pay_type = "2";
-            generatedURL = payGate.paymentWithAction("ReturnGiftCardAction", cardInfoManager.getWasSwiped(), cardType,
+            generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGiftCardAction, cardInfoManager.getWasSwiped(), cardType,
                     cardInfoManager);
         }
 
@@ -478,12 +464,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
         private String urlToPost;
         private boolean wasProcessed = false;
-        private String errorMsg = "Could not process the payment.";
+        private String errorMsg = getString(R.string.coundnot_proceess_payment);
 
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Processing Payment...");
+            myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -495,7 +481,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
 
             Post httpClient = new Post();
 
@@ -506,9 +491,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             try {
                 String xml = httpClient.postData(13, activity, urlToPost);
                 if (xml.equals(Global.TIME_OUT)) {
-                    errorMsg = "TIME OUT, would you like to try again?";
+                    errorMsg = getString(R.string.timeout_tryagain);
                 } else if (xml.equals(Global.NOT_VALID_URL)) {
-                    errorMsg = "Can not proceed...";
+                    errorMsg = getString(R.string.cannot_proceed);
                 } else {
                     InputSource inSource = new InputSource(new StringReader(xml));
 
@@ -531,9 +516,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
 
             return null;
@@ -579,7 +561,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
 
                 Intent data = new Intent();
@@ -614,36 +595,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         cardInfoManager.setWasSwiped(true);
     }
 
-//    private TextWatcher hiddenTxtWatcher(final EditText hiddenField) {
-//
-//        return new TextWatcher() {
-//            boolean doneScanning = false;
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                if (doneScanning) {
-//                    doneScanning = false;
-//                    String data = hiddenField.getText().toString().trim().replace("\n", "");
-//                    hiddenField.setText("");
-//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-//                    cardInfoManager.setCardType("GiftCard");
-//                    updateViewAfterSwipe();
-//                }
-//            }
-//
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                // TODO Auto-generated method stub
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                // TODO Auto-generated method stub
-//                if (s.toString().contains("\n"))
-//                    doneScanning = true;
-//            }
-//        };
-//    }
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
@@ -662,7 +613,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         if (didConnect) {
             cardReaderConnected = true;
             if (uniMagReader != null && uniMagReader.readerIsConnected())
@@ -678,7 +628,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -701,7 +650,6 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.exactAmountBut:
                 fieldAmountTendered.setText(fieldAmountDue.getText().toString());
@@ -754,7 +702,5 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void startSignature() {
-        // TODO Auto-generated method stub
-
     }
 }
