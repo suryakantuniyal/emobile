@@ -924,11 +924,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             } else {
                 if (global.orderProducts.size() > 0 ||
                         !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString())) {
-                    handler.insert(global.order);
+                    if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
+                            !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
+                            !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
+                        handler.insert(global.order);
+                    }
                 }
                 if (global.orderProducts.size() > 0) {
                     if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString())) {
-                        handler2.insert(global.orderProducts);
+                        if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
+                                !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
+                                !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
+                            handler2.insert(global.orderProducts);
+                        }
                         handler3.insert(global.ordProdAttr);
                         if (global.listOrderTaxes != null
                                 && global.listOrderTaxes.size() > 0
