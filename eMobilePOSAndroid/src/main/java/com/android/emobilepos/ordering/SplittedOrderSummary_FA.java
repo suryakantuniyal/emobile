@@ -34,6 +34,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     List<OrderSeatProduct> orderSeatProducts;
     Spinner splitTypeSpinner;
     private GridView gridView;
+    private String tableNumber;
 
 
     public enum SalesReceiptSplitTypes {
@@ -76,6 +77,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             Type listType = new TypeToken<List<OrderSeatProduct>>() {
             }.getType();
             String json = extras.getString("orderSeatProductList");
+            tableNumber = extras.getString("tableNumber");
             orderSeatProducts = gson.fromJson(json, listType);
         }
         splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
@@ -106,9 +108,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                         Order order = global.order;
+
                         List<OrderProduct> orderProducts = getProductsBySeats(seatProduct.seatNumber);
                         SplitedOrder splitedOrder = new SplitedOrder(this, order);
                         splitedOrder.setOrderProducts(orderProducts);
+                        splitedOrder.setTableNumber(tableNumber);
                         splitedOrders.add(splitedOrder);
                     }
                 }

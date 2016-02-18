@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.TextView;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.SplitedOrder;
 
 import java.util.List;
@@ -32,18 +34,41 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.splitted_order_summary_listitem, null);
             holder = new ViewHolder();
+            holder.tableNumber = (TextView) convertView.findViewById(R.id.splited_order_tablenumber_itemtextView);
+            holder.seatNumber = (TextView) convertView.findViewById(R.id.splited_order_seatnumber_itemtextView);
+            holder.itemsCount = (TextView) convertView.findViewById(R.id.splited_order_itemsstextView);
+            holder.ticketPrice = (TextView) convertView.findViewById(R.id.splited_order_price_itemtextView);
+            holder.itemsList = (TextView) convertView.findViewById(R.id.splited_order_productsTextView);
             convertView.setTag(holder);
-
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.splitedOrder = splitedOrders.get(position);
+
+        SplitedOrder order = splitedOrders.get(position);
+        holder.tableNumber.setText(order.getTableNumber());
+        String seats = "";
+        String items = "";
+
+        for (OrderProduct product : order.getOrderProducts()) {
+            seats += "["+product.assignedSeat + "]";
+            items += "["+product.ordprod_name + "] ";
+        }
+
+        holder.seatNumber.setText(seats);
+        holder.ticketPrice.setText(order.ord_total);
+        holder.itemsCount.setText(String.valueOf(order.getOrderProducts().size()));
+        holder.itemsList.setText(items);
         return convertView;
+
     }
 
 
     public class ViewHolder {
-        public SplitedOrder splitedOrder;
+        TextView tableNumber;
+        TextView seatNumber;
+        TextView itemsCount;
+        TextView ticketPrice;
+        TextView itemsList;
     }
 
 

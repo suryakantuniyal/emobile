@@ -774,6 +774,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (isToGo) {
                         processOrder(emailInput.getText().toString(), false);
                     } else {
+                        global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
                         showSplitedOrderPreview();
                     }
                 }
@@ -783,8 +784,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void showSplitedOrderPreview() {
-//        ArrayList<SplitedOrder> splitedOrders = (ArrayList<SplitedOrder>) ((OrderingMain_FA) getActivity())
-//                .splitBySeats(global.order, global.orderProducts);
         Gson gson = new Gson();
         Type listType = new TypeToken<List<OrderSeatProduct>>() {
         }.getType();
@@ -792,6 +791,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         Bundle b = new Bundle();
         String json = gson.toJson(mainLVAdapter.orderSeatProductList, listType);
         b.putString("orderSeatProductList", json);
+        b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
         intent.putExtras(b);
         startActivity(intent);
     }

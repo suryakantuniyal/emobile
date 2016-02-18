@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SplitedOrder extends Order {
     private List<OrderProduct> orderProducts;
-
+    private String tableNumber;
 
     public SplitedOrder(Activity activity, Order order) {
         super(activity);
@@ -79,5 +79,13 @@ public class SplitedOrder extends Order {
 
     public void setOrderProducts(List<OrderProduct> orderProducts) {
         this.orderProducts = orderProducts;
+    }
+
+    public String getTableNumber() {
+        return tableNumber;
+    }
+
+    public void setTableNumber(String tableNumber) {
+        this.tableNumber = tableNumber;
     }
 }
