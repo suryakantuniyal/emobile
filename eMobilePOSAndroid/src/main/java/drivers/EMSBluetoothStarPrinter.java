@@ -344,6 +344,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return true;
     }
 
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
+
 
     public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable) throws StarIOPortException {
         ArrayList<Byte> commands = new ArrayList<Byte>();
@@ -796,16 +801,16 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
-    } catch (StarIOPortException e) {
+            printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        } catch (StarIOPortException e) {
 //        return false;
 
-    } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } finally {
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
 
-    }
+        }
 
     }
 

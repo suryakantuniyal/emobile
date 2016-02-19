@@ -43,6 +43,7 @@ import com.android.emobilepos.models.ShiftPeriods;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.database.DBManager;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.mpowa.android.sdk.powapos.PowaPOS;
@@ -988,12 +989,59 @@ public class EMSDeviceDriver {
         return (activity.getResources().getString(id));
     }
 
+    protected boolean printBalanceInquiry(HashMap<String, String> values, int lineWidth) {
+        try {
+            printPref = myPref.getPrintingPreferences();
+            StringBuilder sb = new StringBuilder();
+            printImage(0);
+            if (printPref.contains(MyPreferences.print_header))
+                printHeader(lineWidth);
+            if (values.containsKey("amountAdded")) {
+                sb.append("* ").append(getString(R.string.add_balance));
+            }else {
+                sb.append("* ").append(getString(R.string.balance_inquiry));
+            }
+            sb.append(" *\n\n\n");
+            print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
+            sb.setLength(0);
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+                    getString(R.string.receipt_time), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"), DateUtils.getDateAsString(new Date(), "hh:mm:ss"), lineWidth, 0))
+                    .append("\n\n");
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.card_number),
+                    "*" + values.get("pay_maccount"), lineWidth, 0));
+            if (values.containsKey("amountAdded")) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.status),
+                        values.get("epayStatusCode"), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.amount_added),
+                        values.get("amountAdded"), lineWidth, 0));
+            }
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.balanceAmount),
+                   Global.formatDoubleStrToCurrency(values.get("CardBalance")), lineWidth, 0));
+
+            print(sb.toString());
+
+            sb.setLength(0);
+            printFooter(lineWidth);
+            sb.append("\n");
+            print(sb.toString(), FORMAT);
+            sb.setLength(0);
+
+            printEnablerWebSite(lineWidth);
+            cutPaper();
+        } catch (StarIOPortException ignored) {
+
+        } catch (JAException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
 
     protected void printPaymentDetailsReceipt(String payID, int type, boolean isReprint, int lineWidth, EMVContainer emvContainer) {
-
         try {
-
-
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             printPref = myPref.getPrintingPreferences();
             PaymentsHandler payHandler = new PaymentsHandler(activity);
@@ -1015,7 +1063,6 @@ public class EMSDeviceDriver {
             boolean isCheckPayment = false;
             String constantValue = null;
             String creditCardFooting = "";
-
             if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
                 isCashPayment = true;
             else if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
@@ -1024,13 +1071,9 @@ public class EMSDeviceDriver {
                 constantValue = getString(R.string.receipt_included_tip);
                 creditCardFooting = getString(R.string.receipt_creditcard_terms);
             }
-
             printImage(0);
-
             if (printPref.contains(MyPreferences.print_header))
                 printHeader(lineWidth);
-
-
             sb.append("* ").append(payArray.getPaymethod_name());
             if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
                 sb.append(" Refund *\n\n\n");
@@ -1088,8 +1131,7 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
                         Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
             }
-//            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-//                    Global.formatDoubleStrToCurrency(payArray.getOrd_total()), lineWidth, 0));
+
             if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
                         Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
@@ -1167,7 +1209,6 @@ public class EMSDeviceDriver {
         } catch (JAException e) {
             e.printStackTrace();
         }
-
     }
 
     protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth) {

@@ -220,10 +220,8 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
 
-
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-        // TODO Auto-generated method stub
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
 
@@ -231,47 +229,10 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
 
-//    protected void printImage(int type) {
-//
-//        Bitmap myBitmap = null;
-//        switch (type) {
-//            case 0: // Logo
-//            {
-//                File imgFile = new File(myPref.getAccountLogoPath());
-//                if (imgFile.exists()) {
-//                    myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-//
-//                }
-//                break;
-//            }
-//            case 1: // signature
-//            {
-//                if (!encodedSignature.isEmpty()) {
-//                    byte[] img = Base64.decode(encodedSignature, Base64.DEFAULT);
-//                    myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-//                }
-//                break;
-//            }
-//            case 2: {
-//                if (!encodedQRCode.isEmpty()) {
-//                    byte[] img = Base64.decode(encodedQRCode, Base64.DEFAULT);
-//                    myBitmap = BitmapFactory.decodeByteArray(img, 0, img.length);
-//                }
-//                break;
-//            }
-//        }
-//
-//        if (myBitmap != null) {
-//            int PrinterWidth = 640;
-//
-//            // download bitmap
-//            pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
-//            pos_sdk.imageStandardModeRasterPrint(myBitmap, PrinterWidth);
-//            pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
-//        }
-//
-//    }
-
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
 
     @Override
     public boolean printOnHold(Object onHold) {
@@ -289,26 +250,16 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
-//	@Override
-//	public void printEndOfDayReport(String date, String clerk_id)
-//	{
-//		EMSReceiptHelper em = new EMSReceiptHelper(activity,42);
-//		String t = em.getEndOfDayReportReceipt(clerk_id,Global.getCurrentDate());
-//		this.printString(t);
-//		pos_sdk.systemFeedLine(5);
-//		cutPaper();
-//	}
 
     @Override
-	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
-		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
-	}
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+    }
 
-	@Override
-	public void printShiftDetailsReport(String shiftID) {
-		printShiftDetailsReceipt(LINE_WIDTH, shiftID);
-	}
-
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+    }
 
 
     @Override

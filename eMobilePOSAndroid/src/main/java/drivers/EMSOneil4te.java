@@ -298,6 +298,12 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         return true;
     }
 
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
+
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
 

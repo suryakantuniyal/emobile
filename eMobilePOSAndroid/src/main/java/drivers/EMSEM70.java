@@ -13,6 +13,7 @@ import android.util.Log;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -80,6 +81,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
 
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return false;
+    }
+
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
@@ -134,7 +140,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-     }
+    }
 
 
     @Override
@@ -183,7 +189,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void releaseCardReader() {
         try {
             activity.unregisterReceiver(mBroadcastReceiver);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
