@@ -39,16 +39,24 @@
 
     </LinearLayout>
 
-    <GridView
-        android:id="@+id/splitedOrderSummarygridView"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:columnWidth="500dp"
-        android:gravity="center"
-        android:horizontalSpacing="5dp"
-        android:numColumns="auto_fit"
-        android:padding="5dp"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="5dp"
-        tools:listitem="@layout/splitted_order_summary_listitem"></GridView>
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.50"
+            android:id="@+id/splitedOrderSummaryFrameLayout"></FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:id="@+id/splitedOrderDetailFrameLayout"></FrameLayout>
+    </LinearLayout>
+
 </LinearLayout>

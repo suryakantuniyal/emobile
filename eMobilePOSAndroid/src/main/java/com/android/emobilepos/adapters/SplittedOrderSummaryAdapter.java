@@ -45,7 +45,6 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
             holder = new ViewHolder();
             holder.tableNumber = (TextView) convertView.findViewById(R.id.splited_order_tablenumber_itemtextView);
             holder.seatNumber = (TextView) convertView.findViewById(R.id.splited_order_seatnumber_itemtextView);
-            holder.itemsCount = (TextView) convertView.findViewById(R.id.splited_order_itemsstextView);
             holder.ticketPrice = (TextView) convertView.findViewById(R.id.splited_order_price_itemtextView);
             holder.itemsList = (TextView) convertView.findViewById(R.id.splited_order_productsTextView);
             convertView.setTag(holder);
@@ -65,7 +64,6 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
 
         holder.seatNumber.setText(org.springframework.util.StringUtils.arrayToDelimitedString(seats.toArray(), ", "));
         holder.ticketPrice.setText(Global.getCurrencyFormat(order.ord_total));
-        holder.itemsCount.setText(String.valueOf(order.getOrderProducts().size()));
         holder.itemsList.setText(org.springframework.util.StringUtils.arrayToDelimitedString(items.toArray(), ", "));
         return convertView;
 

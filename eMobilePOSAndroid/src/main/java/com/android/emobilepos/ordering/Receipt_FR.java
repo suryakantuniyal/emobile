@@ -340,26 +340,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return view;
     }
 
-    // @Override
-    // public void onResume() {
-    //
-    // if (receiptListView != null) {
-    // global = (Global) getActivity().getApplication();
-    // receiptListView.invalidateViews();
-    //
-    // if(callBackRecalculate!=null)
-    // callBackRecalculate.recalculateTotal();
-    //
-    // }
-    // super.onResume();
-    // }
-
-    // @Override
-    // public void onDestroy()
-    // {
-    // super.onDestroy();
-    // String t = "";
-    // }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
         public MyPagerAdapter(FragmentManager fragmentManager) {
@@ -428,7 +408,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             @Override
                             public void onClick(DialogInterface thisDialog,
                                                 int which) {
-                                // TODO Auto-generated method stub
                                 String value = NumberUtils.cleanCurrencyFormatedNumber(input);
                                 if (!value.isEmpty()) {
                                     BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));

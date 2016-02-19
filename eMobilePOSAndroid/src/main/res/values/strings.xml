@@ -1155,8 +1155,8 @@
 	<string name="split_by_group_seats">Split bill seats group</string>
 	<string name="split_bill_by">Split Bill:</string>
 	<string name="splited_order_summary">Split Order Summary</string>
-	<string name="table_number">Table Number</string>
-	<string name="seatNumber">Seat Number</string>
+	<string name="table_number">Table Number:</string>
+	<string name="seatNumber">Seat Number:</string>
 	<string name="splited_order_total_items">Items</string>
 	<string name="splited_order_price">Price</string>
 	<string name="addseat_btn">Add Seat</string>

@@ -1,10 +1,9 @@
 package com.android.emobilepos.ordering;
 
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Spinner;
 
 import com.android.emobilepos.R;
@@ -23,8 +22,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.android.emobilepos.ordering.SplittedOrderSummary_FA.SalesReceiptSplitTypes.*;
-
 /**
  * Created by Guarionex on 2/8/2016.
  */
@@ -33,8 +30,9 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private Global global;
     List<OrderSeatProduct> orderSeatProducts;
     Spinner splitTypeSpinner;
-    private GridView gridView;
+    //    private GridView gridView;
     private String tableNumber;
+    private SplittedOrderSummaryFR orderSummaryFR;
 
 
     public enum SalesReceiptSplitTypes {
@@ -83,9 +81,13 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
         splitTypeSpinner.setOnItemSelectedListener(this);
         global = (Global) getApplication();
-        gridView = (GridView) findViewById(R.id.splitedOrderSummarygridView);
-//        SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(this, new ArrayList<SplitedOrder>());
-//        gridView.setAdapter(summaryAdapter);
+//        gridView = (GridView) findViewById(R.id.splitedOrderSummarygridView);
+        orderSummaryFR = new SplittedOrderSummaryFR();
+
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.splitedOrderSummaryFrameLayout, orderSummaryFR);
+        ft.commit();
     }
 
     private List<OrderProduct> getProductsBySeats(String seatNumber) {
@@ -117,7 +119,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     }
                 }
                 SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(this, splitedOrders);
-                gridView.setAdapter(summaryAdapter);
+                orderSummaryFR.getGridView().setAdapter(summaryAdapter);
                 break;
             case SPLIT_EQUALLY:
 
