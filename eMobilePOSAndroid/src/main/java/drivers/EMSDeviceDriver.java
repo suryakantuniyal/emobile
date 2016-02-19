@@ -648,7 +648,7 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
 
             print(textHandler.newLines(1), FORMAT);
-            if (type != Global.OrderType.ORDER)
+            if (type != Global.OrderType.ORDER && saveAmount > 0)
                 printYouSave(String.valueOf(saveAmount), lineWidth);
             sb.setLength(0);
             if (Global.isIvuLoto && detailsList.size() > 0) {
@@ -687,7 +687,6 @@ public class EMSDeviceDriver {
         } catch (StarIOPortException ignored) {
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -998,7 +997,7 @@ public class EMSDeviceDriver {
                 printHeader(lineWidth);
             if (values.containsKey("amountAdded")) {
                 sb.append("* ").append(getString(R.string.add_balance));
-            }else {
+            } else {
                 sb.append("* ").append(getString(R.string.balance_inquiry));
             }
             sb.append(" *\n\n\n");
@@ -1019,7 +1018,7 @@ public class EMSDeviceDriver {
             }
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.balanceAmount),
-                   Global.formatDoubleStrToCurrency(values.get("CardBalance")), lineWidth, 0));
+                    Global.formatDoubleStrToCurrency(values.get("CardBalance")), lineWidth, 0));
 
             print(sb.toString());
 
@@ -1290,7 +1289,7 @@ public class EMSDeviceDriver {
                     sb.append(orders.get(m).getQty()).append("x ").append(orders.get(m).getName()).append("\n");
                     if (!orders.get(m).getAttrDesc().isEmpty())
                         sb.append("  [").append(orders.get(m).getAttrDesc()).append("]\n");
-                    if (orders.get(m + 1).getAddon().equals("1")) {
+                    if ((m + 1) < size && orders.get(m + 1).getAddon().equals("1")) {
                         for (int j = i + 1; j < size; j++) {
                             ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
                             if (orders.get(j).getIsAdded().equals("1"))

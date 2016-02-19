@@ -746,9 +746,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         //  if (printerName.toUpperCase().contains("MPOP")) {
         try {
-            result = Communication.sendCommands(data, getStarIOPort(), this.activity);
-        } catch (StarIOPortException e) {
-            // TODO Auto-generated catch block
+            result = Communication.sendCommands(data, port, this.activity);
+        } catch (Exception e) {
             e.printStackTrace();
         }   // 10000mS!!!
 //        }
