@@ -12,8 +12,17 @@ import android.widget.TextView;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.support.Global;
+import com.android.support.NumberUtils;
+import com.google.zxing.common.StringUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import util.StringUtil;
 
 public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
@@ -46,18 +55,18 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
 
         SplitedOrder order = splitedOrders.get(position);
         holder.tableNumber.setText(order.getTableNumber());
-        String seats = "";
-        String items = "";
+        HashSet<String> seats = new HashSet<String>();
+        HashSet<String> items = new HashSet<String>();
 
         for (OrderProduct product : order.getOrderProducts()) {
-            seats += "["+product.assignedSeat + "]";
-            items += "["+product.ordprod_name + "] ";
+            seats.add(product.assignedSeat);
+            items.add(product.ordprod_name);
         }
 
-        holder.seatNumber.setText(seats);
-        holder.ticketPrice.setText(order.ord_total);
+        holder.seatNumber.setText(org.springframework.util.StringUtils.arrayToDelimitedString(seats.toArray(), ", "));
+        holder.ticketPrice.setText(Global.getCurrencyFormat(order.ord_total));
         holder.itemsCount.setText(String.valueOf(order.getOrderProducts().size()));
-        holder.itemsList.setText(items);
+        holder.itemsList.setText(org.springframework.util.StringUtils.arrayToDelimitedString(items.toArray(), ", "));
         return convertView;
 
     }
