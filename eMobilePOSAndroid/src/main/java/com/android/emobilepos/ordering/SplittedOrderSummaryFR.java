@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.android.emobilepos.R;
@@ -13,7 +14,7 @@ import com.android.emobilepos.R;
 /**
  * Created by Guarionex on 2/19/2016.
  */
-public class SplittedOrderSummaryFR extends Fragment {
+public class SplittedOrderSummaryFR extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private GridView gridView;
 
@@ -23,7 +24,7 @@ public class SplittedOrderSummaryFR extends Fragment {
         View view = inflater.inflate(R.layout.splitted_order_summary_fragment,
                 container, false);
         setGridView((GridView) view.findViewById(R.id.splitedOrderSummarygridView));
-
+        getGridView().setOnItemSelectedListener(this);
         return view;
     }
 
@@ -38,5 +39,15 @@ public class SplittedOrderSummaryFR extends Fragment {
 
     public void setGridView(GridView gridView) {
         this.gridView = gridView;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        view.setSelected(true);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

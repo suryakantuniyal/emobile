@@ -119,6 +119,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     }
                 }
                 SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(this, splitedOrders);
+
                 orderSummaryFR.getGridView().setAdapter(summaryAdapter);
                 break;
             case SPLIT_EQUALLY:
