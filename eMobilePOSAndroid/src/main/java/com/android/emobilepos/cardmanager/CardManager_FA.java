@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -26,7 +25,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.payment.ProcessCash_FA;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -63,11 +62,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     public static final int CASE_GIFT = 0, CASE_LOYALTY = 1, CASE_REWARD = 2;
     private EditText hiddenField;
-    private NumberUtils numberUtils = new NumberUtils();
-    private String pay_id, finalMessage;
+    private String finalMessage;
+    private String amountAdded;
 
-    // public static final int CASE_ACTIVATE = 0,CASE_ADD_BALANCE =
-    // 1,CASE_BALANCE_INQUIRY = 2,CASE_MANUAL_ADD = 3;
     public enum GiftCardActions {
         CASE_ACTIVATE(0), CASE_ADD_BALANCE(1), CASE_BALANCE_INQUIRY(2), CASE_MANUAL_ADD(3), CASE_DEACTIVATE(4);
 
@@ -286,11 +283,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                         && value.substring(value.length() - 1).contains("\n")) {
                     String data = hiddenField.getText().toString().replace("\n", "");
                     hiddenField.setText("");
-                    // if(Global.isEncryptSwipe)
-                    // cardInfoManager = EMSUniMagDriver.parseCardData(activity,
-                    // data);
-                    // else
-                    // cardInfoManager = Global.parseSimpleMSR(activity, data);
+
                     cardInfoManager = Global.parseSimpleMSR(activity, data);
                     updateViewAfterSwipe();
                 }
@@ -298,7 +291,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
             }
 
             @Override
@@ -411,7 +403,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.processButton:
                 if (giftCardActions == GiftCardActions.CASE_MANUAL_ADD) {
@@ -457,7 +448,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, editText);
+                NumberUtils.parseInputedCurrency(s, editText);
             }
         };
     }
@@ -507,15 +498,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             GenerateNewID generator = new GenerateNewID(this);
             String tempPay_id;
 
-            // if (paymentHandlerDB.getDBSize() == 0)
-            // tempPay_id = generator.generate("",1);
-            // else
-            // tempPay_id =
-            // generator.generate(paymentHandlerDB.getLastPayID(),1);
 
             tempPay_id = generator.getNextID(GenerateNewID.IdType.PAYMENT_ID);
             payment.pay_id = tempPay_id;
-            pay_id = tempPay_id;
 
             payment.cust_id = myPref.getCustID();
             payment.custidkey = myPref.getCustIDKey();
@@ -551,6 +536,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                     break;
                 case CASE_MANUAL_ADD:
                     BigDecimal bd = Global.getBigDecimalNum(fieldAmountToAdd.getText().toString());
+                    amountAdded = fieldAmountToAdd.getText().toString();
                     payment.paymethod_id = cardType + "Balance";
                     payment.pay_amount = bd.toString();
                     break;
@@ -589,18 +575,12 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
-
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
             urlToPost = params[0];
-
             try {
-
                 String xml = httpClient.postData(13, activity, urlToPost);
-
                 if (xml.equals(Global.TIME_OUT)) {
                     errorMsg = "TIME OUT, would you like to try again?";
                 } else if (xml.equals(Global.NOT_VALID_URL)) {
@@ -613,6 +593,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                     xr.setContentHandler(handler);
                     xr.parse(inSource);
                     parsedMap = handler.getData();
+                    if (fieldAmountToAdd != null) {
+                        parsedMap.put("amountAdded", amountAdded);
+                    }
 
                     if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                         wasProcessed = true;
@@ -622,10 +605,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                         errorMsg = xml;
                 }
 
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+            } catch (Exception ignored) {
             }
             return null;
         }
@@ -654,16 +634,18 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                     paymentHandlerDB.insert(payment);
                 }
 
-                String temp = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
+                String balance = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
 
                 if (cardTypeCase == CASE_LOYALTY)
-                    sb.append("Card Balance: ").append(temp);
+                    sb.append("Card Balance: ").append(balance);
                 else
-                    sb.append("Card Balance: ").append(Global.getCurrencyFrmt(temp));
+                    sb.append("Card Balance: ").append(Global.getCurrencyFrmt(balance));
 
                 finalMessage = sb.toString();
-//                showBalancePrompt(finalMessage);
-                showPrintDlg();
+                PaymentDetails details = new PaymentDetails();
+                details.setPay_amount(balance);
+                details.setPaymethod_name("");
+                showPrintDlg(parsedMap);
 
             } else // payment processing failed
             {
@@ -672,7 +654,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         }
     }
 
-    private void showPrintDlg() {
+    private void showPrintDlg(final HashMap<String, String> parsedMap) {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -694,9 +676,8 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
-                new printAsync().execute();
+                new printAsync().execute(parsedMap);
 
             }
         });
@@ -704,7 +685,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 showBalancePrompt(finalMessage);
             }
@@ -728,7 +708,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+
                 dlog.dismiss();
                 finish();
             }
@@ -737,17 +717,14 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
     }
 
     private void updateViewAfterSwipe() {
-        // month.setText(cardInfoManager.getCardExpMonth());
         SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
         SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
         String formatedYear = "";
         try {
             Date date = dt2.parse(cardInfoManager.getCardExpYear());
             formatedYear = dt.format(date);
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+        } catch (ParseException ignored) {
+
         }
 
         cardInfoManager.setCardExpYear(formatedYear);
@@ -771,7 +748,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
         this.cardInfoManager = cardManager;
         updateViewAfterSwipe();
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
@@ -783,7 +759,6 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         if (didConnect) {
             cardReaderConnected = true;
             if (uniMagReader != null && uniMagReader.readerIsConnected())
@@ -799,19 +774,16 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void startSignature() {
-        // TODO Auto-generated method stub
 
     }
 
 
-
-    private class printAsync extends AsyncTask<String, String, String> {
+    private class printAsync extends AsyncTask<HashMap<String, String>, String, HashMap<String, String>> {
         private boolean printSuccessful = true;
 
         @Override
@@ -827,19 +799,23 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected HashMap<String, String> doInBackground(HashMap<String, String>... params) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(pay_id, 1, true, null);
+                HashMap<String, String> map = params[0];
+                printSuccessful = Global.mainPrinterManager.currentDevice.printBalanceInquiry(map);
+                map.put("printSuccessful", String.valueOf(printSuccessful));
             }
-            return null;
+
+            return params[0];
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(HashMap<String, String> result) {
             myProgressDialog.dismiss();
-            showPrintDlg();
-//            if (!printSuccessful)
-//                showPrintDlg();
+            Boolean printSuccessful = Boolean.valueOf(result.get("printSuccessful"));
+            if (!printSuccessful) {
+                showPrintDlg(result);
+            }
         }
     }
 }

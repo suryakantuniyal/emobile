@@ -373,6 +373,12 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         return true;
     }
 
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
+
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
         // TODO Auto-generated method stub

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 
@@ -19,6 +20,8 @@ public interface EMSDeviceManagerPrinterDelegate {
     boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold);
 
     boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer);
+
+    boolean printBalanceInquiry(HashMap<String, String> values);
 
     boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature);
 
@@ -37,12 +40,13 @@ public interface EMSDeviceManagerPrinterDelegate {
     void playSound();
 
     boolean printReport(String curDate);
+
     public void printShiftDetailsReport(String shiftID);
 
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails);
 
     public void registerPrinter();
-    
+
     void unregisterPrinter();
 
     void loadCardReader(EMSCallBack callBack, boolean isDebitCard);

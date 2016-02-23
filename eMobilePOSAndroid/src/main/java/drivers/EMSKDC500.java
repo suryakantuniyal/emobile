@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -161,6 +162,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         return false;
     }
 
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return false;
+    }
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
