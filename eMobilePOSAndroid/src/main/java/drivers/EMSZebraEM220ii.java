@@ -182,11 +182,16 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-        // TODO Auto-generated method stub
 
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
         return true;
+    }
+
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
     }
 
     @Override
@@ -198,101 +203,13 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         return true;
     }
 
-    /*
-        @Override
-        public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-
-
-            StringBuilder sb = new StringBuilder();
-            printPref = myPref.getPrintingPreferences();
-            //SQLiteDatabase db = new DBManager(activity).openReadableDB();
-            ProductsHandler productDBHandler = new ProductsHandler(activity);
-            HashMap<String, String> map = new HashMap<String, String>();
-            double ordTotal = 0, totalSold = 0, totalReturned = 0, totalDispached = 0, totalLines = 0;
-
-            int size = myConsignment.size();
-
-            if (printPref.contains(MyPreferences.print_header))
-                this.printHeader();
-
-            sb.append(textHandler.centeredString("Consignment Summary", LINE_WIDTH)).append("\n\n");
-
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), myPref.getCustName(), LINE_WIDTH, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee), myPref.getEmpName(), LINE_WIDTH, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
-            sb.append(textHandler.newLines(3));
-
-            for (int i = 0; i < size; i++) {
-                map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);
-
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_name"), LINE_WIDTH, 0));
-
-                if (printPref.contains(MyPreferences.print_descriptions)) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "", LINE_WIDTH, 3)).append(
-                            "\n");
-                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_desc"), LINE_WIDTH, 5)).append("\n");
-                } else
-                    sb.append(textHandler.newLines(1));
-
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:",
-                        myConsignment.get(i).ConsOriginal_Qty, LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Rack Qty:", myConsignment.get(i)
-                        .ConsStock_Qty, LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Returned Qty:",
-                        myConsignment.get(i).ConsReturn_Qty, LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sold Qty:",
-                        myConsignment.get(i).ConsInvoice_Qty, LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Dispatched Qty:",
-                        myConsignment.get(i).ConsDispatch_Qty, LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty,
-                        LINE_WIDTH, 3));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Product Price:",
-                        Global.formatDoubleStrToCurrency(map.get("prod_price")), LINE_WIDTH, 5));
-                sb.append(
-                        textHandler.twoColumnLineWithLeftAlignedText("Total:",
-                                Global.formatDoubleStrToCurrency(myConsignment.get(i).invoice_total), LINE_WIDTH, 5))
-                        .append(textHandler.newLines(2));
-
-                totalSold += Double.parseDouble(myConsignment.get(i).ConsInvoice_Qty);
-                totalReturned += Double.parseDouble(myConsignment.get(i).ConsReturn_Qty);
-                totalDispached += Double.parseDouble(myConsignment.get(i).ConsDispatch_Qty);
-                totalLines += 1;
-                ordTotal += Double.parseDouble(myConsignment.get(i).invoice_total);
-
-                myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-                sb.setLength(0);
-            }
-
-            sb.append(textHandler.lines(LINE_WIDTH));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Sold:", Double.toString(totalSold), LINE_WIDTH, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Returned", Double.toString(totalReturned), LINE_WIDTH, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Dispatched", Double.toString(totalDispached), LINE_WIDTH, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Line Items", Double.toString(totalLines), LINE_WIDTH, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:", Global.formatDoubleToCurrency(ordTotal), LINE_WIDTH, 0));
-            sb.append(textHandler.newLines(3));
-
-            myPrinter.printText(sb.toString(), ALIGN_LEFT, 0, TEXT_SIZE, false);
-
-            if (printPref.contains(MyPreferences.print_footer))
-                this.printFooter();
-            myPrinter.printText(textHandler.newLines(3), ALIGN_LEFT, 0, TEXT_SIZE, false);
-            //db.close();
-
-            return true;
-        }
-
-    */
     @Override
     public boolean printOnHold(Object onHold) {
-        // TODO Auto-generated method stub
         return true;
     }
 
     @Override
     public void setBitmap(Bitmap bmp) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -312,7 +229,6 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public boolean printReport(String curDate) {
-        // TODO Auto-generated method stub
         printReportReceipt(curDate, LINE_WIDTH);
 
         return true;
@@ -320,19 +236,16 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
     }
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        // TODO Auto-generated method stub
         callBack = _callBack;
         myPrinter.getMsrMode();
         myPrinter.setMsrReaderMode();
@@ -509,124 +422,42 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
                             }
 
-//						if (secondTrack.length > 1)//#####=### 
-//						{
-//							int temp = secondTrack[0].length();
-//							String last4Digits = (String) secondTrack[0].subSequence(temp - 4, temp);
-//							cardManager.setCardLast4(last4Digits);
-//							
-//							if(Global.isEncryptSwipe)
-//								cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(secondTrack[0]));
-//							else
-//								cardManager.setCardNumAESEncrypted(secondTrack[0]);
-//						}
-//						else
-//						{
-//							if(Global.isEncryptSwipe)
-//								cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(secondTrack[0]));
-//							else
-//								cardManager.setCardNumAESEncrypted(secondTrack[0]);
-//						}
 
 
                             zebraHandler.post(doUpdateViews);
                         }
 
-
-//					if (tr1 != null && tr2 != null) {
-//						String mTrack1Data = new String(tr1);
-//						String mTrack2Data = new String(tr2);
-//
-//						mTrack1Data.trim();
-//						String[] firstTrack = mTrack1Data.split("\\^");
-//						if (firstTrack.length > 1)
-//							firstTrack = firstTrack[1].split("/");
-//						String[] secondTrack = mTrack2Data.split("=");
-//						// String[] cardNumber = secondTrack[0].split(";");
-//
-//						String expYear = "";
-//						String expDate = "";
-//
-//						if (secondTrack.length > 1) {
-//							expYear = secondTrack[1].substring(0, 2);
-//							expDate = secondTrack[1].substring(2, 4);
-//						}
-//						StringBuilder sb = new StringBuilder();
-//						for (int i = 0; i < firstTrack.length; i++)
-//							sb.append(firstTrack[i].trim()).append(" ");
-//
-//						cardManager.setEncryptedAESTrack1(encrypt.encryptWithAES(mTrack1Data));
-//						cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(mTrack2Data));
-//						cardManager.setCardOwnerName(sb.toString());
-//						// Global.cardName = sb.toString();
-//
-//						if (secondTrack.length > 1) {
-//							int temp = secondTrack[0].length();
-//							String last4Digits = (String) secondTrack[0].subSequence(temp - 4, temp);
-//							cardManager.setCardLast4(last4Digits);
-//							
-//							if(Global.isEncryptSwipe)
-//								cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(secondTrack[0]));
-//							else
-//								cardManager.setCardNumAESEncrypted(secondTrack[0]);
-//						}
-//						cardManager.setCardExpMonth(expDate);
-//						cardManager.setCardExpYear(expYear);
-//
-//						//handler.post(doUpdateViews);
-//						zebraHandler.post(doUpdateViews);
-//					}
                         readerCount = 0;
                     }
                     break;
 
                 case MobilePrinter.MESSAGE_DEVICE_NAME:
 
-                    // mConnectedDeviceName =
-                    // msg.getData().getString(MobilePrinter.DEVICE_NAME);
-                    // Toast.makeText(getApplicationContext(), mConnectedDeviceName,
-                    // Toast.LENGTH_LONG).show();
+
                     break;
 
                 case MobilePrinter.MESSAGE_TOAST:
 
-                    // mListView.setEnabled(false);
-                    // Toast.makeText(getApplicationContext(),
-                    // msg.getData().getString(MobilePrinter.TOAST),
-                    // Toast.LENGTH_SHORT).show();
+
                     break;
 
                 case MobilePrinter.MESSAGE_DEVICE_SET:
 
-				/*
-                 * if (msg.obj == null) {
-				 * Toast.makeText(getApplicationContext(), "No paired device",
-				 * Toast.LENGTH_SHORT).show(); } else {
-				 * DialogManager.showBluetoothDialog(MainActivity.this,
-				 * (Set<BluetoothDevice>) msg.obj); }
-				 */
                     break;
 
                 case MobilePrinter.MESSAGE_PRINT_COMPLETE:
 
-                    // Toast.makeText(getApplicationContext(), "Complete to print",
-                    // Toast.LENGTH_SHORT).show();
+
                     break;
 
                 case MESSAGE_START_WORK:
 
-				/*
-                 * mListView.setEnabled(false);
-				 * mProgressBar.setVisibility(View.VISIBLE);
-				 */
+
                     break;
 
                 case MESSAGE_END_WORK:
 
-				/*
-                 * mListView.setEnabled(true);
-				 * mProgressBar.setVisibility(View.INVISIBLE);
-				 */
+
                     break;
             }
             return false;
@@ -635,7 +466,6 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void releaseCardReader() {
-        // TODO Auto-generated method stub
         myPrinter.cancelMsrReaderMode();
         readerCount = 0;
         callBack = null;
@@ -667,7 +497,6 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-        // TODO Auto-generated method stub
 
         printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
@@ -676,37 +505,30 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        // TODO Auto-generated method stub\
         printOpenInvoicesReceipt(invID, LINE_WIDTH);
         return true;
     }
 
     @Override
     public void printStationPrinter(List<Orders> orders, String ordID) {
-        // TODO Auto-generated method stub
         printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
 
     }
 
     @Override
     public void openCashDrawer() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        // TODO Auto-generated method stub
-
         printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
-
 
         return true;
     }
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
-        // TODO Auto-generated method stub
     }
 
     @Override

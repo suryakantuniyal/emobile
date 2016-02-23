@@ -17,6 +17,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -262,6 +263,13 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
         return true;
     }
+
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
+
 
     @Override
     public boolean printOnHold(Object onHold) {

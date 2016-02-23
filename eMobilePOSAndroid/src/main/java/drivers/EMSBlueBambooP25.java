@@ -241,12 +241,12 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
 
     @Override
-	public void printShiftDetailsReport(String shiftID) {
-		printShiftDetailsReceipt(LINE_WIDTH, shiftID);
-	}
+    public void printShiftDetailsReport(String shiftID) {
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+    }
 
 
-	@Override
+    @Override
 
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
 
@@ -255,6 +255,11 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         return true;
     }
 
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
 
 
     public boolean printOnHold(Object onHold) {
@@ -288,10 +293,10 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
 
-	@Override
-	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
-		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
-	}
+    @Override
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+    }
 
     public void registerPrinter() {
         edm.currentDevice = this;

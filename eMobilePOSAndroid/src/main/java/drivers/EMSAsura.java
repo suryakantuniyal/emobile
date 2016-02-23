@@ -502,6 +502,13 @@ public class EMSAsura extends EMSDeviceDriver
         return true;
     }
 
+
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
+
+
     protected void printImage(int type) throws JAException {
         Bitmap myBitmap = null;
         switch (type) {
