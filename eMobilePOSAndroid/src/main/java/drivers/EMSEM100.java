@@ -13,6 +13,7 @@ import android.util.Log;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -76,19 +77,26 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
 
-
     @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
         return false;
     }
 
     @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String
+            encodedSignature) {
         return false;
     }
 
     @Override
-    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String
+            encodedSignature) {
+        return false;
+    }
+
+    @Override
+    public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c,
+                                           boolean isPickup) {
         return false;
     }
 

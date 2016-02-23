@@ -344,6 +344,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return true;
     }
 
+    @Override
+    public boolean printBalanceInquiry(HashMap<String, String> values) {
+        return printBalanceInquiry(values, LINE_WIDTH);
+    }
+
 
     public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable) throws StarIOPortException {
         ArrayList<Byte> commands = new ArrayList<Byte>();
@@ -741,9 +746,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         //  if (printerName.toUpperCase().contains("MPOP")) {
         try {
-            result = Communication.sendCommands(data, getStarIOPort(), this.activity);
-        } catch (StarIOPortException e) {
-            // TODO Auto-generated catch block
+            result = Communication.sendCommands(data, port, this.activity);
+        } catch (Exception e) {
             e.printStackTrace();
         }   // 10000mS!!!
 //        }
@@ -796,16 +800,16 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // windows-1252
             }
 
-        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
-    } catch (StarIOPortException e) {
+            printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        } catch (StarIOPortException e) {
 //        return false;
 
-    } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    } finally {
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
 
-    }
+        }
 
     }
 
@@ -913,7 +917,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
-
     }
 
     private StarIOPort getStarIOPort() throws StarIOPortException {

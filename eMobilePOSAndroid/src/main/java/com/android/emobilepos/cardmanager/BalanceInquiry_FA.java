@@ -169,17 +169,7 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 					roverReader.initializeReader(activity, false);
 				}
 			}
-//			if (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader)) {
-//				uniMagReader = new EMSUniMagDriver();
-//				uniMagReader.initializeReader(this);
-//			} else {
-//				magtekReader = new EMSMagtekAudioCardReader(this);
-//				new Thread(new Runnable() {
-//					public void run() {
-//						magtekReader.connectMagtek(true,msrCallBack);
-//					}
-//				}).start();
-//			}
+
 		} else {
 			int _swiper_type = myPref.swiperType(true, -2);
 			int _printer_type = myPref.getPrinterType();
@@ -204,7 +194,6 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.processButton:
 			processBalanceInquiry();
@@ -285,10 +274,7 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 
 		@Override
 		protected String doInBackground(String... params) {
-			// TODO Auto-generated method stub
-
 			Post httpClient = new Post();
-
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
 			urlToPost = params[0];
@@ -312,18 +298,12 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 					if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
 						wasProcessed = true;
 					else if (parsedMap != null && parsedMap.size() > 0) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("statusCode = ").append(parsedMap.get("statusCode")).append("\n");
-						sb.append(parsedMap.get("statusMessage"));
-						errorMsg = sb.toString();
+						errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
 					} else
 						errorMsg = xml;
 				}
 
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+			} catch (Exception ignored) {
 			}
 
 			return null;
@@ -363,7 +343,6 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				dlog.dismiss();
 				finish();
 			}
@@ -404,7 +383,6 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 
 	@Override
 	public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-		// TODO Auto-generated method stub
 		this.cardInfoManager = cardManager;
 		updateViewAfterSwipe();
 		if (uniMagReader != null && uniMagReader.readerIsConnected()) {
@@ -415,7 +393,6 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 
 	@Override
 	public void readerConnectedSuccessfully(boolean didConnect) {
-		// TODO Auto-generated method stub
 		if (didConnect) {
 			cardReaderConnected = true;
 			if (uniMagReader != null && uniMagReader.readerIsConnected())
@@ -431,16 +408,12 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 	
 	@Override
 	public void scannerWasRead(String data) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
 
 	@Override
 	public void startSignature() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

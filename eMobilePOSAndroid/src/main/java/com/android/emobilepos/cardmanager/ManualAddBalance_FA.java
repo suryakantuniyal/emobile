@@ -309,13 +309,10 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -350,9 +347,6 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
 
             return null;
@@ -437,7 +431,6 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
         this.cardInfoManager = cardManager;
         updateViewAfterSwipe();
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
@@ -448,7 +441,6 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         if (didConnect) {
             cardReaderConnected = true;
             if (uniMagReader != null && uniMagReader.readerIsConnected())
@@ -464,7 +456,6 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
 
     }
 

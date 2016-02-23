@@ -256,21 +256,29 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             showYesNoPrompt(false, R.string.dlog_title_confirm, R.string.take_payment_now);
     }
 
-//    private void updateConsignmentTransactionIds(String consTrans_ID) {
-//        for (ConsignmentTransaction transaction : consTransactionList) {
-//            if (transaction.ConsTrans_ID.equalsIgnoreCase(consTrans_ID)) {
-//                if (Global.consignment_order != null) {
-//                    transaction.ConsInvoice_ID = Global.consignment_order.ord_id;
-//                }
-//                if (Global.cons_return_order != null) {
-//                    transaction.ConsReturn_ID = Global.cons_return_order.ord_id;
-//                }
-//                if (Global.cons_fillup_order != null) {
-//                    transaction.ConsDispatch_ID = Global.cons_fillup_order.ord_id;
-//                }
-//            }
-//        }
-//    }
+
+    private void updateConsignmentTransactionIds(Global.OrderType type, String id) {
+
+        for (ConsignmentTransaction transaction : consTransactionList) {
+            switch (type) {
+                case CONSIGNMENT_FILLUP:
+                    if (Global.cons_fillup_order != null) {
+                        transaction.ConsDispatch_ID = Global.cons_fillup_order.ord_id;
+                    }
+                    break;
+                case CONSIGNMENT_RETURN:
+                    if (Global.cons_return_order != null) {
+                        transaction.ConsReturn_ID = Global.cons_return_order.ord_id;
+                    }
+                    break;
+                case CONSIGNMENT_INVOICE:
+                    if (Global.consignment_order != null) {
+                        transaction.ConsInvoice_ID = Global.consignment_order.ord_id;
+                    }
+                    break;
+            }
+        }
+    }
 
     private void processOrder() {
         global.order = new Order(activity);
@@ -301,17 +309,6 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         }
 
 
-//        TaxesCalculator calculator;
-//        List<HashMap<String, String>> listMapTaxes = new ArrayList<HashMap<String, String>>();
-//        for (OrderProducts ordProd : global.orderProducts) {
-//            listMapTaxes.clear();
-//            mapTax.put("tax_id", global.listOrderTaxes.get(0).getOrd_tax_id());
-//            mapTax.put("tax_name", global.listOrderTaxes.get(0).getTax_name());
-//            mapTax.put("tax_rate", global.listOrderTaxes.get(0).getTax_rate());
-//            listMapTaxes.add(mapTax);
-//            calculator = new TaxesCalculator(activity, myPref, ordProd, Global.taxID,
-//                    0, 0, new BigDecimal(ordProd.disTotal), new BigDecimal(ordProd.disAmount), listMapTaxes);
-//        }
         global.order.ord_total = _order_total.setScale(2, RoundingMode.HALF_UP).toString();
         global.order.ord_subtotal = Double.toString(ordTotal);
 
@@ -447,7 +444,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         if (ifInvoice) {
             processOrder();
-            consTransactionList.get(0).ConsInvoice_ID = Global.consignment_order.ord_id;
+            updateConsignmentTransactionIds(Global.OrderType.CONSIGNMENT_INVOICE, Global.consignment_order.ord_id);
+//            consTransactionList.get(0).ConsInvoice_ID = Global.consignment_order.ord_id;
         }
         if (Global.cons_return_products.size() > 0) {
             Global.cons_return_order.processed = "1";
@@ -459,7 +457,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
                 product.ord_id = Global.cons_return_order.ord_id;
             }
             orderProductsHandler.insert(Global.cons_return_products);
-            consTransactionList.get(0).ConsReturn_ID = Global.cons_return_order.ord_id;
+            updateConsignmentTransactionIds(Global.OrderType.CONSIGNMENT_RETURN, Global.cons_return_order.ord_id);
+//            consTransactionList.get(0).ConsReturn_ID = Global.cons_return_order.ord_id;
 
         }
         if (Global.cons_fillup_products.size() > 0) {
@@ -471,7 +470,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
                 product.ord_id = Global.cons_fillup_order.ord_id;
             }
             orderProductsHandler.insert(Global.cons_fillup_products);
-            consTransactionList.get(0).ConsDispatch_ID = Global.cons_fillup_order.ord_id;
+            updateConsignmentTransactionIds(Global.OrderType.CONSIGNMENT_FILLUP, Global.cons_fillup_order.ord_id);
+//            consTransactionList.get(0).ConsDispatch_ID = Global.cons_fillup_order.ord_id;
 
         }
 
@@ -481,8 +481,9 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
                 showYesNoPrompt(true, R.string.dlog_title_confirm, R.string.dlog_msg_want_to_print);
             else
                 new printAsync().execute();
-        } else
+        } else {
             finishConsignment();
+        }
 
 
         super.onActivityResult(requestCode, resultCode, data);

@@ -1180,5 +1180,8 @@
 	<string name="payments">Payments</string>
 	<string name="map">Map</string>
 	<string name="print_all_button">Print All</string>
+	<string name="balanceAmount">Balance Amount</string>
+	<string name="status">Status</string>
+	<string name="amount_added">Amount Added</string>
 
 </resources>
