@@ -30,7 +30,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private Global global;
     List<OrderSeatProduct> orderSeatProducts;
     Spinner splitTypeSpinner;
-    //    private GridView gridView;
     private String tableNumber;
     private SplittedOrderSummaryFR orderSummaryFR;
     private SplittedOrderDetailsFR orderDetailsFR;

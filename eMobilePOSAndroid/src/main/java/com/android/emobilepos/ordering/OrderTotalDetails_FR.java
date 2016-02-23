@@ -21,6 +21,7 @@ import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
@@ -262,7 +263,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     taxSelected = pos;
                     setTaxValue(pos);
                 }
-                reCalculate();
+                reCalculate(global.orderProducts);
             }
 
             @Override
@@ -355,182 +356,15 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
     }
 
-    private void calculateTaxes(int i) {
+    private void calculateTaxes(OrderProduct orderProduct) {
         String[] dis = new String[]{};
         if (discountSelected > 0) {
             dis = discountList.get(discountSelected - 1);
         }
-        TaxesCalculator taxesCalculator = new TaxesCalculator(activity, myPref, global.orderProducts.get(i), Global.taxID,
+        TaxesCalculator taxesCalculator = new TaxesCalculator(activity, myPref, orderProduct, Global.taxID,
                 taxSelected, dis, discountable_sub_total, itemsDiscountTotal, listMapTaxes);
         tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
-//
-//        String taxAmount = "0.00";
-//        String prod_taxId = "";
-//        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
-//            if (!Global.taxID.isEmpty()) {
-//                taxAmount = Global.formatNumToLocale(
-//                        Double.parseDouble(taxHandler.getTaxRate(Global.taxID, global.orderProducts.get(i).prod_taxtype,
-//                                Double.parseDouble(global.orderProducts.get(i).overwrite_price))));
-//                prod_taxId = global.orderProducts.get(i).prod_taxtype;
-//            } else {
-//                taxAmount = Global.formatNumToLocale(Double.parseDouble(taxHandler.getTaxRate(
-//                        global.orderProducts.get(i).prod_taxcode, global.orderProducts.get(i).prod_taxtype,
-//                        Double.parseDouble(global.orderProducts.get(i).overwrite_price))));
-//                prod_taxId = global.orderProducts.get(i).prod_taxcode;
-//            }
-//        } else {
-//            if (!Global.taxID.isEmpty()) {
-//                taxAmount = taxList.get(taxSelected - 1)[2];
-//                prod_taxId = Global.taxID;
-//            }
-//        }
-//
-//        BigDecimal tempSubTotal = new BigDecimal(global.orderProducts.get(i).itemSubtotal);
-//        BigDecimal prodQty = new BigDecimal(global.orderProducts.get(i).ordprod_qty);
-//        BigDecimal _temp_subtotal = tempSubTotal;
-//        boolean isVAT = myPref.getIsVAT();
-//        if (isVAT) {
-//            if (global.orderProducts.get(i).prod_istaxable.equals("1")) {
-//                if (global.orderProducts.get(i).prod_price_updated.equals("0")) {
-//                    BigDecimal _curr_prod_price = new BigDecimal(global.orderProducts.get(i).overwrite_price);
-//                    BigDecimal _new_prod_price = getProductPrice(_curr_prod_price,
-//                            new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP));
-//                    _new_prod_price = _new_prod_price.setScale(4, RoundingMode.HALF_UP);
-//                    tempSubTotal = _new_prod_price.multiply(prodQty).setScale(2, RoundingMode.HALF_UP);
-//                    // global.orderProducts.get(i).getSetData("itemSubtotal",
-//
-//                    global.orderProducts.get(i).price_vat_exclusive = _new_prod_price.setScale(2, RoundingMode.HALF_UP)
-//                            .toString();
-//                    global.orderProducts.get(i).prod_price_updated = "1";
-//
-//                    BigDecimal disc;
-//                    if (global.orderProducts.get(i).discount_is_fixed.equals("0")) {
-//                        BigDecimal val = tempSubTotal
-//                                .multiply(Global.getBigDecimalNum(global.orderProducts.get(i).disAmount))
-//                                .setScale(4, RoundingMode.HALF_UP);
-//                        disc = val.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-//                    } else {
-//                        disc = new BigDecimal(global.orderProducts.get(i).disAmount);
-//                    }
-//                    // BigDecimal disc = new
-//                    // BigDecimal(global.orderProducts.get(i).getSetData("discount_value",
-//                    // true, null));
-//                    global.orderProducts.get(i).discount_value = Global.getRoundBigDecimal(disc);
-//                    global.orderProducts.get(i).disTotal = Global.getRoundBigDecimal(disc);
-//                    // global.orderProducts.get(i).getSetData("itemTotal",
-//                    // false,
-//                    // Global.getRoundBigDecimal(tempSubTotal.subtract(disc)));
-//                    global.orderProducts.get(i).itemTotalVatExclusive = Global
-//                            .getRoundBigDecimal(tempSubTotal.subtract(disc));
-//                }
-//
-//                if (prodQty.compareTo(new BigDecimal("1")) == 1) {
-//                    _temp_subtotal = new BigDecimal(global.orderProducts.get(i).price_vat_exclusive).setScale(2,
-//                            RoundingMode.HALF_UP);
-//                } else {
-//                    // _new_prod_price = _new_prod_price.setScale(4,
-//                    // RoundingMode.HALF_UP);
-//                    tempSubTotal = new BigDecimal(global.orderProducts.get(i).price_vat_exclusive).multiply(prodQty)
-//                            .setScale(2, RoundingMode.HALF_UP);
-//                    _temp_subtotal = tempSubTotal;
-//                }
-//            } else
-//                global.orderProducts.get(i).itemTotalVatExclusive = _temp_subtotal.toString();
-//        }
-//        BigDecimal tempTaxTotal = new BigDecimal("0");
-//        String taxTotal = "0";
-//
-//        if (global.orderProducts.get(i).prod_istaxable.equals("1") &&
-//                (global.orderProducts.get(i).item_void.isEmpty() || global.orderProducts.get(i).item_void.equals("0"))) {
-//            taxableDueAmount = taxableDueAmount.add(tempSubTotal);
-//
-//            if (global.orderProducts.get(i).discount_is_taxable.equals("1")) {
-//                BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4,
-//                        RoundingMode.HALF_UP);
-//                tempSubTotal = tempSubTotal.abs().subtract(new BigDecimal(global.orderProducts.get(i).discount_value).abs());
-//                if (global.orderProducts.get(i).isReturned && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
-//                    tempSubTotal = tempSubTotal.negate();
-//                }
-//                BigDecimal tax1 = tempSubTotal.multiply(temp);
-//                tempTaxTotal = tax1;
-//                taxTotal = tax1.toString();
-//                _temp_subtotal = tempSubTotal;
-//                if (discountSelected > 0) {
-//                    if (discountList.get(discountSelected - 1)[1].equals("Fixed")) {
-//                        if (discount_rate.compareTo(tempSubTotal) == -1) {
-//                            taxableSubtotal = taxableSubtotal.add(tempSubTotal.subtract(discount_rate).multiply(temp)
-//                                    .setScale(4, RoundingMode.HALF_UP));
-//                            // discount_rate = new BigDecimal("0");
-//                            if (discountList.get(discountSelected - 1)[3].equals("1")) {
-//                                _temp_subtotal = _temp_subtotal.subtract(discount_rate);
-//                            }
-//                        } else {
-//                            discount_amount = tempSubTotal;
-//                            taxableSubtotal = new BigDecimal("0");
-//                            _temp_subtotal = taxableSubtotal;
-//                        }
-//                    } else {
-//                        BigDecimal temp2 = tempSubTotal.multiply(discount_rate).setScale(4, RoundingMode.HALF_UP);
-//                        taxableSubtotal = taxableSubtotal
-//                                .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP));
-//                        if (discountList.get(discountSelected - 1)[3].equals("1")) {
-//                            _temp_subtotal = _temp_subtotal.subtract(temp2);
-//                        }
-//                    }
-//                } else {
-//                    taxableSubtotal = taxableSubtotal
-//                            .add(tempSubTotal.multiply(temp).setScale(4, RoundingMode.HALF_UP));
-//                }
-//            } else {
-//                BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4,
-//                        RoundingMode.HALF_UP);
-//                BigDecimal tax1 = tempSubTotal.multiply(temp).setScale(2, RoundingMode.HALF_UP);
-//                tempTaxTotal = tax1;
-//                taxTotal = tax1.toString();
-//
-////                if (!global.orderProducts.get(i).isReturned) {
-//                if (discountSelected > 0) {
-//                    if (discountList.get(discountSelected - 1)[1].equals("Fixed")) {
-//                        if (discount_rate.compareTo(tempSubTotal) == -1) {
-//                            taxableSubtotal = taxableSubtotal.add(tempSubTotal.subtract(discount_rate)
-//                                    .multiply(temp).setScale(4, RoundingMode.HALF_UP));
-//                            // discount_rate = new BigDecimal("0");
-//                            if (discountList.get(discountSelected - 1)[3].equals("1")) {
-//                                _temp_subtotal = tempSubTotal.subtract(discount_rate);
-//                            }
-//                        } else {
-//                            // discount_amount = tempSubTotal;
-//                            taxableSubtotal = new BigDecimal("0");
-//                            _temp_subtotal = taxableSubtotal;
-//                        }
-//                    } else {
-//                        BigDecimal temp2 = tempSubTotal.multiply(discount_rate).setScale(4, RoundingMode.HALF_UP);
-//                        taxableSubtotal = taxableSubtotal
-//                                .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP));
-//                        if (discountList.get(discountSelected - 1)[3].equals("1")) {
-//                            _temp_subtotal = tempSubTotal.subtract(temp2);
-//                        }
-//                    }
-//                } else {
-//                    taxableSubtotal = taxableSubtotal
-//                            .add(tempSubTotal.multiply(temp).setScale(4, RoundingMode.HALF_UP));
-//                }
-////                }
-//            }
-//
-//            if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
-//                calculateRetailGlobalTax(_temp_subtotal, taxAmount, prodQty, isVAT);
-//            } else {
-//                calculateGlobalTax(_temp_subtotal, prodQty, isVAT);
-//            }
-//
-//        }
-//
-//        if (tempTaxTotal.compareTo(new BigDecimal("0")) < -1)
-//            taxTotal = Double.toString(0.0);
-//
-//        global.orderProducts.get(i).prod_taxValue = taxTotal;
-//        global.orderProducts.get(i).prod_taxId = prod_taxId;
+
     }
 
     private BigDecimal getProductPrice(BigDecimal prod_with_tax_price, BigDecimal tax) {
@@ -604,8 +438,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //        tempTaxableAmount = tempTaxableAmount.add(_total_tax).setScale(4, RoundingMode.HALF_UP);
 //    }
 
-    public void reCalculate() {
-        int size = global.orderProducts.size();
+    public void reCalculate(List<OrderProduct> orderProducts) {
+        int size = orderProducts.size();
         taxableSubtotal = new BigDecimal("0.00");
         taxableDueAmount = new BigDecimal("0.00");
         tempTaxableAmount = new BigDecimal("0");
@@ -620,40 +454,39 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             String val;
             int pointsSubTotal = 0, pointsInUse = 0, pointsAcumulable = 0;
             for (int i = 0; i < size; i++) {
-
-                calculateTaxes(i);
+                calculateTaxes(orderProducts.get(i));
                 if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
-                    String temp = global.orderProducts.get(i).item_void;
+                    String temp = orderProducts.get(i).item_void;
 
                     if (temp.equals("1"))
                         val = "0.00";
                     else {
                         if (isVAT) {
-                            val = global.orderProducts.get(i).itemTotalVatExclusive;
+                            val = orderProducts.get(i).itemTotalVatExclusive;
                         } else
-                            val = global.orderProducts.get(i).itemTotal;
+                            val = orderProducts.get(i).itemTotal;
                     }
                 } else {
                     if (isVAT) {
-                        val = global.orderProducts.get(i).itemTotalVatExclusive;
+                        val = orderProducts.get(i).itemTotalVatExclusive;
                     } else
-                        val = global.orderProducts.get(i).itemSubtotal;
+                        val = orderProducts.get(i).itemSubtotal;
                 }
                 if (val == null || val.isEmpty())
                     val = "0.00";
                 prodPrice = new BigDecimal(val);
                 discountableAmount = discountableAmount.add(prodPrice);
                 try {
-                    if (global.orderProducts.get(i).discount_value != null
-                            && !global.orderProducts.get(i).discount_value.isEmpty())
-                        itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(global.orderProducts.get(i).discount_value));
+                    if (orderProducts.get(i).discount_value != null
+                            && !orderProducts.get(i).discount_value.isEmpty())
+                        itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).discount_value));
                 } catch (NumberFormatException e) {
                 }
                 amount = amount.add(prodPrice);
-                pointsSubTotal += Double.parseDouble(global.orderProducts.get(i).prod_price_points);
-                pointsAcumulable += Double.parseDouble(global.orderProducts.get(i).prod_value_points);
-                if (Boolean.parseBoolean(global.orderProducts.get(i).payWithPoints))
-                    pointsInUse += Double.parseDouble(global.orderProducts.get(i).prod_price_points);
+                pointsSubTotal += Double.parseDouble(orderProducts.get(i).prod_price_points);
+                pointsAcumulable += Double.parseDouble(orderProducts.get(i).prod_value_points);
+                if (Boolean.parseBoolean(orderProducts.get(i).payWithPoints))
+                    pointsInUse += Double.parseDouble(orderProducts.get(i).prod_price_points);
             }
             if (itemCount != null)
                 itemCount.setText(String.valueOf(size));
@@ -687,6 +520,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     @Override
     public void recalculateTotal() {
-        reCalculate();
+        reCalculate(global.orderProducts);
     }
 }

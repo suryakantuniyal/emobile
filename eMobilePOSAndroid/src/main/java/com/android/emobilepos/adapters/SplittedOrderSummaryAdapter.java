@@ -65,9 +65,7 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         holder.seatNumber.setText(org.springframework.util.StringUtils.arrayToDelimitedString(seats.toArray(), ", "));
         holder.ticketPrice.setText(Global.getCurrencyFormat(order.ord_total));
         holder.itemsList.setText(org.springframework.util.StringUtils.arrayToDelimitedString(items.toArray(), ", "));
-        if (position == getSelectedIndex()) {
-            convertView.setSelected(true);
-        }
+
         return convertView;
 
     }
