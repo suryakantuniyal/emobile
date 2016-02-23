@@ -917,7 +917,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
-
     }
 
     private StarIOPort getStarIOPort() throws StarIOPortException {
