@@ -33,6 +33,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     //    private GridView gridView;
     private String tableNumber;
     private SplittedOrderSummaryFR orderSummaryFR;
+    private SplittedOrderDetailsFR orderDetailsFR;
 
 
     public enum SalesReceiptSplitTypes {
@@ -83,10 +84,12 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         global = (Global) getApplication();
 //        gridView = (GridView) findViewById(R.id.splitedOrderSummarygridView);
         orderSummaryFR = new SplittedOrderSummaryFR();
+        orderDetailsFR = new SplittedOrderDetailsFR();
 
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.splitedOrderSummaryFrameLayout, orderSummaryFR);
+        ft.add(R.id.splitedOrderDetailFrameLayout, orderDetailsFR);
         ft.commit();
     }
 
@@ -121,6 +124,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(this, splitedOrders);
 
                 orderSummaryFR.getGridView().setAdapter(summaryAdapter);
+
                 break;
             case SPLIT_EQUALLY:
 

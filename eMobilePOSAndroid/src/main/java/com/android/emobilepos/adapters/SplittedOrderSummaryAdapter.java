@@ -27,7 +27,7 @@ import util.StringUtil;
 public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
     private List<SplitedOrder> splitedOrders;
-
+    private int selectedIndex = 0;
 
     public SplittedOrderSummaryAdapter(Activity activity, List<SplitedOrder> splitedOrders) {
         mInflater = LayoutInflater.from(activity);
@@ -65,8 +65,19 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         holder.seatNumber.setText(org.springframework.util.StringUtils.arrayToDelimitedString(seats.toArray(), ", "));
         holder.ticketPrice.setText(Global.getCurrencyFormat(order.ord_total));
         holder.itemsList.setText(org.springframework.util.StringUtils.arrayToDelimitedString(items.toArray(), ", "));
+        if (position == getSelectedIndex()) {
+            convertView.setSelected(true);
+        }
         return convertView;
 
+    }
+
+    public int getSelectedIndex() {
+        return selectedIndex;
+    }
+
+    public void setSelectedIndex(int selectedIndex) {
+        this.selectedIndex = selectedIndex;
     }
 
 

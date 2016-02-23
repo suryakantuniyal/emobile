@@ -15,6 +15,7 @@ public class SplitedOrder extends Order {
     private List<OrderProduct> orderProducts;
     private String tableNumber;
 
+
     public SplitedOrder(Activity activity, Order order) {
         super(activity);
         init(order);
