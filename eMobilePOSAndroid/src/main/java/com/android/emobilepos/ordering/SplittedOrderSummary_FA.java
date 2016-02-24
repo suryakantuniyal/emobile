@@ -6,20 +6,29 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
+import com.android.database.ProductsHandler;
+import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
+import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.Tax;
 import com.android.support.Global;
+import com.android.support.OrderCalculator;
+import com.android.support.TaxesCalculator;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,6 +42,13 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private String tableNumber;
     private SplittedOrderSummaryFR orderSummaryFR;
     private SplittedOrderDetailsFR orderDetailsFR;
+    private String taxID;
+    private int taxSelected;
+    private Discount discount;
+    private BigDecimal discountableSubtotal;
+    private BigDecimal itemsDiscountTotal;
+    private List<HashMap<String, String>> listMapTaxes;
+    private Tax tax;
 
 
     public enum SalesReceiptSplitTypes {
@@ -77,6 +93,23 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             String json = extras.getString("orderSeatProductList");
             tableNumber = extras.getString("tableNumber");
             orderSeatProducts = gson.fromJson(json, listType);
+            taxID = extras.getString("taxID");
+            taxSelected = extras.getInt("taxSelected");
+            int discountSelected = extras.getInt("discountSelected");
+            TaxesHandler taxesHandler = new TaxesHandler(this);
+            List<Tax> taxList = taxesHandler.getTaxes();
+            tax = taxList.get(taxSelected);
+            ProductsHandler handler2 = new ProductsHandler(this);
+            List<Discount> discountList = handler2.getDiscounts();
+            if (discountSelected >= 0) {
+                discount = discountList.get(discountSelected);
+            } else {
+                discount = Discount.getDefaultInstance();
+            }
+//            discount = extras.getStringArray("discount");
+//            discountableSubtotal = new BigDecimal(extras.getString("discountableSubtotal"));
+//            itemsDiscountTotal = new BigDecimal(extras.getString("itemsDiscountTotal"));
+
         }
         splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
         splitTypeSpinner.setOnItemSelectedListener(this);
@@ -112,9 +145,15 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                         Order order = global.order;
+                        SplitedOrder splitedOrder = new SplitedOrder(this, order);
 
                         List<OrderProduct> orderProducts = getProductsBySeats(seatProduct.seatNumber);
-                        SplitedOrder splitedOrder = new SplitedOrder(this, order);
+                        BigDecimal orderSubTotal = new BigDecimal(0);
+                        for (OrderProduct product : orderProducts) {
+//                            OrderCalculator orderCalculator = new OrderCalculator(this, product, Global.taxID, tax, discount, global.listOrderTaxes);
+                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.itemSubtotal)).setScale(4, RoundingMode.HALF_UP);
+                        }
+                        splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.setOrderProducts(orderProducts);
                         splitedOrder.setTableNumber(tableNumber);
                         splitedOrders.add(splitedOrder);

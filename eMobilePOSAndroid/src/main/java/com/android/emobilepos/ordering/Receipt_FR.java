@@ -47,6 +47,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
 import com.android.database.ProductsHandler;
+import com.android.database.TaxesHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TransferInventory_DB;
 import com.android.database.TransferLocations_DB;
@@ -65,6 +66,7 @@ import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
 import com.android.support.GenerateNewID;
@@ -771,6 +773,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         String json = gson.toJson(mainLVAdapter.orderSeatProductList, listType);
         b.putString("orderSeatProductList", json);
         b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
+        b.putString("taxID", Global.taxID);
+
+        b.putInt("taxSelected", Global.taxPosition - 1);
+        b.putInt("discountSelected", Global.discountPosition - 1);
+
+
+//        b.putStringArray("discount",Global);
+//
+//        discount = extras.getStringArray("discount");
+//        discountableSubtotal = new BigDecimal(extras.getString("discountableSubtotal"));
+//        itemsDiscountTotal = new BigDecimal(extras.getString("itemsDiscountTotal"));
         intent.putExtras(b);
         startActivity(intent);
     }

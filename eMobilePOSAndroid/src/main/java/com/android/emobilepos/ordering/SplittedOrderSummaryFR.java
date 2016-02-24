@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.models.SplitedOrder;
 
 /**
@@ -45,6 +46,9 @@ public class SplittedOrderSummaryFR extends Fragment implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SplitedOrder splitedOrder = gridView.getItemAtPosition(position);
+        SplitedOrder splitedOrder = (SplitedOrder) gridView.getItemAtPosition(position);
+        SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) gridView.getAdapter();
+        adapter.setSelectedIndex(position);
+        adapter.notifyDataSetChanged();
     }
 }

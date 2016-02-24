@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Product;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -885,33 +886,31 @@ public class ProductsHandler {
         return c;
     }
 
-    public List<String[]> getDiscounts() {
+    public List<Discount> getDiscounts() {
         // SQLiteDatabase db = dbManager.openReadableDB();
 
-        List<String[]> list = new ArrayList<String[]>();
-        String[] data = new String[5];
+        List<Discount> list = new ArrayList<Discount>();
+        Discount data = new Discount();
 
         Cursor cursor = DBManager._db.rawQuery("SELECT p.prod_name,p.prod_disc_type,p.prod_price,IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE p.prod_type = 'Discount' ORDER BY p.prod_name ASC", null);
 
         if (cursor.moveToFirst()) {
             do {
-                data[0] = cursor.getString(cursor.getColumnIndex(prod_name));
-                data[1] = cursor.getString(cursor.getColumnIndex(prod_disc_type));
-                data[2] = cursor.getString(cursor.getColumnIndex(prod_price));
-                data[3] = cursor.getString(cursor.getColumnIndex("taxcode_istaxable"));
-                data[4] = cursor.getString(cursor.getColumnIndex(prod_id));
+                data.setProductName(cursor.getString(cursor.getColumnIndex(prod_name)));
+                data.setProductDiscountType(cursor.getString(cursor.getColumnIndex(prod_disc_type)));
+                data.setProductPrice(cursor.getString(cursor.getColumnIndex(prod_price)));
+                data.setTaxCodeIsTaxable(cursor.getString(cursor.getColumnIndex("taxcode_istaxable")));
+                data.setProductId(cursor.getString(cursor.getColumnIndex(prod_id)));
                 list.add(data);
-                data = new String[5];
+                data = new Discount();
             } while (cursor.moveToNext());
         }
 
         cursor.close();
-        // db.close();
         return list;
     }
 
     public HashMap<String, String> getDiscountDetail(String discount_id) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
         if (discount_id == null)
             discount_id = "";
         HashMap<String, String> map = new HashMap<String, String>();

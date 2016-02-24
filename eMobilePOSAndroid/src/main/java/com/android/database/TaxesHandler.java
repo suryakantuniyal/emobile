@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.Tax;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -125,11 +126,11 @@ public class TaxesHandler {
     }
 
 
-    public List<String[]> getTaxes() {
+    public List<Tax> getTaxes() {
         //SQLiteDatabase db = dbManager.openReadableDB();
 
-        List<String[]> list = new ArrayList<String[]>();
-        String[] data = new String[4];
+        List<Tax> list = new ArrayList<Tax>();
+        Tax data = new Tax();
         String[] fields = new String[]{tax_name, tax_id, tax_rate, tax_type};
 
         Cursor cursor;
@@ -142,17 +143,16 @@ public class TaxesHandler {
         if (cursor.moveToFirst()) {
             do {
 
-                data[0] = cursor.getString(cursor.getColumnIndex(tax_name));
-                data[1] = cursor.getString(cursor.getColumnIndex(tax_id));
-                data[2] = cursor.getString(cursor.getColumnIndex(tax_rate));
-                data[3] = cursor.getString(cursor.getColumnIndex(tax_type));
+                data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
+                data.setTaxId(cursor.getString(cursor.getColumnIndex(tax_id)));
+                data.setTaxRate(cursor.getString(cursor.getColumnIndex(tax_rate)));
+                data.setTaxType(cursor.getString(cursor.getColumnIndex(tax_type)));
                 list.add(data);
-                data = new String[4];
+                data = new Tax();
             } while (cursor.moveToNext());
         }
 
         cursor.close();
-        //db.close();
         return list;
     }
 

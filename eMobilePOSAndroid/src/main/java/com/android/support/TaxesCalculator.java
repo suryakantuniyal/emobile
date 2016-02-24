@@ -4,8 +4,14 @@ import android.app.Activity;
 
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesHandler;
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.Discount;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.ordering.OrderLoyalty_FR;
+import com.android.emobilepos.ordering.OrderRewards_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 
 import java.math.BigDecimal;
@@ -31,18 +37,19 @@ public class TaxesCalculator {
     private final String taxID;
     private final int taxSelected;
     private BigDecimal taxableAmount = new BigDecimal(0.00);
-    private String[] discountSelected;
+    private Discount discountSelected;
     private BigDecimal discountable_sub_total;
     private BigDecimal itemsDiscountTotal;
     private BigDecimal taxableDueAmount = new BigDecimal(0.00);
 
-    public TaxesCalculator(Activity activity, MyPreferences myPref, OrderProduct orderProduct, String taxID, int taxSelected, String[] discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal, List<HashMap<String, String>> listMapTaxes) {
+    public TaxesCalculator(Activity activity, OrderProduct orderProduct, String taxID, int taxSelected, Discount discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal, List<HashMap<String, String>> listMapTaxes) {
         this.listMapTaxes = listMapTaxes;
         this.setDiscountable_sub_total(discountable_sub_total);
         this.setItemsDiscountTotal(itemsDiscountTotal);
         global = (Global) activity.getApplication();
         this.activity = activity;
-        this.myPref = myPref;
+        this.myPref = new MyPreferences(activity);
+
         this.orderProduct = orderProduct;
         this.taxID = taxID;
         this.taxSelected = taxSelected;
@@ -54,10 +61,10 @@ public class TaxesCalculator {
     public void calculateTaxes() {
         TaxesHandler taxHandler = new TaxesHandler(activity);
         ProductsHandler productsHandler = new ProductsHandler(activity);
-        List<String[]> discountList = productsHandler.getDiscounts();
+        List<Discount> discountList = productsHandler.getDiscounts();
         String taxAmount = "0.00";
         String prod_taxId = "";
-        List<String[]> taxList = taxHandler.getTaxes();
+        List<Tax> taxList = taxHandler.getTaxes();
 
         if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
             if (!taxID.isEmpty()) {
@@ -73,7 +80,7 @@ public class TaxesCalculator {
             }
         } else {
             if (!taxID.isEmpty()) {
-                taxAmount = taxList.get(taxSelected - 1)[2];
+                taxAmount = taxList.get(taxSelected - 1).getTaxRate();
                 prod_taxId = taxID;
             }
         }
@@ -142,13 +149,13 @@ public class TaxesCalculator {
                 tempTaxTotal = tax1;
                 taxTotal = tax1.toString();
                 _temp_subtotal = tempSubTotal;
-                if (discountSelected.length > 0) {
-                    if (discountSelected[1].equals("Fixed")) {
+                if (discountSelected != null) {
+                    if (discountSelected.getProductDiscountType().equals("Fixed")) {
                         if (getDiscount_rate().compareTo(tempSubTotal) == -1) {
                             setTaxableSubtotal(getTaxableSubtotal().add(tempSubTotal.subtract(getDiscount_rate()).multiply(temp)
                                     .setScale(4, RoundingMode.HALF_UP)));
                             // discount_rate = new BigDecimal("0");
-                            if (discountSelected[3].equals("1")) {
+                            if (discountSelected.getTaxCodeIsTaxable().equals("1")) {
                                 _temp_subtotal = _temp_subtotal.subtract(getDiscount_rate());
                             }
                         } else {
@@ -160,7 +167,7 @@ public class TaxesCalculator {
                         BigDecimal temp2 = tempSubTotal.multiply(getDiscount_rate()).setScale(4, RoundingMode.HALF_UP);
                         setTaxableSubtotal(getTaxableSubtotal()
                                 .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP)));
-                        if (discountSelected[3].equals("1")) {
+                        if (discountSelected.getTaxCodeIsTaxable().equals("1")) {
                             _temp_subtotal = _temp_subtotal.subtract(temp2);
                         }
                     }
@@ -175,13 +182,13 @@ public class TaxesCalculator {
                 tempTaxTotal = tax1;
                 taxTotal = tax1.toString();
 
-                if (discountSelected.length > 0) {
-                    if (discountSelected[1].equals("Fixed")) {
+                if (discountSelected != null && discountSelected.getProductId() != null) {
+                    if (discountSelected.getProductDiscountType().equals("Fixed")) {
                         if (getDiscount_rate().compareTo(tempSubTotal) == -1) {
                             setTaxableSubtotal(getTaxableSubtotal().add(tempSubTotal.subtract(getDiscount_rate())
                                     .multiply(temp).setScale(4, RoundingMode.HALF_UP)));
                             // discount_rate = new BigDecimal("0");
-                            if (discountSelected[3].equals("1")) {
+                            if (discountSelected.getTaxCodeIsTaxable().equals("1")) {
                                 _temp_subtotal = tempSubTotal.subtract(getDiscount_rate());
                             }
                         } else {
@@ -193,7 +200,7 @@ public class TaxesCalculator {
                         BigDecimal temp2 = tempSubTotal.multiply(getDiscount_rate()).setScale(4, RoundingMode.HALF_UP);
                         setTaxableSubtotal(getTaxableSubtotal()
                                 .add(tempSubTotal.subtract(temp2).multiply(temp).setScale(4, RoundingMode.HALF_UP)));
-                        if (discountSelected[3].equals("1")) {
+                        if (discountSelected.getTaxCodeIsTaxable().equals("1")) {
                             _temp_subtotal = tempSubTotal.subtract(temp2);
                         }
                     }
@@ -225,20 +232,14 @@ public class TaxesCalculator {
     }
 
     private void setDiscountValue() {
-        DecimalFormat frmt = new DecimalFormat("0.00");
-//        if (position == 0) {
-//            discount_rate = new BigDecimal("0");
-//            discount_amount = new BigDecimal("0");
-//            discountID = "";
-//        } else
-        if (discountSelected != null && discountSelected.length > 0) {
-            setDiscountID(discountSelected[4]);
-            if (discountSelected[1].equals("Fixed")) {
-                setDiscount_rate(Global.getBigDecimalNum(discountSelected[2]));
-                setDiscount_amount(Global.getBigDecimalNum(discountSelected[2]));
+        if (discountSelected != null && discountSelected.getProductId() != null) {
+            setDiscountID(discountSelected.getProductId());
+            if (discountSelected.getProductDiscountType().equals("Fixed")) {
+                setDiscount_rate(Global.getBigDecimalNum(discountSelected.getProductPrice()));
+                setDiscount_amount(Global.getBigDecimalNum(discountSelected.getProductPrice()));
 
             } else {
-                setDiscount_rate(Global.getBigDecimalNum(discountSelected[2])
+                setDiscount_rate(Global.getBigDecimalNum(discountSelected.getProductPrice())
                         .divide(new BigDecimal("100")));
                 BigDecimal total = getDiscountable_sub_total().subtract(getItemsDiscountTotal());
                 setDiscount_amount(total.multiply(getDiscount_rate()).setScale(2, RoundingMode.HALF_UP));
@@ -359,11 +360,11 @@ public class TaxesCalculator {
         this.taxableAmount = taxableAmount;
     }
 
-    public String[] getDiscountSelected() {
+    public Discount getDiscountSelected() {
         return discountSelected;
     }
 
-    public void setDiscountSelected(String[] discount) {
+    public void setDiscountSelected(Discount discount) {
         this.discountSelected = discount;
     }
 
@@ -389,5 +390,104 @@ public class TaxesCalculator {
 
     public void setTaxableDueAmount(BigDecimal taxableDueAmount) {
         this.taxableDueAmount = taxableDueAmount;
+    }
+
+    private List<DataTaxes> getTaxesHolder() {
+        int size = listMapTaxes.size();
+        ArrayList<DataTaxes> dataTaxes = new ArrayList<DataTaxes>();
+        DataTaxes tempTaxes;
+        for (int i = 0; i < size; i++) {
+            tempTaxes = new DataTaxes();
+            tempTaxes.setTax_name(listMapTaxes.get(i).get("tax_name"));
+            tempTaxes.setOrd_id("");
+            tempTaxes.setTax_amount("0");
+            tempTaxes.setTax_rate(listMapTaxes.get(i).get("tax_rate"));
+            dataTaxes.add(tempTaxes);
+        }
+        return dataTaxes;
+    }
+
+    private TaxesCalculator calculateTaxes(OrderProduct orderProduct) {
+
+        TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
+                taxSelected, discountSelected, discountable_sub_total, itemsDiscountTotal, listMapTaxes);
+        return taxesCalculator;
+
+    }
+
+    public void reCalculate(Order order, List<OrderProduct> orderProducts) {
+        int size = orderProducts.size();
+        taxableSubtotal = new BigDecimal("0.00");
+        taxableDueAmount = new BigDecimal("0.00");
+        BigDecimal tempTaxableAmount = new BigDecimal("0");
+        itemsDiscountTotal = new BigDecimal(0);
+        List<DataTaxes> taxesHolder = getTaxesHolder();
+        boolean isVAT = myPref.getIsVAT();
+
+        BigDecimal sub_total;
+        BigDecimal gran_total;
+        TaxesCalculator taxes = null;
+        if (size > 0) {
+            BigDecimal amount = new BigDecimal("0.00");
+            BigDecimal discountableAmount = new BigDecimal("0");
+            BigDecimal prodPrice;
+            String val;
+            int pointsSubTotal = 0, pointsInUse = 0, pointsAcumulable = 0;
+            for (int i = 0; i < size; i++) {
+                taxes = calculateTaxes(orderProducts.get(i));
+                if (myPref.getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
+                    String temp = orderProducts.get(i).item_void;
+
+                    if (temp.equals("1"))
+                        val = "0.00";
+                    else {
+                        if (isVAT) {
+                            val = orderProducts.get(i).itemTotalVatExclusive;
+                        } else
+                            val = orderProducts.get(i).itemTotal;
+                    }
+                } else {
+                    if (isVAT) {
+                        val = orderProducts.get(i).itemTotalVatExclusive;
+                    } else
+                        val = orderProducts.get(i).itemSubtotal;
+                }
+                if (val == null || val.isEmpty())
+                    val = "0.00";
+                prodPrice = new BigDecimal(val);
+                discountableAmount = discountableAmount.add(prodPrice);
+                try {
+                    if (orderProducts.get(i).discount_value != null
+                            && !orderProducts.get(i).discount_value.isEmpty())
+                        itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).discount_value));
+                } catch (NumberFormatException e) {
+                }
+                amount = amount.add(prodPrice);
+                pointsSubTotal += Double.parseDouble(orderProducts.get(i).prod_price_points);
+                pointsAcumulable += Double.parseDouble(orderProducts.get(i).prod_value_points);
+                if (Boolean.parseBoolean(orderProducts.get(i).payWithPoints))
+                    pointsInUse += Double.parseDouble(orderProducts.get(i).prod_price_points);
+            }
+
+            discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
+            sub_total = amount.subtract(Global.rewardChargeAmount);
+//            tax_amount = tempTaxableAmount;
+            gran_total = sub_total.subtract(discount_amount).add(tempTaxableAmount)
+                    .subtract(itemsDiscountTotal);
+
+            OrderLoyalty_FR.recalculatePoints(Integer.toString(pointsSubTotal), Integer.toString(pointsInUse),
+                    Integer.toString(pointsAcumulable), gran_total.toString());
+            OrderRewards_FR.setRewardSubTotal(discountable_sub_total.toString());
+        } else {
+            discountable_sub_total = new BigDecimal(0);
+            sub_total = new BigDecimal(0);
+            gran_total = new BigDecimal(0);
+            OrderLoyalty_FR.recalculatePoints("0", "0", "0", gran_total.toString());
+        }
+        order.gran_total = Global.getRoundBigDecimal(gran_total);
+        order.ord_discount = Global.getRoundBigDecimal(discountable_sub_total);
+        order.ord_subtotal = Global.getRoundBigDecimal(sub_total);
+        order.ord_discount_id = discountID;
+        order.ord_taxamount = Global.getRoundBigDecimal(taxes.taxableAmount);
     }
 }

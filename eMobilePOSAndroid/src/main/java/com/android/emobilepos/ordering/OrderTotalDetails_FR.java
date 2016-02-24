@@ -21,7 +21,9 @@ import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.Tax;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
@@ -35,7 +37,8 @@ import java.util.List;
 
 public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.RecalculateCallback {
     private Spinner taxSpinner, discountSpinner;
-    private List<String[]> taxList, discountList;
+    private List<Tax> taxList;
+    private List<Discount> discountList;
     private int taxSelected, discountSelected;
     private EditText globalDiscount, globalTax, subTotal;
     private TextView granTotal, itemCount;
@@ -136,14 +139,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             mSize = size2;
         for (int i = 0; i < mSize; i++) {
             if (i < size) {
-                taxes.add(taxList.get(i)[0]);
-                if (!custTaxCode.isEmpty() && custTaxCode.equals(taxList.get(i)[1])) {
+                taxes.add(taxList.get(i).getTaxName());
+                if (!custTaxCode.isEmpty() && custTaxCode.equals(taxList.get(i).getTaxId())) {
                     taxSelected = i + 1;
                     custTaxWasFound = true;
                 }
             }
             if (i < size2)
-                discount.add(discountList.get(i)[0]);
+                discount.add(discountList.get(i).getProductName());
         }
 
         if (!custTaxWasFound) {
@@ -151,9 +154,29 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             Global.taxID = "";
 
         }
-
-        MySpinnerAdapter taxAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxList, true);
-        MySpinnerAdapter discountAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, discount, discountList,
+        List<String[]> taxArr = new ArrayList<String[]>();
+        int i = 0;
+        for (Tax tax : taxList) {
+            String[] arr = new String[5];
+            arr[0] = tax.getTaxName();
+            arr[1] = tax.getTaxId();
+            arr[2] = tax.getTaxRate();
+            arr[3] = tax.getTaxType();
+            taxArr.add(arr);
+        }
+        MySpinnerAdapter taxAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, taxes, taxArr, true);
+        List<String[]> discountArr = new ArrayList<String[]>();
+        i = 0;
+        for (Discount disc : discountList) {
+            String[] arr = new String[5];
+            arr[0] = disc.getProductName();
+            arr[1] = disc.getProductDiscountType();
+            arr[2] = disc.getProductPrice();
+            arr[3] = disc.getTaxCodeIsTaxable();
+            arr[4] = disc.getProductId();
+            discountArr.add(arr);
+        }
+        MySpinnerAdapter discountAdapter = new MySpinnerAdapter(activity, android.R.layout.simple_spinner_item, discount, discountArr,
                 false);
 
         taxSpinner.setAdapter(taxAdapter);
@@ -285,8 +308,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             taxID = "";
         } else {
 
-            taxID = taxList.get(taxSelected - 1)[1];
-            Global.taxAmount = Global.getBigDecimalNum(taxList.get(taxSelected - 1)[2]);
+            taxID = taxList.get(taxSelected - 1).getTaxId();
+            Global.taxAmount = Global.getBigDecimalNum(taxList.get(taxSelected - 1).getTaxRate());
             if (!myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
                 listMapTaxes = taxHandler.getTaxDetails(taxID, "");
                 if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
@@ -298,8 +321,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 listMapTaxes.clear();
                 HashMap<String, String> mapTax = new HashMap<String, String>();
                 mapTax.put("tax_id", taxID);
-                mapTax.put("tax_name", taxList.get(taxSelected - 1)[0]);
-                mapTax.put("tax_rate", taxList.get(taxSelected - 1)[2]);
+                mapTax.put("tax_name", taxList.get(taxSelected - 1).getTaxName());
+                mapTax.put("tax_rate", taxList.get(taxSelected - 1).getTaxRate());
                 listMapTaxes.add(mapTax);
             }
         }
@@ -315,13 +338,13 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             discount_amount = new BigDecimal("0");
             discountID = "";
         } else if (discountList != null && discountSelected > 0) {
-            discountID = discountList.get(discountSelected - 1)[4];
-            if (discountList.get(discountSelected - 1)[1].equals("Fixed")) {
-                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1)[2]);
-                discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1)[2]);
+            discountID = discountList.get(discountSelected - 1).getProductId();
+            if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
+                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+                discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
 
             } else {
-                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1)[2])
+                discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
                         .divide(new BigDecimal("100"));
                 BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
                 discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
@@ -357,11 +380,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private void calculateTaxes(OrderProduct orderProduct) {
-        String[] dis = new String[]{};
+        Discount dis = null;
         if (discountSelected > 0) {
             dis = discountList.get(discountSelected - 1);
         }
-        TaxesCalculator taxesCalculator = new TaxesCalculator(activity, myPref, orderProduct, Global.taxID,
+        TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
                 taxSelected, dis, discountable_sub_total, itemsDiscountTotal, listMapTaxes);
         tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
 

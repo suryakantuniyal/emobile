@@ -40,6 +40,7 @@ import com.android.database.UOMHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
+import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
@@ -395,7 +396,18 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
 
-        List<String[]> _listDiscounts = prodHandler.getDiscounts();
+        ProductsHandler handler = new ProductsHandler(activity);
+        List<Discount> discounts = handler.getDiscounts();
+        ArrayList<String[]> _listDiscounts = new ArrayList<String[]>();
+        for (Discount discount : discounts) {
+            String[] arr = new String[5];
+            arr[0]=discount.getProductName();
+            arr[1]=discount.getProductDiscountType();
+            arr[2]=discount.getProductPrice();
+            arr[3]=discount.getTaxCodeIsTaxable();
+            arr[4]=discount.getProductId();
+            _listDiscounts.add(arr);
+        }
         List<String[]> _listUOM = uomHandler.getUOMList(prodID);
 
         int plSize = _listPriceLevel.size();
@@ -739,7 +751,17 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             case SEC_DISCOUNT: // Discount
             {
                 ProductsHandler handler = new ProductsHandler(activity);
-                listData_LV = handler.getDiscounts();
+                List<Discount> discounts = handler.getDiscounts();
+                listData_LV=new ArrayList<String[]>();
+                for (Discount discount : discounts) {
+                    String[] arr = new String[5];
+                    arr[0]=discount.getProductName();
+                    arr[1]=discount.getProductDiscountType();
+                    arr[2]=discount.getProductPrice();
+                    arr[3]=discount.getTaxCodeIsTaxable();
+                    arr[4]=discount.getProductId();
+                    listData_LV.add(arr);
+                }
                 break;
             }
         }
