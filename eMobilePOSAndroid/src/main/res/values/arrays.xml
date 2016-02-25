@@ -21,7 +21,7 @@
     <string-array name="salesReceiptSplitTypes">
         <item name="split_by_Seats">@string/split_by_seats</item>
         <item name="split_equally">@string/split_equally</item>
-        <item name="split_by_seat_group">@string/split_by_group_seats</item>
+        <item name="split_single">@string/split_single</item>
     </string-array>
 
 
@@ -162,4 +162,5 @@
         <item name="reader_walker">3</item>
     </string-array>
 
+    <string name="split_single">Single Receipt</string>
 </resources>

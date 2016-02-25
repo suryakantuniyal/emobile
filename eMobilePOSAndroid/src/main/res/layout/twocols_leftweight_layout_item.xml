@@ -6,17 +6,14 @@
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="- Cherry Tomato"
+        android:text="- Cherry Tomato bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb nnnnnnnnnnnnnnn aaaaaaaaaaaaaaaaaaaaaa ddddddddddddddddddddddd"
         android:id="@+id/lefttextView"
-        android:textAppearance="@style/black_text_appearance"
-        android:textSize="@dimen/text_default"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginBottom="5dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="$5.95"
-        android:textAppearance="@style/black_text_appearance"
-        android:textSize="@dimen/text_default"
         android:id="@+id/righttextView" />
 </LinearLayout>

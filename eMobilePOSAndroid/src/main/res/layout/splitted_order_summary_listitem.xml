@@ -39,9 +39,8 @@
             android:textAppearance="@style/black_text_appearance_unbold"
             android:textSize="@dimen/about_main_text_size"
             android:layout_gravity="center_vertical"
-            android:layout_below="@+id/splited_order_tablenumber_itemtextView"
-            android:layout_alignRight="@+id/splited_order_tablenumber_itemtextView"
-            android:layout_marginTop="5dp" />
+            android:layout_above="@+id/textView10"
+            android:layout_alignLeft="@+id/splited_order_tablenumber_itemtextView" />
 
         <TextView
             android:layout_width="wrap_content"

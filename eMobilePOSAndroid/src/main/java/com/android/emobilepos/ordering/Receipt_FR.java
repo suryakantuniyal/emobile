@@ -653,6 +653,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
                                     OrderingMain_FA.setSelectedSeatNumber(targetSeat);
                                     orderSeatProduct.orderProduct.assignedSeat = targetSeat;
+                                    orderSeatProduct.seatGroupId = mainLVAdapter.getSeat(targetSeat).seatGroupId;
                                     mainLVAdapter.notifyDataSetChanged();
                                 }
                                 break;

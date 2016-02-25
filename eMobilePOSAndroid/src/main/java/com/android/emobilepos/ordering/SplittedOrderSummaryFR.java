@@ -49,6 +49,8 @@ public class SplittedOrderSummaryFR extends Fragment implements AdapterView.OnIt
         SplitedOrder splitedOrder = (SplitedOrder) gridView.getItemAtPosition(position);
         SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) gridView.getAdapter();
         adapter.setSelectedIndex(position);
-        adapter.notifyDataSetChanged();
+        ((SplittedOrderSummaryAdapter) gridView.getAdapter()).notifyDataSetChanged();
+        SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+        summaryFa.getOrderDetailsFR().setReceiptOrder(splitedOrder);
     }
 }

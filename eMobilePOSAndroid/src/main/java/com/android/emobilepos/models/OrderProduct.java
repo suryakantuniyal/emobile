@@ -3,7 +3,7 @@ package com.android.emobilepos.models;
 import java.math.BigDecimal;
 
 
-public class OrderProduct {
+public class OrderProduct implements Cloneable{
     private String empt = "";
 
     public String addon = "0";

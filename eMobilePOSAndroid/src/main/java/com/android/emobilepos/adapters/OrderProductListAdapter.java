@@ -153,11 +153,11 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public void joinSeatsGroupId(int sourceGroupId, int targetGroupId) {
         for (OrderSeatProduct seatProduct : orderSeatProductList) {
-            if (seatProduct.rowType == RowType.TYPE_HEADER) {
+//            if (seatProduct.rowType == RowType.TYPE_HEADER) {
                 if (seatProduct.seatGroupId == sourceGroupId) {
                     seatProduct.seatGroupId = targetGroupId;
                 }
-            }
+//            }
         }
         notifyDataSetChanged();
     }
@@ -173,7 +173,9 @@ public class OrderProductListAdapter extends BaseAdapter {
                     for (OrderProduct product : orderProducts) {
                         if (product != null && product.assignedSeat != null &&
                                 product.assignedSeat.equalsIgnoreCase(seatProduct.seatNumber)) {
-                            l.add(new OrderSeatProduct(product));
+                            OrderSeatProduct sp = new OrderSeatProduct(product);
+                            sp.seatGroupId=osp.seatGroupId;
+                            l.add(sp);
                         }
                     }
                     orderSeatProductFullList.set(orderSeatProductFullList.indexOf(seatProduct), osp);
