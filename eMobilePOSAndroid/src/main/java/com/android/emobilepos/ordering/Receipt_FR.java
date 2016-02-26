@@ -518,7 +518,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.holdButton:
 
                 if (global.orderProducts != null && global.orderProducts.size() > 0) {
-                    processOrder("", true);
+                    Order order = buildOrder(getActivity(), global, myPref, "");
+                    processOrder(order, "", true);
 
                 } else
                     Toast.makeText(activity,
@@ -690,9 +691,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             if (myPref
                     .getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
-                    processOrder("", false);
-                else
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    Order order = buildOrder(getActivity(), global, myPref, "");
+                    processOrder(order, "", false);
+                } else
                     showEmailDlog();
             } else {
                 showAddMoreProductsDlg();
@@ -746,15 +748,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
 
                 if (!emailInput.getText().toString().isEmpty()) {
-                    if (checkEmail(emailInput.getText().toString()))
-                        processOrder(emailInput.getText().toString(), false);
-                    else
+                    if (checkEmail(emailInput.getText().toString())) {
+                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
+                        processOrder(order, emailInput.getText().toString(), false);
+                    } else
                         Toast.makeText(activity,
                                 getString(R.string.warning_email_invalid),
                                 Toast.LENGTH_LONG).show();
                 } else {
                     if (isToGo) {
-                        processOrder(emailInput.getText().toString(), false);
+                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
+                        processOrder(order, emailInput.getText().toString(), false);
                     } else {
                         global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
                         showSplitedOrderPreview();
@@ -775,7 +779,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         b.putString("orderSeatProductList", json);
         b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
         b.putString("taxID", Global.taxID);
-
         b.putInt("taxSelected", Global.taxPosition - 1);
         b.putInt("discountSelected", Global.discountPosition - 1);
 
@@ -821,9 +824,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             public void onClick(View v) {
                 dlog.dismiss();
 
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
-                    processOrder("", false);
-                else
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    Order order = buildOrder(getActivity(), global, myPref, "");
+                    processOrder(order, "", false);
+                } else
                     showEmailDlog();
             }
         });
@@ -840,12 +844,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return true;
     }
 
-    private void processOrder(String emailHolder,
+    private void processOrder(Order order, String emailHolder,
                               boolean buttonOnHold) {
 
         OrdersHandler handler = new OrdersHandler(activity);
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-        global.order = buildOrder(activity, global, myPref, emailHolder);
+        global.order = order;
 
         order_email = emailHolder;
 
@@ -953,14 +957,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             switch (caseSelected) {
                 case SALE_RECEIPT: // is Sales Receipt
                 {
-                    this.updateLocalInventory(false);
+                    this.updateLocalInventory(getActivity(), global.orderProducts, false);
                     typeOfProcedure = Global.TransactionType.PAYMENT;
                     if (OrderTotalDetails_FR.gran_total
                             .compareTo(new BigDecimal(0)) == -1) {
-                        this.updateLocalInventory(true);
+                        this.updateLocalInventory(getActivity(), global.orderProducts, true);
                         proceedToRefund();
                     } else {
-                        this.updateLocalInventory(false);
+                        this.updateLocalInventory(getActivity(), global.orderProducts, false);
                         isSalesReceipt();
                     }
                     break;
@@ -982,7 +986,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         }
                     } else// is Return
                     {
-                        this.updateLocalInventory(true);
+                        this.updateLocalInventory(getActivity(), global.orderProducts, true);
                         typeOfProcedure = Global.TransactionType.RETURN;
                         if (myPref
                                 .getPreferences(MyPreferences.pref_return_require_refund))
@@ -997,7 +1001,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case RETURN: {
                     if (custSelected) // Return
                     {
-                        this.updateLocalInventory(true);
+                        this.updateLocalInventory(getActivity(), global.orderProducts, true);
                         typeOfProcedure = Global.TransactionType.ORDERS;
                         if (myPref
                                 .getPreferences(MyPreferences.pref_return_require_refund))
@@ -1015,7 +1019,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (custSelected) // Invoice
                     {
                         handler.updateIsProcessed(Global.lastOrdID, "1");
-                        this.updateLocalInventory(false);
+                        this.updateLocalInventory(getActivity(), global.orderProducts, false);
                         typeOfProcedure = Global.TransactionType.RETURN;
                         showPaymentDlg();
                     }
@@ -1067,7 +1071,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public static Order buildOrder(Activity activity, Global global,
                                    MyPreferences myPref, String _email) {
         Order order = new Order(activity);
-
+        order.assignedTable = ((OrderingMain_FA) activity).getSelectedDinningTableNumber();
         order.ord_total = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
         order.ord_subtotal = Global
@@ -1516,12 +1520,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         startActivityForResult(intent, 0);
     }
 
-    private void updateLocalInventory(boolean isIncrement) {
+    public static void updateLocalInventory(Activity activity, List<OrderProduct> orderProducts, boolean isIncrement) {
         EmpInvHandler eiHandler = new EmpInvHandler(activity);
-        int size = global.orderProducts.size();
+        int size = orderProducts.size();
         for (int i = 0; i < size; i++) {
-            eiHandler.updateOnHand(global.orderProducts.get(i).prod_id,
-                    global.orderProducts.get(i).ordprod_qty, isIncrement);
+            eiHandler.updateOnHand(orderProducts.get(i).prod_id, orderProducts.get(i).ordprod_qty, isIncrement);
         }
     }
 
@@ -1615,7 +1618,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
                 if (!value.isEmpty()) {
@@ -1645,11 +1647,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         switch (type) {
             case 1:// void hold
                 voidOnHold = true;
-                processOrder("", false);
+                Order order = buildOrder(getActivity(), global, myPref, "");
+                processOrder(order, "", false);
                 break;
             case 2:// cancel hold
                 voidOnHold = false;
-                processOrder("", true);
+                order = buildOrder(getActivity(), global, myPref, "");
+                processOrder(order, "", true);
                 break;
         }
     }

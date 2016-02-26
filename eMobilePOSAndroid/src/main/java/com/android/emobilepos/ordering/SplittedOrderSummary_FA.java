@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 
@@ -116,18 +117,13 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             } else {
                 discount = Discount.getDefaultInstance();
             }
-//            discount = extras.getStringArray("discount");
-//            discountableSubtotal = new BigDecimal(extras.getString("discountableSubtotal"));
-//            itemsDiscountTotal = new BigDecimal(extras.getString("itemsDiscountTotal"));
 
         }
         splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
         splitTypeSpinner.setOnItemSelectedListener(this);
         global = (Global) getApplication();
-//        gridView = (GridView) findViewById(R.id.splitedOrderSummarygridView);
         orderSummaryFR = new SplittedOrderSummaryFR();
         setOrderDetailsFR(new SplittedOrderDetailsFR());
-
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.splitedOrderSummaryFrameLayout, orderSummaryFR);
@@ -139,7 +135,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         List<OrderProduct> seatProducts = new ArrayList<OrderProduct>();
         for (OrderSeatProduct product : orderSeatProducts) {
             if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && product.orderProduct.assignedSeat.equalsIgnoreCase(seatNumber)) {
-                seatProducts.add(product.orderProduct);
+                try {
+                    seatProducts.add((OrderProduct) product.orderProduct.clone());
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return seatProducts;
@@ -149,7 +149,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         List<OrderProduct> seatProducts = new ArrayList<OrderProduct>();
         for (OrderSeatProduct product : orderSeatProducts) {
             if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && product.seatGroupId == groupId) {
-                seatProducts.add(product.orderProduct);
+                try {
+                    seatProducts.add((OrderProduct) product.orderProduct.clone());
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return seatProducts;
@@ -159,7 +163,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         List<OrderProduct> seatProducts = new ArrayList<OrderProduct>();
         for (OrderSeatProduct product : orderSeatProducts) {
             if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM) {
-                seatProducts.add(product.orderProduct);
+                try {
+                    seatProducts.add((OrderProduct) product.orderProduct.clone());
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return seatProducts;
@@ -174,8 +182,15 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             case SPLIT_SINGLE: {
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-                        Order order = global.order;
-                        SplitedOrder splitedOrder = new SplitedOrder(this, order);
+                        Order order = null;
+                        try {
+                            order = (Order) global.order.clone();
+                        } catch (CloneNotSupportedException e) {
+                            e.printStackTrace();
+                        }
+                        SplitedOrder splitedOrder = null;
+                        splitedOrder = new SplitedOrder(this, order);
+
                         List<OrderProduct> orderProducts = getProductsSingleReceipt();
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
@@ -225,15 +240,28 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         int splitQty = item.getItemId();
                         for (OrderSeatProduct seatProduct : orderSeatProducts) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-                                Order order = global.order;
+                                Order order = null;
+                                try {
+                                    order = (Order) global.order.clone();
+                                } catch (CloneNotSupportedException e) {
+                                    e.printStackTrace();
+                                }
                                 for (int i = 0; i < splitQty; i++) {
                                     SplitedOrder splitedOrder = new SplitedOrder(SplittedOrderSummary_FA.this, order);
                                     List<OrderProduct> orderProducts = getProductsSingleReceipt();
                                     BigDecimal orderSubTotal = new BigDecimal(0);
                                     for (OrderProduct product : orderProducts) {
-                                        orderSubTotal = orderSubTotal.add(new BigDecimal(product.itemSubtotal)).setScale(4, RoundingMode.HALF_UP);
+                                        BigDecimal itemSubtotal = new BigDecimal(product.itemSubtotal);
+                                        itemSubtotal = itemSubtotal.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
+
+                                        product.itemSubtotal = itemSubtotal.toString();
+                                        product.overwrite_price = Global.getBigDecimalNum(product.overwrite_price).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+                                        product.taxTotal = Global.getBigDecimalNum(product.taxTotal).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+                                        product.discount_value = Global.getBigDecimalNum(product.discount_value).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+                                        product.itemTotal = Global.getBigDecimalNum(product.itemTotal).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+
+                                        orderSubTotal = orderSubTotal.add(itemSubtotal).setScale(4, RoundingMode.HALF_UP);
                                     }
-                                    orderSubTotal = orderSubTotal.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
                                     splitedOrder.ord_subtotal = orderSubTotal.toString();
                                     splitedOrder.setOrderProducts(orderProducts);
                                     splitedOrder.setTableNumber(tableNumber);
@@ -244,6 +272,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         }
                         SplittedOrderSummaryAdapter summaryAdapter = new SplittedOrderSummaryAdapter(SplittedOrderSummary_FA.this, splitedOrders);
                         orderSummaryFR.getGridView().setAdapter(summaryAdapter);
+                        setReceiptPreview();
                         return true;
                     }
                 });
@@ -254,7 +283,12 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER &&
                             !joinedGroupIds.contains(seatProduct.seatGroupId)) {
-                        Order order = global.order;
+                        Order order = null;
+                        try {
+                            order = (Order) global.order.clone();
+                        } catch (CloneNotSupportedException e) {
+                            e.printStackTrace();
+                        }
                         SplitedOrder splitedOrder = new SplitedOrder(this, order);
 
                         List<OrderProduct> orderProducts = getProductsBySeatsGroup(seatProduct.seatGroupId);
@@ -274,12 +308,28 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 break;
             }
         }
-
-        getOrderDetailsFR().setReceiptOrder((SplitedOrder) orderSummaryFR.getGridView().getAdapter().getItem(0));
+        setReceiptPreview();
+//        SplitedOrder splitedOrder = null;
+//        try {
+//            splitedOrder = (SplitedOrder) ((SplitedOrder) orderSummaryFR.getGridView().getAdapter().getItem(0)).clone();
+//        } catch (CloneNotSupportedException e) {
+//            e.printStackTrace();
+//        }
+//        getOrderDetailsFR().setReceiptOrder(splitedOrder);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private void setReceiptPreview(){
+        SplitedOrder splitedOrder = null;
+        try {
+            splitedOrder = (SplitedOrder) ((SplitedOrder) orderSummaryFR.getGridView().getAdapter().getItem(0)).clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        getOrderDetailsFR().setReceiptOrder(splitedOrder);
     }
 }

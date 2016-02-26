@@ -6,7 +6,7 @@ import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-public class Order {
+public class Order implements  Cloneable{
     public String ord_id = "";
     public String qbord_id = "";
     public String emp_id = "";
@@ -61,6 +61,8 @@ public class Order {
 
     //private Global global;
     private MyPreferences myPref;
+    public String assignedTable;
+    public String associateID;
 
     public Order() {
         ord_issync = "0";
@@ -79,4 +81,8 @@ public class Order {
         custidkey = myPref.getCustIDKey();
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

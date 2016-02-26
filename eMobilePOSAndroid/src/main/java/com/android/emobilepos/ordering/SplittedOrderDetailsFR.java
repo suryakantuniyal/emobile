@@ -1,5 +1,6 @@
 package com.android.emobilepos.ordering;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -7,14 +8,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.database.DBManager;
 import com.android.database.MemoTextHandler;
+import com.android.database.OrderProductsAttr_DB;
+import com.android.database.OrderProductsHandler;
+import com.android.database.OrderTaxes_DB;
+import com.android.database.OrdersHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
+import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
@@ -24,13 +34,15 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.http.client.utils.CloneUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by Guarionex on 2/19/2016.
  */
-public class SplittedOrderDetailsFR extends Fragment {
+public class SplittedOrderDetailsFR extends Fragment implements View.OnClickListener {
 
 
     private View detailView;
@@ -49,6 +61,9 @@ public class SplittedOrderDetailsFR extends Fragment {
     private LayoutInflater inflater;
     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    private SplitedOrder restaurantSplitedOrder;
+    private Button checkoutBtn;
+    private Button printReceiptBtn;
 
 
     @Nullable
@@ -62,7 +77,10 @@ public class SplittedOrderDetailsFR extends Fragment {
         MemoTextHandler handler = new MemoTextHandler(getActivity());
         String[] header = handler.getHeader();
         String[] footer = handler.getFooter();
-
+        checkoutBtn = (Button) detailView.findViewById(R.id.checkoutbutton);
+        printReceiptBtn = (Button) detailView.findViewById(R.id.printReceiptbutton2);
+        checkoutBtn.setOnClickListener(this);
+        printReceiptBtn.setOnClickListener(this);
         TextView header1 = (TextView) detailView.findViewById(R.id.memo_headerLine1textView);
         TextView header2 = (TextView) detailView.findViewById(R.id.memo_headerLine2textView16);
         TextView header3 = (TextView) detailView.findViewById(R.id.memo_headerLine3textView18);
@@ -77,9 +95,7 @@ public class SplittedOrderDetailsFR extends Fragment {
         footer2 = (TextView) detailView.findViewById(R.id.footerLine2textView);
         footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
         orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
-
-
-        deviceName.setText(myPref.getEmpName() + "(" + myPref.getEmpID() + ")");
+        deviceName.setText(String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
         orderId.setText(idGen.getNextID(GenerateNewID.IdType.ORDER_ID));
 
@@ -149,7 +165,9 @@ public class SplittedOrderDetailsFR extends Fragment {
         orderProductSection.addView(itemLL);
     }
 
+
     public void setReceiptOrder(SplitedOrder splitedOrder) {
+        restaurantSplitedOrder = splitedOrder;
         List<OrderProduct> products = splitedOrder.getOrderProducts();
 
         if (orderProductSection.getChildCount() > 0) {
@@ -160,7 +178,7 @@ public class SplittedOrderDetailsFR extends Fragment {
         BigDecimal orderGranTotal = new BigDecimal(0);
         BigDecimal itemDiscountTotal = new BigDecimal(0);
         for (OrderProduct product : products) {
-          
+
             orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.overwrite_price));
             orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.taxTotal));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
@@ -174,10 +192,84 @@ public class SplittedOrderDetailsFR extends Fragment {
                 addProductLine(product.ordprod_desc, null, true);
             }
         }
+        splitedOrder.gran_total = orderGranTotal.toString();
+        splitedOrder.ord_subtotal = orderSubtotal.toString();
+        splitedOrder.ord_taxamount = orderTaxes.toString();
+        splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
         subtotal.setText(Global.formatDoubleStrToCurrency(orderSubtotal.toString()));
         lineItemDiscountTotal.setText(Global.formatDoubleStrToCurrency(itemDiscountTotal.toString()));
         taxTotal.setText(Global.formatDoubleStrToCurrency(orderTaxes.toString()));
         granTotal.setText(Global.formatDoubleStrToCurrency(orderGranTotal.toString()));
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.checkoutbutton: {
+                saveHoldOrder(restaurantSplitedOrder);
+                break;
+            }
+            case R.id.printReceiptbutton2: {
+                break;
+            }
+        }
+    }
+
+    private void saveHoldOrder(SplitedOrder splitedOrder) {
+        OrdersHandler handler = new OrdersHandler(getActivity());
+        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+        Global global = (Global) getActivity().getApplication();
+        OrderProductsHandler handler2 = new OrderProductsHandler(getActivity());
+        OrderProductsAttr_DB handler3 = new OrderProductsAttr_DB(getActivity());
+        for (OrderProduct product : splitedOrder.getOrderProducts()) {
+            if (global.orderProducts.contains(product)) {
+                global.orderProducts.remove(product);
+            }
+        }
+        global.order.isOnHold = "1";
+        global.order.ord_HoldName = "Table " + global.order.assignedTable + " " + DateUtils.getDateAsString(new Date(), "MMM/dd/yy hh:mm");
+        global.order.processed = "10";
+        handler.insert(global.order);
+        handler2.insert(global.orderProducts);
+//        DBManager dbManager = new DBManager(getActivity());
+//        dbManager.synchSendOrdersOnHold(false, false);
+        if (global.orderProducts.size() > 0) {
+            GenerateNewID idGen = new GenerateNewID(getActivity());
+            splitedOrder.ord_id = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
+            handler.insert(splitedOrder);
+            handler2.insert(splitedOrder.getOrderProducts());
+            ordTaxesDB.insert(global.listOrderTaxes, splitedOrder.ord_id);
+            Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
+            if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) == -1) {
+//                this.updateLocalInventory(getActivity(), global.orderProducts, true);
+//                proceedToRefund();
+            } else {
+                Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
+                isSalesReceipt(splitedOrder);
+            }
+        }
+    }
+
+    private void isSalesReceipt(SplitedOrder order) {
+        Intent intent = new Intent(getActivity(), SelectPayMethod_FA.class);
+        intent.putExtra("typeOfProcedure", Global.TransactionType.SALE_RECEIPT);
+        intent.putExtra("salesreceipt", true);
+        intent.putExtra("amount", Global.getRoundBigDecimal(Global.getBigDecimalNum(order.gran_total)
+                .compareTo(new BigDecimal(0)) == -1 ? Global.getBigDecimalNum(order.gran_total)
+                .negate() : Global.getBigDecimalNum(order.gran_total)));
+        intent.putExtra("paid", "0.00");
+        intent.putExtra("is_receipt", true);
+        intent.putExtra("job_id", order.ord_id);
+        intent.putExtra("ord_subtotal", order.ord_subtotal);
+        intent.putExtra("ord_taxID", order.tax_id);
+        intent.putExtra("ord_type", Global.OrderType.SALES_RECEIPT);
+        intent.putExtra("ord_email", "");
+
+        if (myPref.isCustSelected()) {
+            intent.putExtra("cust_id", myPref.getCustID());
+            intent.putExtra("custidkey", myPref.getCustIDKey());
+        }
+        startActivity(intent);
     }
 }

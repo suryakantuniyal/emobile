@@ -1,9 +1,10 @@
 package com.android.emobilepos.models;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 
 
-public class OrderProduct implements Cloneable{
+public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String empt = "";
 
     public String addon = "0";
@@ -74,4 +75,24 @@ public class OrderProduct implements Cloneable{
 
 
     public String consignment_qty;
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        OrderProduct product = (OrderProduct) o;
+        if (o == null) {
+            return false;
+        }
+        return this.prod_id.equalsIgnoreCase(((OrderProduct) o).prod_id);
+    }
+
+    @Override
+    public int compareTo(OrderProduct another) {
+        return this.prod_id.compareTo(another.prod_id);
+    }
 }

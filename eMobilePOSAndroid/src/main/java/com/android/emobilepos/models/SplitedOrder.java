@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by guari_000 on 2/4/2016.
  */
-public class SplitedOrder extends Order {
+public class SplitedOrder extends Order implements  Cloneable{
     private List<OrderProduct> orderProducts;
     private String tableNumber;
 
@@ -88,5 +88,10 @@ public class SplitedOrder extends Order {
 
     public void setTableNumber(String tableNumber) {
         this.tableNumber = tableNumber;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

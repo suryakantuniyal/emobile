@@ -871,7 +871,6 @@ public class SynchMethods
 		
 		@Override
 		protected String doInBackground(Boolean[]... params) {
-			// TODO Auto-generated method stub
 			//downloadHoldList = params[0][0];
 			try {
 				if(Global.isConnectedToInternet(activity))
@@ -895,9 +894,6 @@ public class SynchMethods
 				// TODO Auto-generated catch block
 				StringBuilder sb = new StringBuilder();
 				sb.append(e.getMessage()).append(" [com.android.menuadapters.SynchMenuAdapter (at Class.resyncAsynch)]");
-				
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
 				isError = true;
 				err_msg = "Unhandled Exception";
 			}
@@ -908,16 +904,8 @@ public class SynchMethods
 		{
 			if(myProgressDialog!=null&&myProgressDialog.isShowing())
 				myProgressDialog.dismiss();
-//			if(isError)
-//			{
-//				Global.showPrompt(activity, R.string.dlog_title_error, err_msg);
-//			}
-//			else
-//			{
-			
 				if(!downloadHoldList)
 				{
-					//myDB.close();
 					if(!checkoutOnHold)
 						activity.finish();
 				}
@@ -931,7 +919,6 @@ public class SynchMethods
 					Intent intent =  new Intent(activity, OnHoldActivity.class);
 					activity.startActivity(intent);
 				}
-			//}
 		}
 
 	}
