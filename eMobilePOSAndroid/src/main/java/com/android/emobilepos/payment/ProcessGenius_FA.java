@@ -3,6 +3,7 @@ package com.android.emobilepos.payment;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -205,10 +206,22 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         new processLivePaymentAsync().execute(generatedURL);
     }
 
-    private class processLivePaymentAsync extends AsyncTask<String, String, GeniusResponse> {
+    private class processLivePaymentAsync extends AsyncTask<String, String, GeniusResponse> implements Dialog.OnClickListener {
 
         private boolean boProcessed = false;
         private boolean geniusConnected = false;
+
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Post post = new Post();
+//                    MyPreferences myPref = new MyPreferences(activity);
+//                    String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
+//                }
+//            }).start();
+        }
 
         @Override
         protected void onPreExecute() {
@@ -216,8 +229,21 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
+            myProgressDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.manualEntry), this);
             myProgressDialog.show();
-
+            myProgressDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Post post = new Post();
+                            MyPreferences myPref = new MyPreferences(activity);
+                            String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v1/pos?Action=InitiateKeyedSale&Format=XML");
+                        }
+                    }).start();
+                }
+            });
         }
 
         @Override
@@ -418,8 +444,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 int code = connection.getResponseCode();
 
                 isReachable = code == 200 || code == 400;
-            } catch (IOException ignored) {
-
+            } catch (IOException e) {
+                isReachable = false;
             }
             return isReachable;
         }
