@@ -1183,5 +1183,6 @@
 	<string name="balanceAmount">Balance Amount</string>
 	<string name="status">Status</string>
 	<string name="amount_added">Amount Added</string>
+	<string name="manualEntry">Manual entry</string>
 
 </resources>
