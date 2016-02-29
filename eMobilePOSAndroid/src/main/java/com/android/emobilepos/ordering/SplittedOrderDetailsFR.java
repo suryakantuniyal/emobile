@@ -169,7 +169,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     public void setReceiptOrder(SplitedOrder splitedOrder) {
         restaurantSplitedOrder = splitedOrder;
         List<OrderProduct> products = splitedOrder.getOrderProducts();
-
         if (orderProductSection.getChildCount() > 0) {
             orderProductSection.removeAllViewsInLayout();
         }
@@ -192,6 +191,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 addProductLine(product.ordprod_desc, null, true);
             }
         }
+        splitedOrder.ord_total = orderGranTotal.toString();
         splitedOrder.gran_total = orderGranTotal.toString();
         splitedOrder.ord_subtotal = orderSubtotal.toString();
         splitedOrder.ord_taxamount = orderTaxes.toString();
@@ -217,28 +217,46 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     }
 
     private void saveHoldOrder(SplitedOrder splitedOrder) {
-        OrdersHandler handler = new OrdersHandler(getActivity());
+        OrdersHandler ordersHandler = new OrdersHandler(getActivity());
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         Global global = (Global) getActivity().getApplication();
-        OrderProductsHandler handler2 = new OrderProductsHandler(getActivity());
-        OrderProductsAttr_DB handler3 = new OrderProductsAttr_DB(getActivity());
-        for (OrderProduct product : splitedOrder.getOrderProducts()) {
-            if (global.orderProducts.contains(product)) {
-                global.orderProducts.remove(product);
+        OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
+        OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(getActivity());
+        GenerateNewID idGen = new GenerateNewID(getActivity());
+        String nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
+        SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+        if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() > 1) {
+            nextOrderID = idGen.getNextID(splitedOrder.ord_id);
+            for (OrderProduct product : splitedOrder.getOrderProducts()) {
+                if (global.orderProducts.contains(product)) {
+                    product.ord_id = nextOrderID;
+                    global.orderProducts.remove(product);
+                }
             }
+            global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
+                    .subtract(Global.getBigDecimalNum(splitedOrder.ord_subtotal)).toString();
+
+            global.order.ord_total = Global.getBigDecimalNum(global.order.ord_total)
+                    .subtract(Global.getBigDecimalNum(splitedOrder.ord_total)).toString();
+
+            global.order.gran_total = Global.getBigDecimalNum(global.order.gran_total)
+                    .subtract(Global.getBigDecimalNum(splitedOrder.gran_total)).toString();
+
+            global.order.isOnHold = "1";
+            global.order.ord_HoldName = "Table " + global.order.assignedTable + " " + DateUtils.getDateAsString(new Date(), "MMM/dd/yy hh:mm");
+            global.order.processed = "10";
+            ordersHandler.insert(global.order);
+            productsHandler.deleteAllOrdProd(global.order.ord_id);
+            productsHandler.insert(global.orderProducts);
         }
-        global.order.isOnHold = "1";
-        global.order.ord_HoldName = "Table " + global.order.assignedTable + " " + DateUtils.getDateAsString(new Date(), "MMM/dd/yy hh:mm");
-        global.order.processed = "10";
-        handler.insert(global.order);
-        handler2.insert(global.orderProducts);
+
 //        DBManager dbManager = new DBManager(getActivity());
 //        dbManager.synchSendOrdersOnHold(false, false);
+        global.orderProducts = splitedOrder.getOrderProducts();
         if (global.orderProducts.size() > 0) {
-            GenerateNewID idGen = new GenerateNewID(getActivity());
-            splitedOrder.ord_id = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
-            handler.insert(splitedOrder);
-            handler2.insert(splitedOrder.getOrderProducts());
+            splitedOrder.ord_id = nextOrderID;
+            ordersHandler.insert(splitedOrder);
+            productsHandler.insert(splitedOrder.getOrderProducts());
             ordTaxesDB.insert(global.listOrderTaxes, splitedOrder.ord_id);
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
             if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) == -1) {
@@ -270,6 +288,13 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             intent.putExtra("cust_id", myPref.getCustID());
             intent.putExtra("custidkey", myPref.getCustIDKey());
         }
-        startActivity(intent);
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        getActivity().setResult(-1);
+        getActivity().finish();
     }
 }

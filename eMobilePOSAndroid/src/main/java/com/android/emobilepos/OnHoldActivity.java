@@ -295,7 +295,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 //	}
 
 
-    private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Void> {
+    private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
         private boolean proceed = false;
         private Intent intent;
         private OrderProductsHandler orderProdHandler;
@@ -312,8 +312,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
 
         @Override
-        protected Void doInBackground(Boolean... params) {
-            // TODO Auto-generated method stub
+        protected Intent doInBackground(Boolean... params) {
 
             myCursor.moveToPosition(selectedPos);
             orderProdHandler = new OrderProductsHandler(activity);
@@ -329,7 +328,14 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             if (!forPrinting) {
                 intent = new Intent(activity, OrderingMain_FA.class);
                 // intent = new Intent(activity, SalesReceiptSplitActivity.class);
-
+                String assignedTable = myCursor.getString(myCursor.getColumnIndex("assignedTable"));
+                intent.putExtra("selectedDinningTableNumber", assignedTable);
+                intent.putExtra("openFromHold", true);
+                if (assignedTable != null && !assignedTable.isEmpty()) {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+                } else {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                }
                 switch (orderType) {
                     case SALES_RECEIPT:
                         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
@@ -356,11 +362,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             if (Global.isConnectedToInternet(activity))
                 proceed = true;
 
-            return null;
+            return intent;
         }
 
         @Override
-        protected void onPostExecute(Void unused) {
+        protected void onPostExecute(Intent intent) {
             myProgressDialog.dismiss();
             if (proceed) {
                 DBManager dbManager = new DBManager(activity);
@@ -635,7 +641,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             global.qtyCounter.put(c.getString(c.getColumnIndex("prod_id")), c.getString(c.getColumnIndex("ordprod_qty")));
 
-
+            ord.assignedSeat = c.getString(c.getColumnIndex("assignedSeat"));
+            ord.seatGroupId = c.getInt(c.getColumnIndex("seatGroupId"));
             ord.ordprod_qty = c.getString(c.getColumnIndex("ordprod_qty"));
             ord.ordprod_name = c.getString(c.getColumnIndex("ordprod_name"));
             ord.ordprod_desc = c.getString(c.getColumnIndex("ordprod_desc"));
@@ -679,7 +686,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 				
 				/*if(discountIsTaxable)
-				{
+                {
 					ord.getSetData("discount_is_taxable", false, "1");
 				}
 				if(isFixed)

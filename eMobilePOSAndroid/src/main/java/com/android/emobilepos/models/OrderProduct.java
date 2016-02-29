@@ -71,6 +71,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public boolean isReturned = false;
     public String assignedSeat;
+    public int seatGroupId;
+
     public BigDecimal global_discount_total = new BigDecimal("0");
 
 

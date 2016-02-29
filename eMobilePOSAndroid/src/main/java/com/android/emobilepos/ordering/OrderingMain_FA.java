@@ -80,6 +80,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -137,6 +138,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private int selectedSeatsAmount;
     private String selectedDinningTableNumber;
     private static String selectedSeatNumber = "1";
+    public boolean openFromHold;
 
 
 //    CustomKeyboard mCustomKeyboard;
@@ -157,10 +159,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         extras = getIntent().getExtras();
         mTransType = (Global.TransactionType) extras.get("option_number");
         setRestaurantSaleType((Global.RestaurantSaleType) extras.get("RestaurantSaleType"));
-        selectedSeatsAmount = extras.getInt("selectedSeatsAmount");
+        selectedSeatsAmount = extras.getInt("selectedSeatsAmount", 0);
         selectedDinningTableNumber = extras.getString("selectedDinningTableNumber");
+        openFromHold = extras.getBoolean("openFromHold", false);
 
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
+
         returnItem = mTransType == Global.TransactionType.RETURN;
         if (!myPref.getIsTablet())
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -203,7 +207,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         hasBeenCreated = true;
+
     }
+
+
 
 
     private Handler ScanResultHandler = new Handler() {
@@ -510,7 +517,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         } else if (subMenusJoinSeat.containsKey(Integer.valueOf(item.getItemId()))) {
                             String targetSeatNumber = subMenusJoinSeat.get(Integer.valueOf(item.getItemId()));
                             OrderSeatProduct targetSeat = Receipt_FR.mainLVAdapter.getSeat(targetSeatNumber);
-                            Receipt_FR.mainLVAdapter.joinSeatsGroupId(orderSeatProduct.seatGroupId, targetSeat.seatGroupId);
+                            Receipt_FR.mainLVAdapter.joinSeatsGroupId(orderSeatProduct.getSeatGroupId(), targetSeat.getSeatGroupId());
                             Receipt_FR.mainLVAdapter.notifyDataSetChanged();
                         }
 

@@ -98,7 +98,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         if (seatsAmount > 0) {
             for (int i = 0; i < seatsAmount; i++) {
                 OrderSeatProduct seatProduct = new OrderSeatProduct(String.valueOf(i + 1), getNextGroupId());
-                seatProduct.seatGroupId = i + 1;
+                seatProduct.setSeatGroupId(i + 1);
                 orderSeatProductList.add(seatProduct);
             }
         }
@@ -128,12 +128,19 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public void addSeat() {
         OrderSeatProduct product = new OrderSeatProduct(String.valueOf(orderSeatProductFullList.size() + 1), getNextGroupId());
-        product.seatGroupId = getNextGroupId();
+        product.setSeatGroupId(getNextGroupId());
         orderSeatProductList.add(product);
         orderSeatProductFullList.add(product);
         notifyDataSetChanged();
     }
 
+    public void addSeat(OrderProduct orderProduct) {
+        OrderSeatProduct product = new OrderSeatProduct(orderProduct.assignedSeat, orderProduct.seatGroupId);
+        product.setSeatGroupId(getNextGroupId());
+        orderSeatProductList.add(product);
+        orderSeatProductFullList.add(product);
+        notifyDataSetChanged();
+    }
 
     public void removeSeat(String seatNumber) {
         for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
@@ -154,9 +161,9 @@ public class OrderProductListAdapter extends BaseAdapter {
     public void joinSeatsGroupId(int sourceGroupId, int targetGroupId) {
         for (OrderSeatProduct seatProduct : orderSeatProductList) {
 //            if (seatProduct.rowType == RowType.TYPE_HEADER) {
-                if (seatProduct.seatGroupId == sourceGroupId) {
-                    seatProduct.seatGroupId = targetGroupId;
-                }
+            if (seatProduct.getSeatGroupId() == sourceGroupId) {
+                seatProduct.setSeatGroupId(targetGroupId);
+            }
 //            }
         }
         notifyDataSetChanged();
@@ -168,13 +175,13 @@ public class OrderProductListAdapter extends BaseAdapter {
             for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
                 if (seatProduct.rowType == RowType.TYPE_HEADER && !seatProduct.isDeleted) {
                     OrderSeatProduct osp = new OrderSeatProduct(seatProduct.seatNumber, getNextGroupId());
-                    osp.seatGroupId = seatProduct.seatGroupId;
+                    osp.setSeatGroupId(seatProduct.getSeatGroupId());
                     l.add(osp);
                     for (OrderProduct product : orderProducts) {
                         if (product != null && product.assignedSeat != null &&
                                 product.assignedSeat.equalsIgnoreCase(seatProduct.seatNumber)) {
                             OrderSeatProduct sp = new OrderSeatProduct(product);
-                            sp.seatGroupId=osp.seatGroupId;
+                            sp.setSeatGroupId(osp.getSeatGroupId());
                             l.add(sp);
                         }
                     }
@@ -241,7 +248,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.GONE);
                 ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText(String.format("Seat %s", orderSeatProductList.get(position).seatNumber));
-                int colorId = activity.getResources().getIdentifier("seat" + orderSeatProductList.get(position).seatGroupId, "color", activity.getPackageName());
+                int colorId = activity.getResources().getIdentifier("seat" + orderSeatProductList.get(position).getSeatGroupId(), "color", activity.getPackageName());
                 convertView.findViewById(R.id.seatHeaderSection).setBackgroundResource(colorId);
                 if (OrderingMain_FA.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
                     selectedPosition = position;

@@ -24,7 +24,6 @@ public class OrderProductsHandler {
     private final String addon = "addon";
     private final String isAdded = "isAdded";
     private final String isPrinted = "isPrinted";
-    private final String cardIsActivated = "cardIsActivated";
     private final String item_void = "item_void";
     private final String ordprod_id = "ordprod_id";
 
@@ -62,11 +61,14 @@ public class OrderProductsHandler {
     private final String addon_position = "addon_position";
     private final String hasAddons = "hasAddons";
 
+    private String assignedSeat = "assignedSeat";
+    private String seatGroupId = "seatGroupId";
     public final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
-            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id);
+            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, assignedSeat, seatGroupId);
+
 
     public StringBuilder sb1, sb2, sb3;
     public final String empStr = "";
@@ -75,12 +77,10 @@ public class OrderProductsHandler {
     private List<String[]> data;
     private List<HashMap<String, Integer>> dictionaryListMap;
     public static final String table_name = "OrderProduct";
-    private Activity activity;
     private MyPreferences myPref;
 
     public OrderProductsHandler(Activity activity) {
         global = (Global) activity.getApplication();
-        this.activity = activity;
         attrHash = new HashMap<String, Integer>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
@@ -119,7 +119,6 @@ public class OrderProductsHandler {
 
     public void insert(List<OrderProduct> order) {
 
-        // SQLiteDatabase db = dbManager.openWritableDB();
         DBManager._db.beginTransaction();
         try {
 
@@ -181,6 +180,9 @@ public class OrderProductsHandler {
                         TextUtils.isEmpty(prod.addon_position) ? "0" : prod.addon_position);
                 insert.bindString(index(cat_id), prod.cat_id == null ? "" : prod.cat_id);
 
+                insert.bindString(index(assignedSeat), prod.assignedSeat == null ? "" : prod.assignedSeat);
+                insert.bindLong(index(seatGroupId), prod.seatGroupId);
+
                 insert.execute();
                 insert.clearBindings();
 
@@ -194,15 +196,10 @@ public class OrderProductsHandler {
             DBManager._db.setTransactionSuccessful();
 
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.OrderProductsHandler (at Class.insert)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
             DBManager._db.endTransaction();
         }
-        // db.close();
     }
 
     private void insertAddon(SQLiteStatement insert, String ordID) {
@@ -264,10 +261,7 @@ public class OrderProductsHandler {
             this.data = data;
             dictionaryListMap = dictionary;
             SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = this.data.size();
 
@@ -330,12 +324,7 @@ public class OrderProductsHandler {
             insert.close();
             DBManager._db.setTransactionSuccessful();
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage())
-                    .append(" [com.android.emobilepos.OrderProductsHandler.insertOnHold (at Class.insert)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
 
             DBManager._db.endTransaction();
@@ -351,24 +340,13 @@ public class OrderProductsHandler {
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
-    // public void emptyTable() {
-    // StringBuilder sb = new StringBuilder();
-    // SQLiteDatabase db = dbManager.openWritableDB();
-    // sb.append("DELETE FROM ").append(table_name);
-    // db.execSQL(sb.toString());
-    // db.close();
-    // }
+
 
     private boolean checkIfExist(String ordID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT 1 FROM ").append(table_name).append(" WHERE ordprod_id = '");
-        sb.append(ordID).append("'");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager._db.rawQuery("SELECT 1 FROM " + table_name + " WHERE ordprod_id = '" + ordID + "'", null);
         boolean exists = (c.getCount() > 0);
         c.close();
 
@@ -377,13 +355,11 @@ public class OrderProductsHandler {
     }
 
     public void updateIsPrinted(String ordprodID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(ordprod_id).append(" = ?");
 
         ContentValues args = new ContentValues();
 
         args.put(isPrinted, "1");
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{ordprodID});
+        DBManager._db.update(table_name, args, ordprod_id + " = ?", new String[]{ordprodID});
     }
 
     public Cursor getCursorData(String parameter) {
@@ -394,20 +370,8 @@ public class OrderProductsHandler {
         else
             sb.append("(itemTotal+prod_taxValue) AS 'totalLineValue' FROM ");
         sb.append(table_name).append(" WHERE ord_id = ?");
-        // String query =
-        // "SELECT prod_id as _id,prod_name,prod_price,prod_desc,prod_onhand
-        // FROM Products ORDER BY prod_name COLLATE NOCASE";
 
-		/*
-         * String [] fields = new
-		 * String[]{prod_id,prod_name,prod_onhand,prod_price,prod_desc};
-		 * 
-		 * Cursor cursor = db.query(true,table_name,fields, null,null, null,
-		 * null, null, null);
-		 */
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{parameter});
-        // int i = cursor.getCount();
-        return cursor;
+        return DBManager._db.rawQuery(sb.toString(), new String[]{parameter});
     }
 
     public List<OrderProduct> getOrderProducts(String orderId) {
@@ -424,49 +388,24 @@ public class OrderProductsHandler {
     }
 
     public Cursor getWalletOrdProd(String ordID) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(
-                "SELECT op.*,pi.prod_img_name FROM " + table_name + " op LEFT OUTER JOIN Products_Images pi ON op.prod_id = pi.prod_id ");
-        sb.append("AND pi.type = 'I' WHERE ord_id = ?");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{ordID});
-        return c;
+        return DBManager._db.rawQuery(("SELECT op.*,pi.prod_img_name FROM " + table_name + " op LEFT OUTER JOIN Products_Images pi ON op.prod_id = pi.prod_id ") + "AND pi.type = 'I' WHERE ord_id = ?", new String[]{ordID});
     }
 
     public long getDBSize() {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name);
-
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public List<Orders> getPrintOrderedProducts(String ordID) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        /// SQLiteDatabase db = dbManager.openReadableDB();
+
 
         List<Orders> list = new ArrayList<Orders>();
-        StringBuilder sb = new StringBuilder();
-        // sb.append("SELECT
-        // ordprod_name,ordprod_desc,overwrite_price,(overwrite_price*ordprod_qty)
-        // AS 'total', ordprod_qty,addon,isAdded,hasAddons FROM OrderProduct
-        // WHERE ord_id = '");
-        sb.append(
-                "SELECT ordprod_name,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM " + table_name + " WHERE ord_id = '");
-        sb.append(ordID).append("'");
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+
+        Cursor cursor = DBManager._db.rawQuery(("SELECT ordprod_name,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM " + table_name + " WHERE ord_id = '") + ordID + "'", null);
 
         Orders[] orders = new Orders[cursor.getCount()];
 
@@ -489,7 +428,6 @@ public class OrderProductsHandler {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        // db.close();
 
         return list;
     }
@@ -497,7 +435,6 @@ public class OrderProductsHandler {
     public HashMap<String, List<Orders>> getStationPrinterProducts(String ordID) {
         // SQLiteDatabase db = dbManager.openReadableDB();
         List<Orders> list = new ArrayList<Orders>();
-        StringBuilder sb = new StringBuilder();
 
 		/*
          * sb.append(
@@ -505,13 +442,7 @@ public class OrderProductsHandler {
 		 * ); sb.append(ordID).append("' AND isPrinted = '0'");
 		 */
 
-        sb.append(
-                "SELECT op.ordprod_id,op.ordprod_name,op.ordprod_desc,op.overwrite_price,(op.overwrite_price*op.ordprod_qty) AS 'total', ");
-        sb.append(
-                "op.ordprod_qty,op.ordprod_comment,op.addon,op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' FROM " + table_name + " op ");
-        sb.append("LEFT OUTER JOIN ProductsAttr pa ON op.prod_id = pa.prod_id WHERE ord_id = '");
-        sb.append(ordID).append("' AND isPrinted = '0'");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager._db.rawQuery("SELECT op.ordprod_id,op.ordprod_name,op.ordprod_desc,op.overwrite_price,(op.overwrite_price*op.ordprod_qty) AS 'total', " + "op.ordprod_qty,op.ordprod_comment,op.addon,op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' FROM " + table_name + " op " + "LEFT OUTER JOIN ProductsAttr pa ON op.prod_id = pa.prod_id WHERE ord_id = '" + ordID + "' AND isPrinted = '0'", null);
 
         Orders[] orders = new Orders[c.getCount()];
         HashMap<String, List<Orders>> tempMap = new HashMap<String, List<Orders>>();
@@ -532,7 +463,7 @@ public class OrderProductsHandler {
             boolean itHasAddons = false;
             String parentCatID = "";
             boolean inAddons = false;
-            String tempCatID = "";
+            String tempCatID;
             do {
                 if (itHasAddons && !c.getString(i_addon).equals("1"))
                     inAddons = false;
@@ -596,16 +527,8 @@ public class OrderProductsHandler {
 
     public Cursor getOrderProductsOnHold(String ordID) {
         // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("SELECT ").append(sb3.toString())
-                .append(",CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable',p.prod_taxtype FROM ")
-                .append(table_name);
-        sb.append(
-                " op LEFT OUTER JOIN Products p ON op.prod_id = p.prod_id LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE op.ord_id = '")
-                .append(ordID).append("' ");
-        sb.append("ORDER BY prod_seq ASC");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager._db.rawQuery("SELECT " + sb3.toString() + ",CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable',p.prod_taxtype FROM " + table_name + " op LEFT OUTER JOIN Products p ON op.prod_id = p.prod_id LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE op.ord_id = '" + ordID + "' " + "ORDER BY prod_seq ASC", null);
 
         c.moveToFirst();
         // db.close();
@@ -614,45 +537,30 @@ public class OrderProductsHandler {
     }
 
     public HashMap<String, String> getOrdProdGiftCard(String cardNumber) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        StringBuilder sb = new StringBuilder();
         HashMap<String, String> map = new HashMap<String, String>();
-        // String amount = "";
-        sb.append("SELECT * FROM ").append(table_name)
-                .append(" op LEFT JOIN OrderProductsAttr at ON op.ordprod_id = at.ordprod_id WHERE ");
-        sb.append("at.value = ? AND op.cardIsActivated = '0' ORDER BY at.ordprodattr_id DESC LIMIT 1");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{cardNumber});
+        Cursor c = DBManager._db.rawQuery("SELECT * FROM " + table_name + " op LEFT JOIN OrderProductsAttr at ON op.ordprod_id = at.ordprod_id WHERE " + "at.value = ? AND op.cardIsActivated = '0' ORDER BY at.ordprodattr_id DESC LIMIT 1", new String[]{cardNumber});
 
         if (c.moveToFirst()) {
-            // map.put("overwrite_price",
-            // c.getString(c.getColumnIndex("overwrite_price")));
             map.put("overwrite_price", c.getString(c.getColumnIndex("overwrite_price")));
             map.put("ordprod_id", c.getString(c.getColumnIndex("ordprod_id")));
         }
         c.close();
-        // db.close();
         return map;
     }
 
     public void updateOrdProdCardActivated(String ordProdID) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
-        StringBuilder sb = new StringBuilder();
-        sb.append(ordprod_id).append(" = ?");
 
         ContentValues args = new ContentValues();
-
-        args.put(cardIsActivated, "1");
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{ordProdID});
+        args.put("cardIsActivated", "1");
+        DBManager._db.update(table_name, args, ordprod_id + " = ?", new String[]{ordProdID});
         // db.close();
     }
 
     public List<OrderProduct> getOrderedProducts(String ordID) {
         List<OrderProduct> list = new ArrayList<OrderProduct>();
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
         String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
-        // String subquery2="'";
 
         Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
         OrderProduct products;

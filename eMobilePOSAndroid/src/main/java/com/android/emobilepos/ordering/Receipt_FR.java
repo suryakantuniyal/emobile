@@ -86,6 +86,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -377,7 +378,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         OrderingMain_FA orderingMain_fa = (OrderingMain_FA) getActivity();
         mainLVAdapter = new OrderProductListAdapter(getActivity(), global.orderProducts, orderingMain_fa.getSelectedSeatsAmount()); //new ReceiptMainLV_Adapter(activity);
         receiptListView.setAdapter(mainLVAdapter);
+        if (orderingMain_fa.openFromHold && !orderingMain_fa.isToGo) {
+            addHoldOrderSeats();
+            mainLVAdapter.notifyDataSetChanged();
+        }
 //		reCalculate();
+    }
+
+    private int addHoldOrderSeats() {
+        HashSet<String> seats = new HashSet<String>();
+        for (OrderProduct product : global.orderProducts) {
+            mainLVAdapter.addSeat(product);
+        }
+        return seats.size();
     }
 
     private void overridePrice(final int position) {
@@ -654,7 +667,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
                                     OrderingMain_FA.setSelectedSeatNumber(targetSeat);
                                     orderSeatProduct.orderProduct.assignedSeat = targetSeat;
-                                    orderSeatProduct.seatGroupId = mainLVAdapter.getSeat(targetSeat).seatGroupId;
+                                    orderSeatProduct.setSeatGroupId(mainLVAdapter.getSeat(targetSeat).getSeatGroupId());
                                     mainLVAdapter.notifyDataSetChanged();
                                 }
                                 break;
@@ -789,7 +802,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //        discountableSubtotal = new BigDecimal(extras.getString("discountableSubtotal"));
 //        itemsDiscountTotal = new BigDecimal(extras.getString("itemsDiscountTotal"));
         intent.putExtras(b);
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     private void showAddMoreProductsDlg() {

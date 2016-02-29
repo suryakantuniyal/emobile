@@ -64,7 +64,9 @@ public class OrdersHandler {
     private final String ord_longitude = "ord_longitude";
     private final String tipAmount = "tipAmount";
     private final String isVoid = "isVoid";
+    private final String assignedTable = "assignedTable";
     private final String is_stored_fwd = "is_stored_fwd";
+
     private final String VAT = "VAT";
 
     private final List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
@@ -72,7 +74,7 @@ public class OrdersHandler {
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
-            isOnHold, ord_HoldName, is_stored_fwd, VAT);
+            isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable);
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
@@ -175,6 +177,7 @@ public class OrdersHandler {
             insert.bindString(index(isOnHold), TextUtils.isEmpty(order.isOnHold) ? "0" : order.isOnHold);
             insert.bindString(index(ord_HoldName), order.ord_HoldName == null ? "" : order.ord_HoldName);
             insert.bindString(index(is_stored_fwd), TextUtils.isEmpty(order.is_stored_fwd) ? "0" : order.is_stored_fwd);
+            insert.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable); // cust_id
 
             insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
             insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
