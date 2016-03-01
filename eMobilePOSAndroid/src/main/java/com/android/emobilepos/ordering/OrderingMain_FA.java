@@ -102,7 +102,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private int orientation;
     private LinearLayout catalogContainer, receiptContainer;
     public static OrderingMain_FA instance;
-    private DinningTable selectedDinningTable;
     private Catalog_FR rightFragment;
     private Receipt_FR leftFragment;
     private MyPreferences myPref;
@@ -137,7 +136,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public boolean isToGo = true;
     private int selectedSeatsAmount;
     private String selectedDinningTableNumber;
-    private static String selectedSeatNumber = "1";
+    private String selectedSeatNumber = "1";
     public boolean openFromHold;
 
 
@@ -209,8 +208,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         hasBeenCreated = true;
 
     }
-
-
 
 
     private Handler ScanResultHandler = new Handler() {
@@ -475,19 +472,19 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         popup.getMenuInflater().inflate(R.menu.receiptlist_header_menu, popup.getMenu());
         final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
         final HashMap<Integer, String> subMenusJoinSeat = new HashMap<Integer, String>();
-        Receipt_FR.receiptListView.smoothScrollToPosition(Receipt_FR.mainLVAdapter.orderSeatProductList.indexOf(orderSeatProduct));
+        Receipt_FR.receiptListView.smoothScrollToPosition(leftFragment.mainLVAdapter.orderSeatProductList.indexOf(orderSeatProduct));
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.deleteSeat:
                         removeSeat(orderSeatProduct.seatNumber);
-                        if (Receipt_FR.mainLVAdapter.orderSeatProductList.size() > 0) {
-                            setSelectedSeatNumber(Receipt_FR.mainLVAdapter.orderSeatProductList.get(0).seatNumber);
+                        if (leftFragment.mainLVAdapter.orderSeatProductList.size() > 0) {
+                            setSelectedSeatNumber(leftFragment.mainLVAdapter.orderSeatProductList.get(0).seatNumber);
                         }
                         break;
                     case R.id.moveSeatItems:
                         int id = 0;
-                        for (OrderSeatProduct seatProduct : Receipt_FR.mainLVAdapter.orderSeatProductList) {
+                        for (OrderSeatProduct seatProduct : leftFragment.mainLVAdapter.orderSeatProductList) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                 if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
                                     item.getSubMenu().add(0, id, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
@@ -499,7 +496,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         break;
                     case R.id.joinSeats:
                         int jid = 100;
-                        for (OrderSeatProduct seatProduct : Receipt_FR.mainLVAdapter.orderSeatProductList) {
+                        for (OrderSeatProduct seatProduct : leftFragment.mainLVAdapter.orderSeatProductList) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                 if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
                                     item.getSubMenu().add(0, jid, SubMenu.NONE, "Group seats items" + seatProduct.seatNumber);
@@ -513,12 +510,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         if (subMenus.containsKey(Integer.valueOf(item.getItemId()))) {
                             String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
                             setSelectedSeatNumber(targetSeat);
-                            Receipt_FR.mainLVAdapter.moveSeatItems(Receipt_FR.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber), targetSeat);
+                            leftFragment.mainLVAdapter.moveSeatItems(leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber), targetSeat);
                         } else if (subMenusJoinSeat.containsKey(Integer.valueOf(item.getItemId()))) {
                             String targetSeatNumber = subMenusJoinSeat.get(Integer.valueOf(item.getItemId()));
-                            OrderSeatProduct targetSeat = Receipt_FR.mainLVAdapter.getSeat(targetSeatNumber);
-                            Receipt_FR.mainLVAdapter.joinSeatsGroupId(orderSeatProduct.getSeatGroupId(), targetSeat.getSeatGroupId());
-                            Receipt_FR.mainLVAdapter.notifyDataSetChanged();
+                            OrderSeatProduct targetSeat = leftFragment.mainLVAdapter.getSeat(targetSeatNumber);
+                            leftFragment.mainLVAdapter.joinSeatsGroupId(orderSeatProduct.getSeatGroupId(), targetSeat.getSeatGroupId());
+                            leftFragment.mainLVAdapter.notifyDataSetChanged();
                         }
 
                         break;
@@ -526,40 +523,20 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 return true;
             }
         });
-        List<OrderProduct> orderProducts = Receipt_FR.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber);
-        popup.getMenu().findItem(R.id.deleteSeat).setEnabled(orderProducts.isEmpty() && Receipt_FR.mainLVAdapter.getSeatsAmount() > 1);
-        popup.getMenu().findItem(R.id.moveSeatItems).setEnabled(!orderProducts.isEmpty() && Receipt_FR.mainLVAdapter.getSeatsAmount() > 1);
+        List<OrderProduct> orderProducts = leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber);
+        popup.getMenu().findItem(R.id.deleteSeat).setEnabled(orderProducts.isEmpty() && leftFragment.mainLVAdapter.getSeatsAmount() > 1);
+        popup.getMenu().findItem(R.id.moveSeatItems).setEnabled(!orderProducts.isEmpty() && leftFragment.mainLVAdapter.getSeatsAmount() > 1);
 
         popup.show();
     }
 
 
     private void removeSeat(String seatNumber) {
-        Receipt_FR.mainLVAdapter.removeSeat(seatNumber);
-        Receipt_FR.mainLVAdapter.notifyDataSetChanged();
+        leftFragment.mainLVAdapter.removeSeat(seatNumber);
+        leftFragment.mainLVAdapter.notifyDataSetChanged();
         leftFragment.reCalculate();
     }
 
-
-//    public List<SplitedOrder> splitBySeats(Order order, List<OrderSeatProduct> orderSeatProducts) {
-//        List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
-//        GenerateNewID generateNewID = new GenerateNewID(this);
-//        String prevOrderId = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
-//        for (int i = 0; i < selectedSeatsAmount; i++) {
-//            SplitedOrder splitedOrder = new SplitedOrder(this, order);
-//            splitedOrder.ord_id = prevOrderId;
-//            prevOrderId = generateNewID.getNextID(prevOrderId);
-//            ArrayList<OrderProduct> products = new ArrayList<OrderProduct>();
-//            for (OrderSeatProduct seatProduct : orderSeatProducts) {
-//                if (Integer.parseInt(op.assignedSeat) == i + 1) {
-//                    products.add(op);
-//                }
-//            }
-//            splitedOrder.setOrderProducts(products);
-//            splitedOrders.add(splitedOrder);
-//        }
-//        return splitedOrders;
-//    }
 
     @Override
     public void refreshView() {
@@ -855,7 +832,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     global.clearListViewData();
                     msrWasLoaded = false;
                     cardReaderConnected = false;
-                    Receipt_FR.mainLVAdapter.notifyDataSetChanged();
+                    leftFragment.mainLVAdapter.notifyDataSetChanged();
                     Receipt_FR.receiptListView.invalidateViews();
                     finish();
                 }
@@ -885,8 +862,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                         Global.mainPrinterManager.currentDevice.playSound();
                     }
-                    String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "");
-                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
+                    String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
+//                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
                     Product product = handler.getUPCProducts(upc);
                     if (product.getId() != null) {
                         if (myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
@@ -1261,11 +1238,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         return selectedDinningTableNumber;
     }
 
-    public static String getSelectedSeatNumber() {
+    public String getSelectedSeatNumber() {
         return selectedSeatNumber;
     }
 
-    public static void setSelectedSeatNumber(String seatNumber) {
+    public void setSelectedSeatNumber(String seatNumber) {
         selectedSeatNumber = seatNumber;
 
     }
@@ -1463,9 +1440,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void startSignature() {
     }
 
-    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product) {
+    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product,String selectedSeatNumber) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
+
         int sum = 0;
         if (global.qtyCounter.containsKey(product.getId()))
             sum = Integer.parseInt(global.qtyCounter.get(product.getId()));
@@ -1485,7 +1463,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         order.setTaxQty("0");
 
         String val = product.getProdPrice();
-        if (val.isEmpty() || val == null)
+        if (val == null || val.isEmpty())
             val = "0.00";
 
         BigDecimal total = Global.getBigDecimalNum(Global.formatNumToLocale(Double.parseDouble(val)));
@@ -1495,7 +1473,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         ord.overwrite_price = total.toString();
         ord.prod_price = total.toString();
-        ord.assignedSeat = getSelectedSeatNumber();
+        ord.assignedSeat = selectedSeatNumber;
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
 
         DecimalFormat frmt = new DecimalFormat("0.00");

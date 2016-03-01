@@ -11,9 +11,10 @@ import java.util.List;
 /**
  * Created by guari_000 on 2/4/2016.
  */
-public class SplitedOrder extends Order implements  Cloneable{
+public class SplitedOrder extends Order implements Cloneable, Comparable<SplitedOrder> {
     private List<OrderProduct> orderProducts;
     private String tableNumber;
+    public long splittedOrderId = System.currentTimeMillis();
 
 
     public SplitedOrder(Activity activity, Order order) {
@@ -93,5 +94,15 @@ public class SplitedOrder extends Order implements  Cloneable{
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof SplitedOrder && this.splittedOrderId == (((SplitedOrder) o).splittedOrderId);
+    }
+
+    @Override
+    public int compareTo(SplitedOrder another) {
+        return this.ord_id.compareTo(another.ord_id);
     }
 }

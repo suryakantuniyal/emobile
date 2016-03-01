@@ -29,6 +29,8 @@ import java.util.List;
 public class OrderProductListAdapter extends BaseAdapter {
 
 
+    private OrderingMain_FA orderingMainFa;
+
     public enum RowType {
         TYPE_HEADER(0), TYPE_ITEM(1);
         int code;
@@ -50,15 +52,17 @@ public class OrderProductListAdapter extends BaseAdapter {
     public int selectedPosition;
     Activity activity;
 
-    public OrderProductListAdapter(Activity activity, List<OrderProduct> orderProducts, int seatsAmount) {
+    public OrderProductListAdapter(Activity activity, List<OrderProduct> orderProducts,
+                                   OrderingMain_FA orderingMainFa) {
+        this.orderingMainFa = orderingMainFa;
         mInflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         myPref = new MyPreferences(activity);
         this.activity = activity;
         this.orderProducts = orderProducts;
-        initSeats(seatsAmount);
+        initSeats(orderingMainFa.getSelectedSeatsAmount());
         if (orderSeatProductList != null && !orderSeatProductList.isEmpty()) {
-            OrderingMain_FA.setSelectedSeatNumber(orderSeatProductList.get(0).seatNumber);
+            orderingMainFa.setSelectedSeatNumber(orderSeatProductList.get(0).seatNumber);
         }
     }
 
@@ -250,7 +254,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                 ((TextView) convertView.findViewById(R.id.seatNumbertextView)).setText(String.format("Seat %s", orderSeatProductList.get(position).seatNumber));
                 int colorId = activity.getResources().getIdentifier("seat" + orderSeatProductList.get(position).getSeatGroupId(), "color", activity.getPackageName());
                 convertView.findViewById(R.id.seatHeaderSection).setBackgroundResource(colorId);
-                if (OrderingMain_FA.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
+                if (orderingMainFa.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
                     selectedPosition = position;
                     convertView.setBackgroundColor(Color.RED);
                 } else {

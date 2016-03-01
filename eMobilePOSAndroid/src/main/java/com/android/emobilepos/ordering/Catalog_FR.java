@@ -630,7 +630,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void automaticAddOrder(Product product) {
-        ((OrderingMain_FA)getActivity()).automaticAddOrder(getActivity(), false, global, product);
+        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, product, ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -723,8 +723,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             intent.putExtra("prod_value_points", product.getProdValuePoints());
             intent.putExtra("prod_sku", product.getProd_sku());
             intent.putExtra("prod_upc", product.getProd_upc());
-            intent.putExtra("selectedSeatNumber", ((OrderingMain_FA)getActivity()).getSelectedSeatNumber());
-
+            intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
 
 
             if (Global.isConsignment)
@@ -785,7 +784,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
 
                 Product product = populateDataForIntent(myCursor);
-                intent.putExtra("selectedSeatNumber", ((OrderingMain_FA)getActivity()).getSelectedSeatNumber());
+                intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                 intent.putExtra("prod_id", product.getId());
                 intent.putExtra("prod_name", product.getProdName());
                 intent.putExtra("prod_on_hand", product.getProdOnHand());
@@ -836,7 +835,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
                     Product product = populateDataForIntent(myCursor);
-                    intent.putExtra("selectedSeatNumber", ((OrderingMain_FA)getActivity()).getSelectedSeatNumber());
+                    intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                     intent.putExtra("prod_id", product.getId());
                     intent.putExtra("prod_name", product.getProdName());
                     intent.putExtra("prod_on_hand", product.getProdOnHand());

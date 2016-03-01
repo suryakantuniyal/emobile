@@ -105,7 +105,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private Activity activity;
     private SemiClosedSlidingDrawer slidingDrawer;
     public TextView custName;
-    public static OrderProductListAdapter mainLVAdapter;
+    public OrderProductListAdapter mainLVAdapter;
     private ReceiptRestLV_Adapter restLVAdapter;
     public static ListView receiptListView;
 
@@ -376,7 +376,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private void setupListView() {
         OrderingMain_FA orderingMain_fa = (OrderingMain_FA) getActivity();
-        mainLVAdapter = new OrderProductListAdapter(getActivity(), global.orderProducts, orderingMain_fa.getSelectedSeatsAmount()); //new ReceiptMainLV_Adapter(activity);
+        mainLVAdapter = new OrderProductListAdapter(getActivity(), global.orderProducts, orderingMain_fa); //new ReceiptMainLV_Adapter(activity);
         receiptListView.setAdapter(mainLVAdapter);
         if (orderingMain_fa.openFromHold && !orderingMain_fa.isToGo) {
             addHoldOrderSeats();
@@ -513,7 +513,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     ((OrderingMain_FA) getActivity()).isToGo = false;
                     ((OrderingMain_FA) getActivity()).setRestaurantSaleType(Global.RestaurantSaleType.EAT_IN);
                     String firstSeat = mainLVAdapter.getFirstSeat();
-                    OrderingMain_FA.setSelectedSeatNumber(firstSeat);
+                    ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(firstSeat);
                     mainLVAdapter.moveSeatItems(global.orderProducts, firstSeat);
                     mainLVAdapter.notifyDataSetChanged();
                 }
@@ -591,7 +591,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (restLVAdapter != null)
             position = restLVAdapter.dataPosition(orderProductIdx);
         if (orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-            OrderingMain_FA.setSelectedSeatNumber(orderSeatProduct.seatNumber);
+            ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(orderSeatProduct.seatNumber);
             mainLVAdapter.notifyDataSetChanged();
         } else {
             String isVoidedItem = orderSeatProduct.orderProduct.item_void;
@@ -665,7 +665,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             default:
                                 if (subMenus.containsKey(Integer.valueOf(item.getItemId()))) {
                                     String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
-                                    OrderingMain_FA.setSelectedSeatNumber(targetSeat);
+                                    ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(targetSeat);
                                     orderSeatProduct.orderProduct.assignedSeat = targetSeat;
                                     orderSeatProduct.setSeatGroupId(mainLVAdapter.getSeat(targetSeat).getSeatGroupId());
                                     mainLVAdapter.notifyDataSetChanged();

@@ -20,8 +20,10 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -35,6 +37,7 @@ import org.apache.http.client.utils.CloneUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +100,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
         deviceName.setText(String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
-        orderId.setText(idGen.getNextID(GenerateNewID.IdType.ORDER_ID));
+
 
         if (header[0] != null && !header[0].isEmpty()) {
             header1.setText(header[0]);
@@ -200,6 +203,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         lineItemDiscountTotal.setText(Global.formatDoubleStrToCurrency(itemDiscountTotal.toString()));
         taxTotal.setText(Global.formatDoubleStrToCurrency(orderTaxes.toString()));
         granTotal.setText(Global.formatDoubleStrToCurrency(orderGranTotal.toString()));
+        orderId.setText(splitedOrder.ord_id);
 
     }
 
@@ -223,16 +227,17 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
         OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(getActivity());
         GenerateNewID idGen = new GenerateNewID(getActivity());
-        String nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+        String nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
+        SplitedOrder onHoldOrder = null;
         if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() > 1) {
-            nextOrderID = idGen.getNextID(splitedOrder.ord_id);
             for (OrderProduct product : splitedOrder.getOrderProducts()) {
                 if (global.orderProducts.contains(product)) {
                     product.ord_id = nextOrderID;
                     global.orderProducts.remove(product);
                 }
             }
+            global.order.ord_id = nextOrderID;
             global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
                     .subtract(Global.getBigDecimalNum(splitedOrder.ord_subtotal)).toString();
 
@@ -245,19 +250,52 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             global.order.isOnHold = "1";
             global.order.ord_HoldName = "Table " + global.order.assignedTable + " " + DateUtils.getDateAsString(new Date(), "MMM/dd/yy hh:mm");
             global.order.processed = "10";
-            ordersHandler.insert(global.order);
-            productsHandler.deleteAllOrdProd(global.order.ord_id);
-            productsHandler.insert(global.orderProducts);
+            try {
+                onHoldOrder = new SplitedOrder(getActivity(), (Order) global.order.clone());
+                onHoldOrder.setOrderProducts(new ArrayList<OrderProduct>(global.orderProducts));
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+//            ordersHandler.insert(global.order);
+//            productsHandler.deleteAllOrdProd(global.order.ord_id);
+//            productsHandler.insert(global.orderProducts);
         }
 
 //        DBManager dbManager = new DBManager(getActivity());
 //        dbManager.synchSendOrdersOnHold(false, false);
-        global.orderProducts = splitedOrder.getOrderProducts();
-        if (global.orderProducts.size() > 0) {
+        if (splitedOrder.getOrderProducts().size() > 0) {
+            if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 1) {
+                nextOrderID = myPref.getLastOrdID();
+//                global.order.ord_id = nextOrderID;
+//                global.order.isOnHold = "0";
+//                global.order.ord_HoldName = "";
+//                global.order.processed = "1";
+                productsHandler.deleteAllOrdProd(nextOrderID);
+                ordersHandler.deleteOrder(nextOrderID);
+                for (OrderProduct product : splitedOrder.getOrderProducts()) {
+                    product.ord_id = nextOrderID;
+                }
+            } else {
+                nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
+            }
             splitedOrder.ord_id = nextOrderID;
             ordersHandler.insert(splitedOrder);
             productsHandler.insert(splitedOrder.getOrderProducts());
             ordTaxesDB.insert(global.listOrderTaxes, splitedOrder.ord_id);
+//            global.order = splitedOrder;
+//            global.orderProducts = splitedOrder.getOrderProducts();
+            if (onHoldOrder != null) {
+                nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
+                onHoldOrder.ord_id = nextOrderID;
+                for (OrderProduct product : onHoldOrder.getOrderProducts()) {
+                    product.ord_id = nextOrderID;
+                }
+                ordersHandler.insert(onHoldOrder);
+                productsHandler.insert(onHoldOrder.getOrderProducts());
+                ordTaxesDB.insert(global.listOrderTaxes, onHoldOrder.ord_id);
+                global.order = onHoldOrder;
+                global.orderProducts = onHoldOrder.getOrderProducts();
+            }
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
             if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) == -1) {
 //                this.updateLocalInventory(getActivity(), global.orderProducts, true);
@@ -267,6 +305,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 isSalesReceipt(splitedOrder);
             }
         }
+    }
+
+    private void createHold(SplitedOrder splitedOrder) {
+
     }
 
     private void isSalesReceipt(SplitedOrder order) {
@@ -294,7 +336,20 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getActivity().setResult(-1);
-        getActivity().finish();
+        if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
+            SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+            removeCheckoutOrder(summaryFa);
+            if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 0) {
+                getActivity().setResult(-1);
+                getActivity().finish();
+            } else {
+                summaryFa.getOrderDetailsFR().setReceiptOrder((SplitedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
+            }
+        }
+    }
+
+    private void removeCheckoutOrder(SplittedOrderSummary_FA summaryFa) {
+        SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) summaryFa.getOrderSummaryFR().getGridView().getAdapter();
+        adapter.removeOrder(restaurantSplitedOrder);
     }
 }

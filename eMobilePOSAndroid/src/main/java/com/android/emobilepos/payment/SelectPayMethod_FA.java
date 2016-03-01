@@ -41,6 +41,7 @@ import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.genius.GeniusResponse;
+import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -241,6 +242,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         if (currentPaidAmount == 0) {
             // setResult(50);
+            setResult(SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode());
             finish();
         } else {
             if (orderType == Global.OrderType.SALES_RECEIPT) {

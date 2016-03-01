@@ -112,4 +112,9 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         return splitedOrders.get(position);
     }
 
+    public void removeOrder(SplitedOrder order){
+        this.splitedOrders.remove(order);
+        notifyDataSetChanged();
+    }
+
 }
