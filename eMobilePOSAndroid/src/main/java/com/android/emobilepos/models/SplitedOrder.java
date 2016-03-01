@@ -22,6 +22,12 @@ public class SplitedOrder extends Order implements Cloneable, Comparable<Splited
         init(order);
     }
 
+    public void syncOrderProductIds() {
+        for (OrderProduct product : orderProducts) {
+            product.ord_id = ord_id;
+        }
+    }
+
     private void init(Order order) {
         ord_id = order.ord_id;
         qbord_id = order.qbord_id;

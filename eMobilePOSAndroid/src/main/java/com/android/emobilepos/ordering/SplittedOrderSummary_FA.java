@@ -1,6 +1,7 @@
 package com.android.emobilepos.ordering;
 
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -340,5 +341,30 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             e.printStackTrace();
         }
         getOrderDetailsFR().setReceiptOrder(splitedOrder);
+    }
+
+    @Override
+    public void onResume() {
+
+        if (global.isApplicationSentToBackground(this))
+            global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            global.loggedIn = false;
+        global.startActivityTransitionTimer();
     }
 }

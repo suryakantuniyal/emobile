@@ -67,6 +67,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private SplitedOrder restaurantSplitedOrder;
     private Button checkoutBtn;
     private Button printReceiptBtn;
+    private String lastHodOrderId;
 
 
     @Nullable
@@ -256,9 +257,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
-//            ordersHandler.insert(global.order);
-//            productsHandler.deleteAllOrdProd(global.order.ord_id);
-//            productsHandler.insert(global.orderProducts);
         }
 
 //        DBManager dbManager = new DBManager(getActivity());
@@ -266,10 +264,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         if (splitedOrder.getOrderProducts().size() > 0) {
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 1) {
                 nextOrderID = myPref.getLastOrdID();
-//                global.order.ord_id = nextOrderID;
-//                global.order.isOnHold = "0";
-//                global.order.ord_HoldName = "";
-//                global.order.processed = "1";
                 productsHandler.deleteAllOrdProd(nextOrderID);
                 ordersHandler.deleteOrder(nextOrderID);
                 for (OrderProduct product : splitedOrder.getOrderProducts()) {
@@ -278,18 +272,26 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             } else {
                 nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
             }
-            splitedOrder.ord_id = nextOrderID;
+            if (lastHodOrderId == null || lastHodOrderId.isEmpty()) {
+                splitedOrder.ord_id = nextOrderID;
+            } else {
+                productsHandler.deleteAllOrdProd(lastHodOrderId);
+                ordersHandler.deleteOrder(lastHodOrderId);
+                splitedOrder.ord_id = lastHodOrderId;
+            }
+            splitedOrder.syncOrderProductIds();
             ordersHandler.insert(splitedOrder);
             productsHandler.insert(splitedOrder.getOrderProducts());
             ordTaxesDB.insert(global.listOrderTaxes, splitedOrder.ord_id);
-//            global.order = splitedOrder;
-//            global.orderProducts = splitedOrder.getOrderProducts();
+
             if (onHoldOrder != null) {
                 nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
                 onHoldOrder.ord_id = nextOrderID;
-                for (OrderProduct product : onHoldOrder.getOrderProducts()) {
-                    product.ord_id = nextOrderID;
-                }
+                lastHodOrderId = nextOrderID;
+                onHoldOrder.syncOrderProductIds();
+//                for (OrderProduct product : onHoldOrder.getOrderProducts()) {
+//                    product.ord_id = nextOrderID;
+//                }
                 ordersHandler.insert(onHoldOrder);
                 productsHandler.insert(onHoldOrder.getOrderProducts());
                 ordTaxesDB.insert(global.listOrderTaxes, onHoldOrder.ord_id);
