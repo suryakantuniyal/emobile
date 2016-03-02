@@ -48,7 +48,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private SplittedOrderSummaryFR orderSummaryFR;
     private SplittedOrderDetailsFR orderDetailsFR;
     private String taxID;
-    private int taxSelected;
     private Discount discount;
     private BigDecimal discountableSubtotal;
     private BigDecimal itemsDiscountTotal;
@@ -56,6 +55,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private Tax tax;
     MyPreferences preferences;
     GenerateNewID generateNewID;
+    public SalesReceiptSplitTypes splitType;
 
     public enum NavigationResult {
         PAYMENT_COMPLETED(-1), BACK_SELECT_PAYMENT(1901);
@@ -132,11 +132,13 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             tableNumber = extras.getString("tableNumber");
             orderSeatProducts = gson.fromJson(json, listType);
             taxID = extras.getString("taxID");
-            taxSelected = extras.getInt("taxSelected");
+            String ordetTaxId = extras.getString("orderTaxId");
             int discountSelected = extras.getInt("discountSelected");
             TaxesHandler taxesHandler = new TaxesHandler(this);
             List<Tax> taxList = taxesHandler.getTaxes();
-            tax = taxList.get(taxSelected);
+            int idx = taxList.indexOf(new Tax(ordetTaxId));
+            tax = taxList.get(idx);
+
             ProductsHandler handler2 = new ProductsHandler(this);
             List<Discount> discountList = handler2.getDiscounts();
             if (discountSelected >= 0) {
@@ -204,7 +206,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         int code = Long.valueOf(position).intValue();
         final List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
-        SalesReceiptSplitTypes splitType = SalesReceiptSplitTypes.getByCode(code);
+        splitType = SalesReceiptSplitTypes.getByCode(code);
         switch (splitType) {
             case SPLIT_SINGLE: {
                 String nextID = preferences.getLastOrdID();

@@ -773,8 +773,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
                         processOrder(order, emailInput.getText().toString(), false);
                     } else {
-                        global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
-                        showSplitedOrderPreview();
+//                        global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
+                        if (global.orderProducts != null && global.orderProducts.size() > 0) {
+                            Order order = buildOrder(getActivity(), global, myPref, "");
+                            processOrder(order, "", true);
+
+                        } else
+                            Toast.makeText(activity,
+                                    getString(R.string.warning_empty_products),
+                                    Toast.LENGTH_SHORT).show();
+
                     }
                 }
             }
@@ -792,7 +800,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         b.putString("orderSeatProductList", json);
         b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
         b.putString("taxID", Global.taxID);
-        b.putInt("taxSelected", Global.taxPosition - 1);
+        b.putString("orderTaxId", global.order.tax_id);
         b.putInt("discountSelected", Global.discountPosition - 1);
 
 
@@ -1647,7 +1655,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     global.resetOrderDetailsValues();
 
                     DBManager dbManager = new DBManager(activity);
+
                     dbManager.synchSendOrdersOnHold(false, false);
+                    if(!isToGo){
+                        showSplitedOrderPreview();
+                    }
                 } else {
                     showOnHoldPromptName(handler, handler2);
                 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
@@ -186,7 +187,7 @@ public class OrdersHandler {
             insert.clearBindings();
             insert.close();
             DBManager._db.setTransactionSuccessful();
-
+            Log.d("Order Insert:", order.toString());
         } catch (Exception e) {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
@@ -292,6 +293,7 @@ public class OrdersHandler {
 
     public void deleteOrder(String _ord_id) {
         DBManager._db.delete(table_name, "ord_id = ?", new String[]{_ord_id});
+        Log.d("Delete order:", _ord_id);
     }
 
     public void emptyTableOnHold() {

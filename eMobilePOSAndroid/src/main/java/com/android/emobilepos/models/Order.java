@@ -5,6 +5,7 @@ import android.app.Activity;
 import com.android.support.Customer;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.google.gson.Gson;
 
 public class Order implements  Cloneable{
     public String ord_id = "";
@@ -85,4 +86,11 @@ public class Order implements  Cloneable{
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+//    @Override
+//    public String toString() {
+//        Gson gson = new Gson();
+//        String json = gson.toJson(this, Order.class);
+//        return json+ " / " + super.toString();
+//    }
 }

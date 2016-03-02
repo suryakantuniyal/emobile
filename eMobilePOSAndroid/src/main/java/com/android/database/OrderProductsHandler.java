@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
@@ -185,7 +186,7 @@ public class OrderProductsHandler {
 
                 insert.execute();
                 insert.clearBindings();
-
+                Log.d("Insert OrderProduct", prod.toString());
                 if (isRestaurantMode && Global.orderProductAddonsMap != null
                         && Global.orderProductAddonsMap.containsKey(prod.ordprod_id == null ? "" : prod.ordprod_id)) {
                     insertAddon(insert, prod.ordprod_id);
@@ -337,6 +338,7 @@ public class OrderProductsHandler {
 
     public void deleteAllOrdProd(String _ord_id) {
         DBManager._db.delete(table_name, "ord_id = ?", new String[]{_ord_id});
+        Log.d("Delete all order products:",_ord_id);
     }
 
     public void emptyTable() {

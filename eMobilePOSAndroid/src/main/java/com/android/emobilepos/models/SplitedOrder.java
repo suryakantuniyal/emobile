@@ -20,6 +20,12 @@ public class SplitedOrder extends Order implements Cloneable, Comparable<Splited
     public SplitedOrder(Activity activity, Order order) {
         super(activity);
         init(order);
+        splittedOrderId = System.currentTimeMillis();
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void syncOrderProductIds() {

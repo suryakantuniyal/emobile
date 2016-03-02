@@ -1,5 +1,7 @@
 package com.android.emobilepos.models;
 
+import com.google.gson.Gson;
+
 import java.math.BigDecimal;
 import java.util.Comparator;
 
@@ -97,4 +99,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public int compareTo(OrderProduct another) {
         return this.prod_id.compareTo(another.prod_id);
     }
+//
+//    @Override
+//    public String toString() {
+//        String json = new Gson().toJson(this, OrderProduct.class);
+//        return json + " / " + super.toString();
+//    }
 }
