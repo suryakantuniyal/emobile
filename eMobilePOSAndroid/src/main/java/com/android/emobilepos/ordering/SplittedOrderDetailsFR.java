@@ -275,16 +275,22 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 //                splitedOrder.ord_taxamount=global.order.ord_taxamount;
 //                splitedOrder.ord_total=global.order.ord_total;
 //
-                splitedOrder.getOrderProducts().clear();
-                for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
-                    if(seatProduct.rowType== OrderProductListAdapter.RowType.TYPE_ITEM && seatProduct.orderProduct!=null){
-                        splitedOrder.getOrderProducts().add(seatProduct.orderProduct);
-                    }
-                }
 
-                splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
-                splitedOrder.syncOrderProductIds();
-                ordersHandler.insert(global.order);
+                if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
+                    splitedOrder.getOrderProducts().clear();
+                    for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
+                        if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && seatProduct.orderProduct != null) {
+                            splitedOrder.getOrderProducts().add(seatProduct.orderProduct);
+                        }
+                    }
+                    splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
+                    splitedOrder.syncOrderProductIds();
+                    ordersHandler.insert(global.order);
+                } else {
+                    splitedOrder.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
+                    splitedOrder.syncOrderProductIds();
+                    ordersHandler.insert(splitedOrder);
+                }
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
 //                productsAttrDb.insert(global.ordProdAttr);
