@@ -10,7 +10,6 @@ import com.android.database.AddressHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
-import com.android.database.DBManager;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsAttr_DB;
@@ -58,7 +57,6 @@ public class GenerateXML {
 				ending.append("&DeviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
 				ending.append("&BundleVersion=").append(URLEncoder.encode(info.getBundleVersion(), UTF_8));
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}
@@ -71,7 +69,6 @@ public class GenerateXML {
 			sb.append("&p=").append(URLEncoder.encode(info.getAcctPassword(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -84,7 +81,6 @@ public class GenerateXML {
 		try {
 			sb.append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -112,7 +108,6 @@ public class GenerateXML {
 			sb.append("?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8)).append("&ordID=")
 					.append(URLEncoder.encode(ordID, UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -126,7 +121,6 @@ public class GenerateXML {
 			sb.append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
 			sb.append("&empid=").append(URLEncoder.encode(((ClockInOut_FA) (thisActivity)).getClerkID(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -142,7 +136,6 @@ public class GenerateXML {
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return (sb.toString());
@@ -155,7 +148,6 @@ public class GenerateXML {
 			sb.append("getFirstAvailLic.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -169,7 +161,6 @@ public class GenerateXML {
 			sb.append("getServerTime.ashx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -184,7 +175,6 @@ public class GenerateXML {
 			sb.append("&EmpID=").append(URLEncoder.encode(info.getEmpID(), UTF_8)).append("&syncTime=")
 					.append(URLEncoder.encode(time, UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -198,7 +188,6 @@ public class GenerateXML {
 			sb.append("RequestEmployees.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -213,7 +202,6 @@ public class GenerateXML {
 			sb.append("&MSemployeeID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -230,7 +218,6 @@ public class GenerateXML {
 			sb.append("&key=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -245,54 +232,12 @@ public class GenerateXML {
 			sb.append("&empid=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return (sb.toString());
 	}
 
-	/*
-	 * public String downloadCustomers() { StringBuilder sb = new
-	 * StringBuilder();
-	 * 
-	 * sb.append("getXMLCustomers.aspx?RegID=").append(info.getAcctNumber());
-	 * sb.append("&MSemployeeID=").append(info.getEmpID());
-	 * sb.append("&MSZoneID=").append(info.getZoneID());
-	 * sb.append(ending.toString()); return (sb.toString()); }
-	 * 
-	 * public String downloadProducts() { StringBuilder sb = new
-	 * StringBuilder();
-	 * sb.append("getXMLProducts.aspx?RegID=").append(info.getAcctNumber());
-	 * sb.append("&MSemployeeID=").append(info.getEmpID());
-	 * sb.append("&MSZoneID=").append(info.getZoneID());
-	 * sb.append(ending.toString());
-	 * 
-	 * return(sb.toString()); }
-	 * 
-	 * public String downloadAddress() { StringBuilder sb = new StringBuilder();
-	 * sb.append("getXMLAddress.aspx?RegID=").append(info.getAcctNumber());
-	 * sb.append("&MSemployeeID=").append(info.getEmpID());
-	 * sb.append("&MSZoneID=").append(info.getZoneID());
-	 * sb.append(ending.toString());
-	 * 
-	 * return(sb.toString()); } public String downloadProdImages() {
-	 * StringBuilder sb = new StringBuilder();
-	 * sb.append("getXMLProductsImages.aspx?RegID="
-	 * ).append(info.getAcctNumber());
-	 * sb.append("&MSemployeeID=").append(info.getEmpID());
-	 * sb.append("&MSZoneID=").append(info.getZoneID());
-	 * sb.append(ending.toString());
-	 * 
-	 * return(sb.toString()); }
-	 * 
-	 * public String downloadCategories() { StringBuilder sb = new
-	 * StringBuilder();
-	 * sb.append("getXMLCategories.aspx?RegID=").append(info.getAcctNumber());
-	 * sb.append("&MSemployeeID=").append(info.getEmpID());
-	 * sb.append("&MSZoneID=").append(info.getZoneID());
-	 * sb.append(ending.toString()); return(sb.toString()); }
-	 */
 
 	public String downloadAll(String key) {
 		String value = info.getXMLAction(key);
@@ -305,7 +250,6 @@ public class GenerateXML {
 			sb.append("&MSZoneID=").append(URLEncoder.encode(info.getZoneID(), UTF_8));
 			sb.append(URLEncoder.encode(ending.toString(), UTF_8));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -351,22 +295,14 @@ public class GenerateXML {
 			buildNewCustomer(serializer);
 			serializer.endTag(empstr, "NewCustomers");
 			serializer.endDocument();
-
-			// String t = writer.toString();
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.synchNewCustomer)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	public void buildNewCustomer(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
-
 		CustomersHandler custHandler = new CustomersHandler(thisActivity);
 		Cursor cursor = custHandler.getUnsynchCustomers();
 		cursor.moveToFirst();
@@ -424,11 +360,7 @@ public class GenerateXML {
 
 				cursor.moveToNext();
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildNewCustomer)]");
-				handleGoogleAnalytic(sb.toString());
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
@@ -519,13 +451,8 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				// throw new RuntimeException(e);
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildCustAddr)]");
-				handleGoogleAnalytic(sb.toString());
 
 				throw new RuntimeException(e);
-			} finally {
 			}
 		}
 
@@ -552,17 +479,12 @@ public class GenerateXML {
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.synchOrders)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 
 	}
 
 	public void buildOrder(XmlSerializer serializer, boolean isOnHold) {
-		// myDB = dbManager.openReadableDB();
 		OrdersHandler handler = new OrdersHandler(thisActivity);
 		CustomersHandler custHandler = new CustomersHandler(thisActivity);
 		HashMap<String, String> custInfo = new HashMap<String, String>();
@@ -572,21 +494,10 @@ public class GenerateXML {
 		else
 			cursor = handler.getUnsyncOrdersOnHold();
 		cursor.moveToFirst();
-		// int i_ord_type = cursor.getColumnIndex("ord_type");
-		// int i_total_lines_pay = cursor.getColumnIndex("total_lines_pay");
-		// int i_pay_count = cursor.getColumnIndex("pay_count");
-		// int i_isVoid = cursor.getColumnIndex("isVoid");
-		// String _ord_type = "",_total_lines_pay = "",_pay_count = "",_isVoid =
-		// "";
+
 		int size = cursor.getCount();
 		for (int i = 0; i < size; i++) {
-			// _ord_type = cursor.getString(i_ord_type);
-			// _total_lines_pay = cursor.getString(i_total_lines_pay);
-			// _pay_count = cursor.getString(i_pay_count);
-			// _isVoid = cursor.getString(i_isVoid);
-			// if((!_ord_type.equals(Global.IS_SALES_RECEIPT))||
-			// (_ord_type.equals(Global.IS_SALES_RECEIPT)&&(_isVoid.equals("1")||_total_lines_pay.equals(_pay_count))))
-			// {
+
 			try {
 
 				serializer.startTag(empstr, "Order");
@@ -596,6 +507,18 @@ public class GenerateXML {
 					serializer.text(cursor.getString(cursor.getColumnIndex("ord_HoldName")));
 					serializer.endTag(empstr, "holdName");
 				}
+
+				serializer.startTag(empstr, "assignedTable");
+				serializer.text(cursor.getString(cursor.getColumnIndex("assignedTable")));
+				serializer.endTag(empstr, "assignedTable");
+
+				serializer.startTag(empstr, "associateID");
+				serializer.text(cursor.getString(cursor.getColumnIndex("associateID")));
+				serializer.endTag(empstr, "associateID");
+
+                serializer.startTag(empstr, "numberOfSeats");
+                serializer.text(cursor.getString(cursor.getColumnIndex("numberOfSeats")));
+                serializer.endTag(empstr, "numberOfSeats");
 
 				serializer.startTag(empstr, "ord_id");
 				serializer.text(cursor.getString(cursor.getColumnIndex("ord_id")));
@@ -747,7 +670,7 @@ public class GenerateXML {
 
 				serializer.startTag(empstr, "VAT");
 				serializer.text(
-						Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1") ? true : false));
+						Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1")));
 				serializer.endTag(empstr, "VAT");
 
 				custInfo = custHandler.getXMLCustAddr(cursor.getString(cursor.getColumnIndex("cust_id")));
@@ -813,7 +736,7 @@ public class GenerateXML {
 
 				serializer.endTag(empstr, "Shipping");
 
-				serializer.startTag(empstr, "OrderProduct");
+				serializer.startTag(empstr, "OrderProducts");
 				if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
 					if (cursor.getString(cursor.getColumnIndex("isOnHold")).equals("0")) // not
 																							// on
@@ -825,28 +748,16 @@ public class GenerateXML {
 					buildOrderProducts(serializer, cursor.getString(cursor.getColumnIndex("ord_id")), false, false);
 				}
 
-				serializer.endTag(empstr, "OrderProduct");
+				serializer.endTag(empstr, "OrderProducts");
 
 				serializer.endTag(empstr, "Order");
 
 				cursor.moveToNext();
 			} catch (Exception e) {
-				// throw new RuntimeException(e);
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildOrder)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
-			// }
-			// else
-			// {
-			// cursor.moveToNext();
-			// }
 		}
 		cursor.close();
-		// myDB.close();
 	}
 
 	public void buildOrder(XmlSerializer serializer, boolean isOnHold, Order order)
@@ -1009,7 +920,7 @@ public class GenerateXML {
 		serializer.endTag(empstr, "tipAmount");
 
 		serializer.startTag(empstr, "VAT");
-		serializer.text(Boolean.toString(order.VAT.equals("1") ? true : false));
+		serializer.text(Boolean.toString(order.VAT.equals("1")));
 		serializer.endTag(empstr, "VAT");
 
 		serializer.startTag(empstr, "OrderProduct");
@@ -1040,7 +951,16 @@ public class GenerateXML {
 						|| (cursor.getString(cursor.getColumnIndex("addon")).equals("1") && isOnHold)))) {
 					serializer.startTag(empstr, "OrderProduct");
 
-					serializer.startTag(empstr, "isAddon");
+                    serializer.startTag(empstr, "assignedSeat");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("assignedSeat")));
+                    serializer.endTag(empstr, "assignedSeat");
+
+                    serializer.startTag(empstr, "seatGroupId");
+                    serializer.text(cursor.getString(cursor.getColumnIndex("seatGroupId")));
+                    serializer.endTag(empstr, "seatGroupId");
+
+
+                    serializer.startTag(empstr, "isAddon");
 					serializer.text(cursor.getString(cursor.getColumnIndex("addon")));
 					serializer.endTag(empstr, "isAddon");
 
@@ -1146,13 +1066,7 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				// throw new RuntimeException(e);
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildOrderProducts)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
@@ -1168,12 +1082,7 @@ public class GenerateXML {
 
 		for (int i = 0; i < size; i++) {
 			try {
-
 				serializer.startTag(empstr, "Attribute");
-
-//				serializer.startTag(empstr, "ordprod_id");
-//				serializer.text(value);
-//				serializer.endTag(empstr, "ordprod_id");
 
 				serializer.startTag(empstr, "attribute_id");
 				serializer.text(c.getString(c.getColumnIndex("attribute_id")));
@@ -1190,13 +1099,7 @@ public class GenerateXML {
 				serializer.endTag(empstr, "Attribute");
 				c.moveToNext();
 			} catch (Exception e) {
-				// throw new RuntimeException(e);
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildOrdProdAttr)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
@@ -1212,33 +1115,25 @@ public class GenerateXML {
 			serializer.startTag(empstr, "ASXML");
 
 			buildAccountInformation(serializer);
-			// buildOrder(serializer, isOnHold, order);
 			serializer.startTag(empstr, "Payments");
 			buildPayments(serializer);
 			serializer.endTag(empstr, "Payments");
 			serializer.endDocument();
 
-			String t = writer.toString();
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.syncPayments)]");
-			handleGoogleAnalytic(sb.toString());
-
 			throw new RuntimeException(e);
 
-		} finally {
 		}
 	}
 
 	public void buildPayments(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
 		PaymentsHandler handler = new PaymentsHandler(thisActivity);
 		Cursor cursor = handler.getUnsyncPayments();
 		cursor.moveToFirst();
 		int size = cursor.getCount();
-		String payID = new String();
+		String payID;
 		for (int i = 0; i < size; i++) {
 			try {
 				serializer.startTag(empstr, "Payment");
@@ -1427,17 +1322,11 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildPayments)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		cursor.close();
-		// myDB.close();
 	}
 
 	private void buildInvoicePayment(XmlSerializer serializer, String payID) {
@@ -1466,13 +1355,10 @@ public class GenerateXML {
 				serializer.endTag(empstr, "Invoices");
 
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1498,16 +1384,11 @@ public class GenerateXML {
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.syncVoidTrans)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	public void buildVoidTransactions(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
 		VoidTransactionsHandler handler = new VoidTransactionsHandler(thisActivity);
 		Cursor cursor = handler.getUnsyncVoids();
 		cursor.moveToFirst();
@@ -1529,18 +1410,11 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				// throw new RuntimeException(e);
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildVoidTrans)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 		}
 
 		cursor.close();
-		// myDB.close();
 	}
 
 	public String synchTemplates() {
@@ -1563,22 +1437,17 @@ public class GenerateXML {
 			// return "";
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.synchOrders)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	private void buildTemplate(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
-		// PaymentsHandler handler = new PaymentsHandler(thisActivity);
+
 		TemplateHandler handler = new TemplateHandler(thisActivity);
 		Cursor cursor = handler.getUnsyncTemplates();
 		cursor.moveToFirst();
 		int size = cursor.getCount();
-		String str = "";
+		String str;
 		for (int i = 0; i < size; i++) {
 			try {
 				serializer.startTag(empstr, "Template");
@@ -1624,17 +1493,11 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildTemplates)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		cursor.close();
-		// myDB.close();
 	}
 
 	public String synchCustomerInventory() {
@@ -1655,16 +1518,11 @@ public class GenerateXML {
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.synchCustomerInventory)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	private void buildCustomerInventory(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
 		CustomerInventoryHandler handler = new CustomerInventoryHandler(thisActivity);
 		Cursor cursor = handler.getUnsychedItems();
 		cursor.moveToFirst();
@@ -1698,18 +1556,11 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage())
-						.append(" [com.android.support.GenerateXML (at Class.buildCustomerInventory)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		cursor.close();
-		// myDB.close();
 	}
 
 	public String synchConsignmentTransaction() {
@@ -1730,18 +1581,12 @@ public class GenerateXML {
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage())
-					.append(" [com.android.support.GenerateXML (at Class.synchConsignmentTransaction)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	private void buildConsignmentTransaction(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
-		// PaymentsHandler handler = new PaymentsHandler(thisActivity);
+
 		ConsignmentTransactionHandler handler = new ConsignmentTransactionHandler(thisActivity);
 		Cursor cursor = handler.getUnsychedItems();
 		cursor.moveToFirst();
@@ -1819,18 +1664,11 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage())
-						.append(" [com.android.support.GenerateXML (at Class.buildConsignmentTransaction)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		cursor.close();
-		// myDB.close();
 	}
 
 	public String synchTimeClock() {
@@ -1851,22 +1689,12 @@ public class GenerateXML {
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.synchCustomerInventory)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	private void buildTimeClock(XmlSerializer serializer) {
-		boolean dbWasOpen = true;
-		// if(myDB==null||!myDB.isOpen())
-		// {
-		// dbWasOpen = false;
-		// myDB = dbManager.openReadableDB();
-		// }
-		// PaymentsHandler handler = new PaymentsHandler(thisActivity);
+
 		TimeClockHandler tcHandler = new TimeClockHandler(thisActivity);
 		Cursor cursor = tcHandler.getAllUnsync();
 		cursor.moveToFirst();
@@ -1900,18 +1728,11 @@ public class GenerateXML {
 				cursor.moveToNext();
 
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.buildTimeClock)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		cursor.close();
-		// if(!dbWasOpen)
-		// myDB.close();
 	}
 
 	public String synchInventoryTransfer() {
@@ -1929,24 +1750,18 @@ public class GenerateXML {
 			buildUpdateInventory(serializer);
 			serializer.endTag(empstr, "UpdateInventory");
 			serializer.endDocument();
-
-			String t = writer.toString();
 			return writer.toString();
 
 		} catch (Exception e) {
-			handleGoogleAnalytic(Log.getStackTraceString(e));
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	private void buildUpdateInventory(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
 		TransferLocations_DB handler = new TransferLocations_DB(thisActivity);
 		Cursor c = handler.getUnsyncTransfers();
 		c.moveToFirst();
 		int size = c.getCount();
-		String val = empstr;
 		for (int i = 0; i < size; i++) {
 			try {
 				serializer.startTag(empstr, "Location");
@@ -1980,19 +1795,14 @@ public class GenerateXML {
 				c.moveToNext();
 
 			} catch (Exception e) {
-				handleGoogleAnalytic(Log.getStackTraceString(e));
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		c.close();
-		// myDB.close();
 	}
 
 	private void buildInventoryTransactions(XmlSerializer serializer, String _trans_id) {
-		// myDB = dbManager.openReadableDB();
 		TransferInventory_DB handler = new TransferInventory_DB(thisActivity);
 		Cursor c = handler.getInventoryTransactions(_trans_id);
 		c.moveToFirst();
@@ -2014,15 +1824,11 @@ public class GenerateXML {
 				c.moveToNext();
 
 			} catch (Exception e) {
-				handleGoogleAnalytic(Log.getStackTraceString(e));
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		c.close();
-		// myDB.close();
 	}
 
 	public static XmlSerializer getXmlSerializer() {
@@ -2033,13 +1839,10 @@ public class GenerateXML {
 			serializer.startDocument("UTF-8", true);
 			serializer.startTag(empstr, "ASXML");
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -2066,9 +1869,7 @@ public class GenerateXML {
 			return writer.toString();
 
 		} catch (Exception e) {
-			handleGoogleAnalytic(Log.getStackTraceString(e));
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
@@ -2077,16 +1878,13 @@ public class GenerateXML {
 		Date dExpenseDateCreated;
 		String sExpenseDateCreated;
 		String shiftID;
-		int expensesCount = 0;
 		ShiftExpensesDBHandler shiftExpensesDBHandler;
 		shiftExpensesDBHandler = new ShiftExpensesDBHandler(thisActivity);
 		Cursor expensesByShift;
-		// myDB = dbManager.openReadableDB();
 		ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(thisActivity);
 		Cursor c = handler.getUnsyncShifts();
 		c.moveToFirst();
 		int size = c.getCount();
-		String val = empstr;
 		for (int i = 0; i < size; i++) {
 			try {
 				shiftID = c.getString(c.getColumnIndex("shift_id"));
@@ -2109,28 +1907,18 @@ public class GenerateXML {
 				serializer.text(c.getString(c.getColumnIndex("creationDate")));
 				serializer.endTag(empstr, "creationDate");
 
-				// serializer.startTag(empstr, "creationDateLocal");
-				// serializer.text(c.getString(c.getColumnIndex("creationDateLocal")));
-				// serializer.endTag(empstr, "creationDateLocal");
 
 				serializer.startTag(empstr, "startTime");
 				serializer.text(c.getString(c.getColumnIndex("startTime")));
 				serializer.endTag(empstr, "startTime");
 
-				// serializer.startTag(empstr, "startTimeLocal");
-				// serializer.text(c.getString(c.getColumnIndex("startTimeLocal")));
-				// serializer.endTag(empstr, "startTimeLocal");
 
-				val = c.getString(c.getColumnIndex("endTime"));
-				if (!val.isEmpty()) {
+				if (!c.getString(c.getColumnIndex("endTime")).isEmpty()) {
 					serializer.startTag(empstr, "endTime");
 					serializer.text(c.getString(c.getColumnIndex("endTime")));
 					serializer.endTag(empstr, "endTime");
 				}
 
-				// serializer.startTag(empstr, "endTimeLocal");
-				// serializer.text(c.getString(c.getColumnIndex("endTimeLocal")));
-				// serializer.endTag(empstr, "endTimeLocal");
 
 				serializer.startTag(empstr, "beginning_petty_cash");
 				serializer.text(c.getString(c.getColumnIndex("beginning_petty_cash")));
@@ -2162,8 +1950,7 @@ public class GenerateXML {
 
 				serializer.startTag(empstr, "Expenses");
 
-				expensesCount = 0;
-        		while (!expensesByShift.isAfterLast()) {
+				while (!expensesByShift.isAfterLast()) {
 					serializer.startTag(empstr, "Expense");
 
 					serializer.startTag(empstr, "expense_id");
@@ -2177,7 +1964,7 @@ public class GenerateXML {
 					serializer.startTag(empstr, "creationDate");
 					//the expenseID is the number of milliseconds from 1970
 					//use it to find when the expense was created
-					lExpenseDateCreated = new Long(expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
+					lExpenseDateCreated = Long.valueOf(expensesByShift.getString(expensesByShift.getColumnIndex("_id")));
 					dExpenseDateCreated = new Date(lExpenseDateCreated);
 					sExpenseDateCreated = dExpenseDateCreated.toLocaleString();
 					serializer.text(sExpenseDateCreated);
@@ -2196,7 +1983,6 @@ public class GenerateXML {
 
 					serializer.endTag(empstr, "Expense");
 
-					expensesCount++;
 					expensesByShift.moveToNext();
 				}
 
@@ -2208,18 +1994,11 @@ public class GenerateXML {
 				c.moveToNext();
 
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage())
-						.append(" [com.android.support.GenerateXML (at Class.buildConsignmentTransaction)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
 		c.close();
-		// myDB.close();
 	}
 
 	public String synchWalletReceipts() {
@@ -2242,23 +2021,16 @@ public class GenerateXML {
 			return writer.toString();
 
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.support.GenerateXML (at Class.synchCustomerInventory)]");
-			handleGoogleAnalytic(sb.toString());
 			throw new RuntimeException(e);
-		} finally {
 		}
 	}
 
 	private void builderWalletOrder(XmlSerializer serializer) {
-		// myDB = dbManager.openReadableDB();
-		// PaymentsHandler handler = new PaymentsHandler(thisActivity);
-		// ConsignmentTransactionHandler handler = new
-		// ConsignmentTransactionHandler(thisActivity);
+
 		OrdersHandler handler = new OrdersHandler(thisActivity);
 		MemoTextHandler memoHandler = new MemoTextHandler(thisActivity);
 		CustomersHandler custHandler = new CustomersHandler(thisActivity);
-		HashMap<String, String> custInfo = new HashMap<String, String>();
+		HashMap<String, String> custInfo;
 		HashMap<String, String> orderInfo = memoHandler.getOrderInfo();
 		Cursor c = handler.getTupyxOrders();
 		c.moveToFirst();
@@ -2756,13 +2528,7 @@ public class GenerateXML {
 				c.moveToNext();
 
 			} catch (Exception e) {
-				StringBuilder sb = new StringBuilder();
-				sb.append(e.getMessage())
-						.append(" [com.android.support.GenerateXML (at Class.buildConsignmentTransaction)]");
-				handleGoogleAnalytic(sb.toString());
-
 				throw new RuntimeException(e);
-			} finally {
 			}
 
 		}
@@ -2889,9 +2655,6 @@ public class GenerateXML {
 		c.close();
 	}
 
-	private void handleGoogleAnalytic(String stack) {
-//		Tracker tracker = EasyTracker.getInstance(thisActivity);
-//		tracker.send(MapBuilder.createException(stack, false).build());
-	}
+
 
 }

@@ -46,10 +46,7 @@
             android:key="pref_ask_seats"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_ask_numbers_seats" />
-        <CheckBoxPreference
-            android:key="pref_ask_split_equally"
-            android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_ask_split_equally" />
+
     </PreferenceCategory>
 
 

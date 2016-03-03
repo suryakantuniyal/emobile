@@ -138,7 +138,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private String selectedDinningTableNumber;
     private String selectedSeatNumber = "1";
     public boolean openFromHold;
+    OrderingAction orderingAction = OrderingAction.NONE;
 
+    public enum OrderingAction {
+        HOLD, CHECKOUT, NONE
+    }
 
 //    CustomKeyboard mCustomKeyboard;
 
@@ -453,6 +457,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
         switch (v.getId()) {
             case R.id.btnCheckOut:
+                orderingAction=OrderingAction.CHECKOUT;
                 btnCheckout.setEnabled(false);
                 if (leftFragment != null) {
                     leftFragment.checkoutOrder();
@@ -1259,6 +1264,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
+    public void setSelectedDinningTableNumber(String tableNumber) {
+        selectedDinningTableNumber = tableNumber;
+    }
+
 
     private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
         @Override
@@ -1440,7 +1449,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void startSignature() {
     }
 
-    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product,String selectedSeatNumber) {
+    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
 

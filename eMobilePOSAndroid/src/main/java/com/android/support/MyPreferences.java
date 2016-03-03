@@ -89,7 +89,6 @@ public class MyPreferences {
     public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
-    public static final String pref_ask_split_equally = "pref_ask_split_equally";
 
 
     public static final String pref_automatic_sync = "pref_automatic_sync";

@@ -10,6 +10,13 @@ public class DinningTable {
     private Location location;
     private boolean wheelAccessibility;
 
+    public static DinningTable getDefaultDinningTable() {
+        DinningTable table = new DinningTable();
+        table.setNumber("1");
+        table.setSeats(1);
+        return table;
+    }
+
     public String getNumber() {
         return number;
     }

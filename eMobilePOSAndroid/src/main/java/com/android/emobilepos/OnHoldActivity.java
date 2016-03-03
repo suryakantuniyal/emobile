@@ -52,15 +52,12 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Activity activity;
-    private ListView listView;
-    private ListViewCursorAdapter myAdapter;
     private Cursor myCursor;
     //private DBManager dbManager;
     //private SQLiteDatabase db;
     private Global global;
     private boolean isAddon = false;
     private Global.OrderType orderType = Global.OrderType.SALES_RECEIPT;
-    private String ord_HoldName = "";
     private ProgressDialog myProgressDialog;
     boolean validPassword = true;
     private boolean isUpdateOnHold = false;
@@ -78,10 +75,10 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         //dbManager = new DBManager(activity);
         //db = dbManager.openReadableDB();
         myPref = new MyPreferences(activity);
-        listView = (ListView) findViewById(R.id.onHoldListView);
+        ListView listView = (ListView) findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         myCursor = ordersHandler.getOrderOnHold();
-        myAdapter = new ListViewCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
+        ListViewCursorAdapter myAdapter = new ListViewCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -151,7 +148,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(Void... params) {
-            // TODO Auto-generated method stub
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -164,7 +160,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
             if (Global.isConnectedToInternet(activity)) {
-                //selectCustomer(myCursor.getString(myCursor.getColumnIndex("cust_id")));
                 try {
 
 
@@ -202,9 +197,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     }
 
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-//					Tracker tracker = EasyTracker.getInstance(activity);
-//					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
                 }
 
                 return null;
@@ -229,70 +222,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
         }
     }
-
-
-//	private void executeOnHold(boolean forPrinting) {
-//		myCursor.moveToPosition(selectedPos);
-//		OrderProductsHandler orderProdHandler = new OrderProductsHandler(activity);
-//
-//		Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-//		Global.taxID = myCursor.getString(myCursor.getColumnIndex("tax_id"));
-//
-//		orderType = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("ord_type")));
-//		ord_HoldName = myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
-//		selectCustomer(myCursor.getString(myCursor.getColumnIndex("cust_id")));
-//
-//		Intent intent = null;
-//		if (!forPrinting) {
-//			intent = new Intent(activity, OrderingMain_FA.class);
-//			// intent = new Intent(activity, SalesReceiptSplitActivity.class);
-//
-//			switch (orderType) {
-//			case Global.INT_SALES_RECEIPT:
-//				intent.putExtra("option_number", 0);
-//				break;
-//			case Global.INT_RETURN:
-//				intent.putExtra("option_number", 2);
-//				break;
-//			case Global.INT_ORDER:
-//				intent.putExtra("option_number", 1);
-//				break;
-//			case Global.INT_INVOICE:
-//				intent.putExtra("option_number", 3);
-//				break;
-//			case Global.INT_ESTIMATE:
-//				intent.putExtra("option_number", 4);
-//				break;
-//			}
-//
-//			intent.putExtra("ord_HoldName", ord_HoldName);
-//			Global.isFromOnHold = true;
-//
-//		}
-//		if (!Global.isConnectedToInternet(activity)) {
-//			Cursor c = orderProdHandler.getOrderProductsOnHold(myCursor.getString(myCursor.getColumnIndex("ord_id")));
-//			int size = c.getCount();
-//			if (size > 0) {
-//				if (!forPrinting) {
-//					addOrder(c);
-//					isAddon = false;
-//
-//					startActivityForResult(intent, 0);
-//					activity.finish();
-//				} else {
-//					DBManager dbManager = new DBManager(activity);
-//					dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1);
-//				}
-//			} else
-//				Toast.makeText(activity, "no available items", Toast.LENGTH_LONG).show();
-//		} else {
-//			DBManager dbManager = new DBManager(activity);
-//			if (!forPrinting)
-//				dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 0);
-//			else
-//				dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1);
-//		}
-//	}
 
 
     private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
@@ -321,7 +250,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             Global.taxID = myCursor.getString(myCursor.getColumnIndex("tax_id"));
 
             orderType = Global.OrderType.getByCode(Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("ord_type"))));
-            ord_HoldName = myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
+            String ord_HoldName = myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
             selectCustomer(myCursor.getString(myCursor.getColumnIndex("cust_id")));
 
             forPrinting = params[0];
@@ -490,12 +419,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnOpen.setText(R.string.button_open);
         btnCancel.setText(R.string.button_cancel);
-
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         btnOpen.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 askForManagerPassDlg();
 
@@ -505,7 +433,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -633,7 +560,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         ProductsHandler prodHandler = new ProductsHandler(activity);
         String[] discountInfo;
         double discAmount = 0;
-        double total = 0;
+        double total;
         double itemTotal = 0;
 
 
@@ -897,9 +824,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            // TODO Auto-generated method stub
 
-            View retView = null;
+            View retView;
             retView = inflater.inflate(R.layout.onhold_listview_adapter, parent, false);
 
             ViewHolder holder = new ViewHolder();

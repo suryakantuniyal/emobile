@@ -491,8 +491,13 @@ public class SalesTab_FR extends Fragment {
                 popDlog.dismiss();
                 if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
                     selectDinnerTable();
-                } else {
+                } else if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
+                    selectedDinningTable = DinningTable.getDefaultDinningTable();
                     selectSeatAmount();
+                } else {
+                    selectedDinningTable = DinningTable.getDefaultDinningTable();
+                    startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
+
                 }
 
             }
@@ -540,7 +545,11 @@ public class SalesTab_FR extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedDinningTable = dinningTables.get(position);
                 popDlog.dismiss();
-                selectSeatAmount();
+                if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
+                    selectSeatAmount();
+                }else{
+                    startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
+                }
             }
         });
         popDlog.show();
