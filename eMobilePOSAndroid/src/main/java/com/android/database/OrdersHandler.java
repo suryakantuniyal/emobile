@@ -204,7 +204,7 @@ public class OrdersHandler {
 
             this.data = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert = null;
+            SQLiteStatement insert;
             String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
                     "VALUES (" + sb2.toString() + ")";
             insert = DBManager._db.compileStatement(sb);
@@ -256,6 +256,7 @@ public class OrdersHandler {
                     insert.bindString(index(custidkey), getData(custidkey, i)); // custidkey
                     insert.bindString(index(isOnHold), "1"); // isOnHold
                     insert.bindString(index(ord_HoldName), getData(ord_HoldName, i)); // ord_HoldName
+                    insert.bindString(index(assignedTable), getData(assignedTable, i)); // ord_HoldName
 
                     insert.bindString(index(VAT), getData(VAT, i));
 
