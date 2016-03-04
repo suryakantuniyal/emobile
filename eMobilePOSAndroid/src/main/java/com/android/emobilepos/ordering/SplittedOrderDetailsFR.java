@@ -1,15 +1,21 @@
 package com.android.emobilepos.ordering;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -70,6 +76,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private Button checkoutBtn;
     private Button printReceiptBtn;
     private String lastHodOrderId;
+    private LinearLayout receiptPreview;
+    private Button printAllReceiptBtn;
 
 
     @Nullable
@@ -85,6 +93,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         String[] footer = handler.getFooter();
         checkoutBtn = (Button) detailView.findViewById(R.id.checkoutbutton);
         printReceiptBtn = (Button) detailView.findViewById(R.id.printReceiptbutton2);
+        printAllReceiptBtn = (Button) getActivity().findViewById(R.id.printAllReceiptbutton3);
+        printAllReceiptBtn.setOnClickListener(this);
         checkoutBtn.setOnClickListener(this);
         printReceiptBtn.setOnClickListener(this);
         TextView header1 = (TextView) detailView.findViewById(R.id.memo_headerLine1textView);
@@ -101,6 +111,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         footer2 = (TextView) detailView.findViewById(R.id.footerLine2textView);
         footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
         orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
+        receiptPreview = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
         deviceName.setText(String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
 
@@ -223,8 +234,50 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 break;
             }
             case R.id.printReceiptbutton2: {
+                if (Global.mainPrinterManager != null
+                        && Global.mainPrinterManager.currentDevice != null) {
+                    Global.mainPrinterManager.currentDevice.printReceiptPreview(receiptPreview);
+                }
                 break;
             }
+            case R.id.printAllReceiptbutton3: {
+                if (Global.mainPrinterManager != null
+                        && Global.mainPrinterManager.currentDevice != null) {
+                    final int[] count = {0};
+                    SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
+                    final SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) orderSummaryFa.getOrderSummaryFR().getGridView().getAdapter();
+                    ViewTreeObserver vto = receiptPreview.getViewTreeObserver();
+                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            count[0]++;
+                            Global.mainPrinterManager.currentDevice.printReceiptPreview(receiptPreview);
+                            if (count[0] < adapter.getCount()) {
+                                setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
+                            } else {
+                                receiptPreview.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                            }
+
+                        }
+                    });
+
+                    setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
+                }
+            }
+        }
+    }
+
+
+    public class PrintPreview extends AsyncTask<SplitedOrder, Void, SplitedOrder> {
+
+        @Override
+        protected SplitedOrder doInBackground(SplitedOrder... params) {
+            return params[0];
+        }
+
+        @Override
+        protected void onPostExecute(SplitedOrder splitedOrder) {
+
         }
     }
 

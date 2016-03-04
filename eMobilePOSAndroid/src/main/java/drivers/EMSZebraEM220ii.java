@@ -10,7 +10,9 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Base64;
+import android.view.View;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsHandler;
@@ -26,11 +28,13 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.starmicronics.stario.StarIOPortException;
 import com.zebra.printer.MobilePrinter;
 
 import java.io.File;
@@ -539,6 +543,18 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     @Override
     public void toggleBarcodeReader() {
 
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
     }
 
 }

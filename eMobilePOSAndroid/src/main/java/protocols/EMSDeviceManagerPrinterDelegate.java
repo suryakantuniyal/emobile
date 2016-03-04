@@ -2,11 +2,14 @@ package protocols;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 
@@ -64,4 +67,7 @@ public interface EMSDeviceManagerPrinterDelegate {
     boolean isUSBConnected();
 
     void toggleBarcodeReader();
+
+    void printReceiptPreview(View view);
+
 }

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.PayMethodsHandler;
@@ -15,6 +16,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -592,6 +594,18 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public void toggleBarcodeReader() {
 
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
     }
     //
     // protected void printImage(int type) {

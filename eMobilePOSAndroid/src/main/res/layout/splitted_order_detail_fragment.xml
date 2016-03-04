@@ -7,6 +7,7 @@
 
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -14,39 +15,41 @@
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical|center_horizontal"
         android:orientation="horizontal"
-        android:padding="5dp"
-        android:id="@+id/linearLayout2">
+        android:padding="5dp">
 
         <Button
             android:id="@+id/checkoutbutton"
             style="@style/action_button_text_appearance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/action_button_selector"
-            android:text="@string/button_checkout"
-            android:layout_weight="1" />
+            android:text="@string/button_checkout" />
 
         <Button
             android:id="@+id/printReceiptbutton2"
             style="@style/action_button_text_appearance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/action_button_selector"
-            android:text="@string/button_print"
-            android:layout_weight="1" />
+            android:text="@string/button_print" />
 
 
     </LinearLayout>
 
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
         android:id="@+id/scrollView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout2"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/linearLayout2">
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
 
         <LinearLayout
+            android:id="@+id/receiptPreviewContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -70,6 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:fontFamily="sans-serif-medium"
                 android:text="Header 1" />
 
             <TextView
@@ -77,6 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:fontFamily="sans-serif-medium"
                 android:text="Header 2" />
 
             <TextView
@@ -84,6 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:fontFamily="sans-serif-medium"
                 android:text="header 3" />
 
             <LinearLayout
@@ -97,13 +103,19 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/sales_receipt" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/sales_receipt"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/orderIdtextView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="5-00123-2016" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="5-00123-2016"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
             </LinearLayout>
 
             <LinearLayout
@@ -117,13 +129,19 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/receipt_date" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/receipt_date"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/orderDatetextView21"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Feb/12/2016" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Feb/12/2016"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
             </LinearLayout>
 
             <LinearLayout
@@ -137,14 +155,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
-                    android:text="@string/receipt_employee" />
+                    android:text="@string/receipt_employee"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/deviceNametextView23"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Android Employee 1(5)" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Android Employee 1(5)"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
             </LinearLayout>
 
             <LinearLayout
@@ -166,14 +190,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
-                    android:text="@string/subtotal_receipt" />
+                    android:text="@string/subtotal_receipt"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/subtotaltextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="$85.99"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
             </LinearLayout>
 
             <LinearLayout
@@ -187,14 +217,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
-                    android:text="@string/receipt_discount_line_item" />
+                    android:text="@string/receipt_discount_line_item"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/lineitem_discounttextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="$85.99"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
             </LinearLayout>
 
             <LinearLayout
@@ -208,14 +244,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
-                    android:text="@string/receipt_tax" />
+                    android:text="@string/receipt_tax"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/taxtotaltextView14a"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="$85.99"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
             </LinearLayout>
 
             <LinearLayout
@@ -235,14 +277,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
-                    android:text="@string/receipt_grandtotal" />
+                    android:text="@string/receipt_grandtotal"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
 
                 <TextView
                     android:id="@+id/granTotaltextView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99" />
+                    android:fontFamily="sans-serif-medium"
+                    android:text="$85.99"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
             </LinearLayout>
 
 
@@ -251,28 +299,40 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Footer 1" />
+                android:fontFamily="sans-serif-medium"
+                android:text="Footer 1"
+                android:textColor="#000"
+                android:textStyle="normal" />
 
             <TextView
                 android:id="@+id/footerLine2textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="footer 2" />
+                android:fontFamily="sans-serif-medium"
+                android:text="footer 2"
+                android:textColor="#000"
+                android:textStyle="normal" />
 
             <TextView
                 android:id="@+id/footerLine3textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="footer 3" />
+                android:fontFamily="sans-serif-medium"
+                android:text="footer 3"
+                android:textColor="#000"
+                android:textStyle="normal" />
 
             <TextView
                 android:id="@+id/enabler_weblinktextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/enabler_website" />
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/enabler_website"
+                android:textColor="#000"
+                android:textStyle="normal" />
 
 
         </LinearLayout>

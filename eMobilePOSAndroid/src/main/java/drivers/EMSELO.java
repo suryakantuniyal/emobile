@@ -11,14 +11,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -33,6 +36,7 @@ import com.elotouch.paypoint.register.printer.SerialPort;
 import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
 import com.partner.pt100.display.DisplayLineApiContext;
 import com.partner.pt100.display.DisplayManager;
+import com.starmicronics.stario.StarIOPortException;
 
 import org.bouncycastle.crypto.digests.LongDigest;
 
@@ -454,6 +458,18 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public void toggleBarcodeReader() {
         if (barcodereader != null) {
             barcodereader.turnOnLaser();
+        }
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
         }
     }
 

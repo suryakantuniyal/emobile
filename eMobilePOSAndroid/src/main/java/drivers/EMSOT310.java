@@ -9,11 +9,13 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.internal.misccomm.misccommManager;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -272,6 +274,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
 
     }
 

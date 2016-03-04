@@ -10,7 +10,9 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.util.Base64;
+import android.view.View;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.database.MemoTextHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
@@ -19,9 +21,11 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -531,5 +535,17 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public void toggleBarcodeReader() {
 
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -40,6 +40,7 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.database.DBManager;
@@ -58,11 +59,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View;
 
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
@@ -348,6 +351,14 @@ public class EMSDeviceDriver {
                 print(sb.toString());
             }
         }
+    }
+
+    public void printReceiptPreview(Bitmap bitmap, int lineWidth) throws JAException, StarIOPortException {
+        setPaperWidth(lineWidth);
+        printPref = myPref.getPrintingPreferences();
+        StringBuilder sb = new StringBuilder();
+        printImage(bitmap);
+        cutPaper();
     }
 
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
@@ -899,6 +910,111 @@ public class EMSDeviceDriver {
                 matrix.postRotate(90);
                 matrix.preScale(1.0f, -1.0f);
                 Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
+                eloPrinterApi.print_image(activity, rotatedBmp);
+            }
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+
+    public static Bitmap loadBitmapFromView(View v) {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        float ratio = new Integer(PAPER_WIDTH).floatValue() / new Integer(b.getWidth()).floatValue();
+        int width = Math.round(ratio * b.getWidth());
+        int height = Math.round(ratio * b.getHeight());
+        b = Bitmap.createScaledBitmap(b, width, height, true);
+        return b;
+    }
+
+    protected void printImage(Bitmap bitmap) throws StarIOPortException, JAException {
+        if (PRINT_TO_LOG) {
+            Log.d("Print", "*******Image Print***********");
+            return;
+        }
+        if (bitmap != null) {
+
+            if (this instanceof EMSBluetoothStarPrinter) {
+
+                byte[] data;
+
+                if (isPOSPrinter) {
+                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
+                            bitmap);
+                    Communication.Result result;
+                    result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
+
+//					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
+//							PAPER_WIDTH, false);
+                } else {
+                    Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                    int w = bmp.getWidth();
+                    int h = bmp.getHeight();
+                    int pixel;
+                    for (int x = 0; x < w; x++) {
+                        for (int y = 0; y < h; y++) {
+                            pixel = bmp.getPixel(x, y);
+                            if (pixel == Color.TRANSPARENT)
+                                bmp.setPixel(x, y, Color.WHITE);
+                        }
+                    }
+
+                    MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
+                            bmp, PAPER_WIDTH, false, false);
+                }
+
+            } else if (this instanceof EMSPAT100) {
+                printerApi.printImage(bitmap, 0);
+            } else if (this instanceof EMSBlueBambooP25) {
+                EMSBambooImageLoader loader = new EMSBambooImageLoader();
+                ArrayList<ArrayList<Byte>> arrayListList = loader.bambooDataWithAlignment(0, bitmap);
+
+                for (ArrayList<Byte> arrayList : arrayListList) {
+
+                    byte[] byteArray = new byte[arrayList.size()];
+                    int size = arrayList.size();
+                    for (int i = 0; i < size; i++) {
+
+                        byteArray[i] = arrayList.get(i).byteValue();
+
+                    }
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    print(byteArray);
+                }
+            } else if (this instanceof EMSOneil4te) {
+                // print image
+                DocumentLP documentLP = new DocumentLP("$");
+                documentLP.clear();
+                documentLP.writeImage(bitmap, 832);
+
+                device.write(documentLP.getDocumentData());
+
+            } else if (this instanceof EMSPowaPOS) {
+
+                powaPOS.printImage(bitmap);
+            } else if (this instanceof EMSsnbc) {
+                int PrinterWidth = 640;
+
+                // download bitmap
+                pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
+                pos_sdk.imageStandardModeRasterPrint(bitmap, PrinterWidth);
+                pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
+            } else if (this instanceof EMSELO) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                matrix.preScale(1.0f, -1.0f);
+                Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 eloPrinterApi.print_image(activity, rotatedBmp);
             }
 
@@ -2175,5 +2291,6 @@ public class EMSDeviceDriver {
         } catch (StarIOPortException ignored) {
         }
     }
+
 
 }

@@ -11,12 +11,14 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -565,5 +567,12 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     public void toggleBarcodeReader() {
 
     }
+
+    @Override
+    public void printReceiptPreview(View view) {
+
+    }
+
+
 }
 

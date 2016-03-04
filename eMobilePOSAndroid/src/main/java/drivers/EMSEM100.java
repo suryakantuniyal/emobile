@@ -9,11 +9,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -194,6 +196,11 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
 
     }
 
