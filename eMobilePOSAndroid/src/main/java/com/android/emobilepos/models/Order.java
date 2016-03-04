@@ -61,9 +61,11 @@ public class Order implements  Cloneable{
 
 
     //private Global global;
-    private MyPreferences myPref;
+
+    private transient MyPreferences myPref;
     public String assignedTable;
     public String associateID;
+    public int numberOfSeats;
 
     public Order() {
         ord_issync = "0";
@@ -87,10 +89,10 @@ public class Order implements  Cloneable{
         return super.clone();
     }
 
-//    @Override
-//    public String toString() {
-//        Gson gson = new Gson();
-//        String json = gson.toJson(this, Order.class);
-//        return json+ " / " + super.toString();
-//    }
+
+    public String toJson() {
+        Gson gson = new Gson();
+        String json = gson.toJson(this, Order.class);
+        return json;
+    }
 }

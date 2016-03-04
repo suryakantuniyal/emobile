@@ -139,10 +139,12 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public void addSeat(OrderProduct orderProduct) {
-        OrderSeatProduct product = new OrderSeatProduct(orderProduct.assignedSeat, orderProduct.seatGroupId);
-        product.setSeatGroupId(getNextGroupId());
-        orderSeatProductList.add(product);
-        orderSeatProductFullList.add(product);
+        if(getSeat(orderProduct.assignedSeat)==null) {
+            OrderSeatProduct product = new OrderSeatProduct(orderProduct.assignedSeat, orderProduct.seatGroupId);
+            product.setSeatGroupId(orderProduct.seatGroupId == 0 ? getNextGroupId() : orderProduct.seatGroupId);
+            orderSeatProductList.add(product);
+            orderSeatProductFullList.add(product);
+        }
         notifyDataSetChanged();
     }
 

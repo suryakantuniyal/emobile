@@ -29,6 +29,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXdownloadHandler;
@@ -37,6 +38,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -244,21 +246,24 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         protected Intent doInBackground(Boolean... params) {
 
             myCursor.moveToPosition(selectedPos);
+            Order order = OrdersHandler.getOrder(myCursor, activity);
             orderProdHandler = new OrderProductsHandler(activity);
 
-            Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-            Global.taxID = myCursor.getString(myCursor.getColumnIndex("tax_id"));
+            Global.lastOrdID = order.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
+            Global.taxID = order.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
 
-            orderType = Global.OrderType.getByCode(Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("ord_type"))));
-            String ord_HoldName = myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
-            selectCustomer(myCursor.getString(myCursor.getColumnIndex("cust_id")));
+            orderType = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
+            String ord_HoldName = order.ord_HoldName;//myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
+            selectCustomer(order.cust_id);//myCursor.getString(myCursor.getColumnIndex("cust_id")));
 
             forPrinting = params[0];
             if (!forPrinting) {
                 intent = new Intent(activity, OrderingMain_FA.class);
                 // intent = new Intent(activity, SalesReceiptSplitActivity.class);
-                String assignedTable = myCursor.getString(myCursor.getColumnIndex("assignedTable"));
+                String assignedTable = order.assignedTable;//myCursor.getString(myCursor.getColumnIndex("assignedTable"));
                 intent.putExtra("selectedDinningTableNumber", assignedTable);
+                intent.putExtra("onHoldOrderJson",order.toJson());
+
                 intent.putExtra("openFromHold", true);
                 if (assignedTable != null && !assignedTable.isEmpty()) {
                     intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);

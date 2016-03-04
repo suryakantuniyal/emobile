@@ -91,6 +91,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private AddProductBtnCallback callBackAddProd;
     private boolean isToGo;
+    private Order onHoldOrder;
+
+    public Receipt_FR() {
+
+    }
+
+    public Receipt_FR(Order onHoldOrder) {
+
+        this.onHoldOrder = onHoldOrder;
+    }
+
 
     public interface AddProductBtnCallback {
         void addProductServices();
@@ -158,7 +169,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         fragInstance = this;
 
         myPref = new MyPreferences(activity);
-        global.order = new Order(activity);
+        if (onHoldOrder == null) {
+            global.order = new Order(activity);
+        } else {
+            global.order = onHoldOrder;
+        }
         final Bundle extras = activity.getIntent().getExtras();
         typeOfProcedure = (Global.TransactionType) extras.get("option_number");
         isToGo = ((OrderingMain_FA) getActivity()).isToGo;
@@ -528,7 +543,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.holdButton:
                 ((OrderingMain_FA) getActivity()).orderingAction = OrderingMain_FA.OrderingAction.HOLD;
                 if (global.orderProducts != null && global.orderProducts.size() > 0) {
-                    Order order = buildOrder(getActivity(), global, myPref, "");
+                    Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
                     processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold);
 
                 } else
@@ -701,7 +716,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             if (myPref.getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, myPref, "");
+                    Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
                     processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold);
                 } else
                     showEmailDlog();
@@ -758,7 +773,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 if (!emailInput.getText().toString().isEmpty()) {
                     if (checkEmail(emailInput.getText().toString())) {
-                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
+                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString(), ord_HoldName);
                         processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold);
                     } else
                         Toast.makeText(activity,
@@ -766,13 +781,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 Toast.LENGTH_LONG).show();
                 } else {
                     if (isToGo) {
-                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
+                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString(), ord_HoldName);
                         processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold);
                     } else {
 //                        global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
                         if (global.orderProducts != null && global.orderProducts.size() > 0) {
-                            Order order = buildOrder(getActivity(), global, myPref, "");
-                            order.ord_HoldName = ord_HoldName;
+                            Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold);
 
                         } else
@@ -843,7 +857,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 dlog.dismiss();
 
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, myPref, "");
+                    Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
                     processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold);
                 } else
                     showEmailDlog();
@@ -1092,7 +1106,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public static Order buildOrder(Activity activity, Global global,
-                                   MyPreferences myPref, String _email) {
+                                   MyPreferences myPref, String _email, String ord_HoldName) {
         Order order = new Order(activity);
         order.assignedTable = ((OrderingMain_FA) activity).getSelectedDinningTableNumber();
         order.ord_total = Global
@@ -1107,7 +1121,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
         order.qbord_id = Global.lastOrdID.replace("-", "");
-
+        order.ord_HoldName = ord_HoldName;
         order.c_email = _email;
 
         order.cust_id = myPref.getCustID();
@@ -1674,6 +1688,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void setOrderAsHold(String holdName, OrdersHandler ordersHandler, OrderProductsHandler orderProductsHandler) {
         global.order.ord_HoldName = holdName;
         global.order.processed = "10";
+        global.order.numberOfSeats = mainLVAdapter.getSeatsAmount();
         ordersHandler.insert(global.order);
         global.encodedImage = "";
         orderProductsHandler.insert(global.orderProducts);
@@ -1696,12 +1711,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         switch (type) {
             case 1:// void hold
                 voidOnHold = true;
-                Order order = buildOrder(getActivity(), global, myPref, "");
+                Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
                 processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold);
                 break;
             case 2:// cancel hold
                 voidOnHold = false;
-                order = buildOrder(getActivity(), global, myPref, "");
+                order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
+
                 processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold);
                 break;
         }

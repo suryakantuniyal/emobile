@@ -64,6 +64,7 @@ import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -165,7 +166,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         selectedSeatsAmount = extras.getInt("selectedSeatsAmount", 0);
         selectedDinningTableNumber = extras.getString("selectedDinningTableNumber");
         openFromHold = extras.getBoolean("openFromHold", false);
-
+        String onHoldOrderJson = extras.getString("onHoldOrderJson");
+        Order onHoldOrder = null;
+        if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
+            Gson gson = new Gson();
+            onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
+        }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
         returnItem = mTransType == Global.TransactionType.RETURN;
@@ -177,7 +183,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             orientation = getResources().getConfiguration().orientation;
             rightFragment = new Catalog_FR();
-            leftFragment = new Receipt_FR();
+            if (onHoldOrder == null) {
+                leftFragment = new Receipt_FR();
+            } else {
+                leftFragment = new Receipt_FR(onHoldOrder);
+            }
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.order_receipt_frag_container, leftFragment);
@@ -457,7 +467,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Receipt_FR.lastClickTime = SystemClock.elapsedRealtime();
         switch (v.getId()) {
             case R.id.btnCheckOut:
-                orderingAction=OrderingAction.CHECKOUT;
+                orderingAction = OrderingAction.CHECKOUT;
                 btnCheckout.setEnabled(false);
                 if (leftFragment != null) {
                     leftFragment.checkoutOrder();
@@ -1416,7 +1426,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (!Global.lastOrdID.isEmpty()) {
             OrdersHandler dbOrders = new OrdersHandler(this);
             if (global.order.ord_id.isEmpty()) {
-                global.order = Receipt_FR.buildOrder(this, global, myPref, "");
+                global.order = Receipt_FR.buildOrder(this, global, myPref, "","");
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
                 dbOrders.insert(global.order);
