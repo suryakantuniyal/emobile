@@ -23,6 +23,8 @@ import com.android.database.TimeClockHandler;
 import com.android.database.TransferInventory_DB;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
+import com.android.emobilepos.R;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
@@ -49,7 +51,7 @@ public class GenerateXML {
         info = new MyPreferences(activity);
         thisActivity = activity;
         myPref = new MyPreferences(activity);
-        if (thisActivity instanceof ClockInOut_FA)
+        if (thisActivity instanceof ClockInOut_FA) {
             try {
                 ending.append("&EmpID=")
                         .append(URLEncoder.encode(((ClockInOut_FA) (thisActivity)).getClerkID(), UTF_8));
@@ -59,6 +61,17 @@ public class GenerateXML {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else {
+            try {
+                ending.append("&EmpID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
+                ending.append("&ActivationKey=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
+                ending.append("&DeviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
+                ending.append("&BundleVersion=").append(URLEncoder.encode(info.getBundleVersion(), UTF_8));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     public String getAuth() {
@@ -67,7 +80,7 @@ public class GenerateXML {
         try {
             sb.append("getAuth.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&p=").append(URLEncoder.encode(info.getAcctPassword(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -133,7 +146,7 @@ public class GenerateXML {
         try {
             sb.append("getDeviceId.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&deviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -146,7 +159,7 @@ public class GenerateXML {
 
         try {
             sb.append("getFirstAvailLic.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -159,13 +172,40 @@ public class GenerateXML {
 
         try {
             sb.append("getServerTime.ashx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
         return sb.toString();
     }
+
+    public String getDinnerTables() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmlmesas)).append("?regid=")
+                    .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
+            sb.append(ending.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
+
+    public String getSalesAssociate() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmlsalesassociate)).append("?regid=")
+                    .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
+            sb.append(ending.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
+
 
     public String updateSyncTime(String time) {
         StringBuilder sb = new StringBuilder();
@@ -186,7 +226,7 @@ public class GenerateXML {
 
         try {
             sb.append("RequestEmployees.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -200,7 +240,7 @@ public class GenerateXML {
         try {
             sb.append("AssignEmployees.aspx?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&MSemployeeID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -216,7 +256,7 @@ public class GenerateXML {
             sb.append("&empid=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
             sb.append("&deviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
             sb.append("&key=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -230,7 +270,7 @@ public class GenerateXML {
         try {
             sb.append("DownloadPayments.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&empid=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -248,7 +288,7 @@ public class GenerateXML {
             sb.append("&MSemployeeID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
             sb.append("&empID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
             sb.append("&MSZoneID=").append(URLEncoder.encode(info.getZoneID(), UTF_8));
-            sb.append(URLEncoder.encode(ending.toString(), UTF_8));
+            sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

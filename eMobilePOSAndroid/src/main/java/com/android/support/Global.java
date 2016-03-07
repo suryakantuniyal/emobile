@@ -300,6 +300,9 @@ public class Global extends MultiDexApplication {
     public final static int S_UPDATE_SYNC_TIME = 57;
     public final static int S_LOCATIONS = 58;
     public final static int S_SUBMIT_LOCATIONS_INVENTORY = 59;
+    public final static int S_GET_XML_DINNER_TABLES = 60;
+    public final static int S_GET_XML_SALES_ASSOCIATE = 61;
+
     // public final static int S_LOCATIONS_INVENTORY = 59;
 
     public final static int FROM_OPEN_INVOICES = 100;

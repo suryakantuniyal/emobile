@@ -131,7 +131,21 @@ public class Post {
                 isPost = false;
                 break;
             }
-
+            case Global.S_GET_XML_DINNER_TABLES: {
+//                postLink = activity.getString(R.string.sync_enablermobile_getxmlmesas);
+//                entity = xml.synchOrders(false);
+//                isPost = true;
+                url = xml.getDinnerTables();
+                isShortResponse = true;
+                isPost = false;
+                break;
+            }
+            case Global.S_GET_XML_SALES_ASSOCIATE: {
+                url = baseURL.append(xml.getSalesAssociate());
+                isShortResponse = true;
+                isPost = false;
+                break;
+            }
             case Global.S_GET_XML_ORDERS: {
                 postLink = activity.getString(R.string.sync_enablermobile_getxmlorders);
                 entity = xml.synchOrders(false);

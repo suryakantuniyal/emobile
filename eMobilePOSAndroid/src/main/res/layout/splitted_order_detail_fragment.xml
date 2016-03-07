@@ -68,28 +68,28 @@
                 android:layout_marginRight="40dp"
                 android:src="@drawable/logo" />
 
-            <TextView
+            <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/memo_headerLine1textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:fontFamily="sans-serif-medium"
+                android:textColor="#000"
                 android:text="Header 1" />
 
-            <TextView
+            <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/memo_headerLine2textView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#000"
                 android:layout_marginTop="5dp"
-                android:fontFamily="sans-serif-medium"
                 android:text="Header 2" />
 
-            <TextView
+            <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/memo_headerLine3textView18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#000"
                 android:layout_marginTop="5dp"
-                android:fontFamily="sans-serif-medium"
                 android:text="header 3" />
 
             <LinearLayout
@@ -98,21 +98,19 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/transactionTypetextView14"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
                     android:text="@string/sales_receipt"
                     android:textColor="#000"
                     android:textStyle="normal" />
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/orderIdtextView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="5-00123-2016"
                     android:textColor="#000"
                     android:textStyle="normal" />
@@ -124,21 +122,19 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/textView18"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
                     android:text="@string/receipt_date"
                     android:textColor="#000"
                     android:textStyle="normal" />
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/orderDatetextView21"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="Feb/12/2016"
                     android:textColor="#000"
                     android:textStyle="normal" />
@@ -150,22 +146,20 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/textView22"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
                     android:text="@string/receipt_employee"
                     android:textColor="#000"
                     android:textStyle="normal" />
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/deviceNametextView23"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="Android Employee 1(5)"
                     android:textColor="#000"
                     android:textStyle="normal" />
@@ -185,22 +179,20 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/textView14"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
                     android:text="@string/subtotal_receipt"
                     android:textColor="#000"
                     android:textStyle="normal" />
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/subtotaltextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="$85.99"
                     android:textColor="#000"
                     android:textStyle="normal" />
@@ -212,22 +204,20 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/textView14a"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
                     android:text="@string/receipt_discount_line_item"
                     android:textColor="#000"
                     android:textStyle="normal" />
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/lineitem_discounttextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="$85.99"
                     android:textColor="#000"
                     android:textStyle="normal" />
@@ -239,22 +229,20 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/textView15"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
                     android:text="@string/receipt_tax"
                     android:textColor="#000"
                     android:textStyle="normal" />
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/taxtotaltextView14a"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="$85.99"
                     android:textColor="#000"
                     android:textStyle="normal" />
@@ -273,63 +261,57 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="sans-serif-medium"
                     android:singleLine="true"
                     android:text="@string/receipt_grandtotal"
                     android:textColor="#000"
                     android:textStyle="normal" />
 
-                <TextView
+                <com.android.support.TextViewSansSerifMedium
                     android:id="@+id/granTotaltextView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
                     android:text="$85.99"
                     android:textColor="#000"
                     android:textStyle="normal" />
             </LinearLayout>
 
 
-            <TextView
+            <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/footerLine1textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:fontFamily="sans-serif-medium"
                 android:text="Footer 1"
                 android:textColor="#000"
                 android:textStyle="normal" />
 
-            <TextView
+            <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/footerLine2textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:fontFamily="sans-serif-medium"
                 android:text="footer 2"
                 android:textColor="#000"
                 android:textStyle="normal" />
 
-            <TextView
+            <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/footerLine3textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:fontFamily="sans-serif-medium"
                 android:text="footer 3"
                 android:textColor="#000"
                 android:textStyle="normal" />
 
-            <TextView
+            <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/enabler_weblinktextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:fontFamily="sans-serif-medium"
                 android:text="@string/enabler_website"
                 android:textColor="#000"
                 android:textStyle="normal" />

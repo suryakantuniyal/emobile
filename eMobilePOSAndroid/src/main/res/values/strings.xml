@@ -249,6 +249,9 @@
 	<string name = "sync_dload_logo">Downloading Logo\u002E\u002E\u002E</string>
 	<string name = "sync_dload_products_attributes">Downloading ProductsAttributes\u002E\u002E\u002E</string>
 	<string name = "sync_dload_clerks">Downloading Clerks\u002E\u002E\u002E</string>
+	<string name = "sync_dload_dinnertables">Downloading Dinner Tables\u002E\u002E\u002E</string>
+	<string name = "sync_dload_salesassociate">Downloading Sales Associate\u002E\u002E\u002E</string>
+
 	<string name = "sync_dload_termsandconditions">Downloading TermsAndConditions\u002E\u002E\u002E</string>
 	<string name = "sync_dload_ordersonhold">Downloading OrdersOnHold\u002E\u002E\u002E</string>
 	<string name = "sync_dload_locations">Downloading Locations\u002E\u002E\u002E</string>
@@ -293,6 +296,8 @@
 	<string name = "sync_saving_clerks">Saving Clerks\u002E\u002E\u002E</string>
 	<string name = "sync_saving_termsandconditions">Saving TermsAndConditions\u002E\u002E\u002E</string>
 	<string name = "sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
+	<string name = "sync_saving_dinnertables">Saving Dinner Tables\u002E\u002E\u002E</string>
+	<string name = "sync_saving_salesassociate">Saving Sales Associate\u002E\u002E\u002E</string>
 
 
 

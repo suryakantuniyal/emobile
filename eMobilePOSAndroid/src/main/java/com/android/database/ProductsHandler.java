@@ -631,7 +631,7 @@ public class ProductsHandler {
         StringBuilder sb = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
         String query;
-        String[] data = new String[13];
+        String[] data = new String[15];
 
         String priceLevelID;
         if (myPref.isCustSelected())
@@ -640,7 +640,7 @@ public class ProductsHandler {
             priceLevelID = myPref.getEmployeePriceLevel();
 
         sb.append(
-                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
+                "SELECT  p.prod_id as '_id', p.prod_sku as 'prod_sku', p.prod_upc as 'prod_upc',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(

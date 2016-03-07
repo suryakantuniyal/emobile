@@ -3,6 +3,8 @@
     <string name="genius_token_url">https://epay.enablermobile.com/index.ashx</string>
     <string name="sync_enablermobile_deviceasxmltrans">https://sync.enablermobile.com/deviceASXMLTrans/</string>
     <string name="sync_enablermobile_getxmlorders">https://sync.enablermobile.com/deviceASXMLTrans/getXMLOrders.aspx</string>
+    <string name="sync_enablermobile_getxmlsalesassociate">getXMLSalesAssociate.ashx</string>
+    <string name="sync_enablermobile_getxmldinnertables">getXMLMesas.ashx</string>
     <string name="sync_enabler_submitordersonhold">https://sync.enablermobile.com/deviceASXMLTrans/submitOrdersOnHold.ashx</string>
     <string name="sync_enabler_submitpayments">https://sync.enablermobile.com/deviceASXMLTrans/submitPayments.aspx</string>
     <string name="sync_enabler_submittimeclock">https://sync.enablermobile.com/deviceASXMLTrans/submitTimeClock.ashx</string>
