@@ -49,7 +49,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     private GridView myGridView;
     private Activity activity;
-    private Cursor c;
+    //    private Cursor c;
     private PickerAddonLV_Adapter adapter;
 
     private final int SELECT_EMPTY = 0, SELECT_CHECKED = 1, SELECT_CROSS = 2;
@@ -100,7 +100,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         global = (Global) activity.getApplication();
         prodAddonsHandler = new ProductAddonsHandler(activity);
         _prod_id = extras.getString("prod_id");
-        c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(0).get("cat_id"));
+        Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(0).get("cat_id"));
         myGridView = (GridView) findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
         item_position = extras.getInt("item_position");
@@ -168,8 +168,8 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     @Override
     public void onDestroy() {
-        if (!c.isClosed())
-            c.close();
+//        if (!c.isClosed())
+//            c.close();
 //		if (db.isOpen())
 //			db.close();
         instance = null;
@@ -181,10 +181,9 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         switch (v.getId()) {
             case R.id.addonDoneButton:
                 String[] keys = global.addonSelectionType.keySet().toArray(new String[global.addonSelectionType.size()]);
-                int size = keys.length;
                 String[] values;
-                for (int i = 0; i < size; i++) {
-                    values = global.addonSelectionType.get(keys[i]);
+                for (String key : keys) {
+                    values = global.addonSelectionType.get(key);
                     switch (Integer.parseInt(values[0])) {
                         case SELECT_EMPTY:
                             break;
@@ -235,7 +234,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
 
                             index_selected_parent = _curr_pos;
-                            c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(_curr_pos).get("cat_id"));
+                            Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(_curr_pos).get("cat_id"));
                             adapter = new PickerAddonLV_Adapter(activity, c, CursorAdapter.NO_SELECTION, imageLoader);
                             myGridView.setAdapter(adapter);
 
@@ -256,9 +255,10 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     }
 
     private void generateAddon(int pos, String _cat_id, boolean isAdded) {
-        c = prodAddonsHandler.getSpecificChildAddons(_prod_id, _cat_id);
+        Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, _cat_id);
         if (c != null && c.moveToPosition(pos)) {
             OrderProduct ord = new OrderProduct();
+            ord.assignedSeat=selectedSeatNumber;
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             ord.ordprod_qty = "1";
             ord.ordprod_name = c.getString(c.getColumnIndex("prod_name"));
@@ -362,6 +362,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
             Product product = new Product();
             product.setId(extras.getString("prod_id"));
             product.setProdName(extras.getString("prod_name"));
+            product.setAssignedSeat(extras.getString("selectedSeatNumber"));
             product.setProdPrice(extras.getString("prod_price"));
             product.setProdDesc(extras.getString("prod_desc"));
             product.setProdOnHand(extras.getString("prod_on_hand"));
@@ -378,6 +379,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                 Intent intent = new Intent(activity, PickerProduct_FA.class);
                 intent.putExtra("prod_id", product.getId());
                 intent.putExtra("prod_name", product.getProdName());
+                intent.putExtra("selectedSeatNumber", product.getAssignedSeat());
                 intent.putExtra("prod_price", product.getProdPrice());
                 intent.putExtra("prod_desc", product.getProdDesc());
                 intent.putExtra("prod_on_hand", product.getProdOnHand());
@@ -388,6 +390,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                 intent.putExtra("prod_taxtype", product.getProdTaxType());
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
+
                 intent.putExtra("isFromAddon", true);
                 intent.putExtra("cat_id", extras.getString("cat_id"));
                 startActivityForResult(intent, 0);

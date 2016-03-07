@@ -317,6 +317,9 @@ public class OrderProductsHandler {
                     insert.bindString(index(itemSubtotal), getData(itemSubtotal, i));
                     insert.bindString(index(addon_section_name), getData(addon_section_name, i));
                     insert.bindString(index(addon_position), getData(addon_position, i));
+                    insert.bindString(index(assignedSeat), getData(assignedSeat, i));
+                    String groupId = getData(seatGroupId, i);
+                    insert.bindLong(index(seatGroupId), groupId == null || groupId.isEmpty() ? 0 : Long.parseLong(groupId));
 
                     insert.execute();
                     insert.clearBindings();
@@ -338,13 +341,12 @@ public class OrderProductsHandler {
 
     public void deleteAllOrdProd(String _ord_id) {
         DBManager._db.delete(table_name, "ord_id = ?", new String[]{_ord_id});
-        Log.d("Delete all order products:",_ord_id);
+        Log.d("Delete all order products:", _ord_id);
     }
 
     public void emptyTable() {
         DBManager._db.execSQL("DELETE FROM " + table_name);
     }
-
 
 
     private boolean checkIfExist(String ordID) {

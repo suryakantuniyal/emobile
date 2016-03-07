@@ -5,6 +5,7 @@ package com.android.emobilepos.models;
  */
 public class Product {
     private String id;
+    private String assignedSeat;
     private String prodDesc;
     private String prodName;
     private String prodExtraDesc;
@@ -210,5 +211,13 @@ public class Product {
 
     public void setProd_upc(String prod_upc) {
         this.prod_upc = prod_upc;
+    }
+
+    public String getAssignedSeat() {
+        return assignedSeat;
+    }
+
+    public void setAssignedSeat(String seatNumber) {
+        this.assignedSeat = seatNumber;
     }
 }

@@ -299,7 +299,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderProduct.imgURL = extras.getString("url");
         orderProduct.prod_type = extras.getString("prod_type");
         orderProduct.onHand = extras.getString("prod_on_hand");
-
+        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
         orderProduct.prod_istaxable = extras.getString("prod_istaxable");
         orderProduct.ordprod_desc = extras.getString("prod_desc");
         orderProduct.prod_taxcode = extras.getString("prod_taxcode");

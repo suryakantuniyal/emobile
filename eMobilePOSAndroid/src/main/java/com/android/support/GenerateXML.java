@@ -955,12 +955,14 @@ public class GenerateXML {
                         || (cursor.getString(cursor.getColumnIndex("addon")).equals("1") && isOnHold)))) {
                     serializer.startTag(empstr, "OrderProduct");
 
+                    String assignedSeat = cursor.getString(cursor.getColumnIndex("assignedSeat"));
                     serializer.startTag(empstr, "assignedSeat");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("assignedSeat")));
+                    serializer.text(assignedSeat == null ? "" : assignedSeat);
                     serializer.endTag(empstr, "assignedSeat");
 
+                    String seatGroupId = cursor.getString(cursor.getColumnIndex("seatGroupId"));
                     serializer.startTag(empstr, "seatGroupId");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("seatGroupId")));
+                    serializer.text(seatGroupId == null ? "" : seatGroupId);
                     serializer.endTag(empstr, "seatGroupId");
 
 
