@@ -46,7 +46,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
-import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -81,7 +80,6 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -140,6 +138,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private String selectedSeatNumber = "1";
     public boolean openFromHold;
     OrderingAction orderingAction = OrderingAction.NONE;
+    private String associateId;
+
 
     public enum OrderingAction {
         HOLD, CHECKOUT, NONE
@@ -165,6 +165,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         setRestaurantSaleType((Global.RestaurantSaleType) extras.get("RestaurantSaleType"));
         selectedSeatsAmount = extras.getInt("selectedSeatsAmount", 0);
         selectedDinningTableNumber = extras.getString("selectedDinningTableNumber");
+        setAssociateId(extras.getString("associateId", ""));
+
         openFromHold = extras.getBoolean("openFromHold", false);
         String onHoldOrderJson = extras.getString("onHoldOrderJson");
         Order onHoldOrder = null;
@@ -826,7 +828,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 else {
 
                     if (mTransType == Global.TransactionType.SALE_RECEIPT) // is sales receipt
-                        voidTransaction();
+                        voidTransaction(OrderingMain_FA.this, global.order, global.orderProducts, global.ordProdAttr);
                     else if (mTransType == Global.TransactionType.CONSIGNMENT) {
                         if (Global.consignment_order != null && !Global.consignment_order.ord_id.isEmpty()) {
                             OrdersHandler.deleteTransaction(OrderingMain_FA.this, Global.consignment_order.ord_id);
@@ -1422,26 +1424,50 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private void voidTransaction() {
-        if (!Global.lastOrdID.isEmpty()) {
-            OrdersHandler dbOrders = new OrdersHandler(this);
-            if (global.order.ord_id.isEmpty()) {
-                global.order = Receipt_FR.buildOrder(this, global, myPref, "","");
-                OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-                OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
-                dbOrders.insert(global.order);
-                dbOrdProd.insert(global.orderProducts);
-                dbOrdAttr.insert(global.ordProdAttr);
+//    private void voidTransaction() {
+//        if (!Global.lastOrdID.isEmpty()) {
+//            OrdersHandler dbOrders = new OrdersHandler(this);
+//            if (global.order.ord_id.isEmpty()) {
+//                global.order = Receipt_FR.buildOrder(this, global, myPref, "","");
+//                OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
+//                OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
+//                dbOrders.insert(global.order);
+//                dbOrdProd.insert(global.orderProducts);
+//                dbOrdAttr.insert(global.ordProdAttr);
+//            }
+//            dbOrders.updateIsVoid(Global.lastOrdID);
+//            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(this);
+//            Order order = new Order(this);
+//            order.ord_id = Global.lastOrdID;
+//            order.ord_type = global.order.ord_type;
+//            voidHandler.insert(order);
+//
+//        }
+//    }
+
+    public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<OrdProdAttrHolder> ordProdAttr) {
+        if (!order.ord_id.isEmpty()) {
+            OrdersHandler dbOrders = new OrdersHandler(activity);
+            if (order.ord_id.isEmpty()) {
+                Global global = (Global) activity.getApplication();
+                MyPreferences myPref = new MyPreferences(activity);
+                order = Receipt_FR.buildOrder(activity, global, myPref, "","");
+                OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
+                OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
+                dbOrders.insert(order);
+                dbOrdProd.insert(orderProducts);
+                dbOrdAttr.insert(ordProdAttr);
             }
-            dbOrders.updateIsVoid(Global.lastOrdID);
-            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(this);
-            Order order = new Order(this);
-            order.ord_id = Global.lastOrdID;
-            order.ord_type = global.order.ord_type;
-            voidHandler.insert(order);
+            dbOrders.updateIsVoid(order.ord_id);
+            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
+            Order order2 = new Order(activity);
+            order2.ord_id = order.ord_id;
+            order2.ord_type = order.ord_type;
+            voidHandler.insert(order2);
 
         }
     }
+
 
     private void deleteTransaction() {
         if (!Global.lastOrdID.isEmpty()) {
@@ -1511,6 +1537,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ord.onHand = product.getProdOnHand();
         ord.imgURL = product.getProdImgName();
         ord.cat_id = product.getCatId();
+
         try {
             ord.prod_price_points = product.getProdPricePoints();
             ord.prod_value_points = product.getProdValuePoints();
@@ -1592,4 +1619,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         global.orderProducts.add(ord);
     }
 
+    public String getAssociateId() {
+        return associateId;
+    }
+
+    public void setAssociateId(String associateId) {
+        this.associateId = associateId;
+    }
 }

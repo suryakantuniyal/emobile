@@ -145,7 +145,6 @@ public class GenerateXML {
 
         try {
             sb.append("getDeviceId.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append("&deviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
             sb.append(ending.toString());
 
         } catch (UnsupportedEncodingException e) {
@@ -253,8 +252,6 @@ public class GenerateXML {
 
         try {
             sb.append("DisableEmployee.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append("&empid=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
-            sb.append("&deviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
             sb.append("&key=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
@@ -269,7 +266,6 @@ public class GenerateXML {
 
         try {
             sb.append("DownloadPayments.aspx?ac=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append("&empid=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -286,7 +282,6 @@ public class GenerateXML {
         try {
             sb.append(value).append("?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append("&MSemployeeID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
-            sb.append("&empID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
             sb.append("&MSZoneID=").append(URLEncoder.encode(info.getZoneID(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
@@ -528,7 +523,7 @@ public class GenerateXML {
         OrdersHandler ordersHandler = new OrdersHandler(thisActivity);
         CustomersHandler custHandler = new CustomersHandler(thisActivity);
         HashMap<String, String> custInfo = new HashMap<String, String>();
-        Cursor cursor = null;
+        Cursor cursor;
         if (!isOnHold)
             cursor = ordersHandler.getUnsyncOrders();
         else

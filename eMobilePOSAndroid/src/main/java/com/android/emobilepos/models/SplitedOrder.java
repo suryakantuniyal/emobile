@@ -35,6 +35,9 @@ public class SplitedOrder extends Order implements Cloneable, Comparable<Splited
     }
 
     private void init(Order order) {
+        assignedTable = order.assignedTable;
+        associateID = order.associateID;
+        numberOfSeats = order.numberOfSeats;
         ord_id = order.ord_id;
         qbord_id = order.qbord_id;
         emp_id = order.emp_id;

@@ -289,6 +289,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 }
 
                 intent.putExtra("ord_HoldName", ord_HoldName);
+                intent.putExtra("associateId", order.associateID);
+
                 Global.isFromOnHold = true;
 
             }

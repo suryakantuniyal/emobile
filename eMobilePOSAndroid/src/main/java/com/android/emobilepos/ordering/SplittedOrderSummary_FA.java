@@ -58,7 +58,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     public SalesReceiptSplitTypes splitType;
 
     public enum NavigationResult {
-        PAYMENT_COMPLETED(-1), BACK_SELECT_PAYMENT(1901);
+        PAYMENT_COMPLETED(-1), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902);
         int code;
 
         NavigationResult(int code) {
@@ -368,5 +368,16 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         if (!isScreenOn)
             global.loggedIn = false;
         global.startActivityTransitionTimer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (splitType == SalesReceiptSplitTypes.SPLIT_EQUALLY) {
+            OrderingMain_FA.voidTransaction(this, global.order, global.orderProducts, global.ordProdAttr);
+            setResult(-1);
+            finish();
+        } else {
+            finishActivity(0);
+        }
     }
 }

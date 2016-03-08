@@ -387,52 +387,6 @@ public class OrdersHandler {
         Order order = new Order(this.activity);
         if (cursor.moveToFirst()) {
             order = getOrder(cursor, activity);
-//            order.numberOfSeats = cursor.getInt(cursor.getColumnIndex("numberOfSeats"));
-//            order.assignedTable = cursor.getString(cursor.getColumnIndex("assignedTable"));
-//            order.associateID = cursor.getString(cursor.getColumnIndex("associateID"));
-//
-//            order.ord_HoldName = cursor.getString(cursor.getColumnIndex("ord_HoldName"));
-//            order.ord_id = cursor.getString(cursor.getColumnIndex("ord_id"));
-//            order.qbord_id = cursor.getString(cursor.getColumnIndex("qbord_id"));
-//            order.emp_id = cursor.getString(cursor.getColumnIndex("emp_id"));
-//            order.cust_id = cursor.getString(cursor.getColumnIndex("cust_id"));
-//            order.clerk_id = cursor.getString(cursor.getColumnIndex("clerk_id"));
-//            order.c_email = cursor.getString(cursor.getColumnIndex("c_email"));
-//            order.ord_signature = cursor.getString(cursor.getColumnIndex("ord_signature"));
-//            order.ord_po = cursor.getString(cursor.getColumnIndex("ord_po"));
-//            order.total_lines = cursor.getString(cursor.getColumnIndex("total_lines"));
-//            order.total_lines_pay = cursor.getString(cursor.getColumnIndex("total_lines_pay"));
-//            order.ord_total = cursor.getString(cursor.getColumnIndex("ord_total"));
-//            order.ord_comment = cursor.getString(cursor.getColumnIndex("ord_comment"));
-//            order.ord_delivery = cursor.getString(cursor.getColumnIndex("ord_delivery"));
-//            order.ord_timecreated = cursor.getString(cursor.getColumnIndex("ord_timecreated"));
-//            order.ord_timesync = cursor.getString(cursor.getColumnIndex("ord_timesync"));
-//            order.qb_synctime = cursor.getString(cursor.getColumnIndex("qb_synctime"));
-//            order.emailed = cursor.getString(cursor.getColumnIndex("emailed"));
-//            order.processed = cursor.getString(cursor.getColumnIndex("processed"));
-//            order.ord_type = cursor.getString(cursor.getColumnIndex("ord_type"));
-//            order.ord_claimnumber = cursor.getString(cursor.getColumnIndex("ord_claimnumber"));
-//            order.ord_rganumber = cursor.getString(cursor.getColumnIndex("ord_rganumber"));
-//            order.ord_returns_pu = cursor.getString(cursor.getColumnIndex("ord_returns_pu"));
-//            order.ord_inventory = cursor.getString(cursor.getColumnIndex("ord_inventory"));
-//            order.ord_issync = cursor.getString(cursor.getColumnIndex("ord_issync"));
-//            order.tax_id = cursor.getString(cursor.getColumnIndex("tax_id"));
-//            order.ord_shipvia = cursor.getString(cursor.getColumnIndex("ord_shipvia"));
-//            order.ord_shipto = cursor.getString(cursor.getColumnIndex("ord_shipto"));
-//            order.ord_terms = cursor.getString(cursor.getColumnIndex("ord_terms"));
-//            order.ord_custmsg = cursor.getString(cursor.getColumnIndex("ord_custmsg"));
-//            order.ord_class = cursor.getString(cursor.getColumnIndex("ord_class"));
-//            order.ord_subtotal = cursor.getString(cursor.getColumnIndex("ord_subtotal"));
-//            order.ord_taxamount = cursor.getString(cursor.getColumnIndex("ord_taxamount"));
-//            order.ord_discount = cursor.getString(cursor.getColumnIndex("ord_discount"));
-//            order.ord_discount_id = cursor.getString(cursor.getColumnIndex("ord_discount_id"));
-//            order.ord_latitude = cursor.getString(cursor.getColumnIndex("ord_latitude"));
-//            order.ord_longitude = cursor.getString(cursor.getColumnIndex("ord_longitude"));
-//            order.tipAmount = cursor.getString(cursor.getColumnIndex("tipAmount"));
-//            order.VAT = Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1") ? true : false);
-//
-//            CustomersHandler custHandler = new CustomersHandler(this.activity);
-//            order.customer = custHandler.getCustomer(order.cust_id);
 
         }
         cursor.close();
@@ -453,27 +407,21 @@ public class OrdersHandler {
     }
 
     public Cursor getTupyxOrders() {
-        Cursor c = DBManager._db.rawQuery("SELECT * FROM Orders o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE p.paymethod_id = 'Wallet' AND ord_issync = '0'", null);
-        return c;
+        return DBManager._db.rawQuery("SELECT * FROM Orders o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE p.paymethod_id = 'Wallet' AND ord_issync = '0'", null);
     }
 
     public long getNumUnsyncTupyxOrders() {
-
-
         SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " o LEFT OUTER JOIN Payments p ON o.ord_id = p.job_id WHERE p.paymethod_id = 'Wallet' AND o.ord_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public Cursor getUnsyncOrdersOnHold() {
-
         return DBManager._db.rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'", null);
     }
 
     public long getNumUnsyncOrdersOnHold() {
-
         SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'");
         long count = stmt.simpleQueryForLong();
         stmt.close();

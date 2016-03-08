@@ -286,7 +286,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
         Global global = (Global) getActivity().getApplication();
         OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
-        OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(getActivity());
         GenerateNewID idGen = new GenerateNewID(getActivity());
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
         String nextOrderID;
@@ -314,8 +313,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
         }
 
-//        DBManager dbManager = new DBManager(getActivity());
-//        dbManager.synchSendOrdersOnHold(false, false);
         if (splitedOrder.getOrderProducts().size() > 0) {
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 1) {
                 splitedOrder.processed = "10";
@@ -324,10 +321,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 global.order.processed = "10";
                 global.order.total_lines = String.valueOf(splitedOrder.getOrderProducts().size());
                 splitedOrder.ord_id = global.order.ord_id;
-//                splitedOrder.ord_subtotal=global.order.ord_subtotal;
-//                splitedOrder.ord_taxamount=global.order.ord_taxamount;
-//                splitedOrder.ord_total=global.order.ord_total;
-//
 
                 if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     splitedOrder.getOrderProducts().clear();
@@ -346,19 +339,13 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 }
                 global.encodedImage = "";
                 productsHandler.insert(splitedOrder.getOrderProducts());
-//                productsAttrDb.insert(global.ordProdAttr);
                 if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
                     ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
                 }
 
-//                if (myPref
-//                        .getPreferences(MyPreferences.pref_restaurant_mode))
-//                    new printAsync().execute(true);
 
                 DBManager dbManager = new DBManager(getActivity());
                 dbManager.synchSendOrdersOnHold(false, true);
-
-//                }
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                 splitedOrder.ord_id = global.order.ord_id;
                 splitedOrder.syncOrderProductIds();
@@ -413,8 +400,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
-            SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+        SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
+        if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
+            removeCheckoutOrder(summaryFa);
+        } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
             removeCheckoutOrder(summaryFa);
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 0) {
                 getActivity().setResult(-1);
@@ -429,4 +418,5 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) summaryFa.getOrderSummaryFR().getGridView().getAdapter();
         adapter.removeOrder(restaurantSplitedOrder);
     }
+
 }

@@ -132,9 +132,7 @@ public class Post {
                 break;
             }
             case Global.S_GET_XML_DINNER_TABLES: {
-//                postLink = activity.getString(R.string.sync_enablermobile_getxmlmesas);
-//                entity = xml.synchOrders(false);
-//                isPost = true;
+
                 url = baseURL.append(xml.getDinnerTables());
                 isShortResponse = true;
                 isPost = false;

@@ -1109,6 +1109,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                    MyPreferences myPref, String _email, String ord_HoldName) {
         Order order = new Order(activity);
         order.assignedTable = ((OrderingMain_FA) activity).getSelectedDinningTableNumber();
+        order.associateID = ((OrderingMain_FA) activity).getAssociateId();
         order.ord_total = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
         order.ord_subtotal = Global

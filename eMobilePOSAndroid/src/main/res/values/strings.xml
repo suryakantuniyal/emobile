@@ -58,6 +58,8 @@
 
 	<string name = "dlog_title_error">Error</string>
 	<string name = "dlog_msg_select_customer">Select a customer before proceeding</string>
+	<string name = "dlog_title_waiter_signin">Waiter Signin</string>
+
 	<string name = "dlog_title_confirm">Confirm</string>
 	<string name = "dlog_title_success">Success</string>
 	<string name = "dlog_title_choose_action">Choose Action</string>

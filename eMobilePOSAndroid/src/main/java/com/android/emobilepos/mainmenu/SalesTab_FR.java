@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.Locations_DB;
+import com.android.database.SalesAssociateHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTableSeatsAdapter;
@@ -44,6 +45,7 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.database.DBManager;
@@ -69,6 +71,7 @@ public class SalesTab_FR extends Fragment {
     private EditText hiddenField;
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
+    private String associateId;
 //    GridView gridView;
 
 
@@ -489,7 +492,9 @@ public class SalesTab_FR extends Fragment {
             @Override
             public void onClick(View v) {
                 popDlog.dismiss();
-                if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
+                if (myPref.getPreferences(MyPreferences.pref_require_waiter_signin)) {
+                    showWaiterSignin();
+                } else if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
                     selectDinnerTable();
                 } else if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
                     selectedDinningTable = DinningTable.getDefaultDinningTable();
@@ -497,9 +502,65 @@ public class SalesTab_FR extends Fragment {
                 } else {
                     selectedDinningTable = DinningTable.getDefaultDinningTable();
                     startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
-
                 }
 
+            }
+        });
+        popDlog.show();
+    }
+
+    boolean validPassword = true;
+
+    private void showWaiterSignin() {
+        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
+        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        popDlog.setCancelable(true);
+        popDlog.setCanceledOnTouchOutside(false);
+        popDlog.setContentView(R.layout.dlog_field_single_layout);
+        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_waiter_signin);
+        if (!validPassword)
+            viewMsg.setText(R.string.invalid_password);
+        else
+            viewMsg.setText(R.string.enter_password);
+        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                popDlog.dismiss();
+                MyPreferences myPref = new MyPreferences(activity);
+                String enteredPass = viewField.getText().toString().trim();
+                SalesAssociate salesAssociates = SalesAssociateHandler.getSalesAssociate(enteredPass);
+                if (salesAssociates != null) {
+                    validPassword = true;
+                    associateId = enteredPass;
+                    if (myPref.getPreferences(MyPreferences.pref_enable_table_selection)) {
+                        selectDinnerTable();
+                    } else if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
+                        selectedDinningTable = DinningTable.getDefaultDinningTable();
+                        selectSeatAmount();
+                    } else {
+                        selectedDinningTable = DinningTable.getDefaultDinningTable();
+                        startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
+                    }
+                } else {
+                    validPassword = false;
+                    showWaiterSignin();
+                }
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popDlog.dismiss();
             }
         });
         popDlog.show();
@@ -547,7 +608,7 @@ public class SalesTab_FR extends Fragment {
                 popDlog.dismiss();
                 if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
                     selectSeatAmount();
-                }else{
+                } else {
                     startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
                 }
             }
@@ -689,6 +750,7 @@ public class SalesTab_FR extends Fragment {
         intent.putExtra("RestaurantSaleType", restaurantSaleType);
 
         if (restaurantSaleType == Global.RestaurantSaleType.EAT_IN) {
+            intent.putExtra("associateId", associateId);
             intent.putExtra("selectedSeatsAmount", selectedSeatsAmount);
             intent.putExtra("selectedDinningTableNumber", tableNumber);
         }

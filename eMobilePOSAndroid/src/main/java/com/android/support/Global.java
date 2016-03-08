@@ -701,7 +701,6 @@ public class Global extends MultiDexApplication {
         return value;
     }
 
-    private boolean validPassword = true;
 
     public void promptForMandatoryLogin(final Activity activity) {
         if (!loggedIn) {
@@ -715,7 +714,8 @@ public class Global extends MultiDexApplication {
             TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
             TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
-            if (!validPassword)
+            final boolean[] validPassword = {true};
+            if (!validPassword[0])
                 viewMsg.setText(R.string.invalid_password);
             else
                 viewMsg.setText(R.string.enter_password);
@@ -726,15 +726,14 @@ public class Global extends MultiDexApplication {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     globalDlog.dismiss();
                     MyPreferences myPref = new MyPreferences(activity);
                     String enteredPass = viewField.getText().toString().trim();
                     if (enteredPass.equals(myPref.getApplicationPassword())) {
                         loggedIn = true;
-                        validPassword = true;
+                        validPassword[0] = true;
                     } else {
-                        validPassword = false;
+                        validPassword[0] = false;
                         promptForMandatoryLogin(activity);
                     }
                 }
