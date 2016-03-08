@@ -24,6 +24,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
+import com.android.database.SalesAssociateHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
@@ -33,6 +34,8 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.SynchMenuAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.SalesAssociate;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
 import com.android.saxhandler.SAXPostTemplates;
@@ -47,17 +50,22 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -1570,6 +1578,22 @@ public class SynchMethods {
         tempFile.delete();
     }
 
+    private String readTempFile(File file) {
+        StringBuilder text = new StringBuilder();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+                text.append('\n');
+            }
+            br.close();
+        } catch (IOException e) {
+        }
+        return text.toString();
+    }
+
 
     private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
         task.updateProgress(getString(R.string.sync_dload_dinnertables));
@@ -1583,13 +1607,19 @@ public class SynchMethods {
 
 
     private void synchDownloadSalesAssociate(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_salesassociate));
-        post.postData(Global.S_GET_XML_SALES_ASSOCIATE, activity, "SalesAssociate");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_GET_XML_SALES_ASSOCIATE);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_dinnertables));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        try {
+            task.updateProgress(getString(R.string.sync_dload_salesassociate));
+            String response = post.postData(Global.S_GET_XML_SALES_ASSOCIATE, activity, "SalesAssociate");
+            task.updateProgress(getString(R.string.sync_saving_dinnertables));
+            Gson gson = new Gson();
+            Type listType = new com.google.gson.reflect.TypeToken<ArrayList<SalesAssociate>>() {
+            }.getType();
+
+            List<SalesAssociate> salesAssociate = gson.fromJson(response, listType);
+            SalesAssociateHandler.insert(salesAssociate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchDownloadTermsAndConditions(resynchAsync task) throws SAXException, IOException {

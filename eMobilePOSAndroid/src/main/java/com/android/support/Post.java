@@ -135,7 +135,7 @@ public class Post {
 //                postLink = activity.getString(R.string.sync_enablermobile_getxmlmesas);
 //                entity = xml.synchOrders(false);
 //                isPost = true;
-                url = xml.getDinnerTables();
+                url = baseURL.append(xml.getDinnerTables());
                 isShortResponse = true;
                 isPost = false;
                 break;
@@ -267,7 +267,11 @@ public class Post {
         if (!isPost) {
             try {
                 if (type != 11)
-                    response = this.getRequest(new URL(url.toString()));
+                    if (type == Global.S_GET_XML_SALES_ASSOCIATE) {
+                        response = this.getRequest(new URL(url.toString()), true);
+                    } else {
+                        response = this.getRequest(new URL(url.toString()), false);
+                    }
                 else
                     response = getRequestUnsecure(new URI(url.toString()));
             } catch (MalformedURLException e) {
@@ -284,7 +288,7 @@ public class Post {
         return response;
     }
 
-    private String getRequest(URL url) {
+    private String getRequest(URL url, boolean isJsonContentType) {
 
         HttpsURLConnection urlConnection;
         try {
@@ -295,6 +299,9 @@ public class Post {
             urlConnection = (HttpsURLConnection) url.openConnection();
             urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
             urlConnection.setRequestMethod("GET");
+            if (isJsonContentType) {
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+            }
             urlConnection.setRequestProperty("Connection", "close");
             urlConnection.setUseCaches(false);
             urlConnection.setConnectTimeout(50 * 1000);

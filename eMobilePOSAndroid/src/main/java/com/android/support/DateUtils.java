@@ -15,7 +15,7 @@ public class DateUtils {
     public static String getDateStringAsString(String date, String inPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(inPattern);
         SimpleDateFormat output = new SimpleDateFormat(DATE_PATTERN);
-        Date d = null;
+        Date d;
         try {
             d = sdf.parse(date);
         } catch (ParseException e) {
@@ -26,7 +26,22 @@ public class DateUtils {
         return formattedDate;
     }
 
+    public static Date getDateStringAsDate(String date, String inPattern) {
+        SimpleDateFormat sdf = new SimpleDateFormat(inPattern);
+        SimpleDateFormat output = new SimpleDateFormat(DATE_PATTERN);
+        Date d;
+        try {
+            d = sdf.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return d;
+    }
+
     public static String getDateAsString(Date date) {
+
         return getDateAsString(date, DATE_PATTERN);
     }
 }

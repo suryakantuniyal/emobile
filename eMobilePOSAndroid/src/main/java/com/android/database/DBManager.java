@@ -242,10 +242,13 @@ public class DBManager {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            for (String tblName : CREATE_TABLE) db.execSQL(tblName);
+            for (String tblName : CREATE_TABLE) {
+                db.execSQL(tblName);
+            }
             for (String sql : CREATE_INDEX) {
                 db.execSQL(sql);
-            };
+            }
+
             if (_db != null && _db.isOpen())
                 _db.close();
 
@@ -334,6 +337,13 @@ public class DBManager {
             + "[addr_s_name]varchar,[addr_s_str1]varchar,[addr_s_str2]varchar,[addr_s_str3]varchar,[addr_s_city]varchar,[addr_s_state]varchar,"
             + "[addr_s_country]varchar,[addr_s_zipcode]varchar,[qb_cust_id]varchar, [addr_b_type]VARCHAR, [addr_s_type]VARCHAR, PRIMARY KEY ([addr_id],"
             + "[cust_id]) )";
+
+    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [SalesAssociate]([emp_id] [int] PRIMARY KEY NOT NULL,"
+            + "[zone_id] [varchar](50),[emp_name][varchar](50),[emp_init] [varchar](50),[emp_pcs] [varchar](50)," +
+            "[emp_lastlogin] [datetime],[emp_pos][int],[qb_emp_id] [varchar](50),[qb_salesrep_id] [varchar](50)," +
+            "[isactive] [int],[tax_default][varchar](50),[loc_items] [tinyint]NOT NULL,[_rowversion][varchar](50)," +
+            "[lastSync] [datetime],[TupyWalletDevice] [tinyint]NOT NULL,[VAT] [tinyint]NOT NULL" +
+            ")";
 
     private final String CREATE_CATEGORIES = "CREATE TABLE [Categories]([cat_id] [varchar](50) PRIMARY KEY NOT NULL,"
             + "[cat_name] [varchar](255) NOT NULL,[cat_update] [datetime] NOT NULL,[isactive] "
@@ -617,7 +627,7 @@ public class DBManager {
             "OrderTaxes", "Locations", "LocationsInventory", "TransferLocations", "TransferInventory", "PaymentsXML",
             "StoredPayments", "Expenses"};
 
-    private final String[] CREATE_TABLE = new String[]{CREATE_ADDRESS, CREATE_CATEGORIES, CREATE_CUSTOMERS,
+    private final String[] CREATE_TABLE = new String[]{CREATE_ADDRESS, CREATE_CATEGORIES, CREATE_SALES_ASSOCIATE, CREATE_CUSTOMERS,
             CREATE_DRAWDATEINFO, CREATE_EMPINV, CREATE_EMPLOYEES, CREATE_INVPRODUCTS, CREATE_INVOICEPAYMENTS,
             CREATE_INVOICES, CREATE_ORDERPRODUCTS, CREATE_ORDERS, CREATE_PAYMETHODS, CREATE_PAYMENTS,
             CREATE_PAYMENTS_DECLINED, CREATE_PRICELEVEL,

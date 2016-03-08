@@ -183,7 +183,7 @@ public class GenerateXML {
     public String getDinnerTables() {
         StringBuilder sb = new StringBuilder();
         try {
-            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmlmesas)).append("?regid=")
+            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmldinnertables)).append("?regid=")
                     .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {

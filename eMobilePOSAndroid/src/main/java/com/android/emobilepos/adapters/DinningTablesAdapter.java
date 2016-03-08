@@ -12,12 +12,7 @@ import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
-import com.android.support.MyPreferences;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DinningTablesAdapter extends BaseAdapter implements Filterable {
