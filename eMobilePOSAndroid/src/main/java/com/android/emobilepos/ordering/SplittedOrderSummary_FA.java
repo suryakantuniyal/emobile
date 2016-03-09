@@ -1,15 +1,27 @@
 package com.android.emobilepos.ordering;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.android.database.OrderProductsAttr_DB;
+import com.android.database.OrderProductsHandler;
+import com.android.database.OrderTaxes_DB;
+import com.android.database.OrdersHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
@@ -21,9 +33,11 @@ import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -53,12 +67,14 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private BigDecimal itemsDiscountTotal;
     private List<HashMap<String, String>> listMapTaxes;
     private Tax tax;
+    public int checkoutCount = 0;
+
     MyPreferences preferences;
     GenerateNewID generateNewID;
     public SalesReceiptSplitTypes splitType;
 
     public enum NavigationResult {
-        PAYMENT_COMPLETED(-1), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902);
+        PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903);
         int code;
 
         NavigationResult(int code) {
@@ -372,14 +388,137 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
     @Override
     public void onBackPressed() {
-        if (splitType == SalesReceiptSplitTypes.SPLIT_EQUALLY) {
-            OrderingMain_FA.voidCancelOnHold
+        if (splitType == SalesReceiptSplitTypes.SPLIT_EQUALLY && checkoutCount > 0) {
+            promptVoidTransaction(true);
 
-            OrderingMain_FA.voidTransaction(this, global.order, global.orderProducts, global.ordProdAttr);
+        } else {
+            setResult(0);
+            finish();
+        }
+    }
+
+    public void promptVoidTransaction(final boolean voidPayments) {
+        final Dialog dialog = new Dialog(this, R.style.Theme_TransparentTest);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.void_dialog_layout);
+        Button voidBut = (Button) dialog.findViewById(R.id.voidBut);
+        Button notVoid = (Button) dialog.findViewById(R.id.notVoidBut);
+
+        voidBut.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                MyPreferences myPref = new MyPreferences(SplittedOrderSummary_FA.this);
+                if (myPref.getPreferences(MyPreferences.pref_require_manager_pass_to_void_trans)) {
+                    dialog.dismiss();
+                    promptManagerPassword(voidPayments);
+                } else {
+                    dialog.dismiss();
+                    voidTransaction(voidPayments);
+                }
+            }
+        });
+        notVoid.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    private void promptManagerPassword(final boolean voidPayments) {
+        final Dialog globalDlog = new Dialog(this, R.style.Theme_TransparentTest);
+        globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        globalDlog.setCancelable(true);
+        globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+        final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+
+        viewMsg.setText(R.string.dlog_title_enter_manager_password);
+        Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+            }
+        });
+        Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                globalDlog.dismiss();
+                MyPreferences myPref = new MyPreferences(SplittedOrderSummary_FA.this);
+                String pass = viewField.getText().toString();
+                if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
+                    voidTransaction(voidPayments);
+                } else {
+                    promptManagerPassword(voidPayments);
+                }
+            }
+        });
+        globalDlog.show();
+    }
+
+    public void voidTransaction(boolean voidPayments) {
+        if (voidPayments) {
+            SelectPayMethod_FA.voidTransaction(SplittedOrderSummary_FA.this, global.order.ord_id, global.order.ord_type);
+        }
+
+        OrdersHandler ordersHandler = new OrdersHandler(SplittedOrderSummary_FA.this);
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(SplittedOrderSummary_FA.this);
+        OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(SplittedOrderSummary_FA.this);
+        OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
+        ordersHandler.updateFinishOnHold(global.order.ord_id);
+        global.order.isVoid = "1";
+        global.order.processed = "9";
+        global.order.isOnHold = "0";
+        global.orderProducts = orderDetailsFR.restaurantSplitedOrder.getOrderProducts();
+        ordersHandler.insert(global.order);
+        global.encodedImage = "";
+        orderProductsHandler.insert(global.orderProducts);
+        productsAttrDb.insert(global.ordProdAttr);
+        if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
+            ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
+        }
+        new VoidTransaction().execute(global.order.ord_id);
+    }
+
+    private class VoidTransaction extends AsyncTask<String, Void, Void> {
+
+        private ProgressDialog myProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(SplittedOrderSummary_FA.this);
+            myProgressDialog.setMessage("Sending...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            Post httpClient = new Post();
+            httpClient.postData(Global.S_CHECKOUT_ON_HOLD, SplittedOrderSummary_FA.this, params[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            myProgressDialog.dismiss();
             setResult(-1);
             finish();
-        } else {
-            finishActivity(0);
         }
     }
 }

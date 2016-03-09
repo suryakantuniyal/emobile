@@ -565,8 +565,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
+       if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         } else if (resultCode == 1) {
@@ -1450,8 +1449,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             OrdersHandler dbOrders = new OrdersHandler(activity);
             if (order.ord_id.isEmpty()) {
                 Global global = (Global) activity.getApplication();
-                MyPreferences myPref = new MyPreferences(activity);
-                order = Receipt_FR.buildOrder(activity, global, myPref, "","");
+                order = Receipt_FR.buildOrder(activity, global, "", "", ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
                 OrderProductsHandler dbOrdProd = new OrderProductsHandler(activity);
                 OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
                 dbOrders.insert(order);

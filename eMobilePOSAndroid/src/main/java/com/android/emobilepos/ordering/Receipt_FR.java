@@ -98,7 +98,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public Receipt_FR(Order onHoldOrder) {
-
         this.onHoldOrder = onHoldOrder;
     }
 
@@ -130,7 +129,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private ProductsHandler prodHandler;
 
     private String ord_HoldName = "";
-    private boolean voidOnHold = false;
+//    private boolean voidOnHold = false;
 
     private ProgressDialog myProgressDialog;
 
@@ -543,8 +542,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.holdButton:
                 ((OrderingMain_FA) getActivity()).orderingAction = OrderingMain_FA.OrderingAction.HOLD;
                 if (global.orderProducts != null && global.orderProducts.size() > 0) {
-                    Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
-                    processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold);
+                    Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                    processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
                 } else
                     Toast.makeText(activity,
@@ -716,8 +715,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             if (myPref.getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
-                    processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold);
+                    Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                    processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                 } else
                     showEmailDlog();
             } else {
@@ -773,21 +772,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 if (!emailInput.getText().toString().isEmpty()) {
                     if (checkEmail(emailInput.getText().toString())) {
-                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString(), ord_HoldName);
-                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold);
+                        Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else
                         Toast.makeText(activity,
                                 getString(R.string.warning_email_invalid),
                                 Toast.LENGTH_LONG).show();
                 } else {
                     if (isToGo) {
-                        Order order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString(), ord_HoldName);
-                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold);
+                        Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
 //                        global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
                         if (global.orderProducts != null && global.orderProducts.size() > 0) {
-                            Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
-                            processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold);
+                            Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                            processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
                         } else
                             Toast.makeText(activity,
@@ -813,13 +812,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         b.putString("taxID", Global.taxID);
         b.putString("orderTaxId", global.order.tax_id);
         b.putInt("discountSelected", Global.discountPosition - 1);
-
-
-//        b.putStringArray("discount",Global);
-//
-//        discount = extras.getStringArray("discount");
-//        discountableSubtotal = new BigDecimal(extras.getString("discountableSubtotal"));
-//        itemsDiscountTotal = new BigDecimal(extras.getString("itemsDiscountTotal"));
         intent.putExtras(b);
         startActivityForResult(intent, 0);
     }
@@ -857,8 +849,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 dlog.dismiss();
 
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
-                    Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
-                    processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold);
+                    Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                    processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, false);
                 } else
                     showEmailDlog();
             }
@@ -877,7 +869,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void processOrder(Order order, String emailHolder, OrderingMain_FA.OrderingAction orderingAction,
-                              boolean isFromOnHold) {
+                              boolean isFromOnHold, boolean voidOnHold) {
 
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
@@ -956,8 +948,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordTaxesDB.insert(global.listOrderTaxes,
                                 global.order.ord_id);
 
-                    new onHoldAsync().execute(CHECK_OUT_HOLD);
-
+                    new OnHoldAsync().execute(CHECK_OUT_HOLD, voidOnHold);
                 }
             } else {
                 if (global.orderProducts.size() > 0 ||
@@ -1106,10 +1097,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public static Order buildOrder(Activity activity, Global global,
-                                   MyPreferences myPref, String _email, String ord_HoldName) {
+                                   String _email, String ord_HoldName, String assignedTable, String associateId) {
+        MyPreferences myPref = new MyPreferences(activity);
         Order order = new Order(activity);
-        order.assignedTable = ((OrderingMain_FA) activity).getSelectedDinningTableNumber();
-        order.associateID = ((OrderingMain_FA) activity).getAssociateId();
+        order.assignedTable = assignedTable;
+        order.associateID = associateId;
         order.ord_total = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
         order.ord_subtotal = Global
@@ -1601,7 +1593,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
                 if (value.equals(myPref.posManagerPass(true, null))) // validate
@@ -1711,20 +1702,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public void voidCancelOnHold(int type) {
         switch (type) {
             case 1:// void hold
-                voidOnHold = true;
-                Order order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
-                processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold);
+//                voidOnHold = true;
+                Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, true);
                 break;
             case 2:// cancel hold
-                voidOnHold = false;
-                order = buildOrder(getActivity(), global, myPref, "", ord_HoldName);
+//                voidOnHold = false;
+                order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
 
-                processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold);
+                processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
                 break;
         }
     }
 
-    private class onHoldAsync extends AsyncTask<Integer, Integer, String> {
+    public class OnHoldAsync extends AsyncTask<Object, Integer, Boolean> {
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(getActivity());
@@ -1737,11 +1728,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
 
         @Override
-        protected String doInBackground(Integer... arg0) {
+        protected Boolean doInBackground(Object... arg0) {
 
             if (Global.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
-                switch (arg0[0]) {
+                switch ((Integer) arg0[0]) {
                     case UPDATE_HOLD_STATUS:
                         httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD,
                                 activity, Global.lastOrdID);
@@ -1752,11 +1743,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         break;
                 }
             }
-            return null;
+            return (Boolean) arg0[1];
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(Boolean voidOnHold) {
             myProgressDialog.dismiss();
             if (voidOnHold)
                 getActivity().finish();
@@ -1791,7 +1782,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(false);
 
@@ -1801,7 +1791,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 reloadDefaultTransaction();
             }
@@ -1838,8 +1827,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         @Override
         protected String doInBackground(Boolean... params) {
-            // TODO Auto-generated method stub
-
             isPrintStationPrinter = params[0];
             if (!isPrintStationPrinter) {
                 publishProgress();
@@ -1944,7 +1931,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 proceedToRefund();
 
@@ -1954,7 +1940,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
@@ -1992,7 +1977,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 Intent intent = new Intent(activity, SelectPayMethod_FA.class);
                 intent.putExtra("typeOfProcedure", typeOfProcedure);
@@ -2018,7 +2002,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref

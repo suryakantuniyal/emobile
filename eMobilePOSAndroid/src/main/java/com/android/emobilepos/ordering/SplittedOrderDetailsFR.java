@@ -72,7 +72,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private LayoutInflater inflater;
     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    private SplitedOrder restaurantSplitedOrder;
+    public SplitedOrder restaurantSplitedOrder;
     private Button checkoutBtn;
     private Button printReceiptBtn;
     private String lastHodOrderId;
@@ -401,7 +401,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
-        if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
+        summaryFa.checkoutCount++;
+        if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_SELECTION_VOID.getCode()) {
+            summaryFa.voidTransaction(false);
+        } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
             removeCheckoutOrder(summaryFa);
         } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
             removeCheckoutOrder(summaryFa);

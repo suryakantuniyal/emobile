@@ -263,7 +263,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                             promptManagerPassword();
                         } else {
                             dialog.dismiss();
-                            voidTransaction();
+                            voidTransaction(activity, job_id, extras.getString("ord_type"));
                         }
                     }
                 });
@@ -686,7 +686,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
-                    voidTransaction();
+                    voidTransaction(activity, job_id, extras.getString("ord_type"));
                 } else {
                     promptManagerPassword();
                 }
@@ -695,10 +695,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         globalDlog.show();
     }
 
-    private List<Payment> listVoidPayments;
-    private PaymentsHandler payHandler;
 
-    private void voidTransaction() {
+    public static void voidTransaction(Activity activity, String job_id, String orderType) {
         OrdersHandler handler = new OrdersHandler(activity);
         handler.updateIsVoid(job_id);
         handler.updateIsProcessed(job_id, "9");
@@ -706,7 +704,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
         Order order = new Order(activity);
         order.ord_id = job_id;
-        order.ord_type = extras.getString("ord_type");
+        order.ord_type = orderType;
         voidHandler.insert(order);
 
 		/*
@@ -717,44 +715,22 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         // Check if Stored&Forward active and delete from record if any payment
         // were made
+        MyPreferences myPref = new MyPreferences(activity);
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(job_id, "0");
-            StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+            StoredPayments_DB dbStoredPayments = new StoredPayments_DB(activity);
             dbStoredPayments.deletePaymentFromJob(job_id);
         }
-
-        payHandler = new PaymentsHandler(activity);
-        listVoidPayments = payHandler.getOrderPayments(job_id);
+        HashMap<String, String> parsedMap = new HashMap<String, String>();
+        PaymentsHandler payHandler = new PaymentsHandler(activity);
+        List<Payment> listVoidPayments = payHandler.getOrderPayments(job_id);
         int size = listVoidPayments.size();
         if (size > 0) {
-            new voidPaymentAsync().execute();
-        } else {
-            setResult(3);
-            finish();
-        }
-    }
-
-    public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
-        HashMap<String, String> parsedMap = new HashMap<String, String>();
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Voiding Payments...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            int size = listVoidPayments.size();
             EMSPayGate_Default payGate;
 
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler(activity);
             String xml;
             InputSource inSource;
             SAXParser sp;
@@ -772,9 +748,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                                 listVoidPayments.get(i).card_type, null));
                         inSource = new InputSource(new StringReader(xml));
 
-                        xr.setContentHandler(handler);
+                        xr.setContentHandler(processCardPayHandler);
                         xr.parse(inSource);
-                        parsedMap = handler.getData();
+                        parsedMap = processCardPayHandler.getData();
 
                         if (parsedMap != null && parsedMap.size() > 0
                                 && parsedMap.get("epayStatusCode").equals("APPROVED"))
@@ -791,9 +767,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                                 listVoidPayments.get(i).card_type, null));
                         inSource = new InputSource(new StringReader(xml));
 
-                        xr.setContentHandler(handler);
+                        xr.setContentHandler(processCardPayHandler);
                         xr.parse(inSource);
-                        parsedMap = handler.getData();
+                        parsedMap = processCardPayHandler.getData();
 
                         if (parsedMap != null && parsedMap.size() > 0
                                 && parsedMap.get("epayStatusCode").equals("APPROVED"))
@@ -805,18 +781,97 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             } catch (Exception e) {
 
             }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void unused) {
-            myProgressDialog.dismiss();
-
-            setResult(3);
-            finish();
+            activity.setResult(3);
+            activity.finish();
+//            new voidPaymentAsync().execute();
+        } else {
+            activity.setResult(3);
+            activity.finish();
         }
     }
+
+//    public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
+//        HashMap<String, String> parsedMap = new HashMap<String, String>();
+//
+//        @Override
+//        protected void onPreExecute() {
+//            myProgressDialog = new ProgressDialog(activity);
+//            myProgressDialog.setMessage("Voiding Payments...");
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
+//
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//            int size = listVoidPayments.size();
+//            EMSPayGate_Default payGate;
+//
+//            Post post = new Post();
+//            SAXParserFactory spf = SAXParserFactory.newInstance();
+//            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+//            String xml;
+//            InputSource inSource;
+//            SAXParser sp;
+//            XMLReader xr;
+//
+//            try {
+//                sp = spf.newSAXParser();
+//                xr = sp.getXMLReader();
+//                String paymentType;
+//                for (int i = 0; i < size; i++) {
+//                    paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
+//                    if (paymentType.equals("GIFTCARD")) {
+//                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
+//                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
+//                                listVoidPayments.get(i).card_type, null));
+//                        inSource = new InputSource(new StringReader(xml));
+//
+//                        xr.setContentHandler(handler);
+//                        xr.parse(inSource);
+//                        parsedMap = handler.getData();
+//
+//                        if (parsedMap != null && parsedMap.size() > 0
+//                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
+//                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
+//
+//                        parsedMap.clear();
+//                    } else if (paymentType.equals("CASH")) {
+//
+//                        // payHandler.updateIsVoid(pay_id);
+//                        payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
+//                    } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
+//                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
+//                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
+//                                listVoidPayments.get(i).card_type, null));
+//                        inSource = new InputSource(new StringReader(xml));
+//
+//                        xr.setContentHandler(handler);
+//                        xr.parse(inSource);
+//                        parsedMap = handler.getData();
+//
+//                        if (parsedMap != null && parsedMap.size() > 0
+//                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
+//                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
+//
+//                        parsedMap.clear();
+//                    }
+//                }
+//            } catch (Exception e) {
+//
+//            }
+//
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void unused) {
+//            myProgressDialog.dismiss();
+//            setResult(3);
+//            finish();
+//        }
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
