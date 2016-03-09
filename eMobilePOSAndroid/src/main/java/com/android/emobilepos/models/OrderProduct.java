@@ -20,6 +20,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String prod_sku = empt;
     public String prod_upc = empt;
     public String ordprod_qty = empt;
+    public String addon_ordprod_id = "";
     public String overwrite_price = empt;
     public String reason_id = empt;
     public String ordprod_name = empt;

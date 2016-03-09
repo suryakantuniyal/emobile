@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 38;
+    public static final int VERSION = 39;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -40,7 +40,7 @@ public class DBManager {
 
     private String getPassword() {
         MessageDigest digester;
-        String md5 = null;
+        String md5;
         String android_id = Secure.getString(activity.getContentResolver(), Secure.ANDROID_ID);
         try {
             digester = MessageDigest.getInstance("MD5");
@@ -387,7 +387,7 @@ public class DBManager {
             + "[inv_update] [datetime] NULL)";
 
     private final String CREATE_ORDERPRODUCTS = "CREATE TABLE [OrderProduct]( [ordprod_id] [uniqueidentifier] PRIMARY KEY NOT NULL, "
-            + "[prod_id] [varchar](50) NOT NULL, [ord_id] [varchar](50) NOT NULL, [ordprod_qty] [real] NOT NULL, [overwrite_price] [money] NOT NULL, "
+            + "[addon_ordprod_id] [varchar](50), [prod_id] [varchar](50) NOT NULL, [ord_id] [varchar](50) NOT NULL, [ordprod_qty] [real] NOT NULL, [overwrite_price] [money] NOT NULL, "
             + "[reason_id] [int] NULL, [ordprod_desc] [varchar](4095) NULL, [pricelevel_id] [varchar](50) NULL, [prod_seq] [int] NULL, "
             + "[uom_name] [varchar](50) NULL, [uom_conversion] [real] NULL, [discount_id] [varchar](50) NULL, [discount_value] [money] NULL, "
             + "[item_void] [tinyint] NULL, [isPrinted] [bit] NULL, [cat_id] [varchar](50) NULL, [cat_name] [varchar](50) NULL, [addon] [bit] NULL, "
@@ -616,7 +616,7 @@ public class DBManager {
 
     private final String CREATE_PAYMENTS_XML = "CREATE TABLE [PaymentsXML]([app_id] [varchar](100) PRIMARY KEY NOT NULL, [payment_xml] [varchar] NOT NULL)";
 
-    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "Customers", "DrawDateInfo", "EmpInv",
+    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "SalesAssociate", "Customers", "DrawDateInfo", "EmpInv",
             "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProduct", "Orders", "PayMethods",
             "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXRef",
             "ProductChainXRef", "Product_addons", "Products", "Products_Images", "PublicVariables", "Reasons",

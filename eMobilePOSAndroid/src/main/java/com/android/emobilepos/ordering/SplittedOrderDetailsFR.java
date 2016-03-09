@@ -33,6 +33,7 @@ import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
+import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.DateUtils;
@@ -189,6 +190,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         if (orderProductSection.getChildCount() > 0) {
             orderProductSection.removeAllViewsInLayout();
         }
+        Global global = (Global) getActivity().getApplication();
+        OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
+        List<Orders> adonsProducts = productsHandler.getPrintOrderedProducts(global.order.ord_id);
+        HashMap<String, List<Orders>> printerProducts = productsHandler.getStationPrinterProducts(global.order.ord_id);
         BigDecimal orderSubtotal = new BigDecimal(0);
         BigDecimal orderTaxes = new BigDecimal(0);
         BigDecimal orderGranTotal = new BigDecimal(0);
@@ -210,7 +215,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                             .multiply(qty).toString()), true);
             if (product.ordprod_desc != null && !product.ordprod_desc.isEmpty()) {
                 addProductLine(getString(R.string.receipt_description), null, true);
-                addProductLine(product.ordprod_desc, null, true);
+                addProductLine(product.ordprod_desc.replace("<br/>", "\n\r"), null, true);
             }
         }
         splitedOrder.ord_total = orderGranTotal.toString();

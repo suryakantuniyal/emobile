@@ -716,7 +716,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             if (myPref.getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
                     Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
-                    processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                    if (isToGo) {
+                        processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                    } else {
+                        if (global.orderProducts != null && global.orderProducts.size() > 0) {
+                            processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
+                        } else {
+                            Toast.makeText(activity,
+                                    getString(R.string.warning_empty_products),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else
                     showEmailDlog();
             } else {
@@ -850,7 +860,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
                     Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
-                    processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, false);
+//                    processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, false);
+                    if (isToGo) {
+                        processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                    } else {
+                        if (global.orderProducts != null && global.orderProducts.size() > 0) {
+                            processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
+                        } else {
+                            Toast.makeText(activity,
+                                    getString(R.string.warning_empty_products),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
                 } else
                     showEmailDlog();
             }
