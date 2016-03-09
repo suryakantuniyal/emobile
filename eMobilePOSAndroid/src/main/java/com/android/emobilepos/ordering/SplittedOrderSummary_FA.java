@@ -373,6 +373,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     @Override
     public void onBackPressed() {
         if (splitType == SalesReceiptSplitTypes.SPLIT_EQUALLY) {
+            OrderingMain_FA.voidCancelOnHold
+
             OrderingMain_FA.voidTransaction(this, global.order, global.orderProducts, global.ordProdAttr);
             setResult(-1);
             finish();
