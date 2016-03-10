@@ -1,5 +1,6 @@
 package com.android.emobilepos.ordering;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -156,15 +157,23 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void addProductLine(String leftString, String rightString, boolean indented) {
+    private void addProductLine(String leftString, String rightString, boolean indented, int indentedTabs) {
 
-        LinearLayout itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_layout_item, null, false);
+        LinearLayout itemLL;
+        switch (indentedTabs) {
+            default:
+                itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_layout_item, null, false);
+                break;
+            case 1:
+                itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_margin1_layout_item, null, false);
+                break;
+            case 2:
+                itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_margin2_layout_item, null, false);
+                break;
+        }
+
         TextView leftText = (TextView) itemLL.findViewById(R.id.lefttextView);
         TextView rightText = (TextView) itemLL.findViewById(R.id.righttextView);
-        if (indented) {
-            layoutParams.setMargins(10, 0, 0, 0);
-            itemLL.setLayoutParams(layoutParams);
-        }
 
         if (rightString == null) {
             rightText.setVisibility(View.GONE);
@@ -191,31 +200,34 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             orderProductSection.removeAllViewsInLayout();
         }
         Global global = (Global) getActivity().getApplication();
-        OrderProductsHandler productsHandler = new OrderProductsHandler(getActivity());
-        List<Orders> adonsProducts = productsHandler.getPrintOrderedProducts(global.order.ord_id);
-        HashMap<String, List<Orders>> printerProducts = productsHandler.getStationPrinterProducts(global.order.ord_id);
         BigDecimal orderSubtotal = new BigDecimal(0);
         BigDecimal orderTaxes = new BigDecimal(0);
         BigDecimal orderGranTotal = new BigDecimal(0);
         BigDecimal itemDiscountTotal = new BigDecimal(0);
         for (OrderProduct product : products) {
+            List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.ordprod_id);
+
             BigDecimal qty = Global.getBigDecimalNum(product.ordprod_qty);
             orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.overwrite_price).multiply(qty));
             orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.taxTotal));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
             orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
                     .add(Global.getBigDecimalNum(product.taxTotal)));
-            addProductLine(product.ordprod_qty + "x " + product.ordprod_name, null, false);
+            addProductLine(product.ordprod_qty + "x " + product.ordprod_name, null, false, 1);
+            for (OrderProduct addon : addons) {
+                addProductLine("- "+addon.ordprod_name,
+                        Global.getCurrencyFormat(addon.overwrite_price), true, 2);
+            }
             addProductLine(getString(R.string.receipt_price),
-                    Global.getCurrencyFormat(product.overwrite_price), true);
+                    Global.getCurrencyFormat(product.overwrite_price), true, 1);
             addProductLine(getString(R.string.receipt_discount),
-                    Global.getCurrencyFormat(product.discount_value), true);
+                    Global.getCurrencyFormat(product.discount_value), true, 1);
             addProductLine(getString(R.string.receipt_total),
                     Global.getCurrencyFormat(Global.getBigDecimalNum(product.itemTotal)
-                            .multiply(qty).toString()), true);
+                            .multiply(qty).toString()), true, 1);
             if (product.ordprod_desc != null && !product.ordprod_desc.isEmpty()) {
-                addProductLine(getString(R.string.receipt_description), null, true);
-                addProductLine(product.ordprod_desc.replace("<br/>", "\n\r"), null, true);
+                addProductLine(getString(R.string.receipt_description), null, true, 1);
+                addProductLine(product.ordprod_desc.replace("<br/>", "\n\r"), null, true, 1);
             }
         }
         splitedOrder.ord_total = orderGranTotal.toString();
@@ -241,7 +253,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             case R.id.printReceiptbutton2: {
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.currentDevice != null) {
-                    Global.mainPrinterManager.currentDevice.printReceiptPreview(receiptPreview);
+                    new PrintPreview().execute(receiptPreview);
+//                    Global.mainPrinterManager.currentDevice.printReceiptPreview(receiptPreview);
                 }
                 break;
             }
@@ -273,16 +286,27 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     }
 
 
-    public class PrintPreview extends AsyncTask<SplitedOrder, Void, SplitedOrder> {
+    public class PrintPreview extends AsyncTask<LinearLayout, Void, Void> {
+        private ProgressDialog myProgressDialog;
 
         @Override
-        protected SplitedOrder doInBackground(SplitedOrder... params) {
-            return params[0];
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(getActivity());
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
         }
 
         @Override
-        protected void onPostExecute(SplitedOrder splitedOrder) {
+        protected Void doInBackground(LinearLayout... params) {
+            Global.mainPrinterManager.currentDevice.printReceiptPreview(params[0]);
+            return null;
+        }
 
+        @Override
+        protected void onPostExecute(Void none) {
+            myProgressDialog.dismiss();
         }
     }
 

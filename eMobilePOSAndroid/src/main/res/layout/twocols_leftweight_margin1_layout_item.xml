@@ -12,6 +12,7 @@
         android:singleLine="false"
         android:textColor="#000"
         android:textStyle="normal"
+        android:layout_marginLeft="10dp"
         android:layout_marginBottom="1dp" />
 
     <com.android.support.TextViewSansSerifMedium

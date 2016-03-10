@@ -21,50 +21,50 @@ import java.util.List;
 
 public class OrderProductsHandler {
 
-    private final String ord_id = "ord_id";
-    private final String addon = "addon";
-    private final String isAdded = "isAdded";
-    private final String isPrinted = "isPrinted";
-    private final String item_void = "item_void";
-    private final String ordprod_id = "ordprod_id";
-    private final String addon_ordprod_id = "addon_ordprod_id";
-    private final String prod_id = "prod_id";
-    private final String prod_sku = "prod_sku";
-    private final String prod_upc = "prod_upc";
-    private final String ordprod_qty = "ordprod_qty";
-    private final String overwrite_price = "overwrite_price";
-    private final String reason_id = "reason_id";
-    private final String ordprod_name = "ordprod_name";// add
-    private final String ordprod_comment = "ordprod_comment";
-    private final String ordprod_desc = "ordprod_desc";
-    private final String pricelevel_id = "pricelevel_id";
-    private final String prod_seq = "prod_seq";
-    private final String uom_name = "uom_name";
-    private final String uom_conversion = "uom_conversion";
-    private final String uom_id = "uom_id";
-    private final String prod_taxId = "prod_taxId"; // add
-    private final String prod_taxValue = "prod_taxValue"; // add
-    private final String discount_id = "discount_id";
-    private final String discount_value = "discount_value";
-    private final String cat_id = "cat_id";
+    private static final String ord_id = "ord_id";
+    private static final String addon = "addon";
+    private static final String isAdded = "isAdded";
+    private static final String isPrinted = "isPrinted";
+    private static final String item_void = "item_void";
+    private static final String ordprod_id = "ordprod_id";
+    private static final String addon_ordprod_id = "addon_ordprod_id";
+    private static final String prod_id = "prod_id";
+    private static final String prod_sku = "prod_sku";
+    private static final String prod_upc = "prod_upc";
+    private static final String ordprod_qty = "ordprod_qty";
+    private static final String overwrite_price = "overwrite_price";
+    private static final String reason_id = "reason_id";
+    private static final String ordprod_name = "ordprod_name";// add
+    private static final String ordprod_comment = "ordprod_comment";
+    private static final String ordprod_desc = "ordprod_desc";
+    private static final String pricelevel_id = "pricelevel_id";
+    private static final String prod_seq = "prod_seq";
+    private static final String uom_name = "uom_name";
+    private static final String uom_conversion = "uom_conversion";
+    private static final String uom_id = "uom_id";
+    private static final String prod_taxId = "prod_taxId"; // add
+    private static final String prod_taxValue = "prod_taxValue"; // add
+    private static final String discount_id = "discount_id";
+    private static final String discount_value = "discount_value";
+    private static final String cat_id = "cat_id";
 
-    private final String prod_istaxable = "prod_istaxable";
-    private final String discount_is_taxable = "discount_is_taxable";
-    private final String discount_is_fixed = "discount_is_fixed";
-    private final String onHand = "onHand";
-    private final String imgURL = "imgURL";
-    private final String prod_price = "prod_price";
-    private final String prod_type = "prod_type";
-    private final String itemTotal = "itemTotal";
-    private final String itemSubtotal = "itemSubtotal";
+    private static final String prod_istaxable = "prod_istaxable";
+    private static final String discount_is_taxable = "discount_is_taxable";
+    private static final String discount_is_fixed = "discount_is_fixed";
+    private static final String onHand = "onHand";
+    private static final String imgURL = "imgURL";
+    private static final String prod_price = "prod_price";
+    private static final String prod_type = "prod_type";
+    private static final String itemTotal = "itemTotal";
+    private static final String itemSubtotal = "itemSubtotal";
 
-    private final String addon_section_name = "addon_section_name";
-    private final String addon_position = "addon_position";
-    private final String hasAddons = "hasAddons";
+    private static final String addon_section_name = "addon_section_name";
+    private static final String addon_position = "addon_position";
+    private static final String hasAddons = "hasAddons";
 
-    private String assignedSeat = "assignedSeat";
-    private String seatGroupId = "seatGroupId";
-    public final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
+    private static final String assignedSeat = "assignedSeat";
+    private static final String seatGroupId = "seatGroupId";
+    public static final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
@@ -381,7 +381,7 @@ public class OrderProductsHandler {
         return DBManager._db.rawQuery(sb.toString(), new String[]{parameter});
     }
 
-    public List<OrderProduct> getOrderProductAddons(String ordprod_id) {
+    public static List<OrderProduct> getOrderProductAddons(String ordprod_id) {
         List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
         String[] cols = new String[attr.size()];
         attr.toArray(cols);
@@ -390,10 +390,11 @@ public class OrderProductsHandler {
         while (cursor.moveToNext()) {
             orderProducts.add(getOrderProduct(cursor));
         }
+        cursor.close();
         return orderProducts;
     }
 
-    private OrderProduct getOrderProduct(Cursor cursor) {
+    private static OrderProduct getOrderProduct(Cursor cursor) {
         OrderProduct product = new OrderProduct();
         product.addon = cursor.getString(cursor.getColumnIndex(addon));
         product.isAdded = cursor.getString(cursor.getColumnIndex(isAdded));
@@ -434,9 +435,10 @@ public class OrderProductsHandler {
         product.cat_id = cursor.getString(cursor.getColumnIndex(cat_id));
         product.assignedSeat = cursor.getString(cursor.getColumnIndex(assignedSeat));
         product.addon = cursor.getString(cursor.getColumnIndex(addon));
-        product.seatGroupId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(seatGroupId)));
+        String groupId = cursor.getString(cursor.getColumnIndex(seatGroupId));
+        product.seatGroupId = groupId == null || groupId.isEmpty() ? 0 : Integer.parseInt(groupId);
 
-        return null;
+        return product;
     }
 
     public List<OrderProduct> getOrderProducts(String orderId) {
@@ -445,7 +447,6 @@ public class OrderProductsHandler {
         if (cursor.moveToFirst()) {
             do {
                 OrderProduct prod = new OrderProduct();
-
                 products.add(prod);
             } while (cursor.moveToNext());
         }
@@ -470,7 +471,7 @@ public class OrderProductsHandler {
         List<Orders> list = new ArrayList<Orders>();
 
 
-        Cursor cursor = DBManager._db.rawQuery(("SELECT ordprod_name,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM " + table_name + " WHERE ord_id = '") + ordID + "'", null);
+        Cursor cursor = DBManager._db.rawQuery(("SELECT ordprod_name, ordprod_id,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM " + table_name + " WHERE addon = '0' AND ord_id = '") + ordID + "'", null);
 
         Orders[] orders = new Orders[cursor.getCount()];
 
@@ -478,6 +479,7 @@ public class OrderProductsHandler {
             int i = 0;
             do {
                 orders[i] = new Orders();
+                orders[i].setOrdprodID(cursor.getString(cursor.getColumnIndex(ordprod_id)));
                 orders[i].setName(cursor.getString(cursor.getColumnIndex(ordprod_name)));
                 orders[i].setProdDescription(cursor.getString(cursor.getColumnIndex(ordprod_desc)));
                 orders[i].setOverwritePrice(format(cursor.getString(cursor.getColumnIndex(overwrite_price))));

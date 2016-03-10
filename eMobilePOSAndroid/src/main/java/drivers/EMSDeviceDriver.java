@@ -456,56 +456,64 @@ public class EMSDeviceDriver {
                 for (int i = 0; i < size; i++) {
 
                     if (isRestMode) {
-                        if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
-                            m = i;
-                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
+//                        if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
+//                            m = i;
 //                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
-                            for (int j = i + 1; j < size; j++) {
-                                if (orders.get(j).getIsAdded().equals("1"))
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            "- " + orders.get(j).getName(),
-                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
-                                else
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            "- NO " + orders.get(j).getName(),
-                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
-
-                                if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-                                    i = j;
-                                    break;
-                                }
-
-                            }
-
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                    Global.getCurrencyFormat(orders.get(m).getOverwritePrice()), lineWidth, 3))
-                                    .append("\n");
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                                    Global.getCurrencyFormat(orders.get(m).getTotal()), lineWidth, 3)).append("\n");
-
-                            if (printPref.contains(MyPreferences.print_descriptions)) {
+////                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
+//                            for (int j = i + 1; j < size; j++) {
+//                                if (orders.get(j).getIsAdded().equals("1"))
+//                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+//                                            "- " + orders.get(j).getName(),
+//                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
+//                                else
+//                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+//                                            "- NO " + orders.get(j).getName(),
+//                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
+//
+//                                if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
+//                                    i = j;
+//                                    break;
+//                                }
+//
+//                            }
+//
+//                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+//                                    Global.getCurrencyFormat(orders.get(m).getOverwritePrice()), lineWidth, 3))
+//                                    .append("\n");
+//                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+//                                    Global.getCurrencyFormat(orders.get(m).getTotal()), lineWidth, 3)).append("\n");
+//
+//                            if (printPref.contains(MyPreferences.print_descriptions)) {
+//                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+//                                        getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
+//                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+//                                        orders.get(m).getProdDescription(), lineWidth, 5)).append("\n");
+//                            }
+//
+//                        } else {
+                        sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                orders.get(i).getQty() + "x " + orders.get(i).getName(), lineWidth, 1));
+                        if (orders.get(i).getHasAddon().equals("1")) {
+                            List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orders.get(i).getOrdprodID());
+                            for (OrderProduct addon : addons) {
                                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                        getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
-                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                        orders.get(m).getProdDescription(), lineWidth, 5)).append("\n");
-                            }
-
-                        } else {
-                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                    orders.get(i).getQty() + "x " + orders.get(i).getName(), lineWidth, 1));
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                    Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), lineWidth, 3))
-                                    .append("\n");
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                                    Global.getCurrencyFormat(orders.get(i).getTotal()), lineWidth, 3)).append("\n");
-
-                            if (printPref.contains(MyPreferences.print_descriptions)) {
-                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                        getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
-                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                        orders.get(i).getProdDescription(), lineWidth, 5)).append("\n");
+                                        "- " + addon.ordprod_name,
+                                        Global.getCurrencyFormat(addon.overwrite_price), lineWidth, 2));
                             }
                         }
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+                                Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), lineWidth, 3))
+                                .append("\n");
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                                Global.getCurrencyFormat(orders.get(i).getTotal()), lineWidth, 3)).append("\n");
+
+                        if (printPref.contains(MyPreferences.print_descriptions)) {
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                    getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
+                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                    orders.get(i).getProdDescription(), lineWidth, 5)).append("\n");
+                        }
+//                        }
                     } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
                                 orders.get(i).getQty() + "x " + orders.get(i).getName(), lineWidth, 1));
