@@ -126,6 +126,7 @@ public class Global extends MultiDexApplication {
     public static final int OT310 = 12;
     public static final int ESY13P1 = 13;
     public static final int KDC500 = 14;
+    public static final int HANDPOINT = 15;
 
 
     public enum BuildModel {
@@ -525,6 +526,18 @@ public class Global extends MultiDexApplication {
                 break;
             case ISMP:
                 _name = "iSMP";
+                break;
+            case  HANDPOINT:
+                _name="HANDPOINT";
+                break;
+            case  EM100:
+                _name="EM100";
+                break;
+            case  EM70:
+                _name="EM70";
+                break;
+            case  KDC500:
+                _name="KDC500";
                 break;
         }
         return _name;
@@ -1592,7 +1605,7 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
-                || _printer_type == Global.KDC500 || _printer_type == Global.EM70 || _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
+                || _printer_type == Global.KDC500 || _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 || _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {

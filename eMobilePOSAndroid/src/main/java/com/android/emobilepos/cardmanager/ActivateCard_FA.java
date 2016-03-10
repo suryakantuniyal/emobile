@@ -187,7 +187,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 			Intent i = getIntent();
 			handleDecodeData(i);
 			cardSwipe.setChecked(true);
-		} else if (myPref.isSam4s(true, false) || myPref.isEM100()) {
+		} else if (myPref.isSam4s(true, false) || myPref.isEM100()|| myPref.isHandpoint()) {
 			cardSwipe.setChecked(true);
 		}
 	}

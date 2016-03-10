@@ -152,12 +152,10 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
 
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
     }
 
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = null;
     }
 

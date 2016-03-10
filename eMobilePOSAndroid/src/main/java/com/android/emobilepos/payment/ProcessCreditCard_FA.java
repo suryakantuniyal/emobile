@@ -500,7 +500,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000() || myPref.isHandpoint()) {
             cardSwipe.setChecked(true);
         }
     }

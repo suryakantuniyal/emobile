@@ -95,7 +95,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 break;
         }
 
-        portName = myPref.printerMACAddress(true, null);
+        portName = myPref.getPrinterMACAddress();
         portNumber = myPref.getStarPort();
 
         new processConnectionAsync().execute(0);

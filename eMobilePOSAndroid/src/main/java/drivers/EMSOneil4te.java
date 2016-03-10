@@ -84,7 +84,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         resources = this.activity.getResources();
         boolean didConnect = false;
 
-        String macAddress = myPref.printerMACAddress(true, null);
+        String macAddress = myPref.getPrinterMACAddress();
 
         try {
             device = Connection_Bluetooth.createClient(macAddress);
@@ -122,7 +122,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         @Override
         protected String doInBackground(Integer... params) {
             // TODO Auto-generated method stub
-            String macAddress = myPref.printerMACAddress(true, null);
+            String macAddress = myPref.getPrinterMACAddress();
 
             try {
                 device = Connection_Bluetooth.createClient(macAddress);

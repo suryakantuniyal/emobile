@@ -120,7 +120,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         encrypt = new Encrypt(activity);
         boolean didConnect = false;
 
-        String macAddress = myPref.printerMACAddress(true, null);
+        String macAddress = myPref.getPrinterMACAddress();
         BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
         try {
             socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
@@ -163,7 +163,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         @Override
         protected String doInBackground(Void... params) {
 
-            String macAddress = myPref.printerMACAddress(true, null);
+            String macAddress = myPref.getPrinterMACAddress();
             BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
             try {
                 socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));

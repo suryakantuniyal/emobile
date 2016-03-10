@@ -638,16 +638,27 @@ public class MyPreferences {
         return empstr;
     }
 
-    public String printerMACAddress(boolean isGet, String value) {
+    public void setPrinterMACAddress(String value){
         String printer_mac_address = "printer_mac_address";
-        if (isGet)
-            return prefs.getString(printer_mac_address, empstr);
-        else {
-            prefEditor.putString(printer_mac_address, value);
-            prefEditor.commit();
-        }
-        return empstr;
+        prefEditor.putString(printer_mac_address, value);
+        prefEditor.commit();
     }
+
+    public String getPrinterMACAddress(){
+        String printer_mac_address = "printer_mac_address";
+        return prefs.getString(printer_mac_address, empstr);
+    }
+
+//    public String printerMACAddress(boolean isGet, String value) {
+//        String printer_mac_address = "printer_mac_address";
+//        if (isGet)
+//            return prefs.getString(printer_mac_address, empstr);
+//        else {
+//            prefEditor.putString(printer_mac_address, value);
+//            prefEditor.commit();
+//        }
+//        return empstr;
+//    }
 
     public String sledMACAddress(boolean isGet, String value) {
         String sled_mac_address = "sled_mac_address";
@@ -796,6 +807,18 @@ public class MyPreferences {
     public boolean setIsEM100(boolean value) {
         String device_em100 = "device_em100";
         prefEditor.putBoolean(device_em100, value);
+        prefEditor.commit();
+        return false;
+    }
+
+    public boolean isHandpoint() {
+        String device_handpoint = "device_handpoint";
+        return prefs.getBoolean(device_handpoint, false);
+    }
+
+    public boolean setIsHandpoint(boolean value) {
+        String device_handpoint = "device_handpoint";
+        prefEditor.putBoolean(device_handpoint, value);
         prefEditor.commit();
         return false;
     }

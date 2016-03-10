@@ -66,7 +66,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private EMSDeviceManager edm;
     private EMSKDC500 thisInstance;
     KDCReader kdcReader;
-    String msg = new String("Failed to connect");
+    String msg = "Failed to connect";
 
 
     private Handler handler;

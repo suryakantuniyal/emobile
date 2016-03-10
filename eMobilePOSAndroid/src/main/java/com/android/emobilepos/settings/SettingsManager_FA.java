@@ -601,7 +601,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     myPref.setStarIPAddress(ipAddress.getText().toString());
                     myPref.setStarPort(portNumber.getText().toString());
-                    myPref.printerMACAddress(false, "TCP:" + ipAddress.getText().toString());
+                    myPref.setPrinterMACAddress("TCP:" + ipAddress.getText().toString());
 
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
@@ -769,7 +769,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int pos, long arg3) {
-                    // TODO Auto-generated method stub
                     promptDialog.dismiss();
 
                     dialogBuilder = new AlertDialog.Builder(activity);
@@ -780,7 +779,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // TODO Auto-generated method stub
                             MyPreferences myPref = new MyPreferences(activity);
                             String strDeviceName;
                             strDeviceName = val[pos].toUpperCase(Locale.getDefault());
@@ -799,7 +797,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             // micronics
                             {
                                 myPref.setPrinterType(Global.STAR);
-                                myPref.printerMACAddress(false, "BT:" + macAddressList.get(pos));
+                                myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -809,7 +807,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) // bamboo
                             {
                                 myPref.setPrinterType(Global.BAMBOO);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -827,7 +825,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -836,7 +834,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MP")) // Oneil
                             {
                                 myPref.setPrinterType(Global.ONEIL);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -845,12 +843,20 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) // KDC500
                             {
                                 myPref.setPrinterType(Global.KDC500);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615009146")) {
+                                myPref.setPrinterType(Global.HANDPOINT);
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(activity, Global.HANDPOINT, false);
                             } else {
                                 Toast.makeText(activity, R.string.err_invalid_device, Toast.LENGTH_LONG).show();
                             }
@@ -1016,7 +1022,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
                     _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
-                    _portName = myPref.printerMACAddress(true, null);
+                    _portName = myPref.getPrinterMACAddress();
                     String _portNumber = myPref.getStarPort();
                     boolean isPOS = myPref.posPrinter(true, false);
                     int txtAreaSize = myPref.printerAreaSize(true, -1);

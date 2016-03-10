@@ -396,7 +396,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70()|| myPref.isHandpoint() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         }
     }

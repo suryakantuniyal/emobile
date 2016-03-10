@@ -253,7 +253,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 				edm = new EMSDeviceManager();
 				Global.mainPrinterManager = edm.getManager();
 				_peripheralName = Global.getPeripheralName(myPref.getPrinterType());
-				_portName = myPref.printerMACAddress(true, null);
+				_portName = myPref.getPrinterMACAddress();
 				String _portNumber = myPref.getStarPort();
 				boolean isPOS = myPref.posPrinter(true, false);
 				int txtAreaSize = myPref.printerAreaSize(true, -1);

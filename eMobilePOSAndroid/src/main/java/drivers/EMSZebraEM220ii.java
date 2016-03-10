@@ -93,7 +93,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         myProgressDialog.setCancelable(false);
         myProgressDialog.show();
 
-        myPrinter.connect(myPref.printerMACAddress(true, null));
+        myPrinter.connect(myPref.getPrinterMACAddress());
     }
 
     @Override
@@ -119,7 +119,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         }
 
         if (myPrinter != null)
-            myPrinter.connect(myPref.printerMACAddress(true, null));
+            myPrinter.connect(myPref.getPrinterMACAddress());
 
         try {
             Thread.sleep(3000);

@@ -19,6 +19,7 @@ import drivers.EMSBlueBambooP25;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSEM100;
+import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
 import drivers.EMSKDC500;
 import drivers.EMSMagtekAudioCardReader;
@@ -129,6 +130,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSKDC500();
                 aDevice.connect(activity, -1, true, instance);
                 break;
+            case Global.HANDPOINT:
+                aDevice = new EMSHandpoint();
+                aDevice.connect(activity, -1, true, instance);
+                break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
                 aDevice.connect(activity, -1, true, instance);
@@ -183,6 +188,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.KDC500:
                 aDevice = new EMSKDC500();
                 break;
+            case Global.HANDPOINT:
+                aDevice = new EMSHandpoint();
+                break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
                 break;
@@ -208,7 +216,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3) {
-                // TODO Auto-generated method stub
                 promptDialog.dismiss();
                 if (pos == 0)
 
@@ -244,7 +251,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                // TODO Auto-generated method stub
                 promptDialog.dismiss();
                 MyPreferences myPref = new MyPreferences(activity);
                 myPref.posPrinter(false, isPOSPrinter);
@@ -269,22 +275,18 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     public EMSDeviceManagerPrinterDelegate currentDevice;
 
     public void printerDidFinish() {
-        // TODO Auto-generated method stub
 
     }
 
     public void printerDidDisconnect(Error err) {
-        // TODO Auto-generated method stub
 
     }
 
     public void printerDidBegin() {
-        // TODO Auto-generated method stub
 
     }
 
     public void driverDidConnectToDevice(EMSDeviceDriver theDevice, boolean showPrompt) {
-        // TODO Auto-generated method stub
         if (showPrompt) {
             Builder dialog = new AlertDialog.Builder(this.activity);
             dialog.setNegativeButton(R.string.button_ok, null);
@@ -298,12 +300,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     }
 
     public void driverDidDisconnectFromDevice(EMSDeviceDriver theDevice, boolean showPrompt) {
-        // TODO Auto-generated method stub
 
     }
 
     public void driverDidNotConnectToDevice(EMSDeviceDriver theDevice, String err, boolean showPrompt) {
-        // TODO Auto-generated method stub
 
         if (showPrompt) {
             Builder dialog = new AlertDialog.Builder(this.activity);
