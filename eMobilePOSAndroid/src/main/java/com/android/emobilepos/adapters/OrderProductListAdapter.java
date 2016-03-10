@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.database.ProductAddonsHandler;
@@ -139,7 +140,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public void addSeat(OrderProduct orderProduct) {
-        if(getSeat(orderProduct.assignedSeat)==null) {
+        if (getSeat(orderProduct.assignedSeat) == null) {
             OrderSeatProduct product = new OrderSeatProduct(orderProduct.assignedSeat, orderProduct.seatGroupId);
             product.setSeatGroupId(orderProduct.seatGroupId == 0 ? getNextGroupId() : orderProduct.seatGroupId);
             orderSeatProductList.add(product);
@@ -248,7 +249,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
         switch (type) {
             case TYPE_HEADER:
-                Button menuButton = (Button) convertView.findViewById(R.id.headerMenubutton);
+                ImageButton menuButton = (ImageButton) convertView.findViewById(R.id.headerMenubutton);
                 menuButton.setOnClickListener((OrderingMain_FA) activity);
                 menuButton.setTag(orderSeatProductList.get(position));
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.VISIBLE);
