@@ -697,10 +697,12 @@ public class EMSDeviceDriver {
     }
 
     private void printEnablerWebSite(int lineWidth) {
-        StringBuilder sb = new StringBuilder();
-        sb.setLength(0);
-        sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n\n", lineWidth));
-        print(sb.toString());
+        if (myPref.isPrintWebSiteFooterEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            sb.setLength(0);
+            sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n\n", lineWidth));
+            print(sb.toString());
+        }
     }
 
     public void cutPaper() {
