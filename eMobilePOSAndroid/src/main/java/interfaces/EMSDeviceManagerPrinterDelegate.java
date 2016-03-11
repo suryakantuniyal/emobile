@@ -75,4 +75,6 @@ public interface EMSDeviceManagerPrinterDelegate {
     void refund(Payment payment);
 
     void refundReversal(Payment payment);
+
+    void  printEMVReceipt(String text);
 }

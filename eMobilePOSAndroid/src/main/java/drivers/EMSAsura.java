@@ -1328,6 +1328,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
     public void msrError() {
         // TODO Auto-generated method stub
 

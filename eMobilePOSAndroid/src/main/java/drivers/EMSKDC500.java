@@ -319,6 +319,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     }
 
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
 
     @Override
     public void BarcodeDataReceived(KDCData kdcData) {

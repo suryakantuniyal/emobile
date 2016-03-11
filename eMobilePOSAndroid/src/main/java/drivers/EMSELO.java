@@ -480,6 +480,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     }
 
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {

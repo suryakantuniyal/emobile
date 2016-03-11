@@ -16,6 +16,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.multidex.MultiDexApplication;
+import android.text.Html;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
@@ -772,14 +773,13 @@ public class Global extends MultiDexApplication {
         TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(title);
-        viewMsg.setText(msg);
+        viewMsg.setText(Html.fromHtml(msg));
         Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 popDlog.dismiss();
             }
         });

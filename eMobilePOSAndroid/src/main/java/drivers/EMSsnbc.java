@@ -562,4 +562,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void refundReversal(Payment payment) {
 
     }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
 }

@@ -354,6 +354,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         transIDField.setVisibility(View.GONE);
         tipAmount.setVisibility(View.GONE);
         findViewById(R.id.accountInformationTextView).setVisibility(View.GONE);
+        findViewById(R.id.tipAmountBut).setVisibility(View.GONE);
+
     }
 
     private void enableManualCreditCard() {
@@ -541,7 +543,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     private void processPayment() {
 
-        if (walkerReader == null)
+        if (walkerReader == null && myPref.getPrinterType() != Global.HANDPOINT)
             populateCardInfo();
         if (Global.isIvuLoto) {
             Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
@@ -609,7 +611,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
 
 
-        if (walkerReader == null) {
+        if (walkerReader == null && myPref.getPrinterType() != Global.HANDPOINT) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
 
@@ -1526,7 +1528,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
-        if (walkerReader == null) {
+        if (walkerReader == null && myPref.getPrinterType() != Global.HANDPOINT) {
             payment.pay_resultcode = parsedMap.get("pay_resultcode");
             payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
             payment.pay_transid = parsedMap.get("CreditCardTransID");
@@ -1812,14 +1814,22 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
         this.cardInfoManager = cardManager;
-        updateViewAfterSwipe(cardManager);
-        if (uniMagReader != null && uniMagReader.readerIsConnected()) {
-            uniMagReader.startReading();
-        } else if (walkerReader != null) {
-            processPayment();
-        } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
-                && Global.mainPrinterManager != null)
-            Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
+        if (myPref.getPrinterType() != Global.HANDPOINT) {
+            updateViewAfterSwipe(cardManager);
+            if (uniMagReader != null && uniMagReader.readerIsConnected()) {
+                uniMagReader.startReading();
+            } else if (walkerReader != null) {
+                processPayment();
+            } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
+                    && Global.mainPrinterManager != null)
+                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
+        } else {
+            if (read) {
+                processPayment();
+            } else {
+
+            }
+        }
     }
 
     @Override
@@ -2065,7 +2075,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void startSignature() {
-        // TODO Auto-generated method stub
         Intent intent = new Intent(activity, DrawReceiptActivity.class);
         intent.putExtra("isFromPayment", true);
         startActivityForResult(intent, requestCode);

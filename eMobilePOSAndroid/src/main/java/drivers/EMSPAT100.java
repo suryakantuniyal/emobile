@@ -627,6 +627,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void refundReversal(Payment payment) {
 
     }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
     //
     // protected void printImage(int type) {
     // Bitmap myBitmap = null;

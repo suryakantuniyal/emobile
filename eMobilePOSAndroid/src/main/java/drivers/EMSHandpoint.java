@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
@@ -23,12 +24,14 @@ import com.handpoint.api.ConnectionStatus;
 import com.handpoint.api.Currency;
 import com.handpoint.api.Device;
 import com.handpoint.api.Events;
+import com.handpoint.api.FinancialStatus;
 import com.handpoint.api.Hapi;
 import com.handpoint.api.HapiFactory;
 import com.handpoint.api.SignatureRequest;
 import com.handpoint.api.StatusInfo;
 import com.handpoint.api.TransactionResult;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +52,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
     protected static Device device;
     private Handler handler;
-    private EMSCallBack scannerCallBack;
+    private EMSCallBack msrCallBack;
     String msg = "Failed to connect";
     static boolean connected = false;
 
@@ -194,8 +197,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     private Runnable doUpdateDidConnect = new Runnable() {
         public void run() {
             try {
-                if (scannerCallBack != null)
-                    scannerCallBack.readerConnectedSuccessfully(true);
+                if (msrCallBack != null)
+                    msrCallBack.readerConnectedSuccessfully(true);
 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -207,7 +210,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
         if (handler == null)
             handler = new Handler();
-        scannerCallBack = callBack;
+        msrCallBack = callBack;
         if (!connected) {
             synchronized (hapi) {
                 discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
@@ -278,7 +281,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void endOfTransaction(TransactionResult transactionResult, Device device) {
-        String authorisationCode = transactionResult.getAuthorisationCode();
+        CreditCardInfo creditCardInfo = new CreditCardInfo();
+        BigDecimal totalDec = new BigDecimal(transactionResult.getTotalAmount().intValue()).multiply(new BigDecimal(".01"));
+        creditCardInfo.setOriginalTotalAmount(totalDec.toString());
+        creditCardInfo.setWasSwiped(true);
+        creditCardInfo.authcode = transactionResult.getAuthorisationCode();
+        creditCardInfo.transid = transactionResult.getTransactionID();
+        msrCallBack.cardWasReadSuccessfully(transactionResult.getFinStatus() == FinancialStatus.AUTHORISED, creditCardInfo);
     }
 
     @Override
@@ -301,6 +310,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void currentTransactionStatus(StatusInfo statusInfo, Device device) {
         StatusInfo.Status status = statusInfo.getStatus();
+
     }
 
     @Override
@@ -343,7 +353,10 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void salePayment(BigInteger amount) {
         hapi.useDevice(device);
-        boolean sale = hapi.sale(amount, Currency.USD);
+        boolean succeed = hapi.sale(amount, Currency.USD);
+        if (!succeed) {
+
+        }
     }
 
     @Override
@@ -359,6 +372,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void refundReversal(Payment payment) {
 
+    }
+
+    @Override
+    public void printEMVReceipt(String html) {
+        Global.showPrompt(activity, R.string.printing_message, html);
     }
 
     public class ProcessConnectionAsync extends AsyncTask<Void, String, Boolean> {
