@@ -1176,4 +1176,7 @@ public class MyPreferences {
         return gobj;
     }
 
+    public boolean isPrintWebSiteFooterEnabled() {
+        return getPrintingPreferences().contains("print_emobilepos_website");
+    }
 }

@@ -179,7 +179,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                         @Override
                         public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            // TODO Auto-generated method stub
                             if (newValue instanceof Boolean) {
                                 if ((Boolean) newValue) {
                                     // sync Location Inventory
@@ -305,7 +304,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onSelectCountry(String name, String code) {
-                            // TODO Auto-generated method stub
                             myPref.defaultCountryCode(false, code);
                             myPref.defaultCountryName(false, name);
 
@@ -359,7 +357,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     globalDlog.dismiss();
 
                     String value = viewField.getText().toString().trim();
@@ -447,7 +444,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
 
                     String value1 = row1.getText().toString().trim();
                     String value2 = row2.getText().toString().trim();
@@ -509,7 +505,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     promptDialog.dismiss();
                     switch (type) {
                         case R.string.config_force_upload:
@@ -528,7 +523,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     promptDialog.dismiss();
                 }
             });
@@ -549,7 +543,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onClick(DialogInterface thisDialog, int which) {
-                            // TODO Auto-generated method stub
                             final String firstValue = input.getText().toString();
                             if (firstValue.length() > 0) {
                                 myPref.setGeniusIP(firstValue);
@@ -562,7 +555,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onClick(DialogInterface thisDialog, int which) {
-                            // TODO Auto-generated method stub
                             thisDialog.dismiss();
 
                         }
@@ -597,7 +589,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // TODO Auto-generated method stub
 
                     myPref.setStarIPAddress(ipAddress.getText().toString());
                     myPref.setStarPort(portNumber.getText().toString());
@@ -627,7 +618,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     myPref.setPrinterType(Global.SNBC);
                     // myPref.printerMACAddress(false, macAddressList.get(pos));
 
@@ -727,7 +717,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     dlog.dismiss();
                     if (askAmount) {
                         promptCloseShift(false, Global.formatNumFromLocale(viewField.getText().toString()));
@@ -748,7 +737,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     dlog.dismiss();
                 }
             });
@@ -960,7 +948,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
             @Override
             protected Void doInBackground(Void... params) {
-                // TODO Auto-generated method stub
 
                 PrintersHandler ph = new PrintersHandler(activity);
                 Cursor c = ph.getPrinters();
