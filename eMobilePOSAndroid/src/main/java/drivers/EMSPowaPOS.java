@@ -19,8 +19,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -35,13 +34,14 @@ import com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallback;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 //com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallbackBas
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
@@ -255,6 +255,26 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
     }
 
     @Override

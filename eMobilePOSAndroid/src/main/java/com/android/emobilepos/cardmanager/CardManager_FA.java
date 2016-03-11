@@ -56,7 +56,7 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 

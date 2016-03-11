@@ -17,8 +17,6 @@ import android.widget.Toast;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -28,13 +26,14 @@ import com.android.support.MyPreferences;
 import com.magtek.mobile.android.scra.MTSCRAException;
 import com.magtek.mobile.android.scra.MagTekSCRA;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 
 public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
@@ -570,6 +569,26 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
     @Override
     public void printReceiptPreview(View view) {
+
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
 
     }
 

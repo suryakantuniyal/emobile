@@ -13,22 +13,10 @@ import android.util.Base64;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
-import com.android.database.ClerksHandler;
 import com.android.database.MemoTextHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrderTaxes_DB;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
-import com.android.emobilepos.R;
-import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -38,14 +26,14 @@ import com.starmicronics.stario.StarIOPortException;
 import com.zebra.printer.MobilePrinter;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     static final int MESSAGE_START_WORK = Integer.MAX_VALUE - 4;
@@ -555,6 +543,26 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
     }
 
 }

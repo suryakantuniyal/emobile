@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.payment.ProcessCash_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -50,7 +48,7 @@ import javax.xml.parsers.SAXParserFactory;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 

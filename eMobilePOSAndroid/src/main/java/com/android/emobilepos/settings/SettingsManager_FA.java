@@ -844,19 +844,20 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.KDC500);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
-
+                                myPref.swiperType(false, Global.KDC500);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615009146")) {
                                 myPref.setPrinterType(Global.HANDPOINT);
+                                myPref.swiperType(false, Global.HANDPOINT);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
-
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.HANDPOINT, false);
+                                Global.btSwiper = edm.getManager();
+
                             } else {
                                 Toast.makeText(activity, R.string.err_invalid_device, Toast.LENGTH_LONG).show();
                             }

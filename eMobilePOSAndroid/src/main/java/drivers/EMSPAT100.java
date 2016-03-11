@@ -16,7 +16,6 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -29,14 +28,15 @@ import com.partner.pt100.display.DisplayManager;
 import com.partner.pt100.printer.PrinterManage;
 import com.starmicronics.stario.StarIOPortException;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 //import com.partner.pt100.cashdrawer.CashDrawerApiContext;
 //import com.partner.pt100.cashdrawer.CashDrawerManage;
@@ -606,6 +606,26 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
     }
     //
     // protected void printImage(int type) {

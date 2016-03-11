@@ -8,29 +8,26 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.View;
 
-import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.starmicronics.stario.StarIOPortException;
 
 import org.springframework.util.support.Base64;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 import rba_sdk.Comm_Settings;
 import rba_sdk.Comm_Settings_Constants;
 import rba_sdk.Comm_Timeout;
@@ -400,6 +397,26 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void printReceiptPreview(View view) {
+
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
 
     }
 

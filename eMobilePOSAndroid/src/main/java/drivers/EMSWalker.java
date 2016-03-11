@@ -27,7 +27,7 @@ import com.payments.core.DeviceEnum;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class EMSWalker implements CoreAPIListener {
 

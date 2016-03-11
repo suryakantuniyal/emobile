@@ -1,4 +1,4 @@
-package protocols;
+package interfaces;
 
 import com.android.support.CreditCardInfo;
 

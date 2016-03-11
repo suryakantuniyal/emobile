@@ -31,9 +31,9 @@ import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
 import drivers.EMSEM70;
 import drivers.EMSELO;
-import protocols.EMSConnectionDelegate;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import protocols.EMSPrintingDelegate;
+import interfaces.EMSConnectionDelegate;
+import interfaces.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSPrintingDelegate;
 
 public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDelegate {
 
@@ -48,8 +48,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     //private static EMSDeviceManager instance = new EMSDeviceManager();
 
     public EMSDeviceManager() {
-
-
         instance = this;
         return;
     }

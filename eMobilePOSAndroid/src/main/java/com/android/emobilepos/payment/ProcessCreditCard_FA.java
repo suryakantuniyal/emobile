@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -81,7 +82,7 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -337,11 +338,26 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         hiddenField.addTextChangedListener(new CreditCardTextWatcher(activity, hiddenField, cardNum, cardInfoManager, Global.isEncryptSwipe, this));
 
         setUpCardReader();
+        if (myPref.getPrinterType() == Global.HANDPOINT) {
+            setHandopintUIFields();
+        }
+    }
+
+
+    private void setHandopintUIFields() {
+        cardNum.setVisibility(View.GONE);
+        secCode.setVisibility(View.GONE);
+        zipCode.setVisibility(View.GONE);
+        month.setVisibility(View.GONE);
+        year.setVisibility(View.GONE);
+        authIDField.setVisibility(View.GONE);
+        transIDField.setVisibility(View.GONE);
+        tipAmount.setVisibility(View.GONE);
+        findViewById(R.id.accountInformationTextView).setVisibility(View.GONE);
     }
 
     private void enableManualCreditCard() {
         boolean allow = myPref.getPreferences(MyPreferences.pref_allow_manual_credit_card, true);
-
         cardNum.setEnabled(allow);
         secCode.setEnabled(allow);
         zipCode.setEnabled(allow);
@@ -500,7 +516,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000() || myPref.isHandpoint()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         }
     }
@@ -1023,7 +1039,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dialog.dismiss();
             }
         });
@@ -1032,7 +1047,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 promptTipConfirmation();
                 dialog.dismiss();
             }
@@ -1048,7 +1062,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
-                        // TODO Auto-generated method stub
                         if (hasFocus) {
                             x.setGravity(Gravity.LEFT);
                         } else {
@@ -1096,9 +1109,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     public static String cardType(String number) {
         String ccType = "";
-        long cardNumber;
         try {
-            cardNumber = Long.parseLong(number);
+            Long.parseLong(number);
         } catch (NumberFormatException e) {
             return "";
         }
@@ -1317,13 +1329,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
 
         } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -1354,7 +1363,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected Payment doInBackground(Object... params) {
-            // TODO Auto-generated method stub
 
             if (Global.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
@@ -1390,10 +1398,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     }
 
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    // Tracker tracker = EasyTracker.getInstance(activity);
-                    // tracker.send(MapBuilder.createException(
-                    // e.getStackTrace().toString(), false).build());
+
                     connectionFailed = true;
                 }
             }
@@ -1443,7 +1448,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected Payment doInBackground(Payment... params) {
-            // TODO Auto-generated method stub
 
             if (Global.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
@@ -1493,10 +1497,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     }
 
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    // Tracker tracker = EasyTracker.getInstance(activity);
-                    // tracker.send(MapBuilder.createException(e.getStackTrace().toString(),
-                    // false).build());
+
                     errorMsg = e.getMessage();
                 }
             }
@@ -1614,13 +1615,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
 
         } catch (XmlPullParserException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -1763,7 +1761,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(isReprint, payment);
 
@@ -1773,7 +1770,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 finishPaymentTransaction();
             }
@@ -1798,7 +1794,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (isFromReverse) {
                     new processReverseAsync().execute(payment);
@@ -1816,7 +1811,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
         this.cardInfoManager = cardManager;
         updateViewAfterSwipe(cardManager);
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
@@ -1830,7 +1824,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         tvStatusMSR.setText(R.string.status_connected);
         if (didConnect) {
             cardReaderConnected = true;
@@ -1876,13 +1869,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.exactAmountBut:
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
@@ -1890,17 +1881,34 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 amountPaidField.setText(amountDueField.getText().toString());
                 break;
             case R.id.processButton:
-                if (walkerReader == null)
-                    validateProcessPayment();
-                else {
-                    // double enteredAmount =
-                    // Global.formatNumFromLocale(amountPaidField.getText().toString().replaceAll("[^\\d\\,\\.]",
-                    // "").trim());
-                    // cardInfoManager.dueAmount =
-                    // BigDecimal.valueOf(enteredAmount);
-                    // walkerReader.startReading(cardInfoManager);
+                if (myPref.getPrinterType() == Global.HANDPOINT) {
+                    boolean valid = validateProcessPayment();
+                    if (!valid) {
+                        String errorMsg = getString(R.string.card_validation_error);
+                        Global.showPrompt(activity, R.string.validation_failed, errorMsg);
+                    } else {
+                        new ProcessHanpointAsync().execute();
+                    }
+                } else if (walkerReader == null) {
+                    boolean valid = validateProcessPayment();
+                    if (!valid) {
+                        String errorMsg = getString(R.string.card_validation_error);
+                        Global.showPrompt(activity, R.string.validation_failed, errorMsg);
+                    } else {
+                        btnProcess.setEnabled(false);
+                        if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
+                            promptAmountConfirmation();
+                        } else {
+                            if (!extras.getBoolean("histinvoices") || (isOpenInvoice && !isMultiInvoice))
+                                processPayment();
+                            else
+                                processMultiInvoicePayment();
+                        }
+                    }
 
-                    new processWalkerAsync().execute();
+
+                } else {
+                    new ProcessWalkerAsync().execute();
                 }
                 break;
             case R.id.tipAmountBut:
@@ -1909,55 +1917,57 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-    private void validateProcessPayment() {
+    private boolean validateProcessPayment() {
         String errorMsg = getString(R.string.card_validation_error);
         year.setBackgroundResource(android.R.drawable.edit_text);
         cardNum.setBackgroundResource(android.R.drawable.edit_text);
         month.setBackgroundResource(android.R.drawable.edit_text);
         amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
         boolean error = false;
-        if (cardNum.getText().toString().isEmpty() || cardNum.getText().toString().length() < 14
-                || (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
-            cardNum.setBackgroundResource(R.drawable.edittext_wrong_input);
-            error = true;
-        } else {
-            cardNum.setBackgroundResource(R.drawable.edittext_border);
-        }
-        int myMonth = -1;
-        int myYear = -1;
-        if (!month.getText().toString().isEmpty()) {
-            myMonth = Integer.parseInt(month.getText().toString());
-        }
-        if (!year.getText().toString().isEmpty()) {
-            myYear = Integer.parseInt(year.getText().toString());
-        }
-
-        int curMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
-        int curYear = Calendar.getInstance().get(Calendar.YEAR);
-        if (myYear <= curYear) {
-            if (myYear < curYear) {
-                year.setBackgroundResource(R.drawable.edittext_wrong_input);
+        if (myPref.getPrinterType() != Global.HANDPOINT) {
+            if (cardNum.getText().toString().isEmpty() || cardNum.getText().toString().length() < 14
+                    || (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
+                cardNum.setBackgroundResource(R.drawable.edittext_wrong_input);
                 error = true;
             } else {
-                year.setBackgroundResource(R.drawable.edittext_border);
-            }
-            if ((myMonth < curMonth && myYear != -1) || myMonth < 1 || myMonth > 12
-                    || (myMonth < curMonth && myYear == curYear)) {
-                month.setBackgroundResource(R.drawable.edittext_wrong_input);
-                error = true;
-            } else {
-                month.setBackgroundResource(R.drawable.edittext_border);
+                cardNum.setBackgroundResource(R.drawable.edittext_border);
             }
 
-        } else {
-            if (myMonth <= 0 || myMonth > 12) {
-                month.setBackgroundResource(R.drawable.edittext_wrong_input);
-                error = true;
+            int myMonth = -1;
+            int myYear = -1;
+            if (!month.getText().toString().isEmpty()) {
+                myMonth = Integer.parseInt(month.getText().toString());
+            }
+            if (!year.getText().toString().isEmpty()) {
+                myYear = Integer.parseInt(year.getText().toString());
+            }
+
+            int curMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+            int curYear = Calendar.getInstance().get(Calendar.YEAR);
+            if (myYear <= curYear) {
+                if (myYear < curYear) {
+                    year.setBackgroundResource(R.drawable.edittext_wrong_input);
+                    error = true;
+                } else {
+                    year.setBackgroundResource(R.drawable.edittext_border);
+                }
+                if ((myMonth < curMonth && myYear != -1) || myMonth < 1 || myMonth > 12
+                        || (myMonth < curMonth && myYear == curYear)) {
+                    month.setBackgroundResource(R.drawable.edittext_wrong_input);
+                    error = true;
+                } else {
+                    month.setBackgroundResource(R.drawable.edittext_border);
+                }
+
             } else {
-                month.setBackgroundResource(R.drawable.edittext_border);
+                if (myMonth <= 0 || myMonth > 12) {
+                    month.setBackgroundResource(R.drawable.edittext_wrong_input);
+                    error = true;
+                } else {
+                    month.setBackgroundResource(R.drawable.edittext_border);
+                }
             }
         }
-
         if (!isFromMainMenu) {
             double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
             double actualAmount = Double.parseDouble(extras.getString("amount"));
@@ -1990,31 +2000,24 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         }
 
-        // if (ownersName.getText().toString().isEmpty()) {
-        // ownersName.setBackgroundResource(R.drawable.edittext_wrong_input);
-        // error = true;
-        // } else {
-        // ownersName.setBackgroundResource(R.drawable.edittext_border);
-        // }
 
-        if (error) {
-            Global.showPrompt(activity, R.string.validation_failed, errorMsg);
-        } else {
-            btnProcess.setEnabled(false);
-            if (myPref.getPreferences(MyPreferences.pref_show_confirmation_screen)) {
-                promptAmountConfirmation();
-            } else {
-                if (!extras.getBoolean("histinvoices") || (isOpenInvoice && !isMultiInvoice))
-                    processPayment();
-                else
-                    processMultiInvoicePayment();
+        return !error;
+    }
+
+    private class ProcessHanpointAsync extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            if (Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.salePayment(new BigInteger(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField).replace(".", "")));
             }
-
+            return null;
         }
     }
 
-    private class processWalkerAsync extends AsyncTask<Void, Void, Void> {
-        private processWalkerAsync myTask;
+    private class ProcessWalkerAsync extends AsyncTask<Void, Void, Void> {
+        private ProcessWalkerAsync myTask;
         private double enteredAmount;
 
         @Override
@@ -2047,7 +2050,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
             cardInfoManager.dueAmount = BigDecimal.valueOf(enteredAmount);
             walkerReader.startReading(cardInfoManager, myProgressDialog);
             return null;

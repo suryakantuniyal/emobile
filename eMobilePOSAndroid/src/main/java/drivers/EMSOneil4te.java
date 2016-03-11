@@ -22,7 +22,6 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.database.DBManager;
 import com.android.support.Global;
@@ -31,6 +30,7 @@ import com.starmicronics.stario.StarIOPortException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,9 +43,9 @@ import java.util.Locale;
 import datamaxoneil.connection.Connection_Bluetooth;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import protocols.EMSPrintingDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSPrintingDelegate;
 
 public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
@@ -1022,6 +1022,26 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
     }
 
     @Override

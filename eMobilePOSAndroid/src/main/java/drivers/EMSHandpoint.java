@@ -7,45 +7,51 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.handpoint.api.ConnectionMethod;
+import com.handpoint.api.ConnectionStatus;
+import com.handpoint.api.Currency;
 import com.handpoint.api.Device;
 import com.handpoint.api.Events;
 import com.handpoint.api.Hapi;
 import com.handpoint.api.HapiFactory;
 import com.handpoint.api.SignatureRequest;
+import com.handpoint.api.StatusInfo;
 import com.handpoint.api.TransactionResult;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 /**
  * Created by Guarionex on 3/10/2016.
  */
-public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required {
+public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required, Events.Status {
 
     private CreditCardInfo cardManager;
     private Encrypt encrypt;
     private EMSDeviceManager edm;
-    Hapi hapi;
+    static Hapi hapi;
     String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
-    protected Device device;
+    protected static Device device;
     private Handler handler;
     private EMSCallBack scannerCallBack;
     String msg = "Failed to connect";
-    boolean connected = false;
+    static boolean connected = false;
 
 
     @Override
@@ -55,7 +61,9 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         cardManager = new CreditCardInfo();
         encrypt = new Encrypt(activity);
         this.edm = edm;
-        this.hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+        if (hapi == null) {
+            this.hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+        }
 //        new ProcessConnectionAsync().execute();
         myProgressDialog = new ProgressDialog(activity);
         myProgressDialog.setMessage("Connecting Handpoint device...");
@@ -64,6 +72,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         myProgressDialog.show();
 
         discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
+
     }
 
 
@@ -75,7 +84,9 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         cardManager = new CreditCardInfo();
         encrypt = new Encrypt(activity);
         this.edm = edm;
-        this.hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+        if (hapi == null) {
+            this.hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+        }
         synchronized (hapi) {
             discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
             try {
@@ -84,6 +95,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                 e.printStackTrace();
             }
         }
+
         return connected;
     }
 
@@ -165,7 +177,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void registerAll() {
-
+        this.registerPrinter();
     }
 
     @Override
@@ -177,6 +189,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void unregisterPrinter() {
         this.hapi.disconnect();
     }
+
 
     private Runnable doUpdateDidConnect = new Runnable() {
         public void run() {
@@ -195,7 +208,17 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         if (handler == null)
             handler = new Handler();
         scannerCallBack = callBack;
-        discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
+        if (!connected) {
+            synchronized (hapi) {
+                discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
+                try {
+                    hapi.wait();
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         handler.post(doUpdateDidConnect);
     }
 
@@ -250,12 +273,34 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     //******************** Handpoint callbacks
     @Override
     public void signatureRequired(SignatureRequest signatureRequest, Device device) {
-
+        hapi.signatureResult(true);
     }
 
     @Override
     public void endOfTransaction(TransactionResult transactionResult, Device device) {
+        String authorisationCode = transactionResult.getAuthorisationCode();
+    }
 
+    @Override
+    public void connectionStatusChanged(ConnectionStatus connectionStatus, Device device) {
+        Log.d("Handpoint connection:", connectionStatus.name());
+        switch (connectionStatus) {
+            case Connected: {
+                connected = true;
+                break;
+            }
+            case Disconnecting:
+            case Disconnected: {
+                connected = false;
+                break;
+            }
+        }
+
+    }
+
+    @Override
+    public void currentTransactionStatus(StatusInfo statusInfo, Device device) {
+        StatusInfo.Status status = statusInfo.getStatus();
     }
 
     @Override
@@ -267,6 +312,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                     this.device = device;
                     this.hapi.useDevice(this.device);
                     connected = true;
+//                    boolean sale = hapi.sale(new BigInteger("123"), Currency.USD);
                 }
             }
         }
@@ -293,6 +339,27 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private ProgressDialog myProgressDialog;
+
+    @Override
+    public void salePayment(BigInteger amount) {
+        hapi.useDevice(device);
+        boolean sale = hapi.sale(amount, Currency.USD);
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
 
     public class ProcessConnectionAsync extends AsyncTask<Void, String, Boolean> {
 

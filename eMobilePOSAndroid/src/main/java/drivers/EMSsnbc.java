@@ -5,30 +5,24 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
-import android.util.Base64;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.MemoTextHandler;
-import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.starmicronics.stario.StarIOPortException;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -38,8 +32,8 @@ import POSAPI.POSUSBAPI;
 import POSSDK.POSSDK;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     private final int LINE_WIDTH = 42;
@@ -547,5 +541,25 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
     }
 }

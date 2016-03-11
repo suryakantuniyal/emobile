@@ -1,18 +1,13 @@
 package drivers;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
@@ -20,9 +15,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
-import com.android.soundmanager.SoundManager;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -34,27 +26,22 @@ import com.elotouch.paypoint.register.cd.CashDrawer;
 import com.elotouch.paypoint.register.cfd.CFD;
 import com.elotouch.paypoint.register.printer.SerialPort;
 import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
-import com.partner.pt100.display.DisplayLineApiContext;
-import com.partner.pt100.display.DisplayManager;
 import com.starmicronics.stario.StarIOPortException;
-
-import org.bouncycastle.crypto.digests.LongDigest;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
 
 import drivers.elo.utils.MagStripDriver;
-import drivers.elo.utils.MagStripeCardParser;
 import drivers.elo.utils.PrinterAPI;
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 /**
  * Created by Guarionex on 12/3/2015.
@@ -471,6 +458,26 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
     }
 
     private Runnable runnableScannedData = new Runnable() {

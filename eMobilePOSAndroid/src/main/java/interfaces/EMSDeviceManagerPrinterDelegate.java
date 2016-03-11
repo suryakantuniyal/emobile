@@ -1,18 +1,16 @@
-package protocols;
+package interfaces;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -70,4 +68,11 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void printReceiptPreview(View view);
 
+    void salePayment(BigInteger amount);
+
+    void saleReversal(Payment payment);
+
+    void refund(Payment payment);
+
+    void refundReversal(Payment payment);
 }

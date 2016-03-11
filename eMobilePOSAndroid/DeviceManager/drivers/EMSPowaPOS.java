@@ -55,8 +55,8 @@ import android.util.Log;
 import android.widget.Toast;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 //com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallbackBas
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {

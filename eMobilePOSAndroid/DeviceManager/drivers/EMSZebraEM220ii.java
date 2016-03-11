@@ -36,8 +36,8 @@ import android.os.Message;
 import android.util.Base64;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 	static final int MESSAGE_START_WORK = Integer.MAX_VALUE - 4;

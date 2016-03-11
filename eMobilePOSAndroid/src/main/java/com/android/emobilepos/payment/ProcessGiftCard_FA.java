@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -60,7 +59,7 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 

@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -47,7 +46,7 @@ import javax.xml.parsers.SAXParserFactory;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSCallBack,OnClickListener {
 

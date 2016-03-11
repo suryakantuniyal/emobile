@@ -9,13 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -46,7 +44,7 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         implements OnClickListener, OnCheckedChangeListener, EMSCallBack {

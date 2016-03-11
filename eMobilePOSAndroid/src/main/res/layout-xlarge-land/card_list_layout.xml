@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -155,11 +156,12 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:horizontalSpacing="5dp"
-        android:numColumns="3"
+        android:numColumns="4"
         android:background="@color/gray_flat_bg"
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="5dp"></GridView>
+        android:paddingTop="5dp"
+        tools:listitem="@layout/main_menu_listviewadapter"></GridView>
 </LinearLayout>

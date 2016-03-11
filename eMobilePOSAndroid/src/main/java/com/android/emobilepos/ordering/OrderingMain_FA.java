@@ -90,7 +90,7 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,

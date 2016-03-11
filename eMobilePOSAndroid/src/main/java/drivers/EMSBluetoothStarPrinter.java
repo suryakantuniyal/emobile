@@ -1,6 +1,7 @@
 package drivers;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,11 +10,8 @@ import java.util.List;
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -28,7 +26,6 @@ import com.starmicronics.starioextension.starioextmanager.StarIoExtManager;
 import com.starmicronics.starioextension.starioextmanager.StarIoExtManagerListener;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.database.Cursor;
@@ -42,8 +39,8 @@ import drivers.star.utils.Communication;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.PrinterSetting;
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 import util.RasterDocument;
 import util.RasterDocument.RasPageEndMode;
 import util.RasterDocument.RasSpeed;
@@ -874,6 +871,26 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         } catch (JAException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void salePayment(BigInteger amount) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
     }
 
     private void starIoExtManagerConnect() {

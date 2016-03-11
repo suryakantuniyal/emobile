@@ -12,7 +12,7 @@ import net.homeatm.rover.RoverController;
 import net.homeatm.rover.RoverController.RoverStateChangedListener;
 import net.homeatm.rover.RoverController.TransactionType;
 
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 
 public class EMSRover implements RoverStateChangedListener {

@@ -1,7 +1,6 @@
-package protocols;
+package interfaces;
 
 import com.android.support.CreditCardInfo;
-import com.mpowa.android.sdk.powapos.common.dataobjects.PowaDeviceObject;
 
 public interface EMSCallBack {
 	void cardWasReadSuccessfully(boolean read,CreditCardInfo cardManager);
