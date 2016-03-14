@@ -293,7 +293,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(BigInteger amount) {
 
     }
 

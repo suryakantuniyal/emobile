@@ -471,7 +471,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(BigInteger amount) {
 
     }
 

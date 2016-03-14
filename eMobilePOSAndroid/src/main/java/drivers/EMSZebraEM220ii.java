@@ -556,7 +556,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(BigInteger amount) {
 
     }
 

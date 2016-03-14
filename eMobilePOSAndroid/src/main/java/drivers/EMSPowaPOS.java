@@ -268,7 +268,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(BigInteger amount) {
 
     }
 

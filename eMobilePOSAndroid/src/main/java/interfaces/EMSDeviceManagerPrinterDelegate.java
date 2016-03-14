@@ -72,7 +72,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void saleReversal(Payment payment);
 
-    void refund(Payment payment);
+    void refund(BigInteger amount);
 
     void refundReversal(Payment payment);
 

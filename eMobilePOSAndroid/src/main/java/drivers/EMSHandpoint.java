@@ -55,6 +55,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     private EMSCallBack msrCallBack;
     String msg = "Failed to connect";
     static boolean connected = false;
+    private ProgressDialog myProgressDialog;
 
 
     @Override
@@ -65,14 +66,16 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         encrypt = new Encrypt(activity);
         this.edm = edm;
         if (hapi == null) {
-            this.hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+            hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
         }
 //        new ProcessConnectionAsync().execute();
-        myProgressDialog = new ProgressDialog(activity);
-        myProgressDialog.setMessage("Connecting Handpoint device...");
-        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        myProgressDialog.setCancelable(false);
-        myProgressDialog.show();
+        showDialog(R.string.connecting_handpoint);
+
+//        myProgressDialog = new ProgressDialog(activity);
+//        myProgressDialog.setMessage(activity.getString(R.string.connecting_handpoint));
+//        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//        myProgressDialog.setCancelable(false);
+//        myProgressDialog.show();
 
         discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
 
@@ -88,7 +91,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         encrypt = new Encrypt(activity);
         this.edm = edm;
         if (hapi == null) {
-            this.hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+            hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
         }
         synchronized (hapi) {
             discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
@@ -190,7 +193,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void unregisterPrinter() {
-        this.hapi.disconnect();
+        hapi.disconnect();
     }
 
 
@@ -268,7 +271,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     public void discoverDevices(String deviceName, String macAddress) {
 //        device = new Device(deviceName, macAddress, "", ConnectionMethod.BLUETOOTH);
-        this.hapi.listDevices(ConnectionMethod.BLUETOOTH);
+        hapi.listDevices(ConnectionMethod.BLUETOOTH);
         // This triggers the search for all the bluetooth devices around.
     }
 
@@ -281,6 +284,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void endOfTransaction(TransactionResult transactionResult, Device device) {
+        Looper.prepare();
+
         CreditCardInfo creditCardInfo = new CreditCardInfo();
         BigDecimal totalDec = new BigDecimal(transactionResult.getTotalAmount().intValue()).multiply(new BigDecimal(".01"));
         creditCardInfo.setOriginalTotalAmount(totalDec.toString());
@@ -288,6 +293,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         creditCardInfo.authcode = transactionResult.getAuthorisationCode();
         creditCardInfo.transid = transactionResult.getTransactionID();
         msrCallBack.cardWasReadSuccessfully(transactionResult.getFinStatus() == FinancialStatus.AUTHORISED, creditCardInfo);
+        Looper.loop();
     }
 
     @Override
@@ -319,8 +325,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
             if (device.getName() != null) {
                 if (device.getName().equals(myPref.getPrinterName())) {
                     // Put the name of your device, find it by doing C then up arrow on your card reader keypad
-                    this.device = device;
-                    this.hapi.useDevice(this.device);
+                    EMSHandpoint.device = device;
+                    hapi.useDevice(EMSHandpoint.device);
                     connected = true;
 //                    boolean sale = hapi.sale(new BigInteger("123"), Currency.USD);
                 }
@@ -328,7 +334,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
 
         if (myProgressDialog != null && myProgressDialog.isShowing()) {
-            myProgressDialog.dismiss();
+            dismissDialog();
             Looper.prepare();
             if (connected) {
                 this.edm.driverDidConnectToDevice(this, true);
@@ -348,14 +354,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
     }
 
-    private ProgressDialog myProgressDialog;
 
     @Override
     public void salePayment(BigInteger amount) {
-        hapi.useDevice(device);
+//        hapi.useDevice(device);
         boolean succeed = hapi.sale(amount, Currency.USD);
         if (!succeed) {
-
+            Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
     }
 
@@ -365,8 +370,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void refund(Payment payment) {
-
+    public void refund(BigInteger amount) {
+        boolean succeed = hapi.refund(amount, Currency.USD);
+        if (!succeed) {
+            Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
+        }
     }
 
     @Override
@@ -374,28 +382,23 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     }
 
+    private void showDialog(int messageRsId) {
+        myProgressDialog = new ProgressDialog(activity);
+        myProgressDialog.setMessage(activity.getString(messageRsId));
+        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        myProgressDialog.setCancelable(false);
+        myProgressDialog.show();
+    }
+
+    private void dismissDialog() {
+        if (myProgressDialog != null && myProgressDialog.isShowing()) {
+            myProgressDialog.dismiss();
+        }
+    }
+
     @Override
     public void printEMVReceipt(String html) {
         Global.showPrompt(activity, R.string.printing_message, html);
     }
 
-    public class ProcessConnectionAsync extends AsyncTask<Void, String, Boolean> {
-
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Connecting Handpoint device...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
-            return connected;
-        }
-
-    }
 }

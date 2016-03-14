@@ -490,6 +490,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             int _swiper_type = myPref.swiperType(true, -2);
             int _printer_type = myPref.getPrinterType();
             int _sled_type = myPref.sledType(true, -2);
+            if (myPref.getPrinterType() == Global.HANDPOINT && Global.btSwiper.currentDevice == null) {
+                Global.mainPrinterManager.loadDrivers(activity, Global.HANDPOINT, false);
+            }
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
                 Global.btSwiper.currentDevice.loadCardReader(callBack, isDebit);
@@ -1535,6 +1538,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             payment.authcode = parsedMap.get("AuthorizationCode");
             payment.processed = "9";
         } else {
+            if(isRefund){
+                payment.is_refund =  "1";
+                payment.pay_type =  "2";
+                payment.processed = "1";
+            }
             payment.pay_transid = cardInfoManager.transid;
             payment.authcode = cardInfoManager.authcode;
             payment.processed = "9";
@@ -1824,10 +1832,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     && Global.mainPrinterManager != null)
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
         } else {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
             if (read) {
                 processPayment();
             } else {
-
+                String errorMsg = getString(R.string.coundnot_proceess_payment);
+                Global.showPrompt(activity, R.string.payment, errorMsg);
             }
         }
     }
@@ -1897,7 +1909,18 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         String errorMsg = getString(R.string.card_validation_error);
                         Global.showPrompt(activity, R.string.validation_failed, errorMsg);
                     } else {
-                        new ProcessHanpointAsync().execute();
+                        myProgressDialog = new ProgressDialog(activity);
+                        myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
+                        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        myProgressDialog.setCancelable(false);
+                        myProgressDialog.show();
+                        if(isRefund){
+                            Global.mainPrinterManager.currentDevice.refund(new BigInteger(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField).replace(".", "")));
+                        }else {
+                            Global.mainPrinterManager.currentDevice.salePayment(new BigInteger(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField).replace(".", "")));
+                        }
+
+//                        new ProcessHanpointAsync().execute();
                     }
                 } else if (walkerReader == null) {
                     boolean valid = validateProcessPayment();
@@ -2014,9 +2037,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         return !error;
     }
 
+
     private class ProcessHanpointAsync extends AsyncTask<Void, Void, Void> {
-
-
         @Override
         protected Void doInBackground(Void... params) {
             if (Global.mainPrinterManager.currentDevice != null) {

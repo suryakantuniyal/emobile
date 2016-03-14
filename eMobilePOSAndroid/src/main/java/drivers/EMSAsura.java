@@ -1318,7 +1318,7 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
-    public void refund(Payment payment) {
+    public void refund(BigInteger amount) {
 
     }
 
