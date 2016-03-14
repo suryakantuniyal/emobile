@@ -167,7 +167,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     int lent = paid.getText().length();
                     Selection.setSelection(paid.getText(), lent);
@@ -178,7 +177,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(amountDue.getText(), amountDue.getText().length());
                 }
@@ -210,7 +208,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             public void onClick(View v) {
                 btnProcess.setEnabled(false);
                 double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                if (enteredAmount < 0) {
+                if (enteredAmount <= 0) {
                     paid.setBackgroundResource(R.drawable.edittext_wrong_input);
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
                 } else {
@@ -235,7 +233,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 paid.setText(amountDue.getText().toString());
@@ -294,7 +291,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     promptTipConfirmation();
                 }
             });
@@ -327,7 +323,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(subtotal.getText(), subtotal.getText().length());
                 }
@@ -338,7 +333,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(tax1.getText(), tax1.getText().length());
                 }
@@ -349,7 +343,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(tax2.getText(), tax2.getText().length());
                 }
@@ -358,7 +351,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                numberUtils.parseInputedCurrency(s, subtotal);
+                NumberUtils.parseInputedCurrency(s, subtotal);
                 if (!isFromSalesReceipt) {
                     calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                     calculateAmountDue(subtotal, tax1, tax2, amountDue);
@@ -488,7 +481,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(promptTipField.getText(), promptTipField.getText().length());
                 }
@@ -561,8 +553,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-
                 if (tipAmount != null)
                     tipAmount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
                 dialog.dismiss();
@@ -796,7 +786,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             boolean isReturn = false;
-            if (Global.ord_type.equals(Global.OrderType.RETURN.getCodeString()) || isRefund)
+            if (Global.ord_type == Global.OrderType.RETURN || isRefund)
                 isReturn = true;
             ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             if (amountToBePaid <= actualAmount) {
@@ -831,9 +821,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
                 else
                     payment = processPayment();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
             }
             return payment;
         }
@@ -931,7 +919,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(payment);
 
@@ -972,7 +959,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 finish();
             }
