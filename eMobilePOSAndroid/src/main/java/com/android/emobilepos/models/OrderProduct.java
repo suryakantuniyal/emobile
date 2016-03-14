@@ -93,12 +93,12 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (o == null) {
             return false;
         }
-        return this.prod_id.equalsIgnoreCase(((OrderProduct) o).prod_id);
+        return this.ordprod_id.equalsIgnoreCase(((OrderProduct) o).ordprod_id);
     }
 
     @Override
     public int compareTo(OrderProduct another) {
-        return this.prod_id.compareTo(another.prod_id);
+        return this.ordprod_id.compareTo(another.ordprod_id);
     }
 //
 //    @Override

@@ -291,7 +291,9 @@ public class OrderProductListAdapter extends BaseAdapter {
 
 
     public void setHolderValues(ViewHolder holder, final int pos) {
+        Global global = (Global) activity.getApplication();
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
+        final int orderProductIdx =  orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.ordprod_id;
 
         if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {
@@ -311,7 +313,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                         intent.putExtra("addon_map_key", tempId);
                         intent.putExtra("isEditAddon", true);
                         intent.putExtra("prod_id", prodID);
-                        intent.putExtra("item_position", pos);
+                        intent.putExtra("item_position", orderProductIdx);
 
 
                         ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);

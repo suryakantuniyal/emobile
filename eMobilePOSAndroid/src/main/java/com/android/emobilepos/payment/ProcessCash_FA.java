@@ -208,7 +208,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 btnProcess.setEnabled(false);
                 double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
                 if (enteredAmount < 0) {
@@ -1018,7 +1017,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         int temp = 0;
         switch (v.getId()) {
             case R.id.btnFive:

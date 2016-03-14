@@ -543,7 +543,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         List<OrderProduct> orderProducts = leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber);
         popup.getMenu().findItem(R.id.deleteSeat).setEnabled(orderProducts.isEmpty() && leftFragment.mainLVAdapter.getSeatsAmount() > 1);
         popup.getMenu().findItem(R.id.moveSeatItems).setEnabled(!orderProducts.isEmpty() && leftFragment.mainLVAdapter.getSeatsAmount() > 1);
-
+        popup.getMenu().findItem(R.id.joinSeats).setEnabled(!orderProducts.isEmpty() && leftFragment.mainLVAdapter.getSeatsAmount() > 1);
         popup.show();
     }
 
