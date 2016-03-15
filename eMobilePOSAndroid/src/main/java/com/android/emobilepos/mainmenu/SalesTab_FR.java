@@ -573,6 +573,8 @@ public class SalesTab_FR extends Fragment {
         popDlog.setCancelable(false);
         popDlog.setCanceledOnTouchOutside(false);
         popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
+        TextView title = (TextView) popDlog.findViewById(R.id.dlogTitle);
+        title.setText(R.string.select_number_guess);
         GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
         final DinningTableSeatsAdapter adapter = new DinningTableSeatsAdapter(getActivity(), seats);
         gridView.setAdapter(adapter);
