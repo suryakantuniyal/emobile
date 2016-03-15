@@ -657,6 +657,17 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             else
                 new processLivePaymentAsync().execute(generatedURL, payment);
         } else {
+            if (!isRefund) {
+                payment.pay_type = "0";
+            }else{
+                isRef = "1";
+                transactionId = transIDField.getText().toString();
+                authcode = authIDField.getText().toString();
+                payment.is_refund = isRef;
+                payment.pay_type = "2";
+                payment.pay_transid = transactionId;
+                payment.authcode = authcode;
+            }
             saveApprovedPayment(null, payment);
         }
     }
@@ -1541,11 +1552,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if(isRefund){
                 payment.is_refund =  "1";
                 payment.pay_type =  "2";
-                payment.processed = "1";
             }
+            payment.processed = "1";
             payment.pay_transid = cardInfoManager.transid;
             payment.authcode = cardInfoManager.authcode;
-            payment.processed = "9";
         }
         orientation = getResources().getConfiguration().orientation;
         global.orientation = orientation;

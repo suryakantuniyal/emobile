@@ -228,7 +228,7 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void saleReversal(Payment payment) {
+    public void saleReversal(BigInteger amount, String originalTransactionId) {
 
     }
 

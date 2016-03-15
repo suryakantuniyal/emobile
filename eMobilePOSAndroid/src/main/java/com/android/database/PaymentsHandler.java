@@ -433,6 +433,7 @@ public class PaymentsHandler {
         return getPaymentDetails(payID, false);
     }
 
+
     public PaymentDetails getPaymentDetails(String payID, boolean isDeclined) {
         String tableName = table_name;
         if (isDeclined)
@@ -471,30 +472,24 @@ public class PaymentsHandler {
     }
 
     public Payment getPaymentForVoid(String payID) {
-        Payment payment = new Payment(this.activity);
-
+        Payment payment = null;
         Cursor cursor = DBManager._db.rawQuery("SELECT * FROM Payments WHERE pay_id = '" + payID + "'", null);
-
         if (cursor.moveToFirst()) {
-            cursorToPayment(cursor, payment);
+           payment = getPayment(cursor);
 
         }
-
         cursor.close();
         return payment;
     }
 
     public List<Payment> getOrderPayments(String _ordID) {
-        Payment payment = new Payment(this.activity);
 
         Cursor c = DBManager._db.rawQuery("SELECT * FROM Payments WHERE job_id = '" + _ordID + "'", null);
 
         List<Payment> listPayment = new ArrayList<Payment>();
         if (c.moveToFirst()) {
             do {
-                cursorToPayment(c, payment);
-                listPayment.add(payment);
-                payment = new Payment(activity);
+                listPayment.add(getPayment(c));
             } while (c.moveToNext());
         }
 
@@ -502,7 +497,8 @@ public class PaymentsHandler {
         return listPayment;
     }
 
-    private void cursorToPayment(Cursor c, Payment payment) {
+    private Payment getPayment(Cursor c) {
+        Payment payment = new Payment(activity);
         payment.pay_id = c.getString(c.getColumnIndex(pay_id));
         payment.group_pay_id = c.getString(c.getColumnIndex(group_pay_id));
         payment.cust_id = c.getString(c.getColumnIndex(cust_id));
@@ -560,6 +556,7 @@ public class PaymentsHandler {
         payment.custidkey = c.getString(c.getColumnIndex(custidkey));
         payment.original_pay_id = c.getString(c.getColumnIndex(original_pay_id));
         payment.amountTender = c.getDouble(c.getColumnIndex(amount_tender));
+        return payment;
     }
 
     public List<HashMap<String, String>> getPaymentDetailsForTransactions(String jobID) {
@@ -567,22 +564,22 @@ public class PaymentsHandler {
         List<HashMap<String, String>> mapList = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> map = new HashMap<String, String>();
 
-        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+        Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
                 "pm.paymentmethod_type AS 'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p," + "PayMethods pm " +
                 "WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID + "' " +
-                "UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name', amount_tender," +
+                "UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name', amount_tender," +
                 "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Wallet' " +
                 "AND p.job_id = '" + jobID + "' UNION " +
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name', amount_tender," +
+                "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name', amount_tender," +
                 "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" +
-                jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                jobID + "' UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
                 "'Reward' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Reward' " +
-                "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
                 "'GiftCard' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p " +
                 "WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " +
-                "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name', amount_tender," +
+                "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name', amount_tender," +
                 "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" +
-                jobID + "' UNION " + "SELECT p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                jobID + "' UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
                 "'Genius' AS  'paymethod_name', amount_tender, p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = '' " +
                 "AND p.job_id = '" + jobID + "'", null);
         if (cursor.moveToFirst()) {
@@ -595,6 +592,9 @@ public class PaymentsHandler {
 
                 data = cursor.getString(cursor.getColumnIndex("paymethod_name"));
                 map.put("paymethod_name", data);
+
+                data = cursor.getString(cursor.getColumnIndex("pay_transid"));
+                map.put("pay_transid", data);
 
                 data = cursor.getString(cursor.getColumnIndex(pay_id));
                 map.put(pay_id, data);

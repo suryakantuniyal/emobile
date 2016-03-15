@@ -879,7 +879,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void saleReversal(Payment payment) {
+    public void saleReversal(BigInteger amount, String originalTransactionId) {
 
     }
 

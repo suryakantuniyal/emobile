@@ -1313,7 +1313,7 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
-    public void saleReversal(Payment payment) {
+    public void saleReversal(BigInteger amount, String originalTransactionId) {
 
     }
 

@@ -466,7 +466,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public void saleReversal(Payment payment) {
+    public void saleReversal(BigInteger amount, String originalTransactionId) {
 
     }
 

@@ -614,7 +614,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void saleReversal(Payment payment) {
+    public void saleReversal(BigInteger amount, String originalTransactionId) {
 
     }
 

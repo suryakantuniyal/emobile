@@ -45,8 +45,6 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
  */
 public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required, Events.Status {
 
-    private CreditCardInfo cardManager;
-    private Encrypt encrypt;
     private EMSDeviceManager edm;
     static Hapi hapi;
     String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
@@ -62,21 +60,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-        cardManager = new CreditCardInfo();
-        encrypt = new Encrypt(activity);
         this.edm = edm;
         if (hapi == null) {
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
         }
-//        new ProcessConnectionAsync().execute();
         showDialog(R.string.connecting_handpoint);
-
-//        myProgressDialog = new ProgressDialog(activity);
-//        myProgressDialog.setMessage(activity.getString(R.string.connecting_handpoint));
-//        myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//        myProgressDialog.setCancelable(false);
-//        myProgressDialog.show();
-
         discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
 
     }
@@ -87,8 +75,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                                String _portName, String _portNumber) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-        cardManager = new CreditCardInfo();
-        encrypt = new Encrypt(activity);
         this.edm = edm;
         if (hapi == null) {
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
@@ -272,7 +258,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void discoverDevices(String deviceName, String macAddress) {
 //        device = new Device(deviceName, macAddress, "", ConnectionMethod.BLUETOOTH);
         hapi.listDevices(ConnectionMethod.BLUETOOTH);
-        // This triggers the search for all the bluetooth devices around.
     }
 
 
@@ -291,7 +276,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         creditCardInfo.setOriginalTotalAmount(totalDec.toString());
         creditCardInfo.setWasSwiped(true);
         creditCardInfo.authcode = transactionResult.getAuthorisationCode();
-        creditCardInfo.transid = transactionResult.getTransactionID();
+        creditCardInfo.transid = transactionResult.geteFTTransactionID();
         msrCallBack.cardWasReadSuccessfully(transactionResult.getFinStatus() == FinancialStatus.AUTHORISED, creditCardInfo);
         Looper.loop();
     }
@@ -326,9 +311,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                 if (device.getName().equals(myPref.getPrinterName())) {
                     // Put the name of your device, find it by doing C then up arrow on your card reader keypad
                     EMSHandpoint.device = device;
-                    hapi.useDevice(EMSHandpoint.device);
+                    EMSHandpoint.hapi.useDevice(EMSHandpoint.device);
                     connected = true;
-//                    boolean sale = hapi.sale(new BigInteger("123"), Currency.USD);
                 }
             }
         }
@@ -344,7 +328,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
             Looper.loop();
         } else {
             synchronized (hapi) {
-                hapi.notify();
+                hapi.notifyAll();
                 if (connected) {
                     this.edm.driverDidConnectToDevice(this, false);
                 } else {
@@ -357,7 +341,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void salePayment(BigInteger amount) {
-//        hapi.useDevice(device);
         boolean succeed = hapi.sale(amount, Currency.USD);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
@@ -365,9 +348,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void saleReversal(Payment payment) {
-
+    public void saleReversal(BigInteger amount, String originalTransactionId) {
+        boolean succeed = hapi.saleReversal(amount, Currency.USD, originalTransactionId);
+        if (!succeed) {
+            Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
+        }
     }
+
 
     @Override
     public void refund(BigInteger amount) {
@@ -383,10 +370,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private void showDialog(int messageRsId) {
+        if(myProgressDialog!=null && myProgressDialog.isShowing()){
+            myProgressDialog.dismiss();
+        }
         myProgressDialog = new ProgressDialog(activity);
         myProgressDialog.setMessage(activity.getString(messageRsId));
         myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        myProgressDialog.setCancelable(false);
+        myProgressDialog.setCancelable(true);
         myProgressDialog.show();
     }
 

@@ -40,8 +40,10 @@ import com.android.emobilepos.models.PaymentDetails;
 import com.android.payments.EMSPayGate_Default;
 import com.android.payments.EMSPayGate_Default.EAction;
 import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -51,6 +53,7 @@ import org.xml.sax.XMLReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -63,7 +66,9 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar implements OnClickListener {
+import interfaces.EMSCallBack;
+
+public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
     private boolean hasBeenCreated = false;
     private Global global;
@@ -219,7 +224,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.printButton:
                 printButton.setEnabled(false);
@@ -228,6 +232,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 break;
             case R.id.histpayVoidBut:
                 voidButton.setEnabled(false);
+
                 if (myPref.getPreferences(MyPreferences.pref_require_manager_pass_to_void_trans))
                     promptManagerPassword();
                 else
@@ -272,6 +277,39 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
             }
         }).start();
+    }
+
+    @Override
+    public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+
+        if (read) {
+            payHandler.createVoidPayment(paymentToBeRefunded, false, null);
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+//            voidButton.setEnabled(false);
+//            voidButton.setClickable(false);
+        } else {
+            String errorMsg = getString(R.string.void_fail);
+            Global.showPrompt(activity, R.string.payment, errorMsg);
+//            voidButton.setEnabled(true);
+//            voidButton.setClickable(true);
+        }
+    }
+
+    @Override
+    public void readerConnectedSuccessfully(boolean value) {
+
+    }
+
+    @Override
+    public void scannerWasRead(String data) {
+
+    }
+
+    @Override
+    public void startSignature() {
+
     }
 
 
@@ -348,8 +386,17 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
     private void voidTransaction() {
         paymentToBeRefunded = payHandler.getPaymentForVoid(pay_id);
-        if (paymethod_name.equals("Card")) {
-
+        if (myPref.getPrinterType() == Global.HANDPOINT) {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.processing_refund));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+            String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentToBeRefunded.pay_amount);
+            BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
+            Global.mainPrinterManager.currentDevice.loadCardReader(this, false);
+            Global.mainPrinterManager.currentDevice.saleReversal(voidAmountInt, paymentToBeRefunded.pay_transid);
+        } else if (paymethod_name.equals("Card")) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
             new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.card_type, null));
         } else if (paymethod_name.equals("GiftCard") || paymethod_name.equals("LoyaltyCard")) {
@@ -394,7 +441,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {

@@ -1193,5 +1193,6 @@
 	<string name="manualEntry">Manual entry</string>
 	<string name="handpoint_payment_error">Error processing handpoint payment.</string>
 	<string name="connecting_handpoint">Connecting Handpoint device...</string>
+	<string name="void_fail">Error processing void</string>
 
 </resources>

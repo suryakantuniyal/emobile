@@ -578,7 +578,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     }
 
     @Override
-    public void saleReversal(Payment payment) {
+    public void saleReversal(BigInteger amount, String originalTransactionId) {
 
     }
 
