@@ -139,6 +139,9 @@ public class EMSDeviceDriver {
                 case 32:
                     PAPER_WIDTH = 420;
                     break;
+                case 42:
+                    PAPER_WIDTH = 576;
+                    break;
                 case 48:
                     PAPER_WIDTH = 1600;
                     break;

@@ -534,6 +534,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public void printReceiptPreview(View view) {
         try {
+            setPaperWidth(LINE_WIDTH);
             Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(bitmap, LINE_WIDTH);
         } catch (JAException e) {
