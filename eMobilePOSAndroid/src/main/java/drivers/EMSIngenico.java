@@ -8,13 +8,13 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.view.View;
 
+import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
-import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -25,9 +25,9 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 import rba_sdk.Comm_Settings;
 import rba_sdk.Comm_Settings_Constants;
 import rba_sdk.Comm_Timeout;
@@ -43,9 +43,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
-    private Encrypt encrypt;
     private Activity activity;
-    private MyPreferences myPref;
 
     private Handler handler;
     private EMSCallBack callBack, _scannerCallBack;
@@ -56,14 +54,12 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
-        myPref = new MyPreferences(this.activity);
 
         if (handler == null)
             handler = new Handler();
 
         thisInstance = this;
         this.edm = edm;
-        encrypt = new Encrypt(activity);
         sdkEventHandler = this;
 
         new processConnectionAsync().execute(0);
@@ -77,7 +73,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         thisInstance = this;
         this.edm = edm;
-        encrypt = new Encrypt(activity);
         boolean didConnect = false;
         sdkEventHandler = this;
 
@@ -116,13 +111,13 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {
 
-        String msg = new String("Failed to connect");
+        String msg = activity.getString(R.string.fail_to_connect);
         boolean didConnect = false;
 
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage("Connecting Printer...");
+            myProgressDialog.setMessage(activity.getString(R.string.connecting_bluetooth_device));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
@@ -148,7 +143,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                     didConnect = true;
                     break;
                 default:
-                    msg = "Failed to connect: \nError - " + connectionRequest;
+                    msg = getString(R.string.fail_to_connect) + ": \nError - " + connectionRequest;
                     break;
             }
 
@@ -206,37 +201,31 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean printOnHold(Object onHold) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public void setBitmap(Bitmap bmp) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -247,7 +236,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public boolean printReport(String curDate) {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -258,19 +246,16 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
     }
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        // TODO Auto-generated method stub
         callBack = _callBack;
         mIsDebit = isDebitCard;
         if (handler == null)
@@ -297,11 +282,9 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         public void run() {
             try {
                 if (callBack != null) {
-                    // Toast.makeText(activity, "card was swiper calling
-                    // callback..", Toast.LENGTH_LONG).show();
+
                     callBack.cardWasReadSuccessfully(true, cardManager);
-                    //getAcctNum();
-                    // MSG31_PinEntry("4123456789012345");
+
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -313,8 +296,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         public void run() {
             try {
                 if (callBack != null) {
-                    // Toast.makeText(activity, "update did connected..",
-                    // Toast.LENGTH_LONG).show();
+
                     callBack.readerConnectedSuccessfully(true);
                 }
 
@@ -340,7 +322,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
-        // TODO Auto-generated method stub
         _scannerCallBack = _callBack;
         if (handler == null)
             handler = new Handler();
@@ -368,25 +349,21 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void openCashDrawer() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void printHeader() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void printFooter() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public boolean isUSBConnected() {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -465,9 +442,9 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                         String track3 = RBA_API.GetParam(PARAMETER_ID.P23_RES_TRACK3);
 
                         StringBuilder raw_data = new StringBuilder();
-                        if (track1 != null && !track1.isEmpty())
+                        if (!track1.isEmpty())
                             raw_data.append("%").append(track1).append("?");
-                        if (track2 != null && !track2.isEmpty())
+                        if (!track2.isEmpty())
                             raw_data.append(";").append(track2).append("?");
 
                         cardManager = new CreditCardInfo();
@@ -566,7 +543,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                         scannedData = new String(Base64.decode(base64String));
                         handler.post(runnableScannedData);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 } else if (status.equals("8")) {
@@ -591,7 +567,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         ERROR_ID result = RBA_API.ProcessMessage(MESSAGE_ID.M94_BARCODE_SET);
         if (result == ERROR_ID.RESULT_SUCCESS) {
             barcodeReaderLoaded = true;
-        } else {
         }
     }
 
@@ -615,21 +590,19 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void printStationPrinter(List<Orders> orderProducts, String ordID) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
-	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
-		//printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
     }
 
-	@Override
-	public void printShiftDetailsReport(String shiftID) {
-	}
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+    }
 
-	public void getAcctNum() {
-		String retValue = MSG29_GetVariable("00398");
+    public void getAcctNum() {
+        String retValue = MSG29_GetVariable("00398");
 
         if (retValue == null) {
             // For Testing This Value Will Be Hardcoded
@@ -655,8 +628,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
             switch (Integer.parseInt(status)) {
                 case 2: {
-                    String varData = RBA_API.GetParam(PARAMETER_ID.P29_RES_VARIABLE_DATA);
-                    return varData;
+                    return RBA_API.GetParam(PARAMETER_ID.P29_RES_VARIABLE_DATA);
                 }
                 default:
                     return null;

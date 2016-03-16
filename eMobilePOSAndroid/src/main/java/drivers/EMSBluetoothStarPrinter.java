@@ -189,8 +189,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         @Override
         protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
-
             try {
 
                 if (!isPOSPrinter) {

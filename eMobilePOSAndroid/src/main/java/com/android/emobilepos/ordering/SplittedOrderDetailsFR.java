@@ -70,6 +70,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private TextView footer1;
     private TextView footer2;
     private TextView footer3;
+    private LinearLayout productAddonsSection;
     private LinearLayout orderProductSection;
     private LayoutInflater inflater;
     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -164,10 +165,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             default:
                 itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_layout_item, null, false);
                 break;
-            case 1:
+            case 2:
                 itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_margin1_layout_item, null, false);
                 break;
-            case 2:
+            case 3:
                 itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_margin2_layout_item, null, false);
                 break;
         }
@@ -189,7 +190,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             leftText.setText(leftString);
         }
 
-        orderProductSection.addView(itemLL);
+        productAddonsSection.addView(itemLL);
     }
 
 
@@ -205,6 +206,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         BigDecimal orderGranTotal = new BigDecimal(0);
         BigDecimal itemDiscountTotal = new BigDecimal(0);
         for (OrderProduct product : products) {
+            LinearLayout productSectionLL = (LinearLayout) inflater.inflate(R.layout.receipt_product_layout_item, null, false);
+
             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.ordprod_id);
 
             BigDecimal qty = Global.getBigDecimalNum(product.ordprod_qty);
@@ -213,22 +216,36 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
             orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
                     .add(Global.getBigDecimalNum(product.taxTotal)));
-            addProductLine(product.ordprod_qty + "x " + product.ordprod_name, null, false, 1);
+            ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(product.ordprod_qty + "x " + product.ordprod_name);
+
+//            addProductLine(" - " + product.ordprod_qty + "x " + product.ordprod_name, null, false, 1);
+            productAddonsSection = (LinearLayout) productSectionLL.findViewById(R.id.productAddonSectionLinearLayout);
+
             for (OrderProduct addon : addons) {
-                addProductLine("- "+addon.ordprod_name,
-                        Global.getCurrencyFormat(addon.overwrite_price), true, 2);
+                addProductLine("- " + addon.ordprod_name,
+                        Global.getCurrencyFormat(addon.overwrite_price), true, 3);
             }
-            addProductLine(getString(R.string.receipt_price),
-                    Global.getCurrencyFormat(product.overwrite_price), true, 1);
-            addProductLine(getString(R.string.receipt_discount),
-                    Global.getCurrencyFormat(product.discount_value), true, 1);
-            addProductLine(getString(R.string.receipt_total),
-                    Global.getCurrencyFormat(Global.getBigDecimalNum(product.itemTotal)
-                            .multiply(qty).toString()), true, 1);
+            ((TextView) productSectionLL.findViewById(R.id.productPricetextView)).setText(Global.getCurrencyFormat(product.overwrite_price));
+
+//            addProductLine(getString(R.string.receipt_price),
+//                    Global.getCurrencyFormat(product.overwrite_price), true, 2);
+            ((TextView) productSectionLL.findViewById(R.id.productDiscounttextView)).setText(Global.getCurrencyFormat(product.discount_value));
+
+//            addProductLine(getString(R.string.receipt_discount),
+//                    Global.getCurrencyFormat(product.discount_value), true, 2);
+
+            ((TextView) productSectionLL.findViewById(R.id.productTotaltextView)).setText(Global.getCurrencyFormat(Global.getBigDecimalNum(product.itemTotal)
+                    .multiply(qty).toString()));
+
+//            addProductLine(getString(R.string.receipt_total),
+//                    Global.getCurrencyFormat(Global.getBigDecimalNum(product.itemTotal)
+//                            .multiply(qty).toString()), true, 1);
             if (product.ordprod_desc != null && !product.ordprod_desc.isEmpty()) {
-                addProductLine(getString(R.string.receipt_description), null, true, 1);
-                addProductLine(product.ordprod_desc.replace("<br/>", "\n\r"), null, true, 1);
+//                addProductLine(getString(R.string.receipt_description), null, true, 2);
+                ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText(product.ordprod_desc.replace("<br/>", "\n\r"));
+//                addProductLine(product.ordprod_desc.replace("<br/>", "\n\r"), null, true, 2);
             }
+            orderProductSection.addView(productSectionLL);
         }
         splitedOrder.ord_total = orderGranTotal.toString();
         splitedOrder.gran_total = orderGranTotal.toString();
