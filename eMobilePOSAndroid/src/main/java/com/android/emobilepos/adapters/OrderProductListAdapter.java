@@ -79,13 +79,13 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public int getNextGroupId() {
-        int count = 0;
+        int next = 0;
         for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
             if (seatProduct.rowType == RowType.TYPE_HEADER) {
-                count++;
+                next = seatProduct.getSeatGroupId() + 1;
             }
         }
-        return count + 1;
+        return next;
     }
 
     public String getFirstSeat() {
@@ -132,7 +132,11 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public void addSeat() {
-        OrderSeatProduct product = new OrderSeatProduct(String.valueOf(orderSeatProductFullList.size() + 1), getNextGroupId());
+        int seatNumber = 0;
+        if (!orderSeatProductFullList.isEmpty()) {
+            seatNumber = Integer.parseInt(orderSeatProductFullList.get(orderSeatProductFullList.size() - 1).seatNumber);
+        }
+        OrderSeatProduct product = new OrderSeatProduct(String.valueOf(seatNumber + 1), getNextGroupId());
         product.setSeatGroupId(getNextGroupId());
         orderSeatProductList.add(product);
         orderSeatProductFullList.add(product);
@@ -293,7 +297,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     public void setHolderValues(ViewHolder holder, final int pos) {
         Global global = (Global) activity.getApplication();
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
-        final int orderProductIdx =  orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
+        final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.ordprod_id;
 
         if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {

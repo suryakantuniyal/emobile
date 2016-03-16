@@ -570,11 +570,11 @@ public class SalesTab_FR extends Fragment {
         final int[] seats = this.getResources().getIntArray(R.array.dinningTableSeatsArray);
         final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        popDlog.setCancelable(false);
-        popDlog.setCanceledOnTouchOutside(false);
+        popDlog.setCancelable(true);
+        popDlog.setCanceledOnTouchOutside(true);
         popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
         TextView title = (TextView) popDlog.findViewById(R.id.dlogTitle);
-        title.setText(R.string.select_number_guess);
+        title.setText(R.string.select_number_guests);
         GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
         final DinningTableSeatsAdapter adapter = new DinningTableSeatsAdapter(getActivity(), seats);
         gridView.setAdapter(adapter);
@@ -597,8 +597,8 @@ public class SalesTab_FR extends Fragment {
         final List<DinningTable> dinningTables = gson.fromJson(this.getResources().getString(R.string.dinningTables), listType);
         final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        popDlog.setCancelable(false);
-        popDlog.setCanceledOnTouchOutside(false);
+        popDlog.setCancelable(true);
+        popDlog.setCanceledOnTouchOutside(true);
         popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
         GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
         final DinningTablesAdapter adapter = new DinningTablesAdapter(getActivity(), dinningTables);
