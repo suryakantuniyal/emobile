@@ -803,11 +803,10 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager.loadDrivers(activity, Global.BAMBOO, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
-                                    || val[pos].toUpperCase(Locale.getDefault()).contains("ICM")) {
+                                    || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
+                                    !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
                                 myPref.sledType(false, Global.ISMP);
-
                                 EMSDeviceManager edm = new EMSDeviceManager();
-
                                 Global.btSled = edm.getManager();
                                 Global.btSled.loadDrivers(activity, Global.ISMP, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
@@ -844,6 +843,17 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.HANDPOINT, false);
+                                Global.btSwiper = edm.getManager();
+
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
+                                    myPref.getPreferences(MyPreferences.pref_mw_with_evo)) {
+                                myPref.setPrinterType(Global.ICMPEVO);
+                                myPref.swiperType(false, Global.ICMPEVO);
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(activity, Global.ICMPEVO, false);
                                 Global.btSwiper = edm.getManager();
 
                             } else {

@@ -21,6 +21,7 @@ import drivers.EMSDeviceDriver;
 import drivers.EMSEM100;
 import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
+import drivers.EMSIngenicoEVO;
 import drivers.EMSKDC500;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSOT310;
@@ -58,7 +59,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         //instance = new EMSDeviceManager();
         return instance;
     }
-	/*
+    /*
 	public  EMSDeviceManager getInstance()
 	{
 		return instance;
@@ -140,6 +141,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSIngenico();
                 aDevice.connect(activity, -1, true, instance);
                 break;
+            case Global.ICMPEVO:
+                aDevice = new EMSIngenicoEVO();
+                aDevice.connect(activity, -1, true, instance);
+                break;
         }
     }
 
@@ -191,6 +196,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
+                break;
+            case Global.ICMPEVO:
+                aDevice = new EMSIngenicoEVO();
                 break;
         }
         if (aDevice != null)

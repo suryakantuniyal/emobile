@@ -113,6 +113,7 @@ public class MyPreferences {
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
+    public static final String pref_mw_with_evo = "pref_mw_with_evo";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
     public static final String pref_use_clerks = "pref_use_clerks";
     public static final String pref_enable_location_inventory = "pref_enable_location_inventory";
@@ -638,13 +639,13 @@ public class MyPreferences {
         return empstr;
     }
 
-    public void setPrinterMACAddress(String value){
+    public void setPrinterMACAddress(String value) {
         String printer_mac_address = "printer_mac_address";
         prefEditor.putString(printer_mac_address, value);
         prefEditor.commit();
     }
 
-    public String getPrinterMACAddress(){
+    public String getPrinterMACAddress() {
         String printer_mac_address = "printer_mac_address";
         return prefs.getString(printer_mac_address, empstr);
     }
@@ -822,6 +823,20 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
+
+
+    public boolean isICMPEVO() {
+        String device_icmpevo = "device_icmpevo";
+        return prefs.getBoolean(device_icmpevo, false);
+    }
+
+    public boolean setIsICMPEVO(boolean value) {
+        String device_icmpevo = "device_icmpevo";
+        prefEditor.putBoolean(device_icmpevo, value);
+        prefEditor.commit();
+        return false;
+    }
+
 
     public boolean isEM70() {
         String device_em70 = "device_em70";

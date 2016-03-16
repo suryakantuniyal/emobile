@@ -2,39 +2,28 @@ package com.android.emobilepos.ordering;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.database.DBManager;
 import com.android.database.MemoTextHandler;
-import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
-import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
-import com.android.emobilepos.mainmenu.SalesTab_FR;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
-import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.DateUtils;
@@ -42,14 +31,8 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.apache.http.client.utils.CloneUtils;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -58,45 +41,33 @@ import java.util.List;
 public class SplittedOrderDetailsFR extends Fragment implements View.OnClickListener {
 
 
-    private View detailView;
     private TextView orderId;
-    private TextView orderDate;
-    private TextView deviceName;
     private TextView subtotal;
     private MyPreferences myPref;
     private TextView lineItemDiscountTotal;
     private TextView taxTotal;
     private TextView granTotal;
-    private TextView footer1;
-    private TextView footer2;
-    private TextView footer3;
     private LinearLayout productAddonsSection;
     private LinearLayout orderProductSection;
     private LayoutInflater inflater;
-    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
     public SplitedOrder restaurantSplitedOrder;
-    private Button checkoutBtn;
-    private Button printReceiptBtn;
-    private String lastHodOrderId;
     private LinearLayout receiptPreview;
-    private Button printAllReceiptBtn;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        detailView = inflater.inflate(R.layout.splitted_order_detail_fragment,
+        View detailView = inflater.inflate(R.layout.splitted_order_detail_fragment,
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
-        GenerateNewID idGen = new GenerateNewID(getActivity());
         MemoTextHandler handler = new MemoTextHandler(getActivity());
         String[] header = handler.getHeader();
         String[] footer = handler.getFooter();
-        checkoutBtn = (Button) detailView.findViewById(R.id.checkoutbutton);
-        printReceiptBtn = (Button) detailView.findViewById(R.id.printReceiptbutton2);
-        printAllReceiptBtn = (Button) getActivity().findViewById(R.id.printAllReceiptbutton3);
+        Button checkoutBtn = (Button) detailView.findViewById(R.id.checkoutbutton);
+        Button printReceiptBtn = (Button) detailView.findViewById(R.id.printReceiptbutton2);
+        Button printAllReceiptBtn = (Button) getActivity().findViewById(R.id.printAllReceiptbutton3);
         printAllReceiptBtn.setOnClickListener(this);
         checkoutBtn.setOnClickListener(this);
         printReceiptBtn.setOnClickListener(this);
@@ -104,15 +75,15 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         TextView header2 = (TextView) detailView.findViewById(R.id.memo_headerLine2textView16);
         TextView header3 = (TextView) detailView.findViewById(R.id.memo_headerLine3textView18);
         orderId = (TextView) detailView.findViewById(R.id.orderIdtextView16);
-        orderDate = (TextView) detailView.findViewById(R.id.orderDatetextView21);
-        deviceName = (TextView) detailView.findViewById(R.id.deviceNametextView23);
+        TextView orderDate = (TextView) detailView.findViewById(R.id.orderDatetextView21);
+        TextView deviceName = (TextView) detailView.findViewById(R.id.deviceNametextView23);
         subtotal = (TextView) detailView.findViewById(R.id.subtotaltextView);
         lineItemDiscountTotal = (TextView) detailView.findViewById(R.id.lineitem_discounttextView);
         taxTotal = (TextView) detailView.findViewById(R.id.taxtotaltextView14a);
         granTotal = (TextView) detailView.findViewById(R.id.granTotaltextView16);
-        footer1 = (TextView) detailView.findViewById(R.id.footerLine1textView);
-        footer2 = (TextView) detailView.findViewById(R.id.footerLine2textView);
-        footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
+        TextView footer1 = (TextView) detailView.findViewById(R.id.footerLine1textView);
+        TextView footer2 = (TextView) detailView.findViewById(R.id.footerLine2textView);
+        TextView footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
         orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
         receiptPreview = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
         deviceName.setText(String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()));
@@ -158,7 +129,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void addProductLine(String leftString, String rightString, boolean indented, int indentedTabs) {
+    private void addProductLine(String leftString, String rightString, int indentedTabs) {
 
         LinearLayout itemLL;
         switch (indentedTabs) {
@@ -200,7 +171,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         if (orderProductSection.getChildCount() > 0) {
             orderProductSection.removeAllViewsInLayout();
         }
-        Global global = (Global) getActivity().getApplication();
         BigDecimal orderSubtotal = new BigDecimal(0);
         BigDecimal orderTaxes = new BigDecimal(0);
         BigDecimal orderGranTotal = new BigDecimal(0);
@@ -216,14 +186,14 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
             orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
                     .add(Global.getBigDecimalNum(product.taxTotal)));
-            ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(product.ordprod_qty + "x " + product.ordprod_name);
+            ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(String.format("%sx %s", product.ordprod_qty, product.ordprod_name));
 
 //            addProductLine(" - " + product.ordprod_qty + "x " + product.ordprod_name, null, false, 1);
             productAddonsSection = (LinearLayout) productSectionLL.findViewById(R.id.productAddonSectionLinearLayout);
 
             for (OrderProduct addon : addons) {
                 addProductLine("- " + addon.ordprod_name,
-                        Global.getCurrencyFormat(addon.overwrite_price), true, 3);
+                        Global.getCurrencyFormat(addon.overwrite_price), 3);
             }
             ((TextView) productSectionLL.findViewById(R.id.productPricetextView)).setText(Global.getCurrencyFormat(product.overwrite_price));
 
@@ -244,6 +214,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 //                addProductLine(getString(R.string.receipt_description), null, true, 2);
                 ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText(product.ordprod_desc.replace("<br/>", "\n\r"));
 //                addProductLine(product.ordprod_desc.replace("<br/>", "\n\r"), null, true, 2);
+            } else {
+                ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText("");
             }
             orderProductSection.addView(productSectionLL);
         }
@@ -271,7 +243,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.currentDevice != null) {
                     new PrintPreview().execute(receiptPreview);
-//                    Global.mainPrinterManager.currentDevice.printReceiptPreview(receiptPreview);
                 }
                 break;
             }
@@ -407,19 +378,13 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             }
 
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
-            if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) == -1) {
-//                this.updateLocalInventory(getActivity(), global.orderProducts, true);
-//                proceedToRefund();
-            } else {
+            if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) != -1) {
                 Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
                 isSalesReceipt(splitedOrder);
             }
         }
     }
 
-    private void createHold(SplitedOrder splitedOrder) {
-
-    }
 
     private void isSalesReceipt(SplitedOrder order) {
         Intent intent = new Intent(getActivity(), SelectPayMethod_FA.class);
