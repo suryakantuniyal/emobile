@@ -256,6 +256,20 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
         });
 
+        this.tipAmount.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                recalculateChange();
+            }
+
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                numberUtils.parseInputedCurrency(s, tipAmount);
+            }
+        });
+
         this.paid.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 if (!paid.getText().toString().isEmpty())
@@ -270,12 +284,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
         });
 
-//        List<OrderProduct> orderProducts = global.orderProducts;
-//        double subtotalDbl = 0;
-//        for (OrderProduct products : orderProducts) {
-//            subtotalDbl += Double.parseDouble(products.itemSubtotal);
-//        }
-//        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.ivuposRow1).setVisibility(View.GONE);

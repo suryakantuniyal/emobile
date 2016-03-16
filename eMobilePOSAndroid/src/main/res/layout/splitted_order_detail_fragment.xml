@@ -72,27 +72,30 @@
                 android:id="@+id/memo_headerLine1textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000"
-                android:text="Header 1" />
+                android:layout_marginTop="-8dp"
+                android:text="Header 1"
+                android:textColor="#000" />
 
             <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/memo_headerLine2textView16"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000"
-                android:text="Header 2" />
+                android:layout_marginTop="-8dp"
+                android:text="Header 2"
+                android:textColor="#000" />
 
             <com.android.support.TextViewSansSerifMedium
                 android:id="@+id/memo_headerLine3textView18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#000"
-                android:text="header 3" />
+                android:layout_marginTop="-8dp"
+                android:text="header 3"
+                android:textColor="#000" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="-8dp"
                 android:orientation="horizontal">
 
                 <com.android.support.TextViewSansSerifMedium
@@ -116,6 +119,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
                 android:orientation="horizontal">
 
                 <com.android.support.TextViewSansSerifMedium
@@ -139,6 +143,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="-8dp"
                 android:orientation="horizontal">
 
                 <com.android.support.TextViewSansSerifMedium
@@ -164,14 +170,16 @@
                 android:id="@+id/order_products_section_linearlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical">
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="-8dp"
                 android:orientation="horizontal">
 
                 <com.android.support.TextViewSansSerifMedium
@@ -196,6 +204,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
                 android:orientation="horizontal">
 
                 <com.android.support.TextViewSansSerifMedium
@@ -220,6 +229,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
                 android:orientation="horizontal">
 
                 <com.android.support.TextViewSansSerifMedium
@@ -251,7 +261,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="-8dp"
                 android:orientation="horizontal">
 
                 <com.android.support.TextViewSansSerifMedium
@@ -277,7 +287,7 @@
                 android:id="@+id/footerLine1textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="-8dp"
                 android:text="Footer 1"
                 android:textColor="#000"
                 android:textStyle="normal" />
@@ -286,6 +296,7 @@
                 android:id="@+id/footerLine2textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
                 android:text="footer 2"
                 android:textColor="#000"
                 android:textStyle="normal" />
@@ -294,6 +305,7 @@
                 android:id="@+id/footerLine3textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
                 android:text="footer 3"
                 android:textColor="#000"
                 android:textStyle="normal" />

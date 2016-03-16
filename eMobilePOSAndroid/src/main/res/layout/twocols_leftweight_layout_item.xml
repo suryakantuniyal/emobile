@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_marginTop="-8dp"
     android:layout_height="match_parent">
 
     <com.android.support.TextViewSansSerifMedium
@@ -11,8 +12,7 @@
         android:layout_weight="1"
         android:singleLine="false"
         android:textColor="#000"
-        android:textStyle="normal"
-        android:layout_marginBottom="1dp" />
+        android:textStyle="normal" />
 
     <com.android.support.TextViewSansSerifMedium
         android:layout_width="wrap_content"

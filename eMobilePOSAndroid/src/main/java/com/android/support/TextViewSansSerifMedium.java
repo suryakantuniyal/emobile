@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
@@ -25,7 +26,15 @@ public class TextViewSansSerifMedium extends TextView{
     }
 
     public void createFont() {
-        Typeface font = Typeface.createFromAsset(getContext().getAssets(), "Comme-Medium.ttf");
+        Typeface font = Typeface.createFromAsset(getContext().getAssets(), "Comme-Light.ttf");
+
         setTypeface(font);
     }
+//
+//    @Override
+//    protected void onDraw(Canvas canvas) {
+//        int yOffset = getHeight() - getBaseline();
+//        canvas.translate(0, yOffset);
+//        super.onDraw(canvas);
+//    }
 }
