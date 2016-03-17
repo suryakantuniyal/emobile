@@ -1484,6 +1484,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void startSignature() {
     }
 
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
     public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();

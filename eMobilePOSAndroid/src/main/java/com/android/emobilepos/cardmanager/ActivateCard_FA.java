@@ -458,4 +458,9 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void nfcWasRead(String nfcUID) {
+
+	}
 }

@@ -361,6 +361,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     }
 
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
 
     private class printAsync extends AsyncTask<String, String, String> {
         private boolean printSuccessful = true;

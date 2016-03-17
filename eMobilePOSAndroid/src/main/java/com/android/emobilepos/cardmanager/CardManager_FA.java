@@ -782,6 +782,11 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     }
 
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
 
     private class printAsync extends AsyncTask<HashMap<String, String>, String, HashMap<String, String>> {
         private boolean printSuccessful = true;

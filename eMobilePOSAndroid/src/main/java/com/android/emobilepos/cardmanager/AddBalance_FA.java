@@ -496,4 +496,9 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void nfcWasRead(String nfcUID) {
+
+	}
 }

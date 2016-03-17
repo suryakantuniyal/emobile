@@ -602,4 +602,9 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         // TODO Auto-generated method stub
 
     }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
 }

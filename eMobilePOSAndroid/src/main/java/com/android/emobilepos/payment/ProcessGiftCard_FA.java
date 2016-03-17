@@ -702,4 +702,9 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void startSignature() {
     }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
 }

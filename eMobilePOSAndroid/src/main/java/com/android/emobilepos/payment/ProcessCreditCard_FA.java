@@ -2119,4 +2119,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         startActivityForResult(intent, requestCode);
     }
 
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
 }

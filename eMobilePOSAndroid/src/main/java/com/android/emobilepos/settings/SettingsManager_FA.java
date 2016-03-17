@@ -835,7 +835,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615009146")) {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
                                 myPref.setPrinterType(Global.HANDPOINT);
                                 myPref.swiperType(false, Global.HANDPOINT);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));

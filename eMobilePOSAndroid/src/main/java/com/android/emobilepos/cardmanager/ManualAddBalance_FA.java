@@ -464,4 +464,9 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
 
     }
 
+    @Override
+    public void nfcWasRead(String nfcUID) {
+
+    }
+
 }

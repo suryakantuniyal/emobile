@@ -415,4 +415,9 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 	public void startSignature() {
 	}
 
+	@Override
+	public void nfcWasRead(String nfcUID) {
+
+	}
+
 }
