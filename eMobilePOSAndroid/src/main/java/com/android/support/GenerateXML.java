@@ -810,6 +810,15 @@ public class GenerateXML {
             serializer.endTag(empstr, "holdName");
         }
 
+
+        serializer.startTag(empstr, "associateID");
+        serializer.text(order.associateID == null || order.associateID.isEmpty() ? "" : order.associateID);
+        serializer.endTag(empstr, "associateID");
+        serializer.startTag(empstr, "assignedTable");
+        serializer.text(order.assignedTable == null || order.assignedTable.isEmpty() ? "" : order.assignedTable);
+        serializer.endTag(empstr, "assignedTable");
+
+
         serializer.startTag(empstr, "ord_id");
         serializer.text(order.ord_id);
         serializer.endTag(empstr, "ord_id");
@@ -962,10 +971,10 @@ public class GenerateXML {
         serializer.text(Boolean.toString(order.VAT.equals("1")));
         serializer.endTag(empstr, "VAT");
 
-        serializer.startTag(empstr, "OrderProduct");
+        serializer.startTag(empstr, "OrderProducts");
         buildOrderProducts(serializer, order.ord_id, myPref.getPreferences(MyPreferences.pref_restaurant_mode),
                 isOnHold);
-        serializer.endTag(empstr, "OrderProduct");
+        serializer.endTag(empstr, "OrderProducts");
         serializer.endTag(empstr, "Order");
 
     }

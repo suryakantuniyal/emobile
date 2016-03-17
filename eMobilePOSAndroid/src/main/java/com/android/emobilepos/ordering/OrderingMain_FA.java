@@ -152,6 +152,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         super.onCreate(savedInstanceState);
         setContentView(R.layout.order_main_layout);
         instance = this;
+        callBackMSR = this;
         handler = new ProductsHandler(this);
         receiptContainer = (LinearLayout) findViewById(R.id.order_receipt_frag_container);
         catalogContainer = (LinearLayout) findViewById(R.id.order_catalog_frag_container);
@@ -565,7 +566,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-       if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
+        if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         } else if (resultCode == 1) {
