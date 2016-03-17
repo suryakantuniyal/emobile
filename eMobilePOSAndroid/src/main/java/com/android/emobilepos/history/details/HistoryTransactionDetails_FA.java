@@ -332,7 +332,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             if (paymentsToVoid.size() > 0) {
                 String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).pay_amount);
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(voidAmountInt, paymentsToVoid.get(0).pay_transid);
+                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).pay_transid);
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
             } else {
@@ -708,7 +708,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 //                for (Payment p : listVoidPayments) {
                 String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).pay_amount);
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(voidAmountInt, paymentsToVoid.get(0).pay_transid);
+                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).pay_transid);
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
 //                }

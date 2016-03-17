@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -573,17 +574,17 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     }
 
     @Override
-    public void salePayment(BigInteger amount) {
+    public void salePayment(Payment payment) {
 
     }
 
     @Override
-    public void saleReversal(BigInteger amount, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId) {
 
     }
 
     @Override
-    public void refund(BigInteger amount) {
+    public void refund(Payment payment) {
 
     }
 

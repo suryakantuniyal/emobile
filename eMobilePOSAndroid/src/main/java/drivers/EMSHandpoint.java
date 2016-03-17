@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
@@ -205,7 +206,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
                 discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
                 try {
                     hapi.wait();
-
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -340,16 +340,16 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
 
     @Override
-    public void salePayment(BigInteger amount) {
-        boolean succeed = hapi.sale(amount, Currency.USD);
+    public void salePayment(Payment payment) {
+        boolean succeed = hapi.sale(new BigInteger(payment.pay_amount.replace(".","")), Currency.USD);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
     }
 
     @Override
-    public void saleReversal(BigInteger amount, String originalTransactionId) {
-        boolean succeed = hapi.saleReversal(amount, Currency.USD, originalTransactionId);
+    public void saleReversal(Payment payment, String originalTransactionId) {
+        boolean succeed = hapi.saleReversal(new BigInteger(payment.pay_amount.replace(".","")), Currency.USD, originalTransactionId);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -357,8 +357,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
 
     @Override
-    public void refund(BigInteger amount) {
-        boolean succeed = hapi.refund(amount, Currency.USD);
+    public void refund(Payment payment) {
+        boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".","")), Currency.USD);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }

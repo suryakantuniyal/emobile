@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
@@ -68,11 +69,11 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void printReceiptPreview(View view);
 
-    void salePayment(BigInteger amount);
+    void salePayment(Payment payment);
 
-    void saleReversal(BigInteger amount, String originalTransactionId);
+    void saleReversal(Payment payment, String originalTransactionId);
 
-    void refund(BigInteger amount);
+    void refund(Payment payment);
 
     void refundReversal(Payment payment);
 

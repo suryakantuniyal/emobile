@@ -6,13 +6,17 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.evosnap.sdk.api.ApiConfiguration;
@@ -24,9 +28,12 @@ import com.evosnap.sdk.api.config.EncryptionType;
 import com.evosnap.sdk.api.config.HardwareType;
 import com.evosnap.sdk.api.config.PinCapability;
 import com.evosnap.sdk.api.config.ReadCapability;
+import com.evosnap.sdk.api.transaction.BankCardCapture;
 import com.evosnap.sdk.api.transaction.CustomerPresence;
 import com.evosnap.sdk.api.transaction.TransactionData;
 import com.evosnap.sdk.api.transaction.auth.BankCardTransactionResponse;
+import com.evosnap.sdk.api.transaction.management.CancelTransactionRequest;
+import com.evosnap.sdk.api.transaction.management.ReturnByIdRequest;
 import com.evosnap.sdk.api.user.SignOnRequest;
 import com.evosnap.sdk.api.user.SignOnResponse;
 import com.evosnap.sdk.swiper.enums.CaptureMode;
@@ -49,7 +56,6 @@ import rba_sdk.Comm_Timeout;
 public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, TransactionCallbacks {
 
     private EMSDeviceManager edm;
-    String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
     protected static Device device;
     private Handler handler;
     private EMSCallBack msrCallBack;
@@ -57,6 +63,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     static boolean connected = false;
     private ProgressDialog myProgressDialog;
     private ApiConfiguration apiConfig;
+    private boolean deviceFound;
 
 
     @Override
@@ -64,14 +71,12 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
-//        showDialog(R.string.connecting_bluetooth_device);
+        showDialog(R.string.connecting_bluetooth_device);
         apiConfig = new ApiConfiguration(false);
         apiConfig.setApplicationProfileId("6883");
         apiConfig.setServiceKey("1F8BA60D09400001");
         apiConfig.setServiceId("39C6700001");
-//        setCommTimeOuts();
-//        apiConfig.setWorkflowId("A121700011");
-        new EVOConnectAsync().execute();
+        new EVOConnectAsync().execute(true);
     }
 
 
@@ -81,30 +86,36 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
-        return connected;
+        apiConfig = new ApiConfiguration(false);
+        apiConfig.setApplicationProfileId("6883");
+        apiConfig.setServiceKey("1F8BA60D09400001");
+        apiConfig.setServiceId("39C6700001");
+        EvoSnapApi.init(activity, apiConfig);
+        new EVOConnectAsync().execute(false);
+        return true;
     }
 
-    private class EVOConnectAsync extends AsyncTask<Void, Void, SignOnResponse> {
+    private class EVOConnectAsync extends AsyncTask<Boolean, Void, SignOnResponse> {
+
+        private boolean showMsg;
 
         @Override
-        protected SignOnResponse doInBackground(Void... params) {
-            EvoSnapApi.init(activity, apiConfig);
+        protected SignOnResponse doInBackground(Boolean... params) {
+            showMsg = params[0];
+            deviceFound = true;
             SignOnRequest request = new SignOnRequest("enabler1", "Testing!2$");
-            SignOnResponse signOnResponse = EvoSnapApi.signOn(request);
-            return signOnResponse;
+            return EvoSnapApi.signOn(request);
         }
 
         @Override
         protected void onPostExecute(SignOnResponse signOnResponse) {
-            String sessionToken = signOnResponse.getSessionToken();
-            connected = signOnResponse.isSuccessful();
+            dismissDialog();
+            connected = signOnResponse.isSuccessful() && deviceFound;
             if (connected) {
-                edm.driverDidConnectToDevice(EMSIngenicoEVO.this, true);
-                salePayment(new BigInteger("123"));
+                edm.driverDidConnectToDevice(EMSIngenicoEVO.this, showMsg);
             } else {
-                edm.driverDidNotConnectToDevice(EMSIngenicoEVO.this, msg, true);
+                edm.driverDidNotConnectToDevice(EMSIngenicoEVO.this, msg, showMsg);
             }
-
         }
     }
 
@@ -263,13 +274,13 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
-    public void salePayment(BigInteger amount) {
+    public void salePayment(Payment payment) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
-        transactionData.setOrderNumber("");
+        transactionData.setOrderNumber("123456");
         transactionData.setWasSignatureCaptured(true);
-        transactionData.setTipAmount(new BigDecimal(1.00));
-        transactionData.setAmount(new BigDecimal(amount).multiply(new BigDecimal("0.01")));
+        transactionData.setTipAmount(new BigDecimal(0.00));
+        transactionData.setAmount(new BigDecimal(payment.pay_amount));
 
         ApplicationConfigurationData configurationData = new ApplicationConfigurationData();
         configurationData.setApplicationAttended(true);
@@ -278,18 +289,33 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         configurationData.setPinCapability(PinCapability.PIN_VERIFIED_BY_DEVICE);
         configurationData.setReadCapability(ReadCapability.MSREMVICC);
         configurationData.setEncryptionType(EncryptionType.NOT_SET);
-
-        EvoSnapApi.startTransaction(transactionData, CaptureMode.SWIPE_OR_INSERT, CaptureType.AUTH_AND_CAPTURE, CurrencyCode.USD, configurationData, this);
+        EvoSnapApi.startTransaction(transactionData, CaptureMode.SWIPE_OR_INSERT, CaptureType.AUTH_AND_CAPTURE,
+                CurrencyCode.USD, configurationData, this);
     }
 
     @Override
-    public void saleReversal(BigInteger amount, String originalTransactionId) {
+    public void saleReversal(Payment payment, String originalTransactionId) {
 
     }
 
     @Override
-    public void refund(BigInteger amount) {
+    public void refund(Payment payment) {
+        TransactionData transactionData = new TransactionData();
+        transactionData.setCustomerPresence(CustomerPresence.PRESENT);
+        transactionData.setOrderNumber("123456");
+        transactionData.setWasSignatureCaptured(true);
+        transactionData.setTipAmount(new BigDecimal(0.00));
+        transactionData.setAmount(new BigDecimal(payment.pay_amount));
+        ApplicationConfigurationData configurationData = new ApplicationConfigurationData();
+        configurationData.setApplicationAttended(true);
+        configurationData.setApplicationLocation(ApplicationLocation.ON_PREMISES);
+        configurationData.setHardwareType(HardwareType.PC);
+        configurationData.setPinCapability(PinCapability.PIN_VERIFIED_BY_DEVICE);
+        configurationData.setReadCapability(ReadCapability.MSREMVICC);
+        configurationData.setEncryptionType(EncryptionType.NOT_SET);
 
+        EvoSnapApi.startTransaction(transactionData, CaptureMode.SWIPE_OR_INSERT, CaptureType.RETURN_UNLINKED,
+                CurrencyCode.USD, configurationData, this);
     }
 
     @Override
@@ -341,61 +367,90 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 
     @Override
     public void onNoDeviceFound() {
+        deviceFound = false;
         connected = false;
     }
 
     @Override
     public void onWaitingForCard() {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onWaitingForCard", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onCardInserted() {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onCardInserted", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onCardSwiped(String s, String s1, String s2, String s3) {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onCardSwiped", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onRequestSetAmount() {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onRequestSetAmount", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onRequestApplicationSelection(ArrayList<String> arrayList) {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onRequestApplicationSelection", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onRequestAmountConfirmation(BigDecimal bigDecimal) {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onRequestAmountConfirmation", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onRequestPinEntry() {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onRequestPinEntry", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onRequestVerifyId() {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onRequestVerifyId", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 
     @Override
     public void onTransactionCompleted(TransactionResult transactionResult, BankCardTransactionResponse bankCardTransactionResponse) {
-
+        Looper.prepare();
+        CreditCardInfo creditCardInfo = new CreditCardInfo();
+        creditCardInfo.setOriginalTotalAmount(bankCardTransactionResponse.getAmount().toString());
+        creditCardInfo.setWasSwiped(true);
+        creditCardInfo.authcode = bankCardTransactionResponse.getApprovalCode();
+        creditCardInfo.transid = bankCardTransactionResponse.getTransactionId();
+        creditCardInfo.setResultMessage(bankCardTransactionResponse.getStatusMessage());
+        msrCallBack.cardWasReadSuccessfully(transactionResult == TransactionResult.APPROVED, creditCardInfo);
+        Looper.loop();
     }
 
     @Override
     public void onTransactionError(EvoSnapApi.TransactionError transactionError) {
-
+        Looper.prepare();
+        msrCallBack.cardWasReadSuccessfully(false, null);
+        Looper.prepare();
     }
 
     @Override
     public void onRequestOverrideConfirmation() {
-
+        Looper.prepare();
+        Toast.makeText(activity, "onRequestOverrideConfirmation", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 }

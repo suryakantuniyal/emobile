@@ -366,7 +366,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute();
 
@@ -376,7 +375,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -395,7 +393,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentToBeRefunded.pay_amount);
             BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
             Global.mainPrinterManager.currentDevice.loadCardReader(this, false);
-            Global.mainPrinterManager.currentDevice.saleReversal(voidAmountInt, paymentToBeRefunded.pay_transid);
+            Global.mainPrinterManager.currentDevice.saleReversal(paymentToBeRefunded, paymentToBeRefunded.pay_transid);
         } else if (paymethod_name.equals("Card")) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
             new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.card_type, null));
