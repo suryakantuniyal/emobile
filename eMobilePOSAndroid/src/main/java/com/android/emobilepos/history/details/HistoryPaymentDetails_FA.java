@@ -281,12 +281,12 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-
+        if (myProgressDialog != null && myProgressDialog.isShowing()) {
+            myProgressDialog.dismiss();
+        }
         if (read) {
             payHandler.createVoidPayment(paymentToBeRefunded, false, null);
-            if (myProgressDialog != null && myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
-            }
+
 //            voidButton.setEnabled(false);
 //            voidButton.setClickable(false);
         } else {
@@ -389,14 +389,13 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
     private void voidTransaction() {
         paymentToBeRefunded = payHandler.getPaymentForVoid(pay_id);
-        if (myPref.getPrinterType() == Global.HANDPOINT) {
+        if (myPref.getPrinterType() == Global.HANDPOINT || myPref.getPrinterType() == Global.ICMPEVO) {
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage(getString(R.string.processing_refund));
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-            String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentToBeRefunded.pay_amount);
-            BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
+
             Global.mainPrinterManager.currentDevice.loadCardReader(this, false);
             Global.mainPrinterManager.currentDevice.saleReversal(paymentToBeRefunded, paymentToBeRefunded.pay_transid);
         } else if (paymethod_name.equals("Card")) {

@@ -44,7 +44,7 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+        this.edm.driverDidConnectToDevice(thisInstance, true);
     }
 
 

@@ -862,6 +862,18 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isPOWA() {
+        String device_powa = "device_powa";
+        return prefs.getBoolean(device_powa, false);
+    }
+
+    public boolean setIsPOWA(boolean value) {
+        String device_powa = "device_powa";
+        prefEditor.putBoolean(device_powa, value);
+        prefEditor.commit();
+        return false;
+    }
+
     public boolean isKDC5000() {
         String device_kdc500 = "device_kdc500";
         return prefs.getBoolean(device_kdc500, false);

@@ -505,7 +505,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         for (OrderSeatProduct seatProduct : leftFragment.mainLVAdapter.orderSeatProductList) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                 if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
-                                    item.getSubMenu().add(0, id, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
+                                    item.getSubMenu().add(0, id, SubMenu.NONE, getString(R.string.move_items_to_seat) + seatProduct.seatNumber);
                                     subMenus.put(id, seatProduct.seatNumber);
                                     id++;
                                 }
@@ -517,7 +517,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         for (OrderSeatProduct seatProduct : leftFragment.mainLVAdapter.orderSeatProductList) {
                             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                                 if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.seatNumber)) {
-                                    item.getSubMenu().add(0, jid, SubMenu.NONE, "Group seats items" + seatProduct.seatNumber);
+                                    item.getSubMenu().add(0, jid, SubMenu.NONE, getString(R.string.join_with_seat) + seatProduct.seatNumber);
                                     subMenusJoinSeat.put(jid, seatProduct.seatNumber);
                                     jid++;
                                 }

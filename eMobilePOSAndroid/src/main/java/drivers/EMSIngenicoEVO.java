@@ -15,6 +15,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
+import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -31,6 +32,7 @@ import com.evosnap.sdk.api.config.ReadCapability;
 import com.evosnap.sdk.api.transaction.BankCardCapture;
 import com.evosnap.sdk.api.transaction.CustomerPresence;
 import com.evosnap.sdk.api.transaction.TransactionData;
+import com.evosnap.sdk.api.transaction.TransactionStatus;
 import com.evosnap.sdk.api.transaction.auth.BankCardTransactionResponse;
 import com.evosnap.sdk.api.transaction.management.CancelTransactionRequest;
 import com.evosnap.sdk.api.transaction.management.ReturnByIdRequest;
@@ -90,7 +92,6 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         apiConfig.setApplicationProfileId("6883");
         apiConfig.setServiceKey("1F8BA60D09400001");
         apiConfig.setServiceId("39C6700001");
-        EvoSnapApi.init(activity, apiConfig);
         new EVOConnectAsync().execute(false);
         return true;
     }
@@ -103,6 +104,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         protected SignOnResponse doInBackground(Boolean... params) {
             showMsg = params[0];
             deviceFound = true;
+            EvoSnapApi.init(activity, apiConfig);
             SignOnRequest request = new SignOnRequest("enabler1", "Testing!2$");
             return EvoSnapApi.signOn(request);
         }
@@ -277,7 +279,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     public void salePayment(Payment payment) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
-        transactionData.setOrderNumber("123456");
+        transactionData.setOrderNumber("");
         transactionData.setWasSignatureCaptured(true);
         transactionData.setTipAmount(new BigDecimal(0.00));
         transactionData.setAmount(new BigDecimal(payment.pay_amount));
@@ -295,14 +297,41 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
-
+        new EVOCancelTransaction().execute(payment);
     }
+
+    private class EVOCancelTransaction extends AsyncTask<Payment, Void, BankCardTransactionResponse> {
+
+        @Override
+        protected void onPreExecute() {
+//            showDialog(R.string.voiding_payments);
+        }
+
+        @Override
+        protected BankCardTransactionResponse doInBackground(Payment... params) {
+            BankCardCapture bankCardCapture = new BankCardCapture();
+            bankCardCapture.setTransactionId(params[0].pay_transid);
+            bankCardCapture.setAmount(Global.getBigDecimalNum(params[0].pay_amount));
+            bankCardCapture.setType("Undo");
+            CancelTransactionRequest cancelRequest = new CancelTransactionRequest();
+            cancelRequest.setDifferenceData(bankCardCapture);
+            BankCardTransactionResponse response = EvoSnapApi.cancelTransaction(cancelRequest);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(BankCardTransactionResponse bankCardTransactionResponse) {
+            msrCallBack.cardWasReadSuccessfully(bankCardTransactionResponse.getStatus() == TransactionStatus.SUCCESSFUL,
+                    new CreditCardInfo());
+        }
+    }
+
 
     @Override
     public void refund(Payment payment) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
-        transactionData.setOrderNumber("123456");
+        transactionData.setOrderNumber(payment.pay_id);
         transactionData.setWasSignatureCaptured(true);
         transactionData.setTipAmount(new BigDecimal(0.00));
         transactionData.setAmount(new BigDecimal(payment.pay_amount));
@@ -388,6 +417,13 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     @Override
     public void onCardSwiped(String s, String s1, String s2, String s3) {
         Looper.prepare();
+        CreditCardInfo creditCardInfo = new CreditCardInfo();
+        creditCardInfo.setWasSwiped(true);
+        creditCardInfo.setCardOwnerName(s1);
+        creditCardInfo.setCardExpMonth(s2);
+        creditCardInfo.setCardExpYear(s3);
+        creditCardInfo.setCardNumUnencrypted(s);
+        msrCallBack.cardWasReadSuccessfully(true, creditCardInfo);
         Toast.makeText(activity, "onCardSwiped", Toast.LENGTH_LONG).show();
         Looper.loop();
     }
@@ -431,7 +467,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     public void onTransactionCompleted(TransactionResult transactionResult, BankCardTransactionResponse bankCardTransactionResponse) {
         Looper.prepare();
         CreditCardInfo creditCardInfo = new CreditCardInfo();
-        creditCardInfo.setOriginalTotalAmount(bankCardTransactionResponse.getAmount().toString());
+        creditCardInfo.setOriginalTotalAmount(bankCardTransactionResponse == null ? "0" : bankCardTransactionResponse.getAmount().toString());
         creditCardInfo.setWasSwiped(true);
         creditCardInfo.authcode = bankCardTransactionResponse.getApprovalCode();
         creditCardInfo.transid = bankCardTransactionResponse.getTransactionId();

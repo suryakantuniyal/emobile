@@ -115,23 +115,23 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.EM100:
                 aDevice = new EMSEM100();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.EM70:
                 aDevice = new EMSEM70();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.OT310:
                 aDevice = new EMSOT310();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.KDC500:
                 aDevice = new EMSKDC500();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.HANDPOINT:
                 aDevice = new EMSHandpoint();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
@@ -139,11 +139,11 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.ISMP:
                 aDevice = new EMSIngenico();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.ICMPEVO:
                 aDevice = new EMSIngenicoEVO();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
         }
     }
@@ -169,6 +169,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.POWA:
                 aDevice = new EMSPowaPOS();
+                break;
+            case Global.EM100:
+                aDevice = new EMSEM100();
                 break;
             case Global.ASURA:
                 aDevice = new EMSAsura();

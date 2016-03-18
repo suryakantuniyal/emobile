@@ -1925,7 +1925,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         myProgressDialog = new ProgressDialog(activity);
                         myProgressDialog.setMessage(activity.getString(R.string.swipe_insert_card));
                         myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        myProgressDialog.setCancelable(false);
+                        myProgressDialog.setCancelable(true);
                         myProgressDialog.show();
                         if (isRefund) {
                             Payment p = new Payment(activity);
