@@ -14,7 +14,6 @@ import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -144,7 +143,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, editText);
+                NumberUtils.parseInputedCurrency(s, editText);
             }
         };
     }
@@ -219,8 +218,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         }
 
         if (isManual) {
-            String val = fieldPhone.getText().toString().trim();
-            payment.pay_phone = val;
+            payment.pay_phone = fieldPhone.getText().toString().trim();
         }
 
 
@@ -310,7 +308,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
     @Override
     public void nfcWasRead(String nfcUID) {
-
+        boloroTagID = nfcUID;
+        Global.showPrompt(activity, R.string.dlog_title_confirm, activity.getString(R.string.dlog_msg_nfc_scanned));
     }
 
     private class NdefReaderTask extends AsyncTask<Intent, Void, String> {
@@ -319,8 +318,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         protected String doInBackground(Intent... params) {
 
             Tag tagFromIntent = params[0].getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String uid = Common.getHexStringFromBytes(tagFromIntent.getId());
-            return uid;
+            return Common.getHexStringFromBytes(tagFromIntent.getId());
         }
 
         @Override
@@ -356,7 +354,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             try {
 
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-                String generatedURL = new String();
+                String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetMarketTelcos, false, null, null);
 
                 Post httpClient = new Post();
@@ -397,10 +395,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
                 carrierSpinner.setAdapter(carrierAdapter);
                 accountSpinner.setAdapter(accountAdapter);
-            } else {
-
             }
-
         }
     }
 
@@ -428,7 +423,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             try {
 
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-                String generatedURL = new String();
+                String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ProcessBoloroCheckout, false, null, null);
 
                 Post httpClient = new Post();
@@ -465,10 +460,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             } else if (response.containsKey("error_message")) {
                 Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
             } else if (response.containsKey("epayStatusCode")) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Code:").append(response.get("statusCode")).append("\n");
-                sb.append("Msg:").append(response.get("statusMessage"));
-                Global.showPrompt(activity, R.string.dlog_title_error, sb.toString());
+                Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
             }
         }
     }
@@ -497,7 +489,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             try {
 
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-                String generatedURL = new String();
+                String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetTelcoInfoByTag, false, null, null);
 
                 Post httpClient = new Post();
@@ -535,10 +527,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             } else if (response.containsKey("error_message")) {
                 Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
             } else if (response.containsKey("epayStatusCode")) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Code:").append(response.get("statusCode")).append("\n");
-                sb.append("Msg:").append(response.get("statusMessage"));
-                Global.showPrompt(activity, R.string.dlog_title_error, sb.toString());
+                Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
             }
         }
     }
@@ -590,7 +579,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             try {
 
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
-                String generatedURL = new String();
+                String generatedURL;
                 if (isPolling)//is Polling
                 {
                     isPolling = true;
@@ -601,7 +590,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 }
 
 
-                InputSource inSource = null;
+                InputSource inSource;
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
                 Post httpClient = new Post();
@@ -666,10 +655,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             } else if (response.containsKey("short_message")) {
                 Global.showPrompt(activity, R.string.dlog_title_error, response.get("short_message"));
             } else if (response.containsKey("epayStatusCode")) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Code:").append(response.get("statusCode")).append("\n");
-                sb.append("Msg:").append(response.get("statusMessage"));
-                Global.showPrompt(activity, R.string.dlog_title_error, sb.toString());
+                Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
             }
         }
     }

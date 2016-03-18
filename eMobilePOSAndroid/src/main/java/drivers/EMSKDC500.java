@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
@@ -114,12 +115,12 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void NFCDataReceived(KDCData kdcData) {
-        String data = kdcData.GetData();
+
     }
 
-    private void HandleNFCCardReadEvent(KPOSData pData)
-    {
+    private void HandleNFCCardReadEvent(KPOSData pData) {
         String nfcUID = pData.GetNFCUID();
+        scannerCallBack.nfcWasRead(nfcUID);
     }
 
 
@@ -276,6 +277,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void loadScanner(EMSCallBack callBack) {
         scannerCallBack = callBack;
         kdcReader.EnableMSR_POS();
+        kdcReader.EnableNFC_POS();
         if (handler == null)
             handler = new Handler();
 
@@ -390,7 +392,9 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         if (pData != null) {
             switch (pData.GetEventCode()) {
                 case KPOSConstants.EVT_NFC_CARD_TAPPED:
+                    Looper.prepare();
                     HandleNFCCardReadEvent(pData);
+                    Looper.loop();
                     break;
                 case KPOSConstants.EVT_BARCODE_SCANNED:
                     activity.runOnUiThread(new Runnable() {
