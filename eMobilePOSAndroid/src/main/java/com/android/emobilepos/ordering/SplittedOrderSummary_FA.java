@@ -334,7 +334,9 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.setOrderProducts(orderProducts);
                         splitedOrder.setTableNumber(tableNumber);
-                        splitedOrders.add(splitedOrder);
+                        if(!splitedOrder.getOrderProducts().isEmpty()) {
+                            splitedOrders.add(splitedOrder);
+                        }
                         joinedGroupIds.add(seatProduct.getSeatGroupId());
                     }
                 }
