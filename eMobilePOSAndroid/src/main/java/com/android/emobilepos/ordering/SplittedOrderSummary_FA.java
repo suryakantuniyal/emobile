@@ -68,10 +68,12 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private List<HashMap<String, String>> listMapTaxes;
     private Tax tax;
     public int checkoutCount = 0;
+    private BigDecimal globalDiscountPercentge = new BigDecimal(0);
 
     MyPreferences preferences;
     GenerateNewID generateNewID;
     public SalesReceiptSplitTypes splitType;
+
 
     public enum NavigationResult {
         PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903);
@@ -162,14 +164,17 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             } else {
                 discount = Discount.getDefaultInstance();
             }
-
         }
         splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
         splitTypeSpinner.setOnItemSelectedListener(this);
         global = (Global) getApplication();
         setOrderSummaryFR(new SplittedOrderSummaryFR());
         setOrderDetailsFR(new SplittedOrderDetailsFR());
-
+        if (global.order.ord_discount != null && !global.order.ord_discount.isEmpty()) {
+            setGlobalDiscountPercentge(new BigDecimal(global.order.ord_discount).setScale(4, RoundingMode.HALF_UP)
+                    .divide(new BigDecimal(global.order.ord_subtotal).setScale(4, RoundingMode.HALF_UP), 2, RoundingMode.HALF_UP)
+                    .setScale(4, RoundingMode.HALF_UP));
+        }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.splitedOrderSummaryFrameLayout, getOrderSummaryFR());
         ft.add(R.id.splitedOrderDetailFrameLayout, getOrderDetailsFR());
@@ -245,6 +250,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                             orderSubTotal = orderSubTotal.add(new BigDecimal(product.itemSubtotal)).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
+                        splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
                         splitedOrder.setOrderProducts(orderProducts);
                         splitedOrder.setTableNumber(tableNumber);
                         splitedOrders.add(splitedOrder);
@@ -294,6 +300,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                                         orderSubTotal = orderSubTotal.add(itemSubtotal).setScale(4, RoundingMode.HALF_UP);
                                     }
                                     splitedOrder.ord_subtotal = orderSubTotal.toString();
+                                    splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
+
                                     splitedOrder.setOrderProducts(orderProducts);
                                     splitedOrder.setTableNumber(tableNumber);
                                     splitedOrders.add(splitedOrder);
@@ -332,9 +340,11 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                             orderSubTotal = orderSubTotal.add(new BigDecimal(product.itemSubtotal)).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
+                        splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
+
                         splitedOrder.setOrderProducts(orderProducts);
                         splitedOrder.setTableNumber(tableNumber);
-                        if(!splitedOrder.getOrderProducts().isEmpty()) {
+                        if (!splitedOrder.getOrderProducts().isEmpty()) {
                             splitedOrders.add(splitedOrder);
                         }
                         joinedGroupIds.add(seatProduct.getSeatGroupId());
@@ -346,6 +356,14 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             }
         }
         setReceiptPreview();
+    }
+
+    public BigDecimal getGlobalDiscountPercentge() {
+        return globalDiscountPercentge;
+    }
+
+    public void setGlobalDiscountPercentge(BigDecimal globalDiscountPercentge) {
+        this.globalDiscountPercentge = globalDiscountPercentge;
     }
 
     @Override
@@ -522,5 +540,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             setResult(-1);
             finish();
         }
+
     }
 }

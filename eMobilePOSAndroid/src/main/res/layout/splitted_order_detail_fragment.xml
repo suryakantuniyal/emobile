@@ -196,7 +196,7 @@
                     android:id="@+id/subtotaltextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99"
+                    android:text="$0.00"
                     android:textColor="#000"
                     android:textStyle="normal" />
             </LinearLayout>
@@ -221,7 +221,31 @@
                     android:id="@+id/lineitem_discounttextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99"
+                    android:text="$0.00"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-8dp"
+                android:orientation="horizontal">
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/textView14b"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:singleLine="true"
+                    android:text="@string/receipt_global_discount"
+                    android:textColor="#000"
+                    android:textStyle="normal" />
+
+                <com.android.support.TextViewSansSerifMedium
+                    android:id="@+id/globaldiscounttextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$0.00"
                     android:textColor="#000"
                     android:textStyle="normal" />
             </LinearLayout>
@@ -246,7 +270,7 @@
                     android:id="@+id/taxtotaltextView14a"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99"
+                    android:text="$0.00"
                     android:textColor="#000"
                     android:textStyle="normal" />
             </LinearLayout>
@@ -277,7 +301,7 @@
                     android:id="@+id/granTotaltextView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$85.99"
+                    android:text="$0.00"
                     android:textColor="#000"
                     android:textStyle="normal" />
             </LinearLayout>

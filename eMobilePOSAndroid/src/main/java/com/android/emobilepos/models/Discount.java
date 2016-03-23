@@ -10,6 +10,10 @@ public class Discount {
     private String taxCodeIsTaxable;
     private String productId;
 
+    public enum DiscountType {
+        FIXED, PERCENT
+    }
+
     public static Discount getDefaultInstance() {
         Discount discount = new Discount();
         discount.setProductId("");

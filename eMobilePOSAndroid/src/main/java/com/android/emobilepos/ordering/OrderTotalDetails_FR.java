@@ -202,6 +202,15 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             this.isTax = isTax;
         }
 
+        public int getDiscountIdPosition(String discountId) {
+            for (int i = 0; i < rightData.size(); i++) {
+                if (rightData.get(i)[4].equalsIgnoreCase(discountId)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
@@ -334,9 +343,24 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     public void setDiscountValue(int position) {
         DecimalFormat frmt = new DecimalFormat("0.00");
         if (position == 0) {
-            discount_rate = new BigDecimal("0");
-            discount_amount = new BigDecimal("0");
-            discountID = "";
+            if (global.order == null || global.order.ord_discount_id.isEmpty()) {
+                discount_rate = new BigDecimal("0");
+                discount_amount = new BigDecimal("0");
+                discountID = "";
+            } else {
+                discountSelected = ((MySpinnerAdapter) discountSpinner.getAdapter()).getDiscountIdPosition(global.order.ord_discount_id) + 1;
+                discountID = discountList.get(discountSelected - 1).getProductId();
+                if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {
+                    discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+                    discount_amount = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice());
+
+                } else {
+                    discount_rate = Global.getBigDecimalNum(discountList.get(discountSelected - 1).getProductPrice())
+                            .divide(new BigDecimal("100"));
+                    BigDecimal total = discountable_sub_total.subtract(itemsDiscountTotal);
+                    discount_amount = total.multiply(discount_rate).setScale(2, RoundingMode.HALF_UP);
+                }
+            }
         } else if (discountList != null && discountSelected > 0) {
             discountID = discountList.get(discountSelected - 1).getProductId();
             if (discountList.get(discountSelected - 1).getProductDiscountType().equals("Fixed")) {

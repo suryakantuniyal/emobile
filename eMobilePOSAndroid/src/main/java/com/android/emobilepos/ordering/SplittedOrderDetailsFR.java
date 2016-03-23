@@ -46,7 +46,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private TextView orderId;
     private TextView subtotal;
     private MyPreferences myPref;
+    private TextView globalDiscountTextView;
     private TextView lineItemDiscountTotal;
+
     private TextView taxTotal;
     private TextView granTotal;
     private LinearLayout productAddonsSection;
@@ -55,7 +57,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
     public SplitedOrder restaurantSplitedOrder;
     private LinearLayout receiptPreview;
-    private SplitedOrder splittedOrderToRollback;
 
 
     @Nullable
@@ -82,6 +83,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         TextView deviceName = (TextView) detailView.findViewById(R.id.deviceNametextView23);
         subtotal = (TextView) detailView.findViewById(R.id.subtotaltextView);
         lineItemDiscountTotal = (TextView) detailView.findViewById(R.id.lineitem_discounttextView);
+        globalDiscountTextView = (TextView) detailView.findViewById(R.id.globaldiscounttextView);
+
         taxTotal = (TextView) detailView.findViewById(R.id.taxtotaltextView14a);
         granTotal = (TextView) detailView.findViewById(R.id.granTotaltextView16);
         TextView footer1 = (TextView) detailView.findViewById(R.id.footerLine1textView);
@@ -170,6 +173,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
     public void setReceiptOrder(SplitedOrder splitedOrder) {
         restaurantSplitedOrder = splitedOrder;
+        SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
+
         List<OrderProduct> products = splitedOrder.getOrderProducts();
         if (orderProductSection.getChildCount() > 0) {
             orderProductSection.removeAllViewsInLayout();
@@ -178,13 +183,17 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         BigDecimal orderTaxes = new BigDecimal(0);
         BigDecimal orderGranTotal = new BigDecimal(0);
         BigDecimal itemDiscountTotal = new BigDecimal(0);
+        BigDecimal globalDiscountTotal = new BigDecimal(0);
+
         for (OrderProduct product : products) {
-            LinearLayout productSectionLL = (LinearLayout) inflater.inflate(R.layout.receipt_product_layout_item, null, false);
+            getView();
+            LinearLayout productSectionLL = (LinearLayout) View.inflate(getActivity(), R.layout.receipt_product_layout_item, null);
 
             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.ordprod_id);
 
             BigDecimal qty = Global.getBigDecimalNum(product.ordprod_qty);
             orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.overwrite_price).multiply(qty));
+            globalDiscountTotal = orderSubtotal.multiply(orderSummaryFa.getGlobalDiscountPercentge());
             orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.taxTotal));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
             orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
@@ -215,13 +224,14 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         splitedOrder.gran_total = orderGranTotal.toString();
         splitedOrder.ord_subtotal = orderSubtotal.toString();
         splitedOrder.ord_taxamount = orderTaxes.toString();
+        splitedOrder.ord_discount = globalDiscountTotal.toString();
         splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
         subtotal.setText(Global.formatDoubleStrToCurrency(orderSubtotal.toString()));
         lineItemDiscountTotal.setText(Global.formatDoubleStrToCurrency(itemDiscountTotal.toString()));
         taxTotal.setText(Global.formatDoubleStrToCurrency(orderTaxes.toString()));
         granTotal.setText(Global.formatDoubleStrToCurrency(orderGranTotal.toString()));
         orderId.setText(splitedOrder.ord_id);
-
+        globalDiscountTextView.setText(Global.formatDoubleStrToCurrency(globalDiscountTotal.toString()));
     }
 
     @Override
@@ -359,11 +369,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.ord_id = global.order.ord_id;
                 splitedOrder.syncOrderProductIds();
             } else {
-                try {
-                    splittedOrderToRollback = (SplitedOrder) splitedOrder.clone();
-                } catch (CloneNotSupportedException e) {
-                    e.printStackTrace();
-                }
+
                 nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
                 splitedOrder.ord_id = nextOrderID;
                 splitedOrder.processed = "10";
@@ -454,6 +460,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) summaryFa.getOrderSummaryFR().getGridView().getAdapter();
         adapter.removeOrder(restaurantSplitedOrder);
         removeTicket(restaurantSplitedOrder);
+        if (!adapter.isEmpty()) {
+            adapter.setSelectedIndex(0);
+            restaurantSplitedOrder = (SplitedOrder) adapter.getItem(0);
+        }
     }
 
     private void removeTicket(SplitedOrder splitedOrder) {
