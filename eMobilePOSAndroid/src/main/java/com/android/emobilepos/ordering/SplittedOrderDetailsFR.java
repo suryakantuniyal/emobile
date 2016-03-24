@@ -33,6 +33,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -183,7 +184,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         BigDecimal orderTaxes = new BigDecimal(0);
         BigDecimal orderGranTotal = new BigDecimal(0);
         BigDecimal itemDiscountTotal = new BigDecimal(0);
-        BigDecimal globalDiscountTotal;
+        BigDecimal globalDiscountTotal = new BigDecimal(0);
 
         for (OrderProduct product : products) {
             getView();
@@ -193,6 +194,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
             BigDecimal qty = Global.getBigDecimalNum(product.ordprod_qty);
             orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.overwrite_price).multiply(qty));
+            globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.overwrite_price).setScale(4, RoundingMode.HALF_UP)
+                    .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
             orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.taxTotal));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
             orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
@@ -220,7 +223,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             orderProductSection.addView(productSectionLL);
         }
 
-        globalDiscountTotal = orderSubtotal.multiply(orderSummaryFa.getGlobalDiscountPercentge());
+//        globalDiscountTotal = orderSubtotal.multiply(orderSummaryFa.getGlobalDiscountPercentge()).setScale(4, RoundingMode.HALF_UP);
+        orderGranTotal = orderGranTotal.subtract(globalDiscountTotal);
         splitedOrder.ord_total = orderGranTotal.toString();
         splitedOrder.gran_total = orderGranTotal.toString();
         splitedOrder.ord_subtotal = orderSubtotal.toString();

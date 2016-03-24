@@ -25,6 +25,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.models.Discount;
@@ -69,6 +70,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private Tax tax;
     public int checkoutCount = 0;
     private BigDecimal globalDiscountPercentge = new BigDecimal(0);
+    private BigDecimal globalDiscountAmount = new BigDecimal(0);
 
     MyPreferences preferences;
     GenerateNewID generateNewID;
@@ -171,9 +173,10 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         setOrderSummaryFR(new SplittedOrderSummaryFR());
         setOrderDetailsFR(new SplittedOrderDetailsFR());
         if (global.order.ord_discount != null && !global.order.ord_discount.isEmpty()) {
+            globalDiscountAmount = Global.getBigDecimalNum(global.order.ord_discount);
             setGlobalDiscountPercentge(new BigDecimal(global.order.ord_discount).setScale(4, RoundingMode.HALF_UP)
-                    .divide(new BigDecimal(global.order.ord_subtotal).setScale(4, RoundingMode.HALF_UP), 2, RoundingMode.HALF_UP)
-                    .setScale(4, RoundingMode.HALF_UP));
+                    .divide(new BigDecimal(global.order.ord_subtotal).setScale(4, RoundingMode.HALF_UP), 6, RoundingMode.HALF_UP)
+                    .setScale(6, RoundingMode.HALF_UP));
         }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.splitedOrderSummaryFrameLayout, getOrderSummaryFR());
@@ -250,7 +253,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                             orderSubTotal = orderSubTotal.add(new BigDecimal(product.itemSubtotal)).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
-                        splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
+                        splitedOrder.ord_total = orderSubTotal.subtract(globalDiscountAmount).toString();
                         splitedOrder.setOrderProducts(orderProducts);
                         splitedOrder.setTableNumber(tableNumber);
                         splitedOrders.add(splitedOrder);
