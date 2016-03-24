@@ -806,6 +806,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
                                 myPref.sledType(false, Global.ISMP);
+                                myPref.setPrinterType(Global.ISMP);
+                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSled = edm.getManager();
                                 Global.btSled.loadDrivers(activity, Global.ISMP, false);
