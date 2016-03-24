@@ -5,11 +5,11 @@ android {
         config {
             keyAlias 'emobilepos'
             keyPassword '1Enabler1'
-            storeFile file('C:/AndroidAPKCerts/eMobileKeystore')
+            storeFile file('/AndroidAPKCerts/eMobileKeystore')
             storePassword '1Enabler1'
         }
     }
-    compileSdkVersion 14
+    compileSdkVersion 15
     buildToolsVersion "23.0.0"
     dexOptions {
         preDexLibraries = false
@@ -20,7 +20,7 @@ android {
     }
     defaultConfig {
         applicationId "com.emobilepos.app"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 23
         multiDexEnabled = true
     }
@@ -33,9 +33,9 @@ android {
     }
     productFlavors {
         ems {
-            minSdkVersion 14
+            minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.0.54"
+            versionName "1.1.0.55"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
@@ -43,15 +43,15 @@ android {
         emsblue {
             minSdkVersion 14
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.0.54"
+            versionName "1.1.0.55"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
         }
         ivupos {
-            minSdkVersion 14
+            minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.1.0.54"
+            versionName "1.1.0.55"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true

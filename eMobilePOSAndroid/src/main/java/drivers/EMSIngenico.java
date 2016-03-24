@@ -35,6 +35,7 @@ import rba_sdk.EventHandlerInterface;
 import rba_sdk.MESSAGE_ID;
 import rba_sdk.PARAMETER_ID;
 import rba_sdk.RBA_API;
+import rba_sdk.RBA_INSTANCE;
 
 public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, EventHandlerInterface {
 
@@ -85,7 +86,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         Comm_Settings commSettings = new Comm_Settings();
         commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
-        commSettings.BT_Name = "";
+//        commSettings.BT_Name = "";
+        commSettings.AutoDetect= 1;
 
         setCommTimeOuts();
         ERROR_ID connectionRequest;
@@ -135,7 +137,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
             Comm_Settings commSettings = new Comm_Settings();
             commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
-            commSettings.BT_Name = "";
+//            commSettings.BT_Name = "";
+            commSettings.AutoDetect= 1;
 
             setCommTimeOuts();
             ERROR_ID connectionRequest = RBA_API.Connect(commSettings);
