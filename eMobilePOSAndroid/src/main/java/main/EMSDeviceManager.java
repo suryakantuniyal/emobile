@@ -135,7 +135,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.ISMP:
                 aDevice = new EMSIngenico();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
         }
     }
