@@ -5,12 +5,12 @@ android {
         config {
             keyAlias 'emobilepos'
             keyPassword '1Enabler1'
-            storeFile file('C:/AndroidAPKCerts/eMobileKeystore')
+            storeFile file('/AndroidAPKCerts/eMobileKeystore')
             storePassword '1Enabler1'
         }
     }
     compileSdkVersion 15
-    buildToolsVersion "23.0.0"
+    buildToolsVersion '23.0.2'
     dexOptions {
         preDexLibraries = false
         incremental true
