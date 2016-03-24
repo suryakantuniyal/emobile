@@ -807,7 +807,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                     !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
                                 myPref.sledType(false, Global.ISMP);
                                 myPref.setPrinterType(Global.ISMP);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSled = edm.getManager();
