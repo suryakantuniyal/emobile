@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/linen_background"
@@ -109,8 +110,9 @@
             android:background="@drawable/bg_white_page"
             android:cacheColorHint="@android:color/transparent"
             android:paddingBottom="5dp"
-            android:stackFromBottom="true"
-            android:transcriptMode="normal"></ListView>
+            android:stackFromBottom="false"
+            android:transcriptMode="normal"
+            tools:listitem="@layout/product_receipt_adapter"></ListView>
 
         <com.android.support.SemiClosedSlidingDrawer xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:custom="http://schemas.android.com/apk/res-auto"

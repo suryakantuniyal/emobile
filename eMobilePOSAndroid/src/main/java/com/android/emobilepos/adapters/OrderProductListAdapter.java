@@ -263,14 +263,17 @@ public class OrderProductListAdapter extends BaseAdapter {
                 convertView.findViewById(R.id.seatHeaderSection).setBackgroundResource(colorId);
                 if (orderingMainFa.getSelectedSeatNumber().equalsIgnoreCase(orderSeatProductList.get(position).seatNumber)) {
                     selectedPosition = position;
-                    convertView.setBackgroundColor(Color.RED);
+                    convertView.setActivated(true);
+                    convertView.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.blue_row_selector));
                 } else {
+                    convertView.setActivated(false);
+                    convertView.setBackgroundDrawable(null);
                     convertView.setBackgroundResource(colorId);
                 }
                 convertView.setVisibility(orderSeatProductList.get(position).isDeleted ? View.GONE : View.VISIBLE);
                 break;
             case TYPE_ITEM:
-                convertView.setBackgroundDrawable(null);
+                convertView = mInflater.inflate(R.layout.product_receipt_adapter, null);
                 convertView.findViewById(R.id.seatHeaderSection).setVisibility(View.GONE);
                 convertView.findViewById(R.id.itemSection).setVisibility(View.VISIBLE);
                 holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);

@@ -287,7 +287,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-                // TODO Auto-generated method stub
                 if (isDiscount) {
                     discountSelected = pos;
                     setDiscountValue(pos);
@@ -300,7 +299,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
                 if (isDiscount)
                     discountSelected = 0;
                 else
@@ -486,6 +484,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //    }
 
     public void reCalculate(List<OrderProduct> orderProducts) {
+    //TODO Temporary fix. Need verify why SDK 5.0 calls with null global and why sdk 4.3 not
+        if (global == null) {
+            return;
+        }
         int size = orderProducts.size();
         taxableSubtotal = new BigDecimal("0.00");
         taxableDueAmount = new BigDecimal("0.00");

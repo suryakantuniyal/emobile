@@ -575,9 +575,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
-
             try {
-
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
                 String generatedURL;
                 if (isPolling)//is Polling
@@ -588,8 +586,6 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 {
                     generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.CancelBoloroTransaction, false, null, null);
                 }
-
-
                 InputSource inSource;
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
@@ -598,9 +594,6 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 do {
                     xml = httpClient.postData(13, activity, generatedURL);
                     inSource = new InputSource(new StringReader(xml));
-
-//					SAXParser sp = spf.newSAXParser();
-//					XMLReader xr = sp.getXMLReader();
                     xr.setContentHandler(myParser);
                     xr.parse(inSource);
                     response = myParser.getData();
@@ -629,12 +622,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                         failed = true;
                     }
                 } while (!failed && isPolling && !transCompleted);
-
-
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
 
             return null;
