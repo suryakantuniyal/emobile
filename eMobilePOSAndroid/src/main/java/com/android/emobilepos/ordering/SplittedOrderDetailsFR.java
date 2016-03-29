@@ -433,7 +433,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY
                 && resultCode != SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode()) {
             removeCheckoutOrder(summaryFa);
-
+            if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 0) {
+                getActivity().setResult(-1);
+                getActivity().finish();
+            }
         } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
             removeCheckoutOrder(summaryFa);
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 0) {
