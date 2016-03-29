@@ -407,9 +407,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             dis = discountList.get(discountSelected - 1);
         }
         TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
-                taxSelected, dis, discountable_sub_total, itemsDiscountTotal, listMapTaxes);
+                taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
         tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
-
     }
 
     private BigDecimal getProductPrice(BigDecimal prod_with_tax_price, BigDecimal tax) {
@@ -484,7 +483,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //    }
 
     public void reCalculate(List<OrderProduct> orderProducts) {
-    //TODO Temporary fix. Need verify why SDK 5.0 calls with null global and why sdk 4.3 not
+        //TODO Temporary fix. Need verify why SDK 5.0 calls with null global and why sdk 4.3 not
         if (global == null) {
             return;
         }

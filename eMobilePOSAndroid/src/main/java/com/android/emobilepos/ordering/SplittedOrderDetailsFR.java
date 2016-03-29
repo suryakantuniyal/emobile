@@ -31,6 +31,7 @@ import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.TaxesCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -185,7 +186,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         BigDecimal orderGranTotal = new BigDecimal(0);
         BigDecimal itemDiscountTotal = new BigDecimal(0);
         BigDecimal globalDiscountTotal = new BigDecimal(0);
-
+        BigDecimal tempTaxableAmount = new BigDecimal(0);
         for (OrderProduct product : products) {
             getView();
             LinearLayout productSectionLL = (LinearLayout) View.inflate(getActivity(), R.layout.receipt_product_layout_item, null);
@@ -196,10 +197,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.overwrite_price).multiply(qty));
             globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.overwrite_price).setScale(4, RoundingMode.HALF_UP)
                     .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
-            orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.taxTotal));
+//            orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.prod_taxValue));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
-            orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
-                    .add(Global.getBigDecimalNum(product.taxTotal)));
+//            orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
+//                    .add(Global.getBigDecimalNum(product.prod_taxValue)));
             ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(String.format("%sx %s", product.ordprod_qty, product.ordprod_name));
 
             productAddonsSection = (LinearLayout) productSectionLL.findViewById(R.id.productAddonSectionLinearLayout);
@@ -220,11 +221,17 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             } else {
                 ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText("");
             }
+            TaxesCalculator taxesCalculator = new TaxesCalculator(getActivity(), product, splitedOrder.tax_id,
+                    orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
+                    Global.getBigDecimalNum(splitedOrder.ord_discount));
+            orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
             orderProductSection.addView(productSectionLL);
         }
 
 //        globalDiscountTotal = orderSubtotal.multiply(orderSummaryFa.getGlobalDiscountPercentge()).setScale(4, RoundingMode.HALF_UP);
-        orderGranTotal = orderGranTotal.subtract(globalDiscountTotal);
+        orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
+                .subtract(globalDiscountTotal).setScale(6, RoundingMode.HALF_UP).add(orderTaxes)
+                .setScale(6, RoundingMode.HALF_UP);
         splitedOrder.ord_total = orderGranTotal.toString();
         splitedOrder.gran_total = orderGranTotal.toString();
         splitedOrder.ord_subtotal = orderSubtotal.toString();

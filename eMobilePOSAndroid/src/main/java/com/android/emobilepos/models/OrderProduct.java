@@ -80,6 +80,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
 
     public String consignment_qty;
+    public String global_discount_rate;
 
     @Override
     public Object clone() throws CloneNotSupportedException {

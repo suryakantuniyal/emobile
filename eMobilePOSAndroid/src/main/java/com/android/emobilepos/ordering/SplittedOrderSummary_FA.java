@@ -25,7 +25,6 @@ import com.android.database.OrdersHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.adapters.GiftLoyaltyRewardLV_Adapter;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.models.Discount;
@@ -75,6 +74,38 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     MyPreferences preferences;
     GenerateNewID generateNewID;
     public SalesReceiptSplitTypes splitType;
+
+    public String getTaxID() {
+        return taxID;
+    }
+
+    public void setTaxID(String taxID) {
+        this.taxID = taxID;
+    }
+
+    public Tax getTax() {
+        return tax;
+    }
+
+    public void setTax(Tax tax) {
+        this.tax = tax;
+    }
+
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
+    }
+
+    public List<HashMap<String, String>> getListMapTaxes() {
+        return listMapTaxes;
+    }
+
+    public void setListMapTaxes(List<HashMap<String, String>> listMapTaxes) {
+        this.listMapTaxes = listMapTaxes;
+    }
 
 
     public enum NavigationResult {
@@ -151,20 +182,20 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             String json = extras.getString("orderSeatProductList");
             tableNumber = extras.getString("tableNumber");
             orderSeatProducts = gson.fromJson(json, listType);
-            taxID = extras.getString("taxID");
+            setTaxID(extras.getString("taxID"));
             String ordetTaxId = extras.getString("orderTaxId");
             int discountSelected = extras.getInt("discountSelected");
             TaxesHandler taxesHandler = new TaxesHandler(this);
             List<Tax> taxList = taxesHandler.getTaxes();
             int idx = taxList.indexOf(new Tax(ordetTaxId));
-            tax = taxList.get(idx);
-
+            setTax(taxList.get(idx));
+            listMapTaxes = taxesHandler.getTaxDetails(tax.getTaxId(), "");
             ProductsHandler handler2 = new ProductsHandler(this);
             List<Discount> discountList = handler2.getDiscounts();
             if (discountSelected >= 0) {
-                discount = discountList.get(discountSelected);
+                setDiscount(discountList.get(discountSelected));
             } else {
-                discount = Discount.getDefaultInstance();
+                setDiscount(Discount.getDefaultInstance());
             }
         }
         splitTypeSpinner = (Spinner) findViewById(R.id.splitTypesSpinner);
@@ -296,7 +327,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
                                         product.itemSubtotal = itemSubtotal.toString();
                                         product.overwrite_price = Global.getBigDecimalNum(product.overwrite_price).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
-                                        product.taxTotal = Global.getBigDecimalNum(product.taxTotal).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+                                        product.prod_taxValue = Global.getBigDecimalNum(product.prod_taxValue).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
                                         product.discount_value = Global.getBigDecimalNum(product.discount_value).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
                                         product.itemTotal = Global.getBigDecimalNum(product.itemTotal).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
 
