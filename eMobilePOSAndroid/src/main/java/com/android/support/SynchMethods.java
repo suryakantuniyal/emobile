@@ -830,8 +830,13 @@ public class SynchMethods {
             if (myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             if (!downloadHoldList) {
-//                OrderingMain_FA orderingMainFa = (OrderingMain_FA) activity;
-                if (!checkoutOnHold) {
+                boolean closeActivity = true;
+                if (activity instanceof OrderingMain_FA &&
+                        ((OrderingMain_FA) activity).getRestaurantSaleType() == Global.RestaurantSaleType.EAT_IN) {
+                    closeActivity = false;
+                }
+
+                if (!checkoutOnHold && closeActivity) {
                     activity.finish();
                 }
             } else if (!isError) {

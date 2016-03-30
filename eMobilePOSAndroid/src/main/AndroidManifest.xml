@@ -150,8 +150,7 @@
         <activity
             android:name="com.android.emobilepos.ordering.SplittedOrderSummary_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:launchMode="singleTop">
+            android:exported="false">
 
         </activity>
         <activity

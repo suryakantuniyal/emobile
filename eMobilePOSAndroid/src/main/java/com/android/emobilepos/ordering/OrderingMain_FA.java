@@ -142,7 +142,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
 
     public enum OrderingAction {
-        HOLD, CHECKOUT, NONE
+        HOLD, CHECKOUT, NONE, BACK_PRESSED
     }
 
 //    CustomKeyboard mCustomKeyboard;
@@ -432,12 +432,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         orientation = _orientation;
     }
 
-    private boolean isBackPressed = false;
 
     @Override
     public void onBackPressed() {
         boolean tablet = myPref.getIsTablet();
-        isBackPressed = true;
+        orderingAction = OrderingAction.BACK_PRESSED;
         if (catalogContainer.getVisibility() == View.VISIBLE
                 && (!tablet || (tablet && orientation == Configuration.ORIENTATION_PORTRAIT))) {
             catalogContainer.setVisibility(View.GONE);
@@ -659,7 +658,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         super.onDestroy();
         if (myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
                 || (!myPref.getPreferencesValue(MyPreferences.pref_default_transaction).equals("-1")
-                && isBackPressed)) {
+                && orderingAction == OrderingAction.BACK_PRESSED)) {
             if (mDecodeManager != null) {
                 try {
                     mDecodeManager.release();

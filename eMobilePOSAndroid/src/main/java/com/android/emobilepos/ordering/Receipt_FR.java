@@ -1714,15 +1714,20 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         new printAsync().execute(true);
 
-        global.orderProducts = new ArrayList<OrderProduct>();
-        global.qtyCounter.clear();
-        global.resetOrderDetailsValues();
 
+        if(((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
+                || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
+            global.orderProducts = new ArrayList<OrderProduct>();
+            global.qtyCounter.clear();
+            global.resetOrderDetailsValues();
+        }
         DBManager dbManager = new DBManager(activity);
-
         dbManager.synchSendOrdersOnHold(false, false);
-        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT) {
+        if (!isToGo && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+                ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
             showSplitedOrderPreview();
+        }else{
+            getActivity().finish();
         }
     }
 
