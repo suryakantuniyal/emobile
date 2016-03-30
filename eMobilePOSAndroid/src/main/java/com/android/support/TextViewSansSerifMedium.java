@@ -26,7 +26,7 @@ public class TextViewSansSerifMedium extends TextView{
     }
 
     public void createFont() {
-        Typeface font = Typeface.createFromAsset(getContext().getAssets(), "Comme-Light.ttf");
+        Typeface font = Typeface.createFromAsset(getContext().getAssets(), "Comme-Medium.ttf");
 
         setTypeface(font);
     }

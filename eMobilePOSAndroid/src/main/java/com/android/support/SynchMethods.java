@@ -36,6 +36,7 @@ import com.android.emobilepos.adapters.SynchMenuAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
 import com.android.saxhandler.SAXPostTemplates;
@@ -829,8 +830,10 @@ public class SynchMethods {
             if (myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             if (!downloadHoldList) {
-                if (!checkoutOnHold)
+//                OrderingMain_FA orderingMainFa = (OrderingMain_FA) activity;
+                if (!checkoutOnHold) {
                     activity.finish();
+                }
             } else if (!isError) {
                 synchGetOnHoldProducts();
             } else {

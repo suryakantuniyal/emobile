@@ -204,6 +204,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
         addSeatButton.setOnClickListener(this);
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+            addSeatButton.setVisibility(View.GONE);
+        }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
         plusBut.setOnClickListener(this);
 
@@ -810,21 +813,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dialog.show();
     }
 
-    private void showSplitedOrderPreview() {
-        Gson gson = new Gson();
-        Type listType = new TypeToken<List<OrderSeatProduct>>() {
-        }.getType();
-        Intent intent = new Intent(activity, SplittedOrderSummary_FA.class);
-        Bundle b = new Bundle();
-        String json = gson.toJson(mainLVAdapter.orderSeatProductList, listType);
-        b.putString("orderSeatProductList", json);
-        b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
-        b.putString("taxID", Global.taxID);
-        b.putString("orderTaxId", global.order.tax_id);
-        b.putInt("discountSelected", Global.discountPosition - 1);
-        intent.putExtras(b);
-        startActivityForResult(intent, 0);
-    }
+
 
     private void showAddMoreProductsDlg() {
 
@@ -1546,6 +1535,22 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         callBackUpdateHeaderTitle.updateHeaderTitle(title);
 
         reCalculate();
+    }
+
+    private void showSplitedOrderPreview() {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<OrderSeatProduct>>() {
+        }.getType();
+        Intent intent = new Intent(activity, SplittedOrderSummary_FA.class);
+        Bundle b = new Bundle();
+        String json = gson.toJson(mainLVAdapter.orderSeatProductList, listType);
+        b.putString("orderSeatProductList", json);
+        b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
+        b.putString("taxID", Global.taxID);
+        b.putString("orderTaxId", global.order.tax_id);
+        b.putInt("discountSelected", Global.discountPosition - 1);
+        intent.putExtras(b);
+        startActivityForResult(intent, 0);
     }
 
     private void isSalesReceipt() {

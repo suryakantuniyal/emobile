@@ -354,7 +354,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.ord_id = global.order.ord_id;
 
                 if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
-                    splitedOrder.getOrderProducts().clear();
+//                    splitedOrder.getOrderProducts().clear();
                     for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
                         if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && seatProduct.orderProduct != null) {
                             splitedOrder.getOrderProducts().add(seatProduct.orderProduct);
@@ -433,9 +433,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY
                 && resultCode != SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode()) {
             removeCheckoutOrder(summaryFa);
+            summaryFa.findViewById(R.id.splitTypesSpinner).setEnabled(false);
             if (summaryFa.getOrderSummaryFR().getGridView().getAdapter().getCount() == 0) {
                 getActivity().setResult(-1);
                 getActivity().finish();
+            } else {
+                summaryFa.getOrderDetailsFR().setReceiptOrder((SplitedOrder) summaryFa.getOrderSummaryFR().getGridView().getAdapter().getItem(0));
             }
         } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.PAYMENT_COMPLETED.getCode()) {
             removeCheckoutOrder(summaryFa);
@@ -450,14 +453,16 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             Global global = (Global) getActivity().getApplication();
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
                 product.ord_id = global.order.ord_id;
-                global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
-                        .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_subtotal)).toString();
+                if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
+                    global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
+                            .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_subtotal)).toString();
 
-                global.order.ord_total = Global.getBigDecimalNum(global.order.ord_total)
-                        .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_total)).toString();
+                    global.order.ord_total = Global.getBigDecimalNum(global.order.ord_total)
+                            .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_total)).toString();
 
-                global.order.gran_total = Global.getBigDecimalNum(global.order.gran_total)
-                        .add(Global.getBigDecimalNum(restaurantSplitedOrder.gran_total)).toString();
+                    global.order.gran_total = Global.getBigDecimalNum(global.order.gran_total)
+                            .add(Global.getBigDecimalNum(restaurantSplitedOrder.gran_total)).toString();
+                }
             }
 
             OrdersHandler ordersHandler = new OrdersHandler(getActivity());

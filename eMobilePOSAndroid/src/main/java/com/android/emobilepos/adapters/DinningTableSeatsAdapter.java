@@ -42,7 +42,7 @@ public class DinningTableSeatsAdapter extends BaseAdapter implements Filterable 
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.iconLine.setImageResource(R.drawable.chair);
+        holder.iconLine.setImageResource(R.drawable.ic_group_black_48dp);
         holder.textLine.setText(String.valueOf(dinningTableSeats[position]));
         return convertView;
     }

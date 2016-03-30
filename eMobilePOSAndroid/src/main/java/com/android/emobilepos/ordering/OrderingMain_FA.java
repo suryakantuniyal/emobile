@@ -286,6 +286,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     };
 
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -687,6 +688,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     @Override
     public void onPause() {
         super.onPause();
+
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)

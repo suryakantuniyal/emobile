@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -149,7 +150,10 @@
         <activity
             android:name="com.android.emobilepos.ordering.SplittedOrderSummary_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false"
+            android:launchMode="singleTop">
+
+        </activity>
         <activity
             android:name="com.android.emobilepos.OrderDetailsActivity"
             android:configChanges="orientation|screenSize"
@@ -157,7 +161,8 @@
         <activity
             android:name="com.android.emobilepos.payment.SelectPayMethod_FA"
             android:exported="false"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop">
+        </activity>
         <activity
             android:name="com.android.emobilepos.payment.ProcessCreditCard_FA"
             android:configChanges="orientation|screenSize"
