@@ -814,7 +814,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
 
-
     private void showAddMoreProductsDlg() {
 
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -1676,26 +1675,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
+                ord_HoldName = value;
                 if (!value.isEmpty()) {
                     setOrderAsHold(value, ordersHandler, orderProductsHandler);
-//                    global.order.ord_HoldName = value;
-//                    global.order.processed = "10";
-//                    ordersHandler.insert(global.order);
-//                    global.encodedImage = "";
-//                    orderProductsHandler.insert(global.orderProducts);
-//
-//                    new printAsync().execute(true);
-//
-//                    global.orderProducts = new ArrayList<OrderProduct>();
-//                    global.qtyCounter.clear();
-//                    global.resetOrderDetailsValues();
-//
-//                    DBManager dbManager = new DBManager(activity);
-//
-//                    dbManager.synchSendOrdersOnHold(false, false);
-//                    if (!isToGo) {
-//                        showSplitedOrderPreview();
-//                    }
                 } else {
                     showOnHoldPromptName(ordersHandler, orderProductsHandler);
                 }
@@ -1715,7 +1697,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         new printAsync().execute(true);
 
 
-        if(((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
+        if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
                 || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
             global.orderProducts = new ArrayList<OrderProduct>();
             global.qtyCounter.clear();
@@ -1726,7 +1708,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (!isToGo && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
                 ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
             showSplitedOrderPreview();
-        }else{
+        } else {
             getActivity().finish();
         }
     }

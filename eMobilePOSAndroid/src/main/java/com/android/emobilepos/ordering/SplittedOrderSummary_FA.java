@@ -445,6 +445,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         if (splitType == SalesReceiptSplitTypes.SPLIT_EQUALLY && checkoutCount > 0) {
             promptVoidTransaction(true);
         } else {
+            Global.isFromOnHold = true;
             setResult(0);
             finish();
         }

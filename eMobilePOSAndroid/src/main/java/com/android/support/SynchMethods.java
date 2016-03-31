@@ -722,26 +722,17 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             try {
-
-
                 synchOrdersOnHoldDetails(this, params[0]);
-
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(activity);
                 Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
                 if (c != null && c.getCount() > 0) {
                     proceedToView = true;
                     if (type == 0)
                         ((OnHoldActivity) activity).addOrder(c);
-                    else
-                        c.close();
                 } else
                     proceedToView = false;
-                //myDB.close();
-
-
+                c.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -827,7 +818,7 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-            if (myProgressDialog != null && myProgressDialog.isShowing())
+            if (!activity.isFinishing() &&  myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             if (!downloadHoldList) {
                 boolean closeActivity = true;
@@ -835,7 +826,6 @@ public class SynchMethods {
                         ((OrderingMain_FA) activity).getRestaurantSaleType() == Global.RestaurantSaleType.EAT_IN) {
                     closeActivity = false;
                 }
-
                 if (!checkoutOnHold && closeActivity) {
                     activity.finish();
                 }
