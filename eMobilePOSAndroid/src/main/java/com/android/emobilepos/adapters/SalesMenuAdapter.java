@@ -23,9 +23,8 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
 	private Activity activity;
 	
 	private int listViewSize = 0;
-	 
-	private boolean[] enabledSettings;
-	private List<Integer> indexOfEnabled = new ArrayList<Integer>();
+
+    private List<Integer> indexOfEnabled = new ArrayList<Integer>();
 	private String[] mainMenuList;
 	private  SparseArray<String>mainMenuIconsMap;
 	
@@ -52,19 +51,20 @@ public class SalesMenuAdapter extends BaseAdapter implements Filterable {
 		mainMenuIconsMap.put(Global.TransactionType.ON_HOLD.getCode(), "list_red");	//On Hold
 		mainMenuIconsMap.put(Global.TransactionType.CONSIGNMENT.getCode(), "list");	//Consignment
 		mainMenuIconsMap.put(Global.TransactionType.LOCATION.getCode(), "list"); //Transfer Inventory
-		
+		mainMenuIconsMap.put(Global.TransactionType.TIP_ADJUSTMENT.getCode(), "order"); //Transfer Inventory
 		
 		
 		MyPreferences myPref = new MyPreferences(activity);
 		boolean[] temp = myPref.getMainMenuPreference();
-		
-		if(custSelected)
+
+        boolean[] enabledSettings;
+        if(custSelected)
 		{
 			enabledSettings = temp;
 		}
 		else
 		{
-			enabledSettings = new boolean[]{temp[0],false,temp[2],false,false,temp[5],temp[6],temp[7],temp[8],temp[9],false,temp[11],false,temp[13]};
+			enabledSettings = new boolean[]{temp[0],false,temp[2],false,false,temp[5],temp[6],temp[7],temp[8],temp[9],false,temp[11],false,temp[13],temp[14]};
 		}
 		
 		int size = mainMenuList.length;

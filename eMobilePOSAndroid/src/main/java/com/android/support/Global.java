@@ -151,7 +151,7 @@ public class Global extends MultiDexApplication {
     public enum TransactionType {
         SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
         PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
-        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13);
+        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13),TIP_ADJUSTMENT(14);
         private int code;
 
         TransactionType(int code) {

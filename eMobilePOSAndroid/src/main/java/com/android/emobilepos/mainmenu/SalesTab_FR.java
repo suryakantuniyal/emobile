@@ -49,6 +49,7 @@ import com.android.emobilepos.models.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.database.DBManager;
+import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
@@ -265,6 +266,11 @@ public class SalesTab_FR extends Fragment {
         if (isCustomerSelected) // customer is currently selected
         {
             switch (Global.TransactionType.getByCode(pos)) {
+                case TIP_ADJUSTMENT: {
+                    intent = new Intent(activity, TipAdjustmentFA.class);
+                    startActivity(intent);
+                    break;
+                }
                 case SALE_RECEIPT: // Sales Receipt
                 {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {

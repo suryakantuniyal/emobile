@@ -1,1204 +1,1145 @@
 <resources>
 
-	<string name="app_name">eMobilePOS</string>
-	<string name="hello_world">Hello world!</string>
-	<string name="menu_settings">Settings</string>
-	<string name="title_activity_main_menu">eMobilePOS</string>
-	<string name="main_menu_header">Sales</string>
-	<string name="sales_button">No customer selected</string>
-	<string name="add_main_hint1">None</string>
-	<string name="add_main_hint2">$0.00</string>
-	<string name="search_hint">Search by: Name/ID</string>
-	<string name="synch_subtitle">Synchronized items are marked green</string>
-	<string name="intentAction">com.android.emobilepos.RECVR</string>
-	<string name="intentAction2">com.android.emobilepos.RECVR2</string>
-	<string name = "intentAction3">com.android.emobilepos.RECVR3</string>
-	<string name = "intentAction4">com.android.emobilepos.RECVR4</string>
-	<string name = "intentAction5">com.android.emobilepos.RECVR5</string>
-	<string name = "hint_enter_pwd">Enter Password</string>
-	<string name = "hint_search">Search</string>
-	<string name = "enter_name">Enter Name</string>
-	<string name = "last_saved">Last Saved</string>
-
-	<string name = "inventory_transfer">Inventory Transfer</string>
-
-	<string name = "header_title_addons">Addons</string>
-	<string name = "header_title_customers">Customers</string>
-	<string name = "header_title_method">Method</string>
-	<string name = "header_title_gift_card">Gift Card</string>
-	<string name = "header_title_loyalty_card">Loyalty Card</string>
-	<string name = "header_title_reward_card">Reward Card</string>
-	<string name = "header_title_activate">Activate</string>
-	<string name = "header_title_balance_inquiry">Balance Inquiry</string>
-	<string name = "header_title_add_balance">Add Balance</string>
-
-
-	<string name = "enter_password">Enter Password</string>
-	<string name = "reenter_password">Re-enter Password</string>
-	<string name = "invalid_password">Invalid Password, Try again\u002E\u002E\u002E</string>
-	<string name = "cc_offline">CC Offline</string>
-
-	<string name = "enter_price">Enter Price</string>
-	<string name = "ok">OK</string>
-	<string name = "warning_empty_products">No Products have been added, try again</string>
-	<string name = "warning_signature_required">Signature Require Mode Is Enabled, Please Enter Signature</string>
-	<string name = "warning_no_customer_selected">No Customer Selected</string>
-	<string name = "warning_title">Warning</string>
-	<string name = "warning_exit_now">Are you sure you want to exit?</string>
-	<string name = "warning_email_invalid">Invalid e-mail address, try again.</string>
-	<string name = "warning_ship_address_required">Shipping Address is Required\u002E\u002E\u002E</string>
-
-
-
-
-	<string name = "err_invalid_device">Device is not compatible</string>
-
-	<string name = "dlog_title_print_details">Print details</string>
-	<string name = "dlog_msg_print_details">Include details on receipt?</string>
-
-	<string name = "dlog_title_error">Error</string>
-	<string name = "dlog_msg_select_customer">Select a customer before proceeding</string>
-	<string name = "dlog_title_waiter_signin">Waiter Signin</string>
-
-	<string name = "dlog_title_confirm">Confirm</string>
-	<string name = "dlog_title_success">Success</string>
-	<string name = "dlog_title_choose_action">Choose Action</string>
-	<string name = "dlog_title_transaction_failed_to_process">Some transactions failed to process</string>
-	<string name = "dlog_msg_orders_changed_invoice">Orders changed to type Invoice</string>
-	<string name = "dlog_msg_pending_stored_forward">There are pending Store \u0026 Forward transactions to be processed</string>
-	<string name = "dlog_msg_please_try_again">Please, try again later</string>
-	<string name = "dlog_msg_contact_support">Contact Support (error code 102)</string>
-	<string name = "dlog_msg_add_more_products">Do you wish to add more products?</string>
-	<string name = "dlog_msg_confirm_force_upload">Are you sure you want to force upload?</string>
-	<string name = "dlog_msg_confirm_backup_data">Are you sure you want to backup data?</string>
-	<string name = "dlog_msg_enter_qty">Enter the quantity to be added</string>
-	<string name = "dlog_msg_want_to_print">Do you want to print?</string>
-	<string name = "dlog_msg_transaction_voided">Transaction was voided</string>
-	<string name = "dlog_msg_failed_print">Printing failed please verify printer status.\nWould you like to retry printing?</string>
-	<string name = "dlog_msg_want_to_reprint">Do you want to re-print?</string>
-	<string name = "dlog_msg_want_to_make_refund">Do you want to make a refund?</string>
-	<string name = "dlog_msg_template_saved">Template was saved</string>
-	<string name = "dlog_msg_required_attributes">Required attribute(s) missing</string>
-	<string name = "dlog_msg_print_cust_copy">Print customer copy?</string>
-	<string name = "dlog_title_enter_admin_password">Enter Admin Password</string>
-	<string name = "dlog_msg_no_internet_access">No internet access, check connection</string>
-	<string name = "dlog_msg_established_connection_failed">Established connection failed/timed out. \nVerify your connection and try again.</string>
-	<string name = "dlog_msg_item_not_found">Item not found</string>
-	<string name = "dlog_title_invalid_admin_password">Invalid Admin Password, Try Again\u002E\u002E\u002E</string>
-	<string name = "dlog_template">Template</string>
-	<string name = "take_payment_now">Take Payment Now?</string>
-	<string name = "dlog_title_enter_email">Enter Info (optional)</string>
-	<string name = "dlog_msg_email">eMail</string>
-	<string name = "dlog_msg_phone">Phone</string>
-	<string name = "dlog_msg_comments">Order comments</string>
-	<string name = "dlog_msg_nfc_scanned">NFC Scanned Successfully</string>
-	<string name = "dlog_msg_error_no_avail_license">Error,there were no available license\u002E\u002E\u002E</string>
-	<string name = "dlog_msg_error_downloading_employee_data">Failed to download employee data, Please try again\u002E\u002E\u002E</string>
-	<string name = "dlog_msg_error_failed_download_pay_id">Failed to download last pay id, Please try again\u002E\u002E\u002E</string>
-	<string name = "dlog_msg_error_failed_disable_employee">Failed to disable employee, Please try again\u002E\u002E\u002E</string>
-	<string name = "dlog_msg_error_shift_needs_to_be_open">Open shift before performing this action</string>
-	<string name = "dlog_title_claimed_hold">Transaction Claimed</string>
-	<string name = "dlog_msg_claimed_hold">Admin Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
-	<string name = "dlog_title_enter_clerk_password">Enter Clerk Password</string>
-	<string name = "dlog_msg_swiper_loading">Swiper is:</string>
-	<string name = "connected">CONNECTED</string>
-	<string name = "disconnected">DISCONNECTED</string>
-	<string name = "loading">LOADING</string>
-
-	<string name = "dlog_title_enter_number">Enter Number</string>
-	<string name = "dlog_title_enter_manager_password">Enter Manager Password</string>
-	<string name = "dlog_title_select_device_type">Select device type</string>
-	<string name = "dlog_title_select_device_to_connect">Select device to connect</string>
-	<string name = "dlog_title_connect_to_device">Connect to device?</string>
-	<string name = "dlog_title_select_default_country">Select Default Country</string>
-	<string name = "dlog_title_select_origin_location">Select Origin Location</string>
-	<string name = "dlog_title_select_destination_location">Select Destination Location</string>
-	<string name = "dlog_title_customer_display">Customer Display</string>
-	<string name = "dlog_msg_enter_data">Enter data for each line</string>
-
-	<string name = "dlog_star_congifure">Configure STAR Printer</string>
-	<string name = "dlog_star_ip">IP Address</string>
-	<string name = "dlog_star_port">Port Number</string>
-
-	<string name = "sales_receipt_title">Sales Receipt</string>
-
-	<!-- Button -->
-	<string name = "button_print">Print</string>
-	<string name = "button_pay">Pay</string>
-	<string name = "button_void">Void</string>
-	<string name = "button_accept">Accept</string>
-	<string name = "button_cancel">Cancel</string>
-	<string name = "button_next">Next</string>
-	<string name = "button_submit">Submit</string>
-	<string name = "button_connect">Connect</string>
-	<string name = "button_save">Save</string>
-	<string name = "button_yes">Yes</string>
-	<string name = "button_no">No</string>
-	<string name = "button_done">Done</string>
-	<string name = "button_clear">Clear</string>
-	<string name = "button_open">Open</string>
-	<string name = "button_ok">OK</string>
-	<string name = "button_process">Process</string>
-	<string name = "button_retry">Retry</string>
-
-
-	<!-- Switch on/off -->
-	<string name = "switch_on">ON</string>
-	<string name = "switch_off">OFF</string>
-
-	<string name = "swipe">Swiper</string>
-
-
-	<string name = "add_gratuity">Add Gratuity?</string>
-	<string name = "total_plus_tip">Total + Tip:</string>
-	<string name = "confirmation_header">Confirm Amount</string>
-	<string name = "confirmation_total">Total</string>
-	<string name = "confirmation_card_number">Card #:</string>
-	<string name = "confirmation_exp_date">Exp:</string>
-
-
-
-
-
-
-
-
-	<!-- Sales Main tab -->
-	<string name = "sales_title">Sales</string>
-	<string name = "invoices">Invoices</string>
-	<string name = "no_customer">No customer selected</string>
-	<string name = "sales_receipt">Sales Receipt</string>
-	<string name = "order">Order</string>
-	<string name = "return_tag" >Return</string>
-	<string name = "invoice">Invoice</string>
-	<string name = "estimate">Estimate</string>
-	<string name = "payment">Payment</string>
-	<string name = "refund">Refund</string>
-	<string name = "route">Route</string>
-	<string name = "on_hold">On Hold</string>
-	<string name = "master_counter">Master Counter</string>
-	<string name = "consignment">Consignment</string>
-
-
-
-	<!-- Sync Main tab -->
-	<string name = "sync_title">Sync</string>
-	<string name = "sync_send">Send</string>
-	<string name = "sync_receive">Receive</string>
-	<string name = "sync_status">Status:</string>
-	<string name = "sync_connected_to">Connected to </string>
-	<string name = "sync_no_connectivity">No connectivity detected </string>
-	<string name = "sync_pending">Pending:</string>
-	<string name = "sync_payments">Payments</string>
-	<string name = "sync_sales">Sales</string>
-	<string name = "sync_templates">Templates</string>
-	<string name = "sync_customers">Customers</string>
-	<string name = "sync_signatures">Signatures</string>
-	<string name = "sync_shifts">Shifts</string>
-	<string name = "sync_timeclock">Time Clock</string>
-	<string name = "sync_consignment">Consignment</string>
-	<string name = "sync_transfer">Transfer</string>
-	<string name = "sync_void">Voids</string>
-	<string name = "sync_on_hold">On Hold</string>
-	<string name = "sync_last_sync">Last Synchronization:</string>
-	<string name = "sync_last_sent">Sent</string>
-	<string name = "sync_last_received">Received</string>
-	<string name = "sync_sending_void">Sending Void Transactions\u002E\u002E\u002E</string>
-	<string name = "sync_sending_cust">Sending New Customers\u002E\u002E\u002E</string>
-	<string name = "sync_sending_orders">Sending Orders\u002E\u002E\u002E</string>
-	<string name = "sync_sending_reverse">Sending Rerverse\u002E\u002E\u002E</string>
-	<string	name = "sync_sending_payment">Sending Payments\u002E\u002E\u002E</string>
-	<string name = "sync_sending_templates">Sending Templates\u002E\u002E\u002E</string>
-	<string name = "sync_sending_customer_inventory">Sending Customer Inventory\u002E\u002E\u002E</string>
-	<string name = "sync_sending_consignment_transaction">Sending Consignment Transaction\u002E\u002E\u002E</string>
-	<string name = "sync_sending_shifts">Sending Shifts\u002E\u002E\u002E</string>
-	<string name = "sync_sending_wallet_order">Sending Wallet Orders\u002E\u002E\u002E</string>
-	<string name = "sync_sending_time_clock">Sending Time Clock\u002E\u002E\u002E</string>
-	<string name = "sync_sending_inventory_transfer">Sending Inventory Transfer\u002E\u002E\u002E</string>
-
-	<string name = "sync_dload_address">Downloading Address\u002E\u002E\u002E</string>
-	<string name = "sync_dload_categories">Downloading Categories\u002E\u002E\u002E</string>
-	<string name = "sync_dload_cust">Downloading Customers\u002E\u002E\u002E</string>
-	<string name = "sync_dload_emp_inv">Downloading EmpInv\u002E\u002E\u002E</string>
-	<string name = "sync_dload_prod_inv">Downloading InvProducts\u002E\u002E\u002E</string>
-	<string name = "sync_dload_invoices">Downloading Invoices\u002E\u002E\u002E</string>
-	<string name = "sync_dload_pay_methods">Downloading PayMethods\u002E\u002E\u002E</string>
-	<string name = "sync_dload_price_levels">Downloading PriceLevels\u002E\u002E\u002E</string>
-	<string name = "sync_dload_item_price_levels">Downloading ItemPriceLevels\u002E\u002E\u002E</string>
-	<string name = "sync_dload_printers">Downloading Printers\u002E\u002E\u002E</string>
-	<string name = "sync_dload_prodcatxref">Downloading ProdCatXRef\u002E\u002E\u002E</string>
-	<string name = "sync_dload_productchainxref">Downloading ProdChainXRef\u002E\u002E\u002E</string>
-	<string name = "sync_dload_product_addons">Downloading ProductAddons\u002E\u002E\u002E</string>
-	<string name = "sync_dload_products">Downloading Products\u002E\u002E\u002E</string>
-	<string name = "sync_dload_product_aliases">Downloading Product Aliases\u002E\u002E\u002E</string>
-	<string name = "sync_dload_products_images">Downloading Products_Images\u002E\u002E\u002E</string>
-	<string name = "sync_dload_salestaxcodes">Downloading SalesTaxCodes\u002E\u002E\u002E</string>
-	<string name = "sync_dload_shipmethod">Downloading ShipMethod\u002E\u002E\u002E</string>
-	<string name = "sync_dload_taxes">Downloading Taxes\u002E\u002E\u002E</string>
-	<string name = "sync_dload_taxes_group">Downloading Taxes_Group\u002E\u002E\u002E</string>
-	<string name = "sync_dload_terms">Downloading Terms\u002E\u002E\u002E</string>
-	<string name = "sync_dload_memotext">Downloading MemoText\u002E\u002E\u002E</string>
-	<string name = "sync_dload_employee_data">Downloading Employee Data\u002E\u002E\u002E</string>
-	<string name = "sync_dload_last_pay_id">Downloading Last Pay ID\u002E\u002E\u002E</string>
-	<string name = "sync_dload_device_default_values">Downloading Device Default Values\u002E\u002E\u002E</string>
-	<string name = "sync_dload_volume_prices">Downloading Volume Prices\u002E\u002E\u002E</string>
-	<string name = "sync_dload_uom">Downloading UoM\u002E\u002E\u002E</string>
-	<string name = "sync_dload_ordprodattr">Downloading OrderProductsAttr\u002E\u002E\u002E</string>
-	<string name = "sync_dload_templates">Downloading Templates\u002E\u002E\u002E</string>
-	<string name = "sync_dload_customer_inventory">Downloading Customer Inventory\u002E\u002E\u002E</string>
-	<string name = "sync_dload_consignment_transaction">Downloading Consignment Transaction\u002E\u002E\u002E</string>
-	<string name = "sync_dload_ivudrawdates">Downloading IvuDrawDates\u002E\u002E\u002E</string>
-	<string name = "sync_dload_logo">Downloading Logo\u002E\u002E\u002E</string>
-	<string name = "sync_dload_products_attributes">Downloading ProductsAttributes\u002E\u002E\u002E</string>
-	<string name = "sync_dload_clerks">Downloading Clerks\u002E\u002E\u002E</string>
-	<string name = "sync_dload_dinnertables">Downloading Dinner Tables\u002E\u002E\u002E</string>
-	<string name = "sync_dload_salesassociate">Downloading Sales Associate\u002E\u002E\u002E</string>
-
-	<string name = "sync_dload_termsandconditions">Downloading TermsAndConditions\u002E\u002E\u002E</string>
-	<string name = "sync_dload_ordersonhold">Downloading OrdersOnHold\u002E\u002E\u002E</string>
-	<string name = "sync_dload_locations">Downloading Locations\u002E\u002E\u002E</string>
-	<string name = "sync_dload_locations_inventory">Downloading Locations Inventory\u002E\u002E\u002E</string>
-
-	<string name = "sync_saving_locations_inventory">Saving Locations Inventory</string>
-	<string name = "sync_saving_locations">Saving Locations</string>
-	<string name = "sync_saving_address">Saving Address\u002E\u002E\u002E</string>
-	<string name = "sync_saving_categories">Saving Categories\u002E\u002E\u002E</string>
-	<string name = "sync_saving_customers">Saving Customers\u002E\u002E\u002E</string>
-	<string name = "sync_saving_emp_inv">Saving EmpInv\u002E\u002E\u002E</string>
-	<string name = "sync_saving_prod_inv">Saving InvProducts\u002E\u002E\u002E</string>
-	<string name = "sync_saving_invoices">Saving Invoices\u002E\u002E\u002E</string>
-	<string name = "sync_saving_pay_methods">Saving PayMethods\u002E\u002E\u002E</string>
-	<string name = "sync_saving_price_levels">Saving PriceLevels\u002E\u002E\u002E</string>
-	<string name = "sync_saving_item_price_levels">Saving ItemPriceLevels\u002E\u002E\u002E</string>
-	<string name = "sync_saving_printers">Saving Printers\u002E\u002E\u002E</string>
-	<string name = "sync_saving_prodcatxref">Saving ProdCatXRef\u002E\u002E\u002E</string>
-	<string name = "sync_saving_productchainxref">Saving ProdChainXRef\u002E\u002E\u002E</string>
-	<string name = "sync_saving_product_addons">Saving ProductAddons\u002E\u002E\u002E</string>
-	<string name = "sync_saving_products">Saving Products\u002E\u002E\u002E</string>
-	<string name = "sync_saving_product_aliases">Saving Product Aliases\u002E\u002E\u002E</string>
-	<string name = "sync_saving_products_images">Saving Products_Images\u002E\u002E\u002E</string>
-	<string name = "sync_saving_salestaxcodes">Saving SalesTaxCodes\u002E\u002E\u002E</string>
-	<string name = "sync_saving_shipmethod">Saving ShipMethod\u002E\u002E\u002E</string>
-	<string name = "sync_saving_taxes">Saving Taxes\u002E\u002E\u002E</string>
-	<string name = "sync_saving_taxes_group">Saving Taxes_Group\u002E\u002E\u002E</string>
-	<string name = "sync_saving_terms">Saving Terms\u002E\u002E\u002E</string>
-	<string name = "sync_saving_memotext">Saving MemoText\u002E\u002E\u002E</string>
-	<string name = "sync_saving_employee_data">Saving Employee Data\u002E\u002E\u002E</string>
-	<string name = "sync_saving_last_pay_id">Saving Last Pay ID\u002E\u002E\u002E</string>
-	<string name = "sync_saving_device_default_values">Saving Device Default Values\u002E\u002E\u002E</string>
-	<string name = "sync_saving_volume_prices">Saving Volume Prices\u002E\u002E\u002E</string>
-	<string name = "sync_saving_uom">Saving UoM\u002E\u002E\u002E</string>
-	<string name = "sync_saving_ordprodattr">Saving OrderProductsAttr\u002E\u002E\u002E</string>
-	<string name = "sync_saving_templates">Saving Templates\u002E\u002E\u002E</string>
-	<string name = "sync_saving_customer_inventory">Saving Customer Inventory\u002E\u002E\u002E</string>
-	<string name = "sync_saving_consignment_transaction">Saving Consignment Transaction\u002E\u002E\u002E</string>
-	<string name = "sync_saving_ivudrawdates">Saving IvuDrawDates\u002E\u002E\u002E</string>
-	<string name = "sync_saving_logo">Saving Logo\u002E\u002E\u002E</string>
-	<string name = "sync_saving_products_attributes">Saving ProductsAttributes\u002E\u002E\u002E</string>
-	<string name = "sync_saving_clerks">Saving Clerks\u002E\u002E\u002E</string>
-	<string name = "sync_saving_termsandconditions">Saving TermsAndConditions\u002E\u002E\u002E</string>
-	<string name = "sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
-	<string name = "sync_saving_dinnertables">Saving Dinner Tables\u002E\u002E\u002E</string>
-	<string name = "sync_saving_salesassociate">Saving Sales Associate\u002E\u002E\u002E</string>
-
-
-
-
-
-
-
-
-
-
-
-
-	<!-- History Main tab -->
-	<string name = "hist_title">History</string>
-	<string name = "hist_transac">Transactions</string>
-	<string name = "hist_payments">Payments</string>
-	<string name = "hist_refunds">Refunds</string>
-	<string name = "hist_open_inv">Open Invoices</string>
-
-
-
-	<!-- Routes Main Tab -->
-	<string name = "routes_title">Routes</string>
-	<string name = "routes_but_subtitle">press to change</string>
-
-
-
-
-	<!-- Admin Main Tab -->
-	<string name = "admin_title">Settings</string>
-	<string name = "admin_gen_settings">General Settings</string>
-	<string name = "admin_fast_scan">Fast-Scanning Mode</string>
-	<string name = "admin_rest_mode">Restaurant Mode</string>
-	<string name = "admin_signa_required">Signature Required Mode</string>
-	<string name = "admin_auto_sync">Automatic Synchronization</string>
-	<string name = "admin_qr_code">QR Code Reading through Camera</string>
-	<string name = "admin_enable_recursive">Enable Mult. Categories per Product</string>
-	<string name = "admin_enable_retail_taxes">Enable Retail Taxes</string>
-	<string name = "admin_skip_email_phone">Skip at Checkout - \u0022Add eMail\u0026Phone\u0022</string>
-	<string name = "admin_skip_want_add_more_products">Skip at Checkout - \u0022Add More Products\u0022 </string>
-	<string name = "admin_show_confirmation_screen">Show Confirmation Screen</string>
-	<string name = "admin_quick_customer_selection">Quick Customer Selection</string>
-	<string name = "admin_require_customer">Require Customer</string>
-	<string name = "admin_use_clerks">Use Clerks</string>
-
-
-	<string name = "admin_acc_sett">Account Settings</string>
-	<string name = "admin_change_pass">Change Password</string>
-
-	<string name = "admin_prod_set">Product Settings</string>
-	<string name = "admin_volume_pricing">Enable Volume Pricing</string>
-	<string name = "admin_allow_decimal">Allow Decimal Quantities</string>
-	<string name = "admin_group_sku">Group-in Receipt By SKU</string>
-	<string name = "admin_group_by_name">Group-in Catalog By Name</string>
-	<string name = "admin_req_pass_remove_void">Require Password to Remove-Void</string>
-	<string name = "admin_show_removed">Show Removed-Void Items</string>
-	<string name = "admin_default_cate">Default Category</string>
-	<string name = "admin_filter_by_cust">Filter Products by Customer</string>
-	<string name = "admin_limit_product_onhand">Limit Products On Hand</string>
-
-	<string name = "admin_prit_settings">Printing Settings</string>
-	<string name = "admin_detect_periph">Redetect Peripherals</string>
-	<string name = "admin_forget_periph">Forget Peripherals</string>
-	<string name = "admin_enable_print">Enable Printing</string>
-	<string name = "admin_printek_info">Printek Info</string>
-	<string name = "admin_star_info">Star Info</string>
-	<string name = "admin_print_pref">Printing Preference</string>
-	<string name = "admin_wholesale_printout">Wholesale Receipt Printout</string>
-
-	<string name = "admin_other_setting">Other Settings</string>
-	<string name = "admin_map_inside">Maps Inside App</string>
-	<string name = "admin_clear_cache">Clear Images Cache</string>
-	<string name = "admin_config_homemenu">Configure Home Menu</string>
-	<string name = "admin_blk_price_lev">Block Price Level Change</string>
-	<string name = "admin_cloud">Cloud</string>
-	<string name = "admin_req_addr">Require Address</string>
-	<string name = "admin_admin_priv_ovrr">Admin Price Override</string>
-	<string name = "admin_req_pass_clockout">Require Password to Clock Out</string>
-	<string name = "admin_choose_audio_card_reader">Choose Audio Card Reader</string>
-	<string name = "admin_connect_bluetooth">Connect to Bluetooth Peripheral</string>
-
-	<string name = "admin_shifts">Shifts</string>
-	<string name = "admin_close_shift">Close Shift</string>
-	<string name = "admin_open_shift">Open Shift</string>
-	<string name = "admin_expense">Expenses</string>
-
-	<string name = "admin_cash_drawer">Cash Drawer</string>
-	<string name = "admin_config_drawer">Configure Cash Drawer</string>
-
-	<string name = "admin_genius">Genius Settings</string>
-	<string name = "admin_config_genius">Configure Genius Peripheral</string>
-
-	<string name = "admin_hardcoded_title">Hard-coded Payments Methods</string>
-	<string name = "admin_hardcoded_configure">Configure hard-coded payment methods</string>
-	<string name = "admin_paymethod_tupyx">Pay with Tupyx</string>
-	<string name = "admin_paymethod_genius">MW with Genius</string>
-
-	<string name = "admin_process_payment">Process Payments</string>
-	<string name = "admin_process_live_cash">Process Cash Online</string>
-	<string name = "admin_process_live_check">Process Check Online</string>
-	<string name = "admin_process_show_tip">Show tip for Cash</string>
-
-
-	<!-- Audio Card Reader -->
-	<string name = "unimag_card_reader">Unimag Shuttle</string>
-	<string name = "magtek_udynamo_card_reader">Magtek uDynamo</string>
-
-
-	<!-- Printing Preferences menu -->
-	<string name = "PrintHeaderBlock">Header</string>
-	<string name = "PrintShipToInfoBlock">Ship To Info</string>
-	<string name = "PrintTermsBlock">Terms</string>
-	<string name = "PrintOrderCommentsBlock">Order Comments</string>
-	<string name = "PrintAddonsBlock">Addons</string>
-	<string name = "PrintTaxDetailsBlock">Product Tax Details</string>
-	<string name = "PrintDiscountDetailsBlock">Product Discount Details</string>
-	<string name = "PrintProdDescBlock">Product Description</string>
-	<string name = "PrintProdCommentsBlock">Product Comments</string>
-	<string name = "PrintMetadataBlock">Metadata</string>
-	<string name = "PrintPaymentCommentsBlock">Payment Comments</string>
-	<string name = "PrintFooterBlock">Footer</string>
-	<string name = "PrintTermsAndCondBlock">Terms and Conditions</string>
-	<string name = "PrintIvuLottoQR">IvuLoto QR Code</string>
-
-
-
-	<!-- Report Main Tab -->
-	<string name = "report_title">Report</string>
-	<string name = "report_but_title">Day Summary</string>
-	<string name = "report_payments">Payments</string>
-	<string name = "report_refunds">Refunds</string>
-	<string name = "report_methods">Method</string>
-	<string name = "report_transactions">Transactions</string>
-	<string name = "report_date_button">Date</string>
-
-
-
-	<!-- Clocks Main Tab -->
-	<string name = "clock_title">Clock</string>
-
-	<!-- About Main Tab -->
-	<string name = "about_title">About</string>
-	<string name = "about_acct_num">Account Num.</string>
-	<string name = "about_employee">Employee</string>
-	<string name = "about_version">Version</string>
-	<string name = "about_copyright_tag">Copyright</string>
-	<string name = "about_location_tag">Location ID</string>
-	<string name = "about_copyright">\u00A9 2015 e-Nabler Corporation</string>
-	<string name = "about_footer">WARNING: This program is protected by copyright law and international treaties\u002E Unauthorized reproduction 
+    <string name="app_name">eMobilePOS</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main_menu">eMobilePOS</string>
+    <string name="main_menu_header">Sales</string>
+    <string name="sales_button">No customer selected</string>
+    <string name="add_main_hint1">None</string>
+    <string name="add_main_hint2">$0.00</string>
+    <string name="search_hint">Search by: Name/ID</string>
+    <string name="synch_subtitle">Synchronized items are marked green</string>
+    <string name="intentAction">com.android.emobilepos.RECVR</string>
+    <string name="intentAction2">com.android.emobilepos.RECVR2</string>
+    <string name="intentAction3">com.android.emobilepos.RECVR3</string>
+    <string name="intentAction4">com.android.emobilepos.RECVR4</string>
+    <string name="intentAction5">com.android.emobilepos.RECVR5</string>
+    <string name="hint_enter_pwd">Enter Password</string>
+    <string name="hint_search">Search</string>
+    <string name="enter_name">Enter Name</string>
+    <string name="last_saved">Last Saved</string>
+
+    <string name="inventory_transfer">Inventory Transfer</string>
+
+    <string name="header_title_addons">Addons</string>
+    <string name="header_title_customers">Customers</string>
+    <string name="header_title_method">Method</string>
+    <string name="header_title_gift_card">Gift Card</string>
+    <string name="header_title_loyalty_card">Loyalty Card</string>
+    <string name="header_title_reward_card">Reward Card</string>
+    <string name="header_title_activate">Activate</string>
+    <string name="header_title_balance_inquiry">Balance Inquiry</string>
+    <string name="header_title_add_balance">Add Balance</string>
+
+
+    <string name="enter_password">Enter Password</string>
+    <string name="reenter_password">Re-enter Password</string>
+    <string name="invalid_password">Invalid Password, Try again\u002E\u002E\u002E</string>
+    <string name="cc_offline">CC Offline</string>
+
+    <string name="enter_price">Enter Price</string>
+    <string name="ok">OK</string>
+    <string name="warning_empty_products">No Products have been added, try again</string>
+    <string name="warning_signature_required">Signature Require Mode Is Enabled, Please Enter Signature</string>
+    <string name="warning_no_customer_selected">No Customer Selected</string>
+    <string name="warning_title">Warning</string>
+    <string name="warning_exit_now">Are you sure you want to exit?</string>
+    <string name="warning_email_invalid">Invalid e-mail address, try again.</string>
+    <string name="warning_ship_address_required">Shipping Address is Required\u002E\u002E\u002E</string>
+
+
+    <string name="err_invalid_device">Device is not compatible</string>
+
+    <string name="dlog_title_print_details">Print details</string>
+    <string name="dlog_msg_print_details">Include details on receipt?</string>
+
+    <string name="dlog_title_error">Error</string>
+    <string name="dlog_msg_select_customer">Select a customer before proceeding</string>
+    <string name="dlog_title_waiter_signin">Waiter Signin</string>
+
+    <string name="dlog_title_confirm">Confirm</string>
+    <string name="dlog_title_success">Success</string>
+    <string name="dlog_title_choose_action">Choose Action</string>
+    <string name="dlog_title_transaction_failed_to_process">Some transactions failed to process</string>
+    <string name="dlog_msg_orders_changed_invoice">Orders changed to type Invoice</string>
+    <string name="dlog_msg_pending_stored_forward">There are pending Store \u0026 Forward transactions to be processed</string>
+    <string name="dlog_msg_please_try_again">Please, try again later</string>
+    <string name="dlog_msg_contact_support">Contact Support (error code 102)</string>
+    <string name="dlog_msg_add_more_products">Do you wish to add more products?</string>
+    <string name="dlog_msg_confirm_force_upload">Are you sure you want to force upload?</string>
+    <string name="dlog_msg_confirm_backup_data">Are you sure you want to backup data?</string>
+    <string name="dlog_msg_enter_qty">Enter the quantity to be added</string>
+    <string name="dlog_msg_want_to_print">Do you want to print?</string>
+    <string name="dlog_msg_transaction_voided">Transaction was voided</string>
+    <string name="dlog_msg_failed_print">Printing failed please verify printer status.\nWould you like to retry printing?</string>
+    <string name="dlog_msg_want_to_reprint">Do you want to re-print?</string>
+    <string name="dlog_msg_want_to_make_refund">Do you want to make a refund?</string>
+    <string name="dlog_msg_template_saved">Template was saved</string>
+    <string name="dlog_msg_required_attributes">Required attribute(s) missing</string>
+    <string name="dlog_msg_print_cust_copy">Print customer copy?</string>
+    <string name="dlog_title_enter_admin_password">Enter Admin Password</string>
+    <string name="dlog_msg_no_internet_access">No internet access, check connection</string>
+    <string name="dlog_msg_established_connection_failed">Established connection failed/timed out. \nVerify your connection and try again.</string>
+    <string name="dlog_msg_item_not_found">Item not found</string>
+    <string name="dlog_title_invalid_admin_password">Invalid Admin Password, Try Again\u002E\u002E\u002E</string>
+    <string name="dlog_template">Template</string>
+    <string name="take_payment_now">Take Payment Now?</string>
+    <string name="dlog_title_enter_email">Enter Info (optional)</string>
+    <string name="dlog_msg_email">eMail</string>
+    <string name="dlog_msg_phone">Phone</string>
+    <string name="dlog_msg_comments">Order comments</string>
+    <string name="dlog_msg_nfc_scanned">NFC Scanned Successfully</string>
+    <string name="dlog_msg_error_no_avail_license">Error,there were no available license\u002E\u002E\u002E</string>
+    <string name="dlog_msg_error_downloading_employee_data">Failed to download employee data, Please try again\u002E\u002E\u002E</string>
+    <string name="dlog_msg_error_failed_download_pay_id">Failed to download last pay id, Please try again\u002E\u002E\u002E</string>
+    <string name="dlog_msg_error_failed_disable_employee">Failed to disable employee, Please try again\u002E\u002E\u002E</string>
+    <string name="dlog_msg_error_shift_needs_to_be_open">Open shift before performing this action</string>
+    <string name="dlog_title_claimed_hold">Transaction Claimed</string>
+    <string name="dlog_msg_claimed_hold">Admin Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
+    <string name="dlog_title_enter_clerk_password">Enter Clerk Password</string>
+    <string name="dlog_msg_swiper_loading">Swiper is:</string>
+    <string name="connected">CONNECTED</string>
+    <string name="disconnected">DISCONNECTED</string>
+    <string name="loading">LOADING</string>
+
+    <string name="dlog_title_enter_number">Enter Number</string>
+    <string name="dlog_title_enter_manager_password">Enter Manager Password</string>
+    <string name="dlog_title_select_device_type">Select device type</string>
+    <string name="dlog_title_select_device_to_connect">Select device to connect</string>
+    <string name="dlog_title_connect_to_device">Connect to device?</string>
+    <string name="dlog_title_select_default_country">Select Default Country</string>
+    <string name="dlog_title_select_origin_location">Select Origin Location</string>
+    <string name="dlog_title_select_destination_location">Select Destination Location</string>
+    <string name="dlog_title_customer_display">Customer Display</string>
+    <string name="dlog_msg_enter_data">Enter data for each line</string>
+
+    <string name="dlog_star_congifure">Configure STAR Printer</string>
+    <string name="dlog_star_ip">IP Address</string>
+    <string name="dlog_star_port">Port Number</string>
+
+    <string name="sales_receipt_title">Sales Receipt</string>
+
+    <!-- Button -->
+    <string name="button_print">Print</string>
+    <string name="button_pay">Pay</string>
+    <string name="button_void">Void</string>
+    <string name="button_accept">Accept</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_next">Next</string>
+    <string name="button_submit">Submit</string>
+    <string name="button_connect">Connect</string>
+    <string name="button_save">Save</string>
+    <string name="button_yes">Yes</string>
+    <string name="button_no">No</string>
+    <string name="button_done">Done</string>
+    <string name="button_clear">Clear</string>
+    <string name="button_open">Open</string>
+    <string name="button_ok">OK</string>
+    <string name="button_process">Process</string>
+    <string name="button_retry">Retry</string>
+
+
+    <!-- Switch on/off -->
+    <string name="switch_on">ON</string>
+    <string name="switch_off">OFF</string>
+
+    <string name="swipe">Swiper</string>
+
+
+    <string name="add_gratuity">Add Gratuity?</string>
+    <string name="total_plus_tip">Total + Tip:</string>
+    <string name="confirmation_header">Confirm Amount</string>
+    <string name="confirmation_total">Total</string>
+    <string name="confirmation_card_number">Card #:</string>
+    <string name="confirmation_exp_date">Exp:</string>
+
+
+    <!-- Sales Main tab -->
+    <string name="sales_title">Sales</string>
+    <string name="invoices">Invoices</string>
+    <string name="no_customer">No customer selected</string>
+    <string name="sales_receipt">Sales Receipt</string>
+    <string name="order">Order</string>
+    <string name="return_tag">Return</string>
+    <string name="invoice">Invoice</string>
+    <string name="estimate">Estimate</string>
+    <string name="payment">Payment</string>
+    <string name="refund">Refund</string>
+    <string name="route">Route</string>
+    <string name="on_hold">On Hold</string>
+    <string name="master_counter">Master Counter</string>
+    <string name="consignment">Consignment</string>
+
+
+    <!-- Sync Main tab -->
+    <string name="sync_title">Sync</string>
+    <string name="sync_send">Send</string>
+    <string name="sync_receive">Receive</string>
+    <string name="sync_status">Status:</string>
+    <string name="sync_connected_to">Connected to </string>
+    <string name="sync_no_connectivity">No connectivity detected </string>
+    <string name="sync_pending">Pending:</string>
+    <string name="sync_payments">Payments</string>
+    <string name="sync_sales">Sales</string>
+    <string name="sync_templates">Templates</string>
+    <string name="sync_customers">Customers</string>
+    <string name="sync_signatures">Signatures</string>
+    <string name="sync_shifts">Shifts</string>
+    <string name="sync_timeclock">Time Clock</string>
+    <string name="sync_consignment">Consignment</string>
+    <string name="sync_transfer">Transfer</string>
+    <string name="sync_void">Voids</string>
+    <string name="sync_on_hold">On Hold</string>
+    <string name="sync_last_sync">Last Synchronization:</string>
+    <string name="sync_last_sent">Sent</string>
+    <string name="sync_last_received">Received</string>
+    <string name="sync_sending_void">Sending Void Transactions\u002E\u002E\u002E</string>
+    <string name="sync_sending_cust">Sending New Customers\u002E\u002E\u002E</string>
+    <string name="sync_sending_orders">Sending Orders\u002E\u002E\u002E</string>
+    <string name="sync_sending_reverse">Sending Rerverse\u002E\u002E\u002E</string>
+    <string name="sync_sending_payment">Sending Payments\u002E\u002E\u002E</string>
+    <string name="sync_sending_templates">Sending Templates\u002E\u002E\u002E</string>
+    <string name="sync_sending_customer_inventory">Sending Customer Inventory\u002E\u002E\u002E</string>
+    <string name="sync_sending_consignment_transaction">Sending Consignment Transaction\u002E\u002E\u002E</string>
+    <string name="sync_sending_shifts">Sending Shifts\u002E\u002E\u002E</string>
+    <string name="sync_sending_wallet_order">Sending Wallet Orders\u002E\u002E\u002E</string>
+    <string name="sync_sending_time_clock">Sending Time Clock\u002E\u002E\u002E</string>
+    <string name="sync_sending_inventory_transfer">Sending Inventory Transfer\u002E\u002E\u002E</string>
+
+    <string name="sync_dload_address">Downloading Address\u002E\u002E\u002E</string>
+    <string name="sync_dload_categories">Downloading Categories\u002E\u002E\u002E</string>
+    <string name="sync_dload_cust">Downloading Customers\u002E\u002E\u002E</string>
+    <string name="sync_dload_emp_inv">Downloading EmpInv\u002E\u002E\u002E</string>
+    <string name="sync_dload_prod_inv">Downloading InvProducts\u002E\u002E\u002E</string>
+    <string name="sync_dload_invoices">Downloading Invoices\u002E\u002E\u002E</string>
+    <string name="sync_dload_pay_methods">Downloading PayMethods\u002E\u002E\u002E</string>
+    <string name="sync_dload_price_levels">Downloading PriceLevels\u002E\u002E\u002E</string>
+    <string name="sync_dload_item_price_levels">Downloading ItemPriceLevels\u002E\u002E\u002E</string>
+    <string name="sync_dload_printers">Downloading Printers\u002E\u002E\u002E</string>
+    <string name="sync_dload_prodcatxref">Downloading ProdCatXRef\u002E\u002E\u002E</string>
+    <string name="sync_dload_productchainxref">Downloading ProdChainXRef\u002E\u002E\u002E</string>
+    <string name="sync_dload_product_addons">Downloading ProductAddons\u002E\u002E\u002E</string>
+    <string name="sync_dload_products">Downloading Products\u002E\u002E\u002E</string>
+    <string name="sync_dload_product_aliases">Downloading Product Aliases\u002E\u002E\u002E</string>
+    <string name="sync_dload_products_images">Downloading Products_Images\u002E\u002E\u002E</string>
+    <string name="sync_dload_salestaxcodes">Downloading SalesTaxCodes\u002E\u002E\u002E</string>
+    <string name="sync_dload_shipmethod">Downloading ShipMethod\u002E\u002E\u002E</string>
+    <string name="sync_dload_taxes">Downloading Taxes\u002E\u002E\u002E</string>
+    <string name="sync_dload_taxes_group">Downloading Taxes_Group\u002E\u002E\u002E</string>
+    <string name="sync_dload_terms">Downloading Terms\u002E\u002E\u002E</string>
+    <string name="sync_dload_memotext">Downloading MemoText\u002E\u002E\u002E</string>
+    <string name="sync_dload_employee_data">Downloading Employee Data\u002E\u002E\u002E</string>
+    <string name="sync_dload_last_pay_id">Downloading Last Pay ID\u002E\u002E\u002E</string>
+    <string name="sync_dload_device_default_values">Downloading Device Default Values\u002E\u002E\u002E</string>
+    <string name="sync_dload_volume_prices">Downloading Volume Prices\u002E\u002E\u002E</string>
+    <string name="sync_dload_uom">Downloading UoM\u002E\u002E\u002E</string>
+    <string name="sync_dload_ordprodattr">Downloading OrderProductsAttr\u002E\u002E\u002E</string>
+    <string name="sync_dload_templates">Downloading Templates\u002E\u002E\u002E</string>
+    <string name="sync_dload_customer_inventory">Downloading Customer Inventory\u002E\u002E\u002E</string>
+    <string name="sync_dload_consignment_transaction">Downloading Consignment Transaction\u002E\u002E\u002E</string>
+    <string name="sync_dload_ivudrawdates">Downloading IvuDrawDates\u002E\u002E\u002E</string>
+    <string name="sync_dload_logo">Downloading Logo\u002E\u002E\u002E</string>
+    <string name="sync_dload_products_attributes">Downloading ProductsAttributes\u002E\u002E\u002E</string>
+    <string name="sync_dload_clerks">Downloading Clerks\u002E\u002E\u002E</string>
+    <string name="sync_dload_dinnertables">Downloading Dinner Tables\u002E\u002E\u002E</string>
+    <string name="sync_dload_salesassociate">Downloading Sales Associate\u002E\u002E\u002E</string>
+
+    <string name="sync_dload_termsandconditions">Downloading TermsAndConditions\u002E\u002E\u002E</string>
+    <string name="sync_dload_ordersonhold">Downloading OrdersOnHold\u002E\u002E\u002E</string>
+    <string name="sync_dload_locations">Downloading Locations\u002E\u002E\u002E</string>
+    <string name="sync_dload_locations_inventory">Downloading Locations Inventory\u002E\u002E\u002E</string>
+
+    <string name="sync_saving_locations_inventory">Saving Locations Inventory</string>
+    <string name="sync_saving_locations">Saving Locations</string>
+    <string name="sync_saving_address">Saving Address\u002E\u002E\u002E</string>
+    <string name="sync_saving_categories">Saving Categories\u002E\u002E\u002E</string>
+    <string name="sync_saving_customers">Saving Customers\u002E\u002E\u002E</string>
+    <string name="sync_saving_emp_inv">Saving EmpInv\u002E\u002E\u002E</string>
+    <string name="sync_saving_prod_inv">Saving InvProducts\u002E\u002E\u002E</string>
+    <string name="sync_saving_invoices">Saving Invoices\u002E\u002E\u002E</string>
+    <string name="sync_saving_pay_methods">Saving PayMethods\u002E\u002E\u002E</string>
+    <string name="sync_saving_price_levels">Saving PriceLevels\u002E\u002E\u002E</string>
+    <string name="sync_saving_item_price_levels">Saving ItemPriceLevels\u002E\u002E\u002E</string>
+    <string name="sync_saving_printers">Saving Printers\u002E\u002E\u002E</string>
+    <string name="sync_saving_prodcatxref">Saving ProdCatXRef\u002E\u002E\u002E</string>
+    <string name="sync_saving_productchainxref">Saving ProdChainXRef\u002E\u002E\u002E</string>
+    <string name="sync_saving_product_addons">Saving ProductAddons\u002E\u002E\u002E</string>
+    <string name="sync_saving_products">Saving Products\u002E\u002E\u002E</string>
+    <string name="sync_saving_product_aliases">Saving Product Aliases\u002E\u002E\u002E</string>
+    <string name="sync_saving_products_images">Saving Products_Images\u002E\u002E\u002E</string>
+    <string name="sync_saving_salestaxcodes">Saving SalesTaxCodes\u002E\u002E\u002E</string>
+    <string name="sync_saving_shipmethod">Saving ShipMethod\u002E\u002E\u002E</string>
+    <string name="sync_saving_taxes">Saving Taxes\u002E\u002E\u002E</string>
+    <string name="sync_saving_taxes_group">Saving Taxes_Group\u002E\u002E\u002E</string>
+    <string name="sync_saving_terms">Saving Terms\u002E\u002E\u002E</string>
+    <string name="sync_saving_memotext">Saving MemoText\u002E\u002E\u002E</string>
+    <string name="sync_saving_employee_data">Saving Employee Data\u002E\u002E\u002E</string>
+    <string name="sync_saving_last_pay_id">Saving Last Pay ID\u002E\u002E\u002E</string>
+    <string name="sync_saving_device_default_values">Saving Device Default Values\u002E\u002E\u002E</string>
+    <string name="sync_saving_volume_prices">Saving Volume Prices\u002E\u002E\u002E</string>
+    <string name="sync_saving_uom">Saving UoM\u002E\u002E\u002E</string>
+    <string name="sync_saving_ordprodattr">Saving OrderProductsAttr\u002E\u002E\u002E</string>
+    <string name="sync_saving_templates">Saving Templates\u002E\u002E\u002E</string>
+    <string name="sync_saving_customer_inventory">Saving Customer Inventory\u002E\u002E\u002E</string>
+    <string name="sync_saving_consignment_transaction">Saving Consignment Transaction\u002E\u002E\u002E</string>
+    <string name="sync_saving_ivudrawdates">Saving IvuDrawDates\u002E\u002E\u002E</string>
+    <string name="sync_saving_logo">Saving Logo\u002E\u002E\u002E</string>
+    <string name="sync_saving_products_attributes">Saving ProductsAttributes\u002E\u002E\u002E</string>
+    <string name="sync_saving_clerks">Saving Clerks\u002E\u002E\u002E</string>
+    <string name="sync_saving_termsandconditions">Saving TermsAndConditions\u002E\u002E\u002E</string>
+    <string name="sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
+    <string name="sync_saving_dinnertables">Saving Dinner Tables\u002E\u002E\u002E</string>
+    <string name="sync_saving_salesassociate">Saving Sales Associate\u002E\u002E\u002E</string>
+
+
+    <!-- History Main tab -->
+    <string name="hist_title">History</string>
+    <string name="hist_transac">Transactions</string>
+    <string name="hist_payments">Payments</string>
+    <string name="hist_refunds">Refunds</string>
+    <string name="hist_open_inv">Open Invoices</string>
+
+
+    <!-- Routes Main Tab -->
+    <string name="routes_title">Routes</string>
+    <string name="routes_but_subtitle">press to change</string>
+
+
+    <!-- Admin Main Tab -->
+    <string name="admin_title">Settings</string>
+    <string name="admin_gen_settings">General Settings</string>
+    <string name="admin_fast_scan">Fast-Scanning Mode</string>
+    <string name="admin_rest_mode">Restaurant Mode</string>
+    <string name="admin_signa_required">Signature Required Mode</string>
+    <string name="admin_auto_sync">Automatic Synchronization</string>
+    <string name="admin_qr_code">QR Code Reading through Camera</string>
+    <string name="admin_enable_recursive">Enable Mult. Categories per Product</string>
+    <string name="admin_enable_retail_taxes">Enable Retail Taxes</string>
+    <string name="admin_skip_email_phone">Skip at Checkout - \u0022Add eMail\u0026Phone\u0022</string>
+    <string name="admin_skip_want_add_more_products">Skip at Checkout - \u0022Add More Products\u0022 </string>
+    <string name="admin_show_confirmation_screen">Show Confirmation Screen</string>
+    <string name="admin_quick_customer_selection">Quick Customer Selection</string>
+    <string name="admin_require_customer">Require Customer</string>
+    <string name="admin_use_clerks">Use Clerks</string>
+
+
+    <string name="admin_acc_sett">Account Settings</string>
+    <string name="admin_change_pass">Change Password</string>
+
+    <string name="admin_prod_set">Product Settings</string>
+    <string name="admin_volume_pricing">Enable Volume Pricing</string>
+    <string name="admin_allow_decimal">Allow Decimal Quantities</string>
+    <string name="admin_group_sku">Group-in Receipt By SKU</string>
+    <string name="admin_group_by_name">Group-in Catalog By Name</string>
+    <string name="admin_req_pass_remove_void">Require Password to Remove-Void</string>
+    <string name="admin_show_removed">Show Removed-Void Items</string>
+    <string name="admin_default_cate">Default Category</string>
+    <string name="admin_filter_by_cust">Filter Products by Customer</string>
+    <string name="admin_limit_product_onhand">Limit Products On Hand</string>
+
+    <string name="admin_prit_settings">Printing Settings</string>
+    <string name="admin_detect_periph">Redetect Peripherals</string>
+    <string name="admin_forget_periph">Forget Peripherals</string>
+    <string name="admin_enable_print">Enable Printing</string>
+    <string name="admin_printek_info">Printek Info</string>
+    <string name="admin_star_info">Star Info</string>
+    <string name="admin_print_pref">Printing Preference</string>
+    <string name="admin_wholesale_printout">Wholesale Receipt Printout</string>
+
+    <string name="admin_other_setting">Other Settings</string>
+    <string name="admin_map_inside">Maps Inside App</string>
+    <string name="admin_clear_cache">Clear Images Cache</string>
+    <string name="admin_config_homemenu">Configure Home Menu</string>
+    <string name="admin_blk_price_lev">Block Price Level Change</string>
+    <string name="admin_cloud">Cloud</string>
+    <string name="admin_req_addr">Require Address</string>
+    <string name="admin_admin_priv_ovrr">Admin Price Override</string>
+    <string name="admin_req_pass_clockout">Require Password to Clock Out</string>
+    <string name="admin_choose_audio_card_reader">Choose Audio Card Reader</string>
+    <string name="admin_connect_bluetooth">Connect to Bluetooth Peripheral</string>
+
+    <string name="admin_shifts">Shifts</string>
+    <string name="admin_close_shift">Close Shift</string>
+    <string name="admin_open_shift">Open Shift</string>
+    <string name="admin_expense">Expenses</string>
+
+    <string name="admin_cash_drawer">Cash Drawer</string>
+    <string name="admin_config_drawer">Configure Cash Drawer</string>
+
+    <string name="admin_genius">Genius Settings</string>
+    <string name="admin_config_genius">Configure Genius Peripheral</string>
+
+    <string name="admin_hardcoded_title">Hard-coded Payments Methods</string>
+    <string name="admin_hardcoded_configure">Configure hard-coded payment methods</string>
+    <string name="admin_paymethod_tupyx">Pay with Tupyx</string>
+    <string name="admin_paymethod_genius">MW with Genius</string>
+
+    <string name="admin_process_payment">Process Payments</string>
+    <string name="admin_process_live_cash">Process Cash Online</string>
+    <string name="admin_process_live_check">Process Check Online</string>
+    <string name="admin_process_show_tip">Show tip for Cash</string>
+
+
+    <!-- Audio Card Reader -->
+    <string name="unimag_card_reader">Unimag Shuttle</string>
+    <string name="magtek_udynamo_card_reader">Magtek uDynamo</string>
+
+
+    <!-- Printing Preferences menu -->
+    <string name="PrintHeaderBlock">Header</string>
+    <string name="PrintShipToInfoBlock">Ship To Info</string>
+    <string name="PrintTermsBlock">Terms</string>
+    <string name="PrintOrderCommentsBlock">Order Comments</string>
+    <string name="PrintAddonsBlock">Addons</string>
+    <string name="PrintTaxDetailsBlock">Product Tax Details</string>
+    <string name="PrintDiscountDetailsBlock">Product Discount Details</string>
+    <string name="PrintProdDescBlock">Product Description</string>
+    <string name="PrintProdCommentsBlock">Product Comments</string>
+    <string name="PrintMetadataBlock">Metadata</string>
+    <string name="PrintPaymentCommentsBlock">Payment Comments</string>
+    <string name="PrintFooterBlock">Footer</string>
+    <string name="PrintTermsAndCondBlock">Terms and Conditions</string>
+    <string name="PrintIvuLottoQR">IvuLoto QR Code</string>
+
+
+    <!-- Report Main Tab -->
+    <string name="report_title">Report</string>
+    <string name="report_but_title">Day Summary</string>
+    <string name="report_payments">Payments</string>
+    <string name="report_refunds">Refunds</string>
+    <string name="report_methods">Method</string>
+    <string name="report_transactions">Transactions</string>
+    <string name="report_date_button">Date</string>
+
+
+    <!-- Clocks Main Tab -->
+    <string name="clock_title">Clock</string>
+
+    <!-- About Main Tab -->
+    <string name="about_title">About</string>
+    <string name="about_acct_num">Account Num.</string>
+    <string name="about_employee">Employee</string>
+    <string name="about_version">Version</string>
+    <string name="about_copyright_tag">Copyright</string>
+    <string name="about_location_tag">Location ID</string>
+    <string name="about_copyright">\u00A9 2015 e-Nabler Corporation</string>
+	<string name="about_footer">WARNING: This program is protected by copyright law and international treaties\u002E Unauthorized reproduction
 	    or distribution of this program may result in severe civil and criminal penalties, and will be prosecuted to the maximum 
 	    extent possible under law\u002E</string>
 
 
-
-
-
-
-	<!-- Add items window -->
-	<string name = "button_add_prod_serv">Add Products\u002FServices</string>
-	<string name = "button_none">None</string>
-	<string name = "button_grand_total">Grand Total:</string>
-	<string name = "button_global_discount">Global Discount</string>
-	<string name = "text_tax">Tax</string>
-	<string name = "text_discount">Discount</string>
-	<string name = "button_global_tax">Global Tax</string>
-
-	<string name = "button_load">Load</string>
-	<string name = "button_checkout">Checkout</string>
-	<string name = "button_template">Template</string>
-	<string name = "button_hold">Hold</string>
-	<string name = "button_details">Details</string>
-	<string name = "button_sign">Sign</string>
-
-
-	<!-- Catalog layout -->
-	<string name = "button_category">Category</string>
-	<string name = "catalog_title">Catalog</string>
-	<string name = "catalog_name">Name</string>
-	<string name = "catalog_description">Description</string>
-	<string name = "catalog_type">Type</string>
-	<string name = "catalog_upc">UPC</string>
-	<string name = "catalog_sku">SKU</string>
-
-
-	<!-- Catalog/Picker -->
-	<string name = "cat_picker_title">Picker</string>
-	<string name = "cat_picker_attributes">Attributes</string>
-	<string name = "cat_picker_onhand">On Hand:</string>
-	<string name = "cat_picker_add_but">Add</string>
-	<string name = "cat_picker_qty">Quantity:</string>
-	<string name = "cat_picker_uom">UOM</string>
-	<string name = "cat_picker_comments">Comments</string>
-	<string name = "cat_picker_price_level">Price Level</string>
-	<string name = "cat_picker_discount">Discount</string>
-	<string name = "cat_picker_special_tax">Special Tax</string>
-	<string name = "cat_picker_view_other_types">View Other Types</string>
-	<string name = "required_attributes_marked_red">Required attributes are in red</string>
-
-	<!-- Catalog/More Product Details -->
-	<string name = "cat_details_title">Product Details</string>
-	<string name = "cat_details_info">Information</string>
-	<string name = "cat_details_extra_desc">Extra Description</string>
-	<string name = "cat_details_prod_det_type">Product Details Type</string>
-	<string name = "cat_details_tax_code">Tax Code</string>
-	<string name = "cat_details_price">Price</string>
-	<string name = "cat_details_dis_type">Discount Type</string>
-	<string name = "cat_details_inventory">Inventory</string>
-	<string name = "cat_details_identification">Identification</string>
-	<string name = "cat_details_sku">SKU</string>
-	<string name = "cat_details_cat_id">Category ID</string>
-	<string name = "cat_details_upc">UPC</string>
-
-
-
-	<!-- History/Transaction -->
-	<string name = "trans_tab_orders">Orders</string>
-	<string name = "trans_tab_returns">Returns</string>
-	<string name = "trans_tab_invoices">Invoices</string>
-	<string name = "trans_tab_estimates">Estimates</string>
-	<string name = "trans_tab_receipts">Receipts</string>
-	<string name = "trans_tab_fillup">Fill-Up</string>
-	<string name = "trans_tab_pickup">Pick-Up</string>
-	<string name = "trans_tab_cons_invoice">Cons Invoice</string>
-	<string name = "trans_footer">Synchronized Items are Marked Green</string>
-
-
-
-	<!-- History/Transaction/Details -->
-	<string name = "trans_details_title">Order Details</string>
-	<string name = "trans_details_total">Total</string>
-	<string name = "trans_details_amount_paid">Amount Paid</string>
-	<string name = "trans_details_tip">Tip</string>
-	<string name = "trans_details_clerk_id">Clerk ID</string>
-	<string name = "trans_details_comment">Comment</string>
-	<string name = "trans_details_ship_via">Ship Via</string>
-	<string name = "trans_details_terms">Terms</string>
-	<string name = "trans_details_delivery">Delivery</string>
-	<string name = "trans_details_email">e-Mail</string>
-	<string name = "trans_details_po">PO</string>
-	<string name = "trans_details_transfer_id">Trans ID</string>
-	<string name = "trans_details_origin">Origin</string>
-	<string name = "trans_details_destination">Destination</string>
-	<string name = "trans_details_date">Date</string>
-	<string name = "inventory_transfer_details">Transfer Details</string>
-
-
-
-	<!-- History/Payments -->
-	<string name = "pay_tab_cash">Cash</string>
-	<string name = "pay_tab_check">Check</string>
-	<string name = "pay_tab_card">Card</string>
-	<string name = "pay_tab_giftcard">Gift Card</string>
-	<string name = "pay_tab_other">Other</string>
-
-
-	<!-- History/Payments/Details -->
-	<string name = "pay_details_title">Payment Details</string>
-	<string name = "pay_details_infomation">Info</string>
-	<string name = "pay_details_map">Map</string>
-	<string name = "pay_details_id">ID</string>
-	<string name = "pay_details_date">Date</string>
-	<string name = "pay_details_method">Method</string>
-	<string name = "pay_details_comment">Comment</string>
-	<string name = "pay_details_inv_num">Invoice #</string>
-	<string name = "pay_details_group_id">Group ID</string>
-	<string name = "pay_details_cc_num">CC #</string>
-	<string name = "pay_details_auth_id">Auth ID</string>
-	<string name = "pay_details_trans_id">Trans ID</string>
-	<string name = "pay_details_clerk_id">Clerk ID</string>
-
-
-
-
-
-
-
-	<!-- History/Invoices -->
-	<string name = "open_inv_created">Created:</string>
-	<string name = "open_inv_due">Due:</string>
-	<string name = "open_inv_ship">Ship:</string>
-	<string name = "open_inv_paid">PAID</string>
-
-
-	<!-- History/Invoices/Details -->
-	<string name = "inv_details_title">Invoice Details</string>
-	<string name = "inv_details_info">Info</string>
-	<string name = "inv_details_name">Name</string>
-	<string name = "inv_details_uid">UID</string>
-	<string name = "inv_details_txnid">TxnID</string>
-	<string name = "inv_details_total">Total</string>
-	<string name = "inv_details_balance">Balance</string>
-	<string name = "inv_details_createdate">Created Date</string>
-	<string name = "inv_details_duedate">Due Date</string>
-	<string name = "inv_details_shipdate">Ship Date</string>
-	<string name = "inv_details_paid">Paid</string>
-	<string name = "inv_details_items">Items</string>
-
-
-	<!-- Customer Selection -->
-	<string name = "cust_select_title">Customer Selection</string>
-	<string name = "cust_select_add">Add</string>
-	<string name = "cust_add_title">New Customer</string>
-	<string name = "cust_add_save">Save</string>
-	<string name = "cust_add_info">Customer Information</string>
-	<string name = "cust_add_alias">Customer Alias (Required)</string>
-	<string name = "cust_add_first_name">First Name</string>
-	<string name = "cust_add_last_name">Last Name</string>
-	<string name = "cust_add_company">Company</string>
-	<string name = "cust_add_email">e-Mail</string>
-	<string name = "cust_add_phone">Phone</string>
-	<string name = "cust_add_contact">Contact</string>
-	<string name = "cust_add_price_lev">Price Level</string>
-	<string name = "cust_add_tax">Tax</string>
-	<string name = "cust_add_bill_addr">Billing Address</string>
-	<string name = "cust_add_street1">Street 1</string>
-	<string name = "cust_add_street2">Street 2</string>
-	<string name = "cust_add_city_state">City/State</string>
-	<string name = "cust_add_city">City</string>
-	<string name = "cust_add_state">State</string>
-	<string name = "cust_add_country">Country</string>
-	<string name = "cust_add_zcode">Zip Code</string>
-	<string name = "cust_add_ship_addr">Shipping Address</string>
-	<string name = "cust_add_same_as_bill">Sames as Billing</string>
-	<string name = "cust_add_date_of_birth">Date Of Birth</string>
-	<string name = "cust_add_address_residential">Residential</string>
-	<string name = "cust_add_address_business">Business</string>
-	<string name = "cust_add_type">Type</string>
-
-
-	<!-- Process Card Payment -->
-	<string name = "card_payment_title">Card Payment</string>
-	<string name = "card_refund_title">Card Refund</string>
-	<string name = "card_credit_card">Credit Card</string>
-	<string name = "card_card_swipe">Card Swipe</string>
-	<string name = "card_button_process">Process</string>
-	<string name = "card_number">Card Number</string>
-	<string name = "card_exp_date">Exp\u002E Date</string>
-	<string name = "card_zcode">Zip Code</string>
-	<string name = "card_sec_code">Security Code</string>
-	<string name = "card_info">Info</string>
-	<string name = "card_amount">Amount</string>
-	<string name = "card_tip">Tip</string>
-	<string name = "card_name">Name</string>
-	<string name = "card_email">e-Mail</string>
-	<string name = "card_phone">Phone\u0023</string>
-	<string name = "card_reference">Reference \u0023</string>
-	<string name = "card_auth_id">AuthID</string>
-	<string name = "card_trans_id">TransID</string>
-	<string name = "error_wrong_amount">Amount to be paid must be greater than 0\u002E\u002E\u002E</string>
-	<string name = "account_information">Account Information</string>
-	<string name = "general_information">General Information</string>
-	<string name = "card_information">Card Information</string>
-	<string name = "paymethod_due_amount_label">Amount Due</string>
-	<string name = "comments">Comments</string>
-
-
-
-	<!-- Check Payment/Refund -->
-	<string name = "check_payment_title">Check Payment</string>
-	<string name = "check_refund_title">Check Refund</string>
-	<string name = "check_button_process">Process</string>
-	<string name = "check_name">Name</string>
-	<string name = "check_email">e-Mail</string>
-	<string name = "check_phone">Phone</string>
-	<string name = "check_amount">Amount</string>
-	<string name = "check_tip">Tip</string>
-	<string name = "check_amount_paid">Amount Paid</string>
-	<string name = "check_invoice">Invoice \u0023</string>
-	<string name = "check_check_num">Check \u0023</string>
-	<string name = "check_comments">Comments</string>
-	<string name = "check_account_type">Type</string>
-	<string name = "check_type_savings">Savings</string>
-	<string name = "check_type_checking">Checking</string>
-	<string name = "check_personal_check">Personal</string>
-	<string name = "check_corporate_check">Corporate</string>
-	<string name = "check_check_type">Type</string>
-	<string name = "check_address_city">City</string>
-	<string name = "check_address_state">State</string>
-	<string name = "drivers_license_info">Drivers License Info</string>
-	<string name = "number">Number</string>
-	<string name = "state">State</string>
-	<string name = "dob_year">DOB Year</string>
-	<string name = "check_account_number">Account \u0023</string>
-	<string name = "check_routing_number">Routing \u0023</string>
-	<string name = "check_zipcode">Zip Code</string>
-	<string name = "check_address">Street Address</string>
-	<string name = "check_billing_information">Billing Information</string>
-
-
-
-
-	<!-- Cash Payment/Refund -->
-	<string name = "cash_payment_title">Cash Payment</string>
-	<string name = "cash_refund_title">Cash Refund</string>
-	<string name = "cash_button_process">Process</string>
-	<string name = "cash_name">Name</string>
-	<string name = "cash_email">e-Mail</string>
-	<string name = "cash_phone">Phone</string>
-	<string name = "cash_amount">Amount</string>
-	<string name = "cash_amount_paid">Amount Tendered</string>
-	<string name = "cash_reference">Reference \u0023</string>
-	<string name = "cash_comments">Comments</string>
-	<string name = "cash_tip_amount">Tip Amount</string>
-	<string name = "cash_exact">Exact</string>
-	<string name = "cash_tip">Tip</string>
-
-
-
-
-	<!-- Customer Choose Actions Dialog -->
-	<string name = "cust_dlog_choose_action">Choose Action</string>
-	<string name = "cust_dlog_select_cust">Select this Customer</string>
-	<string name = "cust_dlog_dial">Dial</string>
-	<string name = "cust_dlog_map">Map</string>
-	<string name = "cust_dlog_view_trans">View Transactions</string>
-	<string name = "cust_dlog_cancel">Cancel</string>
-
-
-
-	<!-- Customer details -->
-	<string name = "cust_detail_title">Customer Info</string>
-	<string name = "cust_detail_info">Information</string>
-	<string name = "cust_detail_name">Name</string>
-	<string name = "cust_detail_contact">Contact</string>
-	<string name = "cust_detail_phone">Phone</string>
-	<string name = "cust_detail_email">e-Mail</string>
-	<string name = "cust_detail_company">Company</string>
-	<string name = "cust_detail_financial_info">Financial Info</string>
-	<string name = "cust_detail_balance">Balance</string>
-	<string name = "cust_detail_limit">Limit</string>
-	<string name = "cust_detail_taxable">Taxable</string>
-	<string name = "cust_detail_tax_id">Tax ID</string>
-	<string name = "cust_detail_address">Address</string>
-	<string name = "cust_detail_bill">Billing:</string>
-	<string name = "cust_detail_ship">Shipping:</string>
-
-
-
-
-
-
-	<!-- Picker Item Dialog -->
-	<string name = "picked_dlog_modify">Modify</string>
-	<string name = "picked_dlog_remove">Remove</string>
-	<string name = "picked_dlog_view_variations">View Variations</string>
-	<string name = "picked_dlog_override_price">Override Price</string>
-	<string name = "picked_dlog_cancel">Cancel</string>
-	<string name = "additional_info">Additional Info</string>
-
-
-
-	<!-- Details View -->
-	<string name = "details_title">More Info</string>
-	<string name = "details_shipping">Shipping</string>
-	<string name = "details_terms">Terms</string>
-	<string name = "details_delivery">Delivery</string>
-	<string name = "details_address">Address</string>
-	<string name = "details_comments">Comments</string>
-	<string name = "details_po">PO</string>
-
-
-	<!-- Draw Receipt Layout -->
-	<string name = "draw_receipt_cancel">Cancel</string>
-	<string name = "draw_receipt_clear">Clear</string>
-	<string name = "draw_receipt_accept">Accept</string>
-
-
-
-	<!-- Error Messages -->
-	<string name = "validation_failed">Validation Failed</string>
-	<string name = "card_validation_error">One or more fields are incomplete or contain invalid information\u002E\u002E\u002E</string>
-	<string name="card_overpaid_error">You can\'t over pay this transaction</string>
-	<string name = "limit_onhand">Could not add product, qty selected is invalid</string>
-
-
-
-	<!-- Receipt Values -->
-	<string name = "receipt_date">Date:</string>
-	<string name = "receipt_time">Time:</string>
-	<string name = "receipt_clerk">Clerk:</string>
-	<string name = "receipt_employee">Employee:</string>
-	<string name = "receipt_customer">Customer:</string>
-	<string name = "receipt_customer_id">Account #:</string>
-	<string name = "receipt_price">Price:</string>
-	<string name = "receipt_total">Total:</string>
-	<string name = "receipt_description">Description</string>
-	<string name = "receipt_subtotal">Subtotal:</string>
-	<string name = "receipt_discount">Discount:</string>
-	<string name = "receipt_discount_line_item">Line Item Discount Total:</string>
-	<string name = "receipt_global_discount">Global Discount:</string>
-	<string name = "receipt_tax">Tax:</string>
-	<string name = "receipt_grandtotal">Grand Total:</string>
-	<string name = "receipt_amountpaid">Amount Paid:</string>
-	<string name = "receipt_amountreturned">Amount Returned:</string>
-	<string name = "receipt_total_tip_paid">Total Tip Paid:</string>
-	<string name = "receipt_balance_due">Balance Due:</string>
-	<string name = "receipt_cash_returned">Cash Returned:</string>
-	<string name = "receipt_idnum">Payment ID:</string>
-	<string name = "receipt_order_id">Order ID:</string>
-	<string name = "receipt_cardnum">Card Number:</string>
-	<string name = "receipt_paid">Paid:</string>
-	<string name = "receipt_checknum">Check\u0023:</string>
-	<string name = "receipt_signature">Signature</string>
-	<string name = "receipt_cust_copy">CUSTOMER COPY</string>
-	<string name = "receipt_report">REPORT</string>
-	<string name = "receipt_pay_summary">Payments Summary</string>
-	<string name = "receipt_refund_summmary">Refunds Summary</string>
-	<string name = "receipt_sale">Sale</string>
-	<string name = "receipt_change">Change:</string>
-	<string name = "receipt_included_tip">Included Tip:</string>
-	<string name = "receipt_creditcard_terms">CARDHOLDER ACKNOWLEDGES RECEIPT OF GOODS AND/FOR SERVICES IN THE AMOUNT OF THE TOTAL SHOWN HERE AND AGREES TO PERFORM THE OBLIGATIONS SET FORTH IN THE CARDHOLDER\u0027S AGREEMENT WITH THE ISSUER</string>
-	<string name = "receipt_invoice">Invoice:</string>
-	<string name = "receipt_invoice_ref">Invoice Ref:</string>
-	<string name = "receipt_PO">PO:</string>
-	<string name = "receipt_terms">Terms:</string>
-	<string name = "receipt_created">Created:</string>
-	<string name = "receipt_ship">Ship:</string>
-	<string name = "receipt_due">Due:</string>
-	<string name = "receipt_thankyou">Thank You</string>
-	<string name = "receipt_started">Started:</string>
-	<string name = "receipt_sent_by">Sent By:</string>
-	<string name = "receipt_name">Name:</string>
-	<string name = "receipt_cons_trans_id">Consignment ID</string>
-	<string name = "receipt_consignment_pickup">Consignment Pick-up</string>
-	<string name = "receipt_consignment_summary">Consignment Summary</string>
-	<string name = "receipt_invoice_total">Invoice Total:</string>
-	<string name = "receipt_paid_previously">Paid Previously:</string>
-	<string name = "receipt_amount_collected">Amount Collected:</string>
-	<string name = "receipt_youSave">You Save :</string>
-
-
-
-
-	<string name = "payment_view_total">Total</string>
-	<string name = "payment_view_paid">Paid</string>
-	<string name = "payment_view_tip">Tip</string>
-	<string name = "payment_view_due">Due:\t\t</string>
-
-
-	<string name = "consignment_consign">Consign Inventory</string>
-	<string name = "consignment_pickup">Pick-up</string>
-	<string name = "consignment_history">View Inventory</string>
-	<string name = "consignment_title">Consignment</string>
-	<string name = "consignment_summary">Summary</string>
-	<string name = "consignment_stacked">Rack</string>
-	<string name = "consignment_returned">Return</string>
-	<string name = "consignment_filledup">Fill-up</string>
-	<string name = "consignment_issued">Invoice</string>
-	<string name = "consignment_modify">Modify</string>
-	<string name = "consignment_original">Original</string>
-	<string name = "consignment_updated">Updated:</string>
-	<string name = "consignment_price">Price:</string>
-	<string name = "consignment_qty">Qty:</string>
-	<string name = "consignment_total">Total:</string>
-
-	<string name = "login_select_this_employee">Select This Employee?</string>
-
-
-
-	<string name = "clock_in_on">Clocked In On:</string>
-	<string name = "confirm_clock_out">Confirm Clock Out:</string>
-	<string name = "pick_date_time">Pick Date and Time</string>
-
-
-	<string name = "shift_close_shift">Close Shift</string>
-	<string name = "shift_open_shift">Open Shift</string>
-	<string name = "shift_expenses">Shift Expenses</string>
-	<string name = "shift_expense">Expense</string>
-	<string name = "shift_add_expense">Add Expense</string>
-	<string name = "shift_title">Shift</string>
-
-	<string name = "report_per_shift">Per-Shift</string>
-	<string name = "shift_details">Shift Details</string>
-	<string name = "sales_clerk">Sales Clerk</string>
-	<string name = "begging_petty_cash">Beginning Petty Cash</string>
-	<string name = "total_expenses">Total Expenses</string>
-	<string name = "ending_petty_cash">Ending Petty Cash</string>
-	<string name = "total_transactions_cash">Total Transactions Cash</string>
-	<string name = "total_ending_cash">Total Ending Cash</string>
-	<string name = "entered_close_amount">Entered Close Amount</string>
-
-
-
-	<string name = "consign_details_total_sold">Total Sold</string>
-	<string name = "consign_details_total_returned">Total Returned</string>
-	<string name = "consign_details_total_dispatched">Total Dispatched</string>
-	<string name = "consign_details_total_items">Total Line Items</string>
-	<string name = "consign_details_grand_total">Grand Total</string>
-	<string name = "consign_details_original">Orig.</string>
-	<string name = "consign_details_rack">Rack</string>
-	<string name = "consign_details_returns">Returns</string>
-	<string name = "consign_details_sold">Sold</string>
-	<string name = "consign_details_disp">Disp.</string>
-	<string name = "consign_details_new_qty">New Qty</string>
-	<string name = "consign_details_prod_price">Product Price</string>
-	<string name = "consign_details_subtotal">Subtotal</string>
-	<string name = "consign_details_credit_memo">Credit Memo</string>
-	<string name = "consign_details_total">Total</string>
-	<string name = "consign_details_id">Consignment ID</string>
-
-
-
-
-	<string name = "progress_connecting_printer">Connecting Printer\u002E\u002E\u002E</string>
-
-
-
-	<string name = "config_administrator_settings">Admin Settings</string>
-	<string name = "config_manager_settings">Manager Settings</string>
-	<string name = "config_general_settings">General Settings</string>
-	<string name = "config_account_settings">Account Settings</string>
-	<string name = "config_product_settings">Product Settings</string>
-	<string name = "config_printing_settings">Printing Settings</string>
-	<string name = "config_other_settings">Other Settings</string>
-	<string name = "config_shifts">Shifts</string>
-	<string name = "config_cash_drawer">Cash Drawer</string>
-	<string name = "config_kiosk_configuration">Kiosk Configuration</string>
-	<string name = "config_shipping_calculation">Shipping Calculation</string>
-	<string name = "config_hard_code_payments">Payment Methods</string>
-	<string name = "config_payment_processing">Payment Processing</string>
-	<string name = "config_transaction_settings">Transaction Settings</string>
-	<string name = "config_gift_card_settings">Gift Card Settings</string>
-	<string name = "config_open_cash_drawer">Open Cash Drawer</string>
-	<string name = "config_use_clerks">Use Clerks</string>
-
-	<string name = "config_change_password">Change Password</string>
-	<string name = "config_configure_cash_drawer">Configure Cash Drawer</string>
-	<string name = "config_restaurant_mode">Restaurant Mode</string>
-	<string name = "config_automatic_sync">Auto. Synch.</string>
-	<string name = "config_transaction_num_prefix">Transaction Num. Prefix</string>
-	<string name = "config_fast_scanning_mode">Fast Scanning Mode</string>
-	<string name = "config_signature_required_mode">Signature Required Mode</string>
-	<string name = "config_qr_code_reading">QR Code Reading Thru Camera</string>
-	<string name = "config_enable_multi_category">Mult. Categories Per Product</string>
-	<string name = "config_skip_email_phone">Skip e-Mail and Phone Prompt</string>
-	<string name = "config_show_only_group_taxes">Show Only Group Taxes</string>
-	<string name = "config_retail_taxes">Retail Taxes</string>
-	<string name = "config_require_customer">Require Customer</string>
-	<string name = "config_show_confirmation_screen">Show Confirmation Screen</string>
-	<string name = "config_ask_order_comments">Ask for order comments</string>
-	<string name = "config_direct_customer_selection">Direct Customer Selection</string>
-	<string name = "config_display_customer_account_number">Display Customer Account Number</string>
-	<string name = "config_skip_want_add_more_products">Skip Want Add More Prod.</string>
-	<string name = "config_require_shift_transactions">Require Shift For Transactions</string>
-	<string name = "config_allow_customer_creation">Allow Customer Creation</string>
-	<string name = "config_scope_bar_in_restaurant_mode">Show Scope Bar in Restaurant Mode</string>
-
-	<string name = "config_display_also_redeem">Display Also Redeem</string>
-	<string name = "config_display_redeem_all">Display Redeem All</string>
-	<string name = "config_use_loyal_patron">Use Loyal Patron</string>
-
-
-	<string name = "config_pay_with_tupyx">Pay with Tupyx</string>
-	<string name = "config_mw_with_genius">MW with Genius</string>
-	<string name = "config_mw_with_evo">MW with EVO</string>
-	<string name = "config_genius_peripheral">Configure Genius Peripheral</string>
-	<string name = "config_pay_with_boloro">Pay with Boloro</string>
-
-	<string name = "config_customer_display">Customer Display Terminal</string>
-
-	<string name = "config_default_transaction">Default Transaction</string>
-	<string name = "config_configure_home_menu">Configure Home Menu</string>
-	<string name = "config_block_price_level_change">Block Price Level Change</string>
-	<string name = "config_require_address">Require Address</string>
-	<string name = "config_require_po">Require PO</string>
-	<string name = "config_clear_images_cache">Clear Images Cache</string>
-	<string name = "config_skip_manager_price_override">Skip Manager Price Override</string>
-	<string name = "config_require_password_to_clockout">Require Password To Clock Out</string>
-	<string name = "config_maps_inside_app">Maps Inside App</string>
-	<string name = "config_enable_location_inventory">Use Location Inventory</string>
-
-	<string name = "config_allow_manual_credit_card">Allow Manual Credit Card</string>
-	<string name = "config_process_check_online">Process Check Online</string>
-	<string name = "config_show_tips_for_cash">Show Tips For Cash</string>
-	<string name = "config_audio_card_reader">Audio Card Reader</string>
-	<string name = "config_default_payment_method">Default Payment Method</string>
-	<string name = "config_return_require_refund">Return Require Refund</string>
-	<string name = "config_convert_to_reward">Convert To Reward</string>
-	<string name = "config_invoice_require_payment">Invoice Require Payment</string>
-	<string name = "config_invoice_require_full_payment">Invoice Require Full Payment</string>
-	<string name = "config_prefill_total_amount">Pre-fill Total Amount</string>
-	<string name = "config_use_store_and_forward">Use Store \u0026 Forward</string>
-	<string name = "config_store_and_forward_transactions">Store \u0026 Forward Transactions</string>
-
-	<string name = "config_enable_printing">Enable Printing</string>
-	<string name = "config_printek_info">Printek Info</string>
-	<string name = "config_star_info">Star Info</string>
-	<string name = "config_snbc_setup">SNBC Setup</string>
-	<string name = "config_set_printing_preferences">Set Printing Preferences</string>
-	<string name = "config_automatic_printing">Automatic Printing</string>
-	<string name = "config_configure_ingenico_settings">Configure Ingenico Settings</string>
-	<string name = "config_redetect_peripherals">Re-detect Peripherals</string>
-	<string name = "config_delete_saved_peripherals">Delete Saved Peripherals</string>
-	<string name = "config_wholesale_printout">Wholesale Printout</string>
-	<string name = "config_prompt_customer_copy">Prompt print receipt copy for CC payments</string>
-	<string name = "config_print_receipt_transaction_payments">Print receipt of transaction payments</string>
-	<string name = "config_handwritten_signature">Handwritten signature</string>
-
-	<string name = "config_allow_decimal_quantities">Allow Decimal Quantities</string>
-	<string name = "config_group_receipt_by_sku">Group Receipt By SKU</string>
-	<string name = "config_require_password_to_remove_void">Require Password To Remove/Void</string>
-	<string name = "config_show_removed_void_items_in_printout">Show Removed/Void Items In Print Out</string>
-	<string name = "config_default_category">Default Category</string>
-	<string name = "config_attribute_to_display">Attribute To Display</string>
-	<string name = "config_group_in_catalog_by_name">Group In Catalog By Name</string>
-	<string name = "config_filter_products_by_customer">Filter Products By Customers</string>
-	<string name = "config_limit_products_on_hand">Limit Products On Hand</string>
-
-	<string name = "config_open_shift">Open Shift</string>
-	<string name = "config_expenses">Expenses</string>
-
-	<string name = "config_use_nexternal">Use Nexternal</string>
-
-	<string name = "config_require_manager_pass_to_void_trans">Req. Manager Pass To Void Trans</string>
-	<string name = "config_default_country">Default Country</string>
-	<string name = "config_connect_to_bluetooth_peripheral">Connect to Bluetooth Peripheral</string>
-	<string name = "config_connect_to_usb_peripheral">Connect to USB Peripheral</string>
-
-	<string name = "config_support_troubleshooting">Support Troubleshooting</string>
-	<string name = "config_force_upload">Force Upload</string>
-	<string name = "config_backup_data">Backup Data</string>
-
-
-
-	<string name = "header_scanner">Scanner</string>
-	<string name = "header_tupyx">Tupyx</string>
-	<string name = "header_pay_with_tupyx">Pay with Tupyx</string>
-	<string name = "tupyx_scanner_instruction">Place QR in front of camera</string>
-	<string name = "tupyx_amount_to_pay">Amount To Pay</string>
-	<string name = "tupyx_total_amount">Total Amount</string>
-	<string name = "tupyx_read_qr">Read QR</string>
-
-
-
-
-	<string name = "loyalty_points_balance">Points Balance</string>
-	<string name = "loyalty_points_sub_total">Points Subtotal</string>
-	<string name = "loyalty_points_in_use">Points in Use</string>
-	<string name = "loyalty_points_available">Points Available</string>
-	<string name = "loyalty_acumulable_points">Acumulable Points</string>
-
-	<string name = "rewards_balance">Rewards Balance</string>
-	<string name = "button_pay_with_rewards">Pay With Rewards</string>
-	<string name = "label_sub_total">Subtotal</string>
-
-	<string name = "activate">Activate</string>
-	<string name = "deactivate">Deactivate</string>
-	<string name = "add_balance">Add Balance</string>
-	<string name = "balance_inquiry">Balance Inquiry</string>
-	<string name = "manually_add_balance">Manually Add Balance</string>
-
-	<string name = "amount">Amount</string>
-	<string name = "invoice_num">Invoice #</string>
-	<string name = "amount_to_add">Amount to Add</string>
-
-	<string name = "boloro">Boloro</string>
-	<string name = "tap_and_pay">Tap and Pay</string>
-	<string name = "manual">Manual</string>
-	<string name = "boloro_payment_method">What is the Boloro payment method?</string>
-	<string name = "carrier">Carrier</string>
-	<string name = "account">Account</string>
-	<string name = "payment_saved_successfully">Payment Saved Successfully</string>
-	<string name = "return_to_customer">Return to customer:</string>
-	<string name = "reading_nfc_tag">Reading NFC tag\u002E\u002E\u002E</string>
-	<string name = "scan_boloro_tag_now">Scan Boloro tag now</string>
-	<string name = "processing_loyalty_card">Processing loyalty card\u002E\u002E\u002E</string>
-	<string name = "processing_reward">Processing reward\u002E\u002E\u002E</string>
-	<string name = "processing_credit_card">Processing credit card\u002E\u002E\u002E</string>
-	<string name = "failed_genius_connectivity">There appears to be no connectivity with the genius device</string>
-	<string name = "employee_could_not_be_processed">This employee selection could not be processed. Please try again.</string>
-	<string name = "enter_cash_close_amount">Enter cash close amount</string>
-	<string name = "close_amount_is">Close amount is</string>
-	<string name = "password_five_char_long">Password must be 5 characters long</string>
-	<string name = "send_unsync_items_first">Send unsynchronized items before proceeding</string>
-	<string name = "without_customer">Without Customer</string>
-	<string name = "with_customer">With Customer</string>
-	<string name = "loading_boloro_data">Loading Boloro Data\u002E\u002E\u002E</string>
-	<string name = "sending_boloro_payment">Sending Payment Request\u002E\u002E\u002E</string>
-	<string name = "waiting_for_pin">Waiting for PIN from Customer\u002E\u002E\u002E</string>
-	<string name = "cancelling_transaction">Cancelling Transaction</string>
-
-
-	<string name = "tap_to_enter_loyalty">Tap to enter loyalty card</string>
-	<string name = "tap_to_enter_rewards">Tap to enter reward card</string>
-	<string name = "capture_front">Capture Front</string>
-	<string name = "capture_back">Capture Back</string>
-	<string name = "capture_check">Capture Check</string>
-	<string name = "dlog_msg_check_capture_invalid">Invalid Check Capture</string>
-
-
-	<string name = "redeem">Redeem</string>
-	<string name = "accumulable">Accumulable</string>
-	<string name = "btn_pay_with_loyalty">Pay with loyalty</string>
-	<string name = "btn_process_all">Process All</string>
-
-	<string name = "loyalty">Loyalty</string>
-	<string name = "rewards">Rewards</string>
-	<string name="ivupos_packageid">ivupos</string>
-	<string name="paymentmethod_subtotal_amount">Subtotal</string>
-	<string name="privu_state">PR IVU 10.5</string>
-	<string name="privu_city">PR IVU 1</string>
-	<string name="paymethod_subtotal_amount_label">Subtotal</string>
-	<string name="paymethod_tax1_amount_label">Tax1</string>
-	<string name="paymethod_tax2_amount_label">Tax2</string>
-	<string name="processing_payment_msg">Processing Payment...</string>
-	<string name="changeLbl">Change:</string>
-	<string name="cash_invoice_lbl">Cash Invoice</string>
-	<string name="card_invoice">Card Invoice</string>
-	<string name="status_connected">Connected</string>
-	<string name="swipe_insert_card">Swipe/Insert Card...</string>
-	<string name="printing_message">Printing...</string>
-	<string name="please_wait_message">Please wait...</string>
-	<string name="ivu_control">"CONTROL: "</string>
-	<string name="adding_balance_message">Adding Balance...</string>
-	<string name="return_title">Return</string>
-	<string name="base_price_lbl">Base Price</string>
-	<string name="no_discount_lbl">No Discount</string>
-	<string name="amount_zero_lbl">0.00</string>
-	<string name="none_uppercase_lbl">NONE</string>
-	<string name="enabler_prefix">EN</string>
-	<string name="enabler_website">www.e-nabler.com</string>
-	<string name="powered_by_enabler">Powered by Enabler</string>
-	<string name="ivuloto_control_label">"CONTROL: "</string>
-	<string name="menu_back">Back</string>
-	<string name="selectinvoices">Select Invoices</string>
-	<string name="sync_send_btn">Send</string>
-	<string name="sync_receive_btn">Receive</string>
-	<string name="pay_button">Pay</string>
-	<string name="sync_enabler_submitlocationinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx</string>
-	<string name="genius_aid">AID:</string>
-	<string name="cryptogram_type">Cryptogram Type:</string>
-	<string name="cryptogram">Cryptogram:</string>
-	<string name="pin_statement">PIN Statement:</string>
-	<string name="payment_save_declined">Payment was declined.</string>
-	<string name="credit_approval_status">Status:</string>
-	<string name="approved">Approved</string>
-	<string name="error_reading_card">Card swipe read error.</string>
-	<string name="endofdayBtn">End of day</string>
-	<string name="declined">DECLINED</string>
-	<string name="ten_percent">10%</string>
-	<string name="fifteen_percent">15%</string>
-	<string name="twenty_percent">20%</string>
-	<string name="other">Other:</string>
-	<string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
-	<string name="genius_application_label">Application Label:</string>
-	<string name="receipt_amount">Amount:</string>
-	<string name="modify">Modify</string>
-	<string name="config_restaurant_settings">Restaurant Settings</string>
-	<string name="config_enable_togo_eatin">Enable section of \"To Go\"/\"Eat In\"</string>
-	<string name="config_require_waiter_signin">Require waiter to sign in</string>
-	<string name="config_enable_table_selection">Enable table selection</string>
-	<string name="config_ask_numbers_seats">Ask number of seats</string>
-	<string name="config_ask_split_equally">Ask to split payment equally</string>
-	<string name="select_togo_eatin">Select To-Go or Eat-In</string>
-	<string name="eatin_btn">Eat-In</string>
-	<string name="toGo_btn">To-Go</string>
-	<string name="select_table_number">Select table number</string>
-	<string name="select_table_seats_amount">Select the amount of seats</string>
-	<string name="split_by_seats">Split bill by seats</string>
-	<string name="split_equally">Split bill equally</string>
-	<string name="split_by_group_seats">Split bill seats group</string>
-	<string name="split_bill_by">Split Bill:</string>
-	<string name="splited_order_summary">Split Order Summary</string>
-	<string name="table_number">Table Number:</string>
-	<string name="seatNumber">Seat Number:</string>
-	<string name="splited_order_total_items">Items</string>
-	<string name="splited_order_price">Price</string>
-	<string name="addseat_btn">Add Seat</string>
-	<string name="elipses">...</string>
-	<string name="voiding_payments">Voiding Payments...</string>
-	<string name="processing_refund">Processing Refund...</string>
-	<string name="coundnot_proceess_payment">Could not process the payment.</string>
-	<string name="endofday_report">End of day report</string>
-	<string name="subtotal_receipt">Subtotal:</string>
-	<string name="move_product_seat">Change product seat</string>
-	<string name="join_seats">Join Seats</string>
-	<string name="delete_seat">Delete Seat</string>
-	<string name="amount_tendered">Tendered:</string>
-	<string name="timeout_tryagain">TIME OUT, would you like to try again?</string>
-	<string name="cannot_proceed">Can not proceed...</string>
-	<string name="activating">Activating...</string>
-	<string name="adding_balance">Adding Balance...</string>
-	<string name="retrieving_balance">Retrieving Balance...</string>
-	<string name="info">Info</string>
-	<string name="items">Items</string>
-	<string name="payments">Payments</string>
-	<string name="map">Map</string>
-	<string name="print_all_button">Print All</string>
-	<string name="balanceAmount">Balance Amount</string>
-	<string name="status">Status</string>
-	<string name="amount_added">Amount Added</string>
-	<string name="manualEntry">Manual entry</string>
-	<string name="handpoint_payment_error">Error processing handpoint payment.</string>
-	<string name="connecting_handpoint">Connecting Handpoint device...</string>
-	<string name="void_fail">Error processing void</string>
-	<string name="select_number_guests">Select number of guests</string>
-	<string name="fail_to_connect">Failed to connect</string>
-	<string name="connecting_bluetooth_device">Connecting Bletooth Device...</string>
-	<string name="move_items_to_seat">"Move items to seat "</string>
-	<string name="join_with_seat">"Join with seat "</string>
+    <!-- Add items window -->
+    <string name="button_add_prod_serv">Add Products\u002FServices</string>
+    <string name="button_none">None</string>
+    <string name="button_grand_total">Grand Total:</string>
+    <string name="button_global_discount">Global Discount</string>
+    <string name="text_tax">Tax</string>
+    <string name="text_discount">Discount</string>
+    <string name="button_global_tax">Global Tax</string>
+
+    <string name="button_load">Load</string>
+    <string name="button_checkout">Checkout</string>
+    <string name="button_template">Template</string>
+    <string name="button_hold">Hold</string>
+    <string name="button_details">Details</string>
+    <string name="button_sign">Sign</string>
+
+
+    <!-- Catalog layout -->
+    <string name="button_category">Category</string>
+    <string name="catalog_title">Catalog</string>
+    <string name="catalog_name">Name</string>
+    <string name="catalog_description">Description</string>
+    <string name="catalog_type">Type</string>
+    <string name="catalog_upc">UPC</string>
+    <string name="catalog_sku">SKU</string>
+
+
+    <!-- Catalog/Picker -->
+    <string name="cat_picker_title">Picker</string>
+    <string name="cat_picker_attributes">Attributes</string>
+    <string name="cat_picker_onhand">On Hand:</string>
+    <string name="cat_picker_add_but">Add</string>
+    <string name="cat_picker_qty">Quantity:</string>
+    <string name="cat_picker_uom">UOM</string>
+    <string name="cat_picker_comments">Comments</string>
+    <string name="cat_picker_price_level">Price Level</string>
+    <string name="cat_picker_discount">Discount</string>
+    <string name="cat_picker_special_tax">Special Tax</string>
+    <string name="cat_picker_view_other_types">View Other Types</string>
+    <string name="required_attributes_marked_red">Required attributes are in red</string>
+
+    <!-- Catalog/More Product Details -->
+    <string name="cat_details_title">Product Details</string>
+    <string name="cat_details_info">Information</string>
+    <string name="cat_details_extra_desc">Extra Description</string>
+    <string name="cat_details_prod_det_type">Product Details Type</string>
+    <string name="cat_details_tax_code">Tax Code</string>
+    <string name="cat_details_price">Price</string>
+    <string name="cat_details_dis_type">Discount Type</string>
+    <string name="cat_details_inventory">Inventory</string>
+    <string name="cat_details_identification">Identification</string>
+    <string name="cat_details_sku">SKU</string>
+    <string name="cat_details_cat_id">Category ID</string>
+    <string name="cat_details_upc">UPC</string>
+
+
+    <!-- History/Transaction -->
+    <string name="trans_tab_orders">Orders</string>
+    <string name="trans_tab_returns">Returns</string>
+    <string name="trans_tab_invoices">Invoices</string>
+    <string name="trans_tab_estimates">Estimates</string>
+    <string name="trans_tab_receipts">Receipts</string>
+    <string name="trans_tab_fillup">Fill-Up</string>
+    <string name="trans_tab_pickup">Pick-Up</string>
+    <string name="trans_tab_cons_invoice">Cons Invoice</string>
+    <string name="trans_footer">Synchronized Items are Marked Green</string>
+
+
+    <!-- History/Transaction/Details -->
+    <string name="trans_details_title">Order Details</string>
+    <string name="trans_details_total">Total</string>
+    <string name="trans_details_amount_paid">Amount Paid</string>
+    <string name="trans_details_tip">Tip</string>
+    <string name="trans_details_clerk_id">Clerk ID</string>
+    <string name="trans_details_comment">Comment</string>
+    <string name="trans_details_ship_via">Ship Via</string>
+    <string name="trans_details_terms">Terms</string>
+    <string name="trans_details_delivery">Delivery</string>
+    <string name="trans_details_email">e-Mail</string>
+    <string name="trans_details_po">PO</string>
+    <string name="trans_details_transfer_id">Trans ID</string>
+    <string name="trans_details_origin">Origin</string>
+    <string name="trans_details_destination">Destination</string>
+    <string name="trans_details_date">Date</string>
+    <string name="inventory_transfer_details">Transfer Details</string>
+
+
+    <!-- History/Payments -->
+    <string name="pay_tab_cash">Cash</string>
+    <string name="pay_tab_check">Check</string>
+    <string name="pay_tab_card">Card</string>
+    <string name="pay_tab_giftcard">Gift Card</string>
+    <string name="pay_tab_other">Other</string>
+
+
+    <!-- History/Payments/Details -->
+    <string name="pay_details_title">Payment Details</string>
+    <string name="pay_details_infomation">Info</string>
+    <string name="pay_details_map">Map</string>
+    <string name="pay_details_id">ID</string>
+    <string name="pay_details_date">Date</string>
+    <string name="pay_details_method">Method</string>
+    <string name="pay_details_comment">Comment</string>
+    <string name="pay_details_inv_num">Invoice #</string>
+    <string name="pay_details_group_id">Group ID</string>
+    <string name="pay_details_cc_num">CC #</string>
+    <string name="pay_details_auth_id">Auth ID</string>
+    <string name="pay_details_trans_id">Trans ID</string>
+    <string name="pay_details_clerk_id">Clerk ID</string>
+
+
+    <!-- History/Invoices -->
+    <string name="open_inv_created">Created:</string>
+    <string name="open_inv_due">Due:</string>
+    <string name="open_inv_ship">Ship:</string>
+    <string name="open_inv_paid">PAID</string>
+
+
+    <!-- History/Invoices/Details -->
+    <string name="inv_details_title">Invoice Details</string>
+    <string name="inv_details_info">Info</string>
+    <string name="inv_details_name">Name</string>
+    <string name="inv_details_uid">UID</string>
+    <string name="inv_details_txnid">TxnID</string>
+    <string name="inv_details_total">Total</string>
+    <string name="inv_details_balance">Balance</string>
+    <string name="inv_details_createdate">Created Date</string>
+    <string name="inv_details_duedate">Due Date</string>
+    <string name="inv_details_shipdate">Ship Date</string>
+    <string name="inv_details_paid">Paid</string>
+    <string name="inv_details_items">Items</string>
+
+
+    <!-- Customer Selection -->
+    <string name="cust_select_title">Customer Selection</string>
+    <string name="cust_select_add">Add</string>
+    <string name="cust_add_title">New Customer</string>
+    <string name="cust_add_save">Save</string>
+    <string name="cust_add_info">Customer Information</string>
+    <string name="cust_add_alias">Customer Alias (Required)</string>
+    <string name="cust_add_first_name">First Name</string>
+    <string name="cust_add_last_name">Last Name</string>
+    <string name="cust_add_company">Company</string>
+    <string name="cust_add_email">e-Mail</string>
+    <string name="cust_add_phone">Phone</string>
+    <string name="cust_add_contact">Contact</string>
+    <string name="cust_add_price_lev">Price Level</string>
+    <string name="cust_add_tax">Tax</string>
+    <string name="cust_add_bill_addr">Billing Address</string>
+    <string name="cust_add_street1">Street 1</string>
+    <string name="cust_add_street2">Street 2</string>
+    <string name="cust_add_city_state">City/State</string>
+    <string name="cust_add_city">City</string>
+    <string name="cust_add_state">State</string>
+    <string name="cust_add_country">Country</string>
+    <string name="cust_add_zcode">Zip Code</string>
+    <string name="cust_add_ship_addr">Shipping Address</string>
+    <string name="cust_add_same_as_bill">Sames as Billing</string>
+    <string name="cust_add_date_of_birth">Date Of Birth</string>
+    <string name="cust_add_address_residential">Residential</string>
+    <string name="cust_add_address_business">Business</string>
+    <string name="cust_add_type">Type</string>
+
+
+    <!-- Process Card Payment -->
+    <string name="card_payment_title">Card Payment</string>
+    <string name="card_refund_title">Card Refund</string>
+    <string name="card_credit_card">Credit Card</string>
+    <string name="card_card_swipe">Card Swipe</string>
+    <string name="card_button_process">Process</string>
+    <string name="card_number">Card Number</string>
+    <string name="card_exp_date">Exp\u002E Date</string>
+    <string name="card_zcode">Zip Code</string>
+    <string name="card_sec_code">Security Code</string>
+    <string name="card_info">Info</string>
+    <string name="card_amount">Amount</string>
+    <string name="card_tip">Tip</string>
+    <string name="card_name">Name</string>
+    <string name="card_email">e-Mail</string>
+    <string name="card_phone">Phone\u0023</string>
+    <string name="card_reference">Reference \u0023</string>
+    <string name="card_auth_id">AuthID</string>
+    <string name="card_trans_id">TransID</string>
+    <string name="error_wrong_amount">Amount to be paid must be greater than 0\u002E\u002E\u002E</string>
+    <string name="account_information">Account Information</string>
+    <string name="general_information">General Information</string>
+    <string name="card_information">Card Information</string>
+    <string name="paymethod_due_amount_label">Amount Due</string>
+    <string name="comments">Comments</string>
+
+
+    <!-- Check Payment/Refund -->
+    <string name="check_payment_title">Check Payment</string>
+    <string name="check_refund_title">Check Refund</string>
+    <string name="check_button_process">Process</string>
+    <string name="check_name">Name</string>
+    <string name="check_email">e-Mail</string>
+    <string name="check_phone">Phone</string>
+    <string name="check_amount">Amount</string>
+    <string name="check_tip">Tip</string>
+    <string name="check_amount_paid">Amount Paid</string>
+    <string name="check_invoice">Invoice \u0023</string>
+    <string name="check_check_num">Check \u0023</string>
+    <string name="check_comments">Comments</string>
+    <string name="check_account_type">Type</string>
+    <string name="check_type_savings">Savings</string>
+    <string name="check_type_checking">Checking</string>
+    <string name="check_personal_check">Personal</string>
+    <string name="check_corporate_check">Corporate</string>
+    <string name="check_check_type">Type</string>
+    <string name="check_address_city">City</string>
+    <string name="check_address_state">State</string>
+    <string name="drivers_license_info">Drivers License Info</string>
+    <string name="number">Number</string>
+    <string name="state">State</string>
+    <string name="dob_year">DOB Year</string>
+    <string name="check_account_number">Account \u0023</string>
+    <string name="check_routing_number">Routing \u0023</string>
+    <string name="check_zipcode">Zip Code</string>
+    <string name="check_address">Street Address</string>
+    <string name="check_billing_information">Billing Information</string>
+
+
+    <!-- Cash Payment/Refund -->
+    <string name="cash_payment_title">Cash Payment</string>
+    <string name="cash_refund_title">Cash Refund</string>
+    <string name="cash_button_process">Process</string>
+    <string name="cash_name">Name</string>
+    <string name="cash_email">e-Mail</string>
+    <string name="cash_phone">Phone</string>
+    <string name="cash_amount">Amount</string>
+    <string name="cash_amount_paid">Amount Tendered</string>
+    <string name="cash_reference">Reference \u0023</string>
+    <string name="cash_comments">Comments</string>
+    <string name="cash_tip_amount">Tip Amount</string>
+    <string name="cash_exact">Exact</string>
+    <string name="cash_tip">Tip</string>
+
+
+    <!-- Customer Choose Actions Dialog -->
+    <string name="cust_dlog_choose_action">Choose Action</string>
+    <string name="cust_dlog_select_cust">Select this Customer</string>
+    <string name="cust_dlog_dial">Dial</string>
+    <string name="cust_dlog_map">Map</string>
+    <string name="cust_dlog_view_trans">View Transactions</string>
+    <string name="cust_dlog_cancel">Cancel</string>
+
+
+    <!-- Customer details -->
+    <string name="cust_detail_title">Customer Info</string>
+    <string name="cust_detail_info">Information</string>
+    <string name="cust_detail_name">Name</string>
+    <string name="cust_detail_contact">Contact</string>
+    <string name="cust_detail_phone">Phone</string>
+    <string name="cust_detail_email">e-Mail</string>
+    <string name="cust_detail_company">Company</string>
+    <string name="cust_detail_financial_info">Financial Info</string>
+    <string name="cust_detail_balance">Balance</string>
+    <string name="cust_detail_limit">Limit</string>
+    <string name="cust_detail_taxable">Taxable</string>
+    <string name="cust_detail_tax_id">Tax ID</string>
+    <string name="cust_detail_address">Address</string>
+    <string name="cust_detail_bill">Billing:</string>
+    <string name="cust_detail_ship">Shipping:</string>
+
+
+    <!-- Picker Item Dialog -->
+    <string name="picked_dlog_modify">Modify</string>
+    <string name="picked_dlog_remove">Remove</string>
+    <string name="picked_dlog_view_variations">View Variations</string>
+    <string name="picked_dlog_override_price">Override Price</string>
+    <string name="picked_dlog_cancel">Cancel</string>
+    <string name="additional_info">Additional Info</string>
+
+
+    <!-- Details View -->
+    <string name="details_title">More Info</string>
+    <string name="details_shipping">Shipping</string>
+    <string name="details_terms">Terms</string>
+    <string name="details_delivery">Delivery</string>
+    <string name="details_address">Address</string>
+    <string name="details_comments">Comments</string>
+    <string name="details_po">PO</string>
+
+
+    <!-- Draw Receipt Layout -->
+    <string name="draw_receipt_cancel">Cancel</string>
+    <string name="draw_receipt_clear">Clear</string>
+    <string name="draw_receipt_accept">Accept</string>
+
+
+    <!-- Error Messages -->
+    <string name="validation_failed">Validation Failed</string>
+    <string name="card_validation_error">One or more fields are incomplete or contain invalid information\u002E\u002E\u002E</string>
+    <string name="card_overpaid_error">You can\'t over pay this transaction</string>
+    <string name="limit_onhand">Could not add product, qty selected is invalid</string>
+
+
+    <!-- Receipt Values -->
+    <string name="receipt_date">Date:</string>
+    <string name="receipt_time">Time:</string>
+    <string name="receipt_clerk">Clerk:</string>
+    <string name="receipt_employee">Employee:</string>
+    <string name="receipt_customer">Customer:</string>
+    <string name="receipt_customer_id">Account #:</string>
+    <string name="receipt_price">Price:</string>
+    <string name="receipt_total">Total:</string>
+    <string name="receipt_description">Description</string>
+    <string name="receipt_subtotal">Subtotal:</string>
+    <string name="receipt_discount">Discount:</string>
+    <string name="receipt_discount_line_item">Line Item Discount Total:</string>
+    <string name="receipt_global_discount">Global Discount:</string>
+    <string name="receipt_tax">Tax:</string>
+    <string name="receipt_grandtotal">Grand Total:</string>
+    <string name="receipt_amountpaid">Amount Paid:</string>
+    <string name="receipt_amountreturned">Amount Returned:</string>
+    <string name="receipt_total_tip_paid">Total Tip Paid:</string>
+    <string name="receipt_balance_due">Balance Due:</string>
+    <string name="receipt_cash_returned">Cash Returned:</string>
+    <string name="receipt_idnum">Payment ID:</string>
+    <string name="receipt_order_id">Order ID:</string>
+    <string name="receipt_cardnum">Card Number:</string>
+    <string name="receipt_paid">Paid:</string>
+    <string name="receipt_checknum">Check\u0023:</string>
+    <string name="receipt_signature">Signature</string>
+    <string name="receipt_cust_copy">CUSTOMER COPY</string>
+    <string name="receipt_report">REPORT</string>
+    <string name="receipt_pay_summary">Payments Summary</string>
+    <string name="receipt_refund_summmary">Refunds Summary</string>
+    <string name="receipt_sale">Sale</string>
+    <string name="receipt_change">Change:</string>
+    <string name="receipt_included_tip">Included Tip:</string>
+    <string name="receipt_creditcard_terms">CARDHOLDER ACKNOWLEDGES RECEIPT OF GOODS AND/FOR SERVICES IN THE AMOUNT OF THE TOTAL SHOWN HERE AND AGREES TO PERFORM THE OBLIGATIONS SET FORTH IN THE CARDHOLDER\u0027S AGREEMENT WITH THE ISSUER</string>
+    <string name="receipt_invoice">Invoice:</string>
+    <string name="receipt_invoice_ref">Invoice Ref:</string>
+    <string name="receipt_PO">PO:</string>
+    <string name="receipt_terms">Terms:</string>
+    <string name="receipt_created">Created:</string>
+    <string name="receipt_ship">Ship:</string>
+    <string name="receipt_due">Due:</string>
+    <string name="receipt_thankyou">Thank You</string>
+    <string name="receipt_started">Started:</string>
+    <string name="receipt_sent_by">Sent By:</string>
+    <string name="receipt_name">Name:</string>
+    <string name="receipt_cons_trans_id">Consignment ID</string>
+    <string name="receipt_consignment_pickup">Consignment Pick-up</string>
+    <string name="receipt_consignment_summary">Consignment Summary</string>
+    <string name="receipt_invoice_total">Invoice Total:</string>
+    <string name="receipt_paid_previously">Paid Previously:</string>
+    <string name="receipt_amount_collected">Amount Collected:</string>
+    <string name="receipt_youSave">You Save :</string>
+
+
+    <string name="payment_view_total">Total</string>
+    <string name="payment_view_paid">Paid</string>
+    <string name="payment_view_tip">Tip</string>
+    <string name="payment_view_due">Due:\t\t</string>
+
+
+    <string name="consignment_consign">Consign Inventory</string>
+    <string name="consignment_pickup">Pick-up</string>
+    <string name="consignment_history">View Inventory</string>
+    <string name="consignment_title">Consignment</string>
+    <string name="consignment_summary">Summary</string>
+    <string name="consignment_stacked">Rack</string>
+    <string name="consignment_returned">Return</string>
+    <string name="consignment_filledup">Fill-up</string>
+    <string name="consignment_issued">Invoice</string>
+    <string name="consignment_modify">Modify</string>
+    <string name="consignment_original">Original</string>
+    <string name="consignment_updated">Updated:</string>
+    <string name="consignment_price">Price:</string>
+    <string name="consignment_qty">Qty:</string>
+    <string name="consignment_total">Total:</string>
+
+    <string name="login_select_this_employee">Select This Employee?</string>
+
+
+    <string name="clock_in_on">Clocked In On:</string>
+    <string name="confirm_clock_out">Confirm Clock Out:</string>
+    <string name="pick_date_time">Pick Date and Time</string>
+
+
+    <string name="shift_close_shift">Close Shift</string>
+    <string name="shift_open_shift">Open Shift</string>
+    <string name="shift_expenses">Shift Expenses</string>
+    <string name="shift_expense">Expense</string>
+    <string name="shift_add_expense">Add Expense</string>
+    <string name="shift_title">Shift</string>
+
+    <string name="report_per_shift">Per-Shift</string>
+    <string name="shift_details">Shift Details</string>
+    <string name="sales_clerk">Sales Clerk</string>
+    <string name="begging_petty_cash">Beginning Petty Cash</string>
+    <string name="total_expenses">Total Expenses</string>
+    <string name="ending_petty_cash">Ending Petty Cash</string>
+    <string name="total_transactions_cash">Total Transactions Cash</string>
+    <string name="total_ending_cash">Total Ending Cash</string>
+    <string name="entered_close_amount">Entered Close Amount</string>
+
+
+    <string name="consign_details_total_sold">Total Sold</string>
+    <string name="consign_details_total_returned">Total Returned</string>
+    <string name="consign_details_total_dispatched">Total Dispatched</string>
+    <string name="consign_details_total_items">Total Line Items</string>
+    <string name="consign_details_grand_total">Grand Total</string>
+    <string name="consign_details_original">Orig.</string>
+    <string name="consign_details_rack">Rack</string>
+    <string name="consign_details_returns">Returns</string>
+    <string name="consign_details_sold">Sold</string>
+    <string name="consign_details_disp">Disp.</string>
+    <string name="consign_details_new_qty">New Qty</string>
+    <string name="consign_details_prod_price">Product Price</string>
+    <string name="consign_details_subtotal">Subtotal</string>
+    <string name="consign_details_credit_memo">Credit Memo</string>
+    <string name="consign_details_total">Total</string>
+    <string name="consign_details_id">Consignment ID</string>
+
+
+    <string name="progress_connecting_printer">Connecting Printer\u002E\u002E\u002E</string>
+
+
+    <string name="config_administrator_settings">Admin Settings</string>
+    <string name="config_manager_settings">Manager Settings</string>
+    <string name="config_general_settings">General Settings</string>
+    <string name="config_account_settings">Account Settings</string>
+    <string name="config_product_settings">Product Settings</string>
+    <string name="config_printing_settings">Printing Settings</string>
+    <string name="config_other_settings">Other Settings</string>
+    <string name="config_shifts">Shifts</string>
+    <string name="config_cash_drawer">Cash Drawer</string>
+    <string name="config_kiosk_configuration">Kiosk Configuration</string>
+    <string name="config_shipping_calculation">Shipping Calculation</string>
+    <string name="config_hard_code_payments">Payment Methods</string>
+    <string name="config_payment_processing">Payment Processing</string>
+    <string name="config_transaction_settings">Transaction Settings</string>
+    <string name="config_gift_card_settings">Gift Card Settings</string>
+    <string name="config_open_cash_drawer">Open Cash Drawer</string>
+    <string name="config_use_clerks">Use Clerks</string>
+
+    <string name="config_change_password">Change Password</string>
+    <string name="config_configure_cash_drawer">Configure Cash Drawer</string>
+    <string name="config_restaurant_mode">Restaurant Mode</string>
+    <string name="config_automatic_sync">Auto. Synch.</string>
+    <string name="config_transaction_num_prefix">Transaction Num. Prefix</string>
+    <string name="config_fast_scanning_mode">Fast Scanning Mode</string>
+    <string name="config_signature_required_mode">Signature Required Mode</string>
+    <string name="config_qr_code_reading">QR Code Reading Thru Camera</string>
+    <string name="config_enable_multi_category">Mult. Categories Per Product</string>
+    <string name="config_skip_email_phone">Skip e-Mail and Phone Prompt</string>
+    <string name="config_show_only_group_taxes">Show Only Group Taxes</string>
+    <string name="config_retail_taxes">Retail Taxes</string>
+    <string name="config_require_customer">Require Customer</string>
+    <string name="config_show_confirmation_screen">Show Confirmation Screen</string>
+    <string name="config_ask_order_comments">Ask for order comments</string>
+    <string name="config_direct_customer_selection">Direct Customer Selection</string>
+    <string name="config_display_customer_account_number">Display Customer Account Number</string>
+    <string name="config_skip_want_add_more_products">Skip Want Add More Prod.</string>
+    <string name="config_require_shift_transactions">Require Shift For Transactions</string>
+    <string name="config_allow_customer_creation">Allow Customer Creation</string>
+    <string name="config_scope_bar_in_restaurant_mode">Show Scope Bar in Restaurant Mode</string>
+
+    <string name="config_display_also_redeem">Display Also Redeem</string>
+    <string name="config_display_redeem_all">Display Redeem All</string>
+    <string name="config_use_loyal_patron">Use Loyal Patron</string>
+
+
+    <string name="config_pay_with_tupyx">Pay with Tupyx</string>
+    <string name="config_mw_with_genius">MW with Genius</string>
+    <string name="config_mw_with_evo">MW with EVO</string>
+    <string name="config_genius_peripheral">Configure Genius Peripheral</string>
+    <string name="config_pay_with_boloro">Pay with Boloro</string>
+
+    <string name="config_customer_display">Customer Display Terminal</string>
+
+    <string name="config_default_transaction">Default Transaction</string>
+    <string name="config_configure_home_menu">Configure Home Menu</string>
+    <string name="config_block_price_level_change">Block Price Level Change</string>
+    <string name="config_require_address">Require Address</string>
+    <string name="config_require_po">Require PO</string>
+    <string name="config_clear_images_cache">Clear Images Cache</string>
+    <string name="config_skip_manager_price_override">Skip Manager Price Override</string>
+    <string name="config_require_password_to_clockout">Require Password To Clock Out</string>
+    <string name="config_maps_inside_app">Maps Inside App</string>
+    <string name="config_enable_location_inventory">Use Location Inventory</string>
+
+    <string name="config_allow_manual_credit_card">Allow Manual Credit Card</string>
+    <string name="config_process_check_online">Process Check Online</string>
+    <string name="config_show_tips_for_cash">Show Tips For Cash</string>
+    <string name="config_audio_card_reader">Audio Card Reader</string>
+    <string name="config_default_payment_method">Default Payment Method</string>
+    <string name="config_return_require_refund">Return Require Refund</string>
+    <string name="config_convert_to_reward">Convert To Reward</string>
+    <string name="config_invoice_require_payment">Invoice Require Payment</string>
+    <string name="config_invoice_require_full_payment">Invoice Require Full Payment</string>
+    <string name="config_prefill_total_amount">Pre-fill Total Amount</string>
+    <string name="config_use_store_and_forward">Use Store \u0026 Forward</string>
+    <string name="config_store_and_forward_transactions">Store \u0026 Forward Transactions</string>
+
+    <string name="config_enable_printing">Enable Printing</string>
+    <string name="config_printek_info">Printek Info</string>
+    <string name="config_star_info">Star Info</string>
+    <string name="config_snbc_setup">SNBC Setup</string>
+    <string name="config_set_printing_preferences">Set Printing Preferences</string>
+    <string name="config_automatic_printing">Automatic Printing</string>
+    <string name="config_configure_ingenico_settings">Configure Ingenico Settings</string>
+    <string name="config_redetect_peripherals">Re-detect Peripherals</string>
+    <string name="config_delete_saved_peripherals">Delete Saved Peripherals</string>
+    <string name="config_wholesale_printout">Wholesale Printout</string>
+    <string name="config_prompt_customer_copy">Prompt print receipt copy for CC payments</string>
+    <string name="config_print_receipt_transaction_payments">Print receipt of transaction payments</string>
+    <string name="config_handwritten_signature">Handwritten signature</string>
+
+    <string name="config_allow_decimal_quantities">Allow Decimal Quantities</string>
+    <string name="config_group_receipt_by_sku">Group Receipt By SKU</string>
+    <string name="config_require_password_to_remove_void">Require Password To Remove/Void</string>
+    <string name="config_show_removed_void_items_in_printout">Show Removed/Void Items In Print Out</string>
+    <string name="config_default_category">Default Category</string>
+    <string name="config_attribute_to_display">Attribute To Display</string>
+    <string name="config_group_in_catalog_by_name">Group In Catalog By Name</string>
+    <string name="config_filter_products_by_customer">Filter Products By Customers</string>
+    <string name="config_limit_products_on_hand">Limit Products On Hand</string>
+
+    <string name="config_open_shift">Open Shift</string>
+    <string name="config_expenses">Expenses</string>
+
+    <string name="config_use_nexternal">Use Nexternal</string>
+
+    <string name="config_require_manager_pass_to_void_trans">Req. Manager Pass To Void Trans</string>
+    <string name="config_default_country">Default Country</string>
+    <string name="config_connect_to_bluetooth_peripheral">Connect to Bluetooth Peripheral</string>
+    <string name="config_connect_to_usb_peripheral">Connect to USB Peripheral</string>
+
+    <string name="config_support_troubleshooting">Support Troubleshooting</string>
+    <string name="config_force_upload">Force Upload</string>
+    <string name="config_backup_data">Backup Data</string>
+
+
+    <string name="header_scanner">Scanner</string>
+    <string name="header_tupyx">Tupyx</string>
+    <string name="header_pay_with_tupyx">Pay with Tupyx</string>
+    <string name="tupyx_scanner_instruction">Place QR in front of camera</string>
+    <string name="tupyx_amount_to_pay">Amount To Pay</string>
+    <string name="tupyx_total_amount">Total Amount</string>
+    <string name="tupyx_read_qr">Read QR</string>
+
+
+    <string name="loyalty_points_balance">Points Balance</string>
+    <string name="loyalty_points_sub_total">Points Subtotal</string>
+    <string name="loyalty_points_in_use">Points in Use</string>
+    <string name="loyalty_points_available">Points Available</string>
+    <string name="loyalty_acumulable_points">Acumulable Points</string>
+
+    <string name="rewards_balance">Rewards Balance</string>
+    <string name="button_pay_with_rewards">Pay With Rewards</string>
+    <string name="label_sub_total">Subtotal</string>
+
+    <string name="activate">Activate</string>
+    <string name="deactivate">Deactivate</string>
+    <string name="add_balance">Add Balance</string>
+    <string name="balance_inquiry">Balance Inquiry</string>
+    <string name="manually_add_balance">Manually Add Balance</string>
+
+    <string name="amount">Amount</string>
+    <string name="invoice_num">Invoice #</string>
+    <string name="amount_to_add">Amount to Add</string>
+
+    <string name="boloro">Boloro</string>
+    <string name="tap_and_pay">Tap and Pay</string>
+    <string name="manual">Manual</string>
+    <string name="boloro_payment_method">What is the Boloro payment method?</string>
+    <string name="carrier">Carrier</string>
+    <string name="account">Account</string>
+    <string name="payment_saved_successfully">Payment Saved Successfully</string>
+    <string name="return_to_customer">Return to customer:</string>
+    <string name="reading_nfc_tag">Reading NFC tag\u002E\u002E\u002E</string>
+    <string name="scan_boloro_tag_now">Scan Boloro tag now</string>
+    <string name="processing_loyalty_card">Processing loyalty card\u002E\u002E\u002E</string>
+    <string name="processing_reward">Processing reward\u002E\u002E\u002E</string>
+    <string name="processing_credit_card">Processing credit card\u002E\u002E\u002E</string>
+    <string name="failed_genius_connectivity">There appears to be no connectivity with the genius device</string>
+    <string name="employee_could_not_be_processed">This employee selection could not be processed. Please try again.</string>
+    <string name="enter_cash_close_amount">Enter cash close amount</string>
+    <string name="close_amount_is">Close amount is</string>
+    <string name="password_five_char_long">Password must be 5 characters long</string>
+    <string name="send_unsync_items_first">Send unsynchronized items before proceeding</string>
+    <string name="without_customer">Without Customer</string>
+    <string name="with_customer">With Customer</string>
+    <string name="loading_boloro_data">Loading Boloro Data\u002E\u002E\u002E</string>
+    <string name="sending_boloro_payment">Sending Payment Request\u002E\u002E\u002E</string>
+    <string name="waiting_for_pin">Waiting for PIN from Customer\u002E\u002E\u002E</string>
+    <string name="cancelling_transaction">Cancelling Transaction</string>
+
+
+    <string name="tap_to_enter_loyalty">Tap to enter loyalty card</string>
+    <string name="tap_to_enter_rewards">Tap to enter reward card</string>
+    <string name="capture_front">Capture Front</string>
+    <string name="capture_back">Capture Back</string>
+    <string name="capture_check">Capture Check</string>
+    <string name="dlog_msg_check_capture_invalid">Invalid Check Capture</string>
+
+
+    <string name="redeem">Redeem</string>
+    <string name="accumulable">Accumulable</string>
+    <string name="btn_pay_with_loyalty">Pay with loyalty</string>
+    <string name="btn_process_all">Process All</string>
+
+    <string name="loyalty">Loyalty</string>
+    <string name="rewards">Rewards</string>
+    <string name="ivupos_packageid">ivupos</string>
+    <string name="paymentmethod_subtotal_amount">Subtotal</string>
+    <string name="privu_state">PR IVU 10.5</string>
+    <string name="privu_city">PR IVU 1</string>
+    <string name="paymethod_subtotal_amount_label">Subtotal</string>
+    <string name="paymethod_tax1_amount_label">Tax1</string>
+    <string name="paymethod_tax2_amount_label">Tax2</string>
+    <string name="processing_payment_msg">Processing Payment...</string>
+    <string name="changeLbl">Change:</string>
+    <string name="cash_invoice_lbl">Cash Invoice</string>
+    <string name="card_invoice">Card Invoice</string>
+    <string name="status_connected">Connected</string>
+    <string name="swipe_insert_card">Swipe/Insert Card...</string>
+    <string name="printing_message">Printing...</string>
+    <string name="please_wait_message">Please wait...</string>
+    <string name="ivu_control">"CONTROL: "</string>
+    <string name="adding_balance_message">Adding Balance...</string>
+    <string name="return_title">Return</string>
+    <string name="base_price_lbl">Base Price</string>
+    <string name="no_discount_lbl">No Discount</string>
+    <string name="amount_zero_lbl">0.00</string>
+    <string name="none_uppercase_lbl">NONE</string>
+    <string name="enabler_prefix">EN</string>
+    <string name="enabler_website">www.e-nabler.com</string>
+    <string name="powered_by_enabler">Powered by Enabler</string>
+    <string name="ivuloto_control_label">"CONTROL: "</string>
+    <string name="menu_back">Back</string>
+    <string name="selectinvoices">Select Invoices</string>
+    <string name="sync_send_btn">Send</string>
+    <string name="sync_receive_btn">Receive</string>
+    <string name="pay_button">Pay</string>
+    <string name="sync_enabler_submitlocationinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitLocationInventory.aspx</string>
+    <string name="genius_aid">AID:</string>
+    <string name="cryptogram_type">Cryptogram Type:</string>
+    <string name="cryptogram">Cryptogram:</string>
+    <string name="pin_statement">PIN Statement:</string>
+    <string name="payment_save_declined">Payment was declined.</string>
+    <string name="credit_approval_status">Status:</string>
+    <string name="approved">Approved</string>
+    <string name="error_reading_card">Card swipe read error.</string>
+    <string name="endofdayBtn">End of day</string>
+    <string name="declined">DECLINED</string>
+    <string name="ten_percent">10%</string>
+    <string name="fifteen_percent">15%</string>
+    <string name="twenty_percent">20%</string>
+    <string name="other">Other:</string>
+    <string name="config_toggle_elo_bcr">Elo barcode reader on/off</string>
+    <string name="genius_application_label">Application Label:</string>
+    <string name="receipt_amount">Amount:</string>
+    <string name="modify">Modify</string>
+    <string name="config_restaurant_settings">Restaurant Settings</string>
+    <string name="config_enable_togo_eatin">Enable section of \"To Go\"/\"Eat In\"</string>
+    <string name="config_require_waiter_signin">Require waiter to sign in</string>
+    <string name="config_enable_table_selection">Enable table selection</string>
+    <string name="config_ask_numbers_seats">Ask number of seats</string>
+    <string name="config_ask_split_equally">Ask to split payment equally</string>
+    <string name="select_togo_eatin">Select To-Go or Eat-In</string>
+    <string name="eatin_btn">Eat-In</string>
+    <string name="toGo_btn">To-Go</string>
+    <string name="select_table_number">Select table number</string>
+    <string name="select_table_seats_amount">Select the amount of seats</string>
+    <string name="split_by_seats">Split bill by seats</string>
+    <string name="split_equally">Split bill equally</string>
+    <string name="split_by_group_seats">Split bill seats group</string>
+    <string name="split_bill_by">Split Bill:</string>
+    <string name="splited_order_summary">Split Order Summary</string>
+    <string name="table_number">Table Number:</string>
+    <string name="seatNumber">Seat Number:</string>
+    <string name="splited_order_total_items">Items</string>
+    <string name="splited_order_price">Price</string>
+    <string name="addseat_btn">Add Seat</string>
+    <string name="elipses">...</string>
+    <string name="voiding_payments">Voiding Payments...</string>
+    <string name="processing_refund">Processing Refund...</string>
+    <string name="coundnot_proceess_payment">Could not process the payment.</string>
+    <string name="endofday_report">End of day report</string>
+    <string name="subtotal_receipt">Subtotal:</string>
+    <string name="move_product_seat">Change product seat</string>
+    <string name="join_seats">Join Seats</string>
+    <string name="delete_seat">Delete Seat</string>
+    <string name="amount_tendered">Tendered:</string>
+    <string name="timeout_tryagain">TIME OUT, would you like to try again?</string>
+    <string name="cannot_proceed">Can not proceed...</string>
+    <string name="activating">Activating...</string>
+    <string name="adding_balance">Adding Balance...</string>
+    <string name="retrieving_balance">Retrieving Balance...</string>
+    <string name="info">Info</string>
+    <string name="items">Items</string>
+    <string name="payments">Payments</string>
+    <string name="map">Map</string>
+    <string name="print_all_button">Print All</string>
+    <string name="balanceAmount">Balance Amount</string>
+    <string name="status">Status</string>
+    <string name="amount_added">Amount Added</string>
+    <string name="manualEntry">Manual entry</string>
+    <string name="handpoint_payment_error">Error processing handpoint payment.</string>
+    <string name="connecting_handpoint">Connecting Handpoint device...</string>
+    <string name="void_fail">Error processing void</string>
+    <string name="select_number_guests">Select number of guests</string>
+    <string name="fail_to_connect">Failed to connect</string>
+    <string name="connecting_bluetooth_device">Connecting Bletooth Device...</string>
+    <string name="move_items_to_seat">"Move items to seat "</string>
+    <string name="join_with_seat">"Join with seat "</string>
 
 </resources>

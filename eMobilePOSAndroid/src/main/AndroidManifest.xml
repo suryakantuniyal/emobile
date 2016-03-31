@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.emobilepos">
 
@@ -28,8 +29,8 @@
     <permission
         android:name="android.permission.MSR_OPERATION"
         android:protectionLevel="normal" />
-    <uses-permission android:name="android.permission.MSR_OPERATION" />
 
+    <uses-permission android:name="android.permission.MSR_OPERATION" />
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -48,6 +49,8 @@
         android:required="true" />
     <uses-feature android:name="android.hardware.usb.host" />
 
+    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:name="com.android.support.Global"
         android:icon="@drawable/icon"
@@ -58,7 +61,7 @@
             android:value="true" />
 
         <activity
-            android:name="com.android.emobilepos.initialization.SelectAccount_FA"
+            android:name=".initialization.SelectAccount_FA"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_main_menu"
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -69,7 +72,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.emobilepos.mainmenu.MainMenu_FA"
+            android:name=".mainmenu.MainMenu_FA"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
@@ -90,80 +93,77 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name="com.android.emobilepos.initialization.SelectEmployee_FA"
+            android:name=".initialization.SelectEmployee_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.initialization.SelectPassword_FA"
+            android:name=".initialization.SelectPassword_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.history.HistoryTransactions_FA"
+            android:name=".history.HistoryTransactions_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.history.HistoryPayments_FA"
+            android:name=".history.HistoryPayments_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.history.HistoryOpenInvoices_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity
-            android:name="com.android.emobilepos.history.HistoryConsignment_FA"
+            android:name=".history.HistoryOpenInvoices_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.history.HistoryGiftRewardLoyalty_FA"
+            android:name=".history.HistoryConsignment_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.history.HistoryInventoryTransfer_FA"
+            android:name=".history.HistoryGiftRewardLoyalty_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.history.details.HistoryTransactionDetails_FA"
+            android:name=".history.HistoryInventoryTransfer_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
-        <activity
-            android:name="com.android.emobilepos.history.details.HistoryOpenInvoicesDetails_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
-        <activity
-            android:name="com.android.emobilepos.history.details.HistoryConsignmentDetails_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
-        <activity
-            android:name="com.android.emobilepos.history.details.HistoryPaymentDetails_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
-        <activity
-            android:name="com.android.emobilepos.history.details.HistoryInventoryTransferDetails_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
-        <activity
-            android:name="com.android.emobilepos.ordering.SplittedOrderSummary_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false">
-
-        </activity>
-        <activity
-            android:name="com.android.emobilepos.OrderDetailsActivity"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
-        <activity
-            android:name="com.android.emobilepos.payment.SelectPayMethod_FA"
             android:exported="false"
-            android:launchMode="singleTop">
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.payment.ProcessCreditCard_FA"
+            android:name=".history.details.HistoryTransactionDetails_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
+            android:name=".history.details.HistoryOpenInvoicesDetails_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
+            android:name=".history.details.HistoryConsignmentDetails_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
+            android:name=".history.details.HistoryPaymentDetails_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
+            android:name=".history.details.HistoryInventoryTransferDetails_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
+            android:name=".ordering.SplittedOrderSummary_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"></activity>
+        <activity
+            android:name=".OrderDetailsActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
+            android:name=".payment.SelectPayMethod_FA"
+            android:exported="false"
+            android:launchMode="singleTop"></activity>
+        <activity
+            android:name=".payment.ProcessCreditCard_FA"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
@@ -184,7 +184,7 @@
                 android:resource="@xml/ot310_device_filter" />
         </activity>
         <activity
-            android:name="com.android.emobilepos.payment.ProcessGiftCard_FA"
+            android:name=".payment.ProcessGiftCard_FA"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
@@ -196,34 +196,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.emobilepos.payment.ProcessCash_FA"
+            android:name=".payment.ProcessCash_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.android.emobilepos.payment.ProcessCheck_FA"
+            android:name=".payment.ProcessCheck_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="com.android.emobilepos.payment.CaptureCheck_FA"
+            android:name=".payment.CaptureCheck_FA"
             android:configChanges="orientation|screenSize"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="com.android.emobilepos.payment.ProcessGenius_FA"
+            android:name=".payment.ProcessGenius_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.payment.TupyxCamera_FA"
+            android:name=".payment.TupyxCamera_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.payment.ProcessTupyx_FA"
+            android:name=".payment.ProcessTupyx_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
@@ -241,7 +241,7 @@
                 android:value="true" />
         </activity>
         <activity
-            android:name="com.android.emobilepos.payment.ProcessBoloro_FA"
+            android:name=".payment.ProcessBoloro_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
@@ -257,49 +257,48 @@
                 android:value="true" />
         </activity>
         <activity
-            android:name="com.android.emobilepos.OnHoldActivity"
+            android:name=".OnHoldActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="com.android.emobilepos.customer.ViewCustomers_FA"
+            android:name=".customer.ViewCustomers_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="com.android.emobilepos.customer.CreateCustomer_FA"
+            android:name=".customer.CreateCustomer_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name="com.android.emobilepos.customer.ViewCustomerDetails_FA"
-            android:exported="false"></activity>
-
+            android:name=".customer.ViewCustomerDetails_FA"
+            android:exported="false" />
         <activity
             android:name=".ShowProductImageActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.DrawReceiptActivity"
+            android:name=".DrawReceiptActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
-            android:name="com.android.emobilepos.ordering.ViewProductDetails_FA"
+            android:name=".ordering.ViewProductDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.ordering.PickerProduct_FA"
+            android:name=".ordering.PickerProduct_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:theme="@style/Theme.TransparentTest"></activity>
+            android:theme="@style/Theme.TransparentTest" />
         <activity
-            android:name="com.android.emobilepos.ordering.PickerAddon_FA"
+            android:name=".ordering.PickerAddon_FA"
             android:exported="false"
-            android:theme="@style/Theme.TransparentTest"></activity>
+            android:theme="@style/Theme.TransparentTest" />
         <activity
-            android:name="com.android.emobilepos.ordering.OrderingMain_FA"
+            android:name=".ordering.OrderingMain_FA"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
@@ -308,17 +307,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!--<activity-->
-        <!--android:name="com.android.logo.ordering.Receipt_FR"-->
-        <!--android:configChanges="orientation|screenSize"-->
-        <!--android:windowSoftInputMode="stateAlwaysHidden" >-->
-        <!--</activity>-->
+        <!-- <activity -->
+        <!-- android:name="com.android.logo.ordering.Receipt_FR" -->
+        <!-- android:configChanges="orientation|screenSize" -->
+        <!-- android:windowSoftInputMode="stateAlwaysHidden" > -->
+        <!-- </activity> -->
         <activity
-            android:name="com.android.emobilepos.ordering.OrderAttributes_FA"
+            android:name=".ordering.OrderAttributes_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.ordering.OrderAttrEdit_FA"
+            android:name=".ordering.OrderAttrEdit_FA"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/Theme.TransparentTest"
@@ -330,57 +329,57 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.emobilepos.consignment.ConsignmentMain_FA"
+            android:name=".consignment.ConsignmentMain_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.consignment.ConsignmentCheckout_FA"
+            android:name=".consignment.ConsignmentCheckout_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.consignment.ConsignmentHistory_FA"
+            android:name=".consignment.ConsignmentHistory_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.report.ViewReport_FA"
+            android:name=".report.ViewReport_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.report.ViewEndOfDayReport_FA"
+            android:name=".report.ViewEndOfDayReport_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.shifts.ClockInOut_FA"
+            android:name=".shifts.ClockInOut_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.shifts.ShiftExpensesList_FA"
-            android:configChanges="orientation|screenSize"
-            android:exported="false"
-            android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
-        <activity
-            android:name="com.android.emobilepos.shifts.ShiftExpense_FA"
+            android:name=".shifts.ShiftExpensesList_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize"></activity>
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name="com.android.emobilepos.shifts.OpenShift_FA"
+            android:name=".shifts.ShiftExpense_FA"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:theme="@style/LightTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".shifts.OpenShift_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/Theme.TransparentTest"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.shifts.ShiftReportDetails_FA"
+            android:name=".shifts.ShiftReportDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
-        <!--<activity-->
-        <!--android:name="com.android.logo.settings.SettingsCategory_FA"-->
-        <!--android:exported="false" >-->
-        <!--</activity>-->
+            android:exported="false" />
+        <!-- <activity -->
+        <!-- android:name="com.android.logo.settings.SettingsCategory_FA" -->
+        <!-- android:exported="false" > -->
+        <!-- </activity> -->
         <activity
-            android:name="com.android.emobilepos.settings.SettingsManager_FA"
+            android:name=".settings.SettingsManager_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme">
@@ -401,23 +400,22 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
-
         </activity>
         <activity
-            android:name="com.android.emobilepos.settings.ViewStoreForwardTrans_FA"
+            android:name=".settings.ViewStoreForwardTrans_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.cardmanager.GiftCard_FA"
-            android:exported="false"></activity>
+            android:name=".cardmanager.GiftCard_FA"
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.cardmanager.LoyaltyCard_FA"
-            android:exported="false"></activity>
+            android:name=".cardmanager.LoyaltyCard_FA"
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.cardmanager.RewardCard_FA"
-            android:exported="false"></activity>
+            android:name=".cardmanager.RewardCard_FA"
+            android:exported="false" />
         <activity
-            android:name="com.android.emobilepos.cardmanager.CardManager_FA"
+            android:name=".cardmanager.CardManager_FA"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -428,36 +426,37 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.emobilepos.cardmanager.ActivateCard_FA"
+            android:name=".cardmanager.ActivateCard_FA"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.cardmanager.AddBalance_FA"
+            android:name=".cardmanager.AddBalance_FA"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.cardmanager.BalanceInquiry_FA"
+            android:name=".cardmanager.BalanceInquiry_FA"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.android.emobilepos.cardmanager.ManualAddBalance_FA"
+            android:name=".cardmanager.ManualAddBalance_FA"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <!--<activity-->
-        <!--android:name="com.iparse.checkcapture.CheckCaptureActivity"-->
-        <!--android:configChanges="keyboardHidden|screenSize"-->
-        <!--android:label="@string/app_name"-->
-        <!--android:screenOrientation="landscape"-->
-        <!--android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >-->
-        <!--</activity>-->
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <!-- <activity -->
+        <!-- android:name="com.iparse.checkcapture.CheckCaptureActivity" -->
+        <!-- android:configChanges="keyboardHidden|screenSize" -->
+        <!-- android:label="@string/app_name" -->
+        <!-- android:screenOrientation="landscape" -->
+        <!-- android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" > -->
+        <!-- </activity> -->
+
 
         <!-- Crash Activity that will appears when app crashes -->
         <activity android:name="com.android.crashreport.CrashActivity" />
@@ -465,12 +464,15 @@
         <service
             android:name="com.mpowa.android.sdk.powapos.common.communication.usbsocket.PowaUsbService"
             android:enabled="true" />
+
         <receiver android:name="drivers.em70.utils.BCRReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.bcr.newdata" />
                 <action android:name="android.intent.action.scanner.data" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".payment.TipAdjustmentFA"></activity>
     </application>
 
 </manifest>

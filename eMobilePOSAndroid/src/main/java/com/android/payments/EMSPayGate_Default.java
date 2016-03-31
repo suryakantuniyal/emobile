@@ -55,8 +55,8 @@ public class EMSPayGate_Default {
         ChargeCreditCardAction(1010), ChargeTupixAction(1010), ChargeCheckAction(1012), ChargeCashAction(
                 1013), ChargeDebitAction(1014),
 
-        ChargeGeniusAction(1017), ChargeGiftCardAction(1018), ChargeLoyaltyCardAction(1019), CreditCardAuthAction(
-                1020), ChargeRewardAction(1021),
+        ChargeGeniusAction(1017), ChargeGiftCardAction(1018), ChargeLoyaltyCardAction(1019),
+        CreditCardAuthAction(1020), ChargeRewardAction(1021), CreditCardAdjustAmountAction(1110),
 
         VoidCreditCardAction(2010), VoidCheckAction(2012), ReturnCreditCardAction(3010), ReturnDebitAction(3014),
 
@@ -168,6 +168,21 @@ public class EMSPayGate_Default {
                     serializer.endTag(empstr, "epay");
                     serializer.endDocument();
 
+                    break;
+                case CreditCardAdjustAmountAction:
+                    generateERP();
+                    generateAmountBlock();
+                    generateContactInfoBlock(payment.cust_id);
+
+                    if (isSwipe)
+                        generateEncryptedBlock();
+
+                    if (Global.isIvuLoto)
+                        generateEvertec();
+                    generateOrderBlock(payment.job_id);
+                    generateAdjustAmountBlock();
+                    serializer.endTag(empstr, "epay");
+                    serializer.endDocument();
                     break;
                 case CreditCardAuthAction:
                 case ChargeCreditCardAction:
@@ -754,6 +769,17 @@ public class EMSPayGate_Default {
         serializer.endTag(empstr, "dateandtime");
 
         serializer.endTag(empstr, "ERP");
+    }
+
+    private void generateAdjustAmountBlock() throws IllegalArgumentException, IllegalStateException, IOException {
+        serializer.startTag(empstr, "AdjustAmountBlock");
+        serializer.startTag(empstr, "TransID");
+        serializer.text(payment.pay_transid);
+        serializer.endTag(empstr, "TransID");
+        serializer.startTag(empstr, "CCCardType");
+        serializer.text(payment.card_type);
+        serializer.endTag(empstr, "CCCardType");
+        serializer.endTag(empstr, "AdjustAmountBlock");
     }
 
     private void generateAmountBlock() throws IllegalArgumentException, IllegalStateException, IOException {

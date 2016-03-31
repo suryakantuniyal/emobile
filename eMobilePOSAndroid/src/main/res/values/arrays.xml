@@ -16,6 +16,7 @@
         <item name="menu_on_hold">On Hold</item>
         <item name="menu_consignment">Consignment</item>
         <item name="menu_transfer_inventory">Inventory Transfer</item>
+        <item name="menu_tip_adjustment">Tip Adjustment</item>
     </string-array>
 
     <string-array name="salesReceiptSplitTypes">
@@ -23,7 +24,6 @@
         <item name="split_equally">@string/split_equally</item>
         <item name="split_single">@string/split_single</item>
     </string-array>
-
 
 
     <integer-array name="dinningTableSeatsArray">
@@ -74,7 +74,9 @@
         <item name="menu_on_hold">11</item>
         <item name="menu_consignment">12</item>
         <item name="menu_transfer_inventory">13</item>
+        <item name="menu_tip_adjustment">14</item>
     </string-array>
+
     <string-array name="mainMenuKey">
         <item name="menu_sales_receipt">0</item>
         <item name="menu_order">1</item>
@@ -90,7 +92,9 @@
         <item name="menu_on_hold">11</item>
         <item name="menu_consignment">12</item>
         <item name="menu_transfer_inventory">13</item>
+        <item name="menu_tip_adjustment">14</item>
     </string-array>
+
     <string-array name="printPrefArray">
         <item name="print_header">Header</item>
         <item name="print_shiptoinfo">Ship To Info</item>
