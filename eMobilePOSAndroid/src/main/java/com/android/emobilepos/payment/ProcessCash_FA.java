@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
+import util.NumberUtil;
+
 public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
@@ -79,7 +81,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     private Bundle extras;
     private Button btnProcess;
     private List<GroupTax> groupTaxRate;
-    private NumberUtils numberUtils = new NumberUtils();
 
 
     @Override
@@ -252,7 +253,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, amountDue);
+                NumberUtils.parseInputedCurrency(s, amountDue);
             }
         });
 
@@ -266,7 +267,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, tipAmount);
+                NumberUtils.parseInputedCurrency(s, tipAmount);
             }
         });
 
@@ -280,7 +281,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, paid);
+                NumberUtils.parseInputedCurrency(s, paid);
             }
         });
 
@@ -422,7 +423,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
 
     private void recalculateChange() {
-
+        amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tipAmount));
         double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
         double totalPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
@@ -480,7 +481,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, promptTipField);
+                NumberUtils.parseInputedCurrency(s, promptTipField);
             }
         });
 

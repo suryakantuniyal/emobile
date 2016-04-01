@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.database.OrderProductsHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
@@ -100,6 +101,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         global = (Global) activity.getApplication();
         prodAddonsHandler = new ProductAddonsHandler(activity);
         _prod_id = extras.getString("prod_id");
+        List<OrderProduct> orderProductAddons = OrderProductsHandler.getOrderProductAddons(_prod_id);
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(0).get("cat_id"));
         myGridView = (GridView) findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
