@@ -26,15 +26,12 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 	private DisplayImageOptions options;
 
 	private Activity activity;
-	private ViewHolder holder;
-	
-	
-	
+
+
 	private Global global;
 	private final int SELECT_EMPTY = 0, SELECT_CHECKED = 1, SELECT_CROSS = 2;
 	//private final int COLOR_GREEN = Color.rgb(0, 112, 60),COLOR_RED = Color.RED, COLOR_BLACK = Color.rgb(98, 105, 77);
 	private final int COLOR_GREEN = Color.rgb(0, 112, 60),COLOR_RED = Color.RED, COLOR_BLUE = Color.rgb(24, 136, 161);
-	private int cursorSize = 0;
 	private boolean itHasAddonProducts = true;
 	private Cursor c;
 	
@@ -45,7 +42,6 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 
 	public PickerAddonLV_Adapter(Activity context, Cursor _c, int flags, ImageLoader _imageLoader) {
 		super(context, _c, flags);
-		// TODO Auto-generated constructor stub
 		activity = context;
 		inflater = LayoutInflater.from(context);
 		imageLoader = _imageLoader;
@@ -56,9 +52,9 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 		global = (Global) activity.getApplication();
 		c = _c;
 		c.moveToFirst();
-    	
-    	cursorSize = c.getCount();
-    	if(cursorSize==1)
+
+		int cursorSize = c.getCount();
+    	if(cursorSize ==1)
     	{
     		String prodID = c.getString(c.getColumnIndex("_id"));
     		if(prodID==null)
@@ -68,12 +64,11 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 
 	@Override
 	public void bindView(View view, Context context, final Cursor c) {
-		// TODO Auto-generated method stub	
 		final int position = c.getPosition();
 		
 		c.moveToPosition(position);
-        
-		holder = (ViewHolder)view.getTag();
+
+		ViewHolder holder = (ViewHolder) view.getTag();
         if(position == 0)
         	holder.prod_image.requestFocus();
 
@@ -131,10 +126,9 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 	
 	@Override
 	public View newView(Context context, Cursor c, ViewGroup parent) {
-		// TODO Auto-generated method stub
 
-		View retView = null;
-		ViewHolder holder = new ViewHolder();
+		View retView;
+		ViewHolder holder;
 
 		holder = new ViewHolder();
 		holder.i_prod_img_name = c.getColumnIndex("prod_img_name");
@@ -173,7 +167,6 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 
 	@Override
 	public void onClick(View view) {
-		// TODO Auto-generated method stub
 		ViewHolder holder = (ViewHolder)view.getTag();
 		if(holder!=null)
 		{

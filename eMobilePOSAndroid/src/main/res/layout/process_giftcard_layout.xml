@@ -81,10 +81,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:digits="0123456789"
                     android:hint="@string/card_number"
                     android:imeOptions="flagNoExtractUi|actionNext"
-                    android:inputType="numberDecimal"
                     android:nextFocusDown="@+id/fieldCardCCV"
                     android:password="true"
                     android:singleLine="true"
@@ -98,10 +96,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal" >
-
-                    
-
-                    
                 </LinearLayout>
 
                 

@@ -316,11 +316,12 @@ public class OrderProductListAdapter extends BaseAdapter {
                         Intent intent = new Intent(activity, PickerAddon_FA.class);
                         String prodID = product.prod_id;
 //                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
-
+                        intent.putExtra("selectedSeatNumber", product.assignedSeat);
                         intent.putExtra("addon_map_key", tempId);
                         intent.putExtra("isEditAddon", true);
                         intent.putExtra("prod_id", prodID);
                         intent.putExtra("item_position", orderProductIdx);
+
 
 
                         ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
