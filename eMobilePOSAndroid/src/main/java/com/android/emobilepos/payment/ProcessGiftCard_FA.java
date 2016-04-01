@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -90,6 +89,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private EMSCallBack callBack;
     private EMSIDTechUSB _msrUsbSams;
     private NumberUtils numberUtils = new NumberUtils();
+    private GiftCardTextWatcher msrTextWatcher;
 
 
     @Override
@@ -117,7 +117,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         tax2 = (EditText) findViewById(R.id.tax2GiftAmount);
         TextView tax1Lbl = (TextView) findViewById(R.id.tax1GiftCardLbl);
         TextView tax2Lbl = (TextView) findViewById(R.id.tax2GiftCardLbl);
-
+        msrTextWatcher = new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager, Global.isEncryptSwipe);
         if (!Global.isIvuLoto) {
             findViewById(R.id.row1Gift).setVisibility(View.GONE);
             findViewById(R.id.row2Gift).setVisibility(View.GONE);
@@ -138,7 +138,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 Global.formatDoubleToCurrency(0.00));
         tax2.setText(
                 Global.getCurrencyFormat(Global.formatNumToLocale(0.00)));
-        fieldHidden.addTextChangedListener(new GiftCardTextWatcher(activity, fieldHidden, fieldCardNum, cardInfoManager, Global.isEncryptSwipe));
+        fieldHidden.addTextChangedListener(msrTextWatcher);
         Button btnExact = (Button) findViewById(R.id.exactAmountBut);
         Button btnProcess = (Button) findViewById(R.id.processButton);
         btnExact.setOnClickListener(this);
@@ -147,6 +147,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         setupHeaderTitle();
         setUpCardReader();
         hasBeenCreated = true;
+        fieldHidden.requestFocus();
     }
 
     @Override
@@ -379,7 +380,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         Global.amountPaid = Double.toString(amountTendered);
         payment.pay_dueamount = Double.toString(totalAmount - amountTendered);
-        payment.amountTender= amountTendered;
+        payment.amountTender = amountTendered;
         payment.pay_amount = Double.toString(amountTendered);
         payment.originalTotalAmount = Double.toString(totalAmount);
 
@@ -441,10 +442,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
         if (!isRefund) {
             payment.pay_type = "0";
-            if(cardType.equalsIgnoreCase("GIFTCARD")) {
+            if (cardType.equalsIgnoreCase("GIFTCARD")) {
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGiftCardAction, cardInfoManager.getWasSwiped(), cardType,
                         cardInfoManager);
-            }else  if(cardType.equalsIgnoreCase("REWARD")){
+            } else if (cardType.equalsIgnoreCase("REWARD")) {
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, cardInfoManager.getWasSwiped(), cardType,
                         cardInfoManager);
             }
@@ -606,9 +607,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                     && Global.mainPrinterManager != null)
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
-        }else{
-            Global.showPrompt(activity, R.string.card_card_swipe,getString(R.string.error_reading_card));
+        } else {
+            Global.showPrompt(activity, R.string.card_card_swipe, getString(R.string.error_reading_card));
         }
+
     }
 
     @Override
