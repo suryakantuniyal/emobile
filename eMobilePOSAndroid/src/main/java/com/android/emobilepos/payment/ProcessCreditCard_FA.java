@@ -86,7 +86,7 @@ import interfaces.EMSCallBack;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
-    private static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
+    public static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
             CREDITCARD_TYPE_MASTERCARD = "MasterCard", CREDITCARD_TYPE_AMEX = "AmericanExpress";
 

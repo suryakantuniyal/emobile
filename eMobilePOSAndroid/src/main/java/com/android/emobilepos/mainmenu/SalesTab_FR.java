@@ -394,8 +394,9 @@ public class SalesTab_FR extends Fragment {
             }
 
         } else {
-            switch (pos) {
-                case 0: // Sales Receipt
+            switch (Global.TransactionType.getByCode(pos))  {
+
+                case SALE_RECEIPT: // Sales Receipt
                 {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
@@ -412,7 +413,7 @@ public class SalesTab_FR extends Fragment {
 
                     break;
                 }
-                case 2: // Return
+                case RETURN: // Return
                 {
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
                         Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_select_customer));
@@ -423,7 +424,7 @@ public class SalesTab_FR extends Fragment {
                     }
                     break;
                 }
-                case 5: // Payment
+                case PAYMENT: // Payment
                 {
 
                     if (myPref.getPreferences(MyPreferences.pref_require_customer)) {
@@ -439,19 +440,19 @@ public class SalesTab_FR extends Fragment {
                     }
                     break;
                 }
-                case 6:        //Gift Card
+                case GIFT_CARD:        //Gift Card
                     intent = new Intent(activity, GiftCard_FA.class);
                     startActivity(intent);
                     break;
-                case 7:    //Loyalty Card
+                case LOYALTY_CARD:    //Loyalty Card
                     intent = new Intent(activity, LoyaltyCard_FA.class);
                     startActivity(intent);
                     break;
-                case 8:    //Reward Card
+                case REWARD_CARD:    //Reward Card
                     intent = new Intent(activity, RewardCard_FA.class);
                     startActivity(intent);
                     break;
-                case 9: // Refund
+                case REFUND: // Refund
                 {
                     intent = new Intent(activity, SelectPayMethod_FA.class);
                     intent.putExtra("salesrefund", true);
@@ -465,13 +466,18 @@ public class SalesTab_FR extends Fragment {
                     startActivity(intent);
                     break;
                 }
-                case 11://on Hold
+                case ON_HOLD://on Hold
                     DBManager dbManager = new DBManager(activity);
                     dbManager.synchSendOrdersOnHold(true, false);
                     break;
-                case 13:
+                case LOCATION:
                     pickLocations(true);
                     break;
+                case TIP_ADJUSTMENT: {
+                    intent = new Intent(activity, TipAdjustmentFA.class);
+                    startActivity(intent);
+                    break;
+                }
             }
         }
     }

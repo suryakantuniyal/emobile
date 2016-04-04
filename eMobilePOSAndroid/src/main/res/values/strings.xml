@@ -1144,5 +1144,7 @@
     <string name="tip_adjustment">Tip Adjustment</string>
     <string name="hint_transationid">Enter Transaction ID</string>
     <string name="hint_tipamount">Enter Tip Amount</string>
+    <string name="adjust_tip_required_fields">Transaction ID and Tip Amount are required.</string>
+    <string name="processing_tipamount">Processing transaction tip amount</string>
 
 </resources>

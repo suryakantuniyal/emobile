@@ -192,6 +192,8 @@ public class Global extends MultiDexApplication {
                     return CONSIGNMENT;
                 case 13:
                     return LOCATION;
+                case 14:
+                    return TIP_ADJUSTMENT;
                 default:
                     return null;
             }
@@ -305,6 +307,7 @@ public class Global extends MultiDexApplication {
     public final static int S_SUBMIT_LOCATIONS_INVENTORY = 59;
     public final static int S_GET_XML_DINNER_TABLES = 60;
     public final static int S_GET_XML_SALES_ASSOCIATE = 61;
+    public final static int S_SUBMIT_TIP_ADJUSTMENT = 62;
 
     // public final static int S_LOCATIONS_INVENTORY = 59;
 

@@ -249,6 +249,11 @@ public class Post {
                 isShortResponse = true;
                 isPost = false;
                 break;
+            case Global.S_SUBMIT_TIP_ADJUSTMENT:
+                postLink = activity.getString(R.string.sync_enabler_submitpayments);
+                entity = varyingVariable;
+                isPost = true;
+                break;
             case Global.S_UPDATE_SYNC_TIME:
                 url = baseURL.append(xml.updateSyncTime(varyingVariable));
                 isPost = false;

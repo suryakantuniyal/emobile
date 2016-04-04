@@ -166,5 +166,12 @@
         <item name="reader_walker">3</item>
     </string-array>
 
+    <string-array name="cardTypes">
+        <item name="amex">American Express</item>
+        <item name="visa">Visa</item>
+        <item name="discover">Discover</item>
+        <item name="mastercard">Master Card</item>
+    </string-array>
+
     <string name="split_single">Single Receipt</string>
 </resources>
