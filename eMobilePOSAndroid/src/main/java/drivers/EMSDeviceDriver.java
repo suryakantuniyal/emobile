@@ -932,10 +932,10 @@ public class EMSDeviceDriver {
         Canvas c = new Canvas(b);
         v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
         v.draw(c);
-        int margins = new Double(PAPER_WIDTH * .10).intValue();
-        float ratio = new Integer(PAPER_WIDTH - margins).floatValue() / new Integer(b.getWidth()).floatValue();
-        int width = Math.round(ratio * b.getWidth());
-        int height = Math.round(ratio * b.getHeight());
+//        int margins = new Double(PAPER_WIDTH * .).intValue();
+//        float ratio = new Integer(PAPER_WIDTH - margins).floatValue() / new Integer(b.getWidth()).floatValue();
+        int width = Math.round(b.getWidth());
+        int height = Math.round(b.getHeight());
         b = Bitmap.createScaledBitmap(b, width, height, true);
         return b;
     }

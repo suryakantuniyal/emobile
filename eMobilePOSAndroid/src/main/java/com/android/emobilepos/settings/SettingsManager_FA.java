@@ -774,7 +774,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
                             {
-                                myPref.swiperType(false, Global.MAGTEK);
+                                myPref.setSwiperType(Global.MAGTEK);
                                 myPref.swiperMACAddress(false, macAddressList.get(pos));
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -834,29 +834,27 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             {
                                 myPref.setPrinterType(Global.KDC500);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
-                                myPref.swiperType(false, Global.KDC500);
+                                myPref.setSwiperType(Global.KDC500);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
-                                myPref.setPrinterType(Global.HANDPOINT);
-                                myPref.swiperType(false, Global.HANDPOINT);
-                                myPref.setPrinterMACAddress(macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
+                                myPref.setSwiperType(Global.HANDPOINT);
+                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+
                                 EMSDeviceManager edm = new EMSDeviceManager();
-                                Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.HANDPOINT, false);
                                 Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.HANDPOINT, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     myPref.getPreferences(MyPreferences.pref_mw_with_evo)) {
-                                myPref.setPrinterType(Global.ICMPEVO);
-                                myPref.swiperType(false, Global.ICMPEVO);
+                                myPref.setSwiperType(Global.ICMPEVO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
+                                myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
-                                Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.ICMPEVO, false);
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.ICMPEVO, false);
                                 Global.btSwiper = edm.getManager();
 
                             } else {
@@ -1002,20 +1000,20 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 c.close();
                 String _portName;
                 String _peripheralName = "";
-                if ((myPref.swiperType(true, -2) != -1)
+                if ((myPref.getSwiperType() != -1)
                         && (Global.btSwiper == null || Global.btSwiper.currentDevice == null)) {
                     edm = new EMSDeviceManager();
                     _portName = myPref.swiperMACAddress(true, null);
-                    _peripheralName = Global.getPeripheralName(myPref.swiperType(true, -2));
+                    _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                     Global.btSwiper = edm.getManager();
-                    if (Global.btSwiper.loadMultiDriver(activity, myPref.swiperType(true, -2), 0, false,
+                    if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
                             myPref.swiperMACAddress(true, null), null))
                         sb.append(_peripheralName).append(": ").append("Connected\n");
                     else
                         sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-                } else if (myPref.swiperType(true, -2) != -1 && Global.btSwiper != null
+                } else if (myPref.getSwiperType()!= -1 && Global.btSwiper != null
                         && Global.btSwiper.currentDevice != null) {
-                    _peripheralName = Global.getPeripheralName(myPref.swiperType(true, -2));
+                    _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                     sb.append(_peripheralName).append(": ").append("Connected\n");
                 }
                 if ((myPref.getPrinterType() != -1)

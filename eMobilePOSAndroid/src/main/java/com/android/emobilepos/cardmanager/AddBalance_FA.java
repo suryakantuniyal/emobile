@@ -193,7 +193,7 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
 //				}).start();
 //			}
 		} else {
-			int _swiper_type = myPref.swiperType(true, -2);
+			int _swiper_type = myPref.getSwiperType();
 			int _printer_type = myPref.getPrinterType();
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
 				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);

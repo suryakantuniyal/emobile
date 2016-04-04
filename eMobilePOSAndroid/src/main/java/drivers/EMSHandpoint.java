@@ -308,7 +308,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void deviceDiscoveryFinished(List<Device> devices) {
         for (Device device : devices) {
             if (device.getName() != null) {
-                if (device.getName().equals(myPref.getPrinterName())) {
+                if (device.getName().equals(myPref.getSwiperName())) {
                     // Put the name of your device, find it by doing C then up arrow on your card reader keypad
                     EMSHandpoint.device = device;
                     EMSHandpoint.hapi.useDevice(EMSHandpoint.device);

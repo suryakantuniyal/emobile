@@ -57,7 +57,10 @@
             android:background="@drawable/bg_btn_white"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:paddingRight="20dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
 
             <ImageView
                 android:id="@+id/imageView"

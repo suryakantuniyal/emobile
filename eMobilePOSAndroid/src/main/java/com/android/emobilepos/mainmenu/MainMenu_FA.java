@@ -221,15 +221,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             c.close();
             String _portName = "";
             String _peripheralName = "";
-            if ((myPref.swiperType(true, -2) != -1) && (Global.btSwiper == null)) {
+            if ((myPref.getSwiperType() != -1) && (Global.btSwiper == null)) {
                 edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
                 _portName = myPref.swiperMACAddress(true, null);
-                _peripheralName = Global.getPeripheralName(myPref.swiperType(true, -2));
+                _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                 Global.btSwiper = edm.getManager();
                 // Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
                 // -2), false);
-                if (Global.btSwiper.loadMultiDriver(activity, myPref.swiperType(true, -2), 0, false,
+                if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
                         myPref.swiperMACAddress(true, null), null))
                     sb.append(_peripheralName).append(": ").append("Connected\n");
                 else

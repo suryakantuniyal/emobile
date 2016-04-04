@@ -672,16 +672,26 @@ public class MyPreferences {
         return empstr;
     }
 
-    public int swiperType(boolean isGet, int value) {
+    public int getSwiperType(){
         String swiper_type = "swiper_type";
-        if (isGet)
-            return prefs.getInt(swiper_type, -1);
-        else {
-            prefEditor.putInt(swiper_type, value);
-            prefEditor.commit();
-        }
-        return -1;
+        return prefs.getInt(swiper_type, -1);
     }
+
+    public void setSwiperType(int type){
+        String swiper_type = "swiper_type";
+        prefEditor.putInt(swiper_type, type);
+        prefEditor.commit();
+    }
+//    public int swiperType(boolean isGet, int value) {
+//        String swiper_type = "swiper_type";
+//        if (isGet)
+//            return prefs.getInt(swiper_type, -1);
+//        else {
+//            prefEditor.putInt(swiper_type, value);
+//            prefEditor.commit();
+//        }
+//        return -1;
+//    }
 
     public String cdtLine1(boolean get, String value) {
         String cdt_line1 = "cdt_line1";
@@ -723,6 +733,15 @@ public class MyPreferences {
 
     public String getPrinterName() {
         return prefs.getString("printer_name", "");
+    }
+
+    public void setSwiperName(String value) {
+        prefEditor.putString("swiper_name", value);
+        prefEditor.commit();
+    }
+
+    public String getSwiperName() {
+        return prefs.getString("swiper_name", "");
     }
 
     public int sledType(boolean isGet, int value) {

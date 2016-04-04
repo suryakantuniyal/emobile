@@ -656,7 +656,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             } else {
                 voidTransaction();
             }
-        } else if (myPref.getPrinterType() == Global.HANDPOINT) {
+        } else if (myPref.getSwiperType() == Global.HANDPOINT) {
             if (Global.mainPrinterManager.currentDevice != null) {
                 Global.mainPrinterManager.currentDevice.loadCardReader(this, false);
                 voidTransaction();
@@ -707,7 +707,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         listVoidPayments = payHandler.getOrderPayments(order_id);
         int size = listVoidPayments.size();
         if (size > 0) {
-            if (myPref.getPrinterType() == Global.HANDPOINT) {
+            if (myPref.getSwiperType() == Global.HANDPOINT) {
                 paymentsToVoid = new ArrayList<Payment>();
                 paymentsToVoid.addAll(listVoidPayments);
 //                for (Payment p : listVoidPayments) {
