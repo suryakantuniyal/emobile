@@ -23,6 +23,7 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
     private Context context;
     private EditText cardEditText;
     private boolean encryptCardNumber;
+    private boolean isBCR;
 
     public GiftCardTextWatcher(Context context, EditText hiddenEditText, EditText cardEditText, CreditCardInfo creditCardInfo, boolean encryptCardNumber) {
         this.hiddenEditText = hiddenEditText;
@@ -40,7 +41,11 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (s.toString().contains(";") && s.toString().endsWith("?")) {
+            isBCR = false;
             doneScanning = true;
+        } else if (s.toString().endsWith("\n") && s.length() > 4 && !s.toString().contains(";") && !s.toString().contains("?")) {
+            doneScanning = true;
+            isBCR = true;
         }
     }
 
@@ -50,26 +55,30 @@ public class GiftCardTextWatcher implements android.text.TextWatcher {
         if (doneScanning) {
             doneScanning = false;
             String data = hiddenEditText.getText().toString().replace("\n", "").replace("\r", "");
-            creditCardInfo = Global.parseSimpleMSR(context, data);
-            if (encryptCardNumber) {
-                cardEditText.setText(creditCardInfo.getCardNumAESEncrypted());
+            if (isBCR) {
+                cardEditText.setText(data);
+                hiddenEditText.setText("");
             } else {
-                cardEditText.setText(creditCardInfo.getCardNumUnencrypted());
-            }
-            creditCardInfo.setCardType("GiftCard");
-            hiddenEditText.setText("");
-            SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
-            SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
-            String formatedYear = "";
-            try {
-                Date date = dt2.parse(creditCardInfo.getCardExpYear());
-                formatedYear = dt.format(date);
-            } catch (ParseException e) {
+                creditCardInfo = Global.parseSimpleMSR(context, data);
+                if (encryptCardNumber) {
+                    cardEditText.setText(creditCardInfo.getCardNumAESEncrypted());
+                } else {
+                    cardEditText.setText(creditCardInfo.getCardNumUnencrypted());
+                }
+                creditCardInfo.setCardType("GiftCard");
+                hiddenEditText.setText("");
+                SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
+                SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
+                String formatedYear = "";
+                try {
+                    Date date = dt2.parse(creditCardInfo.getCardExpYear());
+                    formatedYear = dt.format(date);
+                } catch (ParseException e) {
 
+                }
+                creditCardInfo.setCardExpYear(formatedYear);
+                creditCardInfo.setWasSwiped(true);
             }
-            creditCardInfo.setCardExpYear(formatedYear);
-            creditCardInfo.setWasSwiped(true);
-
         }
     }
 }

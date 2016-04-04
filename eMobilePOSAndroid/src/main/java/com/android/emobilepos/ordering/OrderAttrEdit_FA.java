@@ -9,13 +9,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -70,8 +68,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
     private EMSUniMagDriver uniMagReader;
     public EMSIDTechUSB _msrUsbSams;
     private EMSMagtekAudioCardReader magtekReader;
-    private EMSRover roverReader;
-    private Switch switchView;
     private LinearLayout cardLayoutHolder, commentLayoutHolder, lastSavedHolder;
     private String ordprodattr_id, attr_id, attr_name, attr_value, ordprod_id;
     private boolean isModify = false;
@@ -79,7 +75,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     // Honeywell Dolphin black
     private DecodeManager mDecodeManager = null;
-    private final int SCANTIMEOUT = 500000;
     private boolean scannerInDecodeMode = false;
 
     @Override
@@ -116,7 +111,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
         fieldHiddenScan = (EditText) findViewById(R.id.hiddenFieldScan);
         fieldHiddenSwiper = (EditText) findViewById(R.id.hiddenFieldSwiper);
-        switchView = (Switch) findViewById(R.id.switchView);
+        Switch switchView = (Switch) findViewById(R.id.switchView);
         switchView.setOnCheckedChangeListener(this);
 
         fieldCardNum = (MyEditText) findViewById(R.id.fieldCardNumber);
@@ -156,7 +151,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager.disableSymbology(CommonDefine.SymbologyID.SYM_CODE39);
                 mDecodeManager.setSymbologyDefaults(CommonDefine.SymbologyID.SYM_UPCA);
             } catch (RemoteException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -176,7 +170,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager.release();
                 mDecodeManager = null;
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -197,7 +190,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 mDecodeManager.release();
                 mDecodeManager = null;
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -254,7 +246,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                         }
                     }).start();
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    roverReader = new EMSRover();
+                    EMSRover roverReader = new EMSRover();
                     roverReader.initializeReader(activity, false);
                 }
             }
@@ -302,7 +294,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     private TextWatcher textWatcher() {
 
-        TextWatcher tw = new TextWatcher() {
+        return new TextWatcher() {
             boolean doneScanning = false;
 
             @Override
@@ -321,52 +313,46 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
                 if (s.toString().contains("\n"))
                     doneScanning = true;
             }
         };
-        return tw;
     }
 
-    private TextWatcher textWatcherSwiper(final EditText hiddenField) {
-
-        TextWatcher tw = new TextWatcher() {
-            boolean doneScanning = false;
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (doneScanning) {
-                    doneScanning = false;
-                    String data = hiddenField.getText().toString().trim().replace("\n", "");
-                    // hiddenField.setText("");
-                    cardInfoManager = Global.parseSimpleMSR(activity, data);
-                    updateViewAfterSwipe();
-                    hiddenField.setText("");
-                    // fieldHiddenScan.requestFocus();
-
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // TODO Auto-generated method stub
-                if (s.toString().contains("\n"))
-                    doneScanning = true;
-            }
-        };
-        return tw;
-    }
+//    private TextWatcher textWatcherSwiper(final EditText hiddenField) {
+//
+//        return new TextWatcher() {
+//            boolean doneScanning = false;
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if (doneScanning) {
+//                    doneScanning = false;
+//                    String data = hiddenField.getText().toString().trim().replace("\n", "");
+//                    // hiddenField.setText("");
+//                    cardInfoManager = Global.parseSimpleMSR(activity, data);
+//                    updateViewAfterSwipe();
+//                    hiddenField.setText("");
+//                    // fieldHiddenScan.requestFocus();
+//
+//                }
+//            }
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                if (s.toString().contains("\n"))
+//                    doneScanning = true;
+//            }
+//        };
+//    }
 
     // SAM4s
     @Override
@@ -410,7 +396,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
         this.cardInfoManager = cardManager;
         updateViewAfterSwipe();
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
@@ -422,7 +407,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     @Override
     public void readerConnectedSuccessfully(boolean didConnect) {
-        // TODO Auto-generated method stub
         if (didConnect) {
             cardReaderConnected = true;
             if (uniMagReader != null && uniMagReader.readerIsConnected())
@@ -438,7 +422,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     @Override
     public void scannerWasRead(String data) {
-        // TODO Auto-generated method stub
         if (!data.isEmpty()) {
             if (!isCardInfo)
                 fieldComment.setText(data);
@@ -453,7 +436,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        // TODO Auto-generated method stub
         if (isChecked) {
             isCardInfo = true;
             commentLayoutHolder.setVisibility(View.GONE);
@@ -488,7 +470,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                     scannerInDecodeMode = false;
                     DoScan();
                 } catch (RemoteException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             } else
@@ -500,11 +481,11 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
     private void DoScan() {
         try {
             if (mDecodeManager != null) {
+                int SCANTIMEOUT = 500000;
                 mDecodeManager.doDecode(SCANTIMEOUT);
                 scannerInDecodeMode = true;
             }
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -513,7 +494,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case DecodeManager.MESSAGE_DECODER_COMPLETE:
-                    String strDecodeResult = "";
+                    String strDecodeResult;
                     DecodeResult decodeResult = (DecodeResult) msg.obj;
 
                     strDecodeResult = decodeResult.barcodeData.trim();
@@ -542,7 +523,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                         try {
                             mDecodeManager.setSymbologyConfigs(symconfig);
                         } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -557,7 +537,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.btnSave:
                 if (isCardInfo) {
@@ -601,7 +580,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     @Override
     public void startSignature() {
-        // TODO Auto-generated method stub
 
     }
 }
