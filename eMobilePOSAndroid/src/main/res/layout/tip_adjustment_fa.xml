@@ -5,4 +5,57 @@
     android:layout_height="match_parent"
     tools:context="com.android.emobilepos.payment.TipAdjustmentFA">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tip_adjustment"
+        android:id="@+id/textView16"
+        android:textSize="@dimen/header_bar_button_height"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+    <com.android.support.MyEditText
+        android:id="@+id/transactionIdEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_field_selector"
+        android:textAppearance="@style/black_text_appearance_unbold"
+        android:textSize="@dimen/field_text_size"
+        android:hint="@string/hint_transationid"
+        android:layout_below="@+id/textView16"
+        android:layout_alignLeft="@+id/textView16"
+        android:layout_alignRight="@+id/textView16"
+        android:layout_marginTop="10dp">
+    </com.android.support.MyEditText>
+
+    <com.android.support.MyEditText
+        android:id="@+id/tipAmountEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_field_selector"
+        android:textAppearance="@style/black_text_appearance_unbold"
+        android:textSize="@dimen/field_text_size"
+        android:hint="@string/hint_tipamount"
+        android:layout_below="@+id/transactionIdEditText"
+        android:layout_alignLeft="@+id/transactionIdEditText"
+        android:layout_alignRight="@+id/transactionIdEditText"
+        android:layout_marginTop="10dp">
+    </com.android.support.MyEditText>
+
+    <Button
+        style="@style/black_text_appearance"
+        android:id="@+id/submitTipButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_submit"
+        android:ems="5"
+        android:background="@drawable/action_button_selector"
+        android:textSize="@dimen/large_button_text_size"
+        android:layout_below="@+id/tipAmountEditText"
+        android:layout_alignLeft="@+id/tipAmountEditText"
+        android:layout_alignRight="@+id/tipAmountEditText"
+        android:layout_marginTop="10dp" />
+
+
 </RelativeLayout>

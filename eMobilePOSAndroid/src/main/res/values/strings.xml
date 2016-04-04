@@ -1141,5 +1141,8 @@
     <string name="connecting_bluetooth_device">Connecting Bletooth Device...</string>
     <string name="move_items_to_seat">"Move items to seat "</string>
     <string name="join_with_seat">"Join with seat "</string>
+    <string name="tip_adjustment">Tip Adjustment</string>
+    <string name="hint_transationid">Enter Transaction ID</string>
+    <string name="hint_tipamount">Enter Tip Amount</string>
 
 </resources>
