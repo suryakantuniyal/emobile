@@ -482,23 +482,46 @@ public class SynchMethods {
         }
     }
 
+    public static boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
     private int getScreenOrientation() {
-        int orientation = activity.getRequestedOrientation();
+        int orientation = activity.getResources().getConfiguration().orientation;
         int rotation = ((WindowManager) activity.getSystemService(
                 Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                break;
-            case Surface.ROTATION_90:
-                orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                break;
-            case Surface.ROTATION_180:
-                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                break;
-            default:
-                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                break;
+        if (isTablet(activity)) {
+            switch (rotation) {
+                case Surface.ROTATION_0:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case Surface.ROTATION_90:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+                case Surface.ROTATION_180:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+                default:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+            }
+        }else{
+            switch (rotation) {
+                case Surface.ROTATION_0:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+                case Surface.ROTATION_90:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case Surface.ROTATION_180:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+                default:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+            }
         }
         return orientation;
     }
@@ -645,7 +668,7 @@ public class SynchMethods {
 
             int orientation = activity.getResources().getConfiguration().orientation;
 //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(getScreenOrientation());
 //            } else {
 //                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //            }
