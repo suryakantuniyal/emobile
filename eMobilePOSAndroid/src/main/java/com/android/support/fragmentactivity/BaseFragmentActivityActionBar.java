@@ -1,26 +1,16 @@
 package com.android.support.fragmentactivity;
 
 import android.app.ActionBar;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.KeyCharacterMap;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewConfiguration;
 import android.view.Window;
-import android.view.WindowManager;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.support.MyPreferences;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Guarionex on 12/9/2015.
