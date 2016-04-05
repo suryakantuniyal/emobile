@@ -1147,5 +1147,6 @@
     <string name="hint_tipamount">Enter Tip Amount</string>
     <string name="adjust_tip_required_fields">Transaction ID and Tip Amount are required.</string>
     <string name="processing_tipamount">Processing transaction tip amount</string>
+    <string name="outofpaper">Printer out of paper!</string>
 
 </resources>

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -138,7 +139,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
-
+            Looper.prepare();
             String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort port = null;
             try {
@@ -159,7 +160,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 didConnect = false;
                 e.printStackTrace();
             }
-
+            Looper.loop();
             return params[0];
         }
 
@@ -225,7 +226,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return printBalanceInquiry(values, LINE_WIDTH);
     }
-
 
 
     @Override
