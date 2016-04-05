@@ -3,6 +3,7 @@ package com.android.support;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -11,7 +12,9 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -146,11 +149,11 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
+//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            activity.setRequestedOrientation(getScreenOrientation());
+//            } else {
+//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//            }
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -329,7 +332,7 @@ public class SynchMethods {
             isSending = true;
             int orientation = activity.getResources().getConfiguration().orientation;
 
-            activity.setRequestedOrientation(orientation);
+            activity.setRequestedOrientation(getScreenOrientation());
 
             if (isFromMainMenu) {
                 MainMenu_FA synchActivity = (MainMenu_FA) activity;
@@ -479,6 +482,26 @@ public class SynchMethods {
         }
     }
 
+    private int getScreenOrientation() {
+        int orientation = activity.getRequestedOrientation();
+        int rotation = ((WindowManager) activity.getSystemService(
+                Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                break;
+            case Surface.ROTATION_90:
+                orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                break;
+            case Surface.ROTATION_180:
+                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                break;
+            default:
+                orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                break;
+        }
+        return orientation;
+    }
 
     private class forceSendAsync extends AsyncTask<Void, String, Void> {
 
@@ -488,7 +511,7 @@ public class SynchMethods {
             isSending = true;
             int orientation = activity.getResources().getConfiguration().orientation;
 
-            activity.setRequestedOrientation(orientation);
+            activity.setRequestedOrientation(getScreenOrientation());
 
             myProgressDialog = new ProgressDialog(activity);
 
@@ -621,11 +644,11 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
+//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.setRequestedOrientation(getScreenOrientation());
+//            } else {
+//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//            }
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -696,11 +719,11 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
+            //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            activity.setRequestedOrientation(getScreenOrientation());
+//            } else {
+//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//            }
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -765,11 +788,11 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
+//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            activity.setRequestedOrientation(getScreenOrientation());
+//            } else {
+//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//            }
             if (myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             myProgressDialog = new ProgressDialog(activity);
@@ -818,7 +841,7 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-            if (!activity.isFinishing() &&  myProgressDialog != null && myProgressDialog.isShowing())
+            if (!activity.isFinishing() && myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             if (!downloadHoldList) {
                 boolean closeActivity = true;
@@ -846,11 +869,11 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
+//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            activity.setRequestedOrientation(getScreenOrientation());
+//            } else {
+//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//            }
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
