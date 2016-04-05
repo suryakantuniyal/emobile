@@ -52,13 +52,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/cardTypesspinner"
-        android:textSize="@dimen/header_bar_button_height"
         android:layout_below="@+id/textView16"
         android:layout_marginTop="10dp"
-        android:entries="@array/cardTypes"
         android:layout_alignRight="@+id/linearLayout3"
-        android:layout_alignLeft="@+id/linearLayout3"
-         />
+        android:layout_alignLeft="@+id/linearLayout3" />
 
     <LinearLayout
         android:orientation="horizontal"

@@ -171,6 +171,9 @@
         <item name="visa">Visa</item>
         <item name="discover">Discover</item>
         <item name="mastercard">Master Card</item>
+        <item name="cup">CUP</item>
+        <item name="jcb">JCB</item>
+        <item name="dinersclub">Diners Club</item>
     </string-array>
 
     <string name="split_single">Single Receipt</string>

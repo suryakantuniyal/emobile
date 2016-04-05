@@ -8,9 +8,11 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
@@ -57,6 +59,12 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
         submitTipAmountBtn.setOnClickListener(this);
         messageText.setText("");
         tipAmount.setText("0.00");
+        setSpinnerAdapter();
+    }
+
+    private void setSpinnerAdapter() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item_layout, getResources().getStringArray(R.array.cardTypes));
+        cardTypesSpinner.setAdapter(adapter);
     }
 
     @Override
@@ -85,6 +93,12 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
             return ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD;
         } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
             return ProcessCreditCard_FA.CREDITCARD_TYPE_VISA;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_JCB;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_CUP;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS;
         } else {
             return "";
         }
@@ -121,7 +135,7 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                     null);
 
             Post httpClient = new Post();
-//            String xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, paymentWithAction);
+            String xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, paymentWithAction);
 
             return null;
         }

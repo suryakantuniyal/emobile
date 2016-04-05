@@ -56,7 +56,7 @@ public class EMSPayGate_Default {
                 1013), ChargeDebitAction(1014),
 
         ChargeGeniusAction(1017), ChargeGiftCardAction(1018), ChargeLoyaltyCardAction(1019),
-        CreditCardAuthAction(1020), ChargeRewardAction(1021), CreditCardAdjustTipAmountAction(1110),
+        CreditCardAuthAction(1020), ChargeRewardAction(1021), CreditCardAdjustTipAmountAction(1011),
 
         VoidCreditCardAction(2010), VoidCheckAction(2012), ReturnCreditCardAction(3010), ReturnDebitAction(3014),
 
