@@ -176,5 +176,9 @@
         <item name="dinersclub">Diners Club</item>
     </string-array>
 
+    <string-array name="navigationbarByModels">
+        <item name="paypoint">paypoint</item>
+    </string-array>
+
     <string name="split_single">Single Receipt</string>
 </resources>

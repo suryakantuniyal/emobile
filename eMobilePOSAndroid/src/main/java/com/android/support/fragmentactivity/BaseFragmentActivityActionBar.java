@@ -19,6 +19,9 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.support.MyPreferences;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by Guarionex on 12/9/2015.
  */
@@ -26,9 +29,10 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
     protected ActionBar myBar;
     private static MyPreferences myPref;
     private boolean showNavigationbar = false;
+    private static String[] navigationbarByModels;
 
     protected void setActionBar() {
-        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar);
+        showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel();
         if (this instanceof MainMenu_FA || showNavigationbar) {
             myBar = this.getActionBar();
             if (myBar != null) {
@@ -42,9 +46,20 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         }
     }
 
+    private boolean isNavigationBarModel() {
+        for (String model : navigationbarByModels) {
+            if(Build.MODEL.toLowerCase().startsWith(model)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (navigationbarByModels == null || navigationbarByModels.length == 0) {
+            navigationbarByModels = getResources().getStringArray(R.array.navigationbarByModels);
+        }
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
