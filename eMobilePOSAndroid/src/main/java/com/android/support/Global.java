@@ -3,6 +3,7 @@ package com.android.support;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -19,9 +20,11 @@ import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -1668,4 +1671,49 @@ public class Global extends MultiDexApplication {
 
         return exists;
     }
+
+    public static int getScreenOrientation(Activity activity) {
+        int orientation = activity.getResources().getConfiguration().orientation;
+        int rotation = ((WindowManager) activity.getSystemService(
+                Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        if (isTablet(activity)) {
+            switch (rotation) {
+                case Surface.ROTATION_0:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case Surface.ROTATION_90:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+                case Surface.ROTATION_180:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+                default:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+            }
+        }else{
+            switch (rotation) {
+                case Surface.ROTATION_0:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+                case Surface.ROTATION_90:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case Surface.ROTATION_180:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+                default:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+            }
+        }
+        return orientation;
+    }
+
+    public static boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
 }

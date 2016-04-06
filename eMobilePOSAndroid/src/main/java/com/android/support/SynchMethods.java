@@ -150,7 +150,7 @@ public class SynchMethods {
 
             int orientation = activity.getResources().getConfiguration().orientation;
 //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
 //            } else {
 //                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //            }
@@ -332,7 +332,7 @@ public class SynchMethods {
             isSending = true;
             int orientation = activity.getResources().getConfiguration().orientation;
 
-            activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
 
             if (isFromMainMenu) {
                 MainMenu_FA synchActivity = (MainMenu_FA) activity;
@@ -482,49 +482,8 @@ public class SynchMethods {
         }
     }
 
-    public static boolean isTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK)
-                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
-    }
 
-    private int getScreenOrientation() {
-        int orientation = activity.getResources().getConfiguration().orientation;
-        int rotation = ((WindowManager) activity.getSystemService(
-                Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-        if (isTablet(activity)) {
-            switch (rotation) {
-                case Surface.ROTATION_0:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    break;
-                case Surface.ROTATION_90:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    break;
-                case Surface.ROTATION_180:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    break;
-                default:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    break;
-            }
-        }else{
-            switch (rotation) {
-                case Surface.ROTATION_0:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                    break;
-                case Surface.ROTATION_90:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                    break;
-                case Surface.ROTATION_180:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-                    break;
-                default:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-                    break;
-            }
-        }
-        return orientation;
-    }
+
 
     private class forceSendAsync extends AsyncTask<Void, String, Void> {
 
@@ -534,7 +493,7 @@ public class SynchMethods {
             isSending = true;
             int orientation = activity.getResources().getConfiguration().orientation;
 
-            activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
 
             myProgressDialog = new ProgressDialog(activity);
 
@@ -668,7 +627,7 @@ public class SynchMethods {
 
             int orientation = activity.getResources().getConfiguration().orientation;
 //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
 //            } else {
 //                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //            }
@@ -743,7 +702,7 @@ public class SynchMethods {
 
             int orientation = activity.getResources().getConfiguration().orientation;
             //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
 //            } else {
 //                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //            }
@@ -812,7 +771,7 @@ public class SynchMethods {
 
             int orientation = activity.getResources().getConfiguration().orientation;
 //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
 //            } else {
 //                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //            }
@@ -893,7 +852,7 @@ public class SynchMethods {
 
             int orientation = activity.getResources().getConfiguration().orientation;
 //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(getScreenOrientation());
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
 //            } else {
 //                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //            }
