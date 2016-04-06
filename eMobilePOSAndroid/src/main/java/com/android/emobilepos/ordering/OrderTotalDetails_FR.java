@@ -605,6 +605,9 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 //    }
 
     public void reCalculate() {
+        if (global == null) {
+            return;
+        }
         int size = global.orderProducts.size();
         taxableSubtotal = new BigDecimal("0.00");
         taxableDueAmount = new BigDecimal("0.00");
