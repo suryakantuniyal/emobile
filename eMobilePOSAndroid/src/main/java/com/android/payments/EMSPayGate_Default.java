@@ -35,9 +35,9 @@ public class EMSPayGate_Default {
     private boolean isTupyx = false;
     private CreditCardInfo cardManager;
 
-    private static final int CHARGE_CREDIT_CARD = 1010;
-    private static final int CHARGE_DEBIT_CARD = 1014;
-    private static final int CHARGE_CHECK = 1012;
+//    private static final int CHARGE_CREDIT_CARD = 1010;
+//    private static final int CHARGE_DEBIT_CARD = 1014;
+//    private static final int CHARGE_CHECK = 1012;
 
     private static final int REVERSE_CREDIT_CARD = 9993;
     private static final int REVERSE_DEBIT_CARD = 9994;
@@ -52,33 +52,107 @@ public class EMSPayGate_Default {
     }
 
     public enum EAction {
-        ChargeCreditCardAction(1010), ChargeTupixAction(1010), ChargeCheckAction(1012), ChargeCashAction(
-                1013), ChargeDebitAction(1014),
+        ChargeCreditCardAction(1010), ChargeTupixAction(1010), ChargeCheckAction(1012), ChargeCashAction(1013),
+        ChargeDebitAction(1014), ChargeGeniusAction(1017), ChargeGiftCardAction(1018),
+        ChargeLoyaltyCardAction(1019), CreditCardAuthAction(1020), ChargeRewardAction(1021),
+        CreditCardAdjustTipAmountAction(1011), VoidCreditCardAction(2010), VoidCheckAction(2012),
+        ReturnCreditCardAction(3010), ReturnDebitAction(3014), ReturnGeniusAction(3017), VoidGiftCardAction(2018),
+        ReturnGiftCardAction(3018), ActivateGiftCardAction(5000),
+        //        DeactivateGiftCardAction(5010),
+        AddValueGiftCardAction(5010), BalanceGiftCardAction(5020), ActivateLoyaltyCardAction(6000),
+        AddValueLoyaltyCardAction(6010), BalanceLoyaltyCardAction(6020), ActivateRewardAction(6100),
+        AddValueRewardAction(6110), BalanceRewardAction(6120), CheckTransactionStatus(7003),
+        GiftCardReverseAction(9995), LoyaltyCardReverseAction(9996), RewardCardReverseAction(9997),
+        ReverseCheckAction(9992), ReverseCreditCardAction(9993), ReverseDebitCardAction(9994),
+        ProcessBoloroCheckout(10000), CancelBoloroTransaction(10001), GetTelcoInfoByTag(10002),
+        GetMarketTelcos(10003), BoloroPolling(10004);
 
-        ChargeGeniusAction(1017), ChargeGiftCardAction(1018), ChargeLoyaltyCardAction(1019),
-        CreditCardAuthAction(1020), ChargeRewardAction(1021), CreditCardAdjustTipAmountAction(1011),
-
-        VoidCreditCardAction(2010), VoidCheckAction(2012), ReturnCreditCardAction(3010), ReturnDebitAction(3014),
-
-        ReturnGeniusAction(3017), VoidGiftCardAction(2018), ReturnGiftCardAction(3018), ActivateGiftCardAction(
-                5000), DeactivateGiftCardAction(5010), AddValueGiftCardAction(5010), BalanceGiftCardAction(5020),
-
-        ActivateLoyaltyCardAction(6000), AddValueLoyaltyCardAction(6010), BalanceLoyaltyCardAction(6020),
-
-        ActivateRewardAction(6100), AddValueRewardAction(6110), BalanceRewardAction(6120),
-
-        CheckTransactionStatus(7003),
-
-        GiftCardReverseAction(9995), LoyaltyCardReverseAction(9996), RewardCardReverseAction(9997), ReverseCheckAction(
-                9992), ReverseCreditCardAction(9993), ReverseDebitCardAction(9994),
-
-        ProcessBoloroCheckout(10000), CancelBoloroTransaction(10001), GetTelcoInfoByTag(10002), GetMarketTelcos(
-                10003), BoloroPolling(10004);
-
-        private int foo;
+        private int code;
 
         EAction(int val) {
-            this.foo = val;
+            this.code = val;
+        }
+
+        public static EAction toAction(int code) {
+            switch (code) {
+                case 1010:
+                    return ChargeCreditCardAction;
+                case 6100:
+                    return ActivateRewardAction;
+                case 6110:
+                    return AddValueRewardAction;
+                case 6120:
+                    return BalanceRewardAction;
+                case 7003:
+                    return CheckTransactionStatus;
+                case 9995:
+                    return GiftCardReverseAction;
+                case 9996:
+                    return LoyaltyCardReverseAction;
+                case 9997:
+                    return RewardCardReverseAction;
+                case 9992:
+                    return ReverseCheckAction;
+                case 9993:
+                    return ReverseCreditCardAction;
+                case 9994:
+                    return ReverseDebitCardAction;
+                case 10000:
+                    return ProcessBoloroCheckout;
+                case 10001:
+                    return CancelBoloroTransaction;
+                case 10002:
+                    return GetTelcoInfoByTag;
+                case 10003:
+                    return GetMarketTelcos;
+                case 10004:
+                    return BoloroPolling;
+                case 1012:
+                    return ChargeCheckAction;
+                case 1013:
+                    return ChargeCashAction;
+                case 1014:
+                    return ChargeDebitAction;
+                case 1017:
+                    return ChargeGeniusAction;
+                case 1018:
+                    return ChargeGiftCardAction;
+                case 1019:
+                    return ChargeLoyaltyCardAction;
+                case 1020:
+                    return CreditCardAuthAction;
+                case 1021:
+                    return ChargeRewardAction;
+                case 1011:
+                    return CreditCardAdjustTipAmountAction;
+                case 2012:
+                    return VoidCheckAction;
+                case 3010:
+                    return ReturnCreditCardAction;
+                case 3014:
+                    return ReturnDebitAction;
+                case 3017:
+                    return ReturnGeniusAction;
+                case 2018:
+                    return VoidGiftCardAction;
+                case 3018:
+                    return ReturnGiftCardAction;
+                case 5000:
+                    return ActivateGiftCardAction;
+//                case 5010: return DeactivateGiftCardAction;
+                case 5010:
+                    return AddValueGiftCardAction;
+                case 5020:
+                    return BalanceGiftCardAction;
+                case 6000:
+                    return ActivateLoyaltyCardAction;
+                case 6010:
+                    return AddValueLoyaltyCardAction;
+                case 6020:
+                    return BalanceLoyaltyCardAction;
+
+            }
+            return null;
         }
 
         public static EAction toAction(String str) {
@@ -89,8 +163,8 @@ public class EMSPayGate_Default {
             }
         }
 
-        public int getValue() {
-            return this.foo;
+        public int getCode() {
+            return this.code;
         }
 
     }
@@ -113,7 +187,7 @@ public class EMSPayGate_Default {
 
             serializer.startTag(empstr, "epay");
             serializer.startTag(empstr, "action");
-            serializer.text(Integer.toString(actionType.getValue()));
+            serializer.text(Integer.toString(actionType.getCode()));
             serializer.endTag(empstr, "action");
             serializer.startTag(empstr, "app_id");
             serializer.text(UUID.randomUUID().toString());
@@ -376,14 +450,21 @@ public class EMSPayGate_Default {
         }
     }
 
-    public static String getReverseAction(int _original_action) {
-        switch (_original_action) {
-            case CHARGE_CREDIT_CARD:
+    public static String getReverseAction(EMSPayGate_Default.EAction originalAction) {
+        switch (originalAction) {
+            case CreditCardAdjustTipAmountAction:
+            case ChargeCreditCardAction:
                 return Integer.toString(REVERSE_CREDIT_CARD);
-            case CHARGE_DEBIT_CARD:
+            case ChargeDebitAction:
                 return Integer.toString(REVERSE_DEBIT_CARD);
-            case CHARGE_CHECK:
+            case ChargeCheckAction:
                 return Integer.toString(REVERSE_CHECK);
+//            case CHARGE_CREDIT_CARD:
+//                return Integer.toString(REVERSE_CREDIT_CARD);
+//            case CHARGE_DEBIT_CARD:
+//                return Integer.toString(REVERSE_DEBIT_CARD);
+//            case CHARGE_CHECK:
+//                return Integer.toString(REVERSE_CHECK);
         }
         return "0";
     }

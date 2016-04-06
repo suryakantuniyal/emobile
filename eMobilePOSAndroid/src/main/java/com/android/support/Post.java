@@ -250,7 +250,7 @@ public class Post {
                 isPost = false;
                 break;
             case Global.S_SUBMIT_TIP_ADJUSTMENT:
-                postLink = activity.getString(R.string.sync_enabler_submitpayments);
+                postLink = activity.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
                 entity = varyingVariable;
                 isPost = true;
                 break;

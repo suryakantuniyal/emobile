@@ -132,6 +132,8 @@ public class Global extends MultiDexApplication {
     public static final int KDC500 = 14;
     public static final int HANDPOINT = 15;
     public static final int ICMPEVO = 16;
+    public static final int WALKER = 17;
+
 
 
     public enum BuildModel {

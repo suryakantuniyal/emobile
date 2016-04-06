@@ -89,6 +89,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     public static final String CREDITCARD_TYPE_JCB = "JCB", CREDITCARD_TYPE_CUP = "CUP",
             CREDITCARD_TYPE_DISCOVER = "Discover", CREDITCARD_TYPE_VISA = "Visa", CREDITCARD_TYPE_DINERS = "DinersClub",
             CREDITCARD_TYPE_MASTERCARD = "MasterCard", CREDITCARD_TYPE_AMEX = "AmericanExpress";
+    private HashMap<String, String> reverseXMLMap;
 
     public enum PAYMENT_GIFT_CARDS {
         GIFTCARDS, LOYALTYCARD, REWARD
@@ -474,18 +475,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     roverReader.initializeReader(activity, isDebit);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
                     walkerReader = new EMSWalker(activity, true);
-
+                    myPref.setSwiperType(Global.WALKER);
                 }
             }
 
         } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
             walkerReader = new EMSWalker(activity, false);
-            // new Thread(new Runnable(){
-            // public void run()
-            // {
-            // walkerReader = new EMSWalker(activity);
-            // }
-            // }).start();
+            myPref.setSwiperType(Global.WALKER);
+
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
@@ -550,7 +547,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     private void processPayment() {
 
-        if (walkerReader == null && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO)
+        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO)
             populateCardInfo();
         if (Global.isIvuLoto) {
             Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
@@ -618,7 +615,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
 
 
-        if (walkerReader == null && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
+        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
 
@@ -814,10 +811,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     @Override
     public void onResume() {
 
-        // if(_msrUsbSams!=null)
-        // {
-        // _msrUsbSams.registerReceiver();
-        // }
         if (global.isApplicationSentToBackground(this))
             global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -833,11 +826,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     @Override
     public void onPause() {
         super.onPause();
-        // if(_msrUsbSams!=null)
-        // {
-        // _msrUsbSams.unregisterReceiver();
-        // }
-
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
@@ -1406,7 +1394,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         xr.setContentHandler(handler);
                         xr.parse(inSource);
                         parsedMap = handler.getData();
-                        parsedMap = handler.getData();
 
                         if (parsedMap != null && parsedMap.size() > 0
                                 && parsedMap.get("epayStatusCode").equals("APPROVED"))
@@ -1437,7 +1424,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             } else // payment processing failed
             {
                 if (connectionFailed) {
-                    generateReverseXML(_charge_xml);
+                    reverseXMLMap = generateReverseXML(activity, _charge_xml);
                 }
 
                 btnProcess.setEnabled(true);
@@ -1446,7 +1433,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-    private String _reverse_xml = "";
+    private String reverseXml = "";
 
     private class processReverseAsync extends AsyncTask<Payment, Void, Payment> {
 
@@ -1476,7 +1463,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
 
                 try {
-                    String xml = httpClient.postData(13, activity, _reverse_xml);
+                    String xml = httpClient.postData(13, activity, reverseXml);
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                         errorMsg = getString(R.string.dlog_msg_established_connection_failed);
@@ -1527,9 +1514,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected void onPostExecute(Payment payment) {
             myProgressDialog.dismiss();
+            String xmlAppId = reverseXMLMap.get(PaymentsXML_DB.app_id);
+
             if (reverseWasProcessed) {
                 PaymentsXML_DB _paymentXml_DB = new PaymentsXML_DB(activity);
-                _paymentXml_DB.deleteRow(_xml_app_id);
+                _paymentXml_DB.deleteRow(xmlAppId);
                 if (paymentWasApproved) {
                     saveApprovedPayment(parsedMap, payment);
                 } else {
@@ -1603,16 +1592,16 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-    private String _xml_app_id = "";
 
-    private void generateReverseXML(String _charge_xml) {
+    public static HashMap<String, String> generateReverseXML(Activity activity, String chargeXml) {
 
-        int _action = 0;
+        int action = 0;
 
+        String xmlAppId = "";
         try {
             XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
             XmlPullParser parser = xmlFactoryObject.newPullParser();
-            parser.setInput(new StringReader(_charge_xml));
+            parser.setInput(new StringReader(chargeXml));
 
             int event = parser.getEventType();
             String tag = "";
@@ -1628,10 +1617,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     case XmlPullParser.TEXT:
                         if (tag != null) {
                             if (tag.equals("app_id")) {
-                                _xml_app_id = parser.getText();
+                                xmlAppId = parser.getText();
                                 found = true;
                             } else if (tag.equals("action"))
-                                _action = Integer.parseInt(parser.getText());
+                                action = Integer.parseInt(parser.getText());
                         }
                         break;
                 }
@@ -1646,16 +1635,17 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             e.printStackTrace();
         }
 
-        _reverse_xml = _charge_xml.replaceAll("<action>.*?</action>",
-                "<action>" + EMSPayGate_Default.getReverseAction(_action) + "</action>");
+        String reverseXml = chargeXml.replaceAll("<action>.*?</action>",
+                "<action>" + EMSPayGate_Default.getReverseAction(EMSPayGate_Default.EAction.toAction(action)) + "</action>");
 
         PaymentsXML_DB _payment_xml = new PaymentsXML_DB(activity);
         HashMap<String, String> map = new HashMap<String, String>();
 
-        map.put(PaymentsXML_DB.app_id, _xml_app_id);
-        map.put(PaymentsXML_DB.payment_xml, _reverse_xml);
+        map.put(PaymentsXML_DB.app_id, xmlAppId);
+        map.put(PaymentsXML_DB.payment_xml, reverseXml);
 
         _payment_xml.insert(map);
+        return map;
     }
 
     @Override
@@ -1668,7 +1658,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
 
         if (resultCode == -1) {
-            if (walkerReader == null) {
+            if (myPref.getSwiperType() != Global.WALKER) {
                 if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
                     StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
                     Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().pay_uuid);
@@ -1840,7 +1830,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             updateViewAfterSwipe(cardManager);
             if (uniMagReader != null && uniMagReader.readerIsConnected()) {
                 uniMagReader.startReading();
-            } else if (walkerReader != null) {
+            } else if (myPref.getSwiperType() == Global.WALKER) {
                 processPayment();
             } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                     && Global.mainPrinterManager != null)
@@ -1941,7 +1931,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                             Global.btSwiper.currentDevice.salePayment(p);
                         }
                     }
-                } else if (walkerReader == null) {
+                } else if (myPref.getSwiperType() != Global.WALKER) {
                     boolean valid = validateProcessPayment();
                     if (!valid) {
                         String errorMsg = getString(R.string.card_validation_error);
