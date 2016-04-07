@@ -153,7 +153,7 @@
         <activity
             android:name=".ordering.SplittedOrderSummary_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".OrderDetailsActivity"
             android:configChanges="orientation|screenSize"
@@ -161,7 +161,7 @@
         <activity
             android:name=".payment.SelectPayMethod_FA"
             android:exported="false"
-            android:launchMode="singleTop"></activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".payment.ProcessCreditCard_FA"
             android:configChanges="orientation|screenSize"
@@ -315,6 +315,11 @@
         <activity
             android:name=".ordering.OrderAttributes_FA"
             android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
+            android:name=".mainmenu.restaurant.DinningTablesActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/TransparentDialogFullScreen"
             android:exported="false" />
         <activity
             android:name=".ordering.OrderAttrEdit_FA"
@@ -472,7 +477,14 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".payment.TipAdjustmentFA"></activity>
+        <activity android:name=".payment.TipAdjustmentFA" />
+        <activity
+            android:name=".mainmenu.DinningTAblesActivity"
+            android:label="@string/title_activity_dinning_tables">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.android.emobilepos.mainmenu.MainMenu_FA" />
+        </activity>
     </application>
 
 </manifest>

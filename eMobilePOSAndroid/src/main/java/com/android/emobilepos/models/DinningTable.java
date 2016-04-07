@@ -1,14 +1,24 @@
 package com.android.emobilepos.models;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Guarionex on 1/19/2016.
  */
 public class DinningTable {
+    @SerializedName("id")
+    private String id;
+    @SerializedName("name")
     private String number;
+    @SerializedName("defaultSeats")
     private int seats;
+    @SerializedName("type")
     private String style;
+    @SerializedName("position")
     private Location location;
     private boolean wheelAccessibility;
+    @SerializedName("dimensions")
+    Dimensions dimensions;
 
     public static DinningTable getDefaultDinningTable() {
         DinningTable table = new DinningTable();
@@ -55,5 +65,13 @@ public class DinningTable {
 
     public void setWheelAccessibility(boolean wheelAccessibility) {
         this.wheelAccessibility = wheelAccessibility;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
