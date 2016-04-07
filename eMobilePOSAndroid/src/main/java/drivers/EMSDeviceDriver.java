@@ -448,45 +448,9 @@ public class EMSDeviceDriver {
             if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
                 boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
 
-                int m;
                 for (int i = 0; i < size; i++) {
 
                     if (isRestMode) {
-//                        if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
-//                            m = i;
-//                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
-////                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
-//                            for (int j = i + 1; j < size; j++) {
-//                                if (orders.get(j).getIsAdded().equals("1"))
-//                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-//                                            "- " + orders.get(j).getName(),
-//                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
-//                                else
-//                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-//                                            "- NO " + orders.get(j).getName(),
-//                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
-//
-//                                if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-//                                    i = j;
-//                                    break;
-//                                }
-//
-//                            }
-//
-//                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-//                                    Global.getCurrencyFormat(orders.get(m).getOverwritePrice()), lineWidth, 3))
-//                                    .append("\n");
-//                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-//                                    Global.getCurrencyFormat(orders.get(m).getTotal()), lineWidth, 3)).append("\n");
-//
-//                            if (printPref.contains(MyPreferences.print_descriptions)) {
-//                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-//                                        getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
-//                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-//                                        orders.get(m).getProdDescription(), lineWidth, 5)).append("\n");
-//                            }
-//
-//                        } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
                                 orders.get(i).getQty() + "x " + orders.get(i).getName(), lineWidth, 1));
                         if (orders.get(i).getHasAddon().equals("1")) {
@@ -509,7 +473,6 @@ public class EMSDeviceDriver {
                             sb.append(textHandler.oneColumnLineWithLeftAlignedText(
                                     orders.get(i).getProdDescription(), lineWidth, 5)).append("\n");
                         }
-//                        }
                     } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
                                 orders.get(i).getQty() + "x " + orders.get(i).getName(), lineWidth, 1));
@@ -640,8 +603,24 @@ public class EMSDeviceDriver {
                             Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), lineWidth, 0));
                 }
                 if (type != Global.OrderType.ORDER) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-                            Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
+                    if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                            myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                        if (tempTipAmount == 0) {
+                            sb.append("\n\n");
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+                                    textHandler.lines(lineWidth / 2), lineWidth, 0));
+                            sb.append("\n\n");
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                                    textHandler.lines(lineWidth / 2), lineWidth, 0));
+                        } else {
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+                                    Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
+                        }
+
+                    } else {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+                                Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
+                    }
 
                     if (type == Global.OrderType.RETURN) {
                         tempAmount = paidAmount;
@@ -932,10 +911,10 @@ public class EMSDeviceDriver {
         Canvas c = new Canvas(b);
         v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
         v.draw(c);
-//        int margins = new Double(PAPER_WIDTH * .).intValue();
-//        float ratio = new Integer(PAPER_WIDTH - margins).floatValue() / new Integer(b.getWidth()).floatValue();
-        int width = Math.round(b.getWidth());
-        int height = Math.round(b.getHeight());
+        int margins = new Double(PAPER_WIDTH * .10).intValue();
+        float ratio = new Integer(PAPER_WIDTH - margins).floatValue() / new Integer(b.getWidth()).floatValue();
+        int width = Math.round(ratio * b.getWidth());
+        int height = Math.round(ratio * b.getHeight());
         b = Bitmap.createScaledBitmap(b, width, height, true);
         return b;
     }
@@ -1183,14 +1162,14 @@ public class EMSDeviceDriver {
             StringBuilder sb = new StringBuilder();
             boolean isCashPayment = false;
             boolean isCheckPayment = false;
-            String constantValue = null;
+            String includedTip = null;
             String creditCardFooting = "";
             if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
                 isCashPayment = true;
             else if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
                 isCheckPayment = true;
             else {
-                constantValue = getString(R.string.receipt_included_tip);
+                includedTip = getString(R.string.receipt_included_tip);
                 creditCardFooting = getString(R.string.receipt_creditcard_terms);
             }
             printImage(0);
@@ -1267,11 +1246,29 @@ public class EMSDeviceDriver {
             if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
                     && Double.parseDouble(change) > 0)
                 change = "";
-
-            if (constantValue != null)
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
-                        Global.formatDoubleStrToCurrency(change), lineWidth, 0));
-
+            sb.append("\n");
+            print(sb.toString(), FORMAT);
+            sb.setLength(0);
+            if (includedTip != null) {
+                if (Double.parseDouble(change) > 0) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(includedTip,
+                            Global.formatDoubleStrToCurrency(change), lineWidth, 0));
+                } else if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                    print(textHandler.newLines(1), FORMAT);
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tip),
+                            textHandler.lines(lineWidth / 2), lineWidth, 0))
+                            .append("\n\n");
+                    print(sb.toString(), FORMAT);
+                    sb.setLength(0);
+                    print(textHandler.newLines(1), FORMAT);
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                            textHandler.lines(lineWidth / 2), lineWidth, 0))
+                            .append("\n\n");
+                    print(sb.toString(), FORMAT);
+                    sb.setLength(0);
+                }
+            }
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
@@ -1283,12 +1280,11 @@ public class EMSDeviceDriver {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
-                sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
+                sb.append("\n\nx").append(textHandler.lines(lineWidth / 2)).append("\n");
                 sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
             }
-
             if (Global.isIvuLoto) {
                 sb = new StringBuilder();
 
@@ -1301,7 +1297,6 @@ public class EMSDeviceDriver {
                 }
                 sb.setLength(0);
             }
-
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);

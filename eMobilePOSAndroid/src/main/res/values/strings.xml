@@ -746,6 +746,7 @@
     <string name="receipt_amountpaid">Amount Paid:</string>
     <string name="receipt_amountreturned">Amount Returned:</string>
     <string name="receipt_total_tip_paid">Total Tip Paid:</string>
+    <string name="receipt_tip">Tip:</string>
     <string name="receipt_balance_due">Balance Due:</string>
     <string name="receipt_cash_returned">Cash Returned:</string>
     <string name="receipt_idnum">Payment ID:</string>
