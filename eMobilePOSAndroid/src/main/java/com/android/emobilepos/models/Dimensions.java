@@ -7,9 +7,33 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Dimensions {
     @SerializedName("height")
-    int height;
+    private int height;
     @SerializedName("width")
-    int width;
+    private int width;
     @SerializedName("radio")
-    int radio;
+    private int radio;
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getRadio() {
+        return radio;
+    }
+
+    public void setRadio(int radio) {
+        this.radio = radio;
+    }
 }

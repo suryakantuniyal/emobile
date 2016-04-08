@@ -2,6 +2,8 @@ package com.android.emobilepos.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by Guarionex on 1/19/2016.
  */
@@ -18,7 +20,7 @@ public class DinningTable {
     private Location location;
     private boolean wheelAccessibility;
     @SerializedName("dimensions")
-    Dimensions dimensions;
+    private Dimensions dimensions;
 
     public static DinningTable getDefaultDinningTable() {
         DinningTable table = new DinningTable();
@@ -73,5 +75,13 @@ public class DinningTable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Dimensions getDimensions() {
+        return dimensions;
+    }
+
+    public void setDimensions(Dimensions dimensions) {
+        this.dimensions = dimensions;
     }
 }

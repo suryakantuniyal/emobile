@@ -8,12 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.DinningTable;
-import com.android.proxies.DinnerTablesProxy;
+import com.android.proxies.DinningTablesProxy;
 
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class TablesGridFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final List<DinningTable> dinningTables = DinnerTablesProxy.getDinningTables(getActivity());
+        final List<DinningTable> dinningTables = DinningTablesProxy.getDinningTables(getActivity());
         GridView gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         final DinningTablesAdapter adapter = new DinningTablesAdapter(getActivity(), dinningTables);
         gridView.setAdapter(adapter);

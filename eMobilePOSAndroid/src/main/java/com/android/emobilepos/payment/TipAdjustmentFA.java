@@ -130,7 +130,7 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
         messageText.setText(resId);
     }
 
-    private void showErrorDlog(final boolean isError, String msg, final Payment payment) {
+    private void showErrorDlog(final boolean reverse, String msg, final Payment payment) {
         final Dialog dlog = new Dialog(TipAdjustmentFA.this, R.style.Theme_TransparentTest);
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
@@ -147,13 +147,11 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                                      @Override
                                      public void onClick(View v) {
                                          dlog.dismiss();
-                                         if (isError) {
+                                         if (reverse) {
                                              new processReverseAsync().execute(payment);
-                                         } else
-                                             finish();
+                                         }
                                      }
                                  }
-
         );
 
         dlog.show();
@@ -200,6 +198,9 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
             dialog.dismiss();
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                 String errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+                reverseXMLMap = ProcessCreditCard_FA.generateReverseXML(TipAdjustmentFA.this, paymentWithAction);
+                reverseXMLMap.put(PaymentsXML_DB.charge_xml, paymentWithAction);
+                showErrorDlog(true, errorMsg, payment);
                 Global.showPrompt(TipAdjustmentFA.this, R.string.fail_to_connect, errorMsg);
             } else {
                 InputSource inSource = new InputSource(new StringReader(xml));
@@ -222,12 +223,12 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                         errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                         reverseXMLMap = ProcessCreditCard_FA.generateReverseXML(TipAdjustmentFA.this, paymentWithAction);
                         reverseXMLMap.put(PaymentsXML_DB.charge_xml, paymentWithAction);
-                        showErrorDlog(true, errorMsg, payment);
+                        showErrorDlog(false, errorMsg, payment);
                     } else {
                         errorMsg = xml;
                         reverseXMLMap = ProcessCreditCard_FA.generateReverseXML(TipAdjustmentFA.this, paymentWithAction);
                         reverseXMLMap.put(PaymentsXML_DB.charge_xml, paymentWithAction);
-                        showErrorDlog(true, errorMsg, payment);
+                        showErrorDlog(false, errorMsg, payment);
                     }
                 } catch (ParserConfigurationException e) {
                     e.printStackTrace();
@@ -292,39 +293,59 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                         errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+                        reverseWasProcessed = true;
+                        String _verify_payment_xml = chargeXML.replaceAll("<action>.*?</action>", "<action>"
+                                + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
+                        xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, _verify_payment_xml);
+                        if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL)) {
+                            errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+                        } else {
+                            InputSource inSource = new InputSource(new StringReader(xml));
+                            SAXParser sp = spf.newSAXParser();
+                            XMLReader xr = sp.getXMLReader();
+                            xr.setContentHandler(handler);
+                            xr.parse(inSource);
+                            parsedMap = handler.getData();
+                            inSource = new InputSource(new StringReader(xml));
+                            xr.parse(inSource);
+                            parsedMap = handler.getData();
+                            if (parsedMap != null) {
+                                if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                                    paymentWasApproved = true;
+                                } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
+                                    paymentWasDecline = true;
+                                    errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                                } else
+                                    errorMsg = xml;
+                            }
+                        }
                     } else {
-                        InputSource inSource = new InputSource(new StringReader(xml));
 
-                        SAXParser sp = spf.newSAXParser();
-                        XMLReader xr = sp.getXMLReader();
-                        xr.setContentHandler(handler);
-                        xr.parse(inSource);
-                        parsedMap = handler.getData();
 
                         if (parsedMap != null && parsedMap.size() > 0
                                 && (parsedMap.get("epayStatusCode").equals("APPROVED")))
                             reverseWasProcessed = true;
                         else if (parsedMap != null && parsedMap.get("epayStatusCode").equals("DECLINE")) {
-                            reverseWasProcessed = true;
-                            String _verify_payment_xml = chargeXML.replaceAll("<action>.*?</action>", "<action>"
-                                    + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
-                            xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, _verify_payment_xml);
-                            if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL)) {
-                                errorMsg = getString(R.string.dlog_msg_established_connection_failed);
-                            } else {
-                                inSource = new InputSource(new StringReader(xml));
-                                xr.parse(inSource);
-                                parsedMap = handler.getData();
-                                if (parsedMap != null) {
-                                    if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                                        paymentWasApproved = true;
-                                    } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
-                                        paymentWasDecline = true;
-                                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                                    } else
-                                        errorMsg = xml;
-                                }
-                            }
+//                            reverseWasProcessed = true;
+//                            String _verify_payment_xml = chargeXML.replaceAll("<action>.*?</action>", "<action>"
+//                                    + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
+//                            xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, _verify_payment_xml);
+//                            if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL)) {
+//                                errorMsg = getString(R.string.dlog_msg_established_connection_failed);
+//                            } else {
+//                                inSource = new InputSource(new StringReader(xml));
+//                                xr.parse(inSource);
+//                                parsedMap = handler.getData();
+//                                if (parsedMap != null) {
+//                                    if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
+//                                        paymentWasApproved = true;
+//                                    } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
+//                                        paymentWasDecline = true;
+//                                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+//                                    } else
+//                                        errorMsg = xml;
+//                                }
+//                            }
                         }
                     }
 
