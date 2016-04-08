@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by Guarionex on 1/19/2016.
  */
-public class Location {
+public class Position {
     @SerializedName("x")
     private
     int positionX;

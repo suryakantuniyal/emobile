@@ -319,7 +319,6 @@
         <activity
             android:name=".mainmenu.restaurant.DinningTablesActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/TransparentDialogFullScreen"
             android:exported="false" />
         <activity
             android:name=".ordering.OrderAttrEdit_FA"
@@ -478,13 +477,7 @@
         </receiver>
 
         <activity android:name=".payment.TipAdjustmentFA" />
-        <activity
-            android:name=".mainmenu.DinningTAblesActivity"
-            android:label="@string/title_activity_dinning_tables">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.android.emobilepos.mainmenu.MainMenu_FA" />
-        </activity>
+        
     </application>
 
 </manifest>

@@ -181,7 +181,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         public boolean onPreferenceChange(Preference preference, Object newValue) {
                             if (newValue instanceof Boolean) {
                                 if ((Boolean) newValue) {
-                                    // sync Location Inventory
+                                    // sync Position Inventory
                                     DBManager dbManager = new DBManager(activity);
                                     SynchMethods sm = new SynchMethods(dbManager);
                                     sm.getLocationsInventory();

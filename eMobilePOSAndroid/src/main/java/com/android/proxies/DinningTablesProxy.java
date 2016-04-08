@@ -23,6 +23,4 @@ public class DinningTablesProxy {
         final List<DinningTable> dinningTables = gson.fromJson(json, listType);
         return dinningTables;
     }
-
-
 }
