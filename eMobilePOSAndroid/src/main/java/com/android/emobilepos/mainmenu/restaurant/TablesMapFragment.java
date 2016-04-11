@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.android.database.DinningTableHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
 import com.android.proxies.DinningTablesProxy;
@@ -34,7 +35,7 @@ public class TablesMapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
-        dinningTables = DinningTablesProxy.getDinningTables(getActivity());
+        dinningTables = DinningTableHandler.getDinningTables();//DinningTablesProxy.getDinningTables(getActivity());
         return rootView;
     }
 

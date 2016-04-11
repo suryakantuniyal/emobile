@@ -41,7 +41,7 @@ public class SalesAssociateHandler {
         DBManager._db.beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + TABLE_NAME + " ( " +
+            insert = DBManager._db.compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " ( " +
                     emp_id + "," + zone_id + "," + emp_name + "," + emp_init + "," + emp_pcs + "," +
                     emp_lastlogin + "," + emp_pos + "," + qb_emp_id + "," + qb_salesrep_id + "," +
                     isactive + "," + tax_default + "," + loc_items + "," + _rowversion + "," + lastSync + "," +

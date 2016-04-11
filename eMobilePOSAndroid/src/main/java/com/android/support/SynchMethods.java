@@ -23,6 +23,7 @@ import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
+import com.android.database.DinningTableHandler;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
@@ -1600,12 +1601,18 @@ public class SynchMethods {
 
     private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
         task.updateProgress(getString(R.string.sync_dload_dinnertables));
-        post.postData(Global.S_GET_XML_DINNER_TABLES, activity, "DinnerTables");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_GET_XML_DINNER_TABLES);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_dinnertables));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        String response = post.postData(Global.S_GET_XML_DINNER_TABLES, activity, "DinnerTables");
+        Gson gson = new Gson();
+        Type listType = new com.google.gson.reflect.TypeToken<ArrayList<DinningTable>>() {
+        }.getType();
+
+        List<DinningTable> dinningTables = gson.fromJson(response, listType);
+        DinningTableHandler.insert(dinningTables);
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_GET_XML_DINNER_TABLES);
+//        File tempFile = new File(tempFilePath);
+//        task.updateProgress(getString(R.string.sync_saving_dinnertables));
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
     }
 
 
