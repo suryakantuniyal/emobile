@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 import util.NumberUtil;
 
 public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnClickListener {
-    private ProgressDialog myProgressDialog;
+//    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
     private Context thisContext = this;
     private Activity activity = this;
@@ -810,13 +810,15 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     private class processPaymentAsync extends AsyncTask<Boolean, String, Payment> {
 
+        private ProgressDialog progressDialog;
+
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(thisContext);
-            myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+            progressDialog = new ProgressDialog(thisContext);
+            progressDialog.setMessage(getString(R.string.processing_payment_msg));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
 
@@ -837,7 +839,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
         @Override
         protected void onPostExecute(Payment payment) {
-            myProgressDialog.dismiss();
+            progressDialog.dismiss();
 
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
@@ -859,6 +861,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     private class printAsync extends AsyncTask<Payment, Void, Payment> {
         private boolean printSuccessful = true;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {

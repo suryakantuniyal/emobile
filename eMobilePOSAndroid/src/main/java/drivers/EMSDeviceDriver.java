@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
@@ -50,6 +51,8 @@ import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -973,7 +976,6 @@ public class EMSDeviceDriver {
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     print(byteArray);
@@ -1002,6 +1004,7 @@ public class EMSDeviceDriver {
                 matrix.preScale(1.0f, -1.0f);
                 Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 eloPrinterApi.print_image(activity, rotatedBmp);
+                print("\n\n\n\n");
             }
 
             try {
@@ -1009,6 +1012,14 @@ public class EMSDeviceDriver {
             } catch (InterruptedException ignored) {
             }
         }
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        matrix.preScale(1.0f, -1.0f);
+        Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return rotatedBmp;
     }
 
     public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {

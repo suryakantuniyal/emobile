@@ -139,7 +139,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
-            Looper.prepare();
+//            Looper.prepare();
             String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort port = null;
             try {
@@ -149,7 +149,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
                 eloPrinterApi = new PrinterAPI(eloPrinterPort);
                 if (!eloPrinterApi.isPaperAvailable()) {
-                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
                 }
                 eloPrinterPort.getInputStream().close();
                 eloPrinterPort.getOutputStream().close();
@@ -160,7 +160,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 didConnect = false;
                 e.printStackTrace();
             }
-            Looper.loop();
+//            Looper.loop();
             return params[0];
         }
 
@@ -450,12 +450,21 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void printReceiptPreview(View view) {
+
         try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            setPaperWidth(LINE_WIDTH);
             Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(bitmap, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
