@@ -96,7 +96,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public Receipt_FR() {
 
     }
-    public static Receipt_FR getInstance(Order onHoldOrder){
+
+    public static Receipt_FR getInstance(Order onHoldOrder) {
         Receipt_FR receipt_fr = new Receipt_FR();
         receipt_fr.onHoldOrder = onHoldOrder;
         return receipt_fr;
@@ -1709,7 +1710,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         DBManager dbManager = new DBManager(activity);
         dbManager.synchSendOrdersOnHold(false, false);
-        if (!isToGo && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+                && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
                 ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
             showSplitedOrderPreview();
         } else {
