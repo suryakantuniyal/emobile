@@ -96,10 +96,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public Receipt_FR() {
 
     }
-
-    public Receipt_FR(Order onHoldOrder) {
-        this.onHoldOrder = onHoldOrder;
+    public static Receipt_FR getInstance(Order onHoldOrder){
+        Receipt_FR receipt_fr = new Receipt_FR();
+        receipt_fr.onHoldOrder = onHoldOrder;
+        return receipt_fr;
     }
+//    public Receipt_FR(Order onHoldOrder) {
+//        this.onHoldOrder = onHoldOrder;
+//    }
 
 
     public interface AddProductBtnCallback {
