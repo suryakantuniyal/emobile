@@ -106,7 +106,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -229,8 +229,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             Intent intent;
             switch (preference.getTitleRes()) {
                 case R.string.config_use_navigationbar:
-                    finish();
-                    startActivity(getIntent());
+                    getActivity().finish();
+                    getActivity().startActivity(getActivity().getIntent());
                     break;
                 case R.string.config_toggle_elo_bcr:
                     if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
@@ -1016,7 +1016,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         sb.append(_peripheralName).append(": ").append("Connected\n");
                     else
                         sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-                } else if (myPref.getSwiperType()!= -1 && Global.btSwiper != null
+                } else if (myPref.getSwiperType() != -1 && Global.btSwiper != null
                         && Global.btSwiper.currentDevice != null) {
                     _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                     sb.append(_peripheralName).append(": ").append("Connected\n");

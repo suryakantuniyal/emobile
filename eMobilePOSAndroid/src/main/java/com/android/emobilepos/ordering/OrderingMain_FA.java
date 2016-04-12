@@ -189,7 +189,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             if (onHoldOrder == null) {
                 leftFragment = new Receipt_FR();
             } else {
-                leftFragment = new Receipt_FR(onHoldOrder);
+                leftFragment = Receipt_FR.getInstance(onHoldOrder);//new Receipt_FR(onHoldOrder);
             }
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
