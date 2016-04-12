@@ -25,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.DinningTableDAO;
 import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
@@ -49,7 +50,6 @@ import com.android.emobilepos.models.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
-import com.android.proxies.DinningTablesProxy;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -599,7 +599,6 @@ public class SalesTab_FR extends Fragment {
     }
 
     public void selectDinnerTable() {
-        final List<DinningTable> dinningTables = DinningTablesProxy.getDinningTables(getActivity());
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
         startActivityForResult(intent, 0);
 
