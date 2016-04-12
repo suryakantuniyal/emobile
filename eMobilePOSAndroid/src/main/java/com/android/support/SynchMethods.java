@@ -3,27 +3,23 @@ package com.android.support;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.view.Surface;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DinningTableDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
-import com.android.database.DinningTableHandler;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
@@ -55,8 +51,10 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
-import com.google.common.reflect.TypeToken;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -84,6 +82,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
+
 public class SynchMethods {
     private Post post;
     //private SQLiteDatabase myDB;
@@ -104,6 +106,7 @@ public class SynchMethods {
     private boolean isFromMainMenu = false;
 
     private Intent onHoldIntent;
+    private Realm realm;
 
 
     public SynchMethods(DBManager managerInst) {
@@ -482,8 +485,6 @@ public class SynchMethods {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
-
-
 
 
     private class forceSendAsync extends AsyncTask<Void, String, Void> {
@@ -1602,17 +1603,35 @@ public class SynchMethods {
     private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
         task.updateProgress(getString(R.string.sync_dload_dinnertables));
         String response = post.postData(Global.S_GET_XML_DINNER_TABLES, activity, "DinnerTables");
-        Gson gson = new Gson();
-        Type listType = new com.google.gson.reflect.TypeToken<ArrayList<DinningTable>>() {
-        }.getType();
+//        Gson gson = new GsonBuilder()
+//                .setExclusionStrategies(new ExclusionStrategy() {
+//                    @Override
+//                    public boolean shouldSkipField(FieldAttributes f) {
+//                        return f.getDeclaringClass().equals(RealmObject.class);
+//                    }
+//
+//                    @Override
+//                    public boolean shouldSkipClass(Class<?> clazz) {
+//                        return false;
+//                    }
+//                })
+//                .create();
+//
+//        Type listType = new com.google.gson.reflect.TypeToken<List<DinningTable>>() {
+//        }.getType();
+        try {
+            DinningTableDAO.insert(response);
+//            List<DinningTable> dinningTables = gson.fromJson(response, listType);
+//            realm = Realm.getDefaultInstance();
+//            realm.beginTransaction();
+//            DinningTableDAO.insert(dinningTables);
+//            realm.commitTransaction();
+            RealmResults<DinningTable> tables = DinningTableDAO.getAll();
 
-        List<DinningTable> dinningTables = gson.fromJson(response, listType);
-        DinningTableHandler.insert(dinningTables);
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_GET_XML_DINNER_TABLES);
-//        File tempFile = new File(tempFilePath);
-//        task.updateProgress(getString(R.string.sync_saving_dinnertables));
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 

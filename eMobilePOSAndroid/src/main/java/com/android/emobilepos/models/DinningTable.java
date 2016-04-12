@@ -3,13 +3,18 @@ package com.android.emobilepos.models;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.RealmClass;
+
 /**
  * Created by Guarionex on 1/19/2016.
  */
-public class DinningTable {
+public class DinningTable extends RealmObject {
     private static final Gson GSON = new Gson();
 
     @SerializedName("mesa_id")
+    @PrimaryKey
     private String id;
     @SerializedName("loc_id")
     private String locationId;

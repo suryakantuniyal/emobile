@@ -2,10 +2,12 @@ package com.android.emobilepos.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Guarionex on 1/19/2016.
  */
-public class Position {
+public class Position  extends RealmObject {
     @SerializedName("x")
     private
     int positionX;

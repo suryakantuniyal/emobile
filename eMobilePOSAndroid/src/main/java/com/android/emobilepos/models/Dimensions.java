@@ -2,10 +2,12 @@ package com.android.emobilepos.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Guarionex on 4/6/2016.
  */
-public class Dimensions {
+public class Dimensions  extends RealmObject {
     @SerializedName("height")
     private int height;
     @SerializedName("width")

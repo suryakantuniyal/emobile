@@ -81,6 +81,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -98,6 +100,9 @@ public class Global extends MultiDexApplication {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
+        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+        Realm.deleteRealm(config);
+        Realm.setDefaultConfiguration(config);
     }
 
     public static boolean isIvuLoto = false;

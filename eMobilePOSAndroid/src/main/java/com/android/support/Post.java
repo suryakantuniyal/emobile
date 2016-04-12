@@ -270,7 +270,7 @@ public class Post {
         if (!isPost) {
             try {
                 if (type != 11)
-                    if (type == Global.S_GET_XML_SALES_ASSOCIATE) {
+                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_XML_DINNER_TABLES) {
                         response = this.getRequest(new URL(url.toString()), true);
                     } else {
                         response = this.getRequest(new URL(url.toString()), false);
