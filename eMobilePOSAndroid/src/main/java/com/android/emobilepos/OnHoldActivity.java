@@ -57,7 +57,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Global global;
     private boolean isAddon = false;
     private Global.OrderType orderType = Global.OrderType.SALES_RECEIPT;
-    private ProgressDialog myProgressDialog;
     boolean validPassword = true;
     private boolean isUpdateOnHold = false;
     private boolean hasBeenCreated = false;
@@ -130,6 +129,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         private String[] returnedPost;
         boolean timedOut = false;
         boolean wasProcessed = false;
+        private ProgressDialog myProgressDialog;
 
 
         @Override
@@ -224,6 +224,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         private Intent intent;
         private OrderProductsHandler orderProdHandler;
         private boolean forPrinting = false;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
@@ -255,7 +256,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 // intent = new Intent(activity, SalesReceiptSplitActivity.class);
                 String assignedTable = order.assignedTable;//myCursor.getString(myCursor.getColumnIndex("assignedTable"));
                 intent.putExtra("selectedDinningTableNumber", assignedTable);
-                intent.putExtra("onHoldOrderJson",order.toJson());
+                intent.putExtra("onHoldOrderJson", order.toJson());
 
                 intent.putExtra("openFromHold", true);
                 if (assignedTable != null && !assignedTable.isEmpty()) {
@@ -330,6 +331,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     private class printAsync extends AsyncTask<Void, Void, Void> {
         private boolean printSuccessful = true;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
@@ -608,7 +610,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     ord.discount_value = discountInfo[4];
                 }
             }
-
 
 
             ord.disAmount = ord.discount_value;
