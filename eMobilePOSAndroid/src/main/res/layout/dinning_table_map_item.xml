@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/table_map_container">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView3"
+        android:src="@drawable/dinning_table"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:textAppearance="@style/black_text_appearance"
+        android:textSize="@dimen/text_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Text view asdasd"
+        android:id="@+id/tableNumbertextView"
+        android:layout_below="@+id/imageView3"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

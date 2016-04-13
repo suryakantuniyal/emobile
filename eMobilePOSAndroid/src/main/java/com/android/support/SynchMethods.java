@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.DinningTableDAO;
+import com.android.dao.SalesAssociateTableDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
@@ -1603,35 +1604,12 @@ public class SynchMethods {
     private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
         task.updateProgress(getString(R.string.sync_dload_dinnertables));
         String response = post.postData(Global.S_GET_XML_DINNER_TABLES, activity, "DinnerTables");
-//        Gson gson = new GsonBuilder()
-//                .setExclusionStrategies(new ExclusionStrategy() {
-//                    @Override
-//                    public boolean shouldSkipField(FieldAttributes f) {
-//                        return f.getDeclaringClass().equals(RealmObject.class);
-//                    }
-//
-//                    @Override
-//                    public boolean shouldSkipClass(Class<?> clazz) {
-//                        return false;
-//                    }
-//                })
-//                .create();
-//
-//        Type listType = new com.google.gson.reflect.TypeToken<List<DinningTable>>() {
-//        }.getType();
         try {
+            DinningTableDAO.truncate();
             DinningTableDAO.insert(response);
-//            List<DinningTable> dinningTables = gson.fromJson(response, listType);
-//            realm = Realm.getDefaultInstance();
-//            realm.beginTransaction();
-//            DinningTableDAO.insert(dinningTables);
-//            realm.commitTransaction();
-            RealmResults<DinningTable> tables = DinningTableDAO.getAll();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -1639,13 +1617,20 @@ public class SynchMethods {
         try {
             task.updateProgress(getString(R.string.sync_dload_salesassociate));
             String response = post.postData(Global.S_GET_XML_SALES_ASSOCIATE, activity, "SalesAssociate");
-            task.updateProgress(getString(R.string.sync_saving_dinnertables));
-            Gson gson = new Gson();
-            Type listType = new com.google.gson.reflect.TypeToken<ArrayList<SalesAssociate>>() {
-            }.getType();
-
-            List<SalesAssociate> salesAssociate = gson.fromJson(response, listType);
-            SalesAssociateHandler.insert(salesAssociate);
+            task.updateProgress(getString(R.string.sync_saving_salesassociate));
+            try {
+                SalesAssociateTableDAO.truncate();
+                SalesAssociateTableDAO.insert(response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+//
+//            Gson gson = new Gson();
+//            Type listType = new com.google.gson.reflect.TypeToken<ArrayList<SalesAssociate>>() {
+//            }.getType();
+//
+//            List<SalesAssociate> salesAssociate = gson.fromJson(response, listType);
+//            SalesAssociateHandler.insert(salesAssociate);
         } catch (Exception e) {
             e.printStackTrace();
         }

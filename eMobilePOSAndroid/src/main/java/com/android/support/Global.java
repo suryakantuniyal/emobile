@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.dao.RealMigration;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -100,8 +101,9 @@ public class Global extends MultiDexApplication {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
-        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
-        Realm.deleteRealm(config);
+        RealmConfiguration config = new RealmConfiguration.Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .build();
         Realm.setDefaultConfiguration(config);
     }
 
@@ -140,7 +142,6 @@ public class Global extends MultiDexApplication {
     public static final int WALKER = 17;
 
 
-
     public enum BuildModel {
         ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
 
@@ -155,13 +156,14 @@ public class Global extends MultiDexApplication {
     public static final String AUDIO_MSR_ROVER = "2";
     public static final String AUDIO_MSR_WALKER = "3";
 
-    public enum RestaurantSaleType{
+    public enum RestaurantSaleType {
         EAT_IN, TO_GO
     }
+
     public enum TransactionType {
         SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
         PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
-        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13),TIP_ADJUSTMENT(14);
+        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13), TIP_ADJUSTMENT(14);
         private int code;
 
         TransactionType(int code) {
@@ -542,20 +544,20 @@ public class Global extends MultiDexApplication {
             case ISMP:
                 _name = "iSMP";
                 break;
-            case  HANDPOINT:
-                _name="HANDPOINT";
+            case HANDPOINT:
+                _name = "HANDPOINT";
                 break;
-            case  ICMPEVO:
-                _name="ICMPEVO";
+            case ICMPEVO:
+                _name = "ICMPEVO";
                 break;
-            case  EM100:
-                _name="EM100";
+            case EM100:
+                _name = "EM100";
                 break;
-            case  EM70:
-                _name="EM70";
+            case EM70:
+                _name = "EM70";
                 break;
-            case  KDC500:
-                _name="KDC500";
+            case KDC500:
+                _name = "KDC500";
                 break;
         }
         return _name;
@@ -1338,7 +1340,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-
     public static boolean isConnectedToInternet(Activity activity) {
         ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo myWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -1698,7 +1699,7 @@ public class Global extends MultiDexApplication {
                     orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
                     break;
             }
-        }else{
+        } else {
             switch (rotation) {
                 case Surface.ROTATION_0:
                     orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;

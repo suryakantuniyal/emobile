@@ -7,6 +7,8 @@ import android.app.FragmentTransaction;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.PowerManager;
+import android.os.RemoteException;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -19,7 +21,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
+import com.android.soundmanager.SoundManager;
+import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.honeywell.decodemanager.DecodeManager;
+import com.honeywell.decodemanager.barcode.CommonDefine;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
@@ -107,5 +113,31 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             }
             return null;
         }
+    }
+
+    @Override
+    public void onResume() {
+        Global global = (Global) getApplication();
+        if (global.isApplicationSentToBackground(this))
+            global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (!global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Global global = (Global) getApplication();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            global.loggedIn = false;
+        global.startActivityTransitionTimer();
     }
 }

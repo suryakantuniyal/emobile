@@ -48,6 +48,7 @@ import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.Global;
@@ -203,6 +204,15 @@ public class SalesTab_FR extends Fragment {
             myListview.setAdapter(myAdapter);
             myListview.setOnItemClickListener(new MyListener());
 
+        } else if (resultCode == SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode()) {
+            Bundle extras = data.getExtras();
+            String tableId = extras.getString("tableId");
+            selectedDinningTable = DinningTableDAO.getById(tableId);
+            if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
+                selectSeatAmount();
+            } else {
+                startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
+            }
         }
     }
 
@@ -580,7 +590,7 @@ public class SalesTab_FR extends Fragment {
         popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         popDlog.setCancelable(true);
         popDlog.setCanceledOnTouchOutside(true);
-        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
+        popDlog.setContentView(R.layout.dlog_ask_table_seats_amount_layout);
         TextView title = (TextView) popDlog.findViewById(R.id.dlogTitle);
         title.setText(R.string.select_number_guests);
         GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);

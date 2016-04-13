@@ -2,6 +2,7 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.android.dao.DinningTableDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 
 import java.util.List;
 
@@ -41,12 +43,11 @@ public class TablesGridFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                selectedDinningTable = dinningTables.get(position);
-//                if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
-//                    selectSeatAmount();
-//                } else {
-//                    startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
-//                }
+                DinningTable table = (DinningTable) parent.getItemAtPosition(position);
+                Intent result = new Intent();
+                result.putExtra("tableId", table.getId());
+                getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+                getActivity().finish();
             }
         });
     }

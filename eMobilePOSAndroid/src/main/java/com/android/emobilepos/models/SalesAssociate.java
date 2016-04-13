@@ -2,10 +2,12 @@ package com.android.emobilepos.models;
 
 import java.util.Date;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Guarionex on 3/8/2016.
  */
-public class SalesAssociate {
+public class SalesAssociate extends RealmObject {
     private int emp_id;
     private String zone_id;
     private String emp_name;

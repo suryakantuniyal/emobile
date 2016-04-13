@@ -1,7 +1,13 @@
 package com.android.emobilepos.models;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -64,8 +70,7 @@ public class DinningTable extends RealmObject {
     }
 
     public String getStyle() {
-        if (style == null)
-            parseAdditionalInfo();
+
         return style;
     }
 
@@ -91,7 +96,6 @@ public class DinningTable extends RealmObject {
     }
 
     public Dimensions getDimensions() {
-        if (dimensions == null) parseAdditionalInfo();
         return dimensions;
     }
 
@@ -115,10 +119,22 @@ public class DinningTable extends RealmObject {
         this.additionalInfoJson = additionalInfoJson;
     }
 
-    private void parseAdditionalInfo() {
-        Gson gson = new Gson();
+    public void parseAdditionalInfo() {
+        Gson gson = new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
+
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .create();
         DinningTable table = gson.fromJson(additionalInfoJson, DinningTable.class);
-        this.setDimensions(table.getDimensions());
+        this.dimensions = table.getDimensions();
         this.setPosition(table.getPosition());
         this.setStyle(table.getStyle());
     }
@@ -148,8 +164,6 @@ public class DinningTable extends RealmObject {
     }
 
     public Position getPosition() {
-        if (position == null)
-            parseAdditionalInfo();
         return position;
     }
 

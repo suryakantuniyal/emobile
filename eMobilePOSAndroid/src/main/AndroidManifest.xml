@@ -319,6 +319,7 @@
         <activity
             android:name=".mainmenu.restaurant.DinningTablesActivity"
             android:configChanges="orientation|screenSize"
+            android:screenOrientation="sensorLandscape"
             android:exported="false" />
         <activity
             android:name=".ordering.OrderAttrEdit_FA"

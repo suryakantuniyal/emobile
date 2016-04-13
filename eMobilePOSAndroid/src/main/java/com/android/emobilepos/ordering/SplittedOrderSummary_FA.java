@@ -109,7 +109,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
 
     public enum NavigationResult {
-        PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903);
+        PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903),
+        TABLE_SELECTION(1904),SEAT_SELECTION(1905);
         int code;
 
         NavigationResult(int code) {

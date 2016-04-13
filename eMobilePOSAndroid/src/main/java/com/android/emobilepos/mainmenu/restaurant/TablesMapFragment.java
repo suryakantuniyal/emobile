@@ -3,6 +3,7 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -10,19 +11,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TablesMapFragment extends Fragment {
+public class TablesMapFragment extends Fragment implements View.OnClickListener {
 
     private List<DinningTable> dinningTables;
 
@@ -41,51 +45,57 @@ public class TablesMapFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RelativeLayout.LayoutParams params;
+        final RelativeLayout.LayoutParams[] params = new RelativeLayout.LayoutParams[1];
 
-        RelativeLayout map = (RelativeLayout) view.findViewById(R.id.dinningTableMap);
+        final RelativeLayout map = (RelativeLayout) view.findViewById(R.id.dinningTableMap);
+        final View mapFloor = map.findViewById(R.id.map_floorimageView4);
+        ViewTreeObserver observer = map.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                map.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                for (DinningTable table : dinningTables) {
+                    params[0] = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    RelativeLayout tableItem = (RelativeLayout) View.inflate(getActivity(), R.layout.dinning_table_map_item, null);
+//            ImageView tableImageView = new ImageView(getActivity());
+//            tableImageView.setImageResource(R.drawable.dinning_table);
+//            tableItem.setLeft((int) convertPixelsToDp(table.getPosition().getPositionX(), getActivity()));
+//            tableItem.setTop((int) convertPixelsToDp(table.getPosition().getPositionY(), getActivity()));
+                    params[0].leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), mapFloor);
+                    params[0].topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), mapFloor);
+                    Log.d("Table add:", "X:" + params[0].leftMargin + " Y:" + params[0].topMargin);
+                    String label = getActivity().getString(R.string.table_label_map) + " " + table.getNumber();
+                    ((TextView) tableItem.findViewById(R.id.tableNumbertextView)).setText(label);
+                    map.addView(tableItem, params[0]);
+                    tableItem.findViewById(R.id.table_map_container).setOnClickListener(TablesMapFragment.this);
+                    tableItem.findViewById(R.id.table_map_container).setTag(table);
+                }
+            }
+        });
 
-        for (DinningTable table : dinningTables) {
-            params = new RelativeLayout.LayoutParams((int) convertPixelsToDp(60f, getActivity()),
-                    (int) convertPixelsToDp(60f, getActivity()));
-            ImageView tableImageView = new ImageView(getActivity());
-            tableImageView.setImageResource(R.drawable.dinning_table);
-            params.leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), getActivity());
-            params.topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), getActivity());
-            Log.d("Table add:", "X:" + params.leftMargin + " Y:" + params.topMargin);
-            map.addView(tableImageView, params);
-        }
+
     }
 
 
-    /**
-     * This method converts dp unit to equivalent pixels, depending on device density.
-     *
-     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent px equivalent to dp depending on device density
-     */
-    public static float convertDpToPixel(float dp, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return px;
-    }
-
-    /**
-     * This method converts device specific pixels to density independent pixels.
-     *
-     * @param px      A value in px (pixels) unit. Which we need to convert into db
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent dp equivalent to px value
-     */
-    public static float convertPixelsToDp(float px, Context context) {
-        Resources resources = context.getResources();
-
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float ratio = (Float.valueOf(String.valueOf(metrics.heightPixels)) / 600f);
+    public static float convertPixelsToDp(float px, View view) {
+        float ratio = (Float.valueOf(String.valueOf(view.getHeight())) / 600f);
         px = px * ratio;
 //        float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return px;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.table_map_container: {
+                DinningTable table = (DinningTable) v.getTag();
+                Intent result = new Intent();
+                result.putExtra("tableId", table.getId());
+                getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+                getActivity().finish();
+                break;
+            }
+        }
     }
 }
