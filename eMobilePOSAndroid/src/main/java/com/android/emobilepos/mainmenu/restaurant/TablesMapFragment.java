@@ -62,14 +62,16 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
 //            tableImageView.setImageResource(R.drawable.dinning_table);
 //            tableItem.setLeft((int) convertPixelsToDp(table.getPosition().getPositionX(), getActivity()));
 //            tableItem.setTop((int) convertPixelsToDp(table.getPosition().getPositionY(), getActivity()));
-                    params[0].leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), mapFloor);
-                    params[0].topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), mapFloor);
-                    Log.d("Table add:", "X:" + params[0].leftMargin + " Y:" + params[0].topMargin);
-                    String label = getActivity().getString(R.string.table_label_map) + " " + table.getNumber();
-                    ((TextView) tableItem.findViewById(R.id.tableNumbertextView)).setText(label);
-                    map.addView(tableItem, params[0]);
-                    tableItem.findViewById(R.id.table_map_container).setOnClickListener(TablesMapFragment.this);
-                    tableItem.findViewById(R.id.table_map_container).setTag(table);
+                    if (table.getPosition() != null && table.getPosition().getPositionY() > 0 && table.getPosition().getPositionX() > 0) {
+                        params[0].leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), mapFloor);
+                        params[0].topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), mapFloor);
+                        Log.d("Table add:", "X:" + params[0].leftMargin + " Y:" + params[0].topMargin);
+                        String label = getActivity().getString(R.string.table_label_map) + " " + table.getNumber();
+                        ((TextView) tableItem.findViewById(R.id.tableNumbertextView)).setText(label);
+                        map.addView(tableItem, params[0]);
+                        tableItem.findViewById(R.id.table_map_container).setOnClickListener(TablesMapFragment.this);
+                        tableItem.findViewById(R.id.table_map_container).setTag(table);
+                    }
                 }
             }
         });

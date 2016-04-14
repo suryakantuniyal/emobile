@@ -26,11 +26,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
+import com.android.dao.SalesAssociateTableDAO;
 import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.Locations_DB;
-import com.android.database.SalesAssociateHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTableSeatsAdapter;
@@ -555,7 +555,7 @@ public class SalesTab_FR extends Fragment {
                 popDlog.dismiss();
                 MyPreferences myPref = new MyPreferences(activity);
                 String enteredPass = viewField.getText().toString().trim();
-                SalesAssociate salesAssociates = SalesAssociateHandler.getSalesAssociate(enteredPass);
+                SalesAssociate salesAssociates = SalesAssociateTableDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
                 if (salesAssociates != null) {
                     validPassword = true;
                     associateId = enteredPass;

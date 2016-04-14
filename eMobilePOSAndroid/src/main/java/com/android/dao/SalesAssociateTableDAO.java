@@ -64,7 +64,7 @@ public class SalesAssociateTableDAO {
         realm.commitTransaction();
     }
 
-    public static SalesAssociate getEmpId(String empId) {
+    public static SalesAssociate getByEmpId(int empId) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<SalesAssociate> where = realm.where(SalesAssociate.class);
         SalesAssociate salesAssociate = where.equalTo("emp_id", empId).findFirst();
