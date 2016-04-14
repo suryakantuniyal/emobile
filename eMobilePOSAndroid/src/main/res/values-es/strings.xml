@@ -1219,6 +1219,8 @@
     <string name="processing_tipamount">Processing transaction tip amount</string>
     <string name="outofpaper">Printer out of paper!</string>
     <string name="tippayment_saved_successfully">Tip Payment Saved Successfully</string>
+    <string name="table_map">Floor Map</string>
+    <string name="table_list">Table List</string>
 
 
 </resources>

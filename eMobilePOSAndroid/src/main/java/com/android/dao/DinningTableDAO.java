@@ -38,7 +38,9 @@ public class DinningTableDAO {
         try {
             List<DinningTable> dinningTables = gson.fromJson(json, listType);
             for (DinningTable t : dinningTables) {
-                t.parseAdditionalInfo();
+                if (t.getAdditionalInfoJson() != null && !t.getAdditionalInfoJson().isEmpty()) {
+                    t.parseAdditionalInfo();
+                }
             }
             DinningTableDAO.insert(dinningTables);
         } catch (Exception e) {

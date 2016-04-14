@@ -2,12 +2,8 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +44,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
         final RelativeLayout.LayoutParams[] params = new RelativeLayout.LayoutParams[1];
 
         final RelativeLayout map = (RelativeLayout) view.findViewById(R.id.dinningTableMap);
-        final View mapFloor = map.findViewById(R.id.map_floorimageView4);
+        final View mapFloor = map.findViewById(R.id.dinningTableMap);
         ViewTreeObserver observer = map.getViewTreeObserver();
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -58,14 +54,22 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
                     params[0] = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
                     RelativeLayout tableItem = (RelativeLayout) View.inflate(getActivity(), R.layout.dinning_table_map_item, null);
-//            ImageView tableImageView = new ImageView(getActivity());
-//            tableImageView.setImageResource(R.drawable.dinning_table);
-//            tableItem.setLeft((int) convertPixelsToDp(table.getPosition().getPositionX(), getActivity()));
-//            tableItem.setTop((int) convertPixelsToDp(table.getPosition().getPositionY(), getActivity()));
+
                     if (table.getPosition() != null && table.getPosition().getPositionY() > 0 && table.getPosition().getPositionX() > 0) {
+                        ImageView img;
+                        switch (Integer.parseInt(table.getStyle())) {
+                            case 0: {
+                                img = (ImageView) tableItem.findViewById(R.id.dinningtableimageView3);
+                                img.setImageResource(getSquareTableBySize(table.getDimensions().getWidth()));
+                                break;
+                            }
+                            default: {
+                                img = (ImageView) tableItem.findViewById(R.id.dinningtableimageView3);
+                                img.setImageResource(getRoundTableBySize(table.getDimensions().getWidth()));
+                            }
+                        }
                         params[0].leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), mapFloor);
                         params[0].topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), mapFloor);
-                        Log.d("Table add:", "X:" + params[0].leftMargin + " Y:" + params[0].topMargin);
                         String label = getActivity().getString(R.string.table_label_map) + " " + table.getNumber();
                         ((TextView) tableItem.findViewById(R.id.tableNumbertextView)).setText(label);
                         map.addView(tableItem, params[0]);
@@ -80,10 +84,36 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
     }
 
 
+    private int getRoundTableBySize(int width) {
+        switch (width) {
+            case 40:
+                return R.drawable.table_round_sm;
+            case 60:
+                return R.drawable.table_round_md;
+            case 80:
+                return R.drawable.table_round_lg;
+            default:
+                return R.drawable.table_round_md;
+        }
+    }
+
+    private int getSquareTableBySize(int width) {
+        switch (width) {
+            case 40:
+                return R.drawable.table_square_sm;
+            case 60:
+                return R.drawable.table_square_md;
+            case 80:
+                return R.drawable.table_square_lg;
+            default:
+                return R.drawable.table_square_md;
+        }
+    }
+
+
     public static float convertPixelsToDp(float px, View view) {
         float ratio = (Float.valueOf(String.valueOf(view.getHeight())) / 600f);
         px = px * ratio;
-//        float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return px;
     }
 

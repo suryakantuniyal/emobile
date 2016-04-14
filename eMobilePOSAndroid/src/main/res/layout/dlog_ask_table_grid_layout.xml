@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_dlog"
     android:orientation="vertical">
 
     <TextView
@@ -16,7 +15,8 @@
         android:textAppearance="@style/white_text_appearance"
         android:textSize="@dimen/header_bar_text_size"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp" />
+        android:paddingBottom="10dp"
+        android:layout_margin="10dp" />
 
     <GridView
         android:id="@+id/tablesGridLayout"

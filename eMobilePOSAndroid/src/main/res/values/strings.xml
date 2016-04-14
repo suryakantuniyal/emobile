@@ -1157,6 +1157,8 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="table_label_map">"Table: "</string>
+    <string name="table_map">Floor Map</string>
+    <string name="table_list">Table List</string>
 
 
 </resources>

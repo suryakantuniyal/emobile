@@ -26,6 +26,9 @@ import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.barcode.CommonDefine;
+import com.viewpagerindicator.IconPagerAdapter;
+import com.viewpagerindicator.PageIndicator;
+import com.viewpagerindicator.TitlePageIndicator;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
@@ -43,6 +46,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private PageIndicator titlePageIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +54,9 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         setContentView(R.layout.activity_dinning_tables);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
+        titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        titlePageIndicator.setViewPager(mViewPager);
 
     }
 
@@ -78,7 +84,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     }
 
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class SectionsPagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter{
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -90,12 +96,17 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    TablesGridFragment fragment = new TablesGridFragment();
-                    return fragment;
-                default:
                     TablesMapFragment mapFragment = new TablesMapFragment();
                     return mapFragment;
+                default:
+                    TablesGridFragment fragment = new TablesGridFragment();
+                    return fragment;
             }
+        }
+
+        @Override
+        public int getIconResId(int i) {
+            return 0;
         }
 
         @Override
@@ -107,9 +118,9 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "SECTION 1";
+                    return getString(R.string.table_map);
                 case 1:
-                    return "SECTION 2";
+                    return getString(R.string.table_list);
             }
             return null;
         }
