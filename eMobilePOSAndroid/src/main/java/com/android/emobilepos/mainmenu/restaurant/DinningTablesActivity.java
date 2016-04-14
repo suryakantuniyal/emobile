@@ -64,7 +64,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_dinning_tables, menu);
+//        getMenuInflater().inflate(R.menu.menu_dinning_tables, menu);
         return true;
     }
 
@@ -76,9 +76,9 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }

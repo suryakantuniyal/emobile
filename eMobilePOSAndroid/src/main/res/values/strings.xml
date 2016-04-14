@@ -1151,11 +1151,7 @@
     <string name="outofpaper">Printer out of paper!</string>
     <string name="tippayment_saved_successfully">Tip Payment Saved Successfully</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_dinning_tables">Dinning Tables</string>
-    <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="table_label_map">"Table: "</string>
     <string name="table_map">Floor Map</string>
     <string name="table_list">Table List</string>

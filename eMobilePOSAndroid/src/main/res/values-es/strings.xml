@@ -1221,6 +1221,8 @@
     <string name="tippayment_saved_successfully">Tip Payment Saved Successfully</string>
     <string name="table_map">Floor Map</string>
     <string name="table_list">Table List</string>
+    <string name="title_activity_dinning_tables">Dinning Tables</string>
+    <string name="table_label_map">"Table: "</string>
 
 
 </resources>
