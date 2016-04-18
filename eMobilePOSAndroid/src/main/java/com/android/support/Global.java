@@ -1684,19 +1684,22 @@ public class Global extends MultiDexApplication {
         int orientation = activity.getResources().getConfiguration().orientation;
         int rotation = ((WindowManager) activity.getSystemService(
                 Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-        if (isTablet(activity)) {
+        if (isTablet(activity) && (((rotation == 0 || rotation == 2) && orientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+                orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) || ((rotation == 1 || rotation == 3) &&
+                orientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+        )) {
             switch (rotation) {
                 case Surface.ROTATION_0:
                     orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
                     break;
                 case Surface.ROTATION_90:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
                     break;
                 case Surface.ROTATION_180:
                     orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
                     break;
                 default:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                     break;
             }
         } else {
