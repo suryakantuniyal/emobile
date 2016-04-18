@@ -1686,13 +1686,13 @@ public class Global extends MultiDexApplication {
                     orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
                     break;
                 case Surface.ROTATION_90:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
                     break;
                 case Surface.ROTATION_180:
                     orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
                     break;
                 default:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                     break;
             }
         } else {
@@ -1701,13 +1701,13 @@ public class Global extends MultiDexApplication {
                     orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                     break;
                 case Surface.ROTATION_90:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
                     break;
                 case Surface.ROTATION_180:
                     orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
                     break;
                 default:
-                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
                     break;
             }
         }
