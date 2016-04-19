@@ -45,7 +45,6 @@ public class SelectAccount_FA extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
 		activity = this;
 		final MyPreferences myPref = new MyPreferences(this);
 		

@@ -21,6 +21,7 @@ import com.android.support.MyPreferences;
 import org.springframework.util.support.Base64;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +34,11 @@ import rba_sdk.Comm_Settings_Constants;
 import rba_sdk.Comm_Timeout;
 import rba_sdk.ERROR_ID;
 import rba_sdk.EventHandlerInterface;
+import rba_sdk.LogTraceInterface;
 import rba_sdk.MESSAGE_ID;
 import rba_sdk.PARAMETER_ID;
 import rba_sdk.RBA_API;
-import rba_sdk.RBA_INSTANCE;
+import rbasdk_android_adapter.RBASDKAdapter;
 
 public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, EventHandlerInterface {
 
@@ -44,13 +46,12 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
-    private Activity activity;
-
     private Handler handler;
     private EMSCallBack callBack, _scannerCallBack;
     private EventHandlerInterface sdkEventHandler;
     private boolean barcodeReaderLoaded = false;
     private boolean mIsDebit = false;
+
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -61,7 +62,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         thisInstance = this;
         this.edm = edm;
-        sdkEventHandler = this;
 
         new processConnectionAsync().execute(0);
     }
@@ -83,7 +83,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         Comm_Settings commSettings = new Comm_Settings();
         commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
 //        commSettings.BT_Name = "";
-        commSettings.AutoDetect= 1;
+        commSettings.AutoDetect = 1;
 
         setCommTimeOuts();
         ERROR_ID connectionRequest;
@@ -134,7 +134,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
             Comm_Settings commSettings = new Comm_Settings();
             commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
 //            commSettings.BT_Name = "";
-            commSettings.AutoDetect= 1;
+            commSettings.AutoDetect = 1;
 
             setCommTimeOuts();
             ERROR_ID connectionRequest = RBA_API.Connect(commSettings);
