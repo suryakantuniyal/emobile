@@ -46,8 +46,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
     private CreditCardInfo cardManager;
-    private Activity activity;
-
     private Handler handler;
     private EMSCallBack callBack, _scannerCallBack;
     private EventHandlerInterface sdkEventHandler;
