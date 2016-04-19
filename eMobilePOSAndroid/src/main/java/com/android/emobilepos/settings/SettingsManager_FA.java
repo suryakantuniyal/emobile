@@ -810,13 +810,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
-                                myPref.sledType(false, Global.ISMP);
-                                myPref.setPrinterType(Global.ISMP);
-                                myPref.setPrinterMACAddress(macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
+                                myPref.setSwiperType(Global.ISMP);
+                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
-                                Global.btSled = edm.getManager();
-                                Global.btSled.loadDrivers(activity, Global.ISMP, false);
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.ISMP, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
