@@ -18,6 +18,8 @@ android {
         javaMaxHeapSize "2g"
     }
     packagingOptions {
+        exclude "lib/arm64-v8a/librealm-jni.so"
+        exclude "lib/x86_64/librealm-jni.so"
     }
     defaultConfig {
         applicationId "com.emobilepos.app"
@@ -25,6 +27,16 @@ android {
         targetSdkVersion 23
         multiDexEnabled = true
     }
+
+
+//    splits {
+//        abi {
+//            enable true
+//            reset()
+//            include 'arm', 'arm-v7a', 'arm64', 'mips', 'x86', 'x86_64'
+//        }
+//    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/NOTICE'
@@ -36,7 +48,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.2.0.10"
+            versionName "1.2.0.11"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
@@ -44,7 +56,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.2.0.10"
+            versionName "1.2.0.11"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
@@ -52,7 +64,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.10"
+            versionName "1.2.0.11"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
