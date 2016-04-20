@@ -119,7 +119,7 @@ public class OrderProductsHandler {
     }
 
 
-    public void insert(List<OrderProduct> order) {
+    public void insert(List<OrderProduct> orderProducts) {
 
         DBManager._db.beginTransaction();
         try {
@@ -128,10 +128,10 @@ public class OrderProductsHandler {
             SQLiteStatement insert = null;
             insert = DBManager._db.compileStatement("INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
-            int size = order.size();
+            int size = orderProducts.size();
 
             for (int i = 0; i < size; i++) {
-                OrderProduct prod = order.get(i);
+                OrderProduct prod = orderProducts.get(i);
                 insert.bindString(index(addon), TextUtils.isEmpty(prod.addon) ? "0" : prod.addon); // addon
                 insert.bindString(index(isAdded), prod.isAdded == null ? "" : prod.isAdded); // isAdded
                 insert.bindString(index(isPrinted), TextUtils.isEmpty(prod.isPrinted) ? "0" : prod.isPrinted); // isPrinted

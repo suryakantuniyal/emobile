@@ -385,7 +385,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
                 splitedOrder.ord_id = nextOrderID;
                 splitedOrder.processed = "10";
-                splitedOrder.isOnHold = "0";
+                splitedOrder.isOnHold = "1";
                 splitedOrder.syncOrderProductIds();
                 ordersHandler.insert(splitedOrder);
                 productsHandler.insert(splitedOrder.getOrderProducts());

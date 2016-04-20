@@ -891,8 +891,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             showPaymentSuccessDlog(true, emvContainer);
         } else if (resultCode == -2) {
             totalPayCount++;
-            OrdersHandler handler = new OrdersHandler(activity);
-            handler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
+            OrdersHandler ordersHandler = new OrdersHandler(activity);
+            ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
             currentPaidAmount = currentPaidAmount + Double.parseDouble(Global.amountPaid);
             Global.overallPaidAmount = currentPaidAmount;
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
@@ -925,7 +925,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             } else {
                 if (job_id != null && !job_id.isEmpty()) {
-                    handler.updateIsProcessed(job_id, "1");
+                    ordersHandler.updateIsProcessed(job_id, "1");
                 }
                 previous_pay_id = pay_id;
                 showPaymentSuccessDlog(true, emvContainer);

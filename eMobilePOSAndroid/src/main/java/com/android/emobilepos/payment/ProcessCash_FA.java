@@ -669,13 +669,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
                 null, null, null);
 
 
-//        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey,
-//                extras.getString("paymethod_id"), actualAmount, amountToBePaid,
-//                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(), customerEmailField.getText().toString(),
-//                amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-//                isRef, paymentType, "Cash");
-
-
         Global.amountPaid = Double.toString(amountTender);
 
         payHandler.insert(payment);
