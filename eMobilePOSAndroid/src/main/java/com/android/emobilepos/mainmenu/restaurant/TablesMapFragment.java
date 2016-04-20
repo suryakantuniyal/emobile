@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -53,7 +54,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
                 for (DinningTable table : dinningTables) {
                     params[0] = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT);
-                    RelativeLayout tableItem = (RelativeLayout) View.inflate(getActivity(), R.layout.dinning_table_map_item, null);
+                    LinearLayout tableItem = (LinearLayout) View.inflate(getActivity(), R.layout.dinning_table_map_item, null);
 
                     if (table.getPosition() != null && table.getPosition().getPositionY() > 0 && table.getPosition().getPositionX() > 0) {
                         ImageView img;
