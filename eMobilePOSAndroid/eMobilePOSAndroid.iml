@@ -62,13 +62,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/ems/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/assets" type="java-test-resource" />
@@ -76,6 +69,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />

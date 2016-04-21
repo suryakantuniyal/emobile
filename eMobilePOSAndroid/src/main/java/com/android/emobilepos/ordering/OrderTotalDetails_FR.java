@@ -406,9 +406,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         if (discountSelected > 0) {
             dis = discountList.get(discountSelected - 1);
         }
-        TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
-                taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
-        tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
+        if (taxSelected > 0) {
+            TaxesCalculator taxesCalculator = new TaxesCalculator(activity, orderProduct, Global.taxID,
+                    taxList.get(taxSelected - 1), dis, discountable_sub_total, itemsDiscountTotal);
+            tempTaxableAmount = tempTaxableAmount.add(taxesCalculator.getTaxableAmount());
+        }
     }
 
     private BigDecimal getProductPrice(BigDecimal prod_with_tax_price, BigDecimal tax) {
