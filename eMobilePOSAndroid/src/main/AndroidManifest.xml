@@ -478,7 +478,7 @@
         </receiver>
 
         <activity android:name=".payment.TipAdjustmentFA" />
-        
+
     </application>
 
 </manifest>

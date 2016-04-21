@@ -32,8 +32,8 @@ import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
-import com.android.emobilepos.adapters.SynchMenuAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -286,12 +286,13 @@ public class SynchMethods {
                 activity.startActivity(intent);
                 activity.finish();
             } else if (type == Global.FROM_SYNCH_ACTIVITY) {
-                MainMenu_FA synchActivity = (MainMenu_FA) activity;
-                ListView listView = (ListView) synchActivity.getViewPager().findViewById(R.id.synchListView);
-                if (listView != null) {
-                    SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
-                    adapter.notifyDataSetChanged();
-                }
+                SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+//                synchActivity.getViewPager().getAdapter().
+//                ListView listView = (ListView) synchActivity.getViewPager().findViewById(R.id.synchListView);
+//                if (listView != null) {
+//                    SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
+//                    adapter.notifyDataSetChanged();
+//                }
             }
         }
 
@@ -454,12 +455,13 @@ public class SynchMethods {
 
             if (type == Global.FROM_SYNCH_ACTIVITY) {
                 if (!isFromMainMenu) {
-                    MainMenu_FA synchActivity = (MainMenu_FA) activity;
-                    ListView listView = (ListView) synchActivity.getViewPager().findViewById(R.id.synchListView);
-                    if (listView != null) {
-                        SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
-                        adapter.notifyDataSetChanged();
-                    }
+                    SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
+//                    MainMenu_FA synchActivity = (MainMenu_FA) activity;
+//                    ListView listView = (ListView) synchActivity.getViewPager().findViewById(R.id.synchListView);
+//                    if (listView != null) {
+//                        SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
+//                        adapter.notifyDataSetChanged();
+//                    }
                 } else {
                     synchTextView.setVisibility(View.GONE);
                 }

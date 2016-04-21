@@ -16,14 +16,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.database.DBManager;
 import com.android.database.PrintersHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.adapters.SynchMenuAdapter;
-import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -36,22 +34,19 @@ import main.EMSDeviceManager;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
-    private static AdapterTabs tabsAdapter;
-    private ViewPager viewPager;
     public static Activity activity;
     private Global global;
     private boolean hasBeenCreated = false;
     private static MyPreferences myPref;
-    private static int selectedPage = 0;
-    private static ViewPager childViewPager;
     private TextView synchTextView, tvStoreForward;
+    private AdapterTabs tabsAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        viewPager = (ViewPager) findViewById(R.id.main_menu_pager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.main_menu_pager);
         synchTextView = (TextView) findViewById(R.id.synch_title);
         synchTextView.setVisibility(View.GONE);
         tvStoreForward = (TextView) findViewById(R.id.label_cc_offline);
@@ -64,26 +59,26 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //
 //		myBar.setDisplayShowTitleEnabled(false);
 //		myBar.setDisplayShowHomeEnabled(false);
-        tabsAdapter = new AdapterTabs(this, viewPager);
+        setTabsAdapter(new AdapterTabs(this, viewPager));
 
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.sales_title), SalesTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.sales_title), SalesTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.sync_title), SyncTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.sync_title), SyncTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.hist_title), HistoryTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.hist_title), HistoryTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.routes_title), RoutesTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.routes_title), RoutesTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         // tabsAdapter.addTab(myBar.newTab().setText(R.string.admin_title),
         // SettingsMenuActivity.class, null);
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.admin_title), SettingsTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.admin_title), SettingsTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.report_title).setTag("Reports Fragment"), ReportTab_FR.class,
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.report_title).setTag("Reports Fragment"), ReportTab_FR.class,
                 null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.clock_title), ClockTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.clock_title), ClockTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        tabsAdapter.addTab(myBar.newTab().setText(R.string.about_title), AboutTab_FR.class, null);
+        getTabsAdapter().addTab(myBar.newTab().setText(R.string.about_title), AboutTab_FR.class, null);
         myBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         forceTabs();
@@ -170,6 +165,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         this.finish();
     }
 
+    public AdapterTabs getTabsAdapter() {
+        return tabsAdapter;
+    }
+
+    public void setTabsAdapter(AdapterTabs tabsAdapter) {
+        this.tabsAdapter = tabsAdapter;
+    }
+
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
 
         StringBuilder sb = new StringBuilder();
@@ -189,8 +192,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
             int size = c.getCount();
 
-            if (c != null && size > 0
-                    && (Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0)) {
+            if (size > 0 && (Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0)) {
                 int i = 0;
                 int i_printer_id = c.getColumnIndex("printer_id");
                 int i_printer_type = c.getColumnIndex("printer_type");
@@ -219,8 +221,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 } while (c.moveToNext());
             }
             c.close();
-            String _portName = "";
-            String _peripheralName = "";
+            String _portName;
+            String _peripheralName;
             if ((myPref.getSwiperType() != -1) && (Global.btSwiper == null)) {
                 edm = new EMSDeviceManager();
                 _portName = myPref.swiperMACAddress(true, null);
@@ -281,9 +283,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }
     }
 
-    public ViewPager getViewPager() {
-        return childViewPager;
-    }
 
     public TextView getSynchTextView() {
         return synchTextView;
@@ -313,7 +312,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             myActionBar = activity.getActionBar();
             myViewPager = pager;
             myViewPager.setAdapter(this);
-            myViewPager.setOnPageChangeListener(this);
+            myViewPager.addOnPageChangeListener(this);//setOnPageChangeListener(this);
         }
 
         public void addTab(ActionBar.Tab tab, Class<?> clzz, Bundle args) {
@@ -328,7 +327,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         @Override
         public void onTabSelected(Tab tab, FragmentTransaction ft) {
-            // TODO Auto-generated method stub
             Object tag = tab.getTag();
             int size = myTabs.size();
             for (int i = 0; i < size; i++) {
@@ -341,58 +339,51 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 // Toast.makeText(activity, "launch default trans",
                 // Toast.LENGTH_LONG).show();
                 SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
-            } else if (selectedPage == 1) // Sync tab
-            {
-                childViewPager = myViewPager;
-                ListView listView = (ListView) myViewPager.findViewById(R.id.synchListView);
-                if (listView != null) {
-                    SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
-                    adapter.notifyDataSetChanged();
-                }
             }
+//            else if (selectedPage == 1) // Sync tab
+//            {
+//                childViewPager = myViewPager;
+//                ListView listView = (ListView) myViewPager.findViewById(R.id.synchListView);
+//                if (listView != null) {
+//                    SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
+//                    adapter.notifyDataSetChanged();
+//                }
+//            }
         }
 
         @Override
         public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-            // TODO Auto-generated method stub
 
         }
 
         @Override
         public void onTabReselected(Tab tab, FragmentTransaction ft) {
-            // TODO Auto-generated method stub
 
         }
 
         @Override
         public void onPageScrollStateChanged(int arg0) {
-            // TODO Auto-generated method stub
         }
 
         @Override
         public void onPageScrolled(int arg0, float arg1, int arg2) {
-            // TODO Auto-generated method stub
 
         }
 
         @Override
         public void onPageSelected(int index) {
-            // TODO Auto-generated method stub
-            selectedPage = index;
             myActionBar.setSelectedNavigationItem(index);
 
         }
 
         @Override
         public Fragment getItem(int index) {
-            // TODO Auto-generated method stub
             TabInfo info = myTabs.get(index);
             return Fragment.instantiate(myContext, info.clazz.getName(), info.args);
         }
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return myTabs.size();
         }
 
