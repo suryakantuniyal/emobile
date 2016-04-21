@@ -608,6 +608,7 @@ public class OrdersHandler {
     public void updateIsProcessed(String orderID, String updateValue) {
         ContentValues args = new ContentValues();
         args.put(processed, updateValue);
+        args.put(isOnHold, "0");
         DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{orderID});
     }
 

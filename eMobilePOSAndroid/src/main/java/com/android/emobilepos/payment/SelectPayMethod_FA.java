@@ -893,6 +893,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             totalPayCount++;
             OrdersHandler ordersHandler = new OrdersHandler(activity);
             ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
+
             currentPaidAmount = currentPaidAmount + Double.parseDouble(Global.amountPaid);
             Global.overallPaidAmount = currentPaidAmount;
             tipPaidAmount += Double.parseDouble(Global.tipPaid);
