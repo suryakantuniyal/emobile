@@ -1,34 +1,27 @@
 package drivers;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.util.Log;
+import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.partner.pt100.display.DisplayManager;
-import com.partner.pt100.printer.PrinterManage;
-import com.starmicronics.starioextension.starioextmanager.StarIoExtManager;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 /**
  * Created by Guarionex on 12/3/2015.
@@ -51,7 +44,7 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
-        this.edm.driverDidConnectToDevice(thisInstance, false);
+        this.edm.driverDidConnectToDevice(thisInstance, true);
     }
 
 
@@ -194,6 +187,36 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
 
     }
 

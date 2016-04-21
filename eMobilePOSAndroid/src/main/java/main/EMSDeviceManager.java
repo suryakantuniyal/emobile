@@ -19,7 +19,9 @@ import drivers.EMSBlueBambooP25;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
 import drivers.EMSEM100;
+import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
+import drivers.EMSIngenicoEVO;
 import drivers.EMSKDC500;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSOT310;
@@ -30,9 +32,9 @@ import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
 import drivers.EMSEM70;
 import drivers.EMSELO;
-import protocols.EMSConnectionDelegate;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import protocols.EMSPrintingDelegate;
+import interfaces.EMSConnectionDelegate;
+import interfaces.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSPrintingDelegate;
 
 public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDelegate {
 
@@ -47,8 +49,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     //private static EMSDeviceManager instance = new EMSDeviceManager();
 
     public EMSDeviceManager() {
-
-
         instance = this;
         return;
     }
@@ -59,7 +59,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         //instance = new EMSDeviceManager();
         return instance;
     }
-	/*
+    /*
 	public  EMSDeviceManager getInstance()
 	{
 		return instance;
@@ -115,19 +115,23 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.EM100:
                 aDevice = new EMSEM100();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.EM70:
                 aDevice = new EMSEM70();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.OT310:
                 aDevice = new EMSOT310();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.KDC500:
                 aDevice = new EMSKDC500();
-                aDevice.connect(activity, -1, true, instance);
+                aDevice.connect(activity, -1, false, instance);
+                break;
+            case Global.HANDPOINT:
+                aDevice = new EMSHandpoint();
+                aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
@@ -135,6 +139,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.ISMP:
                 aDevice = new EMSIngenico();
+                aDevice.connect(activity, -1, false, instance);
+                break;
+            case Global.ICMPEVO:
+                aDevice = new EMSIngenicoEVO();
                 aDevice.connect(activity, -1, false, instance);
                 break;
         }
@@ -162,6 +170,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.POWA:
                 aDevice = new EMSPowaPOS();
                 break;
+            case Global.EM100:
+                aDevice = new EMSEM100();
+                break;
             case Global.ASURA:
                 aDevice = new EMSAsura();
                 break;
@@ -183,8 +194,14 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.KDC500:
                 aDevice = new EMSKDC500();
                 break;
+            case Global.HANDPOINT:
+                aDevice = new EMSHandpoint();
+                break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
+                break;
+            case Global.ICMPEVO:
+                aDevice = new EMSIngenicoEVO();
                 break;
         }
         if (aDevice != null)
@@ -208,7 +225,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3) {
-                // TODO Auto-generated method stub
                 promptDialog.dismiss();
                 if (pos == 0)
 
@@ -244,7 +260,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                // TODO Auto-generated method stub
                 promptDialog.dismiss();
                 MyPreferences myPref = new MyPreferences(activity);
                 myPref.posPrinter(false, isPOSPrinter);
@@ -269,22 +284,18 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     public EMSDeviceManagerPrinterDelegate currentDevice;
 
     public void printerDidFinish() {
-        // TODO Auto-generated method stub
 
     }
 
     public void printerDidDisconnect(Error err) {
-        // TODO Auto-generated method stub
 
     }
 
     public void printerDidBegin() {
-        // TODO Auto-generated method stub
 
     }
 
     public void driverDidConnectToDevice(EMSDeviceDriver theDevice, boolean showPrompt) {
-        // TODO Auto-generated method stub
         if (showPrompt) {
             Builder dialog = new AlertDialog.Builder(this.activity);
             dialog.setNegativeButton(R.string.button_ok, null);
@@ -298,12 +309,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
     }
 
     public void driverDidDisconnectFromDevice(EMSDeviceDriver theDevice, boolean showPrompt) {
-        // TODO Auto-generated method stub
 
     }
 
     public void driverDidNotConnectToDevice(EMSDeviceDriver theDevice, String err, boolean showPrompt) {
-        // TODO Auto-generated method stub
 
         if (showPrompt) {
             Builder dialog = new AlertDialog.Builder(this.activity);

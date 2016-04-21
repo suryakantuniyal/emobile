@@ -56,7 +56,7 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -368,7 +368,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             }
 
         } else {
-            int _swiper_type = myPref.swiperType(true, -2);
+            int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
@@ -396,7 +396,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70()|| myPref.isHandpoint() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         }
     }
@@ -779,6 +779,11 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     @Override
     public void startSignature() {
+
+    }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
 
     }
 

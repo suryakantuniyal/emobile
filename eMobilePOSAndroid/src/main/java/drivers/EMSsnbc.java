@@ -5,26 +5,24 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
-import android.util.Base64;
+import android.view.View;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.database.MemoTextHandler;
-import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.starmicronics.stario.StarIOPortException;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +32,8 @@ import POSAPI.POSUSBAPI;
 import POSSDK.POSSDK;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     private final int LINE_WIDTH = 42;
@@ -353,105 +351,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return true;
     }
 
-	/*
-    @Override
-	public boolean printConsignment(List<ConsignmentTransaction> myConsignment,String encodedSig) 
-	{
-		this.encodedSignature = encodedSig;
-		printPref = myPref.getPrintingPreferences();
-		EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-		StringBuilder sb = new StringBuilder();
-		//SQLiteDatabase db = new DBManager(activity).openReadableDB();
-		ProductsHandler productDBHandler = new ProductsHandler(activity);
-		//String value = new String();
-		HashMap<String,String>map = new HashMap<String,String>();
-		double ordTotal = 0,totalSold = 0,totalReturned = 0,totalDispached = 0,totalLines = 0,returnAmount=0,subtotalAmount=0;
-		
-		int size = myConsignment.size();
-		
-		this.printImage(0);
-		
-		if(printPref.contains(MyPreferences.print_header))
-			this.printHeader();
-		
-		
-		sb.append(textHandler.centeredString("Consignment Summary", LINE_WIDTH)).append("\n\n");
-		
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), myPref.getCustName(), LINE_WIDTH,0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee), myPref.getEmpName(), LINE_WIDTH,0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id), myConsignment.get(0).ConsTrans_ID, LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),Global.formatToDisplayDate(Global.getCurrentDate(),activity,3), LINE_WIDTH,0));
-		sb.append(textHandler.newLines(3));
-		
-		for(int i = 0 ; i < size;i++)
-		{
-			if(!myConsignment.get(i).ConsOriginal_Qty.equals("0"))
-			{
-				map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID,true);
-				
-				sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_name"), LINE_WIDTH, 0));
-				
-				if(printPref.contains(MyPreferences.print_descriptions))
-				{
-					sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_description), "", LINE_WIDTH, 3)).append("\n");
-					sb.append(textHandler.oneColumnLineWithLeftAlignedText(map.get("prod_desc"), LINE_WIDTH, 5)).append("\n");
-				}
-				else
-					sb.append(textHandler.newLines(1));
-				
 
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Original Qty:", myConsignment.get(i).ConsOriginal_Qty, LINE_WIDTH, 3));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Rack Qty:",myConsignment.get(i).ConsStock_Qty, LINE_WIDTH, 3));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Returned Qty:", myConsignment.get(i).ConsReturn_Qty, LINE_WIDTH, 3));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sold Qty:", myConsignment.get(i).ConsInvoice_Qty, LINE_WIDTH, 3));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Dispatched Qty:", myConsignment.get(i).ConsDispatch_Qty, LINE_WIDTH, 3));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("New Qty:", myConsignment.get(i).ConsNew_Qty, LINE_WIDTH, 3));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Product Price:", Global.formatDoubleStrToCurrency(map.get("prod_price")), LINE_WIDTH, 5));
-				
-				returnAmount = Global.formatNumFromLocale(myConsignment.get(i).ConsReturn_Qty)*Global.formatNumFromLocale(map.get("prod_price"));
-				subtotalAmount = Global.formatNumFromLocale(myConsignment.get(i).invoice_total)+returnAmount;
-				
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Subtotal:", Global.formatDoubleToCurrency(subtotalAmount),LINE_WIDTH,5));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Credit Memo:", Global.formatDoubleToCurrency(returnAmount),LINE_WIDTH,5));
-				sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total:", Global.formatDoubleStrToCurrency(myConsignment.get(i).invoice_total), LINE_WIDTH, 5)).append(textHandler.newLines(2));
-				
-				totalSold += Double.parseDouble( myConsignment.get(i).ConsInvoice_Qty);
-				totalReturned+=Double.parseDouble(myConsignment.get(i).ConsReturn_Qty);
-				totalDispached+=Double.parseDouble(myConsignment.get(i).ConsDispatch_Qty);
-				totalLines+=1;
-				ordTotal += Double.parseDouble(myConsignment.get(i).invoice_total);
-				
-				
-				this.printString(sb.toString());
-				sb.setLength(0);
-			}
-		}
-		
-		
-		sb.append(textHandler.lines(LINE_WIDTH));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Sold:", Double.toString(totalSold), LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Returned", Double.toString(totalReturned), LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Items Dispatched", Double.toString(totalDispached), LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Line Items", Double.toString(totalLines), LINE_WIDTH, 0));
-		sb.append(textHandler.twoColumnLineWithLeftAlignedText("Grand Total:", Global.formatDoubleToCurrency(ordTotal), LINE_WIDTH, 0));
-		sb.append(textHandler.newLines(3));
-		
-		this.printString(sb.toString());
-		
-		if(printPref.contains(MyPreferences.print_descriptions))
-			this.printFooter();
-		
-		this.printImage(1);
-		this.printString(textHandler.newLines(3));
-		
-		this.cutPaper();
-		
-		
-		//db.close();
-		
-		return true;
-	}
-*/
 
 
     @Override
@@ -530,6 +430,44 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
 
     }
 }

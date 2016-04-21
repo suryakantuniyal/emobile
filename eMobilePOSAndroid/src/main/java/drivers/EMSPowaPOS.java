@@ -11,13 +11,15 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -29,15 +31,17 @@ import com.mpowa.android.sdk.powapos.common.dataobjects.PowaDeviceObject;
 import com.mpowa.android.sdk.powapos.common.utils.ByteUtils;
 import com.mpowa.android.sdk.powapos.core.PowaPOSEnums;
 import com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallback;
+import com.starmicronics.stario.StarIOPortException;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 //com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallbackBas
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
@@ -239,6 +243,43 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void toggleBarcodeReader() {
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
     }
 
     @Override

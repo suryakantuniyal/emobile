@@ -27,8 +27,8 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 
 

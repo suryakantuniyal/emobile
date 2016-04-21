@@ -44,8 +44,8 @@ import android.os.AsyncTask;
 import android.util.Base64;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 import util.EMSReceiptHelper;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate{

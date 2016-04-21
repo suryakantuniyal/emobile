@@ -1,25 +1,21 @@
 package drivers;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
-import android.widget.EditText;
+import android.view.View;
 import android.widget.Toast;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
-import com.android.soundmanager.SoundManager;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -31,26 +27,22 @@ import com.elotouch.paypoint.register.cd.CashDrawer;
 import com.elotouch.paypoint.register.cfd.CFD;
 import com.elotouch.paypoint.register.printer.SerialPort;
 import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
-import com.partner.pt100.display.DisplayLineApiContext;
-import com.partner.pt100.display.DisplayManager;
-
-import org.bouncycastle.crypto.digests.LongDigest;
+import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
 
 import drivers.elo.utils.MagStripDriver;
-import drivers.elo.utils.MagStripeCardParser;
 import drivers.elo.utils.PrinterAPI;
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 /**
  * Created by Guarionex on 12/3/2015.
@@ -147,7 +139,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
         @Override
         protected Boolean doInBackground(Boolean... params) {
-
+//            Looper.prepare();
             String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
             SerialPort port = null;
             try {
@@ -157,7 +149,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
                 eloPrinterApi = new PrinterAPI(eloPrinterPort);
                 if (!eloPrinterApi.isPaperAvailable()) {
-                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(activity, "Printer out of paper!", Toast.LENGTH_LONG).show();
                 }
                 eloPrinterPort.getInputStream().close();
                 eloPrinterPort.getOutputStream().close();
@@ -168,7 +160,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
                 didConnect = false;
                 e.printStackTrace();
             }
-
+//            Looper.loop();
             return params[0];
         }
 
@@ -234,7 +226,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return printBalanceInquiry(values, LINE_WIDTH);
     }
-
 
 
     @Override
@@ -455,6 +446,52 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         if (barcodereader != null) {
             barcodereader.turnOnLaser();
         }
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+
+        try {
+            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+            setPaperWidth(LINE_WIDTH);
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            eloPrinterPort.getInputStream().close();
+            eloPrinterPort.getOutputStream().close();
+            eloPrinterPort.close();
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
     }
 
     private Runnable runnableScannedData = new Runnable() {

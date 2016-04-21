@@ -1,4 +1,4 @@
-package protocols;
+package interfaces;
 
 import java.util.HashMap;
 import java.util.List;

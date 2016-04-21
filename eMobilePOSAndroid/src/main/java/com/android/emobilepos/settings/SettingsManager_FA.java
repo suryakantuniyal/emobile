@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.database.CategoriesHandler;
+import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PrintersHandler;
 import com.android.database.ShiftPeriodsDBHandler;
@@ -45,7 +46,6 @@ import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.shifts.OpenShift_FA;
-import com.android.database.DBManager;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import koamtac.kdc.sdk.KDCReader;
 import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends BaseFragmentActivityActionBar {
@@ -107,7 +106,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -119,7 +118,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             myPref = new MyPreferences(activity);
-            PreferenceManager prefManager = null;
+            PreferenceManager prefManager;
             // Load the preferences from an XML resource
             switch (settingsType) {
                 case SettingsTab_FR.CASE_ADMIN:
@@ -150,8 +149,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
-                        CharSequence c = new String(
-                                "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
+                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                         openShiftPref.setSummary(c);
                     }
                     openShiftPref.setOnPreferenceClickListener(this);
@@ -159,7 +157,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
 
                     defaultCountry = prefManager.findPreference("pref_default_country");
-                    CharSequence temp = new String("\t\t" + myPref.defaultCountryName(true, null));
+                    CharSequence temp = "\t\t" + myPref.defaultCountryName(true, null);
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
 
@@ -183,7 +181,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         public boolean onPreferenceChange(Preference preference, Object newValue) {
                             if (newValue instanceof Boolean) {
                                 if ((Boolean) newValue) {
-                                    // sync Location Inventory
+                                    // sync Position Inventory
                                     DBManager dbManager = new DBManager(activity);
                                     SynchMethods sm = new SynchMethods(dbManager);
                                     sm.getLocationsInventory();
@@ -204,8 +202,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
                     openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
-                        CharSequence c = new String(
-                                "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
+                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                         openShiftPref.setSummary(c);
                     }
                     openShiftPref.setOnPreferenceClickListener(this);
@@ -221,6 +218,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
                     break;
 
             }
@@ -228,8 +226,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
         @Override
         public boolean onPreferenceClick(Preference preference) {
-            Intent intent = null;
+            Intent intent;
             switch (preference.getTitleRes()) {
+                case R.string.config_use_navigationbar:
+                    getActivity().finish();
+                    getActivity().startActivity(getActivity().getIntent());
+                    break;
                 case R.string.config_toggle_elo_bcr:
                     if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
                         Global.mainPrinterManager.currentDevice.toggleBarcodeReader();
@@ -310,7 +312,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             myPref.defaultCountryCode(false, code);
                             myPref.defaultCountryName(false, name);
 
-                            CharSequence temp = new String("\t\t" + name);
+                            CharSequence temp = "\t\t" + name;
                             defaultCountry.setSummary(temp);
 
                             newFrag.dismiss();
@@ -595,7 +597,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     myPref.setStarIPAddress(ipAddress.getText().toString());
                     myPref.setStarPort(portNumber.getText().toString());
-                    myPref.printerMACAddress(false, "TCP:" + ipAddress.getText().toString());
+                    myPref.setPrinterMACAddress("TCP:" + ipAddress.getText().toString());
 
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
@@ -648,8 +650,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             return "";
                         } else {
                             String[] splits = resultingTxt.split("\\.");
-                            for (int i = 0; i < splits.length; i++) {
-                                if (Integer.valueOf(splits[i]) > 255) {
+                            for (String split : splits) {
+                                if (Integer.valueOf(split) > 255) {
                                     return "";
                                 }
                             }
@@ -672,7 +674,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         if (string.length() == 3 || string.equalsIgnoreCase("0")
                                 || (string.length() == 2 && Character.getNumericValue(string.charAt(0)) > 1)) {
                             s.append('.');
-                            return;
                         }
                     }
                 }
@@ -778,7 +779,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
                             {
-                                myPref.swiperType(false, Global.MAGTEK);
+                                myPref.setSwiperType(Global.MAGTEK);
                                 myPref.swiperMACAddress(false, macAddressList.get(pos));
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -789,7 +790,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             // micronics
                             {
                                 myPref.setPrinterType(Global.STAR);
-                                myPref.printerMACAddress(false, "BT:" + macAddressList.get(pos));
+                                myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -799,7 +800,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) // bamboo
                             {
                                 myPref.setPrinterType(Global.BAMBOO);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -807,19 +808,18 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager.loadDrivers(activity, Global.BAMBOO, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
-                                    || val[pos].toUpperCase(Locale.getDefault()).contains("ICM")) {
-                                myPref.sledType(false, Global.ISMP);
-                                myPref.setPrinterType(Global.ISMP);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
+                                    || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
+                                    !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
+                                myPref.setSwiperType(Global.ISMP);
+                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
-
-                                Global.btSled = edm.getManager();
-                                Global.btSled.loadDrivers(activity, Global.ISMP, false);
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.ISMP, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -828,7 +828,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MP")) // Oneil
                             {
                                 myPref.setPrinterType(Global.ONEIL);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -837,12 +837,30 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) // KDC500
                             {
                                 myPref.setPrinterType(Global.KDC500);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
-                                myPref.setPrinterName(strDeviceName);
-
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
+                                myPref.setSwiperType(Global.KDC500);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
+                                myPref.setSwiperType(Global.HANDPOINT);
+                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.HANDPOINT, false);
+
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
+                                    myPref.getPreferences(MyPreferences.pref_mw_with_evo)) {
+                                myPref.setSwiperType(Global.ICMPEVO);
+                                myPref.setPrinterMACAddress(macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.ICMPEVO, false);
+                                Global.btSwiper = edm.getManager();
+
                             } else {
                                 Toast.makeText(activity, R.string.err_invalid_device, Toast.LENGTH_LONG).show();
                             }
@@ -878,9 +896,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(activity, Global.PAT100, false);
             } else if (myPref.isEM100()) {
-                myPref.setPrinterType(Global.EM100);
-                Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(activity, Global.EM100, false);
+//                myPref.setPrinterType(Global.EM100);
+//                Global.mainPrinterManager = edm.getManager();
+//                Global.mainPrinterManager.loadDrivers(activity, Global.EM100, false);
             } else if (myPref.isEM70()) {
                 myPref.setPrinterType(Global.EM70);
                 Global.mainPrinterManager = edm.getManager();
@@ -919,7 +937,6 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     return nameList;
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 StringBuilder sb = new StringBuilder();
                 sb.append(e.getMessage())
                         .append(" [com.android.emobilepos.SettingsMenuActiv (at Class.getPairedDevices)]");
@@ -954,7 +971,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                 int size = c.getCount();
 
-                if (c != null && size > 0) {
+                if (size > 0) {
                     Global.multiPrinterManager.clear();
                     Global.multiPrinterMap.clear();
                     int i = 0;
@@ -984,23 +1001,23 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     } while (c.moveToNext());
                 }
-
-                String _portName = "";
+                c.close();
+                String _portName;
                 String _peripheralName = "";
-                if ((myPref.swiperType(true, -2) != -1)
+                if ((myPref.getSwiperType() != -1)
                         && (Global.btSwiper == null || Global.btSwiper.currentDevice == null)) {
                     edm = new EMSDeviceManager();
                     _portName = myPref.swiperMACAddress(true, null);
-                    _peripheralName = Global.getPeripheralName(myPref.swiperType(true, -2));
+                    _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                     Global.btSwiper = edm.getManager();
-                    if (Global.btSwiper.loadMultiDriver(activity, myPref.swiperType(true, -2), 0, false,
+                    if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
                             myPref.swiperMACAddress(true, null), null))
                         sb.append(_peripheralName).append(": ").append("Connected\n");
                     else
                         sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-                } else if (myPref.swiperType(true, -2) != -1 && Global.btSwiper != null
+                } else if (myPref.getSwiperType() != -1 && Global.btSwiper != null
                         && Global.btSwiper.currentDevice != null) {
-                    _peripheralName = Global.getPeripheralName(myPref.swiperType(true, -2));
+                    _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                     sb.append(_peripheralName).append(": ").append("Connected\n");
                 }
                 if ((myPref.getPrinterType() != -1)
@@ -1008,7 +1025,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
                     _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
-                    _portName = myPref.printerMACAddress(true, null);
+                    _portName = myPref.getPrinterMACAddress();
                     String _portNumber = myPref.getStarPort();
                     boolean isPOS = myPref.posPrinter(true, false);
                     int txtAreaSize = myPref.printerAreaSize(true, -1);
@@ -1042,8 +1059,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
             if (resultCode == 1) {
                 if (!myPref.getShiftIsOpen()) {
-                    CharSequence c = new String(
-                            "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">");
+                    CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                     openShiftPref.setSummary(c);
                 }
             }

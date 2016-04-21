@@ -1,17 +1,17 @@
 package drivers;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -26,7 +26,6 @@ import com.starmicronics.starioextension.starioextmanager.StarIoExtManager;
 import com.starmicronics.starioextension.starioextmanager.StarIoExtManagerListener;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.database.Cursor;
@@ -34,13 +33,14 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.view.View;
 
 import drivers.star.utils.Communication;
 import drivers.star.utils.PrinterFunctions;
 import drivers.star.utils.PrinterSetting;
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 import util.RasterDocument;
 import util.RasterDocument.RasPageEndMode;
 import util.RasterDocument.RasSpeed;
@@ -92,7 +92,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 break;
         }
 
-        portName = myPref.printerMACAddress(true, null);
+        portName = myPref.getPrinterMACAddress();
         portNumber = myPref.getStarPort();
 
         new processConnectionAsync().execute(0);
@@ -189,8 +189,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
         @Override
         protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
-
             try {
 
                 if (!isPOSPrinter) {
@@ -843,6 +841,58 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            setPaperWidth(LINE_WIDTH);
+
+            verifyConnectivity();
+
+            Thread.sleep(1000);
+
+            if (!isPOSPrinter) {
+                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+                // windows-1252
+            }
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+
+        } catch (StarIOPortException e) {
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JAException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
 
     }
 

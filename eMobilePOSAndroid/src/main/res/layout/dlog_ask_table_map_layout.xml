@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dlogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:ems="15"
+        android:gravity="center"
+        android:text="@string/select_table_number"
+
+        android:textAppearance="@style/white_text_appearance"
+        android:textSize="@dimen/header_bar_text_size" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dlogTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/action_button_selector"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/dinningTableMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/pimgpsh_fullsize_distr">
+
+            <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/map_floorimageView4"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:src="@drawable/pimgpsh_fullsize_distr" />-->
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>

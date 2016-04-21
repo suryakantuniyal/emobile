@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.InvProdHandler;
@@ -29,6 +30,7 @@ import com.starmicronics.stario.StarIOPortException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,9 +43,9 @@ import java.util.Locale;
 import datamaxoneil.connection.Connection_Bluetooth;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import protocols.EMSPrintingDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSPrintingDelegate;
 
 public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
@@ -82,7 +84,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         resources = this.activity.getResources();
         boolean didConnect = false;
 
-        String macAddress = myPref.printerMACAddress(true, null);
+        String macAddress = myPref.getPrinterMACAddress();
 
         try {
             device = Connection_Bluetooth.createClient(macAddress);
@@ -120,7 +122,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         @Override
         protected String doInBackground(Integer... params) {
             // TODO Auto-generated method stub
-            String macAddress = myPref.printerMACAddress(true, null);
+            String macAddress = myPref.getPrinterMACAddress();
 
             try {
                 device = Connection_Bluetooth.createClient(macAddress);
@@ -1007,6 +1009,43 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
 
     }
 

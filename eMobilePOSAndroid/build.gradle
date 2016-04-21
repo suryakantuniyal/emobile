@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply from: '../artifacts.gradle'
+apply plugin: 'realm-android'
 android {
     signingConfigs {
         config {
@@ -17,6 +18,8 @@ android {
         javaMaxHeapSize "2g"
     }
     packagingOptions {
+        exclude "lib/arm64-v8a/librealm-jni.so"
+        exclude "lib/x86_64/librealm-jni.so"
     }
     defaultConfig {
         applicationId "com.emobilepos.app"
@@ -24,6 +27,16 @@ android {
         targetSdkVersion 23
         multiDexEnabled = true
     }
+
+
+//    splits {
+//        abi {
+//            enable true
+//            reset()
+//            include 'arm', 'arm-v7a', 'arm64', 'mips', 'x86', 'x86_64'
+//        }
+//    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
         exclude 'META-INF/NOTICE'
@@ -35,15 +48,15 @@ android {
         ems {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.0.57"
+            versionName "1.2.0.12"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
         }
         emsblue {
-            minSdkVersion 14
+            minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.0.57"
+            versionName "1.2.0.12"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
@@ -51,7 +64,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.1.0.57"
+            versionName "1.2.0.12"
             versionCode 95
             targetSdkVersion 23
             multiDexEnabled = true
@@ -72,6 +85,7 @@ repositories {
     }
 }
 dependencies {
+    compile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
     compile(name: 'dragSortLibrary-release', ext: 'aar')
     compile(name: 'mDOpenCV-release', ext: 'aar')
     compile(name: 'honeywell-release', ext: 'aar')
@@ -79,8 +93,6 @@ dependencies {
     compile(name: 'gridHeaderLibrary-release', ext: 'aar')
     compile(name: 'nostraLoader-release', ext: 'aar')
     compile(name: 'viewPagerIndicator-release', ext: 'aar')
-    compile 'com.android.support:support-v4:23.2.0'
-    compile 'com.google.guava:guava:18.0'
     compile files('libs/Android_Platform_Adapter.jar')
     compile files('libs/bouncycastle.jar')
     compile files('libs/commons-codec-1.4.0.jar')
@@ -107,7 +119,6 @@ dependencies {
     compile files('libs/StarIOPort3.1.jar')
     compile files('libs/zbar.jar')
     compile files('libs/zxing.jar')
-    compile 'com.android.support:multidex:1.0.1'
     compile files('libs/com.oem.barcode.sdk.jar')
     compile files('libs/misccom.jar')
     compile files('libs/elotouchcashdrawer.jar')
@@ -116,4 +127,12 @@ dependencies {
     compile files('libs/redlasersdk.jar')
     compile files('libs/powa-platform-android-1.5.1-SNAPSHOT.jar')
     compile files('libs/kdcreader.jar')
+    compile files('libs/hapi-android-3.2.5.jar')
+    compile files('libs/evoSnapSDK.jar')
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:support-v4:23.2.0'
+    compile 'com.android.support:support-v13:24.0.0-alpha1'
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/modifyProduct"
+        android:title="@string/picked_dlog_modify" />
+    <item
+        android:id="@+id/removeProduct"
+        android:title="@string/picked_dlog_remove"></item>
+    <item
+        android:id="@+id/moveProductSeat"
+        android:title="@string/move_product_seat">
+        <menu></menu>
+    </item>
+    <item
+        android:id="@+id/viewVariations"
+        android:title="@string/picked_dlog_view_variations"></item>
+
+    <item
+        android:id="@+id/payWithLoyalty"
+        android:title="@string/btn_pay_with_loyalty"></item>
+    <item
+        android:id="@+id/overridePrice"
+        android:title="@string/picked_dlog_override_price"></item>
+    <item
+        android:id="@+id/cancel"
+        android:title="@string/picked_dlog_cancel"></item>
+</menu>

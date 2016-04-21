@@ -53,8 +53,8 @@ import android.util.Base64;
 import drivers.EMSBluetoothStarPrinter.ReceiveThread;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSAsura extends EMSDeviceDriver
 		implements EMSDeviceManagerPrinterDelegate, IMSRListener, IBarcodeListener {

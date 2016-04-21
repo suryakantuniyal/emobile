@@ -11,12 +11,13 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -26,13 +27,14 @@ import com.android.support.MyPreferences;
 import com.magtek.mobile.android.scra.MTSCRAException;
 import com.magtek.mobile.android.scra.MagTekSCRA;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 
 public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
@@ -565,5 +567,37 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     public void toggleBarcodeReader() {
 
     }
+
+    @Override
+    public void printReceiptPreview(View view) {
+
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
+
 }
 

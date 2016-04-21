@@ -24,9 +24,9 @@ import drivers.EMSPAT100;
 import drivers.EMSPowaPOS;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
-import protocols.EMSConnectionDelegate;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import protocols.EMSPrintingDelegate;
+import interfaces.EMSConnectionDelegate;
+import interfaces.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSPrintingDelegate;
 
 public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDelegate {
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/table_map_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dinning_table_map_selector"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="9dp"
+    android:paddingLeft="5dp"
+    android:paddingRight="14dp"
+    android:paddingTop="5dp">
+
+    <ImageView
+        android:id="@+id/dinningtableimageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/table_round_lg" />
+
+    <TextView
+        android:id="@+id/tableNumbertextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Table #1"
+        android:textAppearance="@style/black_text_appearance"
+        android:textSize="@dimen/text_default" />
+</LinearLayout>

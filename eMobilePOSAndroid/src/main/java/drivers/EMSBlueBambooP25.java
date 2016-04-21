@@ -12,17 +12,12 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
-import com.android.database.StoredPayments_DB;
-import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -33,18 +28,17 @@ import com.starmicronics.stario.StarIOPortException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.Vector;
 
 import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import protocols.EMSPrintingDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSPrintingDelegate;
 import util.NumberUtil;
 import util.PocketPos;
 import util.StringUtil;
@@ -118,7 +112,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         encrypt = new Encrypt(activity);
         boolean didConnect = false;
 
-        String macAddress = myPref.printerMACAddress(true, null);
+        String macAddress = myPref.getPrinterMACAddress();
         BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
         try {
             socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
@@ -161,7 +155,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         @Override
         protected String doInBackground(Void... params) {
 
-            String macAddress = myPref.printerMACAddress(true, null);
+            String macAddress = myPref.getPrinterMACAddress();
             BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
             try {
                 socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
@@ -687,6 +681,43 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
 
     }
 

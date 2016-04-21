@@ -2,18 +2,18 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -21,30 +21,27 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import drivers.star.utils.PrinterFunctions;
 import koamtac.kdc.sdk.KDCBarcodeDataReceivedListener;
-import koamtac.kdc.sdk.KDCBarcodeOption;
 import koamtac.kdc.sdk.KDCConnectionListener;
 import koamtac.kdc.sdk.KDCConstants;
 import koamtac.kdc.sdk.KDCData;
 import koamtac.kdc.sdk.KDCDataReceivedListener;
 import koamtac.kdc.sdk.KDCGPSDataReceivedListener;
 import koamtac.kdc.sdk.KDCMSRDataReceivedListener;
+import koamtac.kdc.sdk.KDCNFCDataReceivedListener;
 import koamtac.kdc.sdk.KDCReader;
 import koamtac.kdc.sdk.KPOSConstants;
 import koamtac.kdc.sdk.KPOSData;
 import koamtac.kdc.sdk.KPOSDataReceivedListener;
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import util.StringUtil;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 /**
  * Created by Guarionex on 12/8/2015.
@@ -54,8 +51,10 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         KDCBarcodeDataReceivedListener,  // required for KDC Barcode Solution models
         KDCGPSDataReceivedListener,        // required for KDC Barcode Solution models
         KDCMSRDataReceivedListener,        // required for KDC Barcode Solution models
+        KDCNFCDataReceivedListener,        // required for KDC Barcode Solution models
         KPOSDataReceivedListener,        // required for KDC Payment Solution models
         KDCConnectionListener            // required for all
+
 {
 
     private EMSCallBack scannerCallBack;
@@ -64,7 +63,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private EMSDeviceManager edm;
     private EMSKDC500 thisInstance;
     KDCReader kdcReader;
-    String msg = new String("Failed to connect");
+    String msg = "Failed to connect";
 
 
     private Handler handler;
@@ -113,6 +112,17 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         }
         return true;
     }
+
+    @Override
+    public void NFCDataReceived(KDCData kdcData) {
+
+    }
+
+    private void HandleNFCCardReadEvent(KPOSData pData) {
+        String nfcUID = pData.GetNFCUID();
+        scannerCallBack.nfcWasRead(nfcUID);
+    }
+
 
     public class processConnectionAsync extends AsyncTask<Void, String, Boolean> {
 
@@ -236,6 +246,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     public void unregisterPrinter() {
+        kdcReader.DisableNFC_POS();
 
         edm.currentDevice = null;
     }
@@ -246,6 +257,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             handler = new Handler();
         scannerCallBack = callBack;
         kdcReader.EnableMSR_POS();
+        kdcReader.EnableNFC_POS();
         handler.post(doUpdateDidConnect);
     }
 
@@ -265,6 +277,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void loadScanner(EMSCallBack callBack) {
         scannerCallBack = callBack;
         kdcReader.EnableMSR_POS();
+        kdcReader.EnableNFC_POS();
         if (handler == null)
             handler = new Handler();
 
@@ -298,6 +311,36 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
 
     }
 
@@ -344,11 +387,15 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
 
-
     @Override
     public void POSDataReceived(final KPOSData pData) {
         if (pData != null) {
             switch (pData.GetEventCode()) {
+                case KPOSConstants.EVT_NFC_CARD_TAPPED:
+                    Looper.prepare();
+                    HandleNFCCardReadEvent(pData);
+                    Looper.loop();
+                    break;
                 case KPOSConstants.EVT_BARCODE_SCANNED:
                     activity.runOnUiThread(new Runnable() {
                         @Override

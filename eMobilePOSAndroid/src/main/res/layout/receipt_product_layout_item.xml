@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
+
+
+    <com.android.support.TextViewSansSerifMedium
+        android:id="@+id/productNametextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="- Cherry Tomato"
+        android:textColor="#000"
+        android:textStyle="normal" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:id="@+id/productAddonSectionLinearLayout"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp">
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="-8dp">
+
+        <com.android.support.TextViewSansSerifMedium
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/receipt_price"
+            android:textColor="#000"
+            android:textStyle="normal" />
+
+        <com.android.support.TextViewSansSerifMedium
+            android:id="@+id/productPricetextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="$5.95"
+            android:textColor="#000"
+            android:textStyle="normal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="-8dp">
+
+        <com.android.support.TextViewSansSerifMedium
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/receipt_discount"
+            android:textColor="#000"
+            android:textStyle="normal" />
+
+        <com.android.support.TextViewSansSerifMedium
+            android:id="@+id/productDiscounttextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="$1.95"
+            android:textColor="#000"
+            android:textStyle="normal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="-8dp">
+
+        <com.android.support.TextViewSansSerifMedium
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/receipt_total"
+            android:textColor="#000"
+            android:textStyle="normal" />
+
+        <com.android.support.TextViewSansSerifMedium
+            android:id="@+id/productTotaltextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="$7.95"
+            android:textColor="#000"
+            android:textStyle="normal" />
+    </LinearLayout>
+
+    <com.android.support.TextViewSansSerifMedium
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/receipt_description"
+        android:textColor="#000"
+        android:textStyle="normal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="-8dp" />
+
+    <com.android.support.TextViewSansSerifMedium
+        android:id="@+id/productDescriptiontextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:singleLine="false"
+        android:text="- Cherry Tomato bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb nnnnnnnnnnnnnnn aaaaaaaaaaaaaaaaaaaaaa ddddddddddddddddddddddd"
+        android:textColor="#000"
+        android:textStyle="normal"
+        android:layout_marginTop="-8dp" />
+
+
+
+</LinearLayout>

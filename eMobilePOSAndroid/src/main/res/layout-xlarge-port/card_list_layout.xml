@@ -161,5 +161,6 @@
         android:verticalSpacing="5dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="5dp"></GridView>
+        android:paddingTop="5dp"
+        listitem="@layout/main_menu_listviewadapter"></GridView>
 </LinearLayout>

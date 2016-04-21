@@ -14,6 +14,7 @@ public class PaymentsXML_DB {
 
 	public static final String app_id = "app_id";
 	public static final String payment_xml = "payment_xml";
+	public static final String charge_xml = "chargeXml";
 	
 	private final List<String> attr = Arrays.asList(app_id,payment_xml);
 	private HashMap<String, Integer> attrHash;

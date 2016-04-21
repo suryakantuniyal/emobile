@@ -47,7 +47,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
 
     private Cursor myCursor;
-    private OrdersHandler handler;
+    private OrdersHandler ordersHandler;
     private ListView lView;
     private Global.OrderType[] orderTypes = {Global.OrderType.ORDER};
 
@@ -70,7 +70,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         headTitle.setText(getString(R.string.hist_transac));
 
         lView = (ListView) findViewById(R.id.listView);
-        handler = new OrdersHandler(this);
+        ordersHandler = new OrdersHandler(this);
 
         final Bundle extras = getIntent().getExtras();
         if (extras != null)
@@ -85,7 +85,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                // TODO Auto-generated method stub
                 myCursor.moveToPosition(position);
                 String ordID = myCursor.getString(myCursor.getColumnIndex("_id"));
                 Intent intent = new Intent(arg0.getContext(), HistoryTransactionDetails_FA.class);
@@ -101,7 +100,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                // TODO Auto-generated method stub
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String text = v.getText().toString().trim();
                     if (!text.isEmpty())
@@ -117,30 +115,27 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
             @Override
             public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
 
             }
 
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
                 String test = s.toString().trim();
                 if (test.isEmpty()) {
                     if (myCursor != null)
                         myCursor.close();
 
-                    handler = new OrdersHandler(activity);
+                    ordersHandler = new OrdersHandler(activity);
 
                     if (isFromCustomers)
-                        myCursor = handler.getReceipts1CustData(orderTypes, receivedCustID);
+                        myCursor = ordersHandler.getReceipts1CustData(orderTypes, receivedCustID);
                     else
-                        myCursor = handler.getReceipts1Data(orderTypes);
+                        myCursor = ordersHandler.getReceipts1Data(orderTypes);
 
 
                     myAdapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
@@ -211,7 +206,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
 
     private TabSpec newTab(String tag, String label, int tabView) {
-        // TODO Auto-generated method stub
 
         View indicator = LayoutInflater.from(activity).inflate(R.layout.tabs_layout, (ViewGroup) findViewById(android.R.id.tabs), false);
 
@@ -246,9 +240,9 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
                 break;
         }
         if (isFromCustomers)
-            myCursor = handler.getReceipts1CustData(orderTypes, receivedCustID);
+            myCursor = ordersHandler.getReceipts1CustData(orderTypes, receivedCustID);
         else
-            myCursor = handler.getReceipts1Data(orderTypes);
+            myCursor = ordersHandler.getReceipts1Data(orderTypes);
 
         myAdapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         lView.setAdapter(myAdapter);
@@ -311,9 +305,9 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
             myCursor.close();
 
         if (isFromCustomers)
-            myCursor = handler.getSearchOrder(orderTypes, text, receivedCustID);
+            myCursor = ordersHandler.getSearchOrder(orderTypes, text, receivedCustID);
         else
-            myCursor = handler.getSearchOrder(orderTypes, text, null);
+            myCursor = ordersHandler.getSearchOrder(orderTypes, text, null);
 
         myAdapter = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
         lView.setAdapter(myAdapter);
@@ -329,13 +323,11 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
         public CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
-            // TODO Auto-generated constructor stub
             inflater = LayoutInflater.from(context);
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            // TODO Auto-generated method stub
 
             myHolder = (ViewHolder) view.getTag();
 
@@ -367,7 +359,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            // TODO Auto-generated method stub
 
             View retView = inflater.inflate(R.layout.trans_lvadapter, parent, false);
 

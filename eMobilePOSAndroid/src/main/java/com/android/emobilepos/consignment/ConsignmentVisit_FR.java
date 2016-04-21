@@ -32,7 +32,7 @@ import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.GenerateNewID;
@@ -214,7 +214,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         private void generateOrder(int pos, ConsignmentTransaction consTransaction) {
 
-            OrderProducts ord = new OrderProducts();
+            OrderProduct ord = new OrderProduct();
             double temp = Double.parseDouble(consTransaction.ConsInvoice_Qty);
 
             // add order to db
@@ -227,7 +227,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
 
             if (global.orderProducts == null) {
-                global.orderProducts = new ArrayList<OrderProducts>();
+                global.orderProducts = new ArrayList<OrderProduct>();
             }
 
             UUID uuid = UUID.randomUUID();
@@ -453,7 +453,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             Global.cons_return_order.ord_signature = encodedImage;
             Global.cons_return_order.ord_type = Global.OrderType.CONSIGNMENT_RETURN.getCodeString();
             ordersHandler.insert(Global.cons_return_order);
-            for (OrderProducts product : Global.cons_return_products) {
+            for (OrderProduct product : Global.cons_return_products) {
                 product.ord_id = Global.cons_return_order.ord_id;
             }
             orderProductsHandler.insert(Global.cons_return_products);
@@ -466,7 +466,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             Global.cons_fillup_order.ord_id = idGen.getNextID(IdType.ORDER_ID);
             Global.cons_fillup_order.ord_signature = encodedImage;
             ordersHandler.insert(Global.cons_fillup_order);
-            for (OrderProducts product : Global.cons_fillup_products) {
+            for (OrderProduct product : Global.cons_fillup_products) {
                 product.ord_id = Global.cons_fillup_order.ord_id;
             }
             orderProductsHandler.insert(Global.cons_fillup_products);

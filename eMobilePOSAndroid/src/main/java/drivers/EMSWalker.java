@@ -27,7 +27,7 @@ import com.payments.core.DeviceEnum;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class EMSWalker implements CoreAPIListener {
 
@@ -45,32 +45,12 @@ public class EMSWalker implements CoreAPIListener {
 	public EMSWalker(Activity activity, boolean _devicePlugged) {
 		this.activity = activity;
 		devicePlugged = _devicePlugged;
-		// Looper.prepare();
 		terminal = new AndroidTerminal(this);
 		//
 		ProcessCreditCard_FA.tvStatusMSR.setVisibility(View.VISIBLE);
 		ProcessCreditCard_FA.tvStatusMSR.setText("Connecting...");
 		new connectWalkerAsync().execute();
-		// terminal.init(activity, TERMINAL_ID, SECRET, Currency.EUR);
-		//
-		// terminal.initDevice(DeviceEnum.WALKER);
-		// if(terminal.getDevice().equals(DeviceEnum.WALKER))
-		// {
-		// activity.runOnUiThread(new Runnable() {
-		// public void run() {
-		// try
-		// {
-		// EMSCallBack callBack = (EMSCallBack) activity;
-		// callBack.readerConnectedSuccessfully(true);
-		//
-		// }
-		// catch(Exception ex)
-		// {
-		// ex.printStackTrace();
-		// }
-		// }
-		// });
-		// }
+
 	}
 
 	private class connectWalkerAsync extends AsyncTask<Void, Void, Void> {
@@ -80,7 +60,6 @@ public class EMSWalker implements CoreAPIListener {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			// TODO Auto-generated method stub
 			// terminal.init(activity, TERMINAL_ID, SECRET, Currency.EUR);
 			terminal.initWithConfiguration(EMSWalker.this.activity, TERMINAL_ID, SECRET);
 			terminal.initDevice(DeviceEnum.WALKER);
@@ -113,7 +92,6 @@ public class EMSWalker implements CoreAPIListener {
 			sale.setCardType(cardInfo.getCardType());
 			sale.setExpiryDate(cardInfo.getCardExpMonth() + cardInfo.getCardExpYear());
 			sale.setAutoReady(true);
-			// sale.addTip(BigDecimal.valueOf(2));
 			terminal.processSale(sale);
 		} else {
 			CoreSale sale = new CoreSale(cardInfo.dueAmount);
@@ -124,7 +102,6 @@ public class EMSWalker implements CoreAPIListener {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -140,30 +117,11 @@ public class EMSWalker implements CoreAPIListener {
 			// signature.signatureText();
 			signature.submitSignature();
 		}
-		//
-		// if (signatureCanvas.checkSignature()) {
-		// if (type.equals(TransactionType.DEVICE)) {
-		// canvasLinearLayout.setVisibility(View.GONE);
-		// signatureCanvas.submitSignature();
-		// signatureCanvas.clearCanvas(true);
-		// } else if (type.equals(TransactionType.TRACK)) {
-		// canvasLinearLayout.setVisibility(View.GONE);
-		// doTrackSale();
-		// signatureCanvas.clearCanvas(false);
-		// } else if (type.equals(TransactionType.EMV)) {
-		// canvasLinearLayout.setVisibility(View.GONE);
-		// doEmvSale();
-		// signatureCanvas.clearCanvas(false);
-		// }
-		// } else {
-		// Toast.makeText(MainActivity.this, "Signature cannot be empty.",
-		// Toast.LENGTH_SHORT).show();
-		// }
+
 	}
 
 	@Override
 	public void onError(CoreError coreError, String s) {
-		// TODO Auto-generated method stub
 		System.out.print(s.toString());
 		failedProcessing = true;
 		isReadingCard = false;
@@ -173,13 +131,11 @@ public class EMSWalker implements CoreAPIListener {
 
 	@Override
 	public void onLoginUrlRetrieved(String arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void onMessage(CoreMessage msg) {
-		// TODO Auto-generated method stub
 		System.out.print(msg.toString());
 
 		if (isReadingCard) {
@@ -190,20 +146,16 @@ public class EMSWalker implements CoreAPIListener {
 				isReadingCard = false;
 
 		}
-		// if(msj.equals(CoreMessage.CARD_ERROR))
-		// isReadingCard = false;
 
 	}
 
 	@Override
 	public void onRefundResponse(CoreRefundResponse arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void onSaleResponse(CoreSaleResponse response) {
-		// TODO Auto-generated method stub
 		isReadingCard = false;
 		try {
 			EMSCallBack callBack = (EMSCallBack) activity;
@@ -222,7 +174,6 @@ public class EMSWalker implements CoreAPIListener {
 
 	@Override
 	public void onSettingsRetrieved(CoreSettings arg0) {
-		// TODO Auto-generated method stub
 		if (devicePlugged) {
 			terminal.initDevice(DeviceEnum.WALKER);
 			try {
@@ -239,7 +190,6 @@ public class EMSWalker implements CoreAPIListener {
 
 	@Override
 	public void onSignatureRequired(CoreSignature _signature) {
-		// TODO Auto-generated method stub
 		signature = _signature;
 		try {
 			EMSCallBack callBack = (EMSCallBack) activity;
@@ -251,7 +201,6 @@ public class EMSWalker implements CoreAPIListener {
 
 	@Override
 	public void onTransactionListResponse(CoreTransactions arg0) {
-		// TODO Auto-generated method stub
 		System.out.print(arg0.toString());
 	}
 
@@ -269,13 +218,11 @@ public class EMSWalker implements CoreAPIListener {
 
 	@Override
 	public void onDeviceError(CoreDeviceError arg0, String arg1) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void onSelectApplication(ArrayList<String> arg0) {
-		// TODO Auto-generated method stub
 
 	}
 

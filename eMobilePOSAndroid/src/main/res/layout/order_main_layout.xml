@@ -3,29 +3,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/headerTitleContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/blue_gradient_header_horizontal">
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/headerTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:gravity="center_vertical|center_horizontal"
             android:padding="@dimen/header_txt_padding"
+            android:text="@string/sales_receipt_title"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_bar_text_size" />
+            android:textSize="@dimen/header_bar_text_size"
+            android:layout_weight="1" />
 
         <Button
-            style="@style/action_button_text_appearance"
             android:id="@+id/btnCheckOut"
+            style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_margin="5dp"
             android:background="@drawable/action_button_selector"
             android:paddingLeft="5dp"
@@ -35,57 +37,57 @@
 
         <EditText
             android:id="@+id/invisibleSearchMain"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true">
-        </EditText>
+            android:layout_centerVertical="true"></EditText>
 
-    </RelativeLayout>
+
+    </LinearLayout>
 
 
     <LinearLayout
         android:id="@+id/order_parent_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:baselineAligned="false"
-        android:orientation="horizontal"
-        android:layout_weight="1">
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/order_receipt_frag_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="@integer/weight_split_view"
-            android:orientation="vertical" >
-   
+            android:orientation="vertical">
+
         </LinearLayout>
-       
+
         <LinearLayout
             android:id="@+id/order_catalog_frag_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="6.5"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
         </LinearLayout>
     </LinearLayout>
 
     <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="vertical"-->
-        <!--android:padding="0dp">-->
-        <!--&lt;!&ndash; NOTE No need to develop a system service for keyboard, there is a standard View for that (well, not completely standard, its in a funny package 'android.inputmethodservice'. &ndash;&gt;-->
-        <!--&lt;!&ndash; NOTE The graphical layout does not know the package ('java.lang.NoClassDefFoundError: Could not initialize class android.inputmethodservice.KeyboardView') so the keyboard is not shown. &ndash;&gt;-->
-        <!--<com.android.support.MyKeyboardView-->
-            <!--android:id="@+id/keyboardview"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:focusable="true"-->
-            <!--android:focusableInTouchMode="true"-->
-            <!--android:visibility="gone"-->
-            <!--android:background="#333333"/>-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="vertical"-->
+    <!--android:padding="0dp">-->
+    <!--&lt;!&ndash; NOTE No need to develop a system service for keyboard, there is a standard View for that (well, not completely standard, its in a funny package 'android.inputmethodservice'. &ndash;&gt;-->
+    <!--&lt;!&ndash; NOTE The graphical layout does not know the package ('java.lang.NoClassDefFoundError: Could not initialize class android.inputmethodservice.KeyboardView') so the keyboard is not shown. &ndash;&gt;-->
+    <!--<com.android.support.MyKeyboardView-->
+    <!--android:id="@+id/keyboardview"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:focusable="true"-->
+    <!--android:focusableInTouchMode="true"-->
+    <!--android:visibility="gone"-->
+    <!--android:background="#333333"/>-->
 
     <!--</LinearLayout>-->
 

@@ -9,6 +9,12 @@ public class Tax {
     private String taxRate;
     private String taxType;
 
+    public Tax() {
+    }
+
+    public Tax(String taxId) {
+        this.taxId = taxId;
+    }
 
     public String getTaxName() {
         return taxName;
@@ -40,5 +46,13 @@ public class Tax {
 
     public void setTaxType(String taxType) {
         this.taxType = taxType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Tax) {
+            return this.getTaxId().equalsIgnoreCase(((Tax) o).getTaxId());
+        }
+        return false;
     }
 }

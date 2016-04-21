@@ -36,6 +36,7 @@ public class CreditCardInfo {
     public String transid;
     public BigDecimal dueAmount = new BigDecimal("0");
     private boolean wasSwiped = false;
+    private String resultMessage;
 
 
     public void setWasSwiped(boolean value) {
@@ -269,5 +270,12 @@ public class CreditCardInfo {
         return this.encryptedTack2;
     }
 
+    public String getResultMessage() {
+        return resultMessage;
+    }
+
+    public void setResultMessage(String resultMessage) {
+        this.resultMessage = resultMessage;
+    }
 }
 

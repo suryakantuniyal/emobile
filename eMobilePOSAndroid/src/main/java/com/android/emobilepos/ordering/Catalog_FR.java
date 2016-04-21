@@ -144,8 +144,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 _typeCase = CASE_PRODUCTS;
         }
 
-//        prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), null, CursorAdapter.NO_SELECTION, imageLoader);
-//        catalogList.setAdapter(prodListAdapter);
         catalogList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -159,11 +157,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     if (lastInScreen == totalItemCount) {
                         page++;
                         new CatalogProductLoader().execute(totalItemCount);
-//                        myCursor.close();
-//                        Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), totalItemCount + Integer.parseInt(getString(R.string.sqlLimit)), 1);
-//                        myCursor = catalog_loader.loadInBackground();
-//                        prodListAdapter.swapCursor(myCursor);
-//                        prodListAdapter.notifyDataSetChanged();
                     }
                 }
             }
@@ -489,7 +482,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void productClicked(int position) {
-        // TODO Auto-generated method stub
         myCursor.moveToPosition(position);
         itemClicked(false);
     }
@@ -638,9 +630,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void automaticAddOrder(Product product) {
-
-
-        global.automaticAddOrder(getActivity(), false, global, product);
+        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, product, ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -733,6 +723,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             intent.putExtra("prod_value_points", product.getProdValuePoints());
             intent.putExtra("prod_sku", product.getProd_sku());
             intent.putExtra("prod_upc", product.getProd_upc());
+            intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
 
 
             if (Global.isConsignment)
@@ -740,7 +731,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             startActivityForResult(intent, 0);
         } else {
-            if (!OrderingMain_FA.instance.validAutomaticAddQty(product)) {
+            OrderingMain_FA orderingMain = (OrderingMain_FA) getActivity();
+            if (!orderingMain.validAutomaticAddQty(product)) {
                 Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.limit_onhand));
             } else {
                 if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
@@ -791,8 +783,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             if (tempListMap != null && tempListMap.size() > 0) {
                 Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
 
-
                 Product product = populateDataForIntent(myCursor);
+                intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                 intent.putExtra("prod_id", product.getId());
                 intent.putExtra("prod_name", product.getProdName());
                 intent.putExtra("prod_on_hand", product.getProdOnHand());
@@ -820,7 +812,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-        // TODO Auto-generated method stub
 
         if (!isFastScanning && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
             return;
@@ -844,6 +835,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
                     Product product = populateDataForIntent(myCursor);
+                    intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                     intent.putExtra("prod_id", product.getId());
                     intent.putExtra("prod_name", product.getProdName());
                     intent.putExtra("prod_on_hand", product.getProdOnHand());
@@ -950,7 +942,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return catName.size();
         }
 

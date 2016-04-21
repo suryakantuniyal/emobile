@@ -64,6 +64,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/accountInformationTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/account_information"
@@ -149,6 +150,7 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/expirationDateTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/card_exp_date"

@@ -24,15 +24,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.database.CustomersHandler;
+import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXdownloadHandler;
-import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -52,16 +53,10 @@ import javax.xml.parsers.SAXParserFactory;
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Activity activity;
-    private ListView listView;
-    private ListViewCursorAdapter myAdapter;
     private Cursor myCursor;
-    //private DBManager dbManager;
-    //private SQLiteDatabase db;
     private Global global;
     private boolean isAddon = false;
     private Global.OrderType orderType = Global.OrderType.SALES_RECEIPT;
-    private String ord_HoldName = "";
-    private ProgressDialog myProgressDialog;
     boolean validPassword = true;
     private boolean isUpdateOnHold = false;
     private boolean hasBeenCreated = false;
@@ -75,20 +70,17 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         setContentView(R.layout.onhold_layout);
         activity = this;
         global = (Global) activity.getApplication();
-        //dbManager = new DBManager(activity);
-        //db = dbManager.openReadableDB();
         myPref = new MyPreferences(activity);
-        listView = (ListView) findViewById(R.id.onHoldListView);
+        ListView listView = (ListView) findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         myCursor = ordersHandler.getOrderOnHold();
-        myAdapter = new ListViewCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
+        ListViewCursorAdapter myAdapter = new ListViewCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
                                     long arg3) {
-                // TODO Auto-generated method stub
                 selectedPos = pos;
                 openPrintOnHold();
             }
@@ -137,6 +129,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         private String[] returnedPost;
         boolean timedOut = false;
         boolean wasProcessed = false;
+        private ProgressDialog myProgressDialog;
 
 
         @Override
@@ -151,7 +144,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(Void... params) {
-            // TODO Auto-generated method stub
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -164,7 +156,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
             if (Global.isConnectedToInternet(activity)) {
-                //selectCustomer(myCursor.getString(myCursor.getColumnIndex("cust_id")));
                 try {
 
 
@@ -202,9 +193,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     }
 
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-//					Tracker tracker = EasyTracker.getInstance(activity);
-//					tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
                 }
 
                 return null;
@@ -222,7 +211,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
 
             if (wasProcessed) {
-                //executeOnHold(false);
                 new executeOnHoldAsync().execute(false);
             } else {
                 claimedTransactionPrompt();
@@ -231,75 +219,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     }
 
 
-//	private void executeOnHold(boolean forPrinting) {
-//		myCursor.moveToPosition(selectedPos);
-//		OrderProductsHandler orderProdHandler = new OrderProductsHandler(activity);
-//
-//		Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-//		Global.taxID = myCursor.getString(myCursor.getColumnIndex("tax_id"));
-//
-//		orderType = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("ord_type")));
-//		ord_HoldName = myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
-//		selectCustomer(myCursor.getString(myCursor.getColumnIndex("cust_id")));
-//
-//		Intent intent = null;
-//		if (!forPrinting) {
-//			intent = new Intent(activity, OrderingMain_FA.class);
-//			// intent = new Intent(activity, SalesReceiptSplitActivity.class);
-//
-//			switch (orderType) {
-//			case Global.INT_SALES_RECEIPT:
-//				intent.putExtra("option_number", 0);
-//				break;
-//			case Global.INT_RETURN:
-//				intent.putExtra("option_number", 2);
-//				break;
-//			case Global.INT_ORDER:
-//				intent.putExtra("option_number", 1);
-//				break;
-//			case Global.INT_INVOICE:
-//				intent.putExtra("option_number", 3);
-//				break;
-//			case Global.INT_ESTIMATE:
-//				intent.putExtra("option_number", 4);
-//				break;
-//			}
-//
-//			intent.putExtra("ord_HoldName", ord_HoldName);
-//			Global.isFromOnHold = true;
-//
-//		}
-//		if (!Global.isConnectedToInternet(activity)) {
-//			Cursor c = orderProdHandler.getOrderProductsOnHold(myCursor.getString(myCursor.getColumnIndex("ord_id")));
-//			int size = c.getCount();
-//			if (size > 0) {
-//				if (!forPrinting) {
-//					addOrder(c);
-//					isAddon = false;
-//
-//					startActivityForResult(intent, 0);
-//					activity.finish();
-//				} else {
-//					DBManager dbManager = new DBManager(activity);
-//					dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1);
-//				}
-//			} else
-//				Toast.makeText(activity, "no available items", Toast.LENGTH_LONG).show();
-//		} else {
-//			DBManager dbManager = new DBManager(activity);
-//			if (!forPrinting)
-//				dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 0);
-//			else
-//				dbManager.synchDownloadOnHoldDetails(intent, myCursor.getString(myCursor.getColumnIndex("ord_id")), 1);
-//		}
-//	}
-
-
-    private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Void> {
+    private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
         private boolean proceed = false;
         private Intent intent;
         private OrderProductsHandler orderProdHandler;
         private boolean forPrinting = false;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
@@ -312,24 +237,33 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
 
         @Override
-        protected Void doInBackground(Boolean... params) {
-            // TODO Auto-generated method stub
+        protected Intent doInBackground(Boolean... params) {
 
             myCursor.moveToPosition(selectedPos);
+            Order order = OrdersHandler.getOrder(myCursor, activity);
             orderProdHandler = new OrderProductsHandler(activity);
 
-            Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-            Global.taxID = myCursor.getString(myCursor.getColumnIndex("tax_id"));
+            Global.lastOrdID = order.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
+            Global.taxID = order.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
 
-            orderType = Global.OrderType.getByCode(Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("ord_type"))));
-            ord_HoldName = myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
-            selectCustomer(myCursor.getString(myCursor.getColumnIndex("cust_id")));
+            orderType = Global.OrderType.getByCode(Integer.parseInt(order.ord_type));
+            String ord_HoldName = order.ord_HoldName;//myCursor.getString(myCursor.getColumnIndex("ord_HoldName"));
+            selectCustomer(order.cust_id);//myCursor.getString(myCursor.getColumnIndex("cust_id")));
 
             forPrinting = params[0];
             if (!forPrinting) {
                 intent = new Intent(activity, OrderingMain_FA.class);
                 // intent = new Intent(activity, SalesReceiptSplitActivity.class);
+                String assignedTable = order.assignedTable;//myCursor.getString(myCursor.getColumnIndex("assignedTable"));
+                intent.putExtra("selectedDinningTableNumber", assignedTable);
+                intent.putExtra("onHoldOrderJson", order.toJson());
 
+                intent.putExtra("openFromHold", true);
+                if (assignedTable != null && !assignedTable.isEmpty()) {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+                } else {
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                }
                 switch (orderType) {
                     case SALES_RECEIPT:
                         intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
@@ -349,6 +283,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 }
 
                 intent.putExtra("ord_HoldName", ord_HoldName);
+                intent.putExtra("associateId", order.associateID);
+
                 Global.isFromOnHold = true;
 
             }
@@ -356,11 +292,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             if (Global.isConnectedToInternet(activity))
                 proceed = true;
 
-            return null;
+            return intent;
         }
 
         @Override
-        protected void onPostExecute(Void unused) {
+        protected void onPostExecute(Intent intent) {
             myProgressDialog.dismiss();
             if (proceed) {
                 DBManager dbManager = new DBManager(activity);
@@ -395,6 +331,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     private class printAsync extends AsyncTask<Void, Void, Void> {
         private boolean printSuccessful = true;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
@@ -408,8 +345,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(Global.lastOrdID, orderType, false, true);
@@ -450,7 +385,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute();
 
@@ -460,7 +394,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -484,12 +417,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         Button btnCancel = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnOpen.setText(R.string.button_open);
         btnCancel.setText(R.string.button_cancel);
-
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
         btnOpen.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 askForManagerPassDlg();
 
@@ -499,7 +431,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -510,7 +441,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     private void askForManagerPassDlg()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
-
 
         final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -541,7 +471,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String value = viewField.getText().toString();
                 if (value.equals(myPref.posManagerPass(true, null))) // validate manager password
@@ -589,13 +518,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new checkHoldStatus().execute();
-//				if(Global.isConnectedToInternet(activity))
-//					new checkHoldStatus().execute();
-//				else
-//					executeOnHold(false);
+
 
             }
         });
@@ -603,14 +528,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 myCursor.moveToPosition(selectedPos);
                 if (myCursor.getString(myCursor.getColumnIndex("ord_issync")).equals("0")) {
                     Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
                     new printAsync().execute();
                 } else {
-                    //executeOnHold(true);
                     new executeOnHoldAsync().execute(true);
                 }
             }
@@ -622,20 +545,21 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     public void addOrder(Cursor c) {
         int size = c.getCount();
-        OrderProducts ord = new OrderProducts();
+        OrderProduct ord = new OrderProduct();
         ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
         ProductsHandler prodHandler = new ProductsHandler(activity);
         String[] discountInfo;
-        double discAmount = 0;
-        double total = 0;
+        double total;
         double itemTotal = 0;
 
 
         for (int i = 0; i < size; i++) {
+            double discAmount = 0;
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             global.qtyCounter.put(c.getString(c.getColumnIndex("prod_id")), c.getString(c.getColumnIndex("ordprod_qty")));
 
-
+            ord.assignedSeat = c.getString(c.getColumnIndex("assignedSeat"));
+            ord.seatGroupId = c.getInt(c.getColumnIndex("seatGroupId"));
             ord.ordprod_qty = c.getString(c.getColumnIndex("ordprod_qty"));
             ord.ordprod_name = c.getString(c.getColumnIndex("ordprod_name"));
             ord.ordprod_desc = c.getString(c.getColumnIndex("ordprod_desc"));
@@ -649,26 +573,17 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.prod_taxValue = c.getString(c.getColumnIndex("prod_taxValue"));
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             ord.prod_taxtype = c.getString(c.getColumnIndex("prod_taxtype"));
-            //ord.getSetData("discount_value", false, c.getString(c.getColumnIndex("discount_value")));
 
 
             // for calculating taxes and discount at receipt
             ord.prod_taxId = c.getString(c.getColumnIndex("prod_taxId"));
             ord.discount_id = c.getString(c.getColumnIndex("discount_id"));
-                /*ord.getSetData("taxAmount", false, taxAmount);
-                ord.getSetData("taxTotal", false, taxTotal);
-				ord.getSetData("disAmount", false, disAmount);
-				ord.getSetData("disTotal", false, disTotal);*/
+
 
             ord.pricelevel_id = c.getString(c.getColumnIndex("pricelevel_id"));
-            //ord.getSetData("priceLevelName", false, priceLevelName);
 
             ord.prod_price = c.getString(c.getColumnIndex("overwrite_price"));
             ord.overwrite_price = c.getString(c.getColumnIndex("overwrite_price"));
-            //ord.getSetData("tax_position", false, Integer.toString(tax_position));
-            //ord.getSetData("discount_position", false, Integer.toString(discount_position));
-            //ord.getSetData("pricelevel_position", false, Integer.toString(pricelevel_position));
-            //ord.getSetData("uom_position", false, Integer.toString(uom_position));
 
             ord.prod_type = c.getString(c.getColumnIndex("prod_type"));
 
@@ -677,14 +592,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.uom_id = c.getString(c.getColumnIndex("uom_id"));
             ord.uom_conversion = c.getString(c.getColumnIndex("uom_conversion"));
 
-				
-				/*if(discountIsTaxable)
-				{
-					ord.getSetData("discount_is_taxable", false, "1");
-				}
-				if(isFixed)
-					ord.getSetData("discount_is_fixed", false, "1");
-				*/
             discountInfo = prodHandler.getDiscount(ord.discount_id, ord.overwrite_price);
 
             if (discountInfo != null) {
@@ -705,19 +612,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
 
 
-//				if(discountInfo!=null&&discountInfo[3]!=null)
-//					ord.getSetData("discount_is_taxable", false, discountInfo[3]);
-//				if(discountInfo!=null&&discountInfo[0]!=null)
-//					ord.getSetData("discount_value", false, discountInfo[0]);
-//				if(discountInfo!=null&&discountInfo[1]!=null&&discountInfo[1].equals("Fixed"))
-//					ord.getSetData("discount_is_fixed", false, "1");
-//				if(discountInfo!=null&&discountInfo[2]!=null)
-//					discAmount = Double.parseDouble(discountInfo[2]);
-//				else
-//					discAmount = 0;
-//				if(discountInfo!=null&&discountInfo[4]!=null)
-//					ord.getSetData("disTotal", false, discountInfo[4]);
-
             ord.disAmount = ord.discount_value;
 
 
@@ -727,21 +621,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.itemTotal = Double.toString(total - discAmount);
             ord.itemSubtotal = Double.toString(total);
 
-				/*OrdersHandler handler = new OrdersHandler(activity);
-
-				GenerateNewID gen9erator = new GenerateNewID(activity);
-
-				if (handler.getDBSize() == 0)
-					Global.lastOrdID = generator.generate("",0);
-				else
-					Global.lastOrdID = generator.generate(handler.getLastOrdID(),0);
-					*/
-
             ord.ord_id = c.getString(c.getColumnIndex("ord_id"));
 
 
             if (global.orderProducts == null) {
-                global.orderProducts = new ArrayList<OrderProducts>();
+                global.orderProducts = new ArrayList<OrderProduct>();
             }
 
 
@@ -768,7 +652,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
                 int pos = global.orderProducts.size();
-                OrderProducts temp = null;
+                OrderProduct temp = null;
                 if (pos > 0)
                     temp = global.orderProducts.get(pos - 1);
 
@@ -779,21 +663,21 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{isAdded, tempVal[1]});
 
 
-                global.orderProductsAddons.add(ord);
+                global.orderProductAddons.add(ord);
 
 
                 if (i + 1 >= size) {
                     if (Global.addonSelectionMap == null)
                         Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
                     if (Global.orderProductAddonsMap == null)
-                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
+                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
                     if (global.addonSelectionType.size() > 0 && temp != null) {
                         Global.addonSelectionMap.put(temp.ordprod_id, global.addonSelectionType);
-                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductsAddons);
+                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductAddons);
 
 
-                        global.orderProductsAddons = new ArrayList<OrderProducts>();
+                        global.orderProductAddons = new ArrayList<OrderProduct>();
                         global.addonSelectionType = new HashMap<String, String[]>();
                     }
                 }
@@ -801,7 +685,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
                 if (isAddon) {
                     int pos = global.orderProducts.size();
-                    OrderProducts temp = null;
+                    OrderProduct temp = null;
                     if (pos > 0)
                         temp = global.orderProducts.get(pos - 1);
 
@@ -809,14 +693,14 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     if (Global.addonSelectionMap == null)
                         Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
                     if (Global.orderProductAddonsMap == null)
-                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
+                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
                     if (global.addonSelectionType.size() > 0 && temp != null) {
                         Global.addonSelectionMap.put(temp.ordprod_id, global.addonSelectionType);
-                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductsAddons);
+                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductAddons);
 
 
-                        global.orderProductsAddons = new ArrayList<OrderProducts>();
+                        global.orderProductAddons = new ArrayList<OrderProduct>();
                         global.addonSelectionType = new HashMap<String, String[]>();
 
                     }
@@ -826,7 +710,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 global.orderProducts.add(ord);
 
             }
-            ord = new OrderProducts();
+            ord = new OrderProduct();
             c.moveToNext();
         }
     }
@@ -861,7 +745,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         public ListViewCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
-            // TODO Auto-generated constructor stub
             inflater = LayoutInflater.from(context);
 
             //imageLoaderTest = new ImageLoaderTest(activity);
@@ -869,13 +752,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            // TODO Auto-generated method stu
-
 
             final ViewHolder myHolder = (ViewHolder) view.getTag();
-
-
-            //imageLoaderTest.DisplayImage(cursor.getString(holder.i_url_icon);, holder.itemImage, true);
             myHolder.holdID.setText(cursor.getString(myHolder.i_holdID));
             myHolder.holdName.setText(cursor.getString(myHolder.i_holdName));
             if (cursor.getString(myHolder.i_issync).equals("1"))//it is synched
@@ -890,9 +768,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            // TODO Auto-generated method stub
 
-            View retView = null;
+            View retView;
             retView = inflater.inflate(R.layout.onhold_listview_adapter, parent, false);
 
             ViewHolder holder = new ViewHolder();

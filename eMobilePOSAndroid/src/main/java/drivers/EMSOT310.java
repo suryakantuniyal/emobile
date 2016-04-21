@@ -9,11 +9,12 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.Payment;
 import com.android.internal.misccomm.misccommManager;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -24,13 +25,14 @@ import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
 import com.oem.barcode.BCRIntents;
 import com.oem.barcode.BCRManager;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
 import drivers.OT310.utils.BCRAppBroadcastReceiver;
 import main.EMSDeviceManager;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 /**
  * Created by Guarionex on 12/8/2015.
@@ -272,6 +274,36 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
 
     }
 

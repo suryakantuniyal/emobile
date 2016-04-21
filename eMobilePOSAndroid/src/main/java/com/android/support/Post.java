@@ -131,7 +131,19 @@ public class Post {
                 isPost = false;
                 break;
             }
+            case Global.S_GET_XML_DINNER_TABLES: {
 
+                url = baseURL.append(xml.getDinnerTables());
+                isShortResponse = true;
+                isPost = false;
+                break;
+            }
+            case Global.S_GET_XML_SALES_ASSOCIATE: {
+                url = baseURL.append(xml.getSalesAssociate());
+                isShortResponse = true;
+                isPost = false;
+                break;
+            }
             case Global.S_GET_XML_ORDERS: {
                 postLink = activity.getString(R.string.sync_enablermobile_getxmlorders);
                 entity = xml.synchOrders(false);
@@ -237,6 +249,11 @@ public class Post {
                 isShortResponse = true;
                 isPost = false;
                 break;
+            case Global.S_SUBMIT_TIP_ADJUSTMENT:
+                postLink = activity.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                entity = varyingVariable;
+                isPost = true;
+                break;
             case Global.S_UPDATE_SYNC_TIME:
                 url = baseURL.append(xml.updateSyncTime(varyingVariable));
                 isPost = false;
@@ -253,7 +270,11 @@ public class Post {
         if (!isPost) {
             try {
                 if (type != 11)
-                    response = this.getRequest(new URL(url.toString()));
+                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_XML_DINNER_TABLES) {
+                        response = this.getRequest(new URL(url.toString()), true);
+                    } else {
+                        response = this.getRequest(new URL(url.toString()), false);
+                    }
                 else
                     response = getRequestUnsecure(new URI(url.toString()));
             } catch (MalformedURLException e) {
@@ -270,7 +291,7 @@ public class Post {
         return response;
     }
 
-    private String getRequest(URL url) {
+    private String getRequest(URL url, boolean isJsonContentType) {
 
         HttpsURLConnection urlConnection;
         try {
@@ -281,6 +302,9 @@ public class Post {
             urlConnection = (HttpsURLConnection) url.openConnection();
             urlConnection.setSSLSocketFactory(sslContext.getSocketFactory());
             urlConnection.setRequestMethod("GET");
+            if (isJsonContentType) {
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+            }
             urlConnection.setRequestProperty("Connection", "close");
             urlConnection.setUseCaches(false);
             urlConnection.setConnectTimeout(50 * 1000);

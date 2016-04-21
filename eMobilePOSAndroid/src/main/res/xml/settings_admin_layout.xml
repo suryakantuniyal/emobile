@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_account_settings" >
+        android:title="@string/config_account_settings">
         <Preference
             android:key="pref_change_password"
             android:layout="@layout/settings_custom_layout"
@@ -11,7 +11,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_cash_drawer" >
+        android:title="@string/config_cash_drawer">
         <Preference
             android:key="pref_open_cash_drawer"
             android:layout="@layout/settings_custom_layout"
@@ -21,13 +21,39 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_configure_cash_drawer" />
     </PreferenceCategory>
+
+
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_general_settings" >
+        android:title="@string/config_restaurant_settings">
         <CheckBoxPreference
             android:key="pref_restaurant_mode"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_restaurant_mode" />
+        <CheckBoxPreference
+            android:key="pref_enable_togo_eatin"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_togo_eatin" />
+        <CheckBoxPreference
+            android:key="pref_require_waiter_signin"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_waiter_signin" />
+        <CheckBoxPreference
+            android:key="pref_enable_table_selection"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_table_selection" />
+        <CheckBoxPreference
+            android:key="pref_ask_seats"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_ask_numbers_seats" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_general_settings">
+
         <CheckBoxPreference
             android:key="pref_automatic_sync"
             android:layout="@layout/settings_custom_layout"
@@ -109,7 +135,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_gift_card_settings" >
+        android:title="@string/config_gift_card_settings">
         <CheckBoxPreference
             android:key="pref_display_also_redeem"
             android:layout="@layout/settings_custom_layout"
@@ -123,7 +149,7 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_use_loyal_patron" />
     </PreferenceCategory>
-    <PreferenceCategory 
+    <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
         android:title="@string/config_kiosk_configuration">
         <Preference
@@ -133,23 +159,23 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_other_settings" >
+        android:title="@string/config_other_settings">
         <MultiSelectListPreference
+            android:defaultValue="@array/mainMenuDefaultKey"
+            android:entries="@array/mainMenuArray"
+            android:entryValues="@array/mainMenuKey"
             android:key="pref_configure_home_menu"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_configure_home_menu" 
-            android:entries="@array/mainMenuArray"
-            android:defaultValue="@array/mainMenuDefaultKey"
-            android:entryValues="@array/mainMenuKey"/>
+            android:title="@string/config_configure_home_menu" />
 
         <ListPreference
-            android:key="pref_default_transaction"
-            android:entries="@array/defaultTransEntries"
             android:defaultValue="-1"
+            android:entries="@array/defaultTransEntries"
             android:entryValues="@array/defaultTransKey"
+            android:key="pref_default_transaction"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_default_transaction" />
-        
+
         <CheckBoxPreference
             android:key="pref_block_price_level_change"
             android:layout="@layout/settings_custom_layout"
@@ -188,28 +214,32 @@
     <PreferenceCategory
         android:key="payment_section"
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_hard_code_payments" >
+        android:title="@string/config_hard_code_payments">
         <CheckBoxPreference
             android:key="pref_pay_with_tupyx"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_pay_with_tupyx" />
         <CheckBoxPreference
+            android:key="pref_mw_with_evo"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_mw_with_evo" />
+        <CheckBoxPreference
             android:key="pref_mw_with_genius"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_mw_with_genius" />
-        <Preference 
+        <Preference
             android:key="pref_config_genius_peripheral"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_genius_peripheral"/>
+            android:title="@string/config_genius_peripheral" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="payment_section"
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_payment_processing" >
-         <CheckBoxPreference
+        android:title="@string/config_payment_processing">
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_allow_manual_credit_card"
             android:layout="@layout/settings_custom_layout"
-            android:defaultValue="true"
             android:title="@string/config_allow_manual_credit_card" />
         <CheckBoxPreference
             android:key="pref_process_check_online"
@@ -220,16 +250,16 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_show_tips_for_cash" />
         <ListPreference
-            android:key="pref_audio_card_reader"
-            android:entries="@array/audioCardReaderEntries"
             android:defaultValue="-1"
+            android:entries="@array/audioCardReaderEntries"
             android:entryValues="@array/audioCardReaderValues"
+            android:key="pref_audio_card_reader"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_audio_card_reader" />
 
         <ListPreference
-            android:key="pref_default_payment_method"
             android:defaultValue="0"
+            android:key="pref_default_payment_method"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_default_payment_method" />
 
@@ -253,18 +283,18 @@
             android:key="pref_prefill_total_amount"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_prefill_total_amount" />
-        <CheckBoxPreference 
-            android:key = "pref_use_store_and_forward"
+        <CheckBoxPreference
+            android:key="pref_use_store_and_forward"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_use_store_and_forward"/>
-        <Preference 
+            android:title="@string/config_use_store_and_forward" />
+        <Preference
             android:key="pref_store_and_forward_transactions"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_store_and_forward_transactions"/>
+            android:title="@string/config_store_and_forward_transactions" />
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_printing_settings" >
+        android:title="@string/config_printing_settings">
         <CheckBoxPreference
             android:key="pref_enable_printing"
             android:layout="@layout/settings_custom_layout"
@@ -281,14 +311,14 @@
             android:key="pref_handwritten_signature"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_handwritten_signature" />
-        <CheckBoxPreference 
+        <CheckBoxPreference
             android:key="pref_prompt_customer_copy"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_prompt_customer_copy"/>
-        <CheckBoxPreference 
+            android:title="@string/config_prompt_customer_copy" />
+        <CheckBoxPreference
             android:key="pref_print_receipt_transaction_payment"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_print_receipt_transaction_payments"/>
+            android:title="@string/config_print_receipt_transaction_payments" />
         <Preference
             android:key="pref_printek_info"
             android:layout="@layout/settings_custom_layout"
@@ -297,35 +327,35 @@
             android:key="pref_star_info"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_star_info" />
-        
-        <Preference 
-            android:key = "pref_snbc_setup"
+
+        <Preference
+            android:key="pref_snbc_setup"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_snbc_setup"/>
+            android:title="@string/config_snbc_setup" />
 
         <MultiSelectListPreference
-            android:key="pref_set_printing_preferences"
-            android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_set_printing_preferences" 
+            android:defaultValue="@array/printPrefValues"
             android:entries="@array/printPrefArray"
             android:entryValues="@array/printPrefValues"
-            android:defaultValue="@array/printPrefValues"/>
+            android:key="pref_set_printing_preferences"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_set_printing_preferences" />
 
         <Preference
             android:key="pref_configure_ingenico_settings"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_configure_ingenico_settings" />
-        
-        <Preference 
-            android:key = "pref_connect_to_bluetooth_peripheral"
+
+        <Preference
+            android:key="pref_connect_to_bluetooth_peripheral"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_connect_to_bluetooth_peripheral"/>
-        
-        <Preference 
-            android:key = "pref_connect_to_usb_peripheral"
+            android:title="@string/config_connect_to_bluetooth_peripheral" />
+
+        <Preference
+            android:key="pref_connect_to_usb_peripheral"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_connect_to_usb_peripheral"/>
-        
+            android:title="@string/config_connect_to_usb_peripheral" />
+
         <Preference
             android:key="pref_redetect_peripherals"
             android:layout="@layout/settings_custom_layout"
@@ -337,7 +367,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_product_settings" >
+        android:title="@string/config_product_settings">
         <CheckBoxPreference
             android:key="pref_allow_decimal_quantities"
             android:layout="@layout/settings_custom_layout"
@@ -356,19 +386,19 @@
             android:title="@string/config_show_removed_void_items_in_printout" />
 
         <ListPreference
-            android:key="pref_default_category"
             android:defaultValue="0"
+            android:key="pref_default_category"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_default_category" />
-        
-        
+
+
         <ListPreference
+            android:defaultValue="prod_name"
+            android:entries="@array/attributeToDisplayArray"
+            android:entryValues="@array/attributeToDisplayValues"
             android:key="pref_attribute_to_display"
             android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_attribute_to_display"
-             android:entries="@array/attributeToDisplayArray"
-            android:entryValues="@array/attributeToDisplayValues"
-            android:defaultValue="prod_name"/>
+            android:title="@string/config_attribute_to_display" />
 
         <CheckBoxPreference
             android:key="pref_group_in_catalog_by_name"
@@ -385,7 +415,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_shifts" >
+        android:title="@string/config_shifts">
         <Preference
             android:key="pref_open_shift"
             android:layout="@layout/settings_custom_layout"
@@ -397,7 +427,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_shipping_calculation" >
+        android:title="@string/config_shipping_calculation">
         <CheckBoxPreference
             android:key="pref_use_nexternal"
             android:layout="@layout/settings_custom_layout"
@@ -405,7 +435,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_transaction_settings" >
+        android:title="@string/config_transaction_settings">
         <CheckBoxPreference
             android:key="pref_require_manager_pass_to_void_trans"
             android:layout="@layout/settings_custom_layout"
@@ -416,10 +446,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_default_country" />
     </PreferenceCategory>
-    
+
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
-        android:title="@string/config_support_troubleshooting" >
+        android:title="@string/config_support_troubleshooting">
         <Preference
             android:key="pref_force_upload"
             android:layout="@layout/settings_custom_layout"
