@@ -293,6 +293,9 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
         tempBalance = Double.toString(Global.formatNumFromLocale(Global.addSubsStrings(false, Global.formatNumToLocale(Double.parseDouble(totalCostAmount)), Global.formatNumToLocale(Double.parseDouble(balanceDue)))));
         intent.putExtra("paid", tempBalance);
+//        intent.putExtra("typeOfProcedure", Global.FROM_JOB_INVOICE);
+        intent.putExtra("typeOfProcedure", Global.OrderType.INVOICE);
+        intent.putExtra("ord_type", Global.OrderType.INVOICE);
 
         startActivityForResult(intent, Global.FROM_OPEN_INVOICES);
     }
