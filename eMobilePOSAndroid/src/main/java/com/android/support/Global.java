@@ -1680,14 +1680,55 @@ public class Global extends MultiDexApplication {
         return exists;
     }
 
+    private static int getNaturalOrientation(int orientation, int rotation) {
+        switch (rotation) {
+            case Surface.ROTATION_0: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                }
+            }
+            case Surface.ROTATION_90: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                }
+            }
+            case Surface.ROTATION_180: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT ||
+                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ) {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                }
+            }
+            case Surface.ROTATION_270: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT ||
+                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                }
+            }
+            default:
+                return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        }
+    }
+
     public static int getScreenOrientation(Activity activity) {
         int orientation = activity.getResources().getConfiguration().orientation;
         int rotation = ((WindowManager) activity.getSystemService(
                 Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
-        if (isTablet(activity) && (((rotation == 0 || rotation == 2) && orientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
-                orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) || ((rotation == 1 || rotation == 3) &&
-                orientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
-        )) {
+        int naturalOrientation = getNaturalOrientation(orientation, rotation);
+
+//        if (isTablet(activity) && (((rotation == 0 || rotation == 2) && orientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+//                orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) || ((rotation == 1 || rotation == 3) &&
+//                orientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+//        ))
+
+        if (naturalOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             switch (rotation) {
                 case Surface.ROTATION_0:
                     orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;

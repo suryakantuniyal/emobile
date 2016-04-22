@@ -274,8 +274,9 @@ public class SynchMethods {
 
             myPref.setLastReceiveSync(date);
 
-
-            myProgressDialog.dismiss();
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             if (type == Global.FROM_LOGIN_ACTIVITTY) {
                 Intent intent = new Intent(activity, MainMenu_FA.class);
@@ -1612,7 +1613,7 @@ public class SynchMethods {
     private void synchDownloadSalesAssociate(resynchAsync task) throws SAXException, IOException {
         try {
             task.updateProgress(getString(R.string.sync_dload_salesassociate));
-             client = new HttpClient();
+            client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
             String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getSalesAssociate());
