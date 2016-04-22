@@ -896,7 +896,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         } else if (resultCode == -2) {
             totalPayCount++;
             OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
+            if (job_id != null) {
+                ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
+            }
 
             currentPaidAmount = currentPaidAmount + Double.parseDouble(Global.amountPaid);
             Global.overallPaidAmount = currentPaidAmount;
