@@ -37,7 +37,7 @@ public class HttpClient {
     public String httpJsonRequest(String url) throws ClientProtocolException,
             IOException {
         HttpGet httpGet = new HttpGet(url);
-        httpGet.setHeader("Content-Type", "application/json;charset=utf-8");
+        httpGet.setHeader("Content-Type", "application/json");
         response = client.execute(httpGet);
         entity = response.getEntity();
         if (entity != null) {
@@ -64,7 +64,7 @@ public class HttpClient {
 //				jsonObject.toString());
 //		String decrypt = ciphers.decrypt(Ciphers.DEFAULT_SEED, encrypt);
         stringEntity = new StringEntity(jsonObject.toString(), "UTF-8");
-        post.setHeader("Content-Type", "application/json;charset=UTF-8");
+        post.setHeader("Content-Type", "application/json");
         post.setEntity(stringEntity);
         response = client.execute(post);
         entity = response.getEntity();
@@ -84,7 +84,7 @@ public class HttpClient {
 //				jsonObject.toString());
 //		String decrypt = ciphers.decrypt(Ciphers.DEFAULT_SEED, encrypt);
         stringEntity = new StringEntity(jsonObject.toString(), "UTF-8");
-        post.setHeader("Content-Type", "application/json;charset=UTF-8");
+        post.setHeader("Content-Type", "application/json");
         post.setEntity(stringEntity);
         response = client.execute(post);
         entity = response.getEntity();

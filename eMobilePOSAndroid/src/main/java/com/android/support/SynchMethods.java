@@ -98,6 +98,7 @@ public class SynchMethods {
 
     private Intent onHoldIntent;
     private Realm realm;
+    private HttpClient client;
 
 
     public SynchMethods(DBManager managerInst) {
@@ -1595,10 +1596,13 @@ public class SynchMethods {
 
     private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
         task.updateProgress(getString(R.string.sync_dload_dinnertables));
-        String response = post.postData(Global.S_GET_XML_DINNER_TABLES, activity, "DinnerTables");
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(activity);
+        String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.getDinnerTables());
         try {
             DinningTableDAO.truncate();
-            DinningTableDAO.insert(response);
+            DinningTableDAO.insert(jsonRequest);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1608,21 +1612,17 @@ public class SynchMethods {
     private void synchDownloadSalesAssociate(resynchAsync task) throws SAXException, IOException {
         try {
             task.updateProgress(getString(R.string.sync_dload_salesassociate));
-            String response = post.postData(Global.S_GET_XML_SALES_ASSOCIATE, activity, "SalesAssociate");
+             client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getSalesAssociate());
             task.updateProgress(getString(R.string.sync_saving_salesassociate));
             try {
                 SalesAssociateTableDAO.truncate();
-                SalesAssociateTableDAO.insert(response);
+                SalesAssociateTableDAO.insert(jsonRequest);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//
-//            Gson gson = new Gson();
-//            Type listType = new com.google.gson.reflect.TypeToken<ArrayList<SalesAssociate>>() {
-//            }.getType();
-//
-//            List<SalesAssociate> salesAssociate = gson.fromJson(response, listType);
-//            SalesAssociateHandler.insert(salesAssociate);
         } catch (Exception e) {
             e.printStackTrace();
         }
