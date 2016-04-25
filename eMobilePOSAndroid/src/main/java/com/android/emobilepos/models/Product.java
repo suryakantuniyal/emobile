@@ -84,9 +84,15 @@ public class Product {
     private
     boolean EBT;
     @SerializedName("PricesXGroupid")
-    private
-    String PricesXGroupid;
-
+    private String PricesXGroupid;
+    @SerializedName("prod_uom")
+    private String prod_uom;
+    private String prod_cost;
+    private String prod_glaccount;
+    private String prod_mininv;
+    private String prod_shipping;
+    private String prod_weight;
+    private String prod_disc_type_points;
 
     public String getId() {
         return id;
@@ -366,5 +372,61 @@ public class Product {
 
     public void setPricesXGroupid(String pricesXGroupid) {
         PricesXGroupid = pricesXGroupid;
+    }
+
+    public String getProd_uom() {
+        return prod_uom;
+    }
+
+    public void setProd_uom(String prod_uom) {
+        this.prod_uom = prod_uom;
+    }
+
+    public String getProd_cost() {
+        return prod_cost;
+    }
+
+    public void setProd_cost(String prod_cost) {
+        this.prod_cost = prod_cost;
+    }
+
+    public String getProd_glaccount() {
+        return prod_glaccount;
+    }
+
+    public void setProd_glaccount(String prod_glaccount) {
+        this.prod_glaccount = prod_glaccount;
+    }
+
+    public String getProd_mininv() {
+        return prod_mininv;
+    }
+
+    public void setProd_mininv(String prod_mininv) {
+        this.prod_mininv = prod_mininv;
+    }
+
+    public String getProd_shipping() {
+        return prod_shipping;
+    }
+
+    public void setProd_shipping(String prod_shipping) {
+        this.prod_shipping = prod_shipping;
+    }
+
+    public String getProd_weight() {
+        return prod_weight;
+    }
+
+    public void setProd_weight(String prod_weight) {
+        this.prod_weight = prod_weight;
+    }
+
+    public String getProd_disc_type_points() {
+        return prod_disc_type_points;
+    }
+
+    public void setProd_disc_type_points(String prod_disc_type_points) {
+        this.prod_disc_type_points = prod_disc_type_points;
     }
 }

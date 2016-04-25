@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
+import com.android.database.ProductsHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
@@ -1386,7 +1389,9 @@ public class SynchMethods {
     private void synchProducts(resynchAsync task) throws IOException, SAXException {
 
         try {
+            ProductsHandler productsHandler = new ProductsHandler(activity);
             task.updateProgress(getString(R.string.sync_dload_products));
+            Log.d("GSon Start", new Date().toString());
             client = new HttpClient();
             Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
@@ -1401,13 +1406,17 @@ public class SynchMethods {
             }
             reader.endArray();
             reader.close();
+//            productsHandler.insert(products);
+            Log.d("GSon Finish", new Date().toString());
 
-
+            Log.d("XML Parser Start", new Date().toString());
             post.postData(7, activity, "Products");
             SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
             File tempFile = new File(tempFilePath);
             task.updateProgress(getString(R.string.sync_saving_products));
             sp.parse(tempFile, synchHandler);
+            Log.d("XML Parser Finish", new Date().toString());
+
             tempFile.delete();
         } catch (Exception e) {
             e.printStackTrace();
