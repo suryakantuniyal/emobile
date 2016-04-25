@@ -34,6 +34,7 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.Product;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -49,6 +50,8 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -60,6 +63,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -1380,14 +1384,34 @@ public class SynchMethods {
     }
 
     private void synchProducts(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_products));
-        post.postData(7, activity, "Products");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_products));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
 
+        try {
+            task.updateProgress(getString(R.string.sync_dload_products));
+            client = new HttpClient();
+            Gson gson = new Gson();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("Products"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<Product> products = new ArrayList<Product>();
+            reader.beginArray();
+            while (reader.hasNext()) {
+                Product product = gson.fromJson(reader, Product.class);
+                products.add(product);
+            }
+            reader.endArray();
+            reader.close();
+
+
+            post.postData(7, activity, "Products");
+            SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
+            File tempFile = new File(tempFilePath);
+            task.updateProgress(getString(R.string.sync_saving_products));
+            sp.parse(tempFile, synchHandler);
+            tempFile.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchProductAliases(resynchAsync task) throws IOException, SAXException {

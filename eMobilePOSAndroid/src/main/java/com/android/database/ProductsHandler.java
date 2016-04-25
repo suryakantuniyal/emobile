@@ -97,6 +97,47 @@ public class ProductsHandler {
         return attrHash.get(tag);
     }
 
+    public void insert(Product product){
+
+    }
+
+    public void insert(List<Product> products) {
+        DBManager._db.beginTransaction();
+        for (Product product : products) {
+            insert.bindString(index(prod_id), getData(prod_id, j)); // prod_id
+            insert.bindString(index(prod_type), getData(prod_type, j)); // prod_type
+            insert.bindString(index(prod_disc_type), getData(prod_disc_type, j)); // prod_disc_type
+            insert.bindString(index(cat_id), getData(cat_id, j)); // cat_id
+            insert.bindString(index(prod_sku), getData(prod_sku, j)); // prod_sku
+            insert.bindString(index(prod_upc), getData(prod_upc, j)); // prod_upc
+            insert.bindString(index(prod_name), getData(prod_name, j)); // prod_name
+            insert.bindString(index(prod_desc), getData(prod_desc, j)); // prod_desc
+            insert.bindString(index(prod_extradesc), getData(prod_extradesc, j)); // prod_extradesc
+            insert.bindString(index(prod_onhand), getData(prod_onhand, j)); // prod_onhand
+            insert.bindString(index(prod_onorder), getData(prod_onorder, j)); // prod_onorder
+            insert.bindString(index(prod_uom), getData(prod_uom, j)); // prod_uom
+            insert.bindString(index(prod_price), getData(prod_price, j)); // prod_price
+            insert.bindString(index(prod_cost), getData(prod_cost, j)); // prod_cost
+            insert.bindString(index(prod_taxcode), getData(prod_taxcode, j)); // prod_taxcode
+            insert.bindString(index(prod_taxtype), getData(prod_taxtype, j)); // prod_taxtype
+            insert.bindString(index(prod_glaccount), getData(prod_glaccount, j)); // prod_glaccount
+            insert.bindString(index(prod_mininv), getData(prod_mininv, j)); // prod_mininv
+            insert.bindString(index(prod_update), getData(prod_update, j)); // prod_update
+            insert.bindString(index(isactive), getData(isactive, j)); // isactive
+            insert.bindString(index(prod_showOnline), getData(prod_showOnline, j)); // prod_showOnlne
+            insert.bindString(index(prod_ispromo), getData(prod_ispromo, j)); // prod_ispromo
+            insert.bindString(index(prod_shipping), getData(prod_shipping, j)); // prod_shipping
+            insert.bindString(index(prod_weight), getData(prod_weight, j)); // prod_weigth
+            insert.bindString(index(prod_expense), getData(prod_expense, j)); // prod_expense
+            insert.bindString(index(prod_disc_type_points), getData(prod_disc_type_points, j)); // prod_disc_type_points
+            insert.bindString(index(prod_price_points), getData(prod_price_points, j)); // prod_price_points
+            insert.bindString(index(prod_value_points), getData(prod_value_points, j)); // prod_value_points
+
+            insert.execute();
+            insert.clearBindings();
+        }
+    }
+
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
         DBManager._db.beginTransaction();
 
