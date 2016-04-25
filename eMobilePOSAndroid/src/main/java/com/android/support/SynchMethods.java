@@ -1406,7 +1406,8 @@ public class SynchMethods {
             }
             reader.endArray();
             reader.close();
-//            productsHandler.insert(products);
+            productsHandler.emptyTable();
+            productsHandler.insert(products);
             Log.d("GSon Finish", new Date().toString());
 
             Log.d("XML Parser Start", new Date().toString());
@@ -1421,6 +1422,7 @@ public class SynchMethods {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void synchProductAliases(resynchAsync task) throws IOException, SAXException {

@@ -140,6 +140,8 @@ public class ProductsHandler {
             insert.execute();
             insert.clearBindings();
         }
+        insert.close();
+        DBManager._db.setTransactionSuccessful();
     }
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
