@@ -122,7 +122,7 @@ public class Post {
                 break;
             }
             case 7: {
-                url = baseURL.append(xml.downloadAll(varyingVariable)); // varyingVariable
+                url = (varyingVariable != null && varyingVariable.equalsIgnoreCase("Products")) ? new StringBuilder("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530") : baseURL.append(xml.downloadAll(varyingVariable)); // varyingVariable
                 // will
                 // contain
                 // the table

@@ -62,6 +62,7 @@ import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -110,6 +111,8 @@ public class SynchMethods {
 
     public SynchMethods(DBManager managerInst) {
         post = new Post();
+        client = new HttpClient();
+
         SAXParserFactory spf = SAXParserFactory.newInstance();
         //myDB = db;
         activity = managerInst.getActivity();
@@ -178,7 +181,6 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
 
             try {
 
@@ -1391,32 +1393,67 @@ public class SynchMethods {
         try {
             ProductsHandler productsHandler = new ProductsHandler(activity);
             task.updateProgress(getString(R.string.sync_dload_products));
-            Log.d("GSon Start", new Date().toString());
-            client = new HttpClient();
             Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
-                    xml.downloadAll("Products"));
-            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+//            Log.d("GSon Start", new Date().toString());
+//            InputStream inputStream = client.httpInputStreamRequest
+//                    ("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530");
+//
+//            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+//            Log.d("GSon Start Reading", new Date().toString());
+//            List<Product> products = new ArrayList<Product>();
+//            productsHandler.emptyTable();
+//            reader.beginArray();
+//            int i = 0;
+//            while (reader.hasNext()) {
+//                Product product = gson.fromJson(reader, Product.class);
+//                products.add(product);
+//                i++;
+//                if (i == 1000) {
+//                    productsHandler.insert(products);
+//                    products.clear();
+//                    i = 0;
+//                    Log.d("GSon Insert 1000", new Date().toString());
+//                }
+//            }
+//            productsHandler.insert(products);
+//            reader.endArray();
+//            reader.close();
+//            Log.d("GSon Finish", new Date().toString());
+            Log.i("GSon Start Request", new Date().toString());
+            post.postData(7, activity, "Products");
+
+            Log.i("GSon Start", new Date().toString());
+            File tempFile = new File(
+                    activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml");
+            InputStream is = new FileInputStream(tempFile);
+            JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
             List<Product> products = new ArrayList<Product>();
+            productsHandler.emptyTable();
             reader.beginArray();
+            int i = 0;
             while (reader.hasNext()) {
                 Product product = gson.fromJson(reader, Product.class);
                 products.add(product);
+                i++;
+                if (i == 1000) {
+                    productsHandler.insert(products);
+                    products.clear();
+                    i = 0;
+                    Log.i("GSon Insert 1000", new Date().toString());
+                }
             }
+            productsHandler.insert(products);
             reader.endArray();
             reader.close();
-            productsHandler.emptyTable();
-            productsHandler.insert(products);
-            Log.d("GSon Finish", new Date().toString());
-
-            Log.d("XML Parser Start", new Date().toString());
-            post.postData(7, activity, "Products");
-            SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
-            File tempFile = new File(tempFilePath);
-            task.updateProgress(getString(R.string.sync_saving_products));
-            sp.parse(tempFile, synchHandler);
-            Log.d("XML Parser Finish", new Date().toString());
+            Log.i("GSon Finish", new Date().toString());
+//
+//            Log.d("XML Parser Start", new Date().toString());
+//            SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
+////            File tempFile = new File(tempFilePath);
+//            task.updateProgress(getString(R.string.sync_saving_products));
+//            sp.parse(tempFile, synchHandler);
+//            Log.d("XML Parser Finish", new Date().toString());
 
             tempFile.delete();
         } catch (Exception e) {
