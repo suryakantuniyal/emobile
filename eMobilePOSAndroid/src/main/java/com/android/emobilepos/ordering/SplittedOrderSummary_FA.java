@@ -65,7 +65,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private Discount discount;
     private BigDecimal discountableSubtotal;
     private BigDecimal itemsDiscountTotal;
-    private List<HashMap<String, String>> listMapTaxes;
+//    private List<HashMap<String, String>> listMapTaxes;
     private Tax tax;
     public int checkoutCount = 0;
     private BigDecimal globalDiscountPercentge = new BigDecimal(0);
@@ -99,18 +99,18 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         this.discount = discount;
     }
 
-    public List<HashMap<String, String>> getListMapTaxes() {
-        return listMapTaxes;
-    }
-
-    public void setListMapTaxes(List<HashMap<String, String>> listMapTaxes) {
-        this.listMapTaxes = listMapTaxes;
-    }
+//    public List<HashMap<String, String>> getListMapTaxes() {
+//        return listMapTaxes;
+//    }
+//
+//    public void setListMapTaxes(List<HashMap<String, String>> listMapTaxes) {
+//        this.listMapTaxes = listMapTaxes;
+//    }
 
 
     public enum NavigationResult {
         PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903),
-        TABLE_SELECTION(1904),SEAT_SELECTION(1905);
+        TABLE_SELECTION(1904), SEAT_SELECTION(1905);
         int code;
 
         NavigationResult(int code) {
@@ -189,8 +189,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             TaxesHandler taxesHandler = new TaxesHandler(this);
             List<Tax> taxList = taxesHandler.getTaxes();
             int idx = taxList.indexOf(new Tax(ordetTaxId));
-            setTax(taxList.get(idx));
-            listMapTaxes = taxesHandler.getTaxDetails(tax.getTaxId(), "");
+            setTax(idx == -1 ? null : taxList.get(idx));
+//            listMapTaxes = taxesHandler.getTaxDetails(tax.getTaxId(), "");
             ProductsHandler handler2 = new ProductsHandler(this);
             List<Discount> discountList = handler2.getDiscounts();
             if (discountSelected >= 0) {

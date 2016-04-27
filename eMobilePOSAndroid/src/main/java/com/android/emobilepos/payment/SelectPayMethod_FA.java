@@ -129,10 +129,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         overAllRemainingBalance = Double.parseDouble(total);
         if (!isFromMainMenu) {
             job_id = extras.getString("job_id");
-            if (extras.get("typeOfProcedure") instanceof Global.OrderType) {
-                typeOfProcedure = ((Global.OrderType) extras.get("typeOfProcedure")).getCode();
-            } else {
-                typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
+            if (extras.containsKey("typeOfProcedure")) {
+                if (extras.get("typeOfProcedure") instanceof Global.OrderType) {
+                    typeOfProcedure = ((Global.OrderType) extras.get("typeOfProcedure")).getCode();
+                } else if (extras.get("typeOfProcedure") instanceof Global.TransactionType) {
+                    typeOfProcedure = ((Global.TransactionType) extras.get("typeOfProcedure")).getCode();
+                } else {
+                    typeOfProcedure = extras.getInt("typeOfProcedure");
+                }
             }
         }
         orderType = (Global.OrderType) extras.get("ord_type");
@@ -892,7 +896,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         } else if (resultCode == -2) {
             totalPayCount++;
             OrdersHandler ordersHandler = new OrdersHandler(activity);
-            ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
+            if (job_id != null) {
+                ordersHandler.updateIsTotalLinesPay(job_id, Integer.toString(totalPayCount));
+            }
 
             currentPaidAmount = currentPaidAmount + Double.parseDouble(Global.amountPaid);
             Global.overallPaidAmount = currentPaidAmount;

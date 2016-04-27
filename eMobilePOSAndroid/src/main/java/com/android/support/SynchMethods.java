@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
+import com.android.database.ProductsHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
@@ -34,6 +37,7 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.Product;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -49,6 +53,11 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -56,10 +65,12 @@ import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -76,6 +87,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 public class SynchMethods {
     private Post post;
@@ -103,6 +116,8 @@ public class SynchMethods {
 
     public SynchMethods(DBManager managerInst) {
         post = new Post();
+        client = new HttpClient();
+
         SAXParserFactory spf = SAXParserFactory.newInstance();
         //myDB = db;
         activity = managerInst.getActivity();
@@ -171,7 +186,6 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
 
             try {
 
@@ -274,8 +288,9 @@ public class SynchMethods {
 
             myPref.setLastReceiveSync(date);
 
-
-            myProgressDialog.dismiss();
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             if (type == Global.FROM_LOGIN_ACTIVITTY) {
                 Intent intent = new Intent(activity, MainMenu_FA.class);
@@ -1379,13 +1394,79 @@ public class SynchMethods {
     }
 
     private void synchProducts(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_products));
-        post.postData(7, activity, "Products");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_products));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+
+        try {
+            ProductsHandler productsHandler = new ProductsHandler(activity);
+            task.updateProgress(getString(R.string.sync_dload_products));
+            Gson gson = new Gson();
+            GenerateXML xml = new GenerateXML(activity);
+            Log.d("GSon Start", new Date().toString());
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("Products"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            Log.d("GSon Start Reading", new Date().toString());
+            List<Product> products = new ArrayList<Product>();
+            productsHandler.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                Product product = gson.fromJson(reader, Product.class);
+                products.add(product);
+                i++;
+                if (i == 1000) {
+                    productsHandler.insert(products);
+                    products.clear();
+                    i = 0;
+                    Log.d("GSon Insert 1000", new Date().toString());
+                }
+            }
+            productsHandler.insert(products);
+            reader.endArray();
+            reader.close();
+            Log.d("GSon Finish", new Date().toString());
+
+
+//            Log.i("GSon Start Request", new Date().toString());
+//            post.postData(7, activity, "Products");
+//
+//            Log.i("GSon Start", new Date().toString());
+//            File tempFile = new File(
+//                    activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml");
+//            InputStream is = new FileInputStream(tempFile);
+//            JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+//            List<Product> products = new ArrayList<Product>();
+//            productsHandler.emptyTable();
+//            reader.beginArray();
+//            int i = 0;
+//            while (reader.hasNext()) {
+//                Product product = gson.fromJson(reader, Product.class);
+//                products.add(product);
+//                i++;
+//                if (i == 1000) {
+//                    productsHandler.insert(products);
+//                    products.clear();
+//                    i = 0;
+//                    Log.i("GSon Insert 1000", new Date().toString());
+//                }
+//            }
+//            productsHandler.insert(products);
+//            reader.endArray();
+//            reader.close();
+//            Log.i("GSon Finish", new Date().toString());
+
+
+//
+//            Log.d("XML Parser Start", new Date().toString());
+//            SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
+////            File tempFile = new File(tempFilePath);
+//            task.updateProgress(getString(R.string.sync_saving_products));
+//            sp.parse(tempFile, synchHandler);
+//            Log.d("XML Parser Finish", new Date().toString());
+
+//            tempFile.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -1612,7 +1693,7 @@ public class SynchMethods {
     private void synchDownloadSalesAssociate(resynchAsync task) throws SAXException, IOException {
         try {
             task.updateProgress(getString(R.string.sync_dload_salesassociate));
-             client = new HttpClient();
+            client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
             String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getSalesAssociate());

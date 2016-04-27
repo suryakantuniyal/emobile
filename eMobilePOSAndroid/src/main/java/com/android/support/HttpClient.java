@@ -27,12 +27,25 @@ public class HttpClient {
     HttpEntity entity;
 //	Ciphers ciphers = new Ciphers();
 
+
+    public InputStream httpInputStreamRequest(String url) throws ClientProtocolException,
+            IOException {
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Content-Type", "application/json");
+        response = client.execute(httpGet);
+        entity = response.getEntity();
+        if (entity != null) {
+           return entity.getContent();
+        }
+        return null;
+    }
+
+
     /**
-     *
      * @param url
+     * @return
      * @throws org.apache.http.client.ClientProtocolException
      * @throws java.io.IOException
-     * @return
      */
     public String httpJsonRequest(String url) throws ClientProtocolException,
             IOException {
@@ -41,15 +54,13 @@ public class HttpClient {
         response = client.execute(httpGet);
         entity = response.getEntity();
         if (entity != null) {
-            String convertStreamToString = convertStreamToString(entity
-                    .getContent());
+            String convertStreamToString = convertStreamToString(entity.getContent());
             return convertStreamToString;
         }
         return null;
     }
 
     /**
-     *
      * @param url
      * @param jsonObject
      * @return
@@ -97,7 +108,7 @@ public class HttpClient {
     }
 
     private static String convertStreamToString(InputStream is) {
-		/*
+        /*
 		 * To convert the InputStream to String we use the
 		 * BufferedReader.readLine() method. We iterate until the BufferedReader
 		 * return null which means there's no more data to read. Each line will

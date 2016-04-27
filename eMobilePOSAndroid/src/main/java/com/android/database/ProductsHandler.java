@@ -3,6 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Product;
@@ -12,11 +13,15 @@ import com.android.support.MyPreferences;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteStatement;
 
+import org.springframework.util.StringUtils;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import util.StringUtil;
 
 public class ProductsHandler {
 
@@ -95,6 +100,49 @@ public class ProductsHandler {
 
     private int index(String tag) {
         return attrHash.get(tag);
+    }
+
+    public void insert(List<Product> products) {
+        DBManager._db.beginTransaction();
+        SQLiteStatement insert;
+        insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+
+        for (Product product : products) {
+            insert.bindString(index(prod_id), product.getId()); // prod_id
+            insert.bindString(index(prod_type), StringUtil.nullStringToEmpty(product.getProdType())); // prod_type
+            insert.bindString(index(prod_disc_type), StringUtil.nullStringToEmpty(product.getProd_disc_type())); // prod_disc_type
+            insert.bindString(index(cat_id), StringUtil.nullStringToEmpty(product.getCatId())); // cat_id
+            insert.bindString(index(prod_sku), StringUtil.nullStringToEmpty(product.getProd_sku())); // prod_sku
+            insert.bindString(index(prod_upc), StringUtil.nullStringToEmpty(product.getProd_upc())); // prod_upc
+            insert.bindString(index(prod_name), StringUtil.nullStringToEmpty(product.getProdName())); // prod_name
+            insert.bindString(index(prod_desc), StringUtil.nullStringToEmpty(product.getProdDesc())); // prod_desc
+            insert.bindString(index(prod_extradesc), StringUtil.nullStringToEmpty(product.getProdExtraDesc())); // prod_extradesc
+            insert.bindString(index(prod_onhand), StringUtil.nullStringToEmpty(product.getProdOnHand())); // prod_onhand
+            insert.bindString(index(prod_onorder), StringUtil.nullStringToEmpty(product.getProd_onorder())); // prod_onorder
+            insert.bindString(index(prod_uom), StringUtil.nullStringToEmpty(product.getProd_uom())); // prod_uom
+            insert.bindString(index(prod_price), StringUtil.nullStringToEmpty(product.getProdPrice())); // prod_price
+            insert.bindString(index(prod_cost), StringUtil.nullStringToEmpty(product.getProd_cost())); // prod_cost
+            insert.bindString(index(prod_taxcode), StringUtil.nullStringToEmpty(product.getProdTaxCode())); // prod_taxcode
+            insert.bindString(index(prod_taxtype), StringUtil.nullStringToEmpty(product.getProdTaxType())); // prod_taxtype
+            insert.bindString(index(prod_glaccount), StringUtil.nullStringToEmpty(product.getProd_glaccount())); // prod_glaccount
+            insert.bindString(index(prod_mininv), StringUtil.nullStringToEmpty(product.getProd_mininv())); // prod_mininv
+            insert.bindString(index(prod_update), StringUtil.nullStringToEmpty(product.getProd_update())); // prod_update
+            insert.bindString(index(isactive), StringUtil.nullStringToEmpty(product.getIsactive())); //) isactive
+            insert.bindString(index(prod_showOnline), StringUtil.nullStringToEmpty(product.getProd_showOnline())); // prod_showOnlne
+            insert.bindString(index(prod_ispromo), StringUtil.nullStringToEmpty(product.getProd_ispromo())); // prod_ispromo
+            insert.bindString(index(prod_shipping), StringUtil.nullStringToEmpty(product.getProd_shipping())); // prod_shipping
+            insert.bindString(index(prod_weight), StringUtil.nullStringToEmpty(product.getProd_weight())); // prod_weigth
+            insert.bindString(index(prod_expense), StringUtil.nullStringToEmpty(product.getProd_expense())); // prod_expense
+            insert.bindString(index(prod_disc_type_points), StringUtil.nullStringToEmpty(product.getProd_disc_type_points())); // prod_disc_type_points
+            insert.bindString(index(prod_price_points), StringUtil.nullStringToEmpty(product.getProdPricePoints())); // prod_price_points
+            insert.bindString(index(prod_value_points), StringUtil.nullStringToEmpty(product.getProdValuePoints())); // prod_value_points
+
+            insert.execute();
+            insert.clearBindings();
+        }
+        insert.close();
+        DBManager._db.setTransactionSuccessful();
+        DBManager._db.endTransaction();
     }
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {

@@ -90,7 +90,6 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/leftTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -113,7 +112,6 @@
             android:textSize="@dimen/sync_pending_content_text_size" />
 
         <TextView
-            android:id="@+id/rightTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -142,7 +140,6 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/leftTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -165,7 +162,6 @@
             android:textSize="@dimen/sync_pending_content_text_size" />
 
         <TextView
-            android:id="@+id/rightTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -194,7 +190,6 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/leftTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -217,7 +212,6 @@
             android:textSize="@dimen/sync_pending_content_text_size" />
 
         <TextView
-            android:id="@+id/rightTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -246,7 +240,6 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/leftTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -269,7 +262,6 @@
             android:textSize="@dimen/sync_pending_content_text_size" />
 
         <TextView
-            android:id="@+id/rightTitle"
             style="@style/text_shadow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
