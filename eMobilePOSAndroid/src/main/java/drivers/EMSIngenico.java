@@ -82,8 +82,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         Comm_Settings commSettings = new Comm_Settings();
         commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
-//        commSettings.BT_Name = "";
-        commSettings.AutoDetect = 1;
+        commSettings.BT_Name = myPref.getSwiperName();
+//        commSettings.AutoDetect = 1;
 
         setCommTimeOuts();
         ERROR_ID connectionRequest;
@@ -133,8 +133,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
             Comm_Settings commSettings = new Comm_Settings();
             commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
-//            commSettings.BT_Name = "";
-            commSettings.AutoDetect = 1;
+            commSettings.BT_Name = myPref.getSwiperName();//"iCM122-20454197";//myPref.getSwiperName();
+//            commSettings.AutoDetect = 1;
 
             setCommTimeOuts();
             ERROR_ID connectionRequest = RBA_API.Connect(commSettings);
@@ -407,7 +407,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void PinPadMessageCallBack(MESSAGE_ID msgID) {
-        // TODO Auto-generated method stub
         switch (msgID) {
 
             case M00_OFFLINE: {

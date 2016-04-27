@@ -1401,13 +1401,8 @@ public class SynchMethods {
             Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
-//            InputStream inputStream = client.httpInputStreamRequest
-//                    ("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530");
-
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Products"));
-
-
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             Log.d("GSon Start Reading", new Date().toString());
             List<Product> products = new ArrayList<Product>();
