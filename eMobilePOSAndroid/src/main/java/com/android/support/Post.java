@@ -122,7 +122,7 @@ public class Post {
                 break;
             }
             case 7: {
-                url = (varyingVariable != null && varyingVariable.equalsIgnoreCase("Products")) ? new StringBuilder("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530") : baseURL.append(xml.downloadAll(varyingVariable)); // varyingVariable
+                url = baseURL.append(xml.downloadAll(varyingVariable)); // varyingVariable
                 // will
                 // contain
                 // the table
@@ -270,7 +270,7 @@ public class Post {
         if (!isPost) {
             try {
                 if (type != 11)
-                    if ((varyingVariable != null && varyingVariable.equalsIgnoreCase("Products")) || type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_XML_DINNER_TABLES) {
+                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_XML_DINNER_TABLES) {
                         response = this.getRequest(new URL(url.toString()), true);
                     } else {
                         response = this.getRequest(new URL(url.toString()), false);

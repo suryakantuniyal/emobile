@@ -53,7 +53,10 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 import org.xml.sax.InputSource;
@@ -84,6 +87,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 public class SynchMethods {
     private Post post;
@@ -1396,8 +1401,12 @@ public class SynchMethods {
             Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
-            InputStream inputStream = client.httpInputStreamRequest
-                    ("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530");
+//            InputStream inputStream = client.httpInputStreamRequest
+//                    ("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530");
+
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("Products"));
+
 
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             Log.d("GSon Start Reading", new Date().toString());

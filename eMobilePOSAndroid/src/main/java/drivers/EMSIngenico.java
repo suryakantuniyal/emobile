@@ -56,7 +56,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
-
+        myPref = new MyPreferences(this.activity);
         if (handler == null)
             handler = new Handler();
 
