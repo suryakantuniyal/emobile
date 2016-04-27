@@ -1395,39 +1395,12 @@ public class SynchMethods {
             task.updateProgress(getString(R.string.sync_dload_products));
             Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
-//            Log.d("GSon Start", new Date().toString());
-//            InputStream inputStream = client.httpInputStreamRequest
-//                    ("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530");
-//
-//            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-//            Log.d("GSon Start Reading", new Date().toString());
-//            List<Product> products = new ArrayList<Product>();
-//            productsHandler.emptyTable();
-//            reader.beginArray();
-//            int i = 0;
-//            while (reader.hasNext()) {
-//                Product product = gson.fromJson(reader, Product.class);
-//                products.add(product);
-//                i++;
-//                if (i == 1000) {
-//                    productsHandler.insert(products);
-//                    products.clear();
-//                    i = 0;
-//                    Log.d("GSon Insert 1000", new Date().toString());
-//                }
-//            }
-//            productsHandler.insert(products);
-//            reader.endArray();
-//            reader.close();
-//            Log.d("GSon Finish", new Date().toString());
-            Log.i("GSon Start Request", new Date().toString());
-            post.postData(7, activity, "Products");
+            Log.d("GSon Start", new Date().toString());
+            InputStream inputStream = client.httpInputStreamRequest
+                    ("https://sync.enablermobile.com/deviceASXMLTrans/getXMLProducts.aspx?RegID=150309140530");
 
-            Log.i("GSon Start", new Date().toString());
-            File tempFile = new File(
-                    activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml");
-            InputStream is = new FileInputStream(tempFile);
-            JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            Log.d("GSon Start Reading", new Date().toString());
             List<Product> products = new ArrayList<Product>();
             productsHandler.emptyTable();
             reader.beginArray();
@@ -1440,13 +1413,44 @@ public class SynchMethods {
                     productsHandler.insert(products);
                     products.clear();
                     i = 0;
-                    Log.i("GSon Insert 1000", new Date().toString());
+                    Log.d("GSon Insert 1000", new Date().toString());
                 }
             }
             productsHandler.insert(products);
             reader.endArray();
             reader.close();
-            Log.i("GSon Finish", new Date().toString());
+            Log.d("GSon Finish", new Date().toString());
+
+
+//            Log.i("GSon Start Request", new Date().toString());
+//            post.postData(7, activity, "Products");
+//
+//            Log.i("GSon Start", new Date().toString());
+//            File tempFile = new File(
+//                    activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml");
+//            InputStream is = new FileInputStream(tempFile);
+//            JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
+//            List<Product> products = new ArrayList<Product>();
+//            productsHandler.emptyTable();
+//            reader.beginArray();
+//            int i = 0;
+//            while (reader.hasNext()) {
+//                Product product = gson.fromJson(reader, Product.class);
+//                products.add(product);
+//                i++;
+//                if (i == 1000) {
+//                    productsHandler.insert(products);
+//                    products.clear();
+//                    i = 0;
+//                    Log.i("GSon Insert 1000", new Date().toString());
+//                }
+//            }
+//            productsHandler.insert(products);
+//            reader.endArray();
+//            reader.close();
+//            Log.i("GSon Finish", new Date().toString());
+
+
 //
 //            Log.d("XML Parser Start", new Date().toString());
 //            SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
@@ -1455,7 +1459,7 @@ public class SynchMethods {
 //            sp.parse(tempFile, synchHandler);
 //            Log.d("XML Parser Finish", new Date().toString());
 
-            tempFile.delete();
+//            tempFile.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
