@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
@@ -66,7 +67,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.edm = edm;
         if (hapi == null) {
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
-            hapi.addLogEventHandler(this);
 
         }
         showDialog(R.string.connecting_handpoint);
@@ -82,7 +82,6 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.edm = edm;
         if (hapi == null) {
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
-            hapi.addLogEventHandler(this);
         }
         synchronized (hapi) {
             discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
@@ -398,7 +397,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void sendEmailLog() {
+        hapi.addLogEventHandler(this);
         hapi.getDeviceLogs();
+    }
+
+    @Override
+    public void updateFirmware() {
+        boolean update = hapi.update();
     }
 
     @Override
@@ -409,10 +414,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         intent.putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.handpoint_log_file));
         intent.putExtra(Intent.EXTRA_TEXT, s);
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.send_email)));
+        hapi.removeLogEventHandler(this);
     }
 
     @Override
     public void onMessageLogged(LogLevel logLevel, String s) {
-
+        Toast.makeText(activity, s, Toast.LENGTH_LONG);
     }
 }

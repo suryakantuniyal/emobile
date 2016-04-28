@@ -475,4 +475,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void sendEmailLog() {
 
     }
+
+    @Override
+    public void updateFirmware() {
+
+    }
 }

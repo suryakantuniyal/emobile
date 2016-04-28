@@ -143,6 +143,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_force_upload").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_backup_data").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
 
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
@@ -333,6 +334,11 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 case R.string.config_send_handpoint_log:
                     if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
                         Global.btSwiper.currentDevice.sendEmailLog();
+                    }
+                    break;
+                case R.string.config_handpoint_update:
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
+                        Global.btSwiper.currentDevice.updateFirmware();
                     }
                     break;
             }

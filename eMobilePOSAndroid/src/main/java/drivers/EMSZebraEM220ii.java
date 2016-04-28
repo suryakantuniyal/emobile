@@ -575,4 +575,9 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     }
 
+    @Override
+    public void updateFirmware() {
+
+    }
+
 }

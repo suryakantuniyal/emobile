@@ -1338,6 +1338,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void updateFirmware() {
+
+    }
+
+    @Override
     public void msrError() {
         // TODO Auto-generated method stub
 

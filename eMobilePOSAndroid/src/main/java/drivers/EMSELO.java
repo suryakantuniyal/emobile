@@ -499,6 +499,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     }
 
+    @Override
+    public void updateFirmware() {
+
+    }
+
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {

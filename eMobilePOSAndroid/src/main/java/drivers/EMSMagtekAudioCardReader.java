@@ -603,6 +603,11 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
     }
 
+    @Override
+    public void updateFirmware() {
+
+    }
+
 
 }
 

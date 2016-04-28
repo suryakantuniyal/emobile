@@ -446,6 +446,18 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_default_country" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_handpoint_utils">
+        <Preference
+            android:key="pref_handpoint_update"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_handpoint_update" />
+        <Preference
+            android:key="pref_send_handpoint_log"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_send_handpoint_log" />
+    </PreferenceCategory>
 
     <PreferenceCategory
         android:layout="@layout/settings_custom_header_layout"
@@ -458,10 +470,7 @@
             android:key="pref_backup_data"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_backup_data" />
-        <Preference
-            android:key="pref_send_handpoint_log"
-            android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_send_handpoint_log" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

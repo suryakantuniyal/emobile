@@ -901,6 +901,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     }
 
+    @Override
+    public void updateFirmware() {
+
+    }
+
     private void starIoExtManagerConnect() {
         final Dialog mProgressDialog = new ProgressDialog(EMSBluetoothStarPrinter.this.activity);
         AsyncTask<Void, Void, Boolean> asyncTask = new AsyncTask<Void, Void, Boolean>() {

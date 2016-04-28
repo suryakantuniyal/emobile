@@ -312,6 +312,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+    @Override
+    public void updateFirmware() {
+
+    }
+
     private class MtHandlerCallback implements Handler.Callback {
         public boolean handleMessage(Message msg) {
 

@@ -80,4 +80,6 @@ public interface EMSDeviceManagerPrinterDelegate {
     void  printEMVReceipt(String text);
 
     void  sendEmailLog();
+
+    void  updateFirmware();
 }

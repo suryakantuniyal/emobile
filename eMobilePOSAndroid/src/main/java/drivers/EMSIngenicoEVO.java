@@ -381,6 +381,11 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
+    public void updateFirmware() {
+
+    }
+
+    @Override
     public void onDeviceConnected() {
         connected = true;
         if (myProgressDialog != null && myProgressDialog.isShowing()) {
