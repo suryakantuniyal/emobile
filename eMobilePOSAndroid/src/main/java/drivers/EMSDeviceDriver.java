@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Environment;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
@@ -364,7 +366,6 @@ public class EMSDeviceDriver {
         try {
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
-
             OrderProductsHandler handler = new OrderProductsHandler(activity);
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
@@ -1157,6 +1158,10 @@ public class EMSDeviceDriver {
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             printPref = myPref.getPrintingPreferences();
             PaymentsHandler payHandler = new PaymentsHandler(activity);
+            Spanned fromHtml = null;
+            if (emvContainer != null && emvContainer.getHandpointResponse() != null && emvContainer.getHandpointResponse().getCustomerReceipt() != null) {
+                fromHtml = Html.fromHtml(emvContainer.getHandpointResponse().getCustomerReceipt());
+            }
             PaymentDetails payArray;
             boolean isStoredFwd = false;
             long pay_count = payHandler.paymentExist(payID, true);
@@ -1184,104 +1189,112 @@ public class EMSDeviceDriver {
                 creditCardFooting = getString(R.string.receipt_creditcard_terms);
             }
             printImage(0);
-            if (printPref.contains(MyPreferences.print_header))
-                printHeader(lineWidth);
-            sb.append("* ").append(payArray.getPaymethod_name());
-            if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
-                sb.append(" Refund *\n\n\n");
-            else
-                sb.append(" Sale *\n\n\n");
-            print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
 
-            sb.setLength(0);
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    getString(R.string.receipt_time), lineWidth, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(), payArray.getPay_timecreated(), lineWidth, 0))
-                    .append("\n\n");
+            if (fromHtml == null) {
+                if (printPref.contains(MyPreferences.print_header))
+                    printHeader(lineWidth);
+                sb.append("* ").append(payArray.getPaymethod_name());
+                if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
+                    sb.append(" Refund *\n\n\n");
+                else
+                    sb.append(" Sale *\n\n\n");
+                print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
 
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray.getCust_name(),
-                    lineWidth, 0));
+                sb.setLength(0);
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+                        getString(R.string.receipt_time), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(), payArray.getPay_timecreated(), lineWidth, 0))
+                        .append("\n\n");
 
-            if (payArray.getJob_id() != null && !payArray.getJob_id().isEmpty())
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
-                        payArray.getJob_id(), lineWidth, 0));
-            else if (payArray.getInv_id() != null && !payArray.getInv_id().isEmpty()) // invoice
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
-                        payArray.getInv_id(), lineWidth, 0));
-
-            if (!isStoredFwd)
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray.getCust_name(),
                         lineWidth, 0));
 
-            if (!isCashPayment && !isCheckPayment) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
-                        "*" + payArray.getCcnum_last4(), lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0));
-            } else if (isCheckPayment) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
-                        payArray.getPay_check(), lineWidth, 0));
-            }
+                if (payArray.getJob_id() != null && !payArray.getJob_id().isEmpty())
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
+                            payArray.getJob_id(), lineWidth, 0));
+                else if (payArray.getInv_id() != null && !payArray.getInv_id().isEmpty()) // invoice
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
+                            payArray.getInv_id(), lineWidth, 0));
 
-            print(sb.toString());
-            sb.setLength(0);
+                if (!isStoredFwd)
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
+                            lineWidth, 0));
 
-            printEMVSection(payArray.getEmvContainer(), lineWidth);
-
-            String status = payArray.getEmvContainer() != null && payArray.getEmvContainer().getGeniusResponse() != null ? payArray.getEmvContainer().getGeniusResponse().getStatus() : getString(R.string.approved);
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.credit_approval_status),
-                    status, lineWidth, 0));
-
-            sb.append(textHandler.newLines(1));
-            if (Global.isIvuLoto && Global.subtotalAmount > 0 && !payArray.getTax1_amount().isEmpty()
-                    && !payArray.getTax2_amount().isEmpty()) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
-                        Global.formatDoubleStrToCurrency(String.valueOf(Global.subtotalAmount)), lineWidth, 0));
-
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),
-                        Global.getCurrencyFormat(payArray.getTax1_amount()), lineWidth, 2));
-
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
-                        Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
-            }
-
-            if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
-                        Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
-            } else {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
-                        Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
-            }
-
-            String change = payArray.getChange();
-
-            if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
-                    && Double.parseDouble(change) > 0)
-                change = "";
-            sb.append("\n");
-            print(sb.toString(), FORMAT);
-            sb.setLength(0);
-            if (includedTip != null) {
-                if (Double.parseDouble(change) > 0) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(includedTip,
-                            Global.formatDoubleStrToCurrency(change), lineWidth, 0));
-                } else if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
-                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
-                    print(textHandler.newLines(1), FORMAT);
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tip),
-                            textHandler.lines(lineWidth / 2), lineWidth, 0))
-                            .append("\n\n");
-                    print(sb.toString(), FORMAT);
-                    sb.setLength(0);
-                    print(textHandler.newLines(1), FORMAT);
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                            textHandler.lines(lineWidth / 2), lineWidth, 0))
-                            .append("\n\n");
-                    print(sb.toString(), FORMAT);
-                    sb.setLength(0);
+                if (!isCashPayment && !isCheckPayment) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
+                            "*" + payArray.getCcnum_last4(), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0));
+                } else if (isCheckPayment) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
+                            payArray.getPay_check(), lineWidth, 0));
                 }
+
+                print(sb.toString());
+                sb.setLength(0);
+
+                printEMVSection(payArray.getEmvContainer(), lineWidth);
+
+                String status = payArray.getEmvContainer() != null && payArray.getEmvContainer().getGeniusResponse() != null ? payArray.getEmvContainer().getGeniusResponse().getStatus() : getString(R.string.approved);
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.credit_approval_status),
+                        status, lineWidth, 0));
+
+                sb.append(textHandler.newLines(1));
+                if (Global.isIvuLoto && Global.subtotalAmount > 0 && !payArray.getTax1_amount().isEmpty()
+                        && !payArray.getTax2_amount().isEmpty()) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
+                            Global.formatDoubleStrToCurrency(String.valueOf(Global.subtotalAmount)), lineWidth, 0));
+
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),
+                            Global.getCurrencyFormat(payArray.getTax1_amount()), lineWidth, 2));
+
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
+                            Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
+                }
+
+                if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
+                            Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
+                } else {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
+                            Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
+                }
+
+                String change = payArray.getChange();
+
+                if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
+                        && Double.parseDouble(change) > 0)
+                    change = "";
+                sb.append("\n");
+                print(sb.toString(), FORMAT);
+                sb.setLength(0);
+                if (includedTip != null) {
+                    if (Double.parseDouble(change) > 0) {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(includedTip,
+                                Global.formatDoubleStrToCurrency(change), lineWidth, 0));
+                    } else if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                            myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                        print(textHandler.newLines(1), FORMAT);
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tip),
+                                textHandler.lines(lineWidth / 2), lineWidth, 0))
+                                .append("\n\n");
+                        print(sb.toString(), FORMAT);
+                        sb.setLength(0);
+                        print(textHandler.newLines(1), FORMAT);
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                                textHandler.lines(lineWidth / 2), lineWidth, 0))
+                                .append("\n\n");
+                        print(sb.toString(), FORMAT);
+                        sb.setLength(0);
+                    }
+                }
+                sb.append("\n");
+                print(sb.toString(), FORMAT);
+            } else {
+                sb.setLength(0);
+                sb.append("\n\n");
+                sb.append(fromHtml.toString());
+                print(sb.toString(), FORMAT);
             }
-            sb.append("\n");
-            print(sb.toString(), FORMAT);
             sb.setLength(0);
 
             if (!isCashPayment && !isCheckPayment) {
@@ -1316,11 +1329,12 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
             sb.setLength(0);
 
-            String temp;
-            if (!isCashPayment && !isCheckPayment) {
-                print(creditCardFooting, FORMAT);
-                temp = textHandler.newLines(1);
-                print(temp, FORMAT);
+            if (fromHtml == null) {
+                if (!isCashPayment && !isCheckPayment) {
+                    print(creditCardFooting, FORMAT);
+                    String temp = textHandler.newLines(1);
+                    print(temp, FORMAT);
+                }
             }
 
             sb.setLength(0);

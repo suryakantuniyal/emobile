@@ -43,6 +43,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
@@ -57,6 +58,7 @@ import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
+import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -614,7 +616,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
                 cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
 
-
+        payment.emvContainer = cardInfoManager.getEmvContainer();
         if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
@@ -1301,7 +1303,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             intent.putExtra("isFromPayment", true);
             startActivityForResult(intent, requestCode);
         } else {
-            finishPaymentTransaction();
+            finishPaymentTransaction(payment);
         }
     }
 
@@ -1568,7 +1570,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 intent.putExtra("isFromPayment", true);
                 startActivityForResult(intent, requestCode);
             } else {
-                finishPaymentTransaction();
+                finishPaymentTransaction(payment);
             }
         } else {
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
@@ -1588,7 +1590,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 else
                     showPrintDlg(false, false, payment);
             } else
-                finishPaymentTransaction();
+                finishPaymentTransaction(payment);
         }
     }
 
@@ -1676,7 +1678,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     else
                         showPrintDlg(false, false, PaymentsHandler.getLastPaymentInserted());
                 } else
-                    finishPaymentTransaction();
+                    finishPaymentTransaction(PaymentsHandler.getLastPaymentInserted());
             } else {
                 PaymentsHandler payHandler = new PaymentsHandler(this);
                 Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
@@ -1685,7 +1687,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-    private void finishPaymentTransaction() {
+    private void finishPaymentTransaction(Payment payment) {
         // if(!myPref.getLastPayID().isEmpty())
         // myPref.setLastPayID("0");
 
@@ -1695,7 +1697,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             setResult(-2);
         else {
             Intent result = new Intent();
-
+            result.putExtra("emvcontainer", new Gson().toJson(payment.emvContainer, EMVContainer.class));
             result.putExtra("total_amount", Double.toString(Global
                     .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.amountDueField))));
             setResult(-2, result);
@@ -1725,7 +1727,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             wasReprint = (Boolean) params[0];
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printingSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1,
-                        wasReprint, null);
+                        wasReprint, payment.emvContainer);
             }
             return payment;
         }
@@ -1738,7 +1740,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
                     showPrintDlg(true, false, payment);
                 else {
-                    finishPaymentTransaction();
+                    finishPaymentTransaction(payment);
                 }
             } else {
                 showPrintDlg(wasReprint, true, payment);
@@ -1785,7 +1787,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                finishPaymentTransaction();
+                finishPaymentTransaction(payment);
             }
         });
         dlog.show();

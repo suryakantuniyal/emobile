@@ -277,6 +277,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         creditCardInfo.setWasSwiped(true);
         creditCardInfo.authcode = transactionResult.getAuthorisationCode();
         creditCardInfo.transid = transactionResult.geteFTTransactionID();
+        creditCardInfo.setEmvContainer(new EMVContainer(transactionResult));
         msrCallBack.cardWasReadSuccessfully(transactionResult.getFinStatus() == FinancialStatus.AUTHORISED, creditCardInfo);
         Looper.loop();
     }
@@ -341,7 +342,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void salePayment(Payment payment) {
-        boolean succeed = hapi.sale(new BigInteger(payment.pay_amount.replace(".","")), Currency.USD);
+        boolean succeed = hapi.sale(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -349,7 +350,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
-        boolean succeed = hapi.saleReversal(new BigInteger(payment.pay_amount.replace(".","")), Currency.USD, originalTransactionId);
+        boolean succeed = hapi.saleReversal(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD, originalTransactionId);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -358,7 +359,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void refund(Payment payment) {
-        boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".","")), Currency.USD);
+        boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -370,7 +371,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     private void showDialog(int messageRsId) {
-        if(myProgressDialog!=null && myProgressDialog.isShowing()){
+        if (myProgressDialog != null && myProgressDialog.isShowing()) {
             myProgressDialog.dismiss();
         }
         myProgressDialog = new ProgressDialog(activity);
