@@ -1333,6 +1333,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
     public void msrError() {
         // TODO Auto-generated method stub
 

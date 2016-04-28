@@ -632,6 +632,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void printEMVReceipt(String text) {
 
     }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
     //
     // protected void printImage(int type) {
     // Bitmap myBitmap = null;

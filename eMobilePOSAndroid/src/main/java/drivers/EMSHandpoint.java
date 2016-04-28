@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -28,6 +29,7 @@ import com.handpoint.api.Events;
 import com.handpoint.api.FinancialStatus;
 import com.handpoint.api.Hapi;
 import com.handpoint.api.HapiFactory;
+import com.handpoint.api.LogLevel;
 import com.handpoint.api.SignatureRequest;
 import com.handpoint.api.StatusInfo;
 import com.handpoint.api.TransactionResult;
@@ -44,7 +46,7 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 /**
  * Created by Guarionex on 3/10/2016.
  */
-public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required, Events.Status {
+public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required, Events.Status, Events.Log {
 
     private EMSDeviceManager edm;
     static Hapi hapi;
@@ -64,10 +66,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.edm = edm;
         if (hapi == null) {
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+            hapi.addLogEventHandler(this);
+
         }
         showDialog(R.string.connecting_handpoint);
         discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
-
     }
 
 
@@ -79,6 +82,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.edm = edm;
         if (hapi == null) {
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+            hapi.addLogEventHandler(this);
         }
         synchronized (hapi) {
             discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
@@ -392,4 +396,23 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         Global.showPrompt(activity, R.string.printing_message, html);
     }
 
+    @Override
+    public void sendEmailLog() {
+        hapi.getDeviceLogs();
+    }
+
+    @Override
+    public void deviceLogsReady(String s, Device device) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, activity.getString(R.string.enabler_support_email));
+        intent.putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.handpoint_log_file));
+        intent.putExtra(Intent.EXTRA_TEXT, s);
+        activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.send_email)));
+    }
+
+    @Override
+    public void onMessageLogged(LogLevel logLevel, String s) {
+
+    }
 }

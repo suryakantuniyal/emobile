@@ -470,4 +470,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void printEMVReceipt(String text) {
 
     }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
 }

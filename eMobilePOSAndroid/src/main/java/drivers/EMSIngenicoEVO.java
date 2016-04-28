@@ -376,6 +376,11 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
     public void onDeviceConnected() {
         connected = true;
         if (myProgressDialog != null && myProgressDialog.isShowing()) {

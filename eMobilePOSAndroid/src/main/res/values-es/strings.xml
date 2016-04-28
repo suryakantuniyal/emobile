@@ -1223,6 +1223,10 @@
     <string name="table_list">Table List</string>
     <string name="title_activity_dinning_tables">Dinning Tables</string>
     <string name="table_label_map">"Table: "</string>
+    <string name="enabler_support_email">support@e-nablercorp.com</string>
+    <string name="handpoint_log_file">Handpoint Log File</string>
+    <string name="send_email">Send Email</string>
+    <string name="config_send_handpoint_log">Send Handpoint Log</string>
 
 
 </resources>

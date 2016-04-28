@@ -494,6 +494,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     }
 
+    @Override
+    public void sendEmailLog() {
+
+    }
+
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {

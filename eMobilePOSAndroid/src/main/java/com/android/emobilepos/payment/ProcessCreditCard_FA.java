@@ -489,11 +489,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
             int _sled_type = myPref.sledType(true, -2);
-//            if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice == null) {
-//                Global.btSwiper.currentDevice.loadCardReader(callBack, isDebit);
-////                Global.btSwiper.loadDrivers(activity, Global.HANDPOINT, false);
-//            }
-
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
                 Global.btSwiper.currentDevice.loadCardReader(callBack, isDebit);

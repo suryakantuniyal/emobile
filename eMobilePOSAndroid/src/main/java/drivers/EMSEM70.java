@@ -247,6 +247,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
+    @Override
+    public void sendEmailLog() {
+
+    }
+
     private Runnable runnableScannedData = new Runnable() {
         public void run() {
             try {

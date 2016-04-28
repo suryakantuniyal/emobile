@@ -458,6 +458,10 @@
             android:key="pref_backup_data"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_backup_data" />
+        <Preference
+            android:key="pref_send_handpoint_log"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_send_handpoint_log" />
     </PreferenceCategory>
 
 </PreferenceScreen>
