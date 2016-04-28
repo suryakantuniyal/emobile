@@ -6,63 +6,104 @@
     android:background="@drawable/linen_background"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="center"
-        android:orientation="horizontal" 
-        android:layout_weight="1.2">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <Button
-            style="@style/action_button_text_appearance"
-            android:id="@+id/cancelBut"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/draw_receipt_cancel"
-            android:background="@drawable/action_button_selector"
-            android:paddingLeft="10dp"
-            android:paddingRight="15dp"
-            android:layout_margin="2dp"
-            android:textSize="30sp"
-         />
+            android:layout_below="@+id/frameLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="20dp">
 
-        <Button
-            android:id="@+id/clearBut"
-            style="@style/action_button_text_appearance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/draw_receipt_clear" 
-            android:background="@drawable/action_button_selector"
-			android:paddingLeft="10dp"
-            android:paddingRight="15dp"
-            android:layout_margin="2dp"
-            android:textSize="30sp"
-           />
+            <Button
+                android:id="@+id/acceptBut"
+                style="@style/action_button_text_appearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/draw_receipt_accept"
+                android:background="@drawable/action_button_selector"
+                android:paddingLeft="10dp"
+                android:paddingRight="15dp"
+                android:textSize="@dimen/button_text_size"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/clearBut"
+                android:layout_weight="1"
+                android:singleLine="true" />
 
-        <Button
-            android:id="@+id/acceptBut"
-            style="@style/action_button_text_appearance"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/clearBut"
+                style="@style/action_button_text_appearance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/draw_receipt_clear"
+                android:background="@drawable/action_button_selector"
+                android:paddingLeft="10dp"
+                android:paddingRight="15dp"
+                android:textSize="@dimen/button_text_size"
+                android:layout_centerInParent="true"
+                android:layout_weight="1" />
+
+            <Button
+                style="@style/action_button_text_appearance"
+                android:id="@+id/cancelBut"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/draw_receipt_cancel"
+                android:background="@drawable/action_button_selector"
+                android:paddingLeft="10dp"
+                android:paddingRight="15dp"
+                android:textSize="@dimen/button_text_size"
+                android:layout_alignTop="@+id/clearBut"
+                android:layout_toRightOf="@+id/clearBut"
+                android:layout_weight="1"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/draw_receipt_accept" 
-            android:background="@drawable/action_button_selector"
-			android:paddingLeft="10dp"
-            android:paddingRight="15dp"
-            android:layout_margin="2dp"
-            android:textSize="30sp"
-            />
-    </LinearLayout>
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/frameLayout"
+            android:layout_margin="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_amount"
+                android:id="@+id/amountSignReceipttextView"
+                android:textAppearance="@style/white_text_appearance"
+                android:textSize="@dimen/about_main_text_size"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cardLogoSignReceiptimageView3"
+                android:src="@drawable/debitcard"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="top"
+                android:layout_marginLeft="10dp" />
+        </FrameLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/signatureReceiptView"
         android:layout_width="match_parent"
-        android:layout_height="0dp" 
+        android:layout_height="0dp"
         android:background="#FFFFFF"
-        android:layout_weight="1.5"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:layout_marginBottom="30dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_weight="1">
      </LinearLayout>
 
 </LinearLayout>

@@ -85,6 +85,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import interfaces.EMSCallBack;
+import util.StringUtil;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -1296,6 +1297,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else if (!isDebit) {
             Intent intent = new Intent(activity, DrawReceiptActivity.class);
             intent.putExtra("isFromPayment", true);
+            intent.putExtra("card_type", payment.card_type);
+            intent.putExtra("pay_amount", payment.pay_amount);
+
             startActivityForResult(intent, requestCode);
         } else {
             finishPaymentTransaction(payment);
@@ -2113,6 +2117,26 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     @Override
     public void nfcWasRead(String nfcUID) {
 
+    }
+
+    public static int getCreditLogo(String cardName) {
+        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
+            return R.drawable.americanexpress;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
+            return R.drawable.discover;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
+            return R.drawable.mastercard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
+            return R.drawable.visa;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+            return R.drawable.debitcard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+            return R.drawable.debitcard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+            return R.drawable.debitcard;
+        } else {
+            return R.drawable.debitcard;
+        }
     }
 
 }
