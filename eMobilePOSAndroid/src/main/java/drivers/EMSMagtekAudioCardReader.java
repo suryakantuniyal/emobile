@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -27,7 +26,6 @@ import com.android.support.MyPreferences;
 import com.magtek.mobile.android.scra.MTSCRAException;
 import com.magtek.mobile.android.scra.MagTekSCRA;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -589,7 +587,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 

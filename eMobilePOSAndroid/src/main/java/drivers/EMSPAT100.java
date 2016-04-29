@@ -28,7 +28,6 @@ import com.partner.pt100.display.DisplayManager;
 import com.partner.pt100.printer.PrinterManage;
 import com.starmicronics.stario.StarIOPortException;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -624,7 +623,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 

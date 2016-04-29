@@ -25,7 +25,6 @@ import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
 import com.oem.barcode.BCRIntents;
 import com.oem.barcode.BCRManager;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -298,7 +297,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 

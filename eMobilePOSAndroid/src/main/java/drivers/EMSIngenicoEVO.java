@@ -12,10 +12,8 @@ import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -35,7 +33,6 @@ import com.evosnap.sdk.api.transaction.TransactionData;
 import com.evosnap.sdk.api.transaction.TransactionStatus;
 import com.evosnap.sdk.api.transaction.auth.BankCardTransactionResponse;
 import com.evosnap.sdk.api.transaction.management.CancelTransactionRequest;
-import com.evosnap.sdk.api.transaction.management.ReturnByIdRequest;
 import com.evosnap.sdk.api.user.SignOnRequest;
 import com.evosnap.sdk.api.user.SignOnResponse;
 import com.evosnap.sdk.swiper.enums.CaptureMode;
@@ -45,7 +42,6 @@ import com.evosnap.sdk.swiper.enums.TransactionResult;
 import com.handpoint.api.Device;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +49,6 @@ import java.util.List;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
-import rba_sdk.Comm_Timeout;
 
 public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, TransactionCallbacks {
 
@@ -348,7 +343,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 

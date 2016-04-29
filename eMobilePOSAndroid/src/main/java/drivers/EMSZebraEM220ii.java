@@ -26,7 +26,6 @@ import com.starmicronics.stario.StarIOPortException;
 import com.zebra.printer.MobilePrinter;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -561,7 +560,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 

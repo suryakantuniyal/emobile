@@ -18,7 +18,9 @@
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/frameLayout"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <Button
                 android:id="@+id/acceptBut"

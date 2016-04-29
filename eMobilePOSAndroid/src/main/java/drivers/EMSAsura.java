@@ -45,7 +45,6 @@ import com.android.support.MyPreferences;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1323,7 +1322,7 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 
