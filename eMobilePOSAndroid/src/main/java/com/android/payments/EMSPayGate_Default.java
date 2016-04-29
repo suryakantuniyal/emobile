@@ -65,7 +65,7 @@ public class EMSPayGate_Default {
         GiftCardReverseAction(9995), LoyaltyCardReverseAction(9996), RewardCardReverseAction(9997),
         ReverseCheckAction(9992), ReverseCreditCardAction(9993), ReverseDebitCardAction(9994),
         ProcessBoloroCheckout(10000), CancelBoloroTransaction(10001), GetTelcoInfoByTag(10002),
-        GetMarketTelcos(10003), BoloroPolling(10004);
+        GetMarketTelcos(10003), BoloroPolling(10004), HandpointWorkingKey(7001);
 
         private int code;
 
@@ -150,6 +150,8 @@ public class EMSPayGate_Default {
                     return AddValueLoyaltyCardAction;
                 case 6020:
                     return BalanceLoyaltyCardAction;
+                case 7001:
+                    return HandpointWorkingKey;
 
             }
             return null;
@@ -201,8 +203,7 @@ public class EMSPayGate_Default {
                     generateERP();
                     generateAmountBlock();
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
 
                     break;
                 case ChargeGeniusAction:
@@ -215,8 +216,7 @@ public class EMSPayGate_Default {
                     if (Global.isIvuLoto)
                         generateEvertec();
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 case ActivateGiftCardAction:
                 case ActivateLoyaltyCardAction:
@@ -239,8 +239,7 @@ public class EMSPayGate_Default {
 
 //				if (Global.isIvuLoto )
 //					generateEvertec();
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
 
                     break;
                 case CreditCardAdjustTipAmountAction:
@@ -255,8 +254,7 @@ public class EMSPayGate_Default {
                         generateEvertec();
                     generateOrderBlock(payment.job_id);
                     generateAdjustAmountBlock();
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 case CreditCardAuthAction:
                 case ChargeCreditCardAction:
@@ -284,8 +282,7 @@ public class EMSPayGate_Default {
                     if (Global.isIvuLoto)
                         generateEvertec();
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
 
                 case AddValueGiftCardAction:
@@ -310,8 +307,7 @@ public class EMSPayGate_Default {
                     if (Global.isIvuLoto)
                         generateEvertec();
 
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 case BalanceGiftCardAction:
                 case BalanceLoyaltyCardAction:
@@ -325,8 +321,7 @@ public class EMSPayGate_Default {
                     if (isSwipe)
                         generateEncryptedBlock();
                     //
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 // case AddValueGiftCardAction:
                 //
@@ -354,8 +349,7 @@ public class EMSPayGate_Default {
                     generateVoidBlock();
 
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
 
                     break;
                 }
@@ -372,8 +366,7 @@ public class EMSPayGate_Default {
                     generateVoidBlock();
 
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 }
                 case ChargeCheckAction:
@@ -384,22 +377,19 @@ public class EMSPayGate_Default {
 
                     generateContactInfoBlock(payment.cust_id);
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 case GetMarketTelcos:
                     generateERP();
 
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 case CancelBoloroTransaction:
                 case BoloroPolling:
                     generateERP();
                     generateVoidBlock();
 
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 case GetTelcoInfoByTag:
                     generateERP();
@@ -407,8 +397,7 @@ public class EMSPayGate_Default {
 
                     generateBoloroBlock();
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 case ProcessBoloroCheckout:
                     generateERP();
@@ -417,12 +406,13 @@ public class EMSPayGate_Default {
                     generateContactInfoBlock(payment.cust_id);
                     generateBoloroBlock();
                     generateOrderBlock(payment.job_id);
-                    serializer.endTag(empstr, "epay");
-                    serializer.endDocument();
+
                     break;
                 default:
                     break;
             }
+            serializer.endTag(empstr, "epay");
+            serializer.endDocument();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (IllegalStateException e) {

@@ -259,6 +259,11 @@ public class Post {
                 isPost = false;
                 isShortResponse = true;
                 break;
+            case Global.S_SUBMIT_WORKINGKEY_REQUEST:
+                postLink = activity.getString(R.string.genius_token_url);//"https://epay.enablermobile.com/index.ashx";
+                entity = varyingVariable;
+                isPost = true;
+                break;
         }
 //Testing png download with the 2016 ssl cert
 //		try {

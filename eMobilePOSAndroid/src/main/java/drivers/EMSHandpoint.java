@@ -12,16 +12,22 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.database.PaymentsXML_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.android.emobilepos.payment.TipAdjustmentFA;
+import com.android.payments.EMSPayGate_Default;
+import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.Post;
 import com.handpoint.api.ConnectionMethod;
 import com.handpoint.api.ConnectionStatus;
 import com.handpoint.api.Currency;
@@ -35,10 +41,20 @@ import com.handpoint.api.SignatureRequest;
 import com.handpoint.api.StatusInfo;
 import com.handpoint.api.TransactionResult;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
@@ -47,7 +63,7 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 /**
  * Created by Guarionex on 3/10/2016.
  */
-public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required, Events.Status, Events.Log {
+public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, Events.Required, Events.Status, Events.Log, Events.PendingResults {
 
     private EMSDeviceManager edm;
     static Hapi hapi;
@@ -65,12 +81,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
-        if (hapi == null) {
-            hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+        new WorkingKeyRequest().execute();
 
-        }
-        showDialog(R.string.connecting_handpoint);
-        discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
     }
 
 
@@ -81,7 +93,16 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
         if (hapi == null) {
+
+            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
+            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
+                    null);
+            Post httpClient = new Post();
+            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
+            sharedSecret = getWorkingKey(xml);
+
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
+            hapi.addPendingResultsEventHandler(this);
         }
         synchronized (hapi) {
             discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
@@ -93,6 +114,67 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         }
 
         return connected;
+    }
+
+    private String getWorkingKey(String xml) {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+        InputSource inSource = new InputSource(new StringReader(xml));
+        String workingKey = "";
+        SAXParser sp = null;
+        try {
+            sp = spf.newSAXParser();
+            XMLReader xr = sp.getXMLReader();
+            xr.setContentHandler(handler);
+            xr.parse(inSource);
+            HashMap<String, String> parsedMap = handler.getData();
+
+            String errorMsg;
+            if (parsedMap != null && parsedMap.size() > 0
+                    && parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                workingKey = parsedMap.get("WorkingKey");
+            } else if (parsedMap != null && parsedMap.size() > 0) {
+                errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+            } else {
+                errorMsg = xml;
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return workingKey;
+    }
+
+    private class WorkingKeyRequest extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            showDialog(R.string.connecting_handpoint);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
+            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
+                    null);
+            Post httpClient = new Post();
+            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
+
+            return getWorkingKey(xml);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            sharedSecret = result;
+            if (hapi == null) {
+                hapi = HapiFactory.getAsyncInterface(EMSHandpoint.this, activity).defaultSharedSecret(sharedSecret);
+                hapi.addPendingResultsEventHandler(EMSHandpoint.this);
+            }
+            discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
+            dismissDialog();
+        }
     }
 
     @Override
@@ -345,6 +427,9 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void salePayment(Payment payment) {
+        if (hapi.getPendingTransaction()) {
+
+        }
         boolean succeed = hapi.sale(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
@@ -353,6 +438,9 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
+        if (hapi.getPendingTransaction()) {
+
+        }
         boolean succeed = hapi.saleReversal(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD, originalTransactionId);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
@@ -362,6 +450,9 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void refund(Payment payment) {
+        if (hapi.getPendingTransaction()) {
+
+        }
         boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
@@ -370,7 +461,9 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void refundReversal(Payment payment) {
+        if (hapi.getPendingTransaction()) {
 
+        }
     }
 
     private void showDialog(int messageRsId) {
@@ -420,5 +513,19 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void onMessageLogged(LogLevel logLevel, String s) {
         Toast.makeText(activity, s, Toast.LENGTH_LONG);
+    }
+
+    @Override
+    public void pendingTransactionResult(Device device) {
+        if (hapi.getPendingTransaction()) {
+
+        }
+    }
+
+    @Override
+    public void transactionResultReady(TransactionResult transactionResult, Device device) {
+        if (hapi.getPendingTransaction()) {
+
+        }
     }
 }
