@@ -611,6 +611,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
                 zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
                 cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
+        if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse() != null) {
+            payment.card_type = getCreditName(cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName());
+        }
 
         payment.emvContainer = cardInfoManager.getEmvContainer();
         if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
@@ -1565,8 +1568,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                 new printAsync().execute(false, payment);
             } else if (!isDebit) {
+
                 Intent intent = new Intent(activity, DrawReceiptActivity.class);
                 intent.putExtra("isFromPayment", true);
+                intent.putExtra("card_type", payment.card_type);
+                intent.putExtra("pay_amount", payment.pay_amount);
                 startActivityForResult(intent, requestCode);
             } else {
                 finishPaymentTransaction(payment);
@@ -2120,23 +2126,56 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     public static int getCreditLogo(String cardName) {
-        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
+        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
+                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
             return R.drawable.americanexpress;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
+                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
             return R.drawable.discover;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
             return R.drawable.mastercard;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
             return R.drawable.visa;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
             return R.drawable.debitcard;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
             return R.drawable.debitcard;
-        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
             return R.drawable.debitcard;
         } else {
             return R.drawable.debitcard;
         }
     }
 
+    public static String getCreditName(String cardName) {
+        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
+                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
+                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_VISA;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_JCB;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_CUP;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS;
+        } else {
+            return "";
+        }
+    }
 }
