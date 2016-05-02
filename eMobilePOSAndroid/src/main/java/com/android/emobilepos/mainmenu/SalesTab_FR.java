@@ -521,7 +521,6 @@ public class SalesTab_FR extends Fragment {
                     selectedDinningTable = DinningTable.getDefaultDinningTable();
                     startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
                 }
-
             }
         });
         popDlog.show();
@@ -612,28 +611,6 @@ public class SalesTab_FR extends Fragment {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
         startActivityForResult(intent, 0);
 
-
-//        final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);
-//        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        popDlog.setCancelable(true);
-//        popDlog.setCanceledOnTouchOutside(true);
-//        popDlog.setContentView(R.layout.dlog_ask_table_number_layout);
-//        GridView gridView = (GridView) popDlog.findViewById(R.id.tablesGridLayout);
-//        final DinningTablesAdapter adapter = new DinningTablesAdapter(getActivity(), dinningTables);
-//        gridView.setAdapter(adapter);
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                selectedDinningTable = dinningTables.get(position);
-//                popDlog.dismiss();
-//                if (myPref.getPreferences(MyPreferences.pref_ask_seats)) {
-//                    selectSeatAmount();
-//                } else {
-//                    startSaleRceipt(Global.RestaurantSaleType.EAT_IN, selectedDinningTable.getSeats(), selectedDinningTable.getNumber());
-//                }
-//            }
-//        });
-//        popDlog.show();
     }
 
     private void pickLocations(final boolean showOrigin) {
@@ -806,7 +783,15 @@ public class SalesTab_FR extends Fragment {
                 salesInvoices.setVisibility(View.GONE);
                 myPref.resetCustInfo(getString(R.string.no_customer));
                 isCustomerSelected = false;
-                askEatInToGo();
+                if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                        myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                    askEatInToGo();
+                }else{
+                    Intent intent = new Intent(activity, OrderingMain_FA.class);
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                    startActivityForResult(intent, 0);
+                }
 //                intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
 //                startActivityForResult(intent, 0);
                 dialog.dismiss();
