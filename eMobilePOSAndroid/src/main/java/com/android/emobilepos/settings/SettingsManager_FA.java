@@ -808,14 +808,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
                                     || val[pos].toUpperCase(Locale.getDefault()).contains("ICM")) {
-                                myPref.sledType(false, Global.ISMP);
-                                myPref.setPrinterType(Global.ISMP);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.swiperType(false, Global.ISMP);
+                                myPref.swiperMACAddress(false, macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
-
-                                Global.btSled = edm.getManager();
-                                Global.btSled.loadDrivers(activity, Global.ISMP, false);
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.ISMP, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
