@@ -773,7 +773,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         public void onClick(DialogInterface dialog, int which) {
                             MyPreferences myPref = new MyPreferences(activity);
                             String strDeviceName;
-                            strDeviceName = val[pos].toUpperCase(Locale.getDefault());
+                            strDeviceName = val[pos];
 
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
