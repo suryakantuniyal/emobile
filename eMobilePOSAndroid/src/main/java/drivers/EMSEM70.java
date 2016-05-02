@@ -19,7 +19,6 @@ import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -238,12 +237,22 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 
     @Override
     public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
 
     }
 

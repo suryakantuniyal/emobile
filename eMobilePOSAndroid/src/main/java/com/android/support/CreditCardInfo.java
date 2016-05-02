@@ -1,5 +1,7 @@
 package com.android.support;
 
+import com.android.emobilepos.models.EMVContainer;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,6 +39,7 @@ public class CreditCardInfo {
     public BigDecimal dueAmount = new BigDecimal("0");
     private boolean wasSwiped = false;
     private String resultMessage;
+    private EMVContainer emvContainer;
 
 
     public void setWasSwiped(boolean value) {
@@ -276,6 +279,14 @@ public class CreditCardInfo {
 
     public void setResultMessage(String resultMessage) {
         this.resultMessage = resultMessage;
+    }
+
+    public EMVContainer getEmvContainer() {
+        return emvContainer;
+    }
+
+    public void setEmvContainer(EMVContainer emvContainer) {
+        this.emvContainer = emvContainer;
     }
 }
 

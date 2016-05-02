@@ -43,6 +43,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
@@ -57,6 +58,7 @@ import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
+import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -83,6 +85,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import interfaces.EMSCallBack;
+import util.StringUtil;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -487,11 +490,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
             int _sled_type = myPref.sledType(true, -2);
-//            if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice == null) {
-//                Global.btSwiper.currentDevice.loadCardReader(callBack, isDebit);
-////                Global.btSwiper.loadDrivers(activity, Global.HANDPOINT, false);
-//            }
-
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
                 Global.btSwiper.currentDevice.loadCardReader(callBack, isDebit);
@@ -613,8 +611,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 cardInfoManager.getCardExpMonth(), cardInfoManager.getCardExpYear(),
                 zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
                 cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
+        if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse() != null) {
+            payment.card_type = getCreditName(cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName());
+        }
 
-
+        payment.emvContainer = cardInfoManager.getEmvContainer();
         if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
@@ -1299,9 +1300,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else if (!isDebit) {
             Intent intent = new Intent(activity, DrawReceiptActivity.class);
             intent.putExtra("isFromPayment", true);
+            intent.putExtra("card_type", payment.card_type);
+            intent.putExtra("pay_amount", payment.pay_amount);
+
             startActivityForResult(intent, requestCode);
         } else {
-            finishPaymentTransaction();
+            finishPaymentTransaction(payment);
         }
     }
 
@@ -1564,11 +1568,14 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                 new printAsync().execute(false, payment);
             } else if (!isDebit) {
+
                 Intent intent = new Intent(activity, DrawReceiptActivity.class);
                 intent.putExtra("isFromPayment", true);
+                intent.putExtra("card_type", payment.card_type);
+                intent.putExtra("pay_amount", payment.pay_amount);
                 startActivityForResult(intent, requestCode);
             } else {
-                finishPaymentTransaction();
+                finishPaymentTransaction(payment);
             }
         } else {
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
@@ -1588,7 +1595,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 else
                     showPrintDlg(false, false, payment);
             } else
-                finishPaymentTransaction();
+                finishPaymentTransaction(payment);
         }
     }
 
@@ -1676,7 +1683,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     else
                         showPrintDlg(false, false, PaymentsHandler.getLastPaymentInserted());
                 } else
-                    finishPaymentTransaction();
+                    finishPaymentTransaction(PaymentsHandler.getLastPaymentInserted());
             } else {
                 PaymentsHandler payHandler = new PaymentsHandler(this);
                 Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
@@ -1685,7 +1692,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-    private void finishPaymentTransaction() {
+    private void finishPaymentTransaction(Payment payment) {
         // if(!myPref.getLastPayID().isEmpty())
         // myPref.setLastPayID("0");
 
@@ -1695,7 +1702,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             setResult(-2);
         else {
             Intent result = new Intent();
-
+            result.putExtra("emvcontainer", new Gson().toJson(payment.emvContainer, EMVContainer.class));
             result.putExtra("total_amount", Double.toString(Global
                     .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.amountDueField))));
             setResult(-2, result);
@@ -1725,7 +1732,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             wasReprint = (Boolean) params[0];
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 printingSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1,
-                        wasReprint, null);
+                        wasReprint, payment.emvContainer);
             }
             return payment;
         }
@@ -1738,7 +1745,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
                     showPrintDlg(true, false, payment);
                 else {
-                    finishPaymentTransaction();
+                    finishPaymentTransaction(payment);
                 }
             } else {
                 showPrintDlg(wasReprint, true, payment);
@@ -1785,7 +1792,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                finishPaymentTransaction();
+                finishPaymentTransaction(payment);
             }
         });
         dlog.show();
@@ -2118,4 +2125,57 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     }
 
+    public static int getCreditLogo(String cardName) {
+        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
+                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
+            return R.drawable.americanexpress;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
+                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
+            return R.drawable.discover;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
+            return R.drawable.mastercard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
+            return R.drawable.visa;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+            return R.drawable.debitcard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+            return R.drawable.debitcard;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+            return R.drawable.debitcard;
+        } else {
+            return R.drawable.debitcard;
+        }
+    }
+
+    public static String getCreditName(String cardName) {
+        if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)
+                || cardName.trim().contains("amex") || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_AMEX;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)
+                || cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_DISCOVER;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_MASTERCARD;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_VISA)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_VISA;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_JCB)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_JCB;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_CUP)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_CUP;
+        } else if (cardName.trim().equalsIgnoreCase(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS) ||
+                cardName.trim().contains(ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS)) {
+            return ProcessCreditCard_FA.CREDITCARD_TYPE_DINERS;
+        } else {
+            return "";
+        }
+    }
 }

@@ -47,6 +47,7 @@ import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
+import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
@@ -59,6 +60,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import interfaces.EMSCallBack;
 import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends BaseFragmentActivityActionBar {
@@ -140,6 +142,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_force_upload").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_backup_data").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
+
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
                     configureDefaultCategory();
@@ -325,6 +330,16 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_backup_data:
                     confirmTroubleshoot(R.string.config_backup_data);
+                    break;
+                case R.string.config_send_handpoint_log:
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
+                        Global.btSwiper.currentDevice.sendEmailLog();
+                    }
+                    break;
+                case R.string.config_handpoint_update:
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
+                        Global.btSwiper.currentDevice.updateFirmware();
+                    }
                     break;
             }
             return false;

@@ -30,7 +30,6 @@ import com.starmicronics.stario.StarIOPortException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1040,12 +1039,22 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 
     @Override
     public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
 
     }
 

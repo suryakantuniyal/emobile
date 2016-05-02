@@ -1,4 +1,5 @@
 <resources>
+    <string name="receipt_html">			            <html><body>                                    <div id='merchant_name'>e-nablertest</div>                                    <div id='merchant_address'>2681 N Flamingo Road <br /> 33323 Fort Lauderda</div>                        <br />                                    MID: 00000<br />            TID: ****0<br />                        <div id='date'>Date: 28.04.2016</div>            <div id='time'>Time: 10:14</div>                                    Auth code: 123456<br />                                    Reference: 7f69fea0-0d4b-11e6-8390-7f297d05bb18<br />                                    <br />                        <div id='receipt_owner'>** CARDHOLDER COPY **</div>                        <br />                        Application Label: Visa Credit<br />                                    Entry: ICC<br />                                    Card Scheme: Mastercard<br />                        CardNumber: **** **** **** 0010<br />                        Aid: A0000000031010<br />                                                                        APP PSN: 01<br />                                                {COPY_RECEIPT}            <br />            <div id='transaction_type'>SALE</div>                        <div id='amount_value'>USD1.11</div>                                                                        <br />                                                Your account will be debited with the above amount                                                <br />                                                                                    ** Verified by signature **                                                            <br />                                                                                                                                                            ** AUTHORISED **            <br />                                    <br />            <div id='footer_text'>Please keep this receipt for your records</div>            </body></html></string>
 
     <string name="app_name">eMobilePOS</string>
     <string name="hello_world">Hello world!</string>
@@ -1155,6 +1156,14 @@
     <string name="table_label_map">"Table: "</string>
     <string name="table_map">Floor Map</string>
     <string name="table_list">Table List</string>
+    <string name="enabler_support_email">support@e-nablercorp.com</string>
+    <string name="handpoint_log_file">Handpoint Log File</string>
+    <string name="send_email">Send Email</string>
+    <string name="config_send_handpoint_log">Send Handpoint Log</string>
+    <string name="config_handpoint_utils">Handopint Tools</string>
+    <string name="config_handpoint_update">Update Firmware</string>
+    <string name="device_update_completed">Device update request completed.</string>
+    <string name="device_update_fail">Device update request fail.</string>
 
 
 </resources>

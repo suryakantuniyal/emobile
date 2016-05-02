@@ -186,9 +186,8 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                     null);
 
             Post httpClient = new Post();
-            String xml = httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, paymentWithAction);
 
-            return xml;
+            return httpClient.postData(Global.S_SUBMIT_TIP_ADJUSTMENT, TipAdjustmentFA.this, paymentWithAction);
         }
 
         @Override

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -33,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -485,12 +483,22 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 
     @Override
     public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
 
     }
 

@@ -21,8 +21,6 @@ import com.android.support.MyPreferences;
 import org.springframework.util.support.Base64;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,11 +32,9 @@ import rba_sdk.Comm_Settings_Constants;
 import rba_sdk.Comm_Timeout;
 import rba_sdk.ERROR_ID;
 import rba_sdk.EventHandlerInterface;
-import rba_sdk.LogTraceInterface;
 import rba_sdk.MESSAGE_ID;
 import rba_sdk.PARAMETER_ID;
 import rba_sdk.RBA_API;
-import rbasdk_android_adapter.RBASDKAdapter;
 
 public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, EventHandlerInterface {
 
@@ -396,12 +392,22 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 
     @Override
     public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
 
     }
 

@@ -34,7 +34,6 @@ import com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallback;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -273,12 +272,22 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void refundReversal(Payment payment) {
+    public void refundReversal(Payment payment, String originalTransactionId) {
 
     }
 
     @Override
     public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
 
     }
 
