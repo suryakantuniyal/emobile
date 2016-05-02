@@ -33,12 +33,12 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar implements OnClickListener {
 
 
-    private String curDate, mDate;
+    private static String curDate, mDate;
     private Activity activity;
-    private Button btnDate;
+    private static Button btnDate;
     private Global global;
     private ProgressDialog myProgressDialog;
-    private ReportEndDayAdapter adapter;
+    private static ReportEndDayAdapter adapter;
 
 
     @Override
@@ -195,7 +195,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
     }
 
 
-    public class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+    public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -208,7 +208,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
-            return new DatePickerDialog(activity, this, year, month, day);
+            return new DatePickerDialog(getActivity(), this, year, month, day);
         }
 
         @Override
@@ -220,8 +220,8 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             cal.set(year, monthOfYear, dayOfMonth);
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
             curDate = sdf2.format(cal.getTime());
-            adapter.setNewDate(Global.formatToDisplayDate(curDate, activity, 4));
-            mDate = Global.formatToDisplayDate(curDate, activity, 0);
+            adapter.setNewDate(Global.formatToDisplayDate(curDate, getActivity(), 4));
+            mDate = Global.formatToDisplayDate(curDate, getActivity(), 0);
             btnDate.setText(mDate);
         }
     }

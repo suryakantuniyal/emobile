@@ -107,7 +107,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
