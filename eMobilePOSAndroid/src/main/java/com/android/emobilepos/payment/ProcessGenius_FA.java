@@ -262,12 +262,13 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     GeniusTransportToken geniusTransportToken = handler.getGeniusTransportToken();
 
                     if (geniusTransportToken != null && geniusTransportToken.getStatusCode().equalsIgnoreCase("APPROVED")) {// && getData("statusCode", 0, 0).equals("APPROVED")) {
-
                         boProcessed = true;
                         MyPreferences myPref = new MyPreferences(activity);
                         String json = post.postData(11, activity, "http://" + myPref.getGeniusIP() + ":8080/v2/pos?TransportKey=" + geniusTransportToken.getTransportkey() + "&Format=JSON");
                         geniusResponse = gson.fromJson(json, GeniusResponse.class);
-
+                    } else {
+                        geniusResponse = new GeniusResponse();
+                        geniusResponse.setErrorMessage(geniusTransportToken.getStatusMessage() + "\r\n" + geniusTransportToken.getEpayStatusCode());
                     }
                 } catch (Exception ignored) {
                 }

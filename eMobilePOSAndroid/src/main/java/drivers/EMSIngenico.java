@@ -494,7 +494,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                 switch (Integer.parseInt(status)) {
                     case 0: {
                         String pinData = RBA_API.GetParam(PARAMETER_ID.P31_RES_PIN_DATA);
-                        String encPINBlock = pinData.substring(0, 15);
+                        String encPINBlock = pinData.substring(0, 16);
                         String keySerialNum = pinData.substring(16);
 
                         cardManager.setDebitPinBlock(encPINBlock);

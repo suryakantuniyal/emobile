@@ -39,7 +39,7 @@ public class CardParser {
                 tempCardData.setCardExpYear(card_exp_date.substring(0, 2));
                 tempCardData.setCardExpMonth(card_exp_date.substring(2, 4));
                 tempCardData.setCardLast4(card_num.substring(card_num.length() - 4));
-
+                tempCardData.setCardType(ProcessCreditCard_FA.getCardType(card_num));
 
                 if (matchTrack2.matches()) {
                     String rawTrack2 = getGroup(matchTrack2, 1);
@@ -87,7 +87,7 @@ public class CardParser {
         Encrypt encrypt = new Encrypt(activity);
 
         if (first6Num != null && !first6Num.isEmpty())
-            cardManager.setCardType(ProcessCreditCard_FA.cardType(first6Num));
+            cardManager.setCardType(ProcessCreditCard_FA.getCardType(first6Num));
         cardManager.setCardLast4(last4Num);
         StringBuilder sb = new StringBuilder();
         sb.append(track1).append(track2);
