@@ -194,7 +194,7 @@ public class CreditCardInfo {
             try {
                 Integer.parseInt(this.cardExpMonth);
             } catch (Exception e) {
-                this.cardExpMonth = String.valueOf(new Date().getMonth()+1);
+                this.cardExpMonth = String.valueOf(new Date().getMonth() + 1);
             }
         }
         return this.cardExpMonth;
@@ -221,9 +221,13 @@ public class CreditCardInfo {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
             SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
             dt2.set2DigitYearStart(new Date());
-            String formatedYear = new String();
+            Calendar cal = dt2.getCalendar();
+            cal.setTime(new Date());
+            cal.setTime(new Date());
+            String formatedYear;
             try {
-                Date date = dt2.parse(this.cardExpYear);
+                String milenium = String.valueOf(cal.get(Calendar.YEAR)).substring(0, 2);
+                Date date = dt2.parse(milenium + this.cardExpYear);
                 formatedYear = dt.format(date);
                 return formatedYear;
             } catch (ParseException e) {

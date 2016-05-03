@@ -61,6 +61,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -209,6 +210,7 @@ public class EMSDeviceDriver {
     }
 
     protected void print(String str) {
+        str = removeAccents(str);
         if (PRINT_TO_LOG) {
             Log.d("Print", str);
             return;
@@ -284,10 +286,16 @@ public class EMSDeviceDriver {
                 e.printStackTrace();
             }
         }
+    }
 
+    private String removeAccents(String str) {
+        str = Normalizer.normalize(str, Normalizer.Form.NFD);
+        str = str.replaceAll("[^\\p{ASCII}]", "");
+        return str;
     }
 
     protected void print(String str, String FORMAT) {
+        str = removeAccents(str);
         if (PRINT_TO_LOG) {
             Log.d("Print", str);
             return;

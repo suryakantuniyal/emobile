@@ -1085,7 +1085,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     private boolean cardIsValid(String number) {
-        creditCardType = cardType(number);
+        creditCardType = getCardType(number);
         if (creditCardType.isEmpty())
             return false;
         else if (creditCardType.equals("CUP")) {
@@ -1116,7 +1116,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     }
 
-    public static String cardType(String number) {
+    public static String getCardType(String number) {
         String ccType = "";
         try {
             Long.parseLong(number);
@@ -1832,6 +1832,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
+        if(isDebit){
+            cardManager.setCardType("DebitCard");
+        }
         this.cardInfoManager = cardManager;
         if (myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             updateViewAfterSwipe(cardManager);
