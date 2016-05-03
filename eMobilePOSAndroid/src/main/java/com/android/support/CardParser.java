@@ -53,6 +53,10 @@ public class CardParser {
                 tempCardData.setEncryptedAESTrack2(encrypt.encryptWithAES(rawTrack2));
                 tempCardData.setCardNumUnencrypted(card_num);
                 tempCardData.setCardNumAESEncrypted(encrypt.encryptWithAES(card_num));
+                int startIdx = swiped_raw_data.indexOf('=') + 1;
+                tempCardData.setCardExpYear(swiped_raw_data.substring(startIdx, startIdx + 2));
+                startIdx += 2;
+                tempCardData.setCardExpMonth(swiped_raw_data.substring(startIdx, startIdx + 2));
                 if (rawTrack2.equalsIgnoreCase(";E?")) {
                     isCardParsed = false;
                     return isCardParsed;
