@@ -1167,7 +1167,7 @@ public class Global extends MultiDexApplication {
 
                     card_number = tracks[0].replace("B", "").substring(1, startIndex - 2);
 
-                    cardManager.setCardType(ProcessCreditCard_FA.cardType(card_number));
+                    cardManager.setCardType(ProcessCreditCard_FA.getCardType(card_number));
 
                     if (card_number.length() > 4) {
                         int temp = card_number.length();
@@ -1196,7 +1196,7 @@ public class Global extends MultiDexApplication {
                     cardManager.setCardExpYear(exp_year);
                 }
                 cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(tracks[1]));
-                cardManager.setCardType(ProcessCreditCard_FA.cardType(card_number));
+                cardManager.setCardType(ProcessCreditCard_FA.getCardType(card_number));
 
                 if (!track2Split[0].isEmpty()) {
 
@@ -1246,7 +1246,7 @@ public class Global extends MultiDexApplication {
                     }
                 }
 
-                cardManager.setCardType(ProcessCreditCard_FA.cardType(card_number));
+                cardManager.setCardType(ProcessCreditCard_FA.getCardType(card_number));
 
                 if (isEncryptSwipe)
                     cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(card_number));
