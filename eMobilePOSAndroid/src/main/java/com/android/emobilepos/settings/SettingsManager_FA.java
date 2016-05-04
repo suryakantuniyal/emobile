@@ -811,6 +811,13 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(activity, Global.STAR, false);
 
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) { // Bixolon
+                                myPref.setPrinterType(Global.BIXOLON);
+                                myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(activity, Global.BIXOLON, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) // bamboo
                             {
                                 myPref.setPrinterType(Global.BAMBOO);
