@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -17,26 +19,36 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.bxl.BXLConst;
 import com.bxl.config.editor.BXLConfigLoader;
+import com.starmicronics.stario.StarIOPortException;
 
 import java.util.HashMap;
 import java.util.List;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import jpos.JposConst;
+import jpos.JposException;
 import jpos.POSPrinter;
+import jpos.POSPrinterConst;
 import jpos.config.JposEntry;
+import jpos.events.ErrorEvent;
+import jpos.events.ErrorListener;
+import jpos.events.OutputCompleteEvent;
+import jpos.events.OutputCompleteListener;
+import jpos.events.StatusUpdateEvent;
+import jpos.events.StatusUpdateListener;
 import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 5/3/2016.
  */
-public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
+public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
+        ErrorListener, OutputCompleteListener, StatusUpdateListener {
 
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
     private String portSettings, portName;
     private BXLConfigLoader bxlConfigLoader;
-    private POSPrinter posPrinter;
     private EMSCallBack callBack;
     private Handler handler;// = new Handler();
     private ProgressDialog myProgressDialog;
@@ -45,8 +57,7 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     private EMSDeviceManager edm;
     private String logicalName;
 
-    @Override
-    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+    private void init(Activity activity, int paperSize, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
@@ -73,24 +84,72 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             e.printStackTrace();
             bxlConfigLoader.newFile();
         }
-        posPrinter = new POSPrinter(activity);
+        bixolonPrinter = new POSPrinter(activity);
+    }
+
+    @Override
+    public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
+        init(activity, paperSize, edm);
         new processConnectionAsync().execute(0);
     }
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
-        boolean didConnect = false;
-        bxlConfigLoader = new BXLConfigLoader(activity);
-        try {
-            bxlConfigLoader.openFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-            bxlConfigLoader.newFile();
+        boolean didConnect;
+        init(activity, paperSize, edm);
+        didConnect = connectPrinter();
+        if (didConnect) {
+            this.edm.driverDidConnectToDevice(thisInstance, false);
+        } else {
+
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
         }
-        posPrinter = new POSPrinter(activity);
         return didConnect;
     }
+
+    private boolean connectPrinter() {
+        try {
+            for (Object entry : bxlConfigLoader.getEntries()) {
+                JposEntry jposEntry = (JposEntry) entry;
+                bxlConfigLoader.removeEntry(jposEntry.getLogicalName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        logicalName = myPref.getPrinterName();
+        String strProduce;
+        if (setProductName(logicalName).length() == 0) {
+            strProduce = logicalName;
+        } else {
+            strProduce = setProductName(logicalName);
+        }
+
+        try {
+
+            bxlConfigLoader.addEntry(myPref.getPrinterName(),
+                    BXLConfigLoader.DEVICE_CATEGORY_POS_PRINTER,
+                    strProduce,
+                    BXLConfigLoader.DEVICE_BUS_BLUETOOTH, myPref.getPrinterMACAddress().substring(3));
+
+            bxlConfigLoader.saveFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try {
+            bixolonPrinter.open(myPref.getPrinterName());
+            bixolonPrinter.claim(0);
+            bixolonPrinter.setDeviceEnabled(true);
+            bixolonPrinter.close();
+        } catch (JposException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 
     public class processConnectionAsync extends AsyncTask<Integer, String, Boolean> {
         String msg = "";
@@ -107,34 +166,35 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
         @Override
         protected Boolean doInBackground(Integer... params) {
-            try {
-                for (Object entry : bxlConfigLoader.getEntries()) {
-                    JposEntry jposEntry = (JposEntry) entry;
-                    bxlConfigLoader.removeEntry(jposEntry.getLogicalName());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            logicalName = myPref.getPrinterName();
-            String strProduce;
-            if (setProductName(logicalName).length() == 0) {
-                strProduce = logicalName;
-            } else {
-                strProduce = setProductName(logicalName);
-            }
-
-            try {
-                bxlConfigLoader.addEntry(myPref.getPrinterName(),
-                        BXLConfigLoader.DEVICE_CATEGORY_POS_PRINTER,
-                        strProduce,
-                        BXLConfigLoader.DEVICE_BUS_BLUETOOTH, myPref.getPrinterMACAddress());
-
-                bxlConfigLoader.saveFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-            return true;
+            return connectPrinter();
+//            try {
+//                for (Object entry : bxlConfigLoader.getEntries()) {
+//                    JposEntry jposEntry = (JposEntry) entry;
+//                    bxlConfigLoader.removeEntry(jposEntry.getLogicalName());
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            logicalName = myPref.getPrinterName();
+//            String strProduce;
+//            if (setProductName(logicalName).length() == 0) {
+//                strProduce = logicalName;
+//            } else {
+//                strProduce = setProductName(logicalName);
+//            }
+//
+//            try {
+//                bxlConfigLoader.addEntry(myPref.getPrinterName(),
+//                        BXLConfigLoader.DEVICE_CATEGORY_POS_PRINTER,
+//                        strProduce,
+//                        BXLConfigLoader.DEVICE_BUS_BLUETOOTH, myPref.getPrinterMACAddress());
+//
+//                bxlConfigLoader.saveFile();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                return false;
+//            }
+//            return true;
         }
 
         @Override
@@ -172,47 +232,57 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+        return true;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        return printTransaction(ordID, saleTypes, isFromHistory, fromOnHold, null);
     }
 
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
+        return true;
     }
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
-        return false;
+        return printBalanceInquiry(values, LINE_WIDTH);
     }
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+        printConsignmentReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+        printConsignmentPickupReceipt(myConsignment, encodedSignature, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        return false;
+        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+        printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH);
 
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        return false;
+        printOpenInvoicesReceipt(invID, LINE_WIDTH);
+        return true;
     }
 
     @Override
@@ -232,27 +302,34 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public boolean printReport(String curDate) {
-        return false;
+        printReportReceipt(curDate, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
-
+        printEndOfDayReportReceipt(date, LINE_WIDTH, printDetails);
     }
 
     @Override
     public void registerPrinter() {
+        edm.currentDevice = this;
 
     }
 
     @Override
     public void unregisterPrinter() {
+        edm.currentDevice = null;
+    }
 
+    @Override
+    public void registerAll() {
+        this.registerPrinter();
     }
 
     @Override
@@ -277,11 +354,12 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void printHeader() {
-
+        super.printHeader(LINE_WIDTH);
     }
 
     @Override
     public void printFooter() {
+        super.printFooter(LINE_WIDTH);
 
     }
 
@@ -297,6 +375,15 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void printReceiptPreview(View view) {
+        setPaperWidth(LINE_WIDTH);
+        Bitmap bitmap = loadBitmapFromView(view);
+        try {
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -333,5 +420,54 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public void updateFirmware() {
 
+    }
+
+    @Override
+    public void errorOccurred(ErrorEvent errorEvent) {
+        Log.d("errorOccurred", errorEvent.toString());
+
+    }
+
+    @Override
+    public void outputCompleteOccurred(OutputCompleteEvent outputCompleteEvent) {
+        Log.d("outputCompleteOccurred", outputCompleteEvent.toString());
+    }
+
+    @Override
+    public void statusUpdateOccurred(StatusUpdateEvent statusUpdateEvent) {
+        Log.d("statusUpdateOccurred", statusUpdateEvent.toString());
+
+    }
+
+    static String getPowerStateString(int powerState) {
+        switch (powerState) {
+            case JposConst.JPOS_PS_OFF_OFFLINE:
+                return "OFFLINE";
+
+            case JposConst.JPOS_PS_ONLINE:
+                return "ONLINE";
+
+            default:
+                return "Unknown";
+        }
+    }
+
+    static String getStatusString(int state) {
+        switch (state) {
+            case JposConst.JPOS_S_BUSY:
+                return "JPOS_S_BUSY";
+
+            case JposConst.JPOS_S_CLOSED:
+                return "JPOS_S_CLOSED";
+
+            case JposConst.JPOS_S_ERROR:
+                return "JPOS_S_ERROR";
+
+            case JposConst.JPOS_S_IDLE:
+                return "JPOS_S_IDLE";
+
+            default:
+                return "Unknown State";
+        }
     }
 }
