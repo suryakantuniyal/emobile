@@ -15,6 +15,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
+import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
@@ -61,6 +62,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.ByteBuffer;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,6 +80,9 @@ import drivers.elo.utils.PrinterAPI;
 import drivers.star.utils.Communication;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
+import jpos.JposException;
+import jpos.POSPrinter;
+import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 
@@ -101,6 +106,8 @@ public class EMSDeviceDriver {
     protected PowaPOS powaPOS;
     protected POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
+    protected POSPrinter bixolonPrinter;
+
 
     protected final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
 
@@ -238,6 +245,21 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSOneil4te) {
             device.write(str);
+        } else if (this instanceof EMSBixolon) {
+            try {
+                bixolonPrinter.open(myPref.getPrinterName());
+                bixolonPrinter.claim(10000);
+                bixolonPrinter.setDeviceEnabled(true);
+                bixolonPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, str);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    bixolonPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (this instanceof EMSPowaPOS) {
             powaPOS.printText(str);
         } else if (this instanceof EMSsnbc) {
@@ -285,6 +307,21 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if (this instanceof EMSBixolon) {
+            try {
+                bixolonPrinter.open(myPref.getPrinterName());
+                bixolonPrinter.claim(10000);
+                bixolonPrinter.setDeviceEnabled(true);
+                bixolonPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, new String(byteArray));
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    bixolonPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -324,6 +361,21 @@ public class EMSDeviceDriver {
             powaPOS.printText(str);
         } else if (this instanceof EMSsnbc) {
             print(str);
+        } else if (this instanceof EMSBixolon) {
+            try {
+                bixolonPrinter.open(myPref.getPrinterName());
+                bixolonPrinter.claim(10000);
+                bixolonPrinter.setDeviceEnabled(true);
+                bixolonPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, str);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    bixolonPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
@@ -908,6 +960,27 @@ public class EMSDeviceDriver {
                 matrix.preScale(1.0f, -1.0f);
                 Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
                 eloPrinterApi.print_image(activity, rotatedBmp);
+            } else if (this instanceof EMSBixolon) {
+                ByteBuffer buffer = ByteBuffer.allocate(4);
+                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+                buffer.put((byte) 50);
+                buffer.put((byte) 1);
+                buffer.put((byte) 0x00);
+                try {
+                    bixolonPrinter.open(myPref.getPrinterName());
+                    bixolonPrinter.claim(10000);
+                    bixolonPrinter.setDeviceEnabled(true);
+                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
+                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
+                } catch (JposException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        bixolonPrinter.close();
+                    } catch (JposException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             try {
@@ -1014,6 +1087,27 @@ public class EMSDeviceDriver {
                 Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 eloPrinterApi.print_image(activity, rotatedBmp);
                 print("\n\n\n\n");
+            } else if (this instanceof EMSBixolon) {
+                ByteBuffer buffer = ByteBuffer.allocate(4);
+                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+                buffer.put((byte) 50);
+                buffer.put((byte) 1);
+                buffer.put((byte) 0x00);
+                try {
+                    bixolonPrinter.open(myPref.getPrinterName());
+                    bixolonPrinter.claim(10000);
+                    bixolonPrinter.setDeviceEnabled(true);
+                    bixolonPrinter.printBitmap(buffer.getInt(0), bitmap,
+                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_CENTER);
+                } catch (JposException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        bixolonPrinter.close();
+                    } catch (JposException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             try {

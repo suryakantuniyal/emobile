@@ -135,4 +135,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:support-v4:23.2.0'
     compile 'com.android.support:support-v13:24.0.0-alpha1'
+    compile files('libs/bixolon_printer.jar')
+    compile files('libs/jpos114-controls.jar')
+    compile files('libs/xerces.jar')
 }

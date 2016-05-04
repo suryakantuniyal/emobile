@@ -43,6 +43,12 @@
       <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/shaders" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/ems/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/ems/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/assets" type="java-test-resource" />
@@ -51,12 +57,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/ems/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/ems/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/assets" type="java-resource" />
@@ -148,7 +148,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
@@ -162,6 +161,7 @@
     <orderEntry type="jdk" jdkName="Android API 15 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="powapos-sdk-android-2.0.2" level="project" />
+    <orderEntry type="library" exported="" name="xerces" level="project" />
     <orderEntry type="library" exported="" name="zxing" level="project" />
     <orderEntry type="library" exported="" name="evoSnapSdk-icmp-release-" level="project" />
     <orderEntry type="library" exported="" name="commons-io-1.3.2" level="project" />
@@ -174,10 +174,12 @@
     <orderEntry type="library" exported="" name="support-annotations-24.0.0-alpha1" level="project" />
     <orderEntry type="library" exported="" name="commons-lang3-3.4" level="project" />
     <orderEntry type="library" exported="" name="mDOpenCV-release-" level="project" />
+    <orderEntry type="library" exported="" name="bixolon_printer" level="project" />
     <orderEntry type="library" exported="" name="core-sdk" level="project" />
     <orderEntry type="library" exported="" name="IDTuniMagSDKAndroid" level="project" />
     <orderEntry type="library" exported="" name="JAsura_Android" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="multidex-instrumentation-1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="jpos114-controls" level="project" />
     <orderEntry type="library" exported="" name="misccom" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="POSSDKForAndroid" level="project" />
