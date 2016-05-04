@@ -26,9 +26,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (this instanceof MainMenu_FA || showNavigationbar) {
             myBar = this.getActionBar();
             if (myBar != null) {
-                myBar.setDisplayShowTitleEnabled(showNavigationbar);
-                myBar.setDisplayShowHomeEnabled(showNavigationbar);
-                myBar.setHomeButtonEnabled(showNavigationbar);
+                myBar.setDisplayShowTitleEnabled(true);
+                myBar.setDisplayShowHomeEnabled(true);
+                myBar.setHomeButtonEnabled(true);
                 myBar.setStackedBackgroundDrawable(getResources().getDrawable(R.drawable.tabbar));
             }
         } else {
@@ -38,7 +38,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     private boolean isNavigationBarModel() {
         for (String model : navigationbarByModels) {
-            if(Build.MODEL.toLowerCase().startsWith(model)){
+            if (Build.MODEL.toLowerCase().startsWith(model)) {
                 return true;
             }
         }
