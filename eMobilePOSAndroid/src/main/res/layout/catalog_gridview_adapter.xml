@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gridCatalogProductContainer"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -36,5 +37,15 @@
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         android:src="@drawable/ph_images" />
+
+    <TextView
+        android:layout_width="@dimen/catalog_image_size"
+        android:layout_height="@dimen/catalog_image_size"
+        android:text="New Text"
+        android:id="@+id/gridCatalogProducttNametextView"
+        android:layout_gravity="center"
+        android:textSize="@dimen/text_default"
+        android:textAppearance="@style/white_text_appearance"
+        android:gravity="center" />
 
 </FrameLayout>
