@@ -1063,7 +1063,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     private boolean cardIsValid(String number) {
-        creditCardType = cardType(number);
+        creditCardType = getCardType(number);
         if (creditCardType.isEmpty())
             return false;
         else if (creditCardType.equals("CUP")) {
@@ -1094,11 +1094,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     }
 
-    public static String cardType(String number) {
+    public static String getCardType(String number) {
         String ccType = "";
-        long cardNumber;
         try {
-            cardNumber = Long.parseLong(number);
+            Long.parseLong(number);
         } catch (NumberFormatException e) {
             return "";
         }
@@ -1816,7 +1815,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        // TODO Auto-generated method stub
+        if(isDebit){
+            cardManager.setCardType("DebitCard");
+        }
         this.cardInfoManager = cardManager;
         updateViewAfterSwipe(cardManager);
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {

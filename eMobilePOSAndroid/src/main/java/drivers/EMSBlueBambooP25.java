@@ -506,7 +506,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
                                         cardManager.setCardLast4(last4Digits);
 
                                         cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(cardNumber));
-                                        cardManager.setCardType(ProcessCreditCard_FA.cardType(cardNumber));
+                                        cardManager.setCardType(ProcessCreditCard_FA.getCardType(cardNumber));
 
                                         if (!Global.isEncryptSwipe)
                                             cardManager.setCardNumUnencrypted(cardNumber);

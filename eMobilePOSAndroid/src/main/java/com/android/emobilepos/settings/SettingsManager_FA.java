@@ -107,7 +107,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -773,7 +773,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         public void onClick(DialogInterface dialog, int which) {
                             MyPreferences myPref = new MyPreferences(activity);
                             String strDeviceName;
-                            strDeviceName = val[pos].toUpperCase(Locale.getDefault());
+                            strDeviceName = val[pos];
 
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
@@ -808,14 +808,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
                                     || val[pos].toUpperCase(Locale.getDefault()).contains("ICM")) {
-                                myPref.sledType(false, Global.ISMP);
-                                myPref.setPrinterType(Global.ISMP);
-                                myPref.printerMACAddress(false, macAddressList.get(pos));
+                                myPref.swiperType(false, Global.ISMP);
+                                myPref.swiperMACAddress(false, macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
-
-                                Global.btSled = edm.getManager();
-                                Global.btSled.loadDrivers(activity, Global.ISMP, false);
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(activity, Global.ISMP, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
                             {
                                 myPref.setPrinterType(Global.ZEBRA);

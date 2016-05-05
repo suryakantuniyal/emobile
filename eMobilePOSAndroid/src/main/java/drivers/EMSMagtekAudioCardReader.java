@@ -253,7 +253,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
                 cardManager.setCardExpYear(year);
                 cardManager.setCardExpMonth(month);
             }
-            cardManager.setCardType(ProcessCreditCard_FA.cardType(mMTSCRA.getCardIIN()));
+            cardManager.setCardType(ProcessCreditCard_FA.getCardType(mMTSCRA.getCardIIN()));
             cardManager.setCardLast4(mMTSCRA.getCardLast4());
             cardManager.setEncryptedBlock(sb.append(mMTSCRA.getTrack1()).append(mMTSCRA.getTrack2()).toString());
             cardManager.setEncryptedTrack1(mMTSCRA.getTrack1());

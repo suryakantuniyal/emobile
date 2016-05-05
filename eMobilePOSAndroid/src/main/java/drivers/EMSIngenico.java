@@ -35,7 +35,6 @@ import rba_sdk.EventHandlerInterface;
 import rba_sdk.MESSAGE_ID;
 import rba_sdk.PARAMETER_ID;
 import rba_sdk.RBA_API;
-import rba_sdk.RBA_INSTANCE;
 
 public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, EventHandlerInterface {
 
@@ -87,7 +86,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         Comm_Settings commSettings = new Comm_Settings();
         commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
 //        commSettings.BT_Name = "";
-        commSettings.AutoDetect= 1;
+        commSettings.BT_Name = myPref.getPrinterName();
+//        commSettings.AutoDetect= 1;
 
         setCommTimeOuts();
         ERROR_ID connectionRequest;
@@ -138,7 +138,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
             Comm_Settings commSettings = new Comm_Settings();
             commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
 //            commSettings.BT_Name = "";
-            commSettings.AutoDetect= 1;
+            commSettings.BT_Name = myPref.getPrinterName();
+//            commSettings.AutoDetect= 1;
 
             setCommTimeOuts();
             ERROR_ID connectionRequest = RBA_API.Connect(commSettings);
@@ -481,7 +482,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                 switch (Integer.parseInt(status)) {
                     case 0: {
                         String pinData = RBA_API.GetParam(PARAMETER_ID.P31_RES_PIN_DATA);
-                        String encPINBlock = pinData.substring(0, 15);
+                        String encPINBlock = pinData.substring(0, 16);
                         String keySerialNum = pinData.substring(16);
 
                         cardManager.setDebitPinBlock(encPINBlock);

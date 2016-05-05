@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string-array name="mainMenuArray">
+                <item name="menu_sales_receipt">Sales Receipt</item>
+                <item name="menu_order">Order</item>
+                <item name="menu_return">Return</item>
+                <item name="menu_invoice">Invoice</item>
+                <item name="menu_estimate">Estimate</item>
+                <item name="menu_payment">Payment</item>
+                <item name="menu_giftcard">Gift Card</item>
+                <item name="menu_loyaltycard">Loyalty Card</item>
+                <item name="menu_rewardcard">Reward Card</item>
+                <item name="menu_refund">Refund</item>
+                <item name="menu_route">Route</item>
+                <item name="menu_on_hold">On Hold</item>
+                <item name="menu_consignment">Consignment</item>
+                <item name="menu_transfer_inventory">Inventory Transfer</item>
+        </string-array>
+        <string-array name="mainMenuDefaultKey">
+                <item name="menu_sales_receipt">0</item>
+                <item name="menu_order">1</item>
+                <item name="menu_return">2</item>
+                <item name="menu_invoice">3</item>
+                <item name="menu_estimate">4</item>
+                <item name="menu_payment">5</item>
+                <item name="menu_giftcard">6</item>
+                <item name="menu_loyaltycard">7</item>
+                <item name="menu_rewardcard">8</item>
+                <item name="menu_refund">9</item>
+                <item name="menu_route">10</item>
+                <item name="menu_on_hold">11</item>
+                <item name="menu_consignment">12</item>
+                <item name="menu_transfer_inventory">13</item>
+        </string-array>
+        <string-array name="mainMenuKey">
+                <item name="menu_sales_receipt">0</item>
+                <item name="menu_order">1</item>
+                <item name="menu_return">2</item>
+                <item name="menu_invoice">3</item>
+                <item name="menu_estimate">4</item>
+                <item name="menu_payment">5</item>
+                <item name="menu_giftcard">6</item>
+                <item name="menu_loyaltycard">7</item>
+                <item name="menu_rewardcard">8</item>
+                <item name="menu_refund">9</item>
+                <item name="menu_route">10</item>
+                <item name="menu_on_hold">11</item>
+                <item name="menu_consignment">12</item>
+                <item name="menu_transfer_inventory">13</item>
+        </string-array>
+        <string-array name="printPrefArray">
+                <item name="print_header">Header</item>
+                <item name="print_shiptoinfo">Ship To Info</item>
+                <item name="print_terms">Terms</item>
+                <item name="print_customer_id">Customer Account Number</item>
+                <item name="print_order_comments">Order Comments</item>
+                <item name="print_addons">Addons</item>
+                <item name="print_tax_details">Product Tax Details</item>
+                <item name="print_discount_details">Products Discount Details</item>
+                <item name="print_descriptions">Product Descriptions</item>
+                <item name="print_prod_comments">Product Comments</item>
+                <item name="print_sale_attributes">Sale Attributes</item>
+                <item name="print_payment_comments">Payment Comments</item>
+                <item name="print_ivuloto_qr">Print Ivu Loto QR Code</item>
+                <item name="print_footer">Footer</item>
+                <item name="print_terms_conditions">Terms And Conditions</item>
+                <item name="print_emobilepos_website">eMobilePOS Website Footer</item>
+        </string-array>
+        <string-array name="printPrefValues">
+                <item name="print_header">print_header</item>
+                <item name="print_shiptoinfo">print_shiptoinfo</item>
+                <item name="print_terms">print_terms</item>
+                <item name="print_customer_id">print_customer_id</item>
+                <item name="print_order_comments">print_order_comments</item>
+                <item name="print_addons">print_addons</item>
+                <item name="print_tax_details">print_tax_details</item>
+                <item name="print_discount_details">print_discount_details</item>
+                <item name="print_descriptions">print_descriptions</item>
+                <item name="print_prod_comments">print_prod_comments</item>
+                <item name="print_sale_attributes">print_sale_atributes</item>
+                <item name="print_payment_comments">print_payment_comments</item>
+                <item name="print_ivu_loto_qr">print_ivuloto_qr</item>
+                <item name="print_footer">print_footer</item>
+                <item name="print_terms_conditions">print_terms_conditions</item>
+                <item name="print_emobilepos_website">print_emobilepos_website</item>
+        </string-array>
+        <string-array name="attributeToDisplayArray">
+                <item name="prod_name">Product Name</item>
+                <item name="prod_desc">Product Description</item>
+                <item name="prod_extradesc">Product Extra Description</item>
+        </string-array>
+        <string-array name="attributeToDisplayValues">
+                <item name="prod_name">prod_name</item>
+                <item name="prod_desc">prod_desc</item>
+                <item name="prod_extradesc">prod_extradesc</item>
+        </string-array>
+        <string-array name="defaultTransEntries">
+                <item name="default_trans_none">None</item>
+                <item name="default_trans_sales_receipt">Sales Receipt</item>
+                <item name="default_trans_return">Return</item>
+        </string-array>
+        <string-array name="defaultTransKey">
+                <item name="default_trans_none">-1</item>
+                <item name="default_trans_sales_receipt">0</item>
+                <item name="default_trans_return">2</item>
+        </string-array>
+        <string-array name="audioCardReaderEntries">
+                <item name="reader_none">None</item>
+                <item name="reader_unimag">Unimag</item>
+                <item name="reader_magtek">Magtek</item>
+                <item name="reader_rover">Rover</item>
+                <item name="reader_walker">Walker</item>
+        </string-array>
+        <string-array name="audioCardReaderValues">
+                <item name="reader_none">-1</item>
+                <item name="reader_unimag">0</item>
+                <item name="reader_magtek">1</item>
+                <item name="reader_rover">2</item>
+                <item name="reader_walker">3</item>
+        </string-array>
+</resources>
