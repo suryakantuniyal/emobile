@@ -64,6 +64,23 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         thisInstance = this;
         LINE_WIDTH = paperSize;
 
+
+        portName = myPref.getPrinterMACAddress();
+        portNumber = myPref.getStarPort();
+        bxlConfigLoader = new BXLConfigLoader(activity);
+        try {
+            bxlConfigLoader.openFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+            bxlConfigLoader.newFile();
+        }
+        bixolonPrinter = new POSPrinter(activity);
+
+        if (myPref.getPrinterName().contains("SPP-R2")) {
+            LINE_WIDTH = 32;
+        } else {
+            LINE_WIDTH = 48;
+        }
         switch (LINE_WIDTH) {
             case 32:
                 PAPER_WIDTH = 408;
@@ -75,16 +92,6 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
                 PAPER_WIDTH = 832;// 5400
                 break;
         }
-        portName = myPref.getPrinterMACAddress();
-        portNumber = myPref.getStarPort();
-        bxlConfigLoader = new BXLConfigLoader(activity);
-        try {
-            bxlConfigLoader.openFile();
-        } catch (Exception e) {
-            e.printStackTrace();
-            bxlConfigLoader.newFile();
-        }
-        bixolonPrinter = new POSPrinter(activity);
     }
 
     @Override
@@ -232,20 +239,20 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        setPaperWidth(LINE_WIDTH);
+//        setPaperWidth(LINE_WIDTH);
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
-        setPaperWidth(LINE_WIDTH);
+//        setPaperWidth(LINE_WIDTH);
         return printTransaction(ordID, saleTypes, isFromHistory, fromOnHold, null);
     }
 
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
-        setPaperWidth(LINE_WIDTH);
+//        setPaperWidth(LINE_WIDTH);
         printPaymentDetailsReceipt(payID, isFromMainMenu, isReprint, LINE_WIDTH, emvContainer);
         return true;
     }
@@ -375,7 +382,7 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void printReceiptPreview(View view) {
-        setPaperWidth(LINE_WIDTH);
+//        setPaperWidth(LINE_WIDTH);
         Bitmap bitmap = loadBitmapFromView(view);
         try {
             super.printReceiptPreview(bitmap, LINE_WIDTH);
