@@ -23,7 +23,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     protected void setActionBar() {
         showNavigationbar = myPref.getPreferences(MyPreferences.pref_use_navigationbar) || isNavigationBarModel();
-        if (this instanceof MainMenu_FA || showNavigationbar) {
+//        if (this instanceof MainMenu_FA || showNavigationbar) {
             myBar = this.getActionBar();
             if (myBar != null) {
                 myBar.setDisplayShowTitleEnabled(true);
@@ -31,9 +31,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
                 myBar.setHomeButtonEnabled(true);
                 myBar.setStackedBackgroundDrawable(getResources().getDrawable(R.drawable.tabbar));
             }
-        } else {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-        }
+//        } else {
+//            requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        }
     }
 
     private boolean isNavigationBarModel() {
