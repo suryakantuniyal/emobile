@@ -46,7 +46,7 @@ android {
     }
     productFlavors {
         ems {
-            minSdkVersion 14
+            minSdkVersion 15
             applicationId = 'com.emobilepos.app'
             versionName "1.2.0.16"
             versionCode 95
@@ -62,7 +62,7 @@ android {
             multiDexEnabled = true
         }
         ivupos {
-            minSdkVersion 14
+            minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
             versionName "1.2.0.16"
             versionCode 95
