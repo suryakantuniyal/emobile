@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.SystemClock;
 import android.support.v4.widget.CursorAdapter;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,7 +77,17 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 			String urlLink = cursor.getString(holder.i_prod_img_name);
 			if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
 				holder.itemImage.setTag(urlLink);
+                if (urlLink != null || TextUtils.isEmpty(cursor.getString(holder.i_prod_name))) {
+                    holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
 				imageLoader.displayImage(urlLink, holder.itemImage, options);
+                    holder.productNameTxt.setVisibility(View.GONE);
+                } else {
+                    holder.itemImage.setImageDrawable(null);
+                    holder.productNameTxt.setText(cursor.getString(holder.i_prod_name));
+                    holder.productNameTxt.setVisibility(View.VISIBLE);
+//                    holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
+//                    holder.itemImage.setImageBitmap(getStringAsBitmap(cursor.getString(holder.i_prod_name)));
+                }
 			}
 
 			holder.itemImage.setOnTouchListener(Global.opaqueImageOnClick());
@@ -159,7 +170,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 			holder.detail = (TextView) retView.findViewById(R.id.catalogItemInfo);
 			holder.iconImage = (ImageView) retView.findViewById(R.id.catalogRightIcon);
 			holder.itemImage = (ImageView) retView.findViewById(R.id.catalogItemPic);
-
+            holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
 			holder.i_id = cursor.getColumnIndex("_id");
 			holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
 			holder.i_master_price = cursor.getColumnIndex("master_price");
@@ -176,7 +187,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
 			holder.title = (TextView) retView.findViewById(R.id.gridViewImageTitle);
 			holder.itemImage = (ImageView) retView.findViewById(R.id.gridViewImage);
-
+            holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
 			holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
 			holder.i_prod_desc = cursor.getColumnIndex("prod_desc");
 			holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
@@ -187,7 +198,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 	}
 
 	private class ViewHolder {
-		TextView title, qty, amount, detail, consignment_qty;
+        TextView title, qty, amount, detail, consignment_qty, productNameTxt;
 		ImageView iconImage, itemImage;
 
 		int i_id, i_prod_name, i_chain_price, i_master_price, i_volume_price, i_pricelevel_price, i_prod_desc, i_prod_img_name, i_consignment_qty;
