@@ -12,6 +12,13 @@
         android:background="@drawable/blue_gradient_header_horizontal"
         android:gravity="center_vertical">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView3"
+            android:src="@drawable/logo"
+            android:layout_marginLeft="10dp" />
+
         <TextView
             android:id="@+id/headerTitle"
             android:layout_width="0dp"
@@ -28,12 +35,12 @@
             style="@style/action_button_text_appearance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:background="@drawable/action_button_selector"
             android:paddingLeft="5dp"
             android:paddingRight="14dp"
             android:text="@string/button_checkout"
-            android:textSize="@dimen/large_button_text_size"
-            android:layout_margin="5dp" />
+            android:textSize="@dimen/large_button_text_size" />
 
         <EditText
             android:id="@+id/invisibleSearchMain"

@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_flat_headers"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/gray_flat_headers">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/blue_gradient_header_horizontal"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView4"
+            android:src="@drawable/logo"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true" />
 
         <TextView
             android:id="@+id/tvHeader"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"
-            android:gravity="center"
             android:padding="@dimen/header_txt_padding"
             android:text="@string/header_title_method"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_txt_size" />
-    </LinearLayout>
+            android:textSize="@dimen/header_txt_size"
+            android:gravity="center"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
 
 
     <LinearLayout
@@ -33,23 +44,22 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingBottom="10dp">
+        android:paddingBottom="10dp" >
 
         <LinearLayout
             android:id="@+id/topLayoutHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
             android:layout_marginTop="10dp"
             android:baselineAligned="false"
-            android:orientation="horizontal">
+            android:orientation="horizontal" >
 
             <LinearLayout
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/totalValue"
@@ -74,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/paidValue"
@@ -99,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/tipValue"
@@ -118,46 +128,52 @@
                     android:textAppearance="@style/black_text_appearance"
                     android:textSize="15sp" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/dueValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/black_text_appearance"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/dueTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/payment_view_due"
+                    android:textAppearance="@style/black_text_appearance"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/dueTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/payment_view_due"
-                android:textAppearance="@style/black_text_appearance"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/dueValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="@style/black_text_appearance"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-        </LinearLayout>
     </LinearLayout>
+
 
 
     <GridView
         android:id="@+id/cardsListview"
-        listitem="@layout/main_menu_listviewadapter"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/white_background"
-        android:columnWidth="200dp"
         android:gravity="center"
         android:horizontalSpacing="5dp"
-        android:numColumns="auto_fit"
-        android:padding="5dp"
+        android:numColumns="4"
+        android:background="@color/gray_flat_bg"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="5dp"></GridView>
+        android:verticalSpacing="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
+        tools:listitem="@layout/main_menu_listviewadapter"></GridView>
 </LinearLayout>

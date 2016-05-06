@@ -8,8 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
+import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.cardmanager.GiftCard_FA;
+import com.android.emobilepos.cardmanager.LoyaltyCard_FA;
+import com.android.emobilepos.cardmanager.RewardCard_FA;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
+import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.MyPreferences;
 
 /**
@@ -26,9 +32,9 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         if (this instanceof MainMenu_FA || showNavigationbar) {
             myBar = this.getActionBar();
             if (myBar != null) {
-                myBar.setDisplayShowTitleEnabled(showNavigationbar);
-                myBar.setDisplayShowHomeEnabled(showNavigationbar);
-                myBar.setHomeButtonEnabled(showNavigationbar);
+                myBar.setDisplayShowTitleEnabled(true);
+                myBar.setDisplayShowHomeEnabled(true);
+                myBar.setHomeButtonEnabled(true);
                 myBar.setStackedBackgroundDrawable(getResources().getDrawable(R.drawable.tabbar));
             }
         } else {
@@ -38,7 +44,7 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     private boolean isNavigationBarModel() {
         for (String model : navigationbarByModels) {
-            if(Build.MODEL.toLowerCase().startsWith(model)){
+            if (Build.MODEL.toLowerCase().startsWith(model)) {
                 return true;
             }
         }
