@@ -24,62 +24,62 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class MenuProdGV_Adapter extends CursorAdapter {
-	LayoutInflater inflater;
-	private ImageLoader imageLoader;
-	private DisplayImageOptions options;
+    LayoutInflater inflater;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
 
-	private ProductClickedCallback callBack;
-	private Activity activity;
-	private boolean isPortrait;
-	private ViewHolder holder;
+    private ProductClickedCallback callBack;
+    private Activity activity;
+    private boolean isPortrait;
+    private ViewHolder holder;
 
-	private VolumePricesHandler volPriceHandler;
-	private String attrToDisplay = "";
-	private long lastClickTime = 0;
-	private boolean isFastScanning = false;
-	private boolean isRestMode = false;
+    private VolumePricesHandler volPriceHandler;
+    private String attrToDisplay = "";
+    private long lastClickTime = 0;
+    private boolean isFastScanning = false;
+    private boolean isRestMode = false;
 
-	public interface ProductClickedCallback {
-		void productClicked(int position);
-	}
+    public interface ProductClickedCallback {
+        void productClicked(int position);
+    }
 
-	public MenuProdGV_Adapter(Catalog_FR _this, Activity context, Cursor c, int flags, ImageLoader _imageLoader) {
-		super(context, c, flags);
-		activity = context;
-		inflater = LayoutInflater.from(context);
-		callBack = _this;
-		isPortrait = Global.isPortrait(context);
-		imageLoader = _imageLoader;
-		MyPreferences myPref = new MyPreferences(context);
-		attrToDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
-		isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
-		isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
+    public MenuProdGV_Adapter(Catalog_FR _this, Activity context, Cursor c, int flags, ImageLoader _imageLoader) {
+        super(context, c, flags);
+        activity = context;
+        inflater = LayoutInflater.from(context);
+        callBack = _this;
+        isPortrait = Global.isPortrait(context);
+        imageLoader = _imageLoader;
+        MyPreferences myPref = new MyPreferences(context);
+        attrToDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
+        isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
+        isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
 
-		if (isPortrait) {
-			options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
-					.imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
-			volPriceHandler = new VolumePricesHandler(activity);
-		} else
-			options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
-					.imageScaleType(ImageScaleType.IN_SAMPLE_INT).showImageOnLoading(R.drawable.loading_image).showImageForEmptyUri(R.drawable.no_image)
-					.build();
-	}
+        if (isPortrait) {
+            options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
+                    .imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
+            volPriceHandler = new VolumePricesHandler(activity);
+        } else
+            options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
+                    .imageScaleType(ImageScaleType.IN_SAMPLE_INT).showImageOnLoading(R.drawable.loading_image).showImageForEmptyUri(R.drawable.no_image)
+                    .build();
+    }
 
-	@Override
-	public void bindView(View view, Context context, final Cursor cursor) {
-		final int position = cursor.getPosition();
+    @Override
+    public void bindView(View view, Context context, final Cursor cursor) {
+        final int position = cursor.getPosition();
 
-		holder = (ViewHolder) view.getTag();
-		if (holder.i_prod_name != -1) {
+        holder = (ViewHolder) view.getTag();
+        if (holder.i_prod_name != -1) {
 
-			holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
+            holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
 
-			String urlLink = cursor.getString(holder.i_prod_img_name);
-			if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
-				holder.itemImage.setTag(urlLink);
-                if (urlLink != null || TextUtils.isEmpty(cursor.getString(holder.i_prod_name))) {
+            String urlLink = cursor.getString(holder.i_prod_img_name);
+            if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
+                holder.itemImage.setTag(urlLink);
+                if (!TextUtils.isEmpty(urlLink) || TextUtils.isEmpty(cursor.getString(holder.i_prod_name))) {
                     holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
-				imageLoader.displayImage(urlLink, holder.itemImage, options);
+                    imageLoader.displayImage(urlLink, holder.itemImage, options);
                     holder.productNameTxt.setVisibility(View.GONE);
                 } else {
                     holder.itemImage.setImageDrawable(null);
@@ -88,129 +88,129 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 //                    holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
 //                    holder.itemImage.setImageBitmap(getStringAsBitmap(cursor.getString(holder.i_prod_name)));
                 }
-			}
+            }
 
-			holder.itemImage.setOnTouchListener(Global.opaqueImageOnClick());
-			holder.itemImage.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					if ((!isFastScanning||(isFastScanning&&isRestMode))&&SystemClock.elapsedRealtime() - lastClickTime < 1000) {
-						return;
-					}
-					lastClickTime = SystemClock.elapsedRealtime();
-					if (isPortrait) {
-						Intent intent = new Intent(activity, ShowProductImageActivity.class);
-						cursor.moveToPosition(position);
-						intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
-						activity.startActivity(intent);
-					} else {
-						callBack.productClicked(position);
-					}
-				}
-			});
+            holder.itemImage.setOnTouchListener(Global.opaqueImageOnClick());
+            holder.itemImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if ((!isFastScanning || (isFastScanning && isRestMode)) && SystemClock.elapsedRealtime() - lastClickTime < 1000) {
+                        return;
+                    }
+                    lastClickTime = SystemClock.elapsedRealtime();
+                    if (isPortrait) {
+                        Intent intent = new Intent(activity, ShowProductImageActivity.class);
+                        cursor.moveToPosition(position);
+                        intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
+                        activity.startActivity(intent);
+                    } else {
+                        callBack.productClicked(position);
+                    }
+                }
+            });
 
-			if (isPortrait) {
-				String prod_id = cursor.getString(holder.i_id);
-				holder.qty.setText(getQty(prod_id));
-				String tempPrice = cursor.getString(holder.i_volume_price);
-				if (tempPrice == null || tempPrice.isEmpty()) {
-					tempPrice = cursor.getString(holder.i_pricelevel_price);
-					if (tempPrice == null || tempPrice.isEmpty()) {
-						tempPrice = cursor.getString(holder.i_chain_price);
-						if (tempPrice == null || tempPrice.isEmpty())
-							tempPrice = cursor.getString(holder.i_master_price);
-					}
-				} else {
-					String[] temp = volPriceHandler.getVolumePrice(getQty(prod_id), prod_id);
-					if (temp[1] != null && !temp[1].isEmpty())
-						tempPrice = temp[1];
-				}
-				final String prod_price = tempPrice;
-				final String prod_desc = cursor.getString(holder.i_prod_desc);
-				holder.amount.setText(Global.formatDoubleStrToCurrency(prod_price));
-				holder.detail.setText(prod_desc);
+            if (isPortrait) {
+                String prod_id = cursor.getString(holder.i_id);
+                holder.qty.setText(getQty(prod_id));
+                String tempPrice = cursor.getString(holder.i_volume_price);
+                if (tempPrice == null || tempPrice.isEmpty()) {
+                    tempPrice = cursor.getString(holder.i_pricelevel_price);
+                    if (tempPrice == null || tempPrice.isEmpty()) {
+                        tempPrice = cursor.getString(holder.i_chain_price);
+                        if (tempPrice == null || tempPrice.isEmpty())
+                            tempPrice = cursor.getString(holder.i_master_price);
+                    }
+                } else {
+                    String[] temp = volPriceHandler.getVolumePrice(getQty(prod_id), prod_id);
+                    if (temp[1] != null && !temp[1].isEmpty())
+                        tempPrice = temp[1];
+                }
+                final String prod_price = tempPrice;
+                final String prod_desc = cursor.getString(holder.i_prod_desc);
+                holder.amount.setText(Global.formatDoubleStrToCurrency(prod_price));
+                holder.detail.setText(prod_desc);
 
-				if (Global.isConsignment && holder.i_consignment_qty != -1) {
-					String tempVal = cursor.getString(holder.i_consignment_qty);
-					tempVal = tempVal == null ? "0" : tempVal;
-					holder.consignment_qty.setText("Orig. Qty: " + tempVal);
-					holder.consignment_qty.setVisibility(View.VISIBLE);
-				} else {
-					holder.consignment_qty.setVisibility(View.GONE);
-				}
+                if (Global.isConsignment && holder.i_consignment_qty != -1) {
+                    String tempVal = cursor.getString(holder.i_consignment_qty);
+                    tempVal = tempVal == null ? "0" : tempVal;
+                    holder.consignment_qty.setText("Orig. Qty: " + tempVal);
+                    holder.consignment_qty.setVisibility(View.VISIBLE);
+                } else {
+                    holder.consignment_qty.setVisibility(View.GONE);
+                }
 
-				holder.iconImage.setOnClickListener(new View.OnClickListener() {
+                holder.iconImage.setOnClickListener(new View.OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						Intent intent = new Intent(activity, ViewProductDetails_FA.class);
-						cursor.moveToPosition(position);
-						intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
-						intent.putExtra("prod_id", cursor.getString(holder.i_id));
-						activity.startActivity(intent);
-					}
-				});
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(activity, ViewProductDetails_FA.class);
+                        cursor.moveToPosition(position);
+                        intent.putExtra("url", cursor.getString(holder.i_prod_img_name));
+                        intent.putExtra("prod_id", cursor.getString(holder.i_id));
+                        activity.startActivity(intent);
+                    }
+                });
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	@Override
-	public View newView(Context context, Cursor cursor, ViewGroup parent) {
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
-		View retView;
-		ViewHolder holder = new ViewHolder();
+        View retView;
+        ViewHolder holder = new ViewHolder();
 
-		if (isPortrait) {
-			retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
-			holder.title = (TextView) retView.findViewById(R.id.catalogItemName);
-			holder.qty = (TextView) retView.findViewById(R.id.catalogItemQty);
-			holder.consignment_qty = (TextView) retView.findViewById(R.id.catalogConsignmentQty);
-			holder.amount = (TextView) retView.findViewById(R.id.catalogItemPrice);
-			holder.detail = (TextView) retView.findViewById(R.id.catalogItemInfo);
-			holder.iconImage = (ImageView) retView.findViewById(R.id.catalogRightIcon);
-			holder.itemImage = (ImageView) retView.findViewById(R.id.catalogItemPic);
+        if (isPortrait) {
+            retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
+            holder.title = (TextView) retView.findViewById(R.id.catalogItemName);
+            holder.qty = (TextView) retView.findViewById(R.id.catalogItemQty);
+            holder.consignment_qty = (TextView) retView.findViewById(R.id.catalogConsignmentQty);
+            holder.amount = (TextView) retView.findViewById(R.id.catalogItemPrice);
+            holder.detail = (TextView) retView.findViewById(R.id.catalogItemInfo);
+            holder.iconImage = (ImageView) retView.findViewById(R.id.catalogRightIcon);
+            holder.itemImage = (ImageView) retView.findViewById(R.id.catalogItemPic);
             holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
-			holder.i_id = cursor.getColumnIndex("_id");
-			holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
-			holder.i_master_price = cursor.getColumnIndex("master_price");
-			holder.i_volume_price = cursor.getColumnIndex("volume_price");
-			holder.i_pricelevel_price = cursor.getColumnIndex("pricelevel_price");
-			holder.i_prod_desc = cursor.getColumnIndex("prod_desc");
-			holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
-			holder.i_chain_price = cursor.getColumnIndex("chain_price");
-			holder.i_consignment_qty = cursor.getColumnIndex("consignment_qty");
+            holder.i_id = cursor.getColumnIndex("_id");
+            holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
+            holder.i_master_price = cursor.getColumnIndex("master_price");
+            holder.i_volume_price = cursor.getColumnIndex("volume_price");
+            holder.i_pricelevel_price = cursor.getColumnIndex("pricelevel_price");
+            holder.i_prod_desc = cursor.getColumnIndex("prod_desc");
+            holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
+            holder.i_chain_price = cursor.getColumnIndex("chain_price");
+            holder.i_consignment_qty = cursor.getColumnIndex("consignment_qty");
 
-		} else {
+        } else {
 
-			retView = inflater.inflate(R.layout.catalog_gridview_adapter, parent, false);
+            retView = inflater.inflate(R.layout.catalog_gridview_adapter, parent, false);
 
-			holder.title = (TextView) retView.findViewById(R.id.gridViewImageTitle);
-			holder.itemImage = (ImageView) retView.findViewById(R.id.gridViewImage);
+            holder.title = (TextView) retView.findViewById(R.id.gridViewImageTitle);
+            holder.itemImage = (ImageView) retView.findViewById(R.id.gridViewImage);
             holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
-			holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
-			holder.i_prod_desc = cursor.getColumnIndex("prod_desc");
-			holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
+            holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
+            holder.i_prod_desc = cursor.getColumnIndex("prod_desc");
+            holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
 
-		}
-		retView.setTag(holder);
-		return retView;
-	}
+        }
+        retView.setTag(holder);
+        return retView;
+    }
 
-	private class ViewHolder {
+    private class ViewHolder {
         TextView title, qty, amount, detail, consignment_qty, productNameTxt;
-		ImageView iconImage, itemImage;
+        ImageView iconImage, itemImage;
 
-		int i_id, i_prod_name, i_chain_price, i_master_price, i_volume_price, i_pricelevel_price, i_prod_desc, i_prod_img_name, i_consignment_qty;
-	}
+        int i_id, i_prod_name, i_chain_price, i_master_price, i_volume_price, i_pricelevel_price, i_prod_desc, i_prod_img_name, i_consignment_qty;
+    }
 
-	public String getQty(String id) {
-		Global global = (Global) activity.getApplication();
-		String value = global.qtyCounter.get(id);
+    public String getQty(String id) {
+        Global global = (Global) activity.getApplication();
+        String value = global.qtyCounter.get(id);
 
-		if (value == null) {
-			return "0";
-		}
-		return value;
-	}
+        if (value == null) {
+            return "0";
+        }
+        return value;
+    }
 }
