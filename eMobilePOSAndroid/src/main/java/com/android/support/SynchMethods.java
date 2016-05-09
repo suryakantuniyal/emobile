@@ -30,6 +30,7 @@ import com.android.database.PaymentsXML_DB;
 import com.android.database.PriceLevelHandler;
 import com.android.database.PriceLevelItemsHandler;
 import com.android.database.ProductAddonsHandler;
+import com.android.database.ProductAliases_DB;
 import com.android.database.ProductsHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
@@ -44,6 +45,7 @@ import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
+import com.android.emobilepos.models.ProductAlias;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -1340,14 +1342,6 @@ public class SynchMethods {
     }
 
     private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {
-//        task.updateProgress(getString(R.string.sync_dload_price_levels));
-//        post.postData(7, activity, "PriceLevel");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRICE_LEVEL);
-//        File tempFile = new File(tempFilePath);
-//        task.updateProgress(getString(R.string.sync_saving_price_levels));
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
-
         try {
             task.updateProgress(getString(R.string.sync_dload_price_levels));
             Gson gson = new Gson();
@@ -1380,14 +1374,6 @@ public class SynchMethods {
     }
 
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
-//        task.updateProgress(getString(R.string.sync_dload_item_price_levels));
-//        post.postData(7, activity, "PriceLevelItems");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ITEM_PRICE_LEVEL);
-//        File tempFile = new File(tempFilePath);
-//        task.updateProgress(getString(R.string.sync_saving_item_price_levels));
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
-
         try {
             task.updateProgress(getString(R.string.sync_dload_item_price_levels));
             Gson gson = new Gson();
@@ -1480,7 +1466,6 @@ public class SynchMethods {
     }
 
     private void synchProducts(resynchAsync task) throws IOException, SAXException {
-
         try {
             ProductsHandler productsHandler = new ProductsHandler(activity);
             task.updateProgress(getString(R.string.sync_dload_products));
@@ -1518,13 +1503,47 @@ public class SynchMethods {
     }
 
     private void synchProductAliases(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_product_aliases));
-        post.postData(7, activity, "ProductAliases");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCT_ALIASES);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_product_aliases));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+//        task.updateProgress(getString(R.string.sync_dload_product_aliases));
+//        post.postData(7, activity, "ProductAliases");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCT_ALIASES);
+//        File tempFile = new File(tempFilePath);
+//        task.updateProgress(getString(R.string.sync_saving_product_aliases));
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
+
+        try {
+            ProductAliases_DB productAliasesDB = new ProductAliases_DB(activity);
+            task.updateProgress(getString(R.string.sync_dload_product_aliases));
+            Gson gson = new Gson();
+            GenerateXML xml = new GenerateXML(activity);
+            Log.d("GSon Start", new Date().toString());
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("ProductAliases"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            Log.d("GSon Start Reading", new Date().toString());
+            List<ProductAlias> productAliases = new ArrayList<ProductAlias>();
+            productAliasesDB.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                ProductAlias alias = gson.fromJson(reader, Product.class);
+                productAliases.add(alias);
+                i++;
+                if (i == 1000) {
+                    productAliasesDB.insert(productAliases);
+                    productAliases.clear();
+                    i = 0;
+                    Log.d("GSon Insert 1000", new Date().toString());
+                }
+            }
+            productAliasesDB.insert(productAliases);
+            reader.endArray();
+            reader.close();
+            Log.d("GSon Finish", new Date().toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
