@@ -25,7 +25,6 @@ import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.handpoint.api.ConnectionMethod;
 import com.handpoint.api.ConnectionStatus;
-import com.handpoint.api.Currency;
 import com.handpoint.api.Device;
 import com.handpoint.api.Events;
 import com.handpoint.api.FinancialStatus;
@@ -46,14 +45,15 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 3/10/2016.
@@ -69,7 +69,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     String msg = "Failed to connect";
     static boolean connected = false;
     private ProgressDialog myProgressDialog;
-
+    com.handpoint.api.Currency currency = com.handpoint.api.Currency.valueOf(java.util.Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -422,7 +422,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void salePayment(Payment payment) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
-        boolean succeed = hapi.sale(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD);
+        boolean succeed = hapi.sale(new BigInteger(payment.pay_amount.replace(".", "")), currency);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -431,7 +431,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
         hapi.getPendingTransaction();
-        boolean succeed = hapi.saleReversal(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD, originalTransactionId);
+        boolean succeed = hapi.saleReversal(new BigInteger(payment.pay_amount.replace(".", "")), currency, originalTransactionId);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -442,7 +442,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void refund(Payment payment) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
-        boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".", "")), Currency.USD);
+        boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".", "")), currency);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -453,7 +453,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.saleReversal(new
-                BigInteger(payment.pay_amount.replace(".", "")), Currency.USD, originalTransactionId);
+                BigInteger(payment.pay_amount.replace(".", "")), currency, originalTransactionId);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -522,13 +522,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 //            String s = gson.toJson(transactionResult, TransactionResult.class);
             if (transactionResult.getFinStatus() == FinancialStatus.AUTHORISED) {
                 Log.d("TransactionResult", transactionResult.getFinStatus().name());
-                Log.d("TransactionResult Reversed", transactionResult.geteFTTransactionID());
+                Log.d("TransResult Reversed", transactionResult.geteFTTransactionID());
                 switch (transactionResult.getType()) {
                     case SALE:
-                        boolean succeed = hapi.saleReversal(transactionResult.getRequestedAmount(), Currency.USD, transactionResult.geteFTTransactionID());
+                        boolean succeed = hapi.saleReversal(transactionResult.getRequestedAmount(), currency, transactionResult.geteFTTransactionID());
                         break;
                     case REFUND:
-                        succeed = hapi.saleReversal(transactionResult.getRequestedAmount(), Currency.USD, transactionResult.geteFTTransactionID());
+                        succeed = hapi.saleReversal(transactionResult.getRequestedAmount(), currency, transactionResult.geteFTTransactionID());
                         break;
                 }
             } else {
