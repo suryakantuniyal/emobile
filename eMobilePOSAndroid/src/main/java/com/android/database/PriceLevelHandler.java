@@ -2,6 +2,8 @@ package com.android.database;
 
 import android.database.Cursor;
 
+import com.android.emobilepos.models.PriceLevel;
+
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
@@ -63,25 +65,54 @@ public class PriceLevelHandler {
     }
 
 
-    public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
+//    public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
+//        DBManager._db.beginTransaction();
+//        try {
+//
+//            addrData = data;
+//            dictionaryListMap = dictionary;
+//            SQLiteStatement insert;
+//            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+//
+//            int size = addrData.size();
+//
+//            for (int j = 0; j < size; j++) {
+//
+//                insert.bindString(index(pricelevel_id), getData(pricelevel_id, j)); // pricelevel_id
+//                insert.bindString(index(pricelevel_name), getData(pricelevel_name, j)); // pricelevel_name
+//                insert.bindString(index(pricelevel_type), getData(pricelevel_type, j)); // pricelevel_type
+//                insert.bindString(index(pricelevel_fixedpct), getData(pricelevel_fixedpct, j)); // pricelevel_fixedpct
+//                insert.bindString(index(pricelevel_update), getData(pricelevel_update, j)); // pricelevel_update
+//                insert.bindString(index(isactive), getData(isactive, j)); // isactive
+//
+//                insert.execute();
+//                insert.clearBindings();
+//            }
+//            insert.close();
+//            DBManager._db.setTransactionSuccessful();
+//        } catch (Exception e) {
+//
+//        } finally {
+//            DBManager._db.endTransaction();
+//        }
+//    }
+
+
+    public void insert(List<PriceLevel> priceLevels) {
         DBManager._db.beginTransaction();
         try {
-
-            addrData = data;
-            dictionaryListMap = dictionary;
             SQLiteStatement insert;
             insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
 
-            for (int j = 0; j < size; j++) {
-
-                insert.bindString(index(pricelevel_id), getData(pricelevel_id, j)); // pricelevel_id
-                insert.bindString(index(pricelevel_name), getData(pricelevel_name, j)); // pricelevel_name
-                insert.bindString(index(pricelevel_type), getData(pricelevel_type, j)); // pricelevel_type
-                insert.bindString(index(pricelevel_fixedpct), getData(pricelevel_fixedpct, j)); // pricelevel_fixedpct
-                insert.bindString(index(pricelevel_update), getData(pricelevel_update, j)); // pricelevel_update
-                insert.bindString(index(isactive), getData(isactive, j)); // isactive
+            for (PriceLevel priceLevel : priceLevels) {
+                insert.bindString(index(pricelevel_id), priceLevel.getPricelevelId()); // pricelevel_id
+                insert.bindString(index(pricelevel_name), priceLevel.getPricelevelName()); // pricelevel_name
+                insert.bindString(index(pricelevel_type), priceLevel.getPricelevelType()); // pricelevel_type
+                insert.bindLong(index(pricelevel_fixedpct), priceLevel.getPricelevelFixedpct()); // pricelevel_fixedpct
+                insert.bindString(index(pricelevel_update), priceLevel.getPricelevelUpdate()); // pricelevel_update
+                insert.bindLong(index(isactive), priceLevel.getIsactive()); // isactive
 
                 insert.execute();
                 insert.clearBindings();
@@ -94,7 +125,6 @@ public class PriceLevelHandler {
             DBManager._db.endTransaction();
         }
     }
-
 
     public void emptyTable() {
         DBManager._db.execSQL("DELETE FROM " + table_name);

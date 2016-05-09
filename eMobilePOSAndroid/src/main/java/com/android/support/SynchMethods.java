@@ -27,6 +27,9 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
+import com.android.database.PriceLevelHandler;
+import com.android.database.PriceLevelItemsHandler;
+import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TemplateHandler;
@@ -37,7 +40,10 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.ItemPriceLevel;
+import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -1334,23 +1340,82 @@ public class SynchMethods {
     }
 
     private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_price_levels));
-        post.postData(7, activity, "PriceLevel");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRICE_LEVEL);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_price_levels));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+//        task.updateProgress(getString(R.string.sync_dload_price_levels));
+//        post.postData(7, activity, "PriceLevel");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRICE_LEVEL);
+//        File tempFile = new File(tempFilePath);
+//        task.updateProgress(getString(R.string.sync_saving_price_levels));
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
+
+        try {
+            task.updateProgress(getString(R.string.sync_dload_price_levels));
+            Gson gson = new Gson();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("PriceLevel"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<PriceLevel> priceLevels = new ArrayList<PriceLevel>();
+            PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
+            priceLevelHandler.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                PriceLevel priceLevel = gson.fromJson(reader, PriceLevel.class);
+                priceLevels.add(priceLevel);
+                i++;
+                if (i == 1000) {
+                    priceLevelHandler.insert(priceLevels);
+                    priceLevels.clear();
+                    i = 0;
+                }
+            }
+            priceLevelHandler.insert(priceLevels);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_item_price_levels));
-        post.postData(7, activity, "PriceLevelItems");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ITEM_PRICE_LEVEL);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_item_price_levels));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+//        task.updateProgress(getString(R.string.sync_dload_item_price_levels));
+//        post.postData(7, activity, "PriceLevelItems");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ITEM_PRICE_LEVEL);
+//        File tempFile = new File(tempFilePath);
+//        task.updateProgress(getString(R.string.sync_saving_item_price_levels));
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
+
+        try {
+            task.updateProgress(getString(R.string.sync_dload_item_price_levels));
+            Gson gson = new Gson();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("PriceLevelItems"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<ItemPriceLevel> itemPriceLevels = new ArrayList<ItemPriceLevel>();
+            PriceLevelItemsHandler levelItemsHandler = new PriceLevelItemsHandler(activity);
+            levelItemsHandler.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                ItemPriceLevel itemPriceLevel = gson.fromJson(reader, ItemPriceLevel.class);
+                itemPriceLevels.add(itemPriceLevel);
+                i++;
+                if (i == 1000) {
+                    levelItemsHandler.insert(itemPriceLevels);
+                    itemPriceLevels.clear();
+                    i = 0;
+                }
+            }
+            levelItemsHandler.insert(itemPriceLevels);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchPrinters(resynchAsync task) throws IOException, SAXException {
@@ -1384,13 +1449,34 @@ public class SynchMethods {
     }
 
     private void synchProdAddon(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_product_addons));
-        post.postData(7, activity, "Product_addons");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PROD_ADDONS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_product_addons));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        try {
+            task.updateProgress(getString(R.string.sync_dload_product_addons));
+            Gson gson = new Gson();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("Product_addons"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<ProductAddons> addonses = new ArrayList<ProductAddons>();
+            ProductAddonsHandler addonsHandler = new ProductAddonsHandler(activity);
+            addonsHandler.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                ProductAddons addons = gson.fromJson(reader, ProductAddons.class);
+                addonses.add(addons);
+                i++;
+                if (i == 1000) {
+                    addonsHandler.insert(addonses);
+                    addonses.clear();
+                    i = 0;
+                }
+            }
+            addonsHandler.insert(addonses);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchProducts(resynchAsync task) throws IOException, SAXException {
@@ -1425,45 +1511,6 @@ public class SynchMethods {
             reader.close();
             Log.d("GSon Finish", new Date().toString());
 
-
-//            Log.i("GSon Start Request", new Date().toString());
-//            post.postData(7, activity, "Products");
-//
-//            Log.i("GSon Start", new Date().toString());
-//            File tempFile = new File(
-//                    activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml");
-//            InputStream is = new FileInputStream(tempFile);
-//            JsonReader reader = new JsonReader(new InputStreamReader(is, "UTF-8"));
-//            List<Product> products = new ArrayList<Product>();
-//            productsHandler.emptyTable();
-//            reader.beginArray();
-//            int i = 0;
-//            while (reader.hasNext()) {
-//                Product product = gson.fromJson(reader, Product.class);
-//                products.add(product);
-//                i++;
-//                if (i == 1000) {
-//                    productsHandler.insert(products);
-//                    products.clear();
-//                    i = 0;
-//                    Log.i("GSon Insert 1000", new Date().toString());
-//                }
-//            }
-//            productsHandler.insert(products);
-//            reader.endArray();
-//            reader.close();
-//            Log.i("GSon Finish", new Date().toString());
-
-
-//
-//            Log.d("XML Parser Start", new Date().toString());
-//            SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS);
-////            File tempFile = new File(tempFilePath);
-//            task.updateProgress(getString(R.string.sync_saving_products));
-//            sp.parse(tempFile, synchHandler);
-//            Log.d("XML Parser Finish", new Date().toString());
-
-//            tempFile.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
