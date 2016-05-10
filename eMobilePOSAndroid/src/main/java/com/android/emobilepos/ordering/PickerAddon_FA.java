@@ -233,25 +233,19 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                             temp1.setBackgroundResource(R.drawable.gridview_title_bar);
                             TextView temp2 = (TextView) listParentViews.get(_curr_pos).findViewById(R.id.gridViewImageTitle);
                             temp2.setBackgroundColor(Color.rgb(0, 112, 60));
-
-
                             index_selected_parent = _curr_pos;
                             Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(_curr_pos).get("cat_id"));
                             adapter = new PickerAddonLV_Adapter(activity, c, CursorAdapter.NO_SELECTION, imageLoader);
                             myGridView.setAdapter(adapter);
-
                         }
-
                     }
                 });
-
                 listParentViews.add(view);
                 addonParentLL.addView(view);
                 if (pos == 0) {
                     tv.setBackgroundColor(Color.rgb(0, 112, 60));
                 }
                 pos++;
-
             }
         }
     }
