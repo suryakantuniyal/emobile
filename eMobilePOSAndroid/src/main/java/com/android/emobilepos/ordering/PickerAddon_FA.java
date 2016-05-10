@@ -8,7 +8,6 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.CursorAdapter;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -25,7 +24,6 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProducts;
 import com.android.emobilepos.models.Product;
-import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -194,19 +192,18 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 		switch (v.getId()) {
 		case R.id.addonDoneButton:
 			String[] keys = global.addonSelectionType.keySet().toArray(new String[global.addonSelectionType.size()]);
-			int size = keys.length;
 			String[] values;
-			for (int i = 0; i < size; i++) {
-				values = global.addonSelectionType.get(keys[i]);
+			for (String key : keys) {
+				values = global.addonSelectionType.get(key);
 				switch (Integer.parseInt(values[0])) {
-				case SELECT_EMPTY:
-					break;
-				case SELECT_CHECKED:
-					generateAddon(Integer.parseInt(values[1]),values[2], true);
-					break;
-				case SELECT_CROSS:
-					generateAddon(Integer.parseInt(values[1]),values[2], false);
-					break;
+					case SELECT_EMPTY:
+						break;
+					case SELECT_CHECKED:
+						generateAddon(Integer.parseInt(values[1]), values[2], true);
+						break;
+					case SELECT_CROSS:
+						generateAddon(Integer.parseInt(values[1]), values[2], false);
+						break;
 				}
 			}
 
@@ -240,7 +237,6 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 					
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
 						int _curr_pos = (Integer)v.getTag();
 						if(_curr_pos != index_selected_parent)
 						{
@@ -248,18 +244,13 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 							temp1.setBackgroundResource(R.drawable.gridview_title_bar);
 							TextView temp2 = (TextView)listParentViews.get(_curr_pos).findViewById(R.id.gridViewImageTitle);
 							temp2.setBackgroundColor(Color.rgb(0, 112, 60));
-							
-							
 							index_selected_parent = _curr_pos;
 							c = prodAddonsHandler.getSpecificChildAddons( _prod_id, Global.productParentAddons.get(_curr_pos).get("cat_id"));
 							adapter = new PickerAddonLV_Adapter(activity,c,CursorAdapter.NO_SELECTION,imageLoader);
 					        myGridView.setAdapter(adapter);
-					        
 						}
-						
 					}
 				});
-				
 				listParentViews.add(view);
 				addonParentLL.addView(view);
 				if(pos==0)
@@ -267,7 +258,6 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 					tv.setBackgroundColor(Color.rgb(0, 112, 60));
 				}
 				pos++;
-				
 			}
 		}
 	}
@@ -347,9 +337,7 @@ public class PickerAddon_FA  extends BaseFragmentActivityActionBar implements On
 			}
 
 			UUID uuid = UUID.randomUUID();
-			String randomUUIDString = uuid.toString();
-
-			ord.ordprod_id = randomUUIDString;
+			ord.ordprod_id = uuid.toString();
 			global.orderProductsAddons.add(ord);
 
 		}
