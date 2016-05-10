@@ -3,6 +3,7 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
+import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
+import com.android.support.Global;
 
 import java.util.List;
 
@@ -69,6 +74,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
                                 img.setImageResource(getRoundTableBySize(table.getDimensions().getWidth()));
                             }
                         }
+                        DinningTableOrder dinningTableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                         params[0].leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), mapFloor);
                         params[0].topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), mapFloor);
                         String label = getActivity().getString(R.string.table_label_map) + " " + table.getNumber();
@@ -76,6 +82,26 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
                         map.addView(tableItem, params[0]);
                         tableItem.findViewById(R.id.table_map_container).setOnClickListener(TablesMapFragment.this);
                         tableItem.findViewById(R.id.table_map_container).setTag(table);
+                        TextView timeTxt = (TextView) tableItem.findViewById(R.id.timetextView21);
+                        TextView guestsTxt = (TextView) tableItem.findViewById(R.id.gueststextView16);
+                        TextView amountxt = (TextView) tableItem.findViewById(R.id.amounttextView23);
+                        if (dinningTableOrder != null) {
+                            timeTxt.setBackgroundResource(R.color.seat7);
+                            guestsTxt.setBackgroundResource(R.color.seat7);
+                            amountxt.setBackgroundResource(R.color.seat7);
+                            timeTxt.setVisibility(View.VISIBLE);
+                            guestsTxt.setVisibility(View.VISIBLE);
+                            amountxt.setVisibility(View.VISIBLE);
+                            timeTxt.setText(dinningTableOrder.getElapsedTime());
+                            guestsTxt.setText(String.format("%d/%d", dinningTableOrder.getNumberOfGuest(), table.getSeats()));
+                            Order order = dinningTableOrder.getOrder(getActivity());
+                            amountxt.setText(Global.formatDoubleStrToCurrency(order.ord_subtotal));
+                        } else {
+                            timeTxt.setBackgroundResource(R.color.seat12);
+                            timeTxt.setVisibility(View.GONE);
+                            guestsTxt.setText(String.format("%d/%d", 0, table.getSeats()));
+                            amountxt.setVisibility(View.GONE);
+                        }
                     }
                 }
             }

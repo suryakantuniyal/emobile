@@ -5,10 +5,10 @@ import com.google.gson.Gson;
 import java.math.BigDecimal;
 import java.util.Comparator;
 
+import io.realm.RealmObject;
+
 
 public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
-    private String empt = "";
-
     public String addon = "0";
     public String isAdded = "0";
     public String isPrinted = "0";

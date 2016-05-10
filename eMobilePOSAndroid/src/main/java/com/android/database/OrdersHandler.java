@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.dao.DinningTableOrderDAO;
+import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.support.Customer;
@@ -610,6 +612,7 @@ public class OrdersHandler {
         args.put(processed, updateValue);
         args.put(isOnHold, "0");
         DBManager._db.update(table_name, args, ord_id + " = ?", new String[]{orderID});
+        DinningTableOrderDAO.deleteByNumber(getOrder(orderID).assignedTable);
     }
 
     public void updateOrderTypeToInvoice(String orderID) {

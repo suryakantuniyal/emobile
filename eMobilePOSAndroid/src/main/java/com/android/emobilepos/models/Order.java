@@ -7,7 +7,12 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
-public class Order implements  Cloneable{
+import java.util.List;
+
+import io.realm.RealmList;
+import io.realm.RealmObject;
+
+public class Order implements Cloneable {
     public String ord_id = "";
     public String qbord_id = "";
     public String emp_id = "";
@@ -59,10 +64,8 @@ public class Order implements  Cloneable{
     public String sync_id = "";
     public Customer customer;
 
-
     //private Global global;
 
-    private transient MyPreferences myPref;
     public String assignedTable;
     public String associateID;
     public int numberOfSeats;
@@ -75,7 +78,7 @@ public class Order implements  Cloneable{
     }
 
     public Order(Activity activity) {
-        myPref = new MyPreferences(activity);
+        MyPreferences myPref = new MyPreferences(activity);
         ord_issync = "0";
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
@@ -95,4 +98,5 @@ public class Order implements  Cloneable{
         String json = gson.toJson(this, Order.class);
         return json;
     }
+
 }
