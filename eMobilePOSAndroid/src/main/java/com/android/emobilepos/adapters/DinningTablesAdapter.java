@@ -42,7 +42,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.iconLine.setImageResource(R.drawable.dinning_table);
+        holder.iconLine.setImageResource(R.drawable.table_square_md);
         holder.textLine.setText(String.valueOf(dinningTables.get(position).getNumber()));
         holder.dinningTable = dinningTables.get(position);
         return convertView;
