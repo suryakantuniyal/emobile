@@ -1231,6 +1231,9 @@
     <string name="config_handpoint_update">Update Firmware</string>
     <string name="device_update_completed">Device update request completed.</string>
     <string name="device_update_fail">Device update request fail.</string>
+    <string name="payment_void_title">Payment Void</string>
+    <string name="payment_void_completed">Payment void completed.</string>
+    <string name="reset_dinning_table">Reset dinning table</string>
 
 
 </resources>

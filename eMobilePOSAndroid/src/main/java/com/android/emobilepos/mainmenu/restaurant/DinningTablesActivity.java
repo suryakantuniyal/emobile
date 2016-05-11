@@ -1,45 +1,24 @@
 package com.android.emobilepos.mainmenu.restaurant;
 
 
-import android.app.Activity;
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.PowerManager;
-import android.os.RemoteException;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.android.soundmanager.SoundManager;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.honeywell.decodemanager.DecodeManager;
-import com.honeywell.decodemanager.barcode.CommonDefine;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
@@ -52,14 +31,22 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dinning_tables);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        titlePageIndicator.setViewPager(mViewPager);
+        refresh();
+//        setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
+//        mViewPager = (ViewPager) findViewById(R.id.container);
+//        titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
+//        mViewPager.setAdapter(getmSectionsPagerAdapter());
+//        titlePageIndicator.setViewPager(mViewPager);
 
     }
 
+    public void refresh(){
+        setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
+        mViewPager.setAdapter(getmSectionsPagerAdapter());
+        titlePageIndicator.setViewPager(mViewPager);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -81,6 +68,22 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 //        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
+     */
+    public SectionsPagerAdapter getmSectionsPagerAdapter() {
+        return mSectionsPagerAdapter;
+    }
+
+    public void setmSectionsPagerAdapter(SectionsPagerAdapter mSectionsPagerAdapter) {
+        this.mSectionsPagerAdapter = mSectionsPagerAdapter;
     }
 
 

@@ -1736,6 +1736,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //                voidOnHold = true;
                 Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
                 processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, true);
+                DinningTableOrderDAO.deleteByNumber(((OrderingMain_FA) activity).getSelectedDinningTableNumber());
                 break;
             case 2:// cancel hold
 //                voidOnHold = false;
