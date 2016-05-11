@@ -39,6 +39,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DinningTableDAO;
+import com.android.dao.DinningTableOrderDAO;
 import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
 import com.android.database.Locations_DB;
@@ -59,6 +61,8 @@ import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -81,6 +85,7 @@ import com.viewpagerindicator.CirclePageIndicator;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -1698,7 +1703,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         ordersHandler.insert(global.order);
         global.encodedImage = "";
         orderProductsHandler.insert(global.orderProducts);
-
+        DinningTable table = DinningTableDAO.getByNumber(global.order.assignedTable);
+        DinningTableOrder dinningTableOrder = new DinningTableOrder();
+        dinningTableOrder.setDinningTable(table);
+        dinningTableOrder.setCurrentOrderId(global.order.ord_id);
+        dinningTableOrder.setNumberOfGuest(mainLVAdapter.getSeatsAmount());
+        dinningTableOrder.setOrderStartDate(new Date());
+        DinningTableOrderDAO.insert(dinningTableOrder);
         new printAsync().execute(true);
 
 
@@ -1725,6 +1736,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //                voidOnHold = true;
                 Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
                 processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, true);
+                DinningTableOrderDAO.deleteByNumber(((OrderingMain_FA) activity).getSelectedDinningTableNumber());
                 break;
             case 2:// cancel hold
 //                voidOnHold = false;

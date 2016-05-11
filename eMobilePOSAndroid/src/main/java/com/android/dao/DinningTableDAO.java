@@ -74,4 +74,11 @@ public class DinningTableDAO {
         DinningTable table = where.equalTo("id", tableId).findFirst();
         return table;
     }
+
+    public static DinningTable getByNumber(String tableNumber) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmQuery<DinningTable> where = realm.where(DinningTable.class);
+        DinningTable table = where.equalTo("number", tableNumber).findFirst();
+        return table;
+    }
 }

@@ -11,12 +11,6 @@
     android:paddingRight="14dp"
     android:paddingTop="5dp">
 
-    <ImageView
-        android:id="@+id/dinningtableimageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/table_round_lg" />
-
     <TextView
         android:id="@+id/tableNumbertextView"
         android:layout_width="wrap_content"
@@ -24,4 +18,50 @@
         android:text="Table #1"
         android:textAppearance="@style/black_text_appearance"
         android:textSize="@dimen/text_default" />
+
+    <ImageView
+        android:id="@+id/dinningtableimageView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/table_round_lg" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="1dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="2"
+            android:drawableLeft="@drawable/ic_group_black_18dp"
+            android:id="@+id/gueststextView16"
+            android:layout_weight="1"
+            android:background="@color/seat12"
+            android:textColor="@color/black"
+            android:layout_marginRight="1dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_access_time_black_18dp"
+            android:text="0:15"
+            android:id="@+id/timetextView21"
+            android:layout_weight="1"
+            android:background="@color/seat12"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_attach_money_black_18dp"
+        android:text="$84.95"
+        android:id="@+id/amounttextView23"
+        android:background="@color/seat12"
+        android:textColor="@color/black"
+        android:layout_marginTop="1dp" />
+
 </LinearLayout>

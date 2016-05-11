@@ -352,15 +352,15 @@ public class SAXSynchHandler extends DefaultHandler {
 //				prodHandler.emptyTable();
 //			}
 //			break;
-		case Global.S_PRODUCT_ALIASES:
-			if(isInsert)
-				prodAliasesDB.insert(dataList,dictionaryListMap);
-			else
-			{
-				prodAliasesDB = new ProductAliases_DB(activity);
-				prodAliasesDB.emptyTable();
-			}
-			break;
+//		case Global.S_PRODUCT_ALIASES:
+//			if(isInsert)
+//				prodAliasesDB.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				prodAliasesDB = new ProductAliases_DB(activity);
+//				prodAliasesDB.emptyTable();
+//			}
+//			break;
 		case Global.S_PROD_IMG:
 			if(isInsert)
 				prodImgHandler.insert(dataList,dictionaryListMap);

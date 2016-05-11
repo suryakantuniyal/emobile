@@ -87,7 +87,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
     private Drawable mapDrawable;
     private Button voidButton, printButton;
     private MyPreferences myPref;
-    private boolean isVoid;
 
 
     @Override
@@ -101,7 +100,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         myPref = new MyPreferences(activity);
 
         pay_id = extras.getString("pay_id");
-        isVoid = extras.getBoolean("isVoid");
+        boolean isVoid = extras.getBoolean("isVoid");
 
         String pay_amount = extras.getString("pay_amount");
         String cust_name = extras.getString("cust_name");
@@ -237,7 +236,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                     promptManagerPassword();
                 else
                     voidTransaction();
-                voidButton.setEnabled(true);
+//                voidButton.setEnabled(false);
                 break;
 
         }
@@ -414,6 +413,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         } else {
             //payHandler.updateIsVoid(pay_id);
             payHandler.createVoidPayment(paymentToBeRefunded, false, null);
+            Global.showPrompt(activity, R.string.payment_void_title, getString(R.string.payment_void_completed));
+
         }
     }
 

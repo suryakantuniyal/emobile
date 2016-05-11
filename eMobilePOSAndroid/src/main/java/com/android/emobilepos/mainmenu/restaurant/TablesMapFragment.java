@@ -3,27 +3,35 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
+import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
+import com.android.support.Global;
 
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TablesMapFragment extends Fragment implements View.OnClickListener {
+public class TablesMapFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
     private List<DinningTable> dinningTables;
 
@@ -42,6 +50,10 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        drawDinningTableMap(view);
+    }
+
+    private void drawDinningTableMap(View view) {
         final RelativeLayout.LayoutParams[] params = new RelativeLayout.LayoutParams[1];
 
         final RelativeLayout map = (RelativeLayout) view.findViewById(R.id.dinningTableMap);
@@ -69,6 +81,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
                                 img.setImageResource(getRoundTableBySize(table.getDimensions().getWidth()));
                             }
                         }
+                        DinningTableOrder dinningTableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                         params[0].leftMargin = (int) convertPixelsToDp(table.getPosition().getPositionX(), mapFloor);
                         params[0].topMargin = (int) convertPixelsToDp(table.getPosition().getPositionY(), mapFloor);
                         String label = getActivity().getString(R.string.table_label_map) + " " + table.getNumber();
@@ -76,12 +89,31 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
                         map.addView(tableItem, params[0]);
                         tableItem.findViewById(R.id.table_map_container).setOnClickListener(TablesMapFragment.this);
                         tableItem.findViewById(R.id.table_map_container).setTag(table);
+                        TextView timeTxt = (TextView) tableItem.findViewById(R.id.timetextView21);
+                        TextView guestsTxt = (TextView) tableItem.findViewById(R.id.gueststextView16);
+                        TextView amountxt = (TextView) tableItem.findViewById(R.id.amounttextView23);
+                        if (dinningTableOrder != null) {
+                            timeTxt.setBackgroundResource(R.color.seat7);
+                            guestsTxt.setBackgroundResource(R.color.seat7);
+                            amountxt.setBackgroundResource(R.color.seat7);
+                            timeTxt.setVisibility(View.VISIBLE);
+                            guestsTxt.setVisibility(View.VISIBLE);
+                            amountxt.setVisibility(View.VISIBLE);
+                            timeTxt.setText(dinningTableOrder.getElapsedTime());
+                            guestsTxt.setText(String.format("%d/%d", dinningTableOrder.getNumberOfGuest(), table.getSeats()));
+                            Order order = dinningTableOrder.getOrder(getActivity());
+                            amountxt.setText(Global.formatDoubleStrToCurrency(order.ord_subtotal));
+                            tableItem.findViewById(R.id.table_map_container).setOnLongClickListener(TablesMapFragment.this);
+                        } else {
+                            timeTxt.setBackgroundResource(R.color.seat12);
+                            timeTxt.setVisibility(View.GONE);
+                            guestsTxt.setText(String.format("%d/%d", 0, table.getSeats()));
+                            amountxt.setVisibility(View.GONE);
+                        }
                     }
                 }
             }
         });
-
-
     }
 
 
@@ -123,12 +155,38 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener 
         switch (v.getId()) {
             case R.id.table_map_container: {
                 DinningTable table = (DinningTable) v.getTag();
-                Intent result = new Intent();
-                result.putExtra("tableId", table.getId());
-                getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
-                getActivity().finish();
+                DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
+                if (tableOrder == null) {
+                    Intent result = new Intent();
+                    result.putExtra("tableId", table.getId());
+                    getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+                    getActivity().finish();
+                }
                 break;
             }
         }
+    }
+
+    @Override
+    public boolean onLongClick(final View v) {
+        switch (v.getId()) {
+            case R.id.table_map_container: {
+                final DinningTable table = (DinningTable) v.getTag();
+                PopupMenu popup = new PopupMenu(getActivity(), v);
+                popup.getMenuInflater().inflate(R.menu.dinning_table_map_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        DinningTableOrderDAO.deleteByNumber(table.getNumber());
+                        DinningTablesActivity activity = (DinningTablesActivity) getActivity();
+                        activity.refresh();
+                        return true;
+                    }
+                });
+                popup.show();
+                break;
+            }
+        }
+        return false;
     }
 }
