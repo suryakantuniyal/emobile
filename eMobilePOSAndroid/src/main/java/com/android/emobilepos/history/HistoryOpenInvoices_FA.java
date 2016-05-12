@@ -136,7 +136,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // TODO Auto-generated method stub
         myCursor.moveToPosition(position);
         if (myCursor.getString(myCursor.getColumnIndex("inv_ispaid"))
                 .equals("0"))
@@ -147,7 +146,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         int size = myAdapter.getCheckedItemSize();
         if (size > 0) {
             isMultiInvoice = true;
@@ -158,23 +156,21 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
 
     private TextWatcher getTextChangedListener() {
-        TextWatcher txtWatcher = new TextWatcher() {
+
+        return new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1,
                                           int arg2, int arg3) {
-                // TODO Auto-generated method stub
             }
 
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2,
                                       int arg3) {
-                // TODO Auto-generated method stub
                 String test = s.toString().trim();
                 if (test.isEmpty()) {
                     if (myCursor != null)
@@ -190,17 +186,15 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
                 }
             }
         };
-
-        return txtWatcher;
     }
 
     private OnEditorActionListener getEditorActionListener() {
-        OnEditorActionListener actionListener = new TextView.OnEditorActionListener() {
+
+        return new OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId,
                                           KeyEvent event) {
-                // TODO Auto-generated method stub
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String text = v.getText().toString().trim();
                     if (!text.isEmpty())
@@ -210,8 +204,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
                 return false;
             }
         };
-
-        return actionListener;
     }
 
 
@@ -248,9 +240,9 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         intent.putExtra("histinvoices", true);
         intent.putExtra("isMultipleInvoice", isMultiInvoice);
 
-        String[] inv_array = null;
-        Double[] balance_array = null;
-        String[] txnID_array = null;
+        String[] inv_array;
+        Double[] balance_array;
+        String[] txnID_array;
 
         if (inv_list.size() == 0) {
             myCursor.moveToPosition(position);
@@ -333,7 +325,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(myCursor.getString(myCursor.getColumnIndex("_id")));
 
@@ -343,7 +334,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 intentSinglePayment(pos);
             }
@@ -375,7 +365,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(_id);
             }
@@ -384,7 +373,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -408,7 +396,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
             _inv_id = params[0];
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
                 printSuccessful = Global.mainPrinterManager.currentDevice.printOpenInvoices(_inv_id);
@@ -459,14 +446,12 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
         public CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
-            // TODO Auto-generated constructor stub
             inflater = LayoutInflater.from(context);
             mSparseBooleanArray = new SparseBooleanArray();
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            // TODO Auto-generated method stub
 
             StringBuilder sb = new StringBuilder();
             TextView clientName = (TextView) view
@@ -533,7 +518,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
                     @Override
                     public void onClick(View v) {
-                        // TODO Auto-generated method stub
                         Intent intent = new Intent(activity, HistoryOpenInvoicesDetails_FA.class);
                         intent.putExtra("uid", uid.getText().toString());
                         chosenInvID = uid.getText().toString();
@@ -553,17 +537,13 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return myCursor.getCount(); // plus the 2 dividers
         }
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            // TODO Auto-generated method stub
-            View retView = inflater.inflate(R.layout.hist_invoices_lvadapter,
+            return inflater.inflate(R.layout.hist_invoices_lvadapter,
                     parent, false);
-
-            return retView;
         }
 
         public void getCheckedItems() {
@@ -616,7 +596,6 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
-                // TODO Auto-generated method stub
                 mSparseBooleanArray.put((Integer) buttonView.getTag(), isChecked);
 
             }
@@ -656,9 +635,9 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
                 }
             } else {
                 InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(this);
-                double invPaid = 0.0;
+                double invPaid;
                 int size = inv_list.size();
-                double remainingBalance = 0.0;
+                double remainingBalance;
                 for (int i = 0; i < size; i++) {
                     invPaid = invPayHandler.getTotalPaidAmount(inv_list.get(i));
                     if (invPaid != -1) {
