@@ -69,6 +69,14 @@ android {
             targetSdkVersion 23
             multiDexEnabled = true
         }
+        restoff {
+            minSdkVersion 15
+            applicationId = 'com.emobilepos.ivupos.app'
+            versionName "1.1.1.0"
+            versionCode 95
+            targetSdkVersion 23
+            multiDexEnabled = true
+        }
     }
     buildTypes {
         release {
