@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -266,6 +267,15 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 } else
                     isUSB = true;
 
+            } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
+                edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
+
+                if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
+                        "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
+                    sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n");
+                else
+                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
             }
 
             return null;
