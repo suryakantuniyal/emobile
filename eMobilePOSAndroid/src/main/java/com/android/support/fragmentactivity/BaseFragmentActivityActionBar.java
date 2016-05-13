@@ -17,6 +17,9 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.MyPreferences;
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Guarionex on 12/9/2015.
@@ -51,15 +54,26 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
         return false;
     }
 
+    private void setCrashliticAditionalInfo() {
+        // You can call any combination of these three methods
+        if (myPref != null) {
+            Crashlytics.setUserIdentifier(myPref.getAcctNumber());
+        }
+//        Crashlytics.setUserEmail("user@fabric.io");
+//        Crashlytics.setUserName("Test User");
+    }
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         if (navigationbarByModels == null || navigationbarByModels.length == 0) {
             navigationbarByModels = getResources().getStringArray(R.array.navigationbarByModels);
         }
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
-
+        setCrashliticAditionalInfo();
         setActionBar();
     }
 

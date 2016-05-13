@@ -94,9 +94,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onResume() {
-
-        if (global.isApplicationSentToBackground(activity))
+        if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
+        }
         global.stopActivityTransitionTimer();
 
         if (hasBeenCreated && !global.loggedIn
@@ -120,6 +120,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         new autoConnectPrinter().execute("");
         super.onResume();
+        throw new RuntimeException("Android force crashlitycs exception...");
     }
 
     @Override

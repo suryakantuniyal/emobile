@@ -56,6 +56,11 @@
             android:name="android.nfc.disable_beam_default"
             android:value="true" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="6fd88ec526ef9dd434f31ce165d5e68db177897c"
+            />
+
         <activity
             android:name=".initialization.SelectAccount_FA"
             android:configChanges="orientation|screenSize"

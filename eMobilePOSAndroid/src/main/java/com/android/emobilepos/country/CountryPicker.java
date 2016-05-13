@@ -1,6 +1,5 @@
 package com.android.emobilepos.country;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -240,7 +239,6 @@ public class CountryPicker extends DialogFragment implements
 	 * 
 	 * @param text
 	 */
-	@SuppressLint("DefaultLocale")
 	private void search(String text) {
 		selectedCountriesList.clear();
 
