@@ -120,7 +120,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         new autoConnectPrinter().execute("");
         super.onResume();
-        throw new RuntimeException("Android force crashlitycs exception...");
     }
 
     @Override
