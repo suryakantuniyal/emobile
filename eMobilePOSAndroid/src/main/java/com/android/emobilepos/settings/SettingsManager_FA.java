@@ -128,6 +128,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager = getPreferenceManager();
                     prefManager.findPreference("pref_change_password").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_salesassociate_config").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_configure_cash_drawer").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
@@ -340,6 +341,10 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
                         Global.btSwiper.currentDevice.updateFirmware();
                     }
+                    break;
+                case R.string.config_salesassociate_config:
+                    intent = new Intent(activity, SalesAssociateConfiguration.class);
+                    startActivity(intent);
                     break;
             }
             return false;

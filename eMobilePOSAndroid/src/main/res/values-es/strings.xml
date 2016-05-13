@@ -1234,6 +1234,7 @@
     <string name="payment_void_title">Payment Void</string>
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
+    <string name="sales_associates">Sales Associates</string>
 
 
 </resources>

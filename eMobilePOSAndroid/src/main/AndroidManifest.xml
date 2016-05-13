@@ -474,7 +474,12 @@
         </receiver>
 
         <activity android:name=".payment.TipAdjustmentFA" />
-
+        <activity
+            android:name=".settings.SalesAssociateDinningTables"
+            android:label="@string/title_activity_sales_associate_dinning_tables" />
+        <activity
+            android:name=".settings.SalesAssociateConfiguration"
+            android:label="@string/title_activity_sales_associate_configuration"></activity>
     </application>
 
 </manifest>

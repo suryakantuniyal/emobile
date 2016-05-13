@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout="@layout/fragment_sales_associate_configuration"
+    android:orientation="horizontal" >
+
+    <fragment
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:name="com.android.emobilepos.settings.SalesAssociateListFragment"
+        android:id="@+id/associateListfragment"
+        android:layout_weight="0.4" />
+
+    <fragment
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:name="com.android.emobilepos.settings.DinningTablesGridFragment"
+        android:id="@+id/dinningTablesGridfragment"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1" />
+</LinearLayout>

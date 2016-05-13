@@ -17,7 +17,7 @@ import io.realm.RealmResults;
 /**
  * Created by Guarionex on 4/12/2016.
  */
-public class SalesAssociateTableDAO {
+public class SalesAssociateDAO {
     public static void insert(String json) {
         Gson gson = new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
@@ -38,7 +38,7 @@ public class SalesAssociateTableDAO {
         try {
             List<SalesAssociate> salesAssociates = gson.fromJson(json, listType);
 
-            SalesAssociateTableDAO.insert(salesAssociates);
+            SalesAssociateDAO.insert(salesAssociates);
         } catch (Exception e) {
             e.printStackTrace();
         }

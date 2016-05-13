@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.DinningTableDAO;
-import com.android.dao.SalesAssociateTableDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
@@ -1765,8 +1765,8 @@ public class SynchMethods {
                     xml.getSalesAssociate());
             task.updateProgress(getString(R.string.sync_saving_salesassociate));
             try {
-                SalesAssociateTableDAO.truncate();
-                SalesAssociateTableDAO.insert(jsonRequest);
+                SalesAssociateDAO.truncate();
+                SalesAssociateDAO.insert(jsonRequest);
             } catch (Exception e) {
                 e.printStackTrace();
             }

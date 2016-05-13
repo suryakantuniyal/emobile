@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.android.emobilepos.settings.SalesAssociateListFragment">
+    <TextView
+        android:id="@+id/dlogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:ems="15"
+        android:gravity="center"
+        android:text="@string/sales_associates"
+        android:textAppearance="@style/white_text_appearance"
+        android:textSize="@dimen/header_bar_text_size" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/salesAssociatelistView"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/dlogTitle" />
+</RelativeLayout>
