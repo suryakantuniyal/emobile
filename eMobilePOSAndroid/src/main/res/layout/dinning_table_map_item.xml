@@ -34,23 +34,25 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="2"
+            android:text="2/4"
             android:drawableLeft="@drawable/ic_group_black_18dp"
             android:id="@+id/gueststextView16"
             android:layout_weight="1"
             android:background="@color/seat12"
             android:textColor="@color/black"
-            android:layout_marginRight="1dp" />
+            android:layout_marginRight="1dp"
+            android:singleLine="true" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_access_time_black_18dp"
-            android:text="0:15"
+            android:text="00:15"
             android:id="@+id/timetextView21"
             android:layout_weight="1"
             android:background="@color/seat12"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:singleLine="true" />
 
     </LinearLayout>
 
@@ -62,6 +64,7 @@
         android:id="@+id/amounttextView23"
         android:background="@color/seat12"
         android:textColor="@color/black"
-        android:layout_marginTop="1dp" />
+        android:layout_marginTop="1dp"
+        android:singleLine="true" />
 
 </LinearLayout>

@@ -10,17 +10,24 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.Order;
+import com.android.support.Global;
 
+import java.util.Collections;
 import java.util.List;
 
 public class DinningTablesAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
     private List<DinningTable> dinningTables;
+    private Activity activity;
 
 
     public DinningTablesAdapter(Activity activity, List<DinningTable> dinningTables) {
+        this.activity = activity;
         mInflater = LayoutInflater.from(activity);
         this.dinningTables = dinningTables;
     }
@@ -32,26 +39,48 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
         ViewHolder holder;
 
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.main_menu_listviewadapter, null);
+            convertView = mInflater.inflate(R.layout.dinning_table_map_item, null);
             holder = new ViewHolder();
-            holder.textLine = (TextView) convertView.findViewById(R.id.salesText);
-            holder.iconLine = (ImageView) convertView.findViewById(R.id.salesIcon);
+            holder.time = (TextView) convertView.findViewById(R.id.timetextView21);
+            holder.guests = (TextView) convertView.findViewById(R.id.gueststextView16);
+            holder.amount = (TextView) convertView.findViewById(R.id.amounttextView23);
+            holder.image = (ImageView) convertView.findViewById(R.id.dinningtableimageView3);
+            holder.tableNumber = (TextView) convertView.findViewById(R.id.tableNumbertextView);
             convertView.setTag(holder);
 
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
-        holder.iconLine.setImageResource(R.drawable.table_square_md);
-        holder.textLine.setText(String.valueOf(dinningTables.get(position).getNumber()));
+        DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(dinningTables.get(position).getNumber());
+        holder.image.setImageResource(R.drawable.table_round_lg);
+        holder.tableNumber.setText(dinningTables.get(position).getNumber());
         holder.dinningTable = dinningTables.get(position);
+        if (tableOrder != null) {
+            holder.time.setBackgroundResource(R.color.seat7);
+            holder.guests.setBackgroundResource(R.color.seat7);
+            holder.amount.setBackgroundResource(R.color.seat7);
+            holder.time.setVisibility(View.VISIBLE);
+            holder.guests.setVisibility(View.VISIBLE);
+            holder.amount.setVisibility(View.VISIBLE);
+            holder.time.setText(tableOrder.getElapsedTime());
+            holder.guests.setText(String.format("%d/%d", tableOrder.getNumberOfGuest(), dinningTables.get(position).getSeats()));
+            Order order = tableOrder.getOrder(activity);
+            holder.amount.setText(Global.formatDoubleStrToCurrency(order.ord_subtotal));
+        } else {
+            holder.time.setBackgroundResource(R.color.seat12);
+            holder.guests.setBackgroundResource(R.color.seat12);
+            holder.amount.setBackgroundResource(R.color.seat12);
+            holder.time.setVisibility(View.GONE);
+            holder.guests.setText(String.format("%d/%d", 0, dinningTables.get(position).getSeats()));
+            holder.amount.setVisibility(View.GONE);
+        }
         return convertView;
     }
 
 
     public class ViewHolder {
-        TextView textLine;
-        ImageView iconLine;
+        TextView tableNumber, guests, time, amount;
+        ImageView image;
         public DinningTable dinningTable;
     }
 

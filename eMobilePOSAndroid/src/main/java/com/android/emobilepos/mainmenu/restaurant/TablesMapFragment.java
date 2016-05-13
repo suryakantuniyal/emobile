@@ -3,10 +3,8 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +25,8 @@ import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 
 import java.util.List;
+
+import io.realm.RealmResults;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -106,6 +106,8 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                             tableItem.findViewById(R.id.table_map_container).setOnLongClickListener(TablesMapFragment.this);
                         } else {
                             timeTxt.setBackgroundResource(R.color.seat12);
+                            guestsTxt.setBackgroundResource(R.color.seat12);
+                            amountxt.setBackgroundResource(R.color.seat12);
                             timeTxt.setVisibility(View.GONE);
                             guestsTxt.setText(String.format("%d/%d", 0, table.getSeats()));
                             amountxt.setVisibility(View.GONE);
@@ -179,7 +181,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                     public boolean onMenuItemClick(MenuItem item) {
                         DinningTableOrderDAO.deleteByNumber(table.getNumber());
                         DinningTablesActivity activity = (DinningTablesActivity) getActivity();
-                        activity.refresh();
+                        activity.refresh(0);
                         return true;
                     }
                 });
