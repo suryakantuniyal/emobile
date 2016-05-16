@@ -742,7 +742,7 @@ public class OrdersHandler {
     public Order getPrintedOrder(String ordID) {
         Order anOrder = new Order(activity);
         String sb = ("SELECT o.ord_id,o.ord_timecreated,o.ord_total,o.ord_subtotal,o.ord_discount,o.ord_taxamount,c.cust_name,c.AccountNumnber,o.cust_id, "
-                + "(o.ord_subtotal+o.ord_taxamount-o.ord_discount) AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid FROM Orders o LEFT OUTER JOIN Customers c ON "
+                + "o.ord_total AS 'gran_total', tipAmount, ord_signature,o.ord_HoldName,o.clerk_id,o.ord_comment,o.isVoid FROM Orders o LEFT OUTER JOIN Customers c ON "
                 + "o.cust_id = c.cust_id WHERE o.ord_id = '") +
                 ordID + "'";
 
