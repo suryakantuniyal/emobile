@@ -6,11 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.SalesAssociateListAdapter;
 import com.android.emobilepos.models.SalesAssociate;
 
 import io.realm.RealmResults;
@@ -21,6 +21,8 @@ import io.realm.RealmResults;
 public class SalesAssociateListFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private ListView list;
+    RealmResults<SalesAssociate> associates = SalesAssociateDAO.getAll();
+    private SalesAssociateListAdapter adapter;
 
     public SalesAssociateListFragment() {
     }
@@ -35,14 +37,19 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         list = (ListView) view.findViewById(R.id.salesAssociatelistView);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, getListValues());
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+//                R.layout.simple_list_item_1, android.R.id.text1, getListValues());
         list.setOnItemClickListener(this);
+        adapter = new SalesAssociateListAdapter(getActivity());
         list.setAdapter(adapter);
+
+        if (!associates.isEmpty()) {
+            SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+            activity.setSelectedSalesAssociate(associates.get(0));
+        }
     }
 
     private String[] getListValues() {
-        RealmResults<SalesAssociate> associates = SalesAssociateDAO.getAll();
         String[] vals = new String[associates.size()];
         int i = 0;
         for (SalesAssociate associate : associates) {
@@ -54,6 +61,12 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+//        view.setSelected(true);
+        adapter.selectedIdx = i;
+        SalesAssociate associate = SalesAssociateDAO.getByEmpId(associates.get(i).getEmp_id());
+        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+        activity.setSelectedSalesAssociate(associate);
+        activity.getDinningTablesGridFragment().setSalesAssociateInfo(associate);
+        adapter.notifyDataSetChanged();
     }
 }

@@ -19,13 +19,19 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/receipt_employee"
-            android:id="@+id/textView16" />
+            android:text="Jon Doe"
+            android:id="@+id/salesAssociateNametextView16"
+            android:textSize="@dimen/text_default"
+            android:textAppearance="@style/black_text_appearance" />
+
     </LinearLayout>
 
     <GridView

@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
@@ -51,6 +52,8 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         adapter = new DinningTablesAdapter(getActivity(), dinningTables);
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(this);
+        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+        setSalesAssociateInfo(activity.getSelectedSalesAssociate());
     }
 
 
@@ -59,5 +62,14 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         final DinningTable table = (DinningTable) adapterView.getItemAtPosition(i);
         DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
 
+    }
+
+    public void setSalesAssociateInfo(SalesAssociate selectedSalesAssociate) {
+        TextView name = (TextView) getView().findViewById(R.id.salesAssociateNametextView16);
+        if (selectedSalesAssociate != null) {
+            name.setText(selectedSalesAssociate.toString());
+        } else {
+            name.setText("");
+        }
     }
 }

@@ -19,5 +19,6 @@
         android:layout_height="match_parent"
         android:id="@+id/salesAssociatelistView"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/dlogTitle" />
+        android:layout_below="@+id/dlogTitle"
+        android:layout_margin="10dp" />
 </RelativeLayout>

@@ -23,7 +23,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/intermediates/classes/ems/debug" />
     <output-test url="file://$MODULE_DIR$/build/intermediates/classes/test/ems/debug" />
     <exclude-output />
@@ -43,6 +43,12 @@
       <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/shaders" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/ems/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/ems/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/ems/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/assets" type="java-test-resource" />
@@ -51,12 +57,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/ems/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/ems/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/assets" type="java-resource" />
@@ -148,6 +148,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />

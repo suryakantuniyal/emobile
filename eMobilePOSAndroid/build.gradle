@@ -77,6 +77,10 @@ android {
             signingConfig signingConfigs.config
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 repositories {
@@ -133,7 +137,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.google.guava:guava:18.0'
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:support-v4:23.2.0'
+    compile 'com.android.support:support-v4:23.4.0'
     compile 'com.android.support:support-v13:24.0.0-alpha1'
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
