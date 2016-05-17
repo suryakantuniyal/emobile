@@ -12,6 +12,7 @@
     <color name = "gray_flat_headers">#e5e5e4</color>
     <color name = "gray_flat_tiles">#cccbcb</color>
     <color name="blue_dark">#165bf6</color>
+    <color name = "white_flat_bg">#f5f5f5</color>
 
 
 </resources>

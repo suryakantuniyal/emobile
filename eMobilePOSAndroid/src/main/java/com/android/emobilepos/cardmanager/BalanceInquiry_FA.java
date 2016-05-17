@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -45,7 +44,7 @@ import javax.xml.parsers.SAXParserFactory;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -171,7 +170,7 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 			}
 
 		} else {
-			int _swiper_type = myPref.swiperType(true, -2);
+			int _swiper_type = myPref.getSwiperType();
 			int _printer_type = myPref.getPrinterType();
 			if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
 				Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
@@ -414,6 +413,11 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
 
 	@Override
 	public void startSignature() {
+	}
+
+	@Override
+	public void nfcWasRead(String nfcUID) {
+
 	}
 
 }

@@ -23,7 +23,7 @@
             android:textSize="@dimen/header_bar_text_size" />
 
         <Button
-            style="@style/black_text_appearance"
+            style="@style/action_button_text_appearance"
             android:id="@+id/processButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/ordering_checkout_btn_height_size"

@@ -45,8 +45,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
-public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnClickListener {
-    private ProgressDialog myProgressDialog;
+import util.NumberUtil;
+
+public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
+//    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
     private Context thisContext = this;
     private Activity activity = this;
@@ -79,7 +81,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
     private Bundle extras;
     private Button btnProcess;
     private List<GroupTax> groupTaxRate;
-    private NumberUtils numberUtils = new NumberUtils();
 
 
     @Override
@@ -167,7 +168,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     int lent = paid.getText().length();
                     Selection.setSelection(paid.getText(), lent);
@@ -178,7 +178,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(amountDue.getText(), amountDue.getText().length());
                 }
@@ -208,10 +207,9 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 btnProcess.setEnabled(false);
                 double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                if (enteredAmount < 0) {
+                if (enteredAmount <= 0) {
                     paid.setBackgroundResource(R.drawable.edittext_wrong_input);
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
                 } else {
@@ -236,7 +234,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
                 grandTotalAmount = amountToBePaid + amountToTip;
                 paid.setText(amountDue.getText().toString());
@@ -256,7 +253,21 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, amountDue);
+                NumberUtils.parseInputedCurrency(s, amountDue);
+            }
+        });
+
+        this.tipAmount.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                recalculateChange();
+            }
+
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                NumberUtils.parseInputedCurrency(s, tipAmount);
             }
         });
 
@@ -270,16 +281,10 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, paid);
+                NumberUtils.parseInputedCurrency(s, paid);
             }
         });
 
-//        List<OrderProducts> orderProducts = global.orderProducts;
-//        double subtotalDbl = 0;
-//        for (OrderProducts products : orderProducts) {
-//            subtotalDbl += Double.parseDouble(products.itemSubtotal);
-//        }
-//        subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         subtotal.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount")))));
         if (!Global.isIvuLoto || isFromSalesReceipt) {
             findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
@@ -295,7 +300,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     promptTipConfirmation();
                 }
             });
@@ -328,7 +332,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(subtotal.getText(), subtotal.getText().length());
                 }
@@ -339,7 +342,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(tax1.getText(), tax1.getText().length());
                 }
@@ -350,7 +352,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(tax2.getText(), tax2.getText().length());
                 }
@@ -359,7 +360,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                numberUtils.parseInputedCurrency(s, subtotal);
+                NumberUtils.parseInputedCurrency(s, subtotal);
                 if (!isFromSalesReceipt) {
                     calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                     calculateAmountDue(subtotal, tax1, tax2, amountDue);
@@ -404,14 +405,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         });
     }
 
-    public static void calculateAmountDue(EditText subtotal, EditText tax1, EditText tax2, EditText amount) {
-        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
-        double tax1Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1));
-        double tax2Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2));
-        double amountDueDbl = subtotalDbl + tax1Dbl + tax2Dbl;
-
-        amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(amountDueDbl)));
-    }
 
     public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
         if (groupTaxRate.size() > 0)
@@ -422,7 +415,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
 
     private void recalculateChange() {
-
+        amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tipAmount));
         double totAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
         double totalPaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
 
@@ -480,7 +473,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, promptTipField);
+                NumberUtils.parseInputedCurrency(s, promptTipField);
             }
         });
 
@@ -489,7 +482,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(promptTipField.getText(), promptTipField.getText().length());
                 }
@@ -562,8 +554,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-
                 if (tipAmount != null)
                     tipAmount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(Double.toString(amountToTip)))));
                 dialog.dismiss();
@@ -669,13 +659,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
                 null, null,
                 null, null, null,
                 null, null, null);
-
-
-//        Payment payment = new Payment(activity, extras.getString("pay_id"), extras.getString("cust_id"), invoiceId, jobId, clerkId, custidkey,
-//                extras.getString("paymethod_id"), actualAmount, amountToBePaid,
-//                customerNameField.getText().toString(), reference.getText().toString(), phoneNumberField.getText().toString(), customerEmailField.getText().toString(),
-//                amountToTip, taxAmnt1, taxAmnt2, taxName1, taxName2,
-//                isRef, paymentType, "Cash");
 
 
         Global.amountPaid = Double.toString(amountTender);
@@ -797,7 +780,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             boolean isReturn = false;
-            if (Global.ord_type.equals(Global.OrderType.RETURN.getCodeString()) || isRefund)
+            if (Global.ord_type == Global.OrderType.RETURN || isRefund)
                 isReturn = true;
             ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
             if (amountToBePaid <= actualAmount) {
@@ -812,13 +795,15 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     private class processPaymentAsync extends AsyncTask<Boolean, String, Payment> {
 
+        private ProgressDialog progressDialog;
+
         @Override
         protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(thisContext);
-            myProgressDialog.setMessage(getString(R.string.processing_payment_msg));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+            progressDialog = new ProgressDialog(thisContext);
+            progressDialog.setMessage(getString(R.string.processing_payment_msg));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
 
@@ -832,16 +817,14 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
                 else
                     payment = processPayment();
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+
             }
             return payment;
         }
 
         @Override
         protected void onPostExecute(Payment payment) {
-            myProgressDialog.dismiss();
+            progressDialog.dismiss();
 
             double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
             double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
@@ -863,6 +846,7 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     private class printAsync extends AsyncTask<Payment, Void, Payment> {
         private boolean printSuccessful = true;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
@@ -932,7 +916,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(payment);
 
@@ -973,7 +956,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 finish();
             }
@@ -1018,7 +1000,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         int temp = 0;
         switch (v.getId()) {
             case R.id.btnFive:

@@ -19,6 +19,8 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,9 +35,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DinningTableDAO;
+import com.android.dao.DinningTableOrderDAO;
+import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
 import com.android.database.Locations_DB;
 import com.android.database.OrderProductsAttr_DB;
@@ -49,17 +55,20 @@ import com.android.database.TransferLocations_DB;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.OrderDetailsActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.consignment.ConsignmentCheckout_FA;
 import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
+import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
-import com.android.database.DBManager;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -69,11 +78,16 @@ import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.viewpagerindicator.CirclePageIndicator;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -81,6 +95,22 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
 
     private AddProductBtnCallback callBackAddProd;
+    private boolean isToGo;
+    private Order onHoldOrder;
+
+    public Receipt_FR() {
+
+    }
+
+    public static Receipt_FR getInstance(Order onHoldOrder) {
+        Receipt_FR receipt_fr = new Receipt_FR();
+        receipt_fr.onHoldOrder = onHoldOrder;
+        return receipt_fr;
+    }
+//    public Receipt_FR(Order onHoldOrder) {
+//        this.onHoldOrder = onHoldOrder;
+//    }
+
 
     public interface AddProductBtnCallback {
         void addProductServices();
@@ -91,12 +121,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private Activity activity;
     private SemiClosedSlidingDrawer slidingDrawer;
     public TextView custName;
-    public static ReceiptMainLV_Adapter mainLVAdapter;
+    public OrderProductListAdapter mainLVAdapter;
     private ReceiptRestLV_Adapter restLVAdapter;
-    // private ListViewAdapter myAdapter;
     public static ListView receiptListView;
-    // private DragSortListView receiptListGuari123
-    // View;
+
 
     private Global.TransactionType caseSelected = Global.TransactionType.SALE_RECEIPT;
     private boolean custSelected;
@@ -111,7 +139,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private ProductsHandler prodHandler;
 
     private String ord_HoldName = "";
-    private boolean voidOnHold = false;
+//    private boolean voidOnHold = false;
 
     private ProgressDialog myProgressDialog;
 
@@ -150,10 +178,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         fragInstance = this;
 
         myPref = new MyPreferences(activity);
-        global.order = new Order(activity);
+        if (onHoldOrder == null) {
+            global.order = new Order(activity);
+        } else {
+            global.order = onHoldOrder;
+        }
         final Bundle extras = activity.getIntent().getExtras();
         typeOfProcedure = (Global.TransactionType) extras.get("option_number");
-
+        isToGo = ((OrderingMain_FA) getActivity()).isToGo;
         prodHandler = new ProductsHandler(activity);
         callBackAddProd = (AddProductBtnCallback) activity;
         callBackUpdateHeaderTitle = (UpdateHeaderTitleCallback) activity;
@@ -180,6 +212,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             addProd.setVisibility(View.GONE);
         }
 
+        Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
+        addSeatButton.setOnClickListener(this);
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || !myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+            addSeatButton.setVisibility(View.GONE);
+        }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
         plusBut.setOnClickListener(this);
 
@@ -329,26 +366,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return view;
     }
 
-    // @Override
-    // public void onResume() {
-    //
-    // if (receiptListView != null) {
-    // global = (Global) getActivity().getApplication();
-    // receiptListView.invalidateViews();
-    //
-    // if(callBackRecalculate!=null)
-    // callBackRecalculate.recalculateTotal();
-    //
-    // }
-    // super.onResume();
-    // }
-
-    // @Override
-    // public void onDestroy()
-    // {
-    // super.onDestroy();
-    // String t = "";
-    // }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
         public MyPagerAdapter(FragmentManager fragmentManager) {
@@ -381,9 +398,22 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void setupListView() {
-        mainLVAdapter = new ReceiptMainLV_Adapter(activity);
+        OrderingMain_FA orderingMain_fa = (OrderingMain_FA) getActivity();
+        mainLVAdapter = new OrderProductListAdapter(getActivity(), global.orderProducts, orderingMain_fa); //new ReceiptMainLV_Adapter(activity);
         receiptListView.setAdapter(mainLVAdapter);
-//		reCalculate();
+        if (orderingMain_fa.openFromHold && !orderingMain_fa.isToGo) {
+            addHoldOrderSeats();
+        }
+        mainLVAdapter.notifyDataSetChanged();
+        //		reCalculate();
+    }
+
+    private int addHoldOrderSeats() {
+        HashSet<String> seats = new HashSet<String>();
+        for (OrderProduct product : global.orderProducts) {
+            mainLVAdapter.addSeat(product);
+        }
+        return seats.size();
     }
 
     private void overridePrice(final int position) {
@@ -416,7 +446,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             @Override
                             public void onClick(DialogInterface thisDialog,
                                                 int which) {
-                                // TODO Auto-generated method stub
                                 String value = NumberUtils.cleanCurrencyFormatedNumber(input);
                                 if (!value.isEmpty()) {
                                     BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
@@ -500,7 +529,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
         lastClickTime = SystemClock.elapsedRealtime();
         switch (v.getId()) {
-
+            case R.id.addSeatButton:
+                mainLVAdapter.addSeat();
+                if (isToGo) {
+                    isToGo = false;
+                    ((OrderingMain_FA) getActivity()).isToGo = false;
+                    ((OrderingMain_FA) getActivity()).setRestaurantSaleType(Global.RestaurantSaleType.EAT_IN);
+                    String firstSeat = mainLVAdapter.getFirstSeat();
+                    ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(firstSeat);
+                    ((OrderingMain_FA) getActivity()).setSelectedDinningTableNumber("1");
+                    mainLVAdapter.moveSeatItems(global.orderProducts, firstSeat);
+                    mainLVAdapter.notifyDataSetChanged();
+                }
+                break;
             case R.id.plusButton:
                 intent = new Intent(getActivity(), ViewCustomers_FA.class);
                 startActivityForResult(intent, 0);
@@ -512,9 +553,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 loadSaveTemplate();
                 break;
             case R.id.holdButton:
-
+                ((OrderingMain_FA) getActivity()).orderingAction = OrderingMain_FA.OrderingAction.HOLD;
                 if (global.orderProducts != null && global.orderProducts.size() > 0) {
-                    processOrder("", true);
+                    Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                    processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
 
                 } else
                     Toast.makeText(activity,
@@ -568,112 +610,103 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        final int removePos = position;
+        final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) mainLVAdapter.getItem(position);
+        final int orderProductIdx = orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProduct.orderProduct) : 0;
         if (restLVAdapter != null)
-            position = restLVAdapter.dataPosition(position);
-        String isVoidedItem = global.orderProducts.get(position).item_void;
+            position = restLVAdapter.dataPosition(orderProductIdx);
+        if (orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
+            ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(orderSeatProduct.seatNumber);
+            mainLVAdapter.notifyDataSetChanged();
+        } else {
+            String isVoidedItem = orderSeatProduct.orderProduct.item_void;
+            final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
+            if (!isVoidedItem.equals("1")) {
+                PopupMenu popup = new PopupMenu(getActivity(), view);
+                popup.getMenuInflater().inflate(R.menu.receiptlist_product_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.modifyProduct:
+                                Intent intent = new Intent(getActivity(),
+                                        PickerProduct_FA.class);
+                                intent.putExtra("isModify", true);
+                                intent.putExtra("modify_position", orderProductIdx);
+                                startActivityForResult(intent, 0);
 
-        if (!isVoidedItem.equals("1")) {
-            final Dialog dialog = new Dialog(activity,
-                    R.style.Theme_TransparentTest);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(true);
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.setContentView(R.layout.picked_item_dialog);
-
-            TextView itemName = (TextView) dialog.findViewById(R.id.itemName);
-            itemName.setText(global.orderProducts.get(position).ordprod_name);
-
-            Button remove = (Button) dialog.findViewById(R.id.removeButton);
-            Button cancel = (Button) dialog.findViewById(R.id.cancelButton);
-            Button modify = (Button) dialog.findViewById(R.id.modifyButton);
-            Button overridePrice = (Button) dialog
-                    .findViewById(R.id.overridePriceButton);
-            Button payWithLoyalty = (Button) dialog
-                    .findViewById(R.id.btnPayWithLoyalty);
-
-            final int pos = position;
-            remove.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    if (myPref
-                            .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
-                        showPromptManagerPassword(REMOVE_ITEM, pos, removePos);
-                    } else {
-                        proceedToRemove(pos, removePos);
+                                break;
+                            case R.id.removeProduct:
+                                if (myPref
+                                        .getPreferences(MyPreferences.pref_require_password_to_remove_void)) {
+                                    showPromptManagerPassword(REMOVE_ITEM, orderProductIdx, orderProductIdx);
+                                } else {
+                                    proceedToRemove(orderProductIdx, orderProductIdx);
+                                    mainLVAdapter.notifyDataSetChanged();
+                                }
+                                break;
+                            case R.id.moveProductSeat:
+                                int i = 0;
+                                for (OrderSeatProduct seatProduct : mainLVAdapter.orderSeatProductList) {
+                                    if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
+                                        if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.orderProduct.assignedSeat)) {
+                                            item.getSubMenu().add(0, i, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
+                                            subMenus.put(i, seatProduct.seatNumber);
+                                            i++;
+                                        }
+                                    }
+                                }
+                                break;
+                            case R.id.viewVariations:
+                                break;
+                            case R.id.payWithLoyalty:
+                                if (!Boolean.parseBoolean(global.orderProducts.get(orderProductIdx).payWithPoints)) {
+                                    String price = orderSeatProduct.orderProduct.prod_price_points;
+                                    if (OrderLoyalty_FR.isValidPointClaim(price)) {
+                                        orderSeatProduct.orderProduct.overwrite_price = "0.00";
+                                        orderSeatProduct.orderProduct.itemTotal = "0.00";
+                                        orderSeatProduct.orderProduct.itemSubtotal = "0.00";
+                                        orderSeatProduct.orderProduct.payWithPoints = "true";
+                                        refreshView();
+                                    } else
+                                        Global.showPrompt(activity,
+                                                R.string.dlog_title_error,
+                                                "Not enough points available");
+                                } else {
+                                    Global.showPrompt(activity, R.string.dlog_title_error,
+                                            "Points claimed");
+                                }
+                                break;
+                            case R.id.overridePrice:
+                                if (myPref
+                                        .getPreferences(MyPreferences.pref_skip_manager_price_override)) {
+                                    overridePrice(orderProductIdx);
+                                } else {
+                                    showPromptManagerPassword(OVERWRITE_PRICE, orderProductIdx, orderProductIdx);
+                                }
+                                break;
+                            case R.id.cancel:
+                                break;
+                            default:
+                                if (subMenus.containsKey(Integer.valueOf(item.getItemId()))) {
+                                    String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
+                                    ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(targetSeat);
+                                    orderSeatProduct.orderProduct.assignedSeat = targetSeat;
+                                    orderSeatProduct.setSeatGroupId(mainLVAdapter.getSeat(targetSeat).getSeatGroupId());
+                                    mainLVAdapter.notifyDataSetChanged();
+                                }
+                                break;
+                        }
+                        return true;
                     }
+                });
+                popup.show();
 
-                    dialog.dismiss();
-                }
-            });
-
-            cancel.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-
-                }
-            });
-
-            modify.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(),
-                            PickerProduct_FA.class);
-                    intent.putExtra("isModify", true);
-                    intent.putExtra("modify_position", pos);
-                    startActivityForResult(intent, 0);
-
-                    dialog.dismiss();
-                }
-            });
-
-            overridePrice.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-
-                    if (myPref
-                            .getPreferences(MyPreferences.pref_skip_manager_price_override)) {
-                        overridePrice(pos);
-                    } else {
-                        showPromptManagerPassword(OVERWRITE_PRICE, pos, pos);
-                    }
-                }
-            });
-
-            payWithLoyalty.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    dialog.dismiss();
-                    if (!Boolean.parseBoolean(global.orderProducts.get(pos).payWithPoints)) {
-                        String price = global.orderProducts.get(pos).prod_price_points;
-                        if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                            global.orderProducts.get(pos).overwrite_price = "0.00";
-                            global.orderProducts.get(pos).itemTotal = "0.00";
-                            global.orderProducts.get(pos).itemSubtotal = "0.00";
-                            global.orderProducts.get(pos).payWithPoints = "true";
-                            refreshView();
-                        } else
-                            Global.showPrompt(activity,
-                                    R.string.dlog_title_error,
-                                    "Not enough points available");
-                    } else {
-                        Global.showPrompt(activity, R.string.dlog_title_error,
-                                "Points claimed");
-                    }
-                }
-            });
-
-            dialog.show();
+            }
         }
+        receiptListView.smoothScrollToPosition(position);
+
     }
+
 
     public void checkoutOrder() {
         if (receiptListView.getCount() == 0 && caseSelected != Global.TransactionType.CONSIGNMENT) {
@@ -693,11 +726,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     Toast.LENGTH_LONG).show();
         } else {
 
-            if (myPref
-                    .getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
-                    processOrder("", false);
-                else
+            if (myPref.getPreferences(MyPreferences.pref_skip_want_add_more_products)) {
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                    if (isToGo) {
+                        processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                    } else {
+                        if (global.orderProducts != null && global.orderProducts.size() > 0) {
+                            processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
+                        } else {
+                            Toast.makeText(activity,
+                                    getString(R.string.warning_empty_products),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else
                     showEmailDlog();
             } else {
                 showAddMoreProductsDlg();
@@ -751,18 +794,35 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
 
                 if (!emailInput.getText().toString().isEmpty()) {
-                    if (checkEmail(emailInput.getText().toString()))
-                        processOrder(emailInput.getText().toString(), false);
-                    else
+                    if (checkEmail(emailInput.getText().toString())) {
+                        Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                    } else
                         Toast.makeText(activity,
                                 getString(R.string.warning_email_invalid),
                                 Toast.LENGTH_LONG).show();
-                } else
-                    processOrder(emailInput.getText().toString(), false);
+                } else {
+                    if (isToGo) {
+                        Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                    } else {
+//                        global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
+                        if (global.orderProducts != null && global.orderProducts.size() > 0) {
+                            Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                            processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
+
+                        } else
+                            Toast.makeText(activity,
+                                    getString(R.string.warning_empty_products),
+                                    Toast.LENGTH_SHORT).show();
+
+                    }
+                }
             }
         });
         dialog.show();
     }
+
 
     private void showAddMoreProductsDlg() {
 
@@ -787,7 +847,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
@@ -795,12 +854,24 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
 
-                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments))
-                    processOrder("", false);
-                else
+                if (myPref.getPreferences(MyPreferences.pref_skip_email_phone) && !myPref.getPreferences(MyPreferences.pref_ask_order_comments)) {
+                    Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+//                    processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, false);
+                    if (isToGo) {
+                        processOrder(order, "", OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                    } else {
+                        if (global.orderProducts != null && global.orderProducts.size() > 0) {
+                            processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
+                        } else {
+                            Toast.makeText(activity,
+                                    getString(R.string.warning_empty_products),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                } else
                     showEmailDlog();
             }
         });
@@ -817,51 +888,56 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return true;
     }
 
-    private void processOrder(String emailHolder,
-                              boolean buttonOnHold) {
+    private void processOrder(Order order, String emailHolder, OrderingMain_FA.OrderingAction orderingAction,
+                              boolean isFromOnHold, boolean voidOnHold) {
 
-        OrdersHandler handler = new OrdersHandler(activity);
+        OrdersHandler ordersHandler = new OrdersHandler(activity);
         OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
-        global.order = buildOrder(activity, global, myPref, emailHolder);
+        global.order = order;
 
         order_email = emailHolder;
 
-        OrderProductsHandler handler2 = new OrderProductsHandler(activity);
-        OrderProductsAttr_DB handler3 = new OrderProductsAttr_DB(activity);
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+        OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(activity);
         if (caseSelected != Global.TransactionType.REFUND) {
-            if (buttonOnHold) {
+            if (orderingAction == OrderingMain_FA.OrderingAction.HOLD) {
                 global.order.isOnHold = "1";
 
-                if (Global.isFromOnHold) {
-                    handler.updateFinishOnHold(Global.lastOrdID);
+                if (isFromOnHold && isToGo) {
+                    ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     // global.order.getSetData("ord_timecreated", false,
                     // handler.updateFinishOnHold(Global.lastOrdID));
                     global.order.ord_HoldName = ord_HoldName;
                     global.order.processed = "10";
-                    handler.insert(global.order);
+                    ordersHandler.insert(global.order);
                     global.encodedImage = "";
-                    handler2.insert(global.orderProducts);
-                    handler3.insert(global.ordProdAttr);
+                    orderProductsHandler.insert(global.orderProducts);
+                    productsAttrDb.insert(global.ordProdAttr);
 
-                    if (myPref
-                            .getPreferences(MyPreferences.pref_restaurant_mode))
+                    if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
                         new printAsync().execute(true);
+                    }
 
                     DBManager dbManager = new DBManager(activity);
                     dbManager.synchSendOrdersOnHold(false, false);
-                } else
-                    showOnHoldPromptName(handler, handler2);
+                } else {
+                    if (global.order.ord_HoldName == null || global.order.ord_HoldName.isEmpty()) {
+                        showOnHoldPromptName(ordersHandler, orderProductsHandler);
+                    } else {
+                        setOrderAsHold(global.order.ord_HoldName, ordersHandler, orderProductsHandler);
+                    }
+                }
             } else if (Global.isFromOnHold) {
                 if (!voidOnHold) {
-                    handler.updateFinishOnHold(Global.lastOrdID);
+                    ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     // global.order.getSetData("ord_timecreated",
                     // false,handler.updateFinishOnHold(Global.lastOrdID) );
                     global.order.processed = "10";
                     global.order.isOnHold = "0";
-                    handler.insert(global.order);
+                    ordersHandler.insert(global.order);
                     global.encodedImage = "";
-                    handler2.insert(global.orderProducts);
-                    handler3.insert(global.ordProdAttr);
+                    orderProductsHandler.insert(global.orderProducts);
+                    productsAttrDb.insert(global.ordProdAttr);
 
                     if (global.listOrderTaxes != null
                             && global.listOrderTaxes.size() > 0
@@ -876,15 +952,15 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     DBManager dbManager = new DBManager(activity);
                     dbManager.synchSendOrdersOnHold(false, true);
                 } else {
-                    handler.updateFinishOnHold(Global.lastOrdID);
+                    ordersHandler.updateFinishOnHold(Global.lastOrdID);
                     // global.order.getSetData("ord_timecreated", false,
                     // handler.updateFinishOnHold(Global.lastOrdID));
                     global.order.isVoid = "1";
                     global.order.processed = "9";
-                    handler.insert(global.order);
+                    ordersHandler.insert(global.order);
                     global.encodedImage = "";
-                    handler2.insert(global.orderProducts);
-                    handler3.insert(global.ordProdAttr);
+                    orderProductsHandler.insert(global.orderProducts);
+                    productsAttrDb.insert(global.ordProdAttr);
 
                     if (global.listOrderTaxes != null
                             && global.listOrderTaxes.size() > 0
@@ -892,8 +968,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordTaxesDB.insert(global.listOrderTaxes,
                                 global.order.ord_id);
 
-                    new onHoldAsync().execute(CHECK_OUT_HOLD);
-
+                    new OnHoldAsync().execute(CHECK_OUT_HOLD, voidOnHold);
                 }
             } else {
                 if (global.orderProducts.size() > 0 ||
@@ -901,7 +976,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
                             !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
                             !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
-                        handler.insert(global.order);
+                        ordersHandler.insert(global.order);
                     }
                 }
                 if (global.orderProducts.size() > 0) {
@@ -909,9 +984,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         if (!global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_INVOICE.getCodeString()) &&
                                 !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_RETURN.getCodeString()) &&
                                 !global.order.ord_type.equalsIgnoreCase(Global.OrderType.CONSIGNMENT_FILLUP.getCodeString())) {
-                            handler2.insert(global.orderProducts);
+                            orderProductsHandler.insert(global.orderProducts);
                         }
-                        handler3.insert(global.ordProdAttr);
+                        productsAttrDb.insert(global.ordProdAttr);
                         if (global.listOrderTaxes != null
                                 && global.listOrderTaxes.size() > 0
                                 && typeOfProcedure != Global.TransactionType.REFUND) {
@@ -926,18 +1001,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             }
         }
 
-        if (!buttonOnHold && !voidOnHold) {
+        if (orderingAction != OrderingMain_FA.OrderingAction.HOLD && !voidOnHold) {
             switch (caseSelected) {
                 case SALE_RECEIPT: // is Sales Receipt
                 {
-                    this.updateLocalInventory(false);
+                    updateLocalInventory(getActivity(), global.orderProducts, false);
                     typeOfProcedure = Global.TransactionType.PAYMENT;
                     if (OrderTotalDetails_FR.gran_total
                             .compareTo(new BigDecimal(0)) == -1) {
-                        this.updateLocalInventory(true);
+                        updateLocalInventory(getActivity(), global.orderProducts, true);
                         proceedToRefund();
                     } else {
-                        this.updateLocalInventory(false);
+                        updateLocalInventory(getActivity(), global.orderProducts, false);
                         isSalesReceipt();
                     }
                     break;
@@ -946,7 +1021,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (custSelected) // is Order
                     {
                         typeOfProcedure = Global.TransactionType.ORDERS;
-                        handler.updateIsProcessed(Global.lastOrdID, "1");
+                        ordersHandler.updateIsProcessed(Global.lastOrdID, "1");
                         if (myPref
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
                             if (myPref
@@ -959,13 +1034,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         }
                     } else// is Return
                     {
-                        this.updateLocalInventory(true);
+                        updateLocalInventory(getActivity(), global.orderProducts, true);
                         typeOfProcedure = Global.TransactionType.RETURN;
                         if (myPref
                                 .getPreferences(MyPreferences.pref_return_require_refund))
                             proceedToRefund();
                         else {
-                            handler.updateIsProcessed(Global.lastOrdID, "1");
+                            ordersHandler.updateIsProcessed(Global.lastOrdID, "1");
                             showRefundDlg();
                         }
                     }
@@ -974,13 +1049,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case RETURN: {
                     if (custSelected) // Return
                     {
-                        this.updateLocalInventory(true);
+                        updateLocalInventory(getActivity(), global.orderProducts, true);
                         typeOfProcedure = Global.TransactionType.ORDERS;
                         if (myPref
                                 .getPreferences(MyPreferences.pref_return_require_refund))
                             proceedToRefund();
                         else {
-                            handler.updateIsProcessed(Global.lastOrdID, "1");
+                            ordersHandler.updateIsProcessed(Global.lastOrdID, "1");
                             showRefundDlg();
                         }
                     } else {
@@ -991,8 +1066,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case INVOICE: {
                     if (custSelected) // Invoice
                     {
-                        handler.updateIsProcessed(Global.lastOrdID, "1");
-                        this.updateLocalInventory(false);
+                        ordersHandler.updateIsProcessed(Global.lastOrdID, "1");
+                        updateLocalInventory(getActivity(), global.orderProducts, false);
                         typeOfProcedure = Global.TransactionType.RETURN;
                         showPaymentDlg();
                     }
@@ -1001,7 +1076,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 case ESTIMATE: {
                     if (custSelected) // Estimate
                     {
-                        handler.updateIsProcessed(Global.lastOrdID, "1");
+                        ordersHandler.updateIsProcessed(Global.lastOrdID, "1");
                         typeOfProcedure = Global.TransactionType.INVOICE;
                         if (myPref
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
@@ -1021,7 +1096,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                     if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
                         processConsignment();
-                        global.orderProducts = new ArrayList<OrderProducts>();
+                        global.orderProducts = new ArrayList<OrderProduct>();
                         global.qtyCounter = new HashMap<String, String>();
                         Intent intent = new Intent(activity,
                                 ConsignmentCheckout_FA.class);
@@ -1036,19 +1111,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     break;
                 }
             }
-            // global.orderProducts = new ArrayList<OrderProducts>();
+            // global.orderProduct = new ArrayList<OrderProduct>();
             // global.qtyCounter.clear();
         }
     }
 
     public static Order buildOrder(Activity activity, Global global,
-                                   MyPreferences myPref, String _email) {
+                                   String _email, String ord_HoldName, String assignedTable, String associateId) {
+        MyPreferences myPref = new MyPreferences(activity);
         Order order = new Order(activity);
-
+        order.assignedTable = assignedTable;
+        order.associateID = associateId;
         order.ord_total = Global
                 .getRoundBigDecimal(OrderTotalDetails_FR.gran_total);
-        order.ord_subtotal = Global
-                .getRoundBigDecimal(OrderTotalDetails_FR.sub_total.subtract(OrderTotalDetails_FR.itemsDiscountTotal));
+        order.ord_subtotal = Global.getRoundBigDecimal(OrderTotalDetails_FR.sub_total);
+//                Global.getRoundBigDecimal(OrderTotalDetails_FR.sub_total.subtract(OrderTotalDetails_FR.itemsDiscountTotal));
         if (Global.lastOrdID == null || Global.lastOrdID.isEmpty()) {
             GenerateNewID generator = new GenerateNewID(activity);
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
@@ -1057,7 +1134,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
         order.qbord_id = Global.lastOrdID.replace("-", "");
-
+        order.ord_HoldName = ord_HoldName;
         order.c_email = _email;
 
         order.cust_id = myPref.getCustID();
@@ -1073,7 +1150,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
 
         int totalLines = global.orderProducts.size();
-        for (OrderProducts orderProduct : global.orderProducts) {
+        for (OrderProduct orderProduct : global.orderProducts) {
             order.ord_lineItemDiscount += orderProduct.discount_value;
         }
         if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
@@ -1458,7 +1535,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
         }
 
-        global.orderProducts = new ArrayList<OrderProducts>();
+        global.orderProducts = new ArrayList<OrderProduct>();
         global.qtyCounter = new HashMap<String, String>();
         if (mainLVAdapter != null)
             mainLVAdapter.notifyDataSetChanged();
@@ -1467,6 +1544,22 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         callBackUpdateHeaderTitle.updateHeaderTitle(title);
 
         reCalculate();
+    }
+
+    private void showSplitedOrderPreview() {
+        Gson gson = new Gson();
+        Type listType = new TypeToken<List<OrderSeatProduct>>() {
+        }.getType();
+        Intent intent = new Intent(activity, SplittedOrderSummary_FA.class);
+        Bundle b = new Bundle();
+        String json = gson.toJson(mainLVAdapter.orderSeatProductList, listType);
+        b.putString("orderSeatProductList", json);
+        b.putString("tableNumber", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber());
+        b.putString("taxID", Global.taxID);
+        b.putString("orderTaxId", global.order.tax_id);
+        b.putInt("discountSelected", Global.discountPosition - 1);
+        intent.putExtras(b);
+        startActivityForResult(intent, 0);
     }
 
     private void isSalesReceipt() {
@@ -1493,12 +1586,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         startActivityForResult(intent, 0);
     }
 
-    private void updateLocalInventory(boolean isIncrement) {
+    public static void updateLocalInventory(Activity activity, List<OrderProduct> orderProducts, boolean isIncrement) {
         EmpInvHandler eiHandler = new EmpInvHandler(activity);
-        int size = global.orderProducts.size();
+        int size = orderProducts.size();
         for (int i = 0; i < size; i++) {
-            eiHandler.updateOnHand(global.orderProducts.get(i).prod_id,
-                    global.orderProducts.get(i).ordprod_qty, isIncrement);
+            eiHandler.updateOnHand(orderProducts.get(i).prod_id, orderProducts.get(i).ordprod_qty, isIncrement);
         }
     }
 
@@ -1537,7 +1629,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
                 if (value.equals(myPref.posManagerPass(true, null))) // validate
@@ -1564,8 +1655,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         globalDlog.show();
     }
 
-    private void showOnHoldPromptName(final OrdersHandler handler,
-                                      final OrderProductsHandler handler2) {
+    private void showOnHoldPromptName(final OrdersHandler ordersHandler,
+                                      final OrderProductsHandler orderProductsHandler) {
         final Dialog globalDlog = new Dialog(activity,
                 R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1592,46 +1683,71 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
+                ord_HoldName = value;
                 if (!value.isEmpty()) {
-                    global.order.ord_HoldName = value;
-                    global.order.processed = "10";
-                    handler.insert(global.order);
-                    global.encodedImage = "";
-                    handler2.insert(global.orderProducts);
-
-                    new printAsync().execute(true);
-
-                    global.orderProducts = new ArrayList<OrderProducts>();
-                    global.qtyCounter.clear();
-                    global.resetOrderDetailsValues();
-
-                    DBManager dbManager = new DBManager(activity);
-                    dbManager.synchSendOrdersOnHold(false, false);
+                    setOrderAsHold(value, ordersHandler, orderProductsHandler);
                 } else {
-                    showOnHoldPromptName(handler, handler2);
+                    showOnHoldPromptName(ordersHandler, orderProductsHandler);
                 }
             }
         });
         globalDlog.show();
     }
 
+    private void setOrderAsHold(String holdName, OrdersHandler ordersHandler, OrderProductsHandler orderProductsHandler) {
+        global.order.ord_HoldName = holdName;
+        global.order.processed = "10";
+        global.order.numberOfSeats = mainLVAdapter.getSeatsAmount();
+        ordersHandler.insert(global.order);
+        global.encodedImage = "";
+        orderProductsHandler.insert(global.orderProducts);
+        DinningTable table = DinningTableDAO.getByNumber(global.order.assignedTable);
+        DinningTableOrder dinningTableOrder = new DinningTableOrder();
+        dinningTableOrder.setDinningTable(table);
+        dinningTableOrder.setCurrentOrderId(global.order.ord_id);
+        dinningTableOrder.setNumberOfGuest(mainLVAdapter.getSeatsAmount());
+        dinningTableOrder.setOrderStartDate(new Date());
+        DinningTableOrderDAO.insert(dinningTableOrder);
+        new printAsync().execute(true);
+
+
+        if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
+                || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
+            global.orderProducts = new ArrayList<OrderProduct>();
+            global.qtyCounter.clear();
+            global.resetOrderDetailsValues();
+        }
+        DBManager dbManager = new DBManager(activity);
+        dbManager.synchSendOrdersOnHold(false, false);
+        if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
+                && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
+                ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
+            showSplitedOrderPreview();
+        } else {
+            getActivity().finish();
+        }
+    }
+
     public void voidCancelOnHold(int type) {
         switch (type) {
             case 1:// void hold
-                voidOnHold = true;
-                processOrder("", false);
+//                voidOnHold = true;
+                Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                processOrder(order, "", OrderingMain_FA.OrderingAction.NONE, Global.isFromOnHold, true);
+                DinningTableOrderDAO.deleteByNumber(((OrderingMain_FA) activity).getSelectedDinningTableNumber());
                 break;
             case 2:// cancel hold
-                voidOnHold = false;
-                processOrder("", true);
+//                voidOnHold = false;
+                order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+
+                processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
                 break;
         }
     }
 
-    private class onHoldAsync extends AsyncTask<Integer, Integer, String> {
+    public class OnHoldAsync extends AsyncTask<Object, Integer, Boolean> {
         @Override
         protected void onPreExecute() {
             myProgressDialog = new ProgressDialog(getActivity());
@@ -1644,12 +1760,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
 
         @Override
-        protected String doInBackground(Integer... arg0) {
-            // TODO Auto-generated method stub
+        protected Boolean doInBackground(Object... arg0) {
 
             if (Global.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
-                switch (arg0[0]) {
+                switch ((Integer) arg0[0]) {
                     case UPDATE_HOLD_STATUS:
                         httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD,
                                 activity, Global.lastOrdID);
@@ -1660,11 +1775,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         break;
                 }
             }
-            return null;
+            return (Boolean) arg0[1];
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(Boolean voidOnHold) {
             myProgressDialog.dismiss();
             if (voidOnHold)
                 getActivity().finish();
@@ -1699,7 +1814,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().execute(false);
 
@@ -1709,7 +1823,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 reloadDefaultTransaction();
             }
@@ -1746,8 +1859,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         @Override
         protected String doInBackground(Boolean... params) {
-            // TODO Auto-generated method stub
-
             isPrintStationPrinter = params[0];
             if (!isPrintStationPrinter) {
                 publishProgress();
@@ -1852,7 +1963,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 proceedToRefund();
 
@@ -1862,7 +1972,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
@@ -1900,7 +2009,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 Intent intent = new Intent(activity, SelectPayMethod_FA.class);
                 intent.putExtra("typeOfProcedure", typeOfProcedure);
@@ -1926,7 +2034,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref
@@ -1942,9 +2049,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void proceedToRemove(int pos, int removePos) {
-        // String quant = global.orderProducts.get(pos).ordprod_qty;
-        // String prodID = global.orderProducts.get(pos).prod_id;
-        OrderProducts product = global.orderProducts.get(pos);
+        OrderProduct product = global.orderProducts.get(removePos);
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             double totalQty = (Double) Global.getFormatedNumber(true,
                     global.qtyCounter.get(product.prod_id));
@@ -1963,7 +2068,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (myPref
                 .getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
             product.item_void = "1";
-            String val = global.orderProducts.get(pos).ordprod_name;
+            String val = product.ordprod_name;
 
             product.ordprod_name = val + " [VOIDED]";
             product.overwrite_price = "0";
@@ -1976,14 +2081,14 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             if (Global.orderProductAddonsMap != null
                     && !Global.orderProductAddonsMap.isEmpty()) {
                 if (Global.orderProductAddonsMap.get(product.ordprod_id) != null)
-                    for (OrderProducts op : Global.orderProductAddonsMap
+                    for (OrderProduct op : Global.orderProductAddonsMap
                             .get(product.ordprod_id)) {
                         ordProdDB.deleteOrderProduct(op.ordprod_id);
                     }
 
                 Global.orderProductAddonsMap.remove(product.ordprod_id);
             }
-            global.orderProducts.remove(pos);
+            global.orderProducts.remove(product);
         }
 
         receiptListView.invalidateViews();
@@ -1995,63 +2100,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
     }
 
-//    private class SectionController extends DragSortController {
-//
-//        private ReceiptRestLV_Adapter mAdapter;
-//
-//        DragSortListView mDslv;
-//
-//        public SectionController(DragSortListView dslv,
-//                                 ReceiptRestLV_Adapter adapter) {
-//            super(dslv, R.id.dragDropIcon, DragSortController.ON_DOWN, 0);
-//            setRemoveEnabled(false);
-//            mDslv = dslv;
-//            mAdapter = adapter;
-//        }
-//
-//        @Override
-//        public int startDragPosition(MotionEvent ev) {
-//            int res = super.dragHandleHitPosition(ev);
-//            int width = mDslv.getWidth();
-//
-//            if ((int) ev.getX() > width / 2) {
-//                return res;
-//            } else {
-//                return DragSortController.MISS;
-//            }
-//        }
-//
-//        @Override
-//        public View onCreateFloatView(int position) {
-//            View v = mAdapter.getView(position, null, mDslv);
-//            v.setBackgroundResource(R.drawable.bg_handle_drag_selection);
-//            v.getBackground().setLevel(10000);
-//            return v;
-//        }
-//
-//        private int origHeight = -1;
-//
-//        @Override
-//        public void onDragFloatView(View floatView, Point floatPoint,
-//                                    Point touchPoint) {
-//            if (origHeight == -1) {
-//                origHeight = floatView.getHeight();
-//            }
-//
-//            if (touchPoint.x > mDslv.getWidth() / 2) {
-//                float scale = touchPoint.x - mDslv.getWidth() / 2;
-//                scale /= (float) (mDslv.getWidth() / 5);
-//                ViewGroup.LayoutParams lp = floatView.getLayoutParams();
-//                lp.height = Math.max(origHeight, (int) (scale * origHeight));
-//                floatView.setLayoutParams(lp);
-//            }
-//        }
-//
-//        @Override
-//        public void onDestroyFloatView(View floatView) {
-//            // do nothing; block super from crashing
-//        }
-//    }
 
     public void reCalculate() {
         pagerAdapter.getItem(0);
@@ -2073,7 +2121,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
             TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_choose_action);
-            // viewMsg.setText(R.string.dlog_msg_want_to_make_refund);
             viewMsg.setVisibility(View.GONE);
             Button btnSave = (Button) dlog.findViewById(R.id.btnDlogLeft);
             Button btnLoad = (Button) dlog.findViewById(R.id.btnDlogRight);
@@ -2090,7 +2137,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     handleTemplate.insert(myPref.getCustID());
                     dlog.dismiss();
                     Global.showPrompt(
@@ -2103,14 +2149,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-
-                    // TODO Auto-generated method stub
                     List<HashMap<String, String>> mapList = handleTemplate
                             .getTemplate(myPref.getCustID());
                     int size = mapList.size();
-                    global.orderProducts = new ArrayList<OrderProducts>();
+                    global.orderProducts = new ArrayList<OrderProduct>();
 
-                    OrderProducts ordProd = new OrderProducts();
+                    OrderProduct ordProd = new OrderProduct();
                     Orders anOrder = new Orders();
                     for (int i = 0; i < size; i++) {
                         ordProd.ordprod_id = mapList.get(i).get("ordprod_id");
@@ -2140,7 +2184,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         global.qtyCounter.put(mapList.get(i).get("prod_id"),
                                 mapList.get(i).get("ordprod_qty"));
 
-                        ordProd = new OrderProducts();
+                        ordProd = new OrderProduct();
                         anOrder = new Orders();
                     }
                     receiptListView.invalidateViews();
@@ -2158,7 +2202,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     @Override
     public void onDrawerClosed() {
-        // TODO Auto-generated method stub
         ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) receiptListView
                 .getLayoutParams();
 
@@ -2182,9 +2225,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
-        if (mainLVAdapter != null)
+        if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
-        else
+            receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
+        } else
             restLVAdapter.notifyDataSetChanged();
         reCalculate();
     }

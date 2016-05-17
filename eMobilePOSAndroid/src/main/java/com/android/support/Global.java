@@ -3,6 +3,7 @@ package com.android.support;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -16,17 +17,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.multidex.MultiDexApplication;
+import android.text.Html;
 import android.text.InputType;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.dao.RealMigration;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -34,7 +39,7 @@ import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.ordering.Catalog_FR;
@@ -77,7 +82,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-import drivers.EMSPAT100;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -95,6 +101,10 @@ public class Global extends MultiDexApplication {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
+        RealmConfiguration config = new RealmConfiguration.Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 
     public static boolean isIvuLoto = false;
@@ -127,6 +137,11 @@ public class Global extends MultiDexApplication {
     public static final int OT310 = 12;
     public static final int ESY13P1 = 13;
     public static final int KDC500 = 14;
+    public static final int HANDPOINT = 15;
+    public static final int ICMPEVO = 16;
+    public static final int WALKER = 17;
+    public static final int BIXOLON = 18;
+
 
 
     public enum BuildModel {
@@ -143,11 +158,14 @@ public class Global extends MultiDexApplication {
     public static final String AUDIO_MSR_ROVER = "2";
     public static final String AUDIO_MSR_WALKER = "3";
 
+    public enum RestaurantSaleType {
+        EAT_IN, TO_GO
+    }
 
     public enum TransactionType {
         SALE_RECEIPT(0), ORDERS(1), RETURN(2), INVOICE(3), ESTIMATE(4),
         PAYMENT(5), GIFT_CARD(6), LOYALTY_CARD(7), REWARD_CARD(8), REFUND(9),
-        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13);
+        ROUTE(10), ON_HOLD(11), CONSIGNMENT(12), LOCATION(13), TIP_ADJUSTMENT(14);
         private int code;
 
         TransactionType(int code) {
@@ -188,6 +206,8 @@ public class Global extends MultiDexApplication {
                     return CONSIGNMENT;
                 case 13:
                     return LOCATION;
+                case 14:
+                    return TIP_ADJUSTMENT;
                 default:
                     return null;
             }
@@ -299,6 +319,11 @@ public class Global extends MultiDexApplication {
     public final static int S_UPDATE_SYNC_TIME = 57;
     public final static int S_LOCATIONS = 58;
     public final static int S_SUBMIT_LOCATIONS_INVENTORY = 59;
+    public final static int S_GET_XML_DINNER_TABLES = 60;
+    public final static int S_GET_XML_SALES_ASSOCIATE = 61;
+    public final static int S_SUBMIT_TIP_ADJUSTMENT = 62;
+    public final static int S_SUBMIT_WORKINGKEY_REQUEST = 63;
+
     // public final static int S_LOCATIONS_INVENTORY = 59;
 
     public final static int FROM_OPEN_INVOICES = 100;
@@ -350,7 +375,7 @@ public class Global extends MultiDexApplication {
     public static HashMap<String, Integer> productParentAddonsDictionary;
     public HashMap<String, String[]> addonSelectionType;
     public static Map<String, HashMap<String, String[]>> addonSelectionMap;
-    public static HashMap<String, List<OrderProducts>> orderProductAddonsMap;
+    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
 
     public static Locations_Holder locationFrom, locationTo;
     public static TransferLocations_Holder transferLocation;
@@ -373,9 +398,9 @@ public class Global extends MultiDexApplication {
 
     public HashMap<String, String> ordProdAttrPending = new HashMap<String, String>();
     public List<OrdProdAttrHolder> ordProdAttr = new ArrayList<OrdProdAttrHolder>();
-    public List<OrderProducts> orderProducts = new ArrayList<OrderProducts>();
-    public List<OrderProducts> orderProductsAddons = new ArrayList<OrderProducts>();
-    // public static HashMap<String,List<OrderProducts>>orderProductsAddonsMap;
+    public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
+    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
+    // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
     // public List<Orders> cur_orders = new ArrayList<Orders>();
     public HashMap<String, String> qtyCounter = new HashMap<String, String>();
@@ -388,24 +413,24 @@ public class Global extends MultiDexApplication {
 
     public static List<String> consignMapKey;
     public static HashMap<String, HashMap<String, String>> consignSummaryMap;
-    public static List<OrderProducts> consignment_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> consignment_products = new ArrayList<OrderProduct>();
     public static Order consignment_order;
     // public static List<Orders>consignment_cur_order = new
     // ArrayList<Orders>();
     public static HashMap<String, String> consignment_qtyCounter = new HashMap<String, String>();
 
-    public static List<OrderProducts> cons_fillup_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> cons_fillup_products = new ArrayList<OrderProduct>();
     public static Order cons_fillup_order;
     // public static List<Orders>cons_fillup_cur_order = new
     // ArrayList<Orders>();
     public static HashMap<String, String> cons_fillup_qtyCounter = new HashMap<String, String>();
 
-    public static List<OrderProducts> cons_issue_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> cons_issue_products = new ArrayList<OrderProduct>();
     public static Order cons_issue_order;
     // public static List<Orders>cons_issue_cur_order = new ArrayList<Orders>();
     public static HashMap<String, String> cons_issue_qtyCounter = new HashMap<String, String>();
 
-    public static List<OrderProducts> cons_return_products = new ArrayList<OrderProducts>();
+    public static List<OrderProduct> cons_return_products = new ArrayList<OrderProduct>();
     public static Order cons_return_order;
     // public static List<Orders>cons_return_cur_order = new
     // ArrayList<Orders>();
@@ -522,6 +547,24 @@ public class Global extends MultiDexApplication {
             case ISMP:
                 _name = "iSMP";
                 break;
+            case HANDPOINT:
+                _name = "HANDPOINT";
+                break;
+            case ICMPEVO:
+                _name = "ICMPEVO";
+                break;
+            case EM100:
+                _name = "EM100";
+                break;
+            case EM70:
+                _name = "EM70";
+                break;
+            case KDC500:
+                _name = "KDC500";
+                break;
+            case BIXOLON:
+                _name = "BIXOLON";
+                break;
         }
         return _name;
 
@@ -540,8 +583,8 @@ public class Global extends MultiDexApplication {
         if (ordProdAttrPending != null)
             ordProdAttrPending.clear();
 
-        if (this.orderProductsAddons != null)
-            this.orderProductsAddons.clear();
+        if (this.orderProductAddons != null)
+            this.orderProductAddons.clear();
 
         if (this.listOrderTaxes != null)
             this.listOrderTaxes.clear();
@@ -697,7 +740,6 @@ public class Global extends MultiDexApplication {
         return value;
     }
 
-    private boolean validPassword = true;
 
     public void promptForMandatoryLogin(final Activity activity) {
         if (!loggedIn) {
@@ -711,7 +753,8 @@ public class Global extends MultiDexApplication {
             TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
             TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
             viewTitle.setText(R.string.dlog_title_confirm);
-            if (!validPassword)
+            final boolean[] validPassword = {true};
+            if (!validPassword[0])
                 viewMsg.setText(R.string.invalid_password);
             else
                 viewMsg.setText(R.string.enter_password);
@@ -722,15 +765,14 @@ public class Global extends MultiDexApplication {
 
                 @Override
                 public void onClick(View v) {
-                    // TODO Auto-generated method stub
                     globalDlog.dismiss();
                     MyPreferences myPref = new MyPreferences(activity);
                     String enteredPass = viewField.getText().toString().trim();
                     if (enteredPass.equals(myPref.getApplicationPassword())) {
                         loggedIn = true;
-                        validPassword = true;
+                        validPassword[0] = true;
                     } else {
-                        validPassword = false;
+                        validPassword[0] = false;
                         promptForMandatoryLogin(activity);
                     }
                 }
@@ -756,14 +798,13 @@ public class Global extends MultiDexApplication {
         TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(title);
-        viewMsg.setText(msg);
+        viewMsg.setText(Html.fromHtml(msg));
         Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 popDlog.dismiss();
             }
         });
@@ -814,7 +855,7 @@ public class Global extends MultiDexApplication {
         else
             sdf2 = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
-        String formatedDate = new String();
+        String formatedDate;
         try {
             formatedDate = sdf2.format(sdf1.parse(date));
 
@@ -959,7 +1000,7 @@ public class Global extends MultiDexApplication {
         result.put("Employees", "RequestEmployees.aspx");
         result.put("InvProducts", "getXMLInvoicesDetails.aspx");
         result.put("Invoices", "getXMLInvoices.aspx");
-        // result.put("OrderProducts", "getXMLOrdersOnHoldDetail.ashx");
+        // result.put("OrderProduct", "getXMLOrdersOnHoldDetail.ashx");
         // Orders
         result.put("PayMethods", "getXMLPayMethods.aspx");
         result.put("PriceLevel", "getXMLPriceLevel.aspx");
@@ -1083,7 +1124,7 @@ public class Global extends MultiDexApplication {
     }
 
     public void refreshParticularOrder(Activity activity, int position, Product product) {
-        OrderProducts orderedProducts = this.orderProducts.get(position);
+        OrderProduct orderedProducts = this.orderProducts.get(position);
         MyPreferences myPref = new MyPreferences(activity);
         String newPickedOrders = orderedProducts.ordprod_qty;
         double sum;
@@ -1304,152 +1345,6 @@ public class Global extends MultiDexApplication {
         return cardManager;
     }
 
-    public void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product) {
-        Orders order = new Orders();
-        OrderProducts ord = new OrderProducts();
-
-        int sum = 0;
-        if (this.qtyCounter.containsKey(product.getId()))
-            sum = Integer.parseInt(this.qtyCounter.get(product.getId()));
-
-        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == TransactionType.RETURN)
-            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
-        else
-            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
-        if (OrderingMain_FA.returnItem)
-            ord.isReturned = true;
-
-        order.setName(product.getProdName());
-        order.setValue(product.getProdPrice());
-        order.setProdID(product.getId());
-        order.setDiscount("0.00");
-        order.setTax("0.00");
-        order.setDistQty("0");
-        order.setTaxQty("0");
-
-        String val = product.getProdPrice();
-        if (val.isEmpty() || val == null)
-            val = "0.00";
-
-        BigDecimal total = Global.getBigDecimalNum(Global.formatNumToLocale(Double.parseDouble(val)));
-        // double total = 1 * Double.parseDouble(val);
-        if (isFromAddon) {
-            total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
-            // total+=Global.addonTotalAmount;
-        }
-
-        ord.overwrite_price = total.toString();
-        ord.prod_price = total.toString();
-
-        total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
-
-        DecimalFormat frmt = new DecimalFormat("0.00");
-        order.setTotal(frmt.format(total));
-
-        ord.prod_istaxable = product.getProdIstaxable();
-        ord.prod_taxtype = product.getProdTaxType();
-        ord.prod_taxcode = product.getProdTaxCode();
-
-        // add order to db
-        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != TransactionType.RETURN ? "-1" : "1";
-        ord.ordprod_name = product.getProdName();
-        ord.ordprod_desc = product.getProdDesc();
-        ord.prod_id = product.getId();
-
-        ord.onHand = product.getProdOnHand();
-        ord.imgURL = product.getProdImgName();
-        ord.cat_id = product.getCatId();
-        try {
-            ord.prod_price_points = product.getProdPricePoints();
-            ord.prod_value_points = product.getProdValuePoints();
-        } catch (Exception e) {
-
-        }
-
-        // Still need to do add the appropriate tax/discount value
-        ord.prod_taxValue = "0.00";
-        ord.discount_value = "0.00";
-
-        ord.taxAmount = "0";
-        ord.taxTotal = "0.00";
-        ord.disAmount = "0";
-        ord.disTotal = "0.00";
-        ord.itemTotal = total.toString();
-        ord.itemSubtotal = total.toString();
-
-        ord.tax_position = "0";
-        ord.discount_position = "0";
-        ord.pricelevel_position = "0";
-        ord.uom_position = "0";
-
-        ord.prod_price_updated = "0";
-        // OrdersHandler handler = new OrdersHandler(activity);
-
-        GenerateNewID generator = new GenerateNewID(activity);
-
-        MyPreferences myPref = new MyPreferences(activity);
-        // myPref.setLastOrdID(generator.getNextID(myPref.getLastOrdID()));
-
-        // if(!Global.isFromOnHold)
-        // {
-        // if (handler.getDBSize() == 0)
-        // Global.lastOrdID = generator.generate("",0);
-        // else
-        // Global.lastOrdID = generator.generate(handler.getLastOrdID(),0);
-        // }
-
-        if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
-            Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-        }
-
-        ord.ord_id = Global.lastOrdID;
-
-        if (global.orderProducts == null) {
-            global.orderProducts = new ArrayList<OrderProducts>();
-        }
-
-        UUID uuid = UUID.randomUUID();
-        String randomUUIDString = uuid.toString();
-
-        ord.ordprod_id = randomUUIDString;
-
-        if (isFromAddon) {
-            Global.addonTotalAmount = 0;
-
-            if (Global.addonSelectionMap == null)
-                Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
-            if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<String, List<OrderProducts>>();
-
-            if (global.addonSelectionType.size() > 0) {
-                StringBuilder sb = new StringBuilder();
-                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductsAddons);
-
-                sb.append(ord.ordprod_desc);
-                int tempSize = global.orderProductsAddons.size();
-                for (int i = 0; i < tempSize; i++) {
-
-//                    sb.append("<br/>");
-                    if (global.orderProductsAddons.get(i).isAdded.equals("0")) // Not
-                        // added
-                        sb.append("\n[NO ").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
-                    else
-                        sb.append("\n[").append(global.orderProductsAddons.get(i).ordprod_name).append("]");
-
-                }
-                ord.ordprod_desc = sb.toString();
-                ord.hasAddons = "1";
-
-                global.orderProductsAddons = new ArrayList<OrderProducts>();
-
-            }
-        }
-        String row1 = ord.ordprod_name;
-        String row2 = Global.formatDoubleStrToCurrency(product.getProdPrice());
-        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        global.orderProducts.add(ord);
-    }
 
     public static boolean isConnectedToInternet(Activity activity) {
         ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -1734,7 +1629,9 @@ public class Global extends MultiDexApplication {
     public static boolean deviceHasMSR(int _printer_type) {
         return (_printer_type == Global.ISMP || _printer_type == Global.STAR || _printer_type == Global.BAMBOO
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
-                || _printer_type == Global.KDC500 || _printer_type == Global.EM70 || _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
+                || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
+                _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
+                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
@@ -1788,4 +1685,93 @@ public class Global extends MultiDexApplication {
 
         return exists;
     }
+
+    private static int getNaturalOrientation(int orientation, int rotation) {
+        switch (rotation) {
+            case Surface.ROTATION_0: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                }
+            }
+            case Surface.ROTATION_90: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                }
+            }
+            case Surface.ROTATION_180: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT ||
+                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ) {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                }
+            }
+            case Surface.ROTATION_270: {
+                if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT ||
+                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                } else {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                }
+            }
+            default:
+                return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        }
+    }
+
+    public static int getScreenOrientation(Activity activity) {
+        int orientation = activity.getResources().getConfiguration().orientation;
+        int rotation = ((WindowManager) activity.getSystemService(
+                Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        int naturalOrientation = getNaturalOrientation(orientation, rotation);
+
+//        if (isTablet(activity) && (((rotation == 0 || rotation == 2) && orientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+//                orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT) || ((rotation == 1 || rotation == 3) &&
+//                orientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && orientation != ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+//        ))
+
+        if (naturalOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            switch (rotation) {
+                case Surface.ROTATION_0:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case Surface.ROTATION_90:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+                case Surface.ROTATION_180:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+                default:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+            }
+        } else {
+            switch (rotation) {
+                case Surface.ROTATION_0:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                    break;
+                case Surface.ROTATION_90:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                    break;
+                case Surface.ROTATION_180:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+                    break;
+                default:
+                    orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+                    break;
+            }
+        }
+        return orientation;
+    }
+
+    public static boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK)
+                >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
 }

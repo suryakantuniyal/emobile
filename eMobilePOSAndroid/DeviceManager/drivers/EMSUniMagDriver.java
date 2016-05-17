@@ -11,7 +11,7 @@ import IDTech.MSR.uniMag.UniMagTools.uniMagReaderToolsMsg;
 import IDTech.MSR.uniMag.UniMagTools.uniMagSDKTools;
 import android.app.Activity;
 import android.os.Handler;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 import util.CardData;
 
 

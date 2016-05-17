@@ -37,9 +37,9 @@ import android.os.AsyncTask;
 import datamaxoneil.connection.Connection_Bluetooth;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
-import protocols.EMSPrintingDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSPrintingDelegate;
 
 public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 

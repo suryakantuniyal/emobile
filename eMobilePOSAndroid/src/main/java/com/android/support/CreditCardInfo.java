@@ -1,5 +1,7 @@
 package com.android.support;
 
+import com.android.emobilepos.models.EMVContainer;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,6 +38,8 @@ public class CreditCardInfo {
     public String transid;
     public BigDecimal dueAmount = new BigDecimal("0");
     private boolean wasSwiped = false;
+    private String resultMessage;
+    private EMVContainer emvContainer;
 
 
     public void setWasSwiped(boolean value) {
@@ -190,7 +194,7 @@ public class CreditCardInfo {
             try {
                 Integer.parseInt(this.cardExpMonth);
             } catch (Exception e) {
-                this.cardExpMonth = String.valueOf(new Date().getMonth()+1);
+                this.cardExpMonth = String.valueOf(new Date().getMonth() + 1);
             }
         }
         return this.cardExpMonth;
@@ -217,9 +221,13 @@ public class CreditCardInfo {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy", Locale.getDefault());
             SimpleDateFormat dt2 = new SimpleDateFormat("yy", Locale.getDefault());
             dt2.set2DigitYearStart(new Date());
-            String formatedYear = new String();
+            Calendar cal = dt2.getCalendar();
+            cal.setTime(new Date());
+            cal.setTime(new Date());
+            String formatedYear;
             try {
-                Date date = dt2.parse(this.cardExpYear);
+                String milenium = String.valueOf(cal.get(Calendar.YEAR)).substring(0, 2);
+                Date date = dt2.parse(milenium + this.cardExpYear);
                 formatedYear = dt.format(date);
                 return formatedYear;
             } catch (ParseException e) {
@@ -269,5 +277,20 @@ public class CreditCardInfo {
         return this.encryptedTack2;
     }
 
+    public String getResultMessage() {
+        return resultMessage;
+    }
+
+    public void setResultMessage(String resultMessage) {
+        this.resultMessage = resultMessage;
+    }
+
+    public EMVContainer getEmvContainer() {
+        return emvContainer;
+    }
+
+    public void setEmvContainer(EMVContainer emvContainer) {
+        this.emvContainer = emvContainer;
+    }
 }
 

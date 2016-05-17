@@ -10,38 +10,29 @@ import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.Base64;
+import android.view.View;
 
-import com.android.database.ClerksHandler;
+import com.StarMicronics.jasura.JAException;
 import com.android.database.MemoTextHandler;
-import com.android.database.OrderProductsHandler;
-import com.android.database.OrderTaxes_DB;
-import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PaymentsHandler;
-import com.android.database.ProductsHandler;
-import com.android.emobilepos.R;
-import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.starmicronics.stario.StarIOPortException;
 import com.zebra.printer.MobilePrinter;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     static final int MESSAGE_START_WORK = Integer.MAX_VALUE - 4;
@@ -89,7 +80,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         myProgressDialog.setCancelable(false);
         myProgressDialog.show();
 
-        myPrinter.connect(myPref.printerMACAddress(true, null));
+        myPrinter.connect(myPref.getPrinterMACAddress());
     }
 
     @Override
@@ -115,7 +106,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
         }
 
         if (myPrinter != null)
-            myPrinter.connect(myPref.printerMACAddress(true, null));
+            myPrinter.connect(myPref.getPrinterMACAddress());
 
         try {
             Thread.sleep(3000);
@@ -538,6 +529,53 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
 
     }
 

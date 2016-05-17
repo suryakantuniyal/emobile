@@ -1,24 +1,25 @@
 package drivers;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import android.app.Activity;
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.os.Environment;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Base64;
+import android.util.Log;
+import android.util.SparseArray;
+import android.view.View;
+import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
+import com.android.database.DBManager;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -35,49 +36,55 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
-import com.android.database.DBManager;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.handpoint.api.Device;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
+import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.ByteBuffer;
+import java.text.Normalizer;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import POSSDK.POSSDK;
-
-import android.app.Activity;
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.util.Base64;
-import android.util.Log;
-import android.util.SparseArray;
-
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
 import drivers.elo.utils.PrinterAPI;
 import drivers.star.utils.Communication;
 import drivers.star.utils.MiniPrinterFunctions;
 import drivers.star.utils.PrinterFunctions;
+import jpos.JposException;
+import jpos.POSPrinter;
+import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import util.RasterDocument;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
-
-import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
 
 
 public class EMSDeviceDriver {
@@ -99,6 +106,8 @@ public class EMSDeviceDriver {
     protected PowaPOS powaPOS;
     protected POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
+    protected POSPrinter bixolonPrinter;
+
 
     protected final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
 
@@ -134,6 +143,9 @@ public class EMSDeviceDriver {
             switch (lineWidth) {
                 case 32:
                     PAPER_WIDTH = 420;
+                    break;
+                case 42:
+                    PAPER_WIDTH = 576;
                     break;
                 case 48:
                     PAPER_WIDTH = 1600;
@@ -205,6 +217,7 @@ public class EMSDeviceDriver {
     }
 
     protected void print(String str) {
+        str = removeAccents(str);
         if (PRINT_TO_LOG) {
             Log.d("Print", str);
             return;
@@ -232,6 +245,21 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSOneil4te) {
             device.write(str);
+        } else if (this instanceof EMSBixolon) {
+            try {
+                bixolonPrinter.open(myPref.getPrinterName());
+                bixolonPrinter.claim(10000);
+                bixolonPrinter.setDeviceEnabled(true);
+                bixolonPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, str);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    bixolonPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         } else if (this instanceof EMSPowaPOS) {
             powaPOS.printText(str);
         } else if (this instanceof EMSsnbc) {
@@ -279,11 +307,32 @@ public class EMSDeviceDriver {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        } else if (this instanceof EMSBixolon) {
+            try {
+                bixolonPrinter.open(myPref.getPrinterName());
+                bixolonPrinter.claim(10000);
+                bixolonPrinter.setDeviceEnabled(true);
+                bixolonPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, new String(byteArray));
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    bixolonPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+    }
 
+    private String removeAccents(String str) {
+        str = Normalizer.normalize(str, Normalizer.Form.NFD);
+        str = str.replaceAll("[^\\p{ASCII}]", "");
+        return str;
     }
 
     protected void print(String str, String FORMAT) {
+        str = removeAccents(str);
         if (PRINT_TO_LOG) {
             Log.d("Print", str);
             return;
@@ -312,6 +361,21 @@ public class EMSDeviceDriver {
             powaPOS.printText(str);
         } else if (this instanceof EMSsnbc) {
             print(str);
+        } else if (this instanceof EMSBixolon) {
+            try {
+                bixolonPrinter.open(myPref.getPrinterName());
+                bixolonPrinter.claim(10000);
+                bixolonPrinter.setDeviceEnabled(true);
+                bixolonPrinter.printNormal(POSPrinterConst.PTR_S_RECEIPT, str);
+            } catch (JposException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    bixolonPrinter.close();
+                } catch (JposException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
@@ -350,11 +414,18 @@ public class EMSDeviceDriver {
         }
     }
 
+    public void printReceiptPreview(Bitmap bitmap, int lineWidth) throws JAException, StarIOPortException {
+        setPaperWidth(lineWidth);
+        printPref = myPref.getPrintingPreferences();
+        StringBuilder sb = new StringBuilder();
+        printImage(bitmap);
+        cutPaper();
+    }
+
     protected void printReceipt(String ordID, int lineWidth, boolean fromOnHold, Global.OrderType type, boolean isFromHistory, EMVContainer emvContainer) {
         try {
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
-
             OrderProductsHandler handler = new OrderProductsHandler(activity);
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
@@ -441,59 +512,30 @@ public class EMSDeviceDriver {
             if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
                 boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
 
-                int m;
                 for (int i = 0; i < size; i++) {
 
                     if (isRestMode) {
-                        if ((i + 1 < size && orders.get(i + 1).getAddon().equals("1"))) {
-                            m = i;
-                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
-//                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(orders.get(m).getQty() + "x " + orders.get(m).getName(), lineWidth, 1));
-                            for (int j = i + 1; j < size; j++) {
-                                if (orders.get(j).getIsAdded().equals("1"))
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            "- " + orders.get(j).getName(),
-                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
-                                else
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            "- NO " + orders.get(j).getName(),
-                                            Global.getCurrencyFormat(orders.get(j).getOverwritePrice()), lineWidth, 2));
-
-                                if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
-                                    i = j;
-                                    break;
-                                }
-
-                            }
-
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                    Global.getCurrencyFormat(orders.get(m).getOverwritePrice()), lineWidth, 3))
-                                    .append("\n");
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                                    Global.getCurrencyFormat(orders.get(m).getTotal()), lineWidth, 3)).append("\n");
-
-                            if (printPref.contains(MyPreferences.print_descriptions)) {
+                        sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                orders.get(i).getQty() + "x " + orders.get(i).getName(), lineWidth, 1));
+                        if (orders.get(i).getHasAddon().equals("1")) {
+                            List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orders.get(i).getOrdprodID());
+                            for (OrderProduct addon : addons) {
                                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                        getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
-                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                        orders.get(m).getProdDescription(), lineWidth, 5)).append("\n");
+                                        "- " + addon.ordprod_name,
+                                        Global.getCurrencyFormat(addon.overwrite_price), lineWidth, 2));
                             }
+                        }
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+                                Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), lineWidth, 3))
+                                .append("\n");
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                                Global.getCurrencyFormat(orders.get(i).getTotal()), lineWidth, 3)).append("\n");
 
-                        } else {
+                        if (printPref.contains(MyPreferences.print_descriptions)) {
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                    getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
                             sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                    orders.get(i).getQty() + "x " + orders.get(i).getName(), lineWidth, 1));
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                    Global.getCurrencyFormat(orders.get(i).getOverwritePrice()), lineWidth, 3))
-                                    .append("\n");
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                                    Global.getCurrencyFormat(orders.get(i).getTotal()), lineWidth, 3)).append("\n");
-
-                            if (printPref.contains(MyPreferences.print_descriptions)) {
-                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                        getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
-                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                        orders.get(i).getProdDescription(), lineWidth, 5)).append("\n");
-                            }
+                                    orders.get(i).getProdDescription(), lineWidth, 5)).append("\n");
                         }
                     } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
@@ -625,8 +667,24 @@ public class EMSDeviceDriver {
                             Global.formatDoubleToCurrency(tempGrandTotal - tempAmount), lineWidth, 0));
                 }
                 if (type != Global.OrderType.ORDER) {
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
-                            Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
+                    if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                            myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                        if (tempTipAmount == 0) {
+                            sb.append("\n\n");
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+                                    textHandler.lines(lineWidth / 2), lineWidth, 0));
+                            sb.append("\n\n");
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                                    textHandler.lines(lineWidth / 2), lineWidth, 0));
+                        } else {
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+                                    Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
+                        }
+
+                    } else {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
+                                Global.formatDoubleStrToCurrency(Double.toString(tempTipAmount)), lineWidth, 0));
+                    }
 
                     if (type == Global.OrderType.RETURN) {
                         tempAmount = paidAmount;
@@ -902,6 +960,27 @@ public class EMSDeviceDriver {
                 matrix.preScale(1.0f, -1.0f);
                 Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
                 eloPrinterApi.print_image(activity, rotatedBmp);
+            } else if (this instanceof EMSBixolon) {
+                ByteBuffer buffer = ByteBuffer.allocate(4);
+                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+                buffer.put((byte) 50);
+                buffer.put((byte) 1);
+                buffer.put((byte) 0x00);
+                try {
+                    bixolonPrinter.open(myPref.getPrinterName());
+                    bixolonPrinter.claim(10000);
+                    bixolonPrinter.setDeviceEnabled(true);
+                    bixolonPrinter.printBitmap(buffer.getInt(0), myBitmap,
+                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_LEFT);
+                } catch (JposException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        bixolonPrinter.close();
+                    } catch (JposException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             try {
@@ -909,6 +988,141 @@ public class EMSDeviceDriver {
             } catch (InterruptedException ignored) {
             }
         }
+    }
+
+
+    public static Bitmap loadBitmapFromView(View v) {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+        v.draw(c);
+        int margins = new Double(PAPER_WIDTH * .10).intValue();
+        float ratio = new Integer(PAPER_WIDTH - margins).floatValue() / new Integer(b.getWidth()).floatValue();
+        int width = Math.round(ratio * b.getWidth());
+        int height = Math.round(ratio * b.getHeight());
+        b = Bitmap.createScaledBitmap(b, width, height, true);
+        return b;
+    }
+
+    protected void printImage(Bitmap bitmap) throws StarIOPortException, JAException {
+        if (PRINT_TO_LOG) {
+            Log.d("Print", "*******Image Print***********");
+            return;
+        }
+        if (bitmap != null) {
+
+            if (this instanceof EMSBluetoothStarPrinter) {
+
+                byte[] data;
+
+                if (isPOSPrinter) {
+                    data = PrinterFunctions.createCommandsEnglishRasterModeCoupon(PAPER_WIDTH, SCBBitmapConverter.Rotation.Normal,
+                            bitmap);
+                    Communication.Result result;
+                    result = Communication.sendCommands(data, port, this.activity); // 10000mS!!!
+
+//					PrinterFunctions.PrintBitmap(activity, port.getPortName(), port.getPortSettings(), myBitmap,
+//							PAPER_WIDTH, false);
+                } else {
+                    Bitmap bmp = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                    int w = bmp.getWidth();
+                    int h = bmp.getHeight();
+                    int pixel;
+                    for (int x = 0; x < w; x++) {
+                        for (int y = 0; y < h; y++) {
+                            pixel = bmp.getPixel(x, y);
+                            if (pixel == Color.TRANSPARENT)
+                                bmp.setPixel(x, y, Color.WHITE);
+                        }
+                    }
+
+                    MiniPrinterFunctions.PrintBitmapImage(activity, port.getPortName(), port.getPortSettings(),
+                            bmp, PAPER_WIDTH, false, false);
+                }
+
+            } else if (this instanceof EMSPAT100) {
+                printerApi.printImage(bitmap, 0);
+            } else if (this instanceof EMSBlueBambooP25) {
+                EMSBambooImageLoader loader = new EMSBambooImageLoader();
+                ArrayList<ArrayList<Byte>> arrayListList = loader.bambooDataWithAlignment(0, bitmap);
+
+                for (ArrayList<Byte> arrayList : arrayListList) {
+
+                    byte[] byteArray = new byte[arrayList.size()];
+                    int size = arrayList.size();
+                    for (int i = 0; i < size; i++) {
+
+                        byteArray[i] = arrayList.get(i).byteValue();
+
+                    }
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    print(byteArray);
+                }
+            } else if (this instanceof EMSOneil4te) {
+                // print image
+                DocumentLP documentLP = new DocumentLP("$");
+                documentLP.clear();
+                documentLP.writeImage(bitmap, 832);
+
+                device.write(documentLP.getDocumentData());
+
+            } else if (this instanceof EMSPowaPOS) {
+
+                powaPOS.printImage(bitmap);
+            } else if (this instanceof EMSsnbc) {
+                int PrinterWidth = 640;
+
+                // download bitmap
+                pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
+                pos_sdk.imageStandardModeRasterPrint(bitmap, PrinterWidth);
+                pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
+            } else if (this instanceof EMSELO) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                matrix.preScale(1.0f, -1.0f);
+                Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                eloPrinterApi.print_image(activity, rotatedBmp);
+                print("\n\n\n\n");
+            } else if (this instanceof EMSBixolon) {
+                ByteBuffer buffer = ByteBuffer.allocate(4);
+                buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
+                buffer.put((byte) 50);
+                buffer.put((byte) 1);
+                buffer.put((byte) 0x00);
+                try {
+                    bixolonPrinter.open(myPref.getPrinterName());
+                    bixolonPrinter.claim(10000);
+                    bixolonPrinter.setDeviceEnabled(true);
+                    bixolonPrinter.printBitmap(buffer.getInt(0), bitmap,
+                            bixolonPrinter.getRecLineWidth(), POSPrinterConst.PTR_BM_CENTER);
+                } catch (JposException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        bixolonPrinter.close();
+                    } catch (JposException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
+    private Bitmap rotateBitmap(Bitmap bitmap) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        matrix.preScale(1.0f, -1.0f);
+        Bitmap rotatedBmp = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return rotatedBmp;
     }
 
     public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
@@ -1046,6 +1260,10 @@ public class EMSDeviceDriver {
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             printPref = myPref.getPrintingPreferences();
             PaymentsHandler payHandler = new PaymentsHandler(activity);
+            Spanned fromHtml = null;
+            if (emvContainer != null && emvContainer.getHandpointResponse() != null && emvContainer.getHandpointResponse().getCustomerReceipt() != null) {
+                fromHtml = Html.fromHtml(emvContainer.getHandpointResponse().getCustomerReceipt());
+            }
             PaymentDetails payArray;
             boolean isStoredFwd = false;
             long pay_count = payHandler.paymentExist(payID, true);
@@ -1062,97 +1280,123 @@ public class EMSDeviceDriver {
             StringBuilder sb = new StringBuilder();
             boolean isCashPayment = false;
             boolean isCheckPayment = false;
-            String constantValue = null;
+            String includedTip = null;
             String creditCardFooting = "";
             if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CASH"))
                 isCashPayment = true;
             else if (payArray.getPaymethod_name() != null && payArray.getPaymethod_name().toUpperCase(Locale.getDefault()).trim().equals("CHECK"))
                 isCheckPayment = true;
             else {
-                constantValue = getString(R.string.receipt_included_tip);
+                includedTip = getString(R.string.receipt_included_tip);
                 creditCardFooting = getString(R.string.receipt_creditcard_terms);
             }
             printImage(0);
-            if (printPref.contains(MyPreferences.print_header))
-                printHeader(lineWidth);
-            sb.append("* ").append(payArray.getPaymethod_name());
-            if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
-                sb.append(" Refund *\n\n\n");
-            else
-                sb.append(" Sale *\n\n\n");
-            print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
 
-            sb.setLength(0);
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    getString(R.string.receipt_time), lineWidth, 0));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(), payArray.getPay_timecreated(), lineWidth, 0))
-                    .append("\n\n");
+            if (fromHtml == null) {
+                if (printPref.contains(MyPreferences.print_header))
+                    printHeader(lineWidth);
+                sb.append("* ").append(payArray.getPaymethod_name());
+                if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
+                    sb.append(" Refund *\n\n\n");
+                else
+                    sb.append(" Sale *\n\n\n");
+                print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
 
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray.getCust_name(),
-                    lineWidth, 0));
+                sb.setLength(0);
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+                        getString(R.string.receipt_time), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(), payArray.getPay_timecreated(), lineWidth, 0))
+                        .append("\n\n");
 
-            if (payArray.getJob_id() != null && !payArray.getJob_id().isEmpty())
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
-                        payArray.getJob_id(), lineWidth, 0));
-            else if (payArray.getInv_id() != null && !payArray.getInv_id().isEmpty()) // invoice
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
-                        payArray.getInv_id(), lineWidth, 0));
-
-            if (!isStoredFwd)
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray.getCust_name(),
                         lineWidth, 0));
 
-            if (!isCashPayment && !isCheckPayment) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
-                        "*" + payArray.getCcnum_last4(), lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0));
-            } else if (isCheckPayment) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
-                        payArray.getPay_check(), lineWidth, 0));
-            }
+                if (payArray.getJob_id() != null && !payArray.getJob_id().isEmpty())
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
+                            payArray.getJob_id(), lineWidth, 0));
+                else if (payArray.getInv_id() != null && !payArray.getInv_id().isEmpty()) // invoice
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
+                            payArray.getInv_id(), lineWidth, 0));
 
-            print(sb.toString());
-            sb.setLength(0);
+                if (!isStoredFwd)
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
+                            lineWidth, 0));
 
-            printEMVSection(payArray.getEmvContainer(), lineWidth);
+                if (!isCashPayment && !isCheckPayment) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
+                            "*" + payArray.getCcnum_last4(), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0));
+                } else if (isCheckPayment) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
+                            payArray.getPay_check(), lineWidth, 0));
+                }
 
-            String status = payArray.getEmvContainer() != null && payArray.getEmvContainer().getGeniusResponse() != null ? payArray.getEmvContainer().getGeniusResponse().getStatus() : getString(R.string.approved);
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.credit_approval_status),
-                    status, lineWidth, 0));
+                print(sb.toString());
+                sb.setLength(0);
 
-            sb.append(textHandler.newLines(1));
-            if (Global.isIvuLoto && Global.subtotalAmount > 0 && !payArray.getTax1_amount().isEmpty()
-                    && !payArray.getTax2_amount().isEmpty()) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
-                        Global.formatDoubleStrToCurrency(String.valueOf(Global.subtotalAmount)), lineWidth, 0));
+                printEMVSection(payArray.getEmvContainer(), lineWidth);
 
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),
-                        Global.getCurrencyFormat(payArray.getTax1_amount()), lineWidth, 2));
+                String status = payArray.getEmvContainer() != null && payArray.getEmvContainer().getGeniusResponse() != null ? payArray.getEmvContainer().getGeniusResponse().getStatus() : getString(R.string.approved);
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.credit_approval_status),
+                        status, lineWidth, 0));
 
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
-                        Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
-            }
+                sb.append(textHandler.newLines(1));
+                if (Global.isIvuLoto && Global.subtotalAmount > 0 && !payArray.getTax1_amount().isEmpty()
+                        && !payArray.getTax2_amount().isEmpty()) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_subtotal),
+                            Global.formatDoubleStrToCurrency(String.valueOf(Global.subtotalAmount)), lineWidth, 0));
 
-            if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
-                        Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax1_name(),
+                            Global.getCurrencyFormat(payArray.getTax1_amount()), lineWidth, 2));
+
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getTax2_name(),
+                            Global.getCurrencyFormat(payArray.getTax2_amount()), lineWidth, 2));
+                }
+
+                if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getAmountApproved() != null) {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
+                            Global.formatDoubleStrToCurrency(emvContainer.getGeniusResponse().getAmountApproved()), lineWidth, 0));
+                } else {
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
+                            Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
+                }
+
+                String change = payArray.getChange();
+
+                if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
+                        && Double.parseDouble(change) > 0)
+                    change = "";
+                sb.append("\n");
+                print(sb.toString(), FORMAT);
+                sb.setLength(0);
+                if (includedTip != null) {
+                    if (Double.parseDouble(change) > 0) {
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(includedTip,
+                                Global.formatDoubleStrToCurrency(change), lineWidth, 0));
+                    } else if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
+                            myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
+                        print(textHandler.newLines(1), FORMAT);
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tip),
+                                textHandler.lines(lineWidth / 2), lineWidth, 0))
+                                .append("\n\n");
+                        print(sb.toString(), FORMAT);
+                        sb.setLength(0);
+                        print(textHandler.newLines(1), FORMAT);
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                                textHandler.lines(lineWidth / 2), lineWidth, 0))
+                                .append("\n\n");
+                        print(sb.toString(), FORMAT);
+                        sb.setLength(0);
+                    }
+                }
+                sb.append("\n");
+                print(sb.toString(), FORMAT);
             } else {
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amount),
-                        Global.formatDoubleStrToCurrency(payArray.getPay_amount()), lineWidth, 0));
+                sb.setLength(0);
+                sb.append("\n\n");
+                sb.append(fromHtml.toString());
+                print(sb.toString(), FORMAT);
             }
-
-            String change = payArray.getChange();
-
-            if (isCashPayment && isCheckPayment && !change.isEmpty() && change.contains(".")
-                    && Double.parseDouble(change) > 0)
-                change = "";
-
-            if (constantValue != null)
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(constantValue,
-                        Global.formatDoubleStrToCurrency(change), lineWidth, 0));
-
-            sb.append("\n");
-            print(sb.toString(), FORMAT);
             sb.setLength(0);
 
             if (!isCashPayment && !isCheckPayment) {
@@ -1162,12 +1406,11 @@ public class EMSDeviceDriver {
                     encodedSignature = payArray.getPay_signature();
                     printImage(1);
                 }
-                sb.append("x").append(textHandler.lines(lineWidth / 2)).append("\n");
+                sb.append("\n\nx").append(textHandler.lines(lineWidth / 2)).append("\n");
                 sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
                 print(sb.toString(), FORMAT);
                 sb.setLength(0);
             }
-
             if (Global.isIvuLoto) {
                 sb = new StringBuilder();
 
@@ -1180,7 +1423,6 @@ public class EMSDeviceDriver {
                 }
                 sb.setLength(0);
             }
-
             sb.append("\n");
             print(sb.toString(), FORMAT);
             sb.setLength(0);
@@ -1189,11 +1431,12 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
             sb.setLength(0);
 
-            String temp;
-            if (!isCashPayment && !isCheckPayment) {
-                print(creditCardFooting, FORMAT);
-                temp = textHandler.newLines(1);
-                print(temp, FORMAT);
+            if (fromHtml == null) {
+                if (!isCashPayment && !isCheckPayment) {
+                    print(creditCardFooting, FORMAT);
+                    String temp = textHandler.newLines(1);
+                    print(temp, FORMAT);
+                }
             }
 
             sb.setLength(0);
@@ -1905,14 +2148,14 @@ public class EMSDeviceDriver {
         sb.append(sb_ord_types);
 
 
-        List<OrderProducts> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
+        List<OrderProduct> listProd = ordProdHandler.getProductsDayReport(true, null, mDate);
         if (listProd.size() > 0) {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Items Sold", lineWidth));
 
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
 
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
@@ -1999,7 +2242,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Items Returned", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.ordprod_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.prod_upc, "", lineWidth, 3));
@@ -2014,7 +2257,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Sales", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
             }
             listProd.clear();
@@ -2025,7 +2268,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Department Returns", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
-            for (OrderProducts prod : listProd) {
+            for (OrderProduct prod : listProd) {
                 sb.append(textHandler.threeColumnLineItem(prod.cat_name, 60, prod.ordprod_qty, 20, Global.formatDoubleStrToCurrency(prod.overwrite_price), 20, lineWidth, 0));
             }
             listProd.clear();
@@ -2177,5 +2420,6 @@ public class EMSDeviceDriver {
         } catch (StarIOPortException ignored) {
         }
     }
+
 
 }

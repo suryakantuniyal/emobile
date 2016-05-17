@@ -4,18 +4,28 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_white_page"
     android:orientation="vertical" >
-    
-<TextView
-            android:id="@+id/textView1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/on_hold"
-            android:gravity="center"
-            android:background="@drawable/blue_gradient_header_horizontal"
-            android:padding="10dp"
-            android:textSize="@dimen/header_bar_text_size"
-       		android:textAppearance="@style/white_text_appearance"
-       		style="@style/text_shadow"/>
+
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@drawable/blue_gradient_header_horizontal"
+		>
+
+		<TextView
+			android:id="@+id/tvHeader"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="@dimen/header_txt_padding"
+			android:text="@string/on_hold"
+			android:textAppearance="@style/white_text_appearance"
+			android:textSize="@dimen/header_txt_size"
+			android:gravity="center"
+			android:layout_centerVertical="true"
+			android:layout_centerHorizontal="true" />
+	</RelativeLayout>
+
+
 
     <ListView
         android:id="@+id/onHoldListView"

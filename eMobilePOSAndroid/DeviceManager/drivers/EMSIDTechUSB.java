@@ -16,7 +16,7 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
  
 public class EMSIDTechUSB {
 	private Activity _activity;

@@ -106,12 +106,8 @@ public class PrintersHandler {
 	
 	public Cursor getPrinters()
 	{
-		//SQLiteDatabase db = dbManager.openReadableDB();
-		
 		Cursor c = DBManager._db.rawQuery("SELECT * FROM Printers", null);
-		
 		c.moveToFirst();
-		//db.close();
 		return c;
 	}
 	

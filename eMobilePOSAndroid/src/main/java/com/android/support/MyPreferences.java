@@ -85,6 +85,14 @@ public class MyPreferences {
     private final String aes_iv = "aes_iv";
 
     public static final String pref_restaurant_mode = "pref_restaurant_mode";
+    public static final String pref_enable_togo_eatin = "pref_enable_togo_eatin";
+    public static final String pref_require_waiter_signin = "pref_require_waiter_signin";
+    public static final String pref_enable_table_selection = "pref_enable_table_selection";
+    public static final String pref_ask_seats = "pref_ask_seats";
+    public static final String pref_use_navigationbar = "pref_use_navigationbar";
+
+
+
     public static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
@@ -107,6 +115,7 @@ public class MyPreferences {
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
+    public static final String pref_mw_with_evo = "pref_mw_with_evo";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
     public static final String pref_use_clerks = "pref_use_clerks";
     public static final String pref_enable_location_inventory = "pref_enable_location_inventory";
@@ -632,16 +641,27 @@ public class MyPreferences {
         return empstr;
     }
 
-    public String printerMACAddress(boolean isGet, String value) {
+    public void setPrinterMACAddress(String value) {
         String printer_mac_address = "printer_mac_address";
-        if (isGet)
-            return prefs.getString(printer_mac_address, empstr);
-        else {
-            prefEditor.putString(printer_mac_address, value);
-            prefEditor.commit();
-        }
-        return empstr;
+        prefEditor.putString(printer_mac_address, value);
+        prefEditor.commit();
     }
+
+    public String getPrinterMACAddress() {
+        String printer_mac_address = "printer_mac_address";
+        return prefs.getString(printer_mac_address, empstr);
+    }
+
+//    public String printerMACAddress(boolean isGet, String value) {
+//        String printer_mac_address = "printer_mac_address";
+//        if (isGet)
+//            return prefs.getString(printer_mac_address, empstr);
+//        else {
+//            prefEditor.putString(printer_mac_address, value);
+//            prefEditor.commit();
+//        }
+//        return empstr;
+//    }
 
     public String sledMACAddress(boolean isGet, String value) {
         String sled_mac_address = "sled_mac_address";
@@ -654,16 +674,26 @@ public class MyPreferences {
         return empstr;
     }
 
-    public int swiperType(boolean isGet, int value) {
+    public int getSwiperType(){
         String swiper_type = "swiper_type";
-        if (isGet)
-            return prefs.getInt(swiper_type, -1);
-        else {
-            prefEditor.putInt(swiper_type, value);
-            prefEditor.commit();
-        }
-        return -1;
+        return prefs.getInt(swiper_type, -1);
     }
+
+    public void setSwiperType(int type){
+        String swiper_type = "swiper_type";
+        prefEditor.putInt(swiper_type, type);
+        prefEditor.commit();
+    }
+//    public int swiperType(boolean isGet, int value) {
+//        String swiper_type = "swiper_type";
+//        if (isGet)
+//            return prefs.getInt(swiper_type, -1);
+//        else {
+//            prefEditor.putInt(swiper_type, value);
+//            prefEditor.commit();
+//        }
+//        return -1;
+//    }
 
     public String cdtLine1(boolean get, String value) {
         String cdt_line1 = "cdt_line1";
@@ -687,25 +717,34 @@ public class MyPreferences {
         return "eMobilePOS";
     }
 
-    public int getPrinterType(){
+    public int getPrinterType() {
         String printer_type = "printer_type";
         return prefs.getInt(printer_type, -1);
     }
 
-    public void setPrinterType(int value){
+    public void setPrinterType(int value) {
         String printer_type = "printer_type";
         prefEditor.putInt(printer_type, value);
         prefEditor.commit();
     }
 
-	public void setPrinterName(String value) {
-		prefEditor.putString("printer_name", value);
-		prefEditor.commit();
-	}
+    public void setPrinterName(String value) {
+        prefEditor.putString("printer_name", value);
+        prefEditor.commit();
+    }
 
-	public String getPrinterName() {
-		return prefs.getString("printer_name", "");
-	}
+    public String getPrinterName() {
+        return prefs.getString("printer_name", "");
+    }
+
+    public void setSwiperName(String value) {
+        prefEditor.putString("swiper_name", value);
+        prefEditor.commit();
+    }
+
+    public String getSwiperName() {
+        return prefs.getString("swiper_name", "");
+    }
 
     public int sledType(boolean isGet, int value) {
         String sled_type = "sled_type";
@@ -723,7 +762,7 @@ public class MyPreferences {
         String printer_type = "printer_type";
         String swiper_type = "swiper_type";
 
-		setPrinterName(""); //clean the printer name
+        setPrinterName(""); //clean the printer name
         prefEditor.putInt(sled_type, -1);
         prefEditor.putInt(printer_type, -1);
         prefEditor.putInt(swiper_type, -1);
@@ -794,6 +833,32 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isHandpoint() {
+        String device_handpoint = "device_handpoint";
+        return prefs.getBoolean(device_handpoint, false);
+    }
+
+    public boolean setIsHandpoint(boolean value) {
+        String device_handpoint = "device_handpoint";
+        prefEditor.putBoolean(device_handpoint, value);
+        prefEditor.commit();
+        return false;
+    }
+
+
+    public boolean isICMPEVO() {
+        String device_icmpevo = "device_icmpevo";
+        return prefs.getBoolean(device_icmpevo, false);
+    }
+
+    public boolean setIsICMPEVO(boolean value) {
+        String device_icmpevo = "device_icmpevo";
+        prefEditor.putBoolean(device_icmpevo, value);
+        prefEditor.commit();
+        return false;
+    }
+
+
     public boolean isEM70() {
         String device_em70 = "device_em70";
         return prefs.getBoolean(device_em70, false);
@@ -814,6 +879,18 @@ public class MyPreferences {
     public boolean setIsOT310(boolean value) {
         String device_ot310 = "device_ot310";
         prefEditor.putBoolean(device_ot310, value);
+        prefEditor.commit();
+        return false;
+    }
+
+    public boolean isPOWA() {
+        String device_powa = "device_powa";
+        return prefs.getBoolean(device_powa, false);
+    }
+
+    public boolean setIsPOWA(boolean value) {
+        String device_powa = "device_powa";
+        prefEditor.putBoolean(device_powa, value);
         prefEditor.commit();
         return false;
     }
@@ -940,7 +1017,7 @@ public class MyPreferences {
     // }
 
     public boolean[] getMainMenuPreference() {
-        int NUM_OF_ITEMS = 14;
+        int NUM_OF_ITEMS = 15;
         boolean[] values = new boolean[NUM_OF_ITEMS];
         Set<String> selections = sharedPref.getStringSet("pref_configure_home_menu", null);
         if (selections != null) {
@@ -954,7 +1031,7 @@ public class MyPreferences {
             }
         } else
             values = new boolean[]{true, true, true, true, true, true, true, true, true, true, true, true, true,
-                    true};
+                    true, true};
 
         return values;
 

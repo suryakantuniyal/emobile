@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
         <string-array name="mainMenuArray">
                 <item name="menu_sales_receipt">Sales Receipt</item>
                 <item name="menu_order">Order</item>
@@ -15,7 +16,49 @@
                 <item name="menu_on_hold">On Hold</item>
                 <item name="menu_consignment">Consignment</item>
                 <item name="menu_transfer_inventory">Inventory Transfer</item>
+                <item name="menu_tip_adjustment">Tip Adjustment</item>
         </string-array>
+
+        <string-array name="salesReceiptSplitTypes">
+                <item name="split_by_Seats">@string/split_by_seats</item>
+                <item name="split_equally">@string/split_equally</item>
+                <item name="split_single">@string/split_single</item>
+        </string-array>
+
+
+        <integer-array name="dinningTableSeatsArray">
+                <item name="1">1</item>
+                <item name="2">2</item>
+                <item name="3">3</item>
+                <item name="4">4</item>
+                <item name="5">5</item>
+                <item name="6">6</item>
+                <item name="7">7</item>
+                <item name="8">8</item>
+                <item name="9">9</item>
+                <item name="10">10</item>
+                <item name="11">11</item>
+                <item name="12">12</item>
+                <item name="13">13</item>
+                <item name="14">14</item>
+                <item name="15">15</item>
+                <item name="16">16</item>
+                <item name="17">17</item>
+                <item name="18">18</item>
+                <item name="19">19</item>
+                <item name="20">20</item>
+                <item name="21">21</item>
+                <item name="22">22</item>
+                <item name="23">23</item>
+                <item name="24">24</item>
+                <item name="25">25</item>
+        </integer-array>
+
+        <!-- <string-array name = "mainMenuDefaultKey"> -->
+        <!-- <item name = "menu_payment">5</item> -->
+        <!-- <item name = "menu_refund">9</item> -->
+        <!-- </string-array> -->
+
         <string-array name="mainMenuDefaultKey">
                 <item name="menu_sales_receipt">0</item>
                 <item name="menu_order">1</item>
@@ -31,7 +74,9 @@
                 <item name="menu_on_hold">11</item>
                 <item name="menu_consignment">12</item>
                 <item name="menu_transfer_inventory">13</item>
+                <item name="menu_tip_adjustment">14</item>
         </string-array>
+
         <string-array name="mainMenuKey">
                 <item name="menu_sales_receipt">0</item>
                 <item name="menu_order">1</item>
@@ -47,7 +92,9 @@
                 <item name="menu_on_hold">11</item>
                 <item name="menu_consignment">12</item>
                 <item name="menu_transfer_inventory">13</item>
+                <item name="menu_tip_adjustment">14</item>
         </string-array>
+
         <string-array name="printPrefArray">
                 <item name="print_header">Header</item>
                 <item name="print_shiptoinfo">Ship To Info</item>
@@ -118,4 +165,20 @@
                 <item name="reader_rover">2</item>
                 <item name="reader_walker">3</item>
         </string-array>
+
+        <string-array name="cardTypes">
+                <item name="amex">American Express</item>
+                <item name="visa">Visa</item>
+                <item name="discover">Discover</item>
+                <item name="mastercard">Master Card</item>
+                <item name="cup">CUP</item>
+                <item name="jcb">JCB</item>
+                <item name="dinersclub">Diners Club</item>
+        </string-array>
+
+        <string-array name="navigationbarByModels">
+                <item name="paypoint">paypoint</item>
+        </string-array>
+
+        <string name="split_single">Single Receipt</string>
 </resources>

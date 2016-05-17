@@ -1,6 +1,5 @@
 package com.android.testimgloader;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,8 +39,6 @@ public class ImageLoaderTest {
         executorService=Executors.newFixedThreadPool(5);
     }
     
-    @SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
 	public void DisplayImage(String url, ImageView imageView,boolean isLandscape)
     {
     	
@@ -205,7 +202,6 @@ public class ImageLoaderTest {
         PhotoToLoad photoToLoad;
         public BitmapDisplayer(Bitmap b, PhotoToLoad p){bitmap=b;photoToLoad=p;}
         @SuppressWarnings("deprecation")
-		@SuppressLint("NewApi")
 		public void run()
         {
             if(imageViewReused(photoToLoad))

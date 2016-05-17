@@ -4,16 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.os.SystemClock;
 import android.support.v4.widget.CursorAdapter;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,43 +65,6 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                     .build();
     }
 
-    private Bitmap getStringAsBitmap(String text) {
-        Paint paint = new Paint();
-        String[] split = text.split("\\s+");
-        paint.setTextSize(34);
-        paint.setColor(Color.WHITE);
-        paint.setTextAlign(Paint.Align.LEFT);
-        float baseline = -paint.ascent(); // ascent() is negative
-        int width = (int) (paint.measureText(text) + 0.5f); // round
-        int height = (int) (baseline + paint.descent() + 0.5f);
-        Bitmap image = Bitmap.createBitmap(width, height * split.length, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(image);
-
-        for (String s : split) {
-            canvas.drawText(text, 0, baseline, paint);
-            baseline += height;
-            break;
-        }
-//        canvas.drawText(text, 0, baseline, paint);
-        return image;
-
-//        Paint paint = new Paint();
-//        paint.setTextSize(34);
-//        paint.setColor(Color.WHITE);
-//        paint.setTextAlign(Paint.Align.CENTER);
-//        float baseline = -paint.ascent(); // ascent() is negative
-//        int width = holder.itemImage.getWidth() > 0 ? holder.itemImage.getWidth() : 280;//(int) (paint.measureText(text) + 0.5f); // round
-//        int height = (int) (baseline + paint.descent() + 0.5f);
-//        Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-//        Canvas canvas = new Canvas(image);
-//        String[] split = text.split("\\s+");
-//        for (String s : split) {
-//            canvas.drawText(s, 0, baseline, paint);
-//        }
-////        canvas.drawText(text, 0, baseline, paint);
-//        return image;
-    }
-
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
         final int position = cursor.getPosition();
@@ -126,7 +81,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                     holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
                     imageLoader.displayImage(urlLink, holder.itemImage, options);
                     if (holder.productNameTxt != null) {
-                        holder.productNameTxt.setVisibility(View.GONE);
+                    holder.productNameTxt.setVisibility(View.GONE);
                     }
                 } else {
                     holder.itemImage.setImageDrawable(null);
@@ -225,14 +180,17 @@ public class MenuProdGV_Adapter extends CursorAdapter {
             holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
             holder.i_chain_price = cursor.getColumnIndex("chain_price");
             holder.i_consignment_qty = cursor.getColumnIndex("consignment_qty");
+
         } else {
 //            retView = inflater.inflate(R.layout.catalog_gridview_adapter, parent, false);
+
             holder.title = (TextView) retView.findViewById(R.id.gridViewImageTitle);
             holder.itemImage = (ImageView) retView.findViewById(R.id.gridViewImage);
             holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
             holder.i_prod_name = cursor.getColumnIndex(attrToDisplay);
             holder.i_prod_desc = cursor.getColumnIndex("prod_desc");
             holder.i_prod_img_name = cursor.getColumnIndex("prod_img_name");
+
         }
         retView.setTag(holder);
         return retView;

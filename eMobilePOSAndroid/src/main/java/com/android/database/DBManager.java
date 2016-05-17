@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 38;
+    public static final int VERSION = 39;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -40,7 +40,7 @@ public class DBManager {
 
     private String getPassword() {
         MessageDigest digester;
-        String md5 = null;
+        String md5;
         String android_id = Secure.getString(activity.getContentResolver(), Secure.ANDROID_ID);
         try {
             digester = MessageDigest.getInstance("MD5");
@@ -242,10 +242,13 @@ public class DBManager {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            for (String tblName : CREATE_TABLE) db.execSQL(tblName);
+            for (String tblName : CREATE_TABLE) {
+                db.execSQL(tblName);
+            }
             for (String sql : CREATE_INDEX) {
                 db.execSQL(sql);
-            };
+            }
+
             if (_db != null && _db.isOpen())
                 _db.close();
 
@@ -335,6 +338,13 @@ public class DBManager {
             + "[addr_s_country]varchar,[addr_s_zipcode]varchar,[qb_cust_id]varchar, [addr_b_type]VARCHAR, [addr_s_type]VARCHAR, PRIMARY KEY ([addr_id],"
             + "[cust_id]) )";
 
+    private final String CREATE_SALES_ASSOCIATE = "CREATE TABLE [SalesAssociate]([emp_id] [int] PRIMARY KEY NOT NULL,"
+            + "[zone_id] [varchar](50),[emp_name][varchar](50),[emp_init] [varchar](50),[emp_pcs] [varchar](50)," +
+            "[emp_lastlogin] [datetime],[emp_pos][int],[qb_emp_id] [varchar](50),[qb_salesrep_id] [varchar](50)," +
+            "[isactive] [int],[tax_default][varchar](50),[loc_items] [tinyint]NOT NULL,[_rowversion][varchar](50)," +
+            "[lastSync] [datetime],[TupyWalletDevice] [tinyint]NOT NULL,[VAT] [tinyint]NOT NULL" +
+            ")";
+
     private final String CREATE_CATEGORIES = "CREATE TABLE [Categories]([cat_id] [varchar](50) PRIMARY KEY NOT NULL,"
             + "[cat_name] [varchar](255) NOT NULL,[cat_update] [datetime] NOT NULL,[isactive] "
             + "[tinyint] NOT NULL,[parentID] [varchar](50) NULL, [url_icon] [varchar])";
@@ -376,15 +386,16 @@ public class DBManager {
             + "[inv_ispaid] [int] NULL, [inv_paiddate] [datetime] NULL, [mod_date] [datetime] NULL, [txnID] [varchar](255) NULL, "
             + "[inv_update] [datetime] NULL)";
 
-    private final String CREATE_ORDERPRODUCTS = "CREATE TABLE [OrderProducts]( [ordprod_id] [uniqueidentifier] PRIMARY KEY NOT NULL, "
-            + "[prod_id] [varchar](50) NOT NULL, [ord_id] [varchar](50) NOT NULL, [ordprod_qty] [real] NOT NULL, [overwrite_price] [money] NOT NULL, "
+    private final String CREATE_ORDERPRODUCTS = "CREATE TABLE [OrderProduct]( [ordprod_id] [uniqueidentifier] PRIMARY KEY NOT NULL, "
+            + "[addon_ordprod_id] [varchar](50), [prod_id] [varchar](50) NOT NULL, [ord_id] [varchar](50) NOT NULL, [ordprod_qty] [real] NOT NULL, [overwrite_price] [money] NOT NULL, "
             + "[reason_id] [int] NULL, [ordprod_desc] [varchar](4095) NULL, [pricelevel_id] [varchar](50) NULL, [prod_seq] [int] NULL, "
             + "[uom_name] [varchar](50) NULL, [uom_conversion] [real] NULL, [discount_id] [varchar](50) NULL, [discount_value] [money] NULL, "
             + "[item_void] [tinyint] NULL, [isPrinted] [bit] NULL, [cat_id] [varchar](50) NULL, [cat_name] [varchar](50) NULL, [addon] [bit] NULL, "
             + "[isAdded] [bit] NULL, [ordprod_name][varchar](50) NULL, [prod_taxId][varchar](50) NULL, [prod_taxValue][varchar](50) NULL , "
             + "[uom_id] [varchar],[prod_istaxable][tinyint] NULL,[discount_is_taxable][tinyint],[discount_is_fixed][tinyint],[onHand][double],"
             + "[imgURL][varchar],[prod_price][money],[prod_type][varchar],[cardIsActivated][tinyint] DEFAULT 0,[itemTotal][money],[itemSubtotal][money],[addon_section_name][varchar],"
-            + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, [prod_upc] [varchar](50) NULL)";
+            + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, " +
+            " [prod_upc] [varchar](50) NULL, [assignedSeat] [varchar](10), [seatGroupId][int] NULL)";
 
     private final String CREATE_ORDERS = "CREATE TABLE [Orders]( [ord_id] [varchar](50) PRIMARY KEY NOT NULL, [qbord_id] [varchar](50) NULL, "
             + "[qbtxid] [varchar](255) NULL, [emp_id] [int] NULL, [cust_id] [varchar](50) NULL,[custidkey] [varchar], [ord_po] [varchar](50) NULL, [total_lines] [int] NULL, "
@@ -400,7 +411,8 @@ public class DBManager {
             + "[addr_s_str2] [varchar](41) NULL, [addr_s_str3] [varchar](41) NULL, [addr_s_city] [varchar](31) NULL, [addr_s_state] [varchar](21) NULL, "
             + "[addr_s_country] [varchar](31) NULL, [addr_s_zipcode] [varchar](13) NULL, [c_email] [varchar](100) NULL, [loc_id] [varchar](50) NULL, "
             + "[ord_HoldName] [varchar](50) NULL,[isOnHold] [tinyint] NULL, [clerk_id][varchar](50) NULL, [ord_discount_id][varchar](50) NULL, [ord_latitude][varchar](50) NULL, "
-            + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint)";
+            + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint," +
+            " [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL)";
 
     private final String CREATE_PAYMETHODS = "CREATE TABLE [PayMethods]( [paymethod_id] [varchar](50) PRIMARY KEY NOT NULL, "
             + "[paymethod_name] [varchar](255) NOT NULL, [paymentmethod_type] [varchar](50) NULL, [paymethod_update] [datetime] NOT NULL, "
@@ -604,8 +616,8 @@ public class DBManager {
 
     private final String CREATE_PAYMENTS_XML = "CREATE TABLE [PaymentsXML]([app_id] [varchar](100) PRIMARY KEY NOT NULL, [payment_xml] [varchar] NOT NULL)";
 
-    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "Customers", "DrawDateInfo", "EmpInv",
-            "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProducts", "Orders", "PayMethods",
+    private final String[] TABLE_NAME = new String[]{"Address", "Categories", "SalesAssociate", "Customers", "DrawDateInfo", "EmpInv",
+            "Employees", "InvProducts", "InvoicePayments", "Invoices", "OrderProduct", "Orders", "PayMethods",
             "Payments", "PaymentsDeclined", "PriceLevel", "PriceLevelItems", "Printers", "Printers_Locations", "ProdCatXRef",
             "ProductChainXRef", "Product_addons", "Products", "Products_Images", "PublicVariables", "Reasons",
             "Refunds", "SalesTaxCodes", "ShipMethod", "Taxes", "Taxes_Group", "Templates", "Terms", "UOM",
@@ -615,7 +627,7 @@ public class DBManager {
             "OrderTaxes", "Locations", "LocationsInventory", "TransferLocations", "TransferInventory", "PaymentsXML",
             "StoredPayments", "Expenses"};
 
-    private final String[] CREATE_TABLE = new String[]{CREATE_ADDRESS, CREATE_CATEGORIES, CREATE_CUSTOMERS,
+    private final String[] CREATE_TABLE = new String[]{CREATE_ADDRESS, CREATE_CATEGORIES, CREATE_SALES_ASSOCIATE, CREATE_CUSTOMERS,
             CREATE_DRAWDATEINFO, CREATE_EMPINV, CREATE_EMPLOYEES, CREATE_INVPRODUCTS, CREATE_INVOICEPAYMENTS,
             CREATE_INVOICES, CREATE_ORDERPRODUCTS, CREATE_ORDERS, CREATE_PAYMETHODS, CREATE_PAYMENTS,
             CREATE_PAYMENTS_DECLINED, CREATE_PRICELEVEL,

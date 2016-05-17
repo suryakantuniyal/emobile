@@ -31,8 +31,8 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 

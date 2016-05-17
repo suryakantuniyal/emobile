@@ -1,26 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/gray_flat_headers">
 
-     <RelativeLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/blue_gradient_header_horizontal" >
+        android:background="@drawable/blue_gradient_header_horizontal"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView4"
+            android:src="@drawable/logo"
+            android:layout_gravity="center_vertical"
+            android:layout_alignBottom="@+id/tvHeader"
+            android:layout_alignParentLeft="true" />
 
         <TextView
             android:id="@+id/tvHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:padding="@dimen/header_txt_padding"
             android:text="@string/header_title_method"
             android:textAppearance="@style/white_text_appearance"
-            android:textSize="@dimen/header_txt_size" />
+            android:textSize="@dimen/header_txt_size"
+            android:gravity="center"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
 
@@ -160,5 +173,7 @@
         android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
         android:background="@drawable/white_background"
-        android:padding="5dp"></GridView>
+        android:padding="5dp"
+        listitem="@layout/main_menu_listviewadapter"
+        tools:listitem="@layout/main_menu_listviewadapter"></GridView>
 </LinearLayout>

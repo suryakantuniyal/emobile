@@ -43,7 +43,7 @@
     
     
     
-        <dimen name = "header_bar_button_height">35dp</dimen>
+        <dimen name = "header_bar_button_height">35sp</dimen>
         <dimen name = "add_orders_button_height">25dp</dimen>
     <dimen name = "add_orders_field_text_size">15sp</dimen>
     <dimen name = "add_orders_button_text_size">10.5sp</dimen>

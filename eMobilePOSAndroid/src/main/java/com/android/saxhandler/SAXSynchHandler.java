@@ -289,24 +289,24 @@ public class SAXSynchHandler extends DefaultHandler {
 				payMethodsHandler.emptyTable();
 			}
 			break;
-		case Global.S_PRICE_LEVEL:
-			if(isInsert)
-				priceLevelHandler.insert(dataList,dictionaryListMap);
-			else
-			{
-				priceLevelHandler = new PriceLevelHandler();
-				priceLevelHandler.emptyTable();
-			}
-			break;
-		case Global.S_ITEM_PRICE_LEVEL:
-			if(isInsert)
-				priceLevItemsHandler.insert(dataList,dictionaryListMap);
-			else
-			{
-				priceLevItemsHandler = new PriceLevelItemsHandler(activity);
-				priceLevItemsHandler.emptyTable();
-			}
-			break;
+//		case Global.S_PRICE_LEVEL:
+//			if(isInsert)
+//				priceLevelHandler.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				priceLevelHandler = new PriceLevelHandler();
+//				priceLevelHandler.emptyTable();
+//			}
+//			break;
+//		case Global.S_ITEM_PRICE_LEVEL:
+//			if(isInsert)
+//				priceLevItemsHandler.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				priceLevItemsHandler = new PriceLevelItemsHandler(activity);
+//				priceLevItemsHandler.emptyTable();
+//			}
+//			break;
 		case Global.S_PRINTERS:
 			if(isInsert)
 				printerHandler.insert(dataList,dictionaryListMap);
@@ -334,33 +334,33 @@ public class SAXSynchHandler extends DefaultHandler {
 				prodChainHandler.emptyTable();
 			}
 			break;
-		case Global.S_PROD_ADDONS:
-			if(isInsert)
-				prodAddonsHandler.insert(dataList,dictionaryListMap);				
-			else
-			{
-				prodAddonsHandler = new ProductAddonsHandler(activity);
-				prodAddonsHandler.emptyTable();
-			}
-			break;
-		case Global.S_PRODUCTS:
-			if(isInsert)
-				prodHandler.insert(dataList,dictionaryListMap);
-			else
-			{
-				prodHandler = new ProductsHandler(activity);
-				prodHandler.emptyTable();
-			}
-			break;
-		case Global.S_PRODUCT_ALIASES:
-			if(isInsert)
-				prodAliasesDB.insert(dataList,dictionaryListMap);
-			else
-			{
-				prodAliasesDB = new ProductAliases_DB(activity);
-				prodAliasesDB.emptyTable();
-			}
-			break;
+//		case Global.S_PROD_ADDONS:
+//			if(isInsert)
+//				prodAddonsHandler.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				prodAddonsHandler = new ProductAddonsHandler(activity);
+//				prodAddonsHandler.emptyTable();
+//			}
+//			break;
+//		case Global.S_PRODUCTS:
+//			if(isInsert)
+//				prodHandler.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				prodHandler = new ProductsHandler(activity);
+//				prodHandler.emptyTable();
+//			}
+//			break;
+//		case Global.S_PRODUCT_ALIASES:
+//			if(isInsert)
+//				prodAliasesDB.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				prodAliasesDB = new ProductAliases_DB(activity);
+//				prodAliasesDB.emptyTable();
+//			}
+//			break;
 		case Global.S_PROD_IMG:
 			if(isInsert)
 				prodImgHandler.insert(dataList,dictionaryListMap);

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.android.emobilepos.payment.TipAdjustmentFA">
+
+
+    <RelativeLayout
+        android:id="@+id/headerRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView4"
+            android:src="@drawable/logo"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/tvHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/header_txt_padding"
+            android:text="@string/tip_adjustment"
+            android:textAppearance="@style/white_text_appearance"
+            android:textSize="@dimen/header_txt_size"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+
+    <Button
+        android:id="@+id/submitTipButton"
+        style="@style/black_text_appearance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/linearLayout3"
+        android:layout_alignRight="@+id/linearLayout3"
+        android:layout_below="@+id/linearLayout3"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/action_button_selector"
+        android:ems="5"
+        android:text="@string/button_submit"
+        android:textSize="@dimen/large_button_text_size" />
+
+    <TextView
+        android:id="@+id/messageTexttextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/submitTipButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:digits="0123456789"
+        android:ellipsize="start"
+        android:imeOptions="flagNoExtractUi|actionNext"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        android:text="Message text area"
+        android:textColor="@color/blue_flat"
+        android:textSize="@dimen/listview_text_size" />
+
+    <Spinner
+        android:id="@+id/cardTypesspinner"
+        style="@style/action_button_text_appearance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/action_button_selector"
+        android:textAppearance="@style/black_text_appearance"
+        android:layout_below="@+id/headerRelativeLayout"
+        android:layout_alignLeft="@+id/linearLayout3"
+        android:layout_alignRight="@+id/linearLayout3"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cardTypesspinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <com.android.support.MyEditText
+            android:id="@+id/transactionIdEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/text_field_selector"
+            android:hint="@string/hint_transationid"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/listview_text_size"></com.android.support.MyEditText>
+
+        <com.android.support.MyEditText
+            android:id="@+id/tipAmountEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/text_field_selector"
+            android:digits="0123456789"
+            android:ellipsize="start"
+            android:enabled="true"
+            android:hint="@string/hint_tipamount"
+            android:imeOptions="flagNoExtractUi|actionNext"
+            android:inputType="numberDecimal"
+            android:singleLine="true"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/listview_text_size">
+        </com.android.support.MyEditText>
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>

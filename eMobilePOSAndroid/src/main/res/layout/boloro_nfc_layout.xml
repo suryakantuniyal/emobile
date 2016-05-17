@@ -33,6 +33,7 @@
             android:textSize="@dimen/ordering_checkout_btn_txt_size"
             android:paddingLeft="5dp"
             android:paddingRight="14dp" />
+
     </RelativeLayout>
     
     

@@ -18,7 +18,7 @@ import android.widget.Toast;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
  
 public class EMSIDTechUSB {
 	private Activity _activity;

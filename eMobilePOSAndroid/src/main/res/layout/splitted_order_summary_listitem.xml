@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/blue_btn_selector"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_btn_white"
+
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView"
+            android:text="@string/table_number"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="11"
+            android:id="@+id/splited_order_tablenumber_itemtextView"
+            android:textSize="@dimen/about_main_text_size"
+            android:layout_alignBottom="@+id/textView"
+            android:layout_toRightOf="@+id/textView"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4"
+            android:id="@+id/splited_order_seatnumber_itemtextView"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"
+            android:layout_gravity="center_vertical"
+            android:layout_above="@+id/textView10"
+            android:layout_alignLeft="@+id/splited_order_tablenumber_itemtextView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/seatNumber"
+            android:id="@+id/textView12"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"
+            android:layout_gravity="center"
+            android:layout_below="@+id/textView20"
+            android:layout_alignLeft="@+id/textView20"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$23.95"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"
+            android:id="@+id/splited_order_price_itemtextView"
+            android:layout_gravity="center_vertical"
+            android:layout_above="@+id/textView12"
+            android:layout_alignLeft="@+id/splited_order_tablenumber_itemtextView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/splited_order_price"
+            android:layout_gravity="center"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"
+            android:id="@+id/textView20"
+            android:layout_below="@+id/splited_order_tablenumber_itemtextView"
+            android:layout_alignLeft="@+id/textView"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"
+            android:text="Mozzarella Sticks, Hotwings"
+            android:id="@+id/splited_order_productsTextView"
+            android:layout_below="@+id/textView10"
+            android:layout_alignLeft="@+id/textView10"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/items"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"
+            android:id="@+id/textView10"
+            android:layout_below="@+id/textView12"
+            android:layout_alignLeft="@+id/textView"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextPaint;
 import android.util.Base64;
+import android.view.View;
 
 import com.StarMicronics.jasura.IBarcodeListener;
 import com.StarMicronics.jasura.IMSRListener;
@@ -41,6 +42,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,8 +53,8 @@ import java.util.Locale;
 import drivers.EMSBluetoothStarPrinter.ReceiveThread;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
-import protocols.EMSCallBack;
-import protocols.EMSDeviceManagerPrinterDelegate;
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class EMSAsura extends EMSDeviceDriver
         implements EMSDeviceManagerPrinterDelegate, IMSRListener, IBarcodeListener {
@@ -317,8 +319,6 @@ public class EMSAsura extends EMSDeviceDriver
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
-
-
 
 
     @Override
@@ -1291,6 +1291,53 @@ public class EMSAsura extends EMSDeviceDriver
 
     @Override
     public void toggleBarcodeReader() {
+
+    }
+
+    @Override
+    public void printReceiptPreview(View view) {
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void salePayment(Payment payment) {
+
+    }
+
+    @Override
+    public void saleReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void refund(Payment payment) {
+
+    }
+
+    @Override
+    public void refundReversal(Payment payment, String originalTransactionId) {
+
+    }
+
+    @Override
+    public void printEMVReceipt(String text) {
+
+    }
+
+    @Override
+    public void sendEmailLog() {
+
+    }
+
+    @Override
+    public void updateFirmware() {
 
     }
 

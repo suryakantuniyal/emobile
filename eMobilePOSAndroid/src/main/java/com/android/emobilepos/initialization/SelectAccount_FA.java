@@ -23,6 +23,7 @@ import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -33,7 +34,7 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class SelectAccount_FA extends FragmentActivity {
+public class SelectAccount_FA extends BaseFragmentActivityActionBar {
 	private Context thisContext;
 	private ProgressDialog myProgressDialog;
 	private Activity activity;
@@ -45,7 +46,6 @@ public class SelectAccount_FA extends FragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
 		activity = this;
 		final MyPreferences myPref = new MyPreferences(this);
 		

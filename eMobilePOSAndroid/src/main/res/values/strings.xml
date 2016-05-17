@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">eMobilePOS</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
@@ -1061,7 +1062,7 @@
     <string name="amount_zero_lbl">0.00</string>
     <string name="none_uppercase_lbl">NONE</string>
     <string name="enabler_prefix">EN</string>
-    <string name="enabler_website">www.e-nabler.com</string>
+    <string name="enabler_website">www.emobilepos.com/</string>
     <string name="powered_by_enabler">Powered by Enabler</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">Back</string>
@@ -1162,6 +1163,9 @@
     <string name="config_handpoint_update">Update Firmware</string>
     <string name="device_update_completed">Device update request completed.</string>
     <string name="device_update_fail">Device update request fail.</string>
+    <string name="payment_void_title">Payment Void</string>
+    <string name="payment_void_completed">Payment void completed.</string>
+    <string name="reset_dinning_table">Reset dinning table</string>
 
 
 </resources>

@@ -44,7 +44,7 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 
 public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         implements OnClickListener, OnCheckedChangeListener, EMSCallBack {
@@ -251,7 +251,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 }
             }
         } else {
-            int _swiper_type = myPref.swiperType(true, -2);
+            int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
             if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
                     && !cardReaderConnected) {
@@ -287,7 +287,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
                 checkBox.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()|| myPref.isHandpoint()) {
             checkBox.setChecked(true);
         }
     }
@@ -580,6 +580,11 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
 
     @Override
     public void startSignature() {
+
+    }
+
+    @Override
+    public void nfcWasRead(String nfcUID) {
 
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_marginTop="-8dp"
+    android:layout_height="wrap_content">
+
+    <com.android.support.TextViewSansSerifMedium
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="- Cherry Tomato bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb nnnnnnnnnnnnnnn aaaaaaaaaaaaaaaaaaaaaa ddddddddddddddddddddddd"
+        android:id="@+id/lefttextView"
+        android:layout_weight="1"
+        android:singleLine="false"
+        android:textColor="#000"
+        android:textStyle="normal" />
+
+    <com.android.support.TextViewSansSerifMedium
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$5.95"
+        android:id="@+id/righttextView"
+        android:singleLine="true"
+        android:textColor="#000"
+        android:textStyle="normal"/>
+</LinearLayout>

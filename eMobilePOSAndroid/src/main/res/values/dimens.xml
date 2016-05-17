@@ -59,7 +59,7 @@
     <dimen name="catalog_listview_img_size">90dp</dimen>
 
 
-    <dimen name="header_bar_button_height">35dp</dimen>
+    <dimen name="header_bar_button_height">35sp</dimen>
     <dimen name="add_orders_button_height">30dp</dimen>
     <dimen name="add_orders_field_text_size">20sp</dimen>
     <dimen name="add_orders_button_text_size">12sp</dimen>
@@ -138,5 +138,8 @@
 
 
     <dimen name="txt_size_change_label">20sp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
 
 </resources>

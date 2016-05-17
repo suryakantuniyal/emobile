@@ -13,7 +13,7 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProducts;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.ShiftPeriods;
 import com.android.support.Global;
@@ -40,7 +40,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
     private String mDate = null, clerk_id = null;
 
     private List<Order> listSummary, listOrdTypes, listARTrans;
-    private List<OrderProducts> listSold, listReturned, listDeptSales, listDeptReturns;
+    private List<OrderProduct> listSold, listReturned, listDeptSales, listDeptReturns;
     private List<Payment> listPayment, listVoid, listRefund;
     private List<ShiftPeriods> listShifts;
     private LayoutInflater inflater;

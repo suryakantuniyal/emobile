@@ -10,7 +10,6 @@
 *.bin
 *.log
 build/intermediates/dex-cache/cache.xml
-eMobilePOSAndroid/eMobilePOSAndroid.iml
 .idea/libraries/
 .idea/misc.xml
 .idea/workspace.xml
@@ -19,3 +18,5 @@ eMobilePOSAndroid/.idea/
 .gradle/2.8/taskArtifacts/cache.properties
 .idea/
 local.properties
+.gradle/2.10/taskArtifacts/cache.properties
+build/generated/mockable-android-14.jar

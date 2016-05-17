@@ -12,7 +12,7 @@ import IDTech.MSR.uniMag.UniMagTools.uniMagReaderToolsMsg;
 import IDTech.MSR.uniMag.UniMagTools.uniMagSDKTools;
 import IDTech.MSR.uniMag.uniMagReader;
 import IDTech.MSR.uniMag.uniMagReaderMsg;
-import protocols.EMSCallBack;
+import interfaces.EMSCallBack;
 import util.CardData;
 
 

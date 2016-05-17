@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="300dp"
+    android:background="@drawable/bg_dlog"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dlogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="15"
+        android:gravity="center"
+        android:text="@string/select_togo_eatin"
+        android:background="@drawable/blue_gradient_header_horizontal"
+        android:textAppearance="@style/white_text_appearance"
+        android:textSize="@dimen/header_bar_text_size"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp" />
+
+    <Button
+        android:id="@+id/eatInbutton"
+        style="@style/action_button_text_appearance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableLeft="@drawable/store"
+        android:textSize="@dimen/sales_tab_lv_text_size"
+        android:textAppearance="@style/tiles_text_appearance"
+        android:background="@drawable/action_button_selector"
+        android:text="@string/eatin_btn"
+        android:layout_margin="10dp" />
+
+    <Button
+        android:id="@+id/toGobutton"
+        style="@style/action_button_text_appearance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableLeft="@drawable/lunchbag"
+        android:textSize="@dimen/sales_tab_lv_text_size"
+        android:textAppearance="@style/tiles_text_appearance"
+        android:background="@drawable/action_button_selector"
+        android:text="@string/toGo_btn"
+        android:layout_margin="10dp" />
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+diff a/eMobilePOSAndroid/build.gradle b/eMobilePOSAndroid/build.gradle	(rejected hunks)
+@@ -35,7 +35,6 @@
+         ems {
+             minSdkVersion 14
+             applicationId = 'com.emobilepos.app'
+-            versionCode 95
+             versionName "1.1.0.12"
+             targetSdkVersion 23
+             multiDexEnabled = true

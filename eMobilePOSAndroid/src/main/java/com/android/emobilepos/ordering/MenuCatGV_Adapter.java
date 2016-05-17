@@ -144,6 +144,7 @@ public class MenuCatGV_Adapter extends CursorAdapter {
             holder.title = (TextView) retView.findViewById(R.id.catalogItemName);
             holder.itemImage = (ImageView) retView.findViewById(R.id.catalogItemPic);
             holder.iconImage = (ImageView) retView.findViewById(R.id.catalogRightIcon);
+            holder.productNameTxt = (TextView) retView.findViewById(R.id.gridCatalogProducttNametextView);
             holder.consignment_qty = (TextView) retView.findViewById(R.id.catalogConsignmentQty);
             holder.qty = (TextView) retView.findViewById(R.id.catalogItemQty);
             holder.amount = (TextView) retView.findViewById(R.id.catalogItemPrice);
