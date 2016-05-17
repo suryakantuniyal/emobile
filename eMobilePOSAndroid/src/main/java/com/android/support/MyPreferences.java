@@ -92,7 +92,6 @@ public class MyPreferences {
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
 
 
-
     public static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
@@ -102,6 +101,7 @@ public class MyPreferences {
     public static final String pref_skip_email_phone = "pref_skip_email_phone";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     public static final String pref_retail_taxes = "pref_retail_taxes";
+    public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
@@ -559,6 +559,10 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public boolean isMixAnMatch() {
+        return getPreferences(pref_mix_match);
+    }
+
     public String getCustPriceLevel() {
         return prefs.getString(cust_pricelevel_id, empstr);
     }
@@ -674,12 +678,12 @@ public class MyPreferences {
         return empstr;
     }
 
-    public int getSwiperType(){
+    public int getSwiperType() {
         String swiper_type = "swiper_type";
         return prefs.getInt(swiper_type, -1);
     }
 
-    public void setSwiperType(int type){
+    public void setSwiperType(int type) {
         String swiper_type = "swiper_type";
         prefEditor.putInt(swiper_type, type);
         prefEditor.commit();

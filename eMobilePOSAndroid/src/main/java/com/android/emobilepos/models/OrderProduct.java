@@ -1,6 +1,7 @@
 package com.android.emobilepos.models;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -41,6 +42,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String prod_price_points = "0";
     public String prod_value_points = "0";
     public String payWithPoints = "false";
+    @SerializedName("PricesXGroupid")
+    public String pricesXGroupid;
 
     public String itemTotalVatExclusive = "0";
     public String itemTotal = "0";
@@ -82,6 +85,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return super.clone();
     }
 
+    public boolean isVoid() {
+        return item_void.equals("1");
+    }
 
     @Override
     public boolean equals(Object o) {

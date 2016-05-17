@@ -244,6 +244,7 @@
     <string name="sync_dload_clerks">Downloading Clerks\u002E\u002E\u002E</string>
     <string name="sync_dload_dinnertables">Downloading Dinner Tables\u002E\u002E\u002E</string>
     <string name="sync_dload_salesassociate">Downloading Sales Associate\u002E\u002E\u002E</string>
+    <string name="sync_dload_mixmatch">Downloading Mix &amp; Match\u002E\u002E\u002E</string>
 
     <string name="sync_dload_termsandconditions">Downloading TermsAndConditions\u002E\u002E\u002E</string>
     <string name="sync_dload_ordersonhold">Downloading OrdersOnHold\u002E\u002E\u002E</string>
@@ -291,8 +292,7 @@
     <string name="sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
     <string name="sync_saving_dinnertables">Saving Dinner Tables\u002E\u002E\u002E</string>
     <string name="sync_saving_salesassociate">Saving Sales Associate\u002E\u002E\u002E</string>
-
-
+    <string name="sync_saving_mixmatch">Saving Mix &amp; Match</string>
     <!-- History Main tab -->
     <string name="hist_title">History</string>
     <string name="hist_transac">Transactions</string>
@@ -1166,6 +1166,7 @@
     <string name="payment_void_title">Payment Void</string>
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
+    <string name="config_mix_match"><![CDATA[Use Mix & Match]]></string>
 
 
 </resources>

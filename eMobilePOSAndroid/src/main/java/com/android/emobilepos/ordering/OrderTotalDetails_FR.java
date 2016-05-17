@@ -3,6 +3,7 @@ package com.android.emobilepos.ordering;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
+import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Tax;
 import com.android.support.Global;
@@ -419,79 +421,46 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private BigDecimal tempTaxableAmount = new BigDecimal("0");
-    private BigDecimal taxableDueAmount = new BigDecimal("0");
 
-//    private void calculateGlobalTax(BigDecimal _subtotal, BigDecimal qty, boolean isVat) {
-//
-//        int size = listMapTaxes.size();
-//        String val = "0";
-//        BigDecimal temp = new BigDecimal("0");
-//        BigDecimal _total_tax = new BigDecimal("0");
-//        for (int j = 0; j < size; j++) {
-//            val = listMapTaxes.get(j).get("tax_rate");
-//            if (val == null || val.isEmpty())
-//                val = "0";
-//            temp = new BigDecimal(listMapTaxes.get(j).get("tax_rate")).divide(new BigDecimal("100")).setScale(4,
-//                    RoundingMode.HALF_UP);
-//            BigDecimal tax_amount = _subtotal.multiply(temp).setScale(4, RoundingMode.HALF_UP);
-//
-//            _total_tax = _total_tax.add(tax_amount);
-//            DataTaxes tempTaxes = global.listOrderTaxes.get(j);
-//            BigDecimal orderTaxesTotal = tempTaxes.getTax_amount().isEmpty() ? new BigDecimal(0.00) : new BigDecimal(tempTaxes.getTax_amount());
-//            if (_subtotal.compareTo(new BigDecimal("0.00")) != 0) {
-//                if (isVat)
-//                    orderTaxesTotal.add(tax_amount.multiply(qty.abs()).setScale(2, RoundingMode.HALF_UP));
-//                else
-//                    orderTaxesTotal.add(tax_amount).setScale(4, RoundingMode.HALF_UP);
-//            }
-//            tempTaxes.setTax_amount(orderTaxesTotal.toString());
-//            global.listOrderTaxes.set(j, tempTaxes);
-//        }
-//
-//        if (isVat)
-//            _total_tax = _total_tax.setScale(2, RoundingMode.HALF_UP).multiply(qty.abs());
-//        tempTaxableAmount = tempTaxableAmount.add(_total_tax).setScale(4, RoundingMode.HALF_UP);
-//    }
-//
-//    private void calculateRetailGlobalTax(BigDecimal _sub_total, String tax_rate, BigDecimal qty, boolean isVat) {
-//        int size = listMapTaxes.size();
-//        String val = "0";
-//        BigDecimal temp = new BigDecimal("0");
-//        BigDecimal _total_tax = new BigDecimal("0");
-//        for (int j = 0; j < size; j++) {
-//            val = listMapTaxes.get(j).get("tax_rate");
-//            if (val == null || val.isEmpty())
-//                val = "0";
-//            temp = new BigDecimal(tax_rate).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
-//            BigDecimal tax_amount = _sub_total.multiply(temp).setScale(4, RoundingMode.HALF_UP);
-//
-//            _total_tax = _total_tax.add(tax_amount);
-//            DataTaxes tempTaxes = global.listOrderTaxes.get(j);
-//            BigDecimal orderTaxesTotal = tempTaxes.getTax_amount().isEmpty() ? new BigDecimal(0.00) : new BigDecimal(tempTaxes.getTax_amount());
-//            if (_sub_total.compareTo(new BigDecimal("0.00")) != 0) {
-//                if (isVat)
-//                    orderTaxesTotal.add(tax_amount.multiply(qty)).setScale(2, RoundingMode.HALF_UP);
-//                else
-//                    orderTaxesTotal.add(tax_amount).setScale(4, RoundingMode.HALF_UP);
-//
-//            }
-//            tempTaxes.setTax_amount(orderTaxesTotal.toString());
-//            global.listOrderTaxes.set(j, tempTaxes);
-//        }
-//
-//        if (isVat)
-//            _total_tax = _total_tax.setScale(2, RoundingMode.HALF_UP).multiply(qty);
-//        tempTaxableAmount = tempTaxableAmount.add(_total_tax).setScale(4, RoundingMode.HALF_UP);
-//    }
+
+    private void calculateMixAndMatch(List<OrderProduct> orderProducts) {
+        HashMap<String, MixMatchProductGroup> mixMatchProductGroupHashMap = new HashMap<String, MixMatchProductGroup>();
+        for (OrderProduct product : orderProducts) {
+            if (TextUtils.isEmpty(product.pricesXGroupid) || product.isVoid()) {
+                continue;
+            } else if (!TextUtils.isEmpty(product.overwrite_price) || !TextUtils.isEmpty(product.discount_id)) {
+                continue;
+            } else {
+                MixMatchProductGroup mixMatchProductGroup = mixMatchProductGroupHashMap.get(product.pricesXGroupid);
+                if (mixMatchProductGroup != null) {
+                    mixMatchProductGroup.getOrderProducts().add(product);
+                    mixMatchProductGroup.setQuantity(Integer.parseInt(mixMatchProductGroup.getQuantity() + product.ordprod_qty));
+                } else {
+                    mixMatchProductGroup = new MixMatchProductGroup();
+                    mixMatchProductGroup.setOrderProducts(new ArrayList<OrderProduct>());
+                    mixMatchProductGroup.setGroupId(product.pricesXGroupid);
+                    mixMatchProductGroup.setPriceLevelId(product.pricelevel_id);
+                    mixMatchProductGroup.setQuantity(Integer.parseInt(product.ordprod_qty));
+                }
+            }
+
+        }
+    }
 
     public void reCalculate(List<OrderProduct> orderProducts) {
         //TODO Temporary fix. Need verify why SDK 5.0 calls with null global and why sdk 4.3 not
+
         if (global == null) {
             return;
         }
+
+        if (myPref.isMixAnMatch()){
+            calculateMixAndMatch(orderProducts);
+        }
+
         int size = orderProducts.size();
         taxableSubtotal = new BigDecimal("0.00");
-        taxableDueAmount = new BigDecimal("0.00");
+        BigDecimal taxableDueAmount = new BigDecimal("0.00");
         tempTaxableAmount = new BigDecimal("0");
         itemsDiscountTotal = new BigDecimal(0);
         setupTaxesHolder();

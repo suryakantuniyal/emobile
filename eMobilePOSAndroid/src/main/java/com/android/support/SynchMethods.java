@@ -10,14 +10,13 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.DinningTableDAO;
+import com.android.dao.MixMatchDAO;
 import com.android.dao.SalesAssociateTableDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -42,6 +41,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
+import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
@@ -73,7 +73,6 @@ import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -81,6 +80,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -96,7 +96,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
-import io.realm.RealmResults;
 
 public class SynchMethods {
     private Post post;
@@ -120,6 +119,19 @@ public class SynchMethods {
     private Intent onHoldIntent;
     private Realm realm;
     private HttpClient client;
+    private Gson gson = new GsonBuilder()
+            .setExclusionStrategies(new ExclusionStrategy() {
+                @Override
+                public boolean shouldSkipField(FieldAttributes f) {
+                    return f.getDeclaringClass().equals(RealmObject.class);
+                }
+
+                @Override
+                public boolean shouldSkipClass(Class<?> clazz) {
+                    return false;
+                }
+            })
+            .create();
 
 
     public SynchMethods(DBManager managerInst) {
@@ -273,6 +285,7 @@ public class SynchMethods {
                 synchDownloadClerks(this);
                 synchDownloadSalesAssociate(this);
                 synchDownloadDinnerTable(this);
+                synchDownloadMixMatch(this);
                 synchDownloadTermsAndConditions(this);
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
@@ -538,8 +551,6 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             try {
                 sendReverse(this);
             } catch (Exception e) {
@@ -669,8 +680,6 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             if (Global.isConnectedToInternet(activity)) {
                 try {
 
@@ -896,17 +905,10 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             try {
-
-
                 synchLocations(this);
                 synchLocationsInventory(this);
-
-
             } catch (Exception e) {
-                // TODO Auto-generated catch block
             }
             return null;
         }
@@ -917,7 +919,6 @@ public class SynchMethods {
         }
 
     }
-
 
     /************************************
      * Send Methods
@@ -1344,7 +1345,6 @@ public class SynchMethods {
     private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
             task.updateProgress(getString(R.string.sync_dload_price_levels));
-            Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevel"));
@@ -1373,10 +1373,10 @@ public class SynchMethods {
 
     }
 
+
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
             task.updateProgress(getString(R.string.sync_dload_item_price_levels));
-            Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevelItems"));
@@ -1437,7 +1437,6 @@ public class SynchMethods {
     private void synchProdAddon(resynchAsync task) throws IOException, SAXException {
         try {
             task.updateProgress(getString(R.string.sync_dload_product_addons));
-            Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Product_addons"));
@@ -1469,13 +1468,10 @@ public class SynchMethods {
         try {
             ProductsHandler productsHandler = new ProductsHandler(activity);
             task.updateProgress(getString(R.string.sync_dload_products));
-            Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
-            Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Products"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            Log.d("GSon Start Reading", new Date().toString());
             List<Product> products = new ArrayList<Product>();
             productsHandler.emptyTable();
             reader.beginArray();
@@ -1488,13 +1484,11 @@ public class SynchMethods {
                     productsHandler.insert(products);
                     products.clear();
                     i = 0;
-                    Log.d("GSon Insert 1000", new Date().toString());
                 }
             }
             productsHandler.insert(products);
             reader.endArray();
             reader.close();
-            Log.d("GSon Finish", new Date().toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1514,7 +1508,6 @@ public class SynchMethods {
         try {
             ProductAliases_DB productAliasesDB = new ProductAliases_DB(activity);
             task.updateProgress(getString(R.string.sync_dload_product_aliases));
-            Gson gson = new Gson();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1750,6 +1743,39 @@ public class SynchMethods {
         try {
             DinningTableDAO.truncate();
             DinningTableDAO.insert(jsonRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void synchDownloadMixMatch(resynchAsync task) throws SAXException, IOException {
+        try {
+            task.updateProgress(getString(R.string.sync_dload_mixmatch));
+            client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+
+
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getMixMatch());
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<MixMatch> mixMatches = new ArrayList<MixMatch>();
+            MixMatchDAO.truncate();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                MixMatch mixMatch = gson.fromJson(reader, MixMatch.class);
+                mixMatches.add(mixMatch);
+                i++;
+                if (i == 1000) {
+                    MixMatchDAO.insert(mixMatches);
+                    mixMatches.clear();
+                    i = 0;
+                }
+            }
+            MixMatchDAO.insert(mixMatches);
+            reader.endArray();
+            reader.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

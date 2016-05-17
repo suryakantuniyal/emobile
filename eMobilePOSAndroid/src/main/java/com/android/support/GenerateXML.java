@@ -205,6 +205,18 @@ public class GenerateXML {
         return sb.toString();
     }
 
+    public String getMixMatch() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmlmixmatch)).append("?regid=")
+                    .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
+            sb.append(ending.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
 
     public String updateSyncTime(String time) {
         StringBuilder sb = new StringBuilder();
