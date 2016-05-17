@@ -182,7 +182,9 @@
                         android:inputType="numberDecimal"
                         android:textAppearance="@style/black_text_appearance_unbold"
                         android:textColor="#000000"
-                        android:textSize="@dimen/field_general_txt_size" >
+                        android:textSize="@dimen/field_general_txt_size"
+                        android:enabled="true"
+                        android:editable="true">
                     </com.android.support.MyEditText>
                 </LinearLayout>
                 <TextView

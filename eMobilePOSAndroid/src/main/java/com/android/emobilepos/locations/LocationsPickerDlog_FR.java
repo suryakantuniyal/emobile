@@ -1,6 +1,5 @@
 package com.android.emobilepos.locations;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
@@ -217,7 +216,6 @@ public class LocationsPickerDlog_FR extends DialogFragment implements Comparator
 	 * 
 	 * @param text
 	 */
-	@SuppressLint("DefaultLocale")
 	private void search(String text) {
 		selectedLocationsList.clear();
 

@@ -25,6 +25,7 @@ import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -37,7 +38,7 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class SelectEmployee_FA extends FragmentActivity {
+public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 	private ListView myListView;
 	private ListViewAdapter myAdapter;
 	private List<String> empName = new ArrayList<String>();

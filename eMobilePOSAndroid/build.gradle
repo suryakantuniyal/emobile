@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply from: '../artifacts.gradle'
 apply plugin: 'realm-android'
+apply plugin: 'io.fabric'
 android {
     signingConfigs {
         config {
@@ -27,7 +28,6 @@ android {
         targetSdkVersion 23
         multiDexEnabled = true
     }
-
 
 //    splits {
 //        abi {
@@ -69,6 +69,22 @@ android {
             targetSdkVersion 23
             multiDexEnabled = true
         }
+        restoff {
+            minSdkVersion 15
+            applicationId = 'com.emobilepos.app'
+            versionName "1.1.1.1"
+            versionCode 95
+            targetSdkVersion 23
+            multiDexEnabled = true
+        }
+        restoffivupos {
+            minSdkVersion 15
+            applicationId = 'com.emobilepos.ivupos.app'
+            versionName "1.1.1.1"
+            versionCode 95
+            targetSdkVersion 23
+            multiDexEnabled = true
+        }
     }
     buildTypes {
         release {
@@ -80,6 +96,7 @@ android {
 }
 
 repositories {
+    maven { url 'https://maven.fabric.io/public' }
     flatDir {
         dirs 'libs'
     }
@@ -138,4 +155,7 @@ dependencies {
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
     compile files('libs/xerces.jar')
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true;
+    }
 }

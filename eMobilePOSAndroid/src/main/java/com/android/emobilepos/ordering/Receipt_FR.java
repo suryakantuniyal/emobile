@@ -214,7 +214,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
         addSeatButton.setOnClickListener(this);
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || !myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
             addSeatButton.setVisibility(View.GONE);
         }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);

@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,7 +48,7 @@ import java.util.List;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements OnCheckedChangeListener, OnClickListener {
+public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChangeListener, OnClickListener {
 
     private Global global;
     private Activity activity;
@@ -182,7 +183,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         isFromSalesReceipt = extras.getBoolean("isFromSalesReceipt");
         boolean isFromMainMenu = extras.getBoolean("isFromMainMenu");
 
-        if (!isFromMainMenu) {
+        if (!isFromMainMenu || Global.isIvuLoto) {
             this.field[this.CHECK_AMOUNT].setEnabled(false);
         }
 
@@ -211,9 +212,79 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             custidkey = "";
 
 
+        field[CHECK_AMOUNT_PAID].setText(Global.formatDoubleToCurrency(0.00));
+        field[CHECK_AMOUNT_PAID].setSelection(5);
+
+        field[CHECK_AMOUNT_PAID].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {
+                    int lent = field[CHECK_AMOUNT_PAID].getText().length();
+                    Selection.setSelection(field[CHECK_AMOUNT_PAID].getText(), lent);
+                }
+            }
+        });
+
+        field[CHECK_AMOUNT_PAID].addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                if (!field[CHECK_AMOUNT_PAID].getText().toString().isEmpty())
+                    recalculateChange();
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                NumberUtils.parseInputedCurrency(s, field[CHECK_AMOUNT_PAID]);
+            }
+        });
+
+        if (!Global.isIvuLoto || isFromSalesReceipt) {
+            findViewById(R.id.ivuposRow1).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow2).setVisibility(View.GONE);
+            findViewById(R.id.ivuposRow3).setVisibility(View.GONE);
+        } else {
+            setIVUPOSFieldListeners();
+        }
+
+        hasBeenCreated = true;
+    }
+
+    private void setIVUPOSFieldListeners() {
+        subtotal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {
+                    Selection.setSelection(subtotal.getText(), subtotal.getText().length());
+                }
+
+            }
+        });
+        tax1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {
+                    Selection.setSelection(tax1.getText(), tax1.getText().length());
+                }
+
+            }
+        });
+        tax2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.hasFocus()) {
+                    Selection.setSelection(tax2.getText(), tax2.getText().length());
+                }
+
+            }
+        });
         subtotal.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                numberUtils.parseInputedCurrency(s, subtotal);
+                NumberUtils.parseInputedCurrency(s, subtotal);
                 if (!isFromSalesReceipt) {
                     ProcessCash_FA.calculateTaxes(groupTaxRate, subtotal, tax1, tax2);
                     ProcessCash_FA.calculateAmountDue(subtotal, tax1, tax2, amountField);
@@ -226,7 +297,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, subtotal);
+                NumberUtils.parseInputedCurrency(s, subtotal);
             }
         });
         tax1.addTextChangedListener(new TextWatcher() {
@@ -239,7 +310,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, tax1);
+                NumberUtils.parseInputedCurrency(s, tax1);
             }
         });
         tax2.addTextChangedListener(new TextWatcher() {
@@ -253,12 +324,9 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, tax2);
+                NumberUtils.parseInputedCurrency(s, tax2);
             }
         });
-
-
-        hasBeenCreated = true;
     }
 
 
@@ -339,7 +407,7 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
         amountTender = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
         payHandler = new PaymentsHandler(activity);
         payment = new Payment(activity);
-        payment.amountTender=amountTender;
+        payment.amountTender = amountTender;
         payment.pay_id = extras.getString("pay_id");
 
         payment.emp_id = myPref.getEmpID();
@@ -969,15 +1037,14 @@ public class ProcessCheck_FA extends BaseFragmentActivityActionBar implements On
                 if (!validInput()) {
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
                 } else {
-                    if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
+                    if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                         Global.mainPrinterManager.currentDevice.openCashDrawer();
+                    }
+                    if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
+                        processPayment();
+                    else
+                        processMultiInvoicePayment();
                 }
-
-                if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
-                    processPayment();
-                else
-                    processMultiInvoicePayment();
-
                 btnProcess.setEnabled(true);
                 break;
             case R.id.exactAmountBut:
