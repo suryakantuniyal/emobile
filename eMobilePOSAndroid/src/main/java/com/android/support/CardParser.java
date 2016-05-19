@@ -1,9 +1,13 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,5 +118,66 @@ public class CardParser {
         } else {
             return "";
         }
+    }
+
+    public static CreditCardInfo parseIDTechOriginal(Context context, byte[] cardReadBuffer) {
+        String ascii = convertHexToAscii(convertByteToString(cardReadBuffer));
+        byte[] ksnB = Arrays.copyOfRange(cardReadBuffer, cardReadBuffer.length - 13, cardReadBuffer.length - 3);
+        String ksn = convertByteToString(ksnB);
+        int t1LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[5]}), 16);
+        int t2LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[6]}), 16);
+        int t3LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[7]}), 16);
+        int encBlockStart = t1LenInt + t2LenInt + t3LenInt + 8;
+        int encBlockEnd = cardReadBuffer.length - 13;
+
+        if (t1LenInt > 0) {
+            encBlockEnd -= 20;
+        }
+        if (t2LenInt > 0) {
+            encBlockEnd -= 20;
+        }
+
+        String encBlock = convertByteToString(Arrays.copyOfRange(cardReadBuffer, encBlockStart, encBlockEnd));
+//                        Message message = handler.obtainMessage();
+        CreditCardInfo creditCardInfo = new CreditCardInfo();
+        creditCardInfo.setTrackDataKSN(ksn);
+        creditCardInfo.setEncryptedBlock(encBlock);
+        creditCardInfo.setCardExpMonth("01");
+        creditCardInfo.setCardExpYear(DateUtils.getYearAdd(1));
+        creditCardInfo.setWasSwiped(true);
+        Encrypt encrypt = new Encrypt(context);
+        String maskNumber = ascii.substring(ascii.indexOf(';') + 1);
+        maskNumber = maskNumber.substring(0, ascii.indexOf('='));
+        creditCardInfo.setCardNumUnencrypted(maskNumber);
+        creditCardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(maskNumber));
+        return creditCardInfo;
+    }
+
+    private static String convertByteToString(byte[] byteData) {
+        String str = null;
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < byteData.length; i++) {
+            str = Integer.toHexString(0xFF & byteData[i]);
+            if (str.length() == 1)
+                str = "0" + str;
+            hexString.append(str);
+        }
+        return hexString.toString();
+    }
+
+    private static String convertHexToAscii(String hexString) {
+        StringBuffer asciiString = new StringBuffer();
+        for (int i = 0; i < hexString.length(); i += 2) {
+            String subs = hexString.substring(i, i + 2);
+            asciiString.append((char) Integer.parseInt(subs, 16));
+        }
+        return asciiString.toString();
+    }
+
+    private short getByteShort(byte[] bytes) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        short l = byteBuffer.getShort();
+        return l;
     }
 }
