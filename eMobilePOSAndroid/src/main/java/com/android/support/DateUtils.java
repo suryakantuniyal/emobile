@@ -3,11 +3,13 @@ package com.android.support;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -66,5 +68,22 @@ public class DateUtils {
             result.put(unit,diff);
         }
         return result;
+    }
+
+    public static String getYearAdd(int value){
+        SimpleDateFormat df = new SimpleDateFormat("yyyy", Locale.getDefault());
+        String now = df.format(new Date());
+        Date date;
+        try {
+            date = df.parse(now);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.YEAR, value); // add 28 days
+
+        return Integer.toString(cal.get(Calendar.YEAR));
     }
 }

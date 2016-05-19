@@ -587,9 +587,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.resetOrderDetailsValues();
             global.clearListViewData();
 
-            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
+//            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
                 Global.showCDTDefault(this);
-            }
+//            }
 
             reloadDefaultTransaction();
         } else if (resultCode == 9) {

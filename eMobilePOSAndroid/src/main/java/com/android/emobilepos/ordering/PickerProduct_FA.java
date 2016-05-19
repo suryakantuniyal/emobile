@@ -1050,20 +1050,20 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         global.orderProducts.add(ord);
 
 
-        if (myPref.isSam4s(true, true)) {
+//        if (myPref.isSam4s(true, true)) {
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
-        } else if (myPref.isPAT100()) {
-            String row1 = ord.ordprod_name;
-            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        } else if (myPref.isESY13P1()) {
-            String row1 = ord.ordprod_name;
-            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        }
+//        } else if (myPref.isPAT100()) {
+//            String row1 = ord.ordprod_name;
+//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        } else if (myPref.isESY13P1()) {
+//            String row1 = ord.ordprod_name;
+//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        }
 
         if (OrderingMain_FA.returnItem) {
             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;

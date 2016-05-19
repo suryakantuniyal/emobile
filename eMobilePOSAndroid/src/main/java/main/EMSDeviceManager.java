@@ -28,6 +28,7 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSOT310;
 import drivers.EMSOneil4te;
 import drivers.EMSPAT100;
+import drivers.EMSPAT215;
 import drivers.EMSPowaPOS;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
@@ -61,7 +62,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
         return instance;
     }
     /*
-	public  EMSDeviceManager getInstance()
+    public  EMSDeviceManager getInstance()
 	{
 		return instance;
 	}
@@ -116,6 +117,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.PAT100:
                 aDevice = new EMSPAT100();
+                aDevice.connect(activity, -1, true, instance);
+                break;
+            case Global.PAT215:
+                aDevice = new EMSPAT215();
                 aDevice.connect(activity, -1, true, instance);
                 break;
             case Global.EM100:
@@ -186,6 +191,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.PAT100:
                 aDevice = new EMSPAT100();
+                break;
+            case Global.PAT215:
+                aDevice = new EMSPAT215();
                 break;
             case Global.ISMP:
                 aDevice = new EMSIngenico();

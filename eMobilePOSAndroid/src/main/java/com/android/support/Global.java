@@ -141,11 +141,12 @@ public class Global extends MultiDexApplication {
     public static final int ICMPEVO = 16;
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
+    public static final int PAT215 = 19;
 
 
 
     public enum BuildModel {
-        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
 
         @Override
         public String toString() {
@@ -543,6 +544,9 @@ public class Global extends MultiDexApplication {
                 break;
             case PAT100:
                 _name = "PAT100";
+                break;
+            case PAT215:
+                _name = "PAT215";
                 break;
             case ISMP:
                 _name = "iSMP";
@@ -1606,9 +1610,9 @@ public class Global extends MultiDexApplication {
         MyPreferences myPref = new MyPreferences(activity);
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-        uart uart_tool = new uart();
-        uart_tool.config(3, 9600, 8, 1);
-        uart_tool.write(3, Global.emptySpaces(40, 0, false));
+//        uart uart_tool = new uart();
+//        uart_tool.config(3, 9600, 8, 1);
+//        uart_tool.write(3, Global.emptySpaces(40, 0, false));
 
         String msg1 = myPref.cdtLine1(true, "");
         String msg2 = myPref.cdtLine2(true, "");
@@ -1631,7 +1635,7 @@ public class Global extends MultiDexApplication {
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
-                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
+                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 ||_printer_type == Global.PAT215 );
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
