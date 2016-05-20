@@ -253,12 +253,23 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                 int startReadData = msrApiContext.startReadData();
 //                activity.runOnUiThread(setViewThread);
 //                readSwiperBuffer();
+                activity.runOnUiThread(doUpdateDidConnect);
                 Thread thread = new Thread(setViewThread);
                 thread.start();
             }
         }.start();
     }
 
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (callback != null)
+                    callback.readerConnectedSuccessfully(true);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
     //
     private Runnable setViewThread = new Runnable() {
         @Override
