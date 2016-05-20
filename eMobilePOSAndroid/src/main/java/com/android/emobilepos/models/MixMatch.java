@@ -2,13 +2,15 @@ package com.android.emobilepos.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 
 /**
  * Created by Guarionex on 5/17/2016.
  */
 public class MixMatch extends RealmObject {
-    
+
     @SerializedName("id_key")
     private int idKey;
     @SerializedName("group_id")
@@ -26,9 +28,9 @@ public class MixMatch extends RealmObject {
     @SerializedName("isactive")
     private boolean isActive;
     @SerializedName("start_date")
-    private String startDate;
+    private Date startDate;
     @SerializedName("end_date")
-    private String endDate;
+    private Date endDate;
     @SerializedName("_rowversion")
     private String rowVersion;
     @SerializedName("MixmatchType")
@@ -102,19 +104,19 @@ public class MixMatch extends RealmObject {
         isActive = active;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 

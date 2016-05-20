@@ -42,7 +42,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String prod_price_points = "0";
     public String prod_value_points = "0";
     public String payWithPoints = "false";
-    @SerializedName("PricesXGroupid")
     public String pricesXGroupid;
 
     public String itemTotalVatExclusive = "0";
@@ -102,4 +101,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return this.ordprod_id.compareTo(another.ordprod_id);
     }
 
+    public void setPricesXGroupid(String pricesXGroupid) {
+        this.pricesXGroupid = pricesXGroupid;
+    }
+
+    public String getPricesXGroupid() {
+        return pricesXGroupid;
+    }
 }

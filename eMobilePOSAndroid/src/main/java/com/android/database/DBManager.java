@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 39;
+    public static final int VERSION = 40;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -485,7 +485,7 @@ public class DBManager {
             + "[prod_taxcode] [varchar](50) NULL, [prod_taxtype] [varchar](50) NULL, [prod_glaccount] [varchar](50) NULL, [prod_mininv] [int] NULL, "
             + "[prod_update] [datetime] NULL, [isactive] [int] NULL, [prod_showOnline] [tinyint] NULL, [prod_ispromo] [tinyint] NULL, "
             + "[prod_shipping] [tinyint] NULL, [prod_weight] [real] NULL, [prod_expense] [bit] NULL, [prod_disc_type_points] [varchar](255) NULL, "
-            + "[prod_price_points] [int] NULL, [prod_value_points] [int] NULL)";
+            + "[prod_price_points] [int] NULL, [prod_value_points] [int] NULL, [prod_prices_group_id] [varchar](50) NULL)";
 
     private final String CREATE_PRODUCTALIASES = "CREATE TABLE [ProductAliases] ([alias_id_pk] INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "[prod_id] [varchar](50), [prod_alias] [varchar](50))";

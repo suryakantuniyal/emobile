@@ -130,7 +130,7 @@ public class SynchMethods {
                 public boolean shouldSkipClass(Class<?> clazz) {
                     return false;
                 }
-            })
+            }).setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
             .create();
 
 

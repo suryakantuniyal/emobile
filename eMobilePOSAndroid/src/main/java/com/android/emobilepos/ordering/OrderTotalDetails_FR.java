@@ -17,12 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.MixMatchDAO;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
+import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Tax;
@@ -35,7 +37,11 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import io.realm.RealmResults;
 
 public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.RecalculateCallback {
     private Spinner taxSpinner, discountSpinner;
@@ -426,9 +432,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private void calculateMixAndMatch(List<OrderProduct> orderProducts) {
         HashMap<String, MixMatchProductGroup> mixMatchProductGroupHashMap = new HashMap<String, MixMatchProductGroup>();
         for (OrderProduct product : orderProducts) {
+            BigDecimal overwrite = Global.getBigDecimalNum(product.overwrite_price);
             if (TextUtils.isEmpty(product.pricesXGroupid) || product.isVoid()) {
                 continue;
-            } else if (!TextUtils.isEmpty(product.overwrite_price) || !TextUtils.isEmpty(product.discount_id)) {
+            } else if (overwrite.compareTo(new BigDecimal(0.00)) > 0 || !TextUtils.isEmpty(product.discount_id)) {
                 continue;
             } else {
                 MixMatchProductGroup mixMatchProductGroup = mixMatchProductGroupHashMap.get(product.pricesXGroupid);
@@ -441,9 +448,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     mixMatchProductGroup.setGroupId(product.pricesXGroupid);
                     mixMatchProductGroup.setPriceLevelId(product.pricelevel_id);
                     mixMatchProductGroup.setQuantity(Integer.parseInt(product.ordprod_qty));
+                    mixMatchProductGroupHashMap.put(product.pricesXGroupid, mixMatchProductGroup);
                 }
             }
-
+        }
+        Iterator<Map.Entry<String, MixMatchProductGroup>> iterator = mixMatchProductGroupHashMap.entrySet().iterator();
+        while (iterator.hasNext()){
+            MixMatchProductGroup group = iterator.next().getValue();
+            RealmResults<MixMatch> mixMatches = MixMatchDAO.getDiscountsBygroupId(group);
         }
     }
 
@@ -454,7 +466,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             return;
         }
 
-        if (myPref.isMixAnMatch()){
+        if (myPref.isMixAnMatch()) {
             calculateMixAndMatch(orderProducts);
         }
 

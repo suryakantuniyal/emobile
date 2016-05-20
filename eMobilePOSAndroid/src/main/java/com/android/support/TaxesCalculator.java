@@ -73,12 +73,12 @@ public class TaxesCalculator {
             if (!taxID.isEmpty()) {
                 taxAmount = Global.formatNumToLocale(
                         Double.parseDouble(taxHandler.getTaxRate(taxID, orderProduct.prod_taxtype,
-                                Double.parseDouble(orderProduct.overwrite_price))));
+                                Global.getBigDecimalNum(orderProduct.overwrite_price).doubleValue())));
                 prod_taxId = orderProduct.prod_taxtype;
             } else {
                 taxAmount = Global.formatNumToLocale(Double.parseDouble(taxHandler.getTaxRate(
                         orderProduct.prod_taxcode, orderProduct.prod_taxtype,
-                        Double.parseDouble(orderProduct.overwrite_price))));
+                        Global.getBigDecimalNum(orderProduct.overwrite_price).doubleValue())));
                 prod_taxId = orderProduct.prod_taxcode;
             }
         } else {
@@ -95,7 +95,7 @@ public class TaxesCalculator {
         if (isVAT) {
             if (orderProduct.prod_istaxable.equals("1")) {
                 if (orderProduct.prod_price_updated.equals("0")) {
-                    BigDecimal _curr_prod_price = new BigDecimal(orderProduct.overwrite_price);
+                    BigDecimal _curr_prod_price = Global.getBigDecimalNum(orderProduct.overwrite_price);
                     BigDecimal _new_prod_price = getProductPrice(_curr_prod_price,
                             new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(6, RoundingMode.HALF_UP));
                     _new_prod_price = _new_prod_price.setScale(6, RoundingMode.HALF_UP);
@@ -534,7 +534,7 @@ public class TaxesCalculator {
         order.ord_taxamount = Global.getRoundBigDecimal(taxes.taxableAmount);
     }
 
-    public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax){
+    public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax) {
 
         return new OrderProduct();
     }

@@ -1,13 +1,16 @@
 package com.android.dao;
 
 import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.MixMatch;
+import com.android.emobilepos.models.MixMatchProductGroup;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
@@ -64,4 +67,19 @@ public class MixMatchDAO {
         realm.commitTransaction();
     }
 
+    public static RealmResults<MixMatch> getDiscountsBygroupId(MixMatchProductGroup group) {
+        Date now = new Date();
+        Realm realm = Realm.getDefaultInstance();
+        RealmQuery<MixMatch> where = realm.where(MixMatch.class);
+        RealmResults<MixMatch> realmResults = where
+                .equalTo("groupId", group.getGroupId())
+                .equalTo("priceLevelId", group.getPriceLevelId())
+                .equalTo("isActive", true)
+                .lessThanOrEqualTo("startDate", now)
+                .greaterThanOrEqualTo("endDate", now)
+                .or()
+                .equalTo("mixMatchType", 2)
+                .findAll();
+        return realmResults;
+    }
 }
