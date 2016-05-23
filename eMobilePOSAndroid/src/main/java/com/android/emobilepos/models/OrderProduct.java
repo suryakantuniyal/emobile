@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.List;
 
 import io.realm.RealmObject;
 
@@ -75,8 +76,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public boolean isReturned = false;
     public String assignedSeat;
     public int seatGroupId;
-
-
+    public int mixMatchQtyApplied;
+    public BigDecimal mixMatchOriginalPrice;
+    public List<MixAndMatchDiscount> mixAndMatchDiscounts;
     public String consignment_qty;
 
     @Override

@@ -627,7 +627,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         orderedProducts.ordprod_qty = val;
-        orderedProducts.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
+        orderedProducts.overwrite_price = "0.00"; //Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
 
         orderedProducts.prod_taxValue = taxTotal;
         orderedProducts.discount_value = disTotal;
