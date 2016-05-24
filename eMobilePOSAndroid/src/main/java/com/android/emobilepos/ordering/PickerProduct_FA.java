@@ -410,8 +410,16 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             arr[4] = discount.getProductId();
             _listDiscounts.add(arr);
         }
-        List<UOM> uoms = UomDAO.getByProdId(prodID);
 
+        List<UOM> uoms = UomDAO.getByProdId(prodID);
+        ArrayList<String[]> _listUOM = new ArrayList<String[]>();
+        for (UOM uom : uoms) {
+            String[] arr = new String[3];
+            arr[0] = uom.getUomName();
+            arr[1] = uom.getUomId();
+            arr[2] = uom.getUomConversion();
+            _listUOM.add(arr);
+        }
         int plSize = _listPriceLevel.size();
         int disSize = _listDiscounts.size();
         int uomSize = uoms.size();
@@ -438,7 +446,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         setTextView(_plIndex, INDEX_PRICE_LEVEL + OFFSET, _listPriceLevel);
         setTextView(_disIndex, INDEX_DISCOUNT + OFFSET, _listDiscounts);
-        setTextView(_uomIndex, INDEX_UOM + OFFSET, null);
+        setTextView(_uomIndex, INDEX_UOM + OFFSET, _listUOM);
     }
 
     private void addAttributeButton(View header, String tag) {
@@ -933,7 +941,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.ordprod_name = orderProduct.ordprod_name;
         ord.ordprod_desc = orderProduct.ordprod_desc;
         ord.prod_id = prodID;
-        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
+        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal);
         ord.onHand = orderProduct.onHand;
         ord.imgURL = orderProduct.imgURL;
         ord.cat_id = orderProduct.cat_id;
