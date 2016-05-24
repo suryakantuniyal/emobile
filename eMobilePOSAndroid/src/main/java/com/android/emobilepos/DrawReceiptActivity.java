@@ -72,12 +72,14 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
         accept.setOnClickListener(this);
         if (!TextUtils.isEmpty(payAmount)) {
             ((TextView) findViewById(R.id.amountSignReceipttextView)).setText(getString(R.string.receipt_amount) + Global.getCurrencyFormat(payAmount));
-        }else{
-            ((TextView) findViewById(R.id.amountSignReceipttextView)).setVisibility(View.INVISIBLE);
+            if (!TextUtils.isEmpty(cardType)) {
+                ((ImageView) findViewById(R.id.cardLogoSignReceiptimageView3)).setImageResource(ProcessCreditCard_FA.getCreditLogo(cardType));
+            }
+        } else {
+            ((TextView) findViewById(R.id.amountSignReceipttextView)).setVisibility(View.GONE);
+            ((ImageView) findViewById(R.id.cardLogoSignReceiptimageView3)).setVisibility(View.GONE);
         }
-        if (!TextUtils.isEmpty(cardType)) {
-            ((ImageView) findViewById(R.id.cardLogoSignReceiptimageView3)).setImageResource(ProcessCreditCard_FA.getCreditLogo(cardType));
-        }
+
 
         //drawView.requestFocus();
         hasBeenCreated = true;

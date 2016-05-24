@@ -568,7 +568,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         } else if (resultCode == 1) {
 
             Bundle extras = data.getExtras();
