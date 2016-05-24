@@ -48,40 +48,40 @@ android {
         ems {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.2.0.21"
-            versionCode 97
+            versionName "1.2.0.22"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
         emsblue {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.2.0.21"
-            versionCode 97
+            versionName "1.2.0.22"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
         ivupos {
             minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.21"
-            versionCode 97
+            versionName "1.2.0.22"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
         restoff {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.1.3"
-            versionCode 97
+            versionName "1.1.1.4"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
         restoffivupos {
             minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.3"
-            versionCode 97
+            versionName "1.1.1.4"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
