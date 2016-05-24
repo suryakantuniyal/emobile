@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.UomDAO;
 import com.android.database.OrdProdAttrList_DB;
 import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsAttrHandler;
@@ -42,6 +43,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.UOM;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -58,6 +60,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+
+import io.realm.RealmResults;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 
@@ -391,8 +395,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void updateSavedDetails() {
         PriceLevelHandler plHandler = new PriceLevelHandler();
-        ProductsHandler prodHandler = new ProductsHandler(activity);
-        UOMHandler uomHandler = new UOMHandler(activity);
 
         List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
 
@@ -401,18 +403,18 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ArrayList<String[]> _listDiscounts = new ArrayList<String[]>();
         for (Discount discount : discounts) {
             String[] arr = new String[5];
-            arr[0]=discount.getProductName();
-            arr[1]=discount.getProductDiscountType();
-            arr[2]=discount.getProductPrice();
-            arr[3]=discount.getTaxCodeIsTaxable();
-            arr[4]=discount.getProductId();
+            arr[0] = discount.getProductName();
+            arr[1] = discount.getProductDiscountType();
+            arr[2] = discount.getProductPrice();
+            arr[3] = discount.getTaxCodeIsTaxable();
+            arr[4] = discount.getProductId();
             _listDiscounts.add(arr);
         }
-        List<String[]> _listUOM = uomHandler.getUOMList(prodID);
+        List<UOM> uoms = UomDAO.getByProdId(prodID);
 
         int plSize = _listPriceLevel.size();
         int disSize = _listDiscounts.size();
-        int uomSize = _listUOM.size();
+        int uomSize = uoms.size();
 
         int maxSize = plSize;
         if (maxSize < disSize)
@@ -428,7 +430,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if (i < disSize && _listDiscounts.get(i)[4].equals(global.orderProducts.get(modifyOrderPosition).discount_id)) {
                 _disIndex = i + 1;
             }
-            if (i < uomSize && _listUOM.get(i)[1].equals(global.orderProducts.get(modifyOrderPosition).uom_id)
+            if (i < uomSize && uoms.get(i).getUomId().equals(global.orderProducts.get(modifyOrderPosition).uom_id)
                     ) {
                 _uomIndex = i + 1;
             }
@@ -436,7 +438,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         setTextView(_plIndex, INDEX_PRICE_LEVEL + OFFSET, _listPriceLevel);
         setTextView(_disIndex, INDEX_DISCOUNT + OFFSET, _listDiscounts);
-        setTextView(_uomIndex, INDEX_UOM + OFFSET, _listUOM);
+        setTextView(_uomIndex, INDEX_UOM + OFFSET, null);
     }
 
     private void addAttributeButton(View header, String tag) {
@@ -729,11 +731,19 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         dlg.setContentView(view);
         ListView dlgListView = (ListView) dlg.findViewById(R.id.dlgListView);
         List<String[]> listData_LV = new ArrayList<String[]>();
+        RealmResults<UOM> uoms;
         switch (type) {
             case SEC_UOM://UoM
             {
-                UOMHandler uomHandler = new UOMHandler(activity);
-                listData_LV = uomHandler.getUOMList(prodID);
+                listData_LV = new ArrayList<String[]>();
+                uoms = UomDAO.getByProdId(prodID);
+                for (UOM uom : uoms) {
+                    String[] arr = new String[3];
+                    arr[0] = uom.getUomName();
+                    arr[1] = uom.getUomId();
+                    arr[2] = uom.getUomConversion();
+                    listData_LV.add(arr);
+                }
                 break;
             }
             case SEC_PRICE_LEV: // Price Level
@@ -752,14 +762,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             {
                 ProductsHandler handler = new ProductsHandler(activity);
                 List<Discount> discounts = handler.getDiscounts();
-                listData_LV=new ArrayList<String[]>();
+                listData_LV = new ArrayList<String[]>();
                 for (Discount discount : discounts) {
                     String[] arr = new String[5];
-                    arr[0]=discount.getProductName();
-                    arr[1]=discount.getProductDiscountType();
-                    arr[2]=discount.getProductPrice();
-                    arr[3]=discount.getTaxCodeIsTaxable();
-                    arr[4]=discount.getProductId();
+                    arr[0] = discount.getProductName();
+                    arr[1] = discount.getProductDiscountType();
+                    arr[2] = discount.getProductPrice();
+                    arr[3] = discount.getTaxCodeIsTaxable();
+                    arr[4] = discount.getProductId();
                     listData_LV.add(arr);
                 }
                 break;
