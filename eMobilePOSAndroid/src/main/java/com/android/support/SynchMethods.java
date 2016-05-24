@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateTableDAO;
+import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
@@ -1786,13 +1787,34 @@ public class SynchMethods {
     }
 
     private void synchUoM(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_uom));
-        post.postData(7, activity, "UoM");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_UOM);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_uom));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+//        task.updateProgress(getString(R.string.sync_dload_uom));
+//        post.postData(7, activity, "UoM");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_UOM);
+//        File tempFile = new File(tempFilePath);
+//        task.updateProgress(getString(R.string.sync_saving_uom));
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
+//
+
+
+        try {
+            task.updateProgress(getString(R.string.sync_dload_uom));
+            client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("UoM"));
+            task.updateProgress(getString(R.string.sync_saving_uom));
+            try {
+                UomDAO.truncate();
+                UomDAO.insert(jsonRequest);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {
