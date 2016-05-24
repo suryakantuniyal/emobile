@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 import util.NumberUtil;
 
 public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
-//    private ProgressDialog myProgressDialog;
+    //    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
     private Context thisContext = this;
     private Activity activity = this;
@@ -209,7 +209,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             public void onClick(View v) {
                 btnProcess.setEnabled(false);
                 double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                if (enteredAmount <= 0) {
+                double amountDueDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+                if (enteredAmount <= 0 && amountDueDbl > 0) {
                     paid.setBackgroundResource(R.drawable.edittext_wrong_input);
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
                 } else {
@@ -562,8 +563,6 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         });
         dialog.show();
     }
-
-
 
 
     public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {
