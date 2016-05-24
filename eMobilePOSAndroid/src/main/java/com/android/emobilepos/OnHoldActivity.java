@@ -568,8 +568,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.onHand = c.getString(c.getColumnIndex("onHand"));
             ord.imgURL = c.getString(c.getColumnIndex("ordprod_qty"));
             ord.isPrinted = c.getString(c.getColumnIndex("isPrinted"));
+            ord.uom_conversion = c.getString(c.getColumnIndex("uom_conversion"));
 
-            total = (Double.parseDouble(ord.ordprod_qty)) * Double.parseDouble(ord.overwrite_price);
+            total = (Double.parseDouble(ord.ordprod_qty)) * Double.parseDouble(ord.overwrite_price) * Double.parseDouble(ord.uom_conversion);
             ord.prod_taxValue = c.getString(c.getColumnIndex("prod_taxValue"));
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             ord.prod_taxtype = c.getString(c.getColumnIndex("prod_taxtype"));
@@ -590,7 +591,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             //Add UOM attributes to the order
             ord.uom_name = c.getString(c.getColumnIndex("uom_name"));
             ord.uom_id = c.getString(c.getColumnIndex("uom_id"));
-            ord.uom_conversion = c.getString(c.getColumnIndex("uom_conversion"));
 
             discountInfo = prodHandler.getDiscount(ord.discount_id, ord.overwrite_price);
 
