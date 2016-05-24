@@ -773,6 +773,11 @@ public class SalesTab_FR extends Fragment {
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                     askEatInToGo();
+                }else{
+                    Intent intent = new Intent(activity, OrderingMain_FA.class);
+                    intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+                    intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
+                    startActivityForResult(intent, 0);
                 }
                 dialog.dismiss();
             }
