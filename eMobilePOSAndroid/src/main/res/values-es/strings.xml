@@ -1227,7 +1227,7 @@
     <string name="handpoint_log_file">Handpoint Log File</string>
     <string name="send_email">Send Email</string>
     <string name="config_send_handpoint_log">Send Handpoint Log</string>
-    <string name="config_handpoint_utils">Handopint Tools</string>
+    <string name="config_handpoint_utils">Handpoint Tools</string>
     <string name="config_handpoint_update">Update Firmware</string>
     <string name="device_update_completed">Device update request completed.</string>
     <string name="device_update_fail">Device update request fail.</string>
