@@ -1209,7 +1209,7 @@
     <string name="void_fail">Error processing void</string>
     <string name="select_number_guests">Select number of guests</string>
     <string name="fail_to_connect">Failed to connect</string>
-    <string name="connecting_bluetooth_device">Connecting Bletooth Device...</string>
+    <string name="connecting_bluetooth_device">Connecting Bluetooth Device...</string>
     <string name="move_items_to_seat">"Move items to seat "</string>
     <string name="join_with_seat">"Join with seat "</string>
     <string name="tip_adjustment">Tip Adjustment</string>
