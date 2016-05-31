@@ -497,10 +497,10 @@ public class CustomersHandler {
 		sb.append(
 				"cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ");
 		sb.append(
-				"WHERE c.cust_name LIKE ? OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? OR c.cust_email LIKE ? OR c.cust_phone LIKE ? ORDER BY cust_name");
+				"WHERE c.cust_name LIKE ? OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? OR c.cust_email LIKE ? OR c.cust_phone LIKE ? OR c.CompanyName LIKE ? ORDER BY cust_name");
 
 		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { "%" + search + "%", "%" + search + "%",
-				"%" + search + "%", "%" + search + "%", "%" + search + "%" });
+				"%" + search + "%", "%" + search + "%", "%" + search + "%", "%" + search + "%" });
 		cursor.moveToFirst();
 		return cursor;
 	}
