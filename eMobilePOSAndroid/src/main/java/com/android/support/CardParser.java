@@ -11,23 +11,21 @@ public class CardParser {
 
     public static boolean parseCreditCard(Activity activity, String swiped_raw_data, CreditCardInfo tempCardData) {
         boolean isCardParsed = false;
-        Pattern track1FormatBPattern = Pattern.compile("(%?([A-Z])([0-9]{1,19})\\^([^\\^]{2,26})\\^([0-9]{4}|\\^)([0-9]{3}|\\^)?([^\\?]+)?\\??)[\t\n\r ]{0,2}.*");
-        Pattern track2Pattern = Pattern.compile(".*[\\t\\n\\r ]?(;([0-9]{1,19})=([0-9]{4})([0-9]{3})(.*)\\?).*");
-        Pattern track3Pattern = Pattern.compile(".*?[\t\n\r ]{0,2}(\\+(.*)\\?)");
-        //string pattern = "^(%{1}[A-Za-z0-9]+\^{1}[A-Za-z0-9/\-\s.]+\^[0-9]+\?{1})?;{1}[0-9]+={1}[0-9]+\?{1}$";
+        Pattern track1FormatBPattern = Pattern.compile("(%([A-Z])([0-9]{1,19})\\^([^\\^]{2,26})\\^([0-9]{4}|\\^)([0-9]{3}|\\^)([^\\?]+)\\?)");
+        Pattern track2Pattern = Pattern.compile("(;([0-9]{4,19})=?([0-9]{2})?(0[1-9]|1[0-2])?[0-9]{0,50}\\?)");
+
         String raw_card_data = swiped_raw_data.trim();
         Matcher matchTrack1 = track1FormatBPattern.matcher(raw_card_data);
         Matcher matchTrack2 = track2Pattern.matcher(raw_card_data);
-        Matcher matchTrack3 = track3Pattern.matcher(raw_card_data);
 
+        boolean hasTrack1 = matchTrack1.find();
+        boolean hasTrack2 = matchTrack2.find();
 
-        //CreditCardInfo tempCardData = new CreditCardInfo();
-
-        if (matchTrack1.matches() || matchTrack2.matches()) {
+        if (hasTrack1 || hasTrack2) {
             tempCardData.setWasSwiped(true);
             Encrypt encrypt = new Encrypt(activity);
 
-            if (matchTrack1.matches()) {
+            if (hasTrack1) {
                 String rawTrack1 = getGroup(matchTrack1, 1);
                 String card_num = getGroup(matchTrack1, 3);
                 String card_owner_name = getGroup(matchTrack1, 4);
@@ -41,7 +39,7 @@ public class CardParser {
                 tempCardData.setCardLast4(card_num.substring(card_num.length() - 4));
                 tempCardData.setCardType(ProcessCreditCard_FA.getCardType(card_num));
 
-                if (matchTrack2.matches()) {
+                if (hasTrack2) {
                     String rawTrack2 = getGroup(matchTrack2, 1);
                     tempCardData.setEncryptedAESTrack2(encrypt.encryptWithAES(rawTrack2));
                 }
@@ -53,10 +51,18 @@ public class CardParser {
                 tempCardData.setEncryptedAESTrack2(encrypt.encryptWithAES(rawTrack2));
                 tempCardData.setCardNumUnencrypted(card_num);
                 tempCardData.setCardNumAESEncrypted(encrypt.encryptWithAES(card_num));
-                int startIdx = swiped_raw_data.indexOf('=') + 1;
-                tempCardData.setCardExpYear(swiped_raw_data.substring(startIdx, startIdx + 2));
-                startIdx += 2;
-                tempCardData.setCardExpMonth(swiped_raw_data.substring(startIdx, startIdx + 2));
+
+                String year = getGroup(matchTrack2, 3);
+                String month = getGroup(matchTrack2, 4);
+
+                if (year == null) year = "";
+                if (month == null) month = "";
+
+                if (!year.isEmpty() && !month.isEmpty()) {
+                    tempCardData.setCardExpYear(year);
+                    tempCardData.setCardExpMonth(month);
+                }
+
                 if (rawTrack2.equalsIgnoreCase(";E?")) {
                     isCardParsed = false;
                     return isCardParsed;
