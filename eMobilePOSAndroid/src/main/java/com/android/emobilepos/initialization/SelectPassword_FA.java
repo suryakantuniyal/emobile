@@ -49,7 +49,7 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
                     dbManager.updateDB();
                     myPref.setCacheDir(activity.getApplicationContext().getCacheDir().getAbsolutePath());
                 } else {
-                    Toast.makeText(activity, "Password not acceptable, try again...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, R.string.wrong_password, Toast.LENGTH_LONG).show();
                 }
             }
         });

@@ -1,9 +1,15 @@
 package com.android.emobilepos.models;
 
+import android.app.Activity;
+
+import com.android.database.ProductsHandler;
+import com.android.support.Global;
 import com.google.gson.Gson;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Locale;
 
 import io.realm.RealmObject;
 
@@ -96,4 +102,58 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         return this.ordprod_id.compareTo(another.ordprod_id);
     }
 
+    public void setOverwritePrice(BigDecimal overwriteAmount, Activity activity) {
+        ProductsHandler productsHandler = new ProductsHandler(activity);
+        HashMap<String, String> map = productsHandler
+                .getDiscountDetail(discount_id);
+        BigDecimal prod_qty;
+        BigDecimal new_subtotal;
+        try {
+            prod_qty = new BigDecimal(
+                    ordprod_qty);
+        } catch (Exception e) {
+            prod_qty = new BigDecimal("0");
+        }
+
+        if (!map.isEmpty()) {
+            if (map.get("discount_type")
+                    .toUpperCase(
+                            Locale.getDefault())
+                    .trim().equals("FIXED")) {
+                new_subtotal = overwriteAmount
+                        .multiply(prod_qty)
+                        .subtract(
+                                new BigDecimal(
+                                        map.get("discount_price")));
+
+            } else {
+                BigDecimal rate = new BigDecimal(
+                        map.get("discount_price"))
+                        .divide(new BigDecimal(
+                                "100"));
+                rate = rate.multiply(overwriteAmount
+                        .multiply(prod_qty));
+
+                new_subtotal = overwriteAmount.multiply(
+                        prod_qty).subtract(rate);
+
+                disTotal = Global
+                        .getRoundBigDecimal(rate);
+                discount_value = Global
+                        .getRoundBigDecimal(rate);
+
+            }
+        } else
+            new_subtotal = overwriteAmount
+                    .multiply(prod_qty);
+
+        overwrite_price = Global.getRoundBigDecimal(overwriteAmount);
+        prod_price = Global.getRoundBigDecimal(overwriteAmount);
+        itemSubtotal = Global
+                .getRoundBigDecimal(new_subtotal);
+        itemTotal = Global
+                .getRoundBigDecimal(new_subtotal);
+        pricelevel_id = "";
+        prod_price_updated = "0";
+    }
 }
