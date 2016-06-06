@@ -1787,16 +1787,6 @@ public class SynchMethods {
     }
 
     private void synchUoM(resynchAsync task) throws IOException, SAXException {
-//        task.updateProgress(getString(R.string.sync_dload_uom));
-//        post.postData(7, activity, "UoM");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_UOM);
-//        File tempFile = new File(tempFilePath);
-//        task.updateProgress(getString(R.string.sync_saving_uom));
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
-//
-
-
         try {
             task.updateProgress(getString(R.string.sync_dload_uom));
             client = new HttpClient();

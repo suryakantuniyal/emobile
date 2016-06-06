@@ -868,6 +868,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         dlog.show();
     }
 
+    public Receipt_FR getLeftFragment() {
+        return leftFragment;
+    }
+
     private TextWatcher textWatcher() {
 
         return new TextWatcher() {
