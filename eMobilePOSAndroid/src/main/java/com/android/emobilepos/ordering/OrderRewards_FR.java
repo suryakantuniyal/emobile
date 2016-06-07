@@ -12,7 +12,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
+import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.GenerateNewID;
@@ -96,6 +100,10 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 callBackRewardSwiper.startRewardSwiper();
                 break;
             case R.id.btnPayWithRewards:
+                Global global = (Global) getActivity().getApplication();
+                Order order = Receipt_FR.buildOrder(getActivity(), global, "", "", ((OrderingMain_FA) getActivity()).getSelectedDinningTableNumber(), ((OrderingMain_FA) getActivity()).getAssociateId());
+                OrdersHandler ordersHandler = new OrdersHandler(getActivity());
+                ordersHandler.insert(order);
                 new ProcessRewardPaymentTask().execute(new BigDecimal(subtotal));
 
 //                Global global = (Global) getActivity().getApplication();
@@ -111,9 +119,12 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
     private class ProcessRewardPaymentTask extends AsyncTask<BigDecimal, Void, PaymentTask.Response> {
 
+        private Payment payment;
+
         @Override
         protected PaymentTask.Response doInBackground(BigDecimal... params) {
-            Payment payment = getPayment(false, params[0]);
+            payment = getPayment(false, params[0]);
+            Global.rewardCardInfo.setRedeemAll("1");
             return PaymentTask.processRewardPayment(getActivity(), params[0], Global.rewardCardInfo, payment);
         }
 
@@ -131,6 +142,15 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 }
                 btnPayRewards.setClickable(false);
                 btnPayRewards.setEnabled(false);
+                payment.pay_issync = "1";
+                PaymentsHandler paymentsHandler = new PaymentsHandler(getActivity());
+                paymentsHandler.insert(payment);
+                BigDecimal zero = new BigDecimal(0);
+                BigDecimal newBalance = Global.getBigDecimalNum(balance).subtract(result.getApprovedAmount());
+                if (newBalance.compareTo(zero) == -1) {
+                    newBalance = zero;
+                }
+                setRewardBalance(Global.getRoundBigDecimal(newBalance));
             } else {
                 Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
 
@@ -176,8 +196,9 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         cardInfoManager.setRedeemAll("0");
         cardInfoManager.setRedeemType("Only");
-
-        loyaltyRewardPayment.paymethod_id = cardType;
+        PayMethodsHandler payMethodsHandler = new PayMethodsHandler(getActivity());
+        String methodId = payMethodsHandler.getSpecificPayMethodId("Rewards");
+        loyaltyRewardPayment.paymethod_id = methodId;
         loyaltyRewardPayment.card_type = cardType;
         loyaltyRewardPayment.pay_type = "0";
 
@@ -200,7 +221,6 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
 
     public static void setRewardBalance(String value) {
-
         balance = value;
         if (fieldRewardBalance != null)
             fieldRewardBalance.setText(balance);
