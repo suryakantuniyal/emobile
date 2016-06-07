@@ -207,7 +207,7 @@ public class TaxesHandler {
     public Tax getTax(String taxID, String taxType, double prodPrice) {
         Tax tax = new Tax(taxID);
 
-        String taxRate = "0.0";
+        String taxRate;
 
         String subquery1 = "SELECT tax_rate,tax_name, tax_type FROM ";
         String subquery2 = " WHERE tax_id = '";
