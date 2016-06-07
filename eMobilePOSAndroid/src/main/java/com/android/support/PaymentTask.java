@@ -59,6 +59,7 @@ public class PaymentTask {
                 response.setMessage(parsedMap.get("statusMessage"));
                 response.setStatusCode(parsedMap.get("statusCode"));
                 response.setApprovedAmount(new BigDecimal(parsedMap.get("AuthorizedAmount")));
+                response.setTransactionId(parsedMap.get("CreditCardTransID"));
             }
         } catch (Exception e) {
 
@@ -67,22 +68,6 @@ public class PaymentTask {
     }
 
     public static class Response {
-        public ResponseStatus getResponseStatus() {
-            return responseStatus;
-        }
-
-        public void setResponseStatus(ResponseStatus responseStatus) {
-            this.responseStatus = responseStatus;
-        }
-
-        public BigDecimal getApprovedAmount() {
-            return approvedAmount;
-        }
-
-        public void setApprovedAmount(BigDecimal approvedAmount) {
-            this.approvedAmount = approvedAmount;
-        }
-
         public enum ResponseStatus {
             OK, FAIL
         }
@@ -92,6 +77,16 @@ public class PaymentTask {
         private String message;
         private String epayStatusCode;
         private BigDecimal approvedAmount;
+        private String transactionId;
+
+        public String getTransactionId() {
+            return transactionId;
+        }
+
+        public void setTransactionId(String transactionId) {
+            this.transactionId = transactionId;
+        }
+
 
         public String getStatusCode() {
             return statusCode;
@@ -116,5 +111,22 @@ public class PaymentTask {
         public void setEpayStatusCode(String epayStatusCode) {
             this.epayStatusCode = epayStatusCode;
         }
+
+        public ResponseStatus getResponseStatus() {
+            return responseStatus;
+        }
+
+        public void setResponseStatus(ResponseStatus responseStatus) {
+            this.responseStatus = responseStatus;
+        }
+
+        public BigDecimal getApprovedAmount() {
+            return approvedAmount;
+        }
+
+        public void setApprovedAmount(BigDecimal approvedAmount) {
+            this.approvedAmount = approvedAmount;
+        }
+
     }
 }

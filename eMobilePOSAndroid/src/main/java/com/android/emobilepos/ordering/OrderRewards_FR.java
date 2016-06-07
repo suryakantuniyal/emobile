@@ -144,6 +144,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 btnPayRewards.setClickable(false);
                 btnPayRewards.setEnabled(false);
                 payment.pay_issync = "1";
+                payment.pay_transid = result.getTransactionId();
                 PaymentsHandler paymentsHandler = new PaymentsHandler(getActivity());
                 paymentsHandler.insert(payment);
                 BigDecimal zero = new BigDecimal(0);
