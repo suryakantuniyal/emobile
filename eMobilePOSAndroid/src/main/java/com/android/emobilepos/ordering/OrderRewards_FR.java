@@ -96,12 +96,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 callBackRewardSwiper.startRewardSwiper();
                 break;
             case R.id.btnPayWithRewards:
-                Global global = (Global) getActivity().getApplication();
-                BigDecimal bdBalance = new BigDecimal(balance);
-                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
-                BigDecimal rewardDiscount = mainFa.getLeftFragment().applyRewardDiscount(bdBalance, global.orderProducts);
-
-                new ProcessRewardPaymentTask().execute(rewardDiscount);
+                new ProcessRewardPaymentTask().execute(new BigDecimal(subtotal));
 
 //                Global global = (Global) getActivity().getApplication();
 //                BigDecimal bdBalance = new BigDecimal(balance);
@@ -110,33 +105,34 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 //                PaymentTask.processRewardPayment(getActivity(), rewardDiscount);
 
 
-                BigDecimal bdSubtotal = new BigDecimal(subtotal);
-                if (bdBalance.compareTo(bdSubtotal) == 1)//bgBalance>bgSubtotal
-                {
-                    bdBalance = new BigDecimal(subtotal);
-                    Global.rewardChargeAmount = bdBalance;
-                } else {
-                    Global.rewardChargeAmount = bdBalance;
-                }
-                if (OrderTotalDetails_FR.getFrag() != null) {
-                    OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
-                }
-                btnPayRewards.setClickable(false);
                 break;
         }
     }
 
-    private class ProcessRewardPaymentTask extends AsyncTask<BigDecimal, Void, Boolean> {
+    private class ProcessRewardPaymentTask extends AsyncTask<BigDecimal, Void, PaymentTask.Response> {
 
         @Override
-        protected Boolean doInBackground(BigDecimal... params) {
+        protected PaymentTask.Response doInBackground(BigDecimal... params) {
             Payment payment = getPayment(false, params[0]);
             return PaymentTask.processRewardPayment(getActivity(), params[0], Global.rewardCardInfo, payment);
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            if (result) {
+        protected void onPostExecute(PaymentTask.Response result) {
+            if (result.getResponseStatus() == PaymentTask.Response.ResponseStatus.OK) {
+                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
+                Global global = (Global) getActivity().getApplication();
+                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+                BigDecimal rewardDiscount = mainFa.getLeftFragment()
+                        .applyRewardDiscount(result.getApprovedAmount(), global.orderProducts);
+
+                if (OrderTotalDetails_FR.getFrag() != null) {
+                    OrderTotalDetails_FR.getFrag().reCalculate(global.orderProducts);
+                }
+                btnPayRewards.setClickable(false);
+                btnPayRewards.setEnabled(false);
+            } else {
+                Global.showPrompt(getActivity(), R.string.rewards, result.getMessage());
 
             }
         }
@@ -154,7 +150,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
             cardInfoManager = Global.rewardCardInfo;
             cardType = "Reward";
         }
-
+        cardInfoManager.setCardType(cardType);
         GenerateNewID generator = new GenerateNewID(getActivity());
         String tempPay_id;
 

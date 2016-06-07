@@ -997,18 +997,18 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             public void onClick(View v) {
                 dlog.dismiss();
                 if (withPrintRequest) {
-                    if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-                        processInquiry(true);
-                    } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-                        processInquiry(false);
-                    } else {
-                        if (myPref.getPreferences(MyPreferences.pref_enable_printing)
-                                && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
-                            showPrintDlg(false, false, emvContainer);
-                        } else if (overAllRemainingBalance <= 0) {
-                            finish();
-                        }
+//                    if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+//                        processInquiry(true);
+//                    } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
+//                        processInquiry(false);
+//                    } else {
+                    if (myPref.getPreferences(MyPreferences.pref_enable_printing)
+                            && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
+                        showPrintDlg(false, false, emvContainer);
+                    } else if (overAllRemainingBalance <= 0) {
+                        finish();
                     }
+//                    }
                 } else if (overAllRemainingBalance <= 0) {
                     finish();
                 }
