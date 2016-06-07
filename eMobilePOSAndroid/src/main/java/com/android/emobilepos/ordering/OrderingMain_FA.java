@@ -52,6 +52,7 @@ import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
@@ -1452,6 +1453,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<OrdProdAttrHolder> ordProdAttr) {
         if (!order.ord_id.isEmpty()) {
+
             OrdersHandler dbOrders = new OrdersHandler(activity);
             if (order.ord_id.isEmpty()) {
                 Global global = (Global) activity.getApplication();
@@ -1462,12 +1464,14 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdProd.insert(orderProducts);
                 dbOrdAttr.insert(ordProdAttr);
             }
-            dbOrders.updateIsVoid(order.ord_id);
-            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
-            Order order2 = new Order(activity);
-            order2.ord_id = order.ord_id;
-            order2.ord_type = order.ord_type;
-            voidHandler.insert(order2);
+            SelectPayMethod_FA.voidTransaction(activity, order.ord_id, order.ord_type);
+
+//            dbOrders.updateIsVoid(order.ord_id);
+//            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
+//            Order order2 = new Order(activity);
+//            order2.ord_id = order.ord_id;
+//            order2.ord_type = order.ord_type;
+//            voidHandler.insert(order2);
 
         }
     }

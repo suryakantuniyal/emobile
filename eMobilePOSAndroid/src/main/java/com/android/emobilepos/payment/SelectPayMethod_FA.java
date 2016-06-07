@@ -735,7 +735,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler(activity);
-            String xml;
+            String xml = null;
             InputSource inSource;
             SAXParser sp;
             XMLReader xr;
@@ -746,10 +746,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 String paymentType;
                 for (int i = 0; i < size; i++) {
                     paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
-                    if (paymentType.equals("GIFTCARD")) {
+                    if (paymentType.equals("GIFTCARD") || paymentType.equals("REWARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
-                                listVoidPayments.get(i).card_type, null));
+                        if (paymentType.equals("GIFTCARD")) {
+                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
+                                    listVoidPayments.get(i).card_type, null));
+                        } else {
+                            xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidRewardCardAction, false,
+                                    listVoidPayments.get(i).card_type, null));
+                        }
                         inSource = new InputSource(new StringReader(xml));
 
                         xr.setContentHandler(processCardPayHandler);
