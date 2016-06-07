@@ -873,11 +873,11 @@ public class EMSPayGate_Default {
         serializer.endTag(empstr, "tipAmount");
         if (isTupyx) {
             serializer.startTag(empstr, "originalTotalAmount");
-            serializer.text(totalAmount);
+            serializer.text(NumberUtils.cleanCurrencyFormatedNumber(totalAmount));
             serializer.endTag(empstr, "originalTotalAmount");
         } else if (!payment.originalTotalAmount.isEmpty()) {
             serializer.startTag(empstr, "originalTotalAmount");
-            serializer.text(payment.originalTotalAmount);
+            serializer.text(NumberUtils.cleanCurrencyFormatedNumber(payment.originalTotalAmount));
             serializer.endTag(empstr, "originalTotalAmount");
         }
 

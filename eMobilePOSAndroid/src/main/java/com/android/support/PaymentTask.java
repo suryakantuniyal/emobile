@@ -22,18 +22,17 @@ import javax.xml.parsers.SAXParserFactory;
  */
 public class PaymentTask {
 
-    public static boolean processRewardPayment(Activity activity, BigDecimal chargeAmount, CreditCardInfo cardInfoManager, Payment rewardPayment) {
+    public static Response processRewardPayment(Activity activity, BigDecimal chargeAmount, CreditCardInfo cardInfoManager, Payment rewardPayment) {
         Post httpClient = new Post();
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-
-        boolean wasProcessed = false;
+        Response response = new Response();
         try {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, rewardPayment);
             String reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, cardInfoManager.getWasSwiped(), cardInfoManager.getCardType(),
                     cardInfoManager);
-            String xml = httpClient.postData(13, activity,reqChargeLoyaltyReward);
+            String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
             Global.generateDebugFile(String.valueOf(chargeAmount));
             String errorMsg;
             if (xml.equals(Global.TIME_OUT)) {
@@ -51,18 +50,71 @@ public class PaymentTask {
 
                 if (parsedMap != null && parsedMap.size() > 0
                         && parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                    wasProcessed = true;
+                    response.setResponseStatus(Response.ResponseStatus.OK);
                 } else if (parsedMap != null && parsedMap.size() > 0) {
                     errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                 } else
                     errorMsg = xml;
+                response.setEpayStatusCode(parsedMap.get("epayStatusCode"));
+                response.setMessage(parsedMap.get("statusMessage"));
+                response.setStatusCode(parsedMap.get("statusCode"));
+                response.setApprovedAmount(new BigDecimal(parsedMap.get("AuthorizedAmount")));
             }
-
         } catch (Exception e) {
 
         }
-        return wasProcessed;
+        return response;
     }
 
+    public static class Response {
+        public ResponseStatus getResponseStatus() {
+            return responseStatus;
+        }
 
+        public void setResponseStatus(ResponseStatus responseStatus) {
+            this.responseStatus = responseStatus;
+        }
+
+        public BigDecimal getApprovedAmount() {
+            return approvedAmount;
+        }
+
+        public void setApprovedAmount(BigDecimal approvedAmount) {
+            this.approvedAmount = approvedAmount;
+        }
+
+        public enum ResponseStatus {
+            OK, FAIL
+        }
+
+        private ResponseStatus responseStatus = ResponseStatus.FAIL;
+        private String statusCode;
+        private String message;
+        private String epayStatusCode;
+        private BigDecimal approvedAmount;
+
+        public String getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(String statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getEpayStatusCode() {
+            return epayStatusCode;
+        }
+
+        public void setEpayStatusCode(String epayStatusCode) {
+            this.epayStatusCode = epayStatusCode;
+        }
+    }
 }
