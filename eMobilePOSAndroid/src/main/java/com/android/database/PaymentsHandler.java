@@ -257,9 +257,8 @@ public class PaymentsHandler {
 
 
     public long getDBSize() {
-
-
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
+        DBManager dbManager = new DBManager(activity);
+        SQLiteStatement stmt = dbManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -269,8 +268,8 @@ public class PaymentsHandler {
     // unsynchronized payments (used in
     // generation of XML for post)
     {
-
-        return DBManager._db.rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
+        DBManager dbManager = new DBManager(activity);
+        return dbManager._db.rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
     }
 
     public String getTotalPayAmount(String paymethod_id, String pay_date) {
@@ -299,9 +298,8 @@ public class PaymentsHandler {
     }
 
     public String getTotalRefundAmount(String paymethod_id, String pay_date) {
-
-
-        Cursor cursor = DBManager._db.rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
+        DBManager dbManager = new DBManager(activity);
+        Cursor cursor = dbManager._db.rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
         String total = "0.00";
         if (cursor.moveToFirst()) {
             total = cursor.getString(cursor.getColumnIndex("total"));
@@ -313,17 +311,16 @@ public class PaymentsHandler {
     }
 
     public long getNumUnsyncPayments() {
-
-
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
+        DBManager dbManager = new DBManager(activity);
+        SQLiteStatement stmt = dbManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
     }
 
     public boolean unsyncPaymentsLeft() {
-
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
+        DBManager dbManager = new DBManager(activity);
+        SQLiteStatement stmt = dbManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;
@@ -475,7 +472,7 @@ public class PaymentsHandler {
         Payment payment = null;
         Cursor cursor = DBManager._db.rawQuery("SELECT * FROM Payments WHERE pay_id = '" + payID + "'", null);
         if (cursor.moveToFirst()) {
-           payment = getPayment(cursor);
+            payment = getPayment(cursor);
 
         }
         cursor.close();
