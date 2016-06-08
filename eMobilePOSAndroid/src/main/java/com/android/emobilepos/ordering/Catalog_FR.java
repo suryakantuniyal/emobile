@@ -687,12 +687,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         product.setProdIstaxable(c.getString(c.getColumnIndex("prod_istaxable")));
         product.setProdType(c.getString(c.getColumnIndex("prod_type")));
         product.setCatId(c.getString(c.getColumnIndex("cat_id")));
-        product.setProdPricePoints(c.getString(c.getColumnIndex("prod_price_points")));
-        if (product.getProdPricePoints() == null || product.getProdPricePoints().isEmpty())
-            product.setProdPricePoints("0");
-        product.setProdValuePoints(c.getString(c.getColumnIndex("prod_value_points")));
-        if (product.getProdValuePoints() == null || product.getProdValuePoints().isEmpty())
-            product.setProdValuePoints("0");
+        product.setProdPricePoints(c.getInt(c.getColumnIndex("prod_price_points")));
+//        if (product.getProdPricePoints() == null || product.getProdPricePoints().isEmpty())
+//            product.setProdPricePoints("0");
+        product.setProdValuePoints(c.getInt(c.getColumnIndex("prod_value_points")));
+//        if (product.getProdValuePoints() == null || product.getProdValuePoints().isEmpty())
+//            product.setProdValuePoints("0");
 
         product.setProdTaxType(c.getString(c.getColumnIndex("prod_taxtype")));
         product.setProdTaxCode(c.getString(c.getColumnIndex("prod_taxcode")));

@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -901,6 +902,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
         OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(activity);
         if (caseSelected != Global.TransactionType.REFUND) {
+            if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+                BigDecimal total = Global.getBigDecimalNum(order.ord_total);
+                if (total.compareTo(new BigDecimal(0)) == 0) {
+                    order.processed = "1";
+                }
+            }
             if (orderingAction == OrderingMain_FA.OrderingAction.HOLD) {
                 global.order.isOnHold = "1";
 
