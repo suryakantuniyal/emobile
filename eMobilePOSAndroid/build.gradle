@@ -75,7 +75,7 @@ android {
             versionName "1.1.1.6"
             versionCode 98
             targetSdkVersion 23
-            multiDexEnabled = true
+            multiDexEnabled = false
         }
         restoffivupos {
             minSdkVersion 15

@@ -1563,8 +1563,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ord.cat_id = product.getCatId();
 
         try {
-            ord.prod_price_points = product.getProdPricePoints();
-            ord.prod_value_points = product.getProdValuePoints();
+            ord.prod_price_points = String.valueOf(product.getProdPricePoints());
+            ord.prod_value_points = String.valueOf(product.getProdValuePoints());
         } catch (Exception ignored) {
 
         }
