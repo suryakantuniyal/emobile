@@ -1464,7 +1464,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdProd.insert(orderProducts);
                 dbOrdAttr.insert(ordProdAttr);
             }
-            SelectPayMethod_FA.voidTransaction(activity, order.ord_id, order.ord_type);
+            new VoidTransactionTask().execute(activity, order);
+//            SelectPayMethod_FA.voidTransaction(activity, order.ord_id, order.ord_type);
 
 //            dbOrders.updateIsVoid(order.ord_id);
 //            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
@@ -1476,6 +1477,16 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
+    private static class VoidTransactionTask extends AsyncTask<Object, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Object... params) {
+            Order order = (Order) params[1];
+            SelectPayMethod_FA.voidTransaction((Activity) params[0], order.ord_id, order.ord_type);
+
+            return null;
+        }
+    }
 
     private void deleteTransaction() {
         if (!Global.lastOrdID.isEmpty()) {
