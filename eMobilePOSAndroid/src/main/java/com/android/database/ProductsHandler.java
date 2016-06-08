@@ -134,8 +134,8 @@ public class ProductsHandler {
             insert.bindString(index(prod_weight), StringUtil.nullStringToEmpty(product.getProd_weight())); // prod_weigth
             insert.bindString(index(prod_expense), StringUtil.nullStringToEmpty(product.getProd_expense())); // prod_expense
             insert.bindString(index(prod_disc_type_points), StringUtil.nullStringToEmpty(product.getProd_disc_type_points())); // prod_disc_type_points
-            insert.bindString(index(prod_price_points), StringUtil.nullStringToEmpty(product.getProdPricePoints())); // prod_price_points
-            insert.bindString(index(prod_value_points), StringUtil.nullStringToEmpty(product.getProdValuePoints())); // prod_value_points
+            insert.bindLong(index(prod_price_points), product.getProdPricePoints()); // prod_price_points
+            insert.bindLong(index(prod_value_points), product.getProdValuePoints()); // prod_value_points
 
             insert.execute();
             insert.clearBindings();
@@ -654,13 +654,13 @@ public class ProductsHandler {
             product.setProdType(cursor.getString(cursor.getColumnIndex("prod_type")));
             product.setCatId(cursor.getString(cursor.getColumnIndex("cat_id")));
 
-            product.setProdPricePoints(cursor.getString(cursor.getColumnIndex("prod_price_points")));
-            if (product.getProdPricePoints() == null || product.getProdPricePoints().isEmpty())
-                product.setProdPricePoints("0");
+            product.setProdPricePoints(cursor.getInt(cursor.getColumnIndex("prod_price_points")));
+//            if (product.getProdPricePoints() == null || product.getProdPricePoints().isEmpty())
+//                product.setProdPricePoints("0");
 
-            product.setProdValuePoints(cursor.getString(cursor.getColumnIndex("prod_value_points")));
-            if (product.getProdValuePoints() == null || product.getProdValuePoints().isEmpty())
-                product.setProdValuePoints("0");
+            product.setProdValuePoints(cursor.getInt(cursor.getColumnIndex("prod_value_points")));
+//            if (product.getProdValuePoints() == null || product.getProdValuePoints().isEmpty())
+//                product.setProdValuePoints("0");
 
             product.setProdTaxType(cursor.getString(cursor.getColumnIndex("prod_taxtype")));
             product.setProdTaxCode(cursor.getString(cursor.getColumnIndex("prod_taxcode")));

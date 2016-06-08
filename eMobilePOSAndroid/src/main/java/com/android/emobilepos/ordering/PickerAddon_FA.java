@@ -368,8 +368,8 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
             product.setCatId(extras.getString("cat_id"));
             product.setProdTaxCode(extras.getString("prod_taxcode"));
             product.setProdTaxType(extras.getString("prod_taxtype"));
-            product.setProdPricePoints(extras.getString("prod_price_points"));
-            product.setProdValuePoints(extras.getString("prod_value_points"));
+            product.setProdPricePoints(extras.getInt("prod_price_points"));
+            product.setProdValuePoints(extras.getInt("prod_value_points"));
 
             if (!myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                 Intent intent = new Intent(activity, PickerProduct_FA.class);
