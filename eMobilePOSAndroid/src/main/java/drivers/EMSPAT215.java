@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 
@@ -22,6 +23,7 @@ import com.android.support.DateUtils;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.partner.pt100.printer.PrinterManage;
 import com.partner.pt215.cashdrawer.CashDrawerApiContext;
 import com.partner.pt215.cashdrawer.CashDrawerManage;
 import com.partner.pt215.display.DisplayLineApiContext;
@@ -47,7 +49,6 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private EMSDeviceDriver thisInstance;
     private ProgressDialog myProgressDialog;
     private MsrApiContext msrApiContext;
-    private final String FORMAT = "windows-1252";
     private final int LINE_WIDTH = 32;
     private byte[] cardReadBuffer;
     public static DisplayLineApiContext terminalDisp;
@@ -82,8 +83,9 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
         thisInstance = this;
+        Looper.prepare();
         new processConnectionAsync().execute(0);
-
+        Looper.loop();
     }
 
     @Override

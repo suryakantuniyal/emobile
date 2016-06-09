@@ -523,7 +523,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215()) {
-
+            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
+                Global.embededMSR.currentDevice.loadCardReader(callBack, isDebit);
+                cardSwipe.setChecked(true);
+            }
         }
     }
 
@@ -1888,7 +1891,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         ownersName.setText(cardInfoManager.getCardOwnerName());
         if (!TextUtils.isEmpty(cardInfoManager.getCardNumAESEncrypted()))
             cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
-        else if(!TextUtils.isEmpty(cardInfoManager.getEncryptedBlock())){
+        else if (!TextUtils.isEmpty(cardInfoManager.getEncryptedBlock())) {
             cardNum.setText(cardInfoManager.getEncryptedBlock());
         }
         creditCardType = cardInfoManager.getCardType();

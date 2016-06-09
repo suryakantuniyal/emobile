@@ -115,6 +115,8 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager terminalDisplayManager;
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
+    public static EMSDeviceManager embededMSR;
+
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<String, Integer>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<EMSDeviceManager>();
 

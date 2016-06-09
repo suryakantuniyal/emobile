@@ -257,8 +257,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 String _portNumber = myPref.getStarPort();
                 boolean isPOS = myPref.posPrinter(true, false);
                 int txtAreaSize = myPref.printerAreaSize(true, -1);
-
-                if (myPref.getPrinterType() != Global.POWA) {
+                if (myPref.isPAT215()) {
+                    Global.embededMSR = edm.getManager();
+                    Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "");
+                } else if (myPref.getPrinterType() != Global.POWA) {
                     if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
                             isPOS, _portName, _portNumber))
                         sb.append(_peripheralName).append(": ").append("Connected\n");

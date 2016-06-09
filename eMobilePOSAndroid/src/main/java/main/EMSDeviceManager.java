@@ -121,6 +121,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.PAT215:
                 aDevice = new EMSPAT215();
+//                aDevice.autoConnect(activity,instance,0,false,"","");
                 aDevice.connect(activity, -1, true, instance);
                 break;
             case Global.EM100:
