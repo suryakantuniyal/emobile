@@ -94,15 +94,15 @@ public class RewardCard_FA extends BaseFragmentActivityActionBar implements OnIt
         intent.putExtra("CARD_TYPE", CardManager_FA.CASE_REWARD);
         switch (pos) {
             case ACTIVATE:
-                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_ACTIVATE);
+                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_ACTIVATE.getCode());
                 startActivity(intent);
                 break;
             case BALANCE_INQUIRY:
-                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_BALANCE_INQUIRY);
+                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_BALANCE_INQUIRY.getCode());
                 startActivity(intent);
                 break;
             case MANUAL_BALANCE:
-                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_MANUAL_ADD);
+                intent.putExtra("PROCESS_TYPE", CardManager_FA.GiftCardActions.CASE_MANUAL_ADD.getCode());
                 promptManagerPassword(intent);
                 break;
         }

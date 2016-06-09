@@ -267,7 +267,9 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_PROMPT_INDEX, "Slide, Tap or Insert Card");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, "MCS");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_OPTIONS, "1");
-
+                if (!getConnectionStatus()) {
+                    autoConnect(activity, edm, 0, isPOSPrinter, "", "");
+                }
                 ERROR_ID result = RBA_API.ProcessMessage(MESSAGE_ID.M23_CARD_READ);
                 if (result == ERROR_ID.RESULT_SUCCESS) {
                     handler.post(doUpdateDidConnect);

@@ -107,7 +107,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             global.promptForMandatoryLogin(activity);
         }
 
-        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated) {
+        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && Global.isConnectedToInternet(activity)) {
             DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
             // SQLiteDatabase db = dbManager.openWritableDB();
             dbManager.synchSend(false, true);

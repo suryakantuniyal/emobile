@@ -48,9 +48,10 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         activity = context;
         inflater = LayoutInflater.from(context);
         callBack = _this;
-        isPortrait = Global.isPortrait(context);
-        imageLoader = _imageLoader;
         MyPreferences myPref = new MyPreferences(context);
+
+        isPortrait = Global.isPortrait(context) || !myPref.getIsTablet();
+        imageLoader = _imageLoader;
         attrToDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
         isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
@@ -71,8 +72,8 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
         holder = (ViewHolder) view.getTag();
         if (holder.i_prod_name != -1) {
-
-            holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
+            if (holder.title != null)
+                holder.title.setText(Global.getValidString(cursor.getString(holder.i_prod_name)));
 
             String urlLink = cursor.getString(holder.i_prod_img_name);
             if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
@@ -81,7 +82,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                     holder.itemImage.setScaleType(ImageView.ScaleType.FIT_XY);
                     imageLoader.displayImage(urlLink, holder.itemImage, options);
                     if (holder.productNameTxt != null) {
-                    holder.productNameTxt.setVisibility(View.GONE);
+                        holder.productNameTxt.setVisibility(View.GONE);
                     }
                 } else {
                     holder.itemImage.setImageDrawable(null);

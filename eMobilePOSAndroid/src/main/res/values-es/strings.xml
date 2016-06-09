@@ -1209,7 +1209,7 @@
     <string name="void_fail">Error processing void</string>
     <string name="select_number_guests">Select number of guests</string>
     <string name="fail_to_connect">Failed to connect</string>
-    <string name="connecting_bluetooth_device">Connecting Bletooth Device...</string>
+    <string name="connecting_bluetooth_device">Connecting Bluetooth Device...</string>
     <string name="move_items_to_seat">"Move items to seat "</string>
     <string name="join_with_seat">"Join with seat "</string>
     <string name="tip_adjustment">Tip Adjustment</string>
@@ -1235,6 +1235,8 @@
     <string name="reset_dinning_table">Reset dinning table</string>
     <string name="config_handpoint_utils">Handopint Tools</string>
     <string name="connecting_device">Connecting Device...</string>
+    <string name="wrong_password">Password not acceptable, try again...</string>
+    <string name="reward_payment_succeed">Reward payment succeed</string>
 
 
 </resources>

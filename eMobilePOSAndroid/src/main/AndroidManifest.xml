@@ -423,6 +423,7 @@
         <activity
             android:name=".cardmanager.CardManager_FA"
             android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>

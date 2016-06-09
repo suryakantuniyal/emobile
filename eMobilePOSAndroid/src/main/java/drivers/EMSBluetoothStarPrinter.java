@@ -92,7 +92,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public boolean  autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
+    public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
         boolean didConnect = false;
         this.activity = activity;
@@ -156,7 +156,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
             }
 
-        } catch (StarIOPortException ignored) {
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
         }
 
         return didConnect;
@@ -270,7 +271,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         try {
             setPaperWidth(LINE_WIDTH);
 
-            verifyConnectivity();
+//            verifyConnectivity();
 
             Thread.sleep(1000);
 
@@ -302,7 +303,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         try {
             setPaperWidth(LINE_WIDTH);
-            verifyConnectivity();
+//            verifyConnectivity();
 
             Thread.sleep(1000);
 
@@ -798,7 +799,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         try {
             setPaperWidth(LINE_WIDTH);
 
-            verifyConnectivity();
+//            verifyConnectivity();
 
             Thread.sleep(1000);
 
@@ -947,7 +948,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     throw new StarIOPortException("Host not reachable.");
                 }
             }
-            port = StarIOPort.getPort(portName, portSettings, 10000, activity);
+            try {
+                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
+            }catch (StarIOPortException e){
+                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
+            }
         }
         return port;
     }
