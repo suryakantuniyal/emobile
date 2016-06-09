@@ -614,7 +614,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             finish();
         else {
             DBManager dbManager = new DBManager(MainMenu_FA.activity, Global.FROM_SYNCH_ACTIVITY);
-            if (myPref.getPreferences(MyPreferences.pref_automatic_sync)) {
+            if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && Global.isConnectedToInternet(this)) {
                 dbManager.synchSend(false, true);
             }
 

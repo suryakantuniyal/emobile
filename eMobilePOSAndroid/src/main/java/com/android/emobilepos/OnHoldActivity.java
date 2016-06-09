@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -568,7 +569,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.onHand = c.getString(c.getColumnIndex("onHand"));
             ord.imgURL = c.getString(c.getColumnIndex("ordprod_qty"));
             ord.isPrinted = c.getString(c.getColumnIndex("isPrinted"));
-            ord.uom_conversion = c.getString(c.getColumnIndex("uom_conversion"));
+            ord.uom_conversion = TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion"));
 
             total = (Double.parseDouble(ord.ordprod_qty)) * Double.parseDouble(ord.overwrite_price) * Double.parseDouble(ord.uom_conversion);
             ord.prod_taxValue = c.getString(c.getColumnIndex("prod_taxValue"));

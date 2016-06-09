@@ -902,7 +902,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
         OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(activity);
         if (caseSelected != Global.TransactionType.REFUND) {
-            if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+            if ((Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) ||
+                    (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty())) {
                 BigDecimal total = Global.getBigDecimalNum(order.ord_total);
                 if (total.compareTo(new BigDecimal(0)) == 0) {
                     order.processed = "1";
