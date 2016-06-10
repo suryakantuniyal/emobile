@@ -19,11 +19,8 @@ import com.android.internal.misccomm.MsrManager;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
-import com.android.support.DateUtils;
-import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.partner.pt100.printer.PrinterManage;
 import com.partner.pt215.cashdrawer.CashDrawerApiContext;
 import com.partner.pt215.cashdrawer.CashDrawerManage;
 import com.partner.pt215.display.DisplayLineApiContext;
@@ -38,8 +35,6 @@ import java.util.List;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
-import util.CardData;
-import util.StringUtil;
 
 
 public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
@@ -103,7 +98,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         msrApiContext.setMsrOutputMode(0);
 
         int reader = msrApiContext.getMsrReading();
-
+        initMSR();
         if (res == 0) {
             this.edm.driverDidConnectToDevice(thisInstance, false);
             return true;
@@ -226,40 +221,40 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
         this.callback = callBack;
-//        setHandler();
-
-
         if (handler == null)
             handler = new Handler();
 
         new Thread() {
             public void run() {
-                releaseCardReader();
-                EMSPAT215.runReader = true;
-                if (msrApiContext == null)
-                    msrApiContext = MsrManager.getDefault(activity);
-
-                int reader = msrApiContext.getMsrReading();
-                int setMsrReading;
-                if (reader == 0) {
-                    setMsrReading = msrApiContext.setMsrReading(1);
-                }
-                int outMode = msrApiContext.getMsrOutputMode();
-                if (outMode == 0) {
-                    int setMsrOutputMode = msrApiContext.setMsrOutputMode(1);
-                    if (setMsrOutputMode == 1)
-                        setMsrOutputMode = msrApiContext.setMsrOutputMode(1);
-                }
-
-                int setMsrEnable = msrApiContext.setMsrEnable();
-                int startReadData = msrApiContext.startReadData();
-//                activity.runOnUiThread(setViewThread);
-//                readSwiperBuffer();
-                activity.runOnUiThread(doUpdateDidConnect);
+                initMSR();
                 Thread thread = new Thread(setViewThread);
                 thread.start();
             }
         }.start();
+    }
+
+    private void initMSR() {
+        releaseCardReader();
+        EMSPAT215.runReader = true;
+        if (msrApiContext == null)
+            msrApiContext = MsrManager.getDefault(activity);
+
+        int reader = msrApiContext.getMsrReading();
+        int setMsrReading;
+        if (reader == 0) {
+            setMsrReading = msrApiContext.setMsrReading(1);
+        }
+        int outMode = msrApiContext.getMsrOutputMode();
+        if (outMode == 0) {
+            int setMsrOutputMode = msrApiContext.setMsrOutputMode(1);
+            if (setMsrOutputMode == 1)
+                setMsrOutputMode = msrApiContext.setMsrOutputMode(1);
+        }
+
+        int setMsrEnable = msrApiContext.setMsrEnable();
+        int startReadData = msrApiContext.startReadData();
+
+        activity.runOnUiThread(doUpdateDidConnect);
     }
 
     private Runnable doUpdateDidConnect = new Runnable() {
@@ -276,7 +271,6 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     private Runnable setViewThread = new Runnable() {
         @Override
         public void run() {
-//    private void readSwiperBuffer() {
             boolean startReadBuffer = false;
 
             while (EMSPAT215.runReader) {
@@ -306,40 +300,9 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                     if (startReadBuffer && data == null) {
                         EMSPAT215.runReader = false;
 
-//                        String ascii = convertHexToAscii(convertByteToString(cardReadBuffer));
-//                        byte[] ksnB = Arrays.copyOfRange(cardReadBuffer, cardReadBuffer.length - 13, cardReadBuffer.length - 3);
-//                        String ksn = convertByteToString(ksnB);
-//                        int t1LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[5]}), 16);
-//                        int t2LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[6]}), 16);
-//                        int t3LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[7]}), 16);
-//                        int encBlockStart = t1LenInt + t2LenInt + t3LenInt + 8;
-//                        int encBlockEnd = cardReadBuffer.length - 13;
-//
-//                        if (t1LenInt > 0) {
-//                            encBlockEnd -= 20;
-//                        }
-//                        if (t2LenInt > 0) {
-//                            encBlockEnd -= 20;
-//                        }
-//
-//                        String encBlock = convertByteToString(Arrays.copyOfRange(cardReadBuffer, encBlockStart, encBlockEnd));
-////                        Message message = handler.obtainMessage();
-//                        creditCardInfo = new CreditCardInfo();
-//                        creditCardInfo.setTrackDataKSN(ksn);
-//                        creditCardInfo.setEncryptedBlock(encBlock);
-//                        creditCardInfo.setCardExpMonth("01");
-//                        creditCardInfo.setCardExpYear(DateUtils.getYearAdd(1));
-//                        creditCardInfo.setWasSwiped(true);
-//                        Encrypt encrypt = new Encrypt(activity);
-//                        String maskNumber = ascii.substring(ascii.indexOf(';') + 1);
-//                        maskNumber = maskNumber.substring(0, ascii.indexOf('='));
-//                        creditCardInfo.setCardNumUnencrypted(maskNumber);
-//                        creditCardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(maskNumber));
-
                         creditCardInfo = CardParser.parseIDTechOriginal(activity, cardReadBuffer);
                         handler.post(doUpdateViews);
-//                        message.obj = creditCardInfo;
-//                        handler.dispatchMessage(message);
+
                     }
                 }
             }

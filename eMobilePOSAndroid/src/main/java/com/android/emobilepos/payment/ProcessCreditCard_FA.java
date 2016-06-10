@@ -525,7 +525,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         } else if (myPref.isPAT215()) {
             if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
                 Global.embededMSR.currentDevice.loadCardReader(callBack, isDebit);
-                cardSwipe.setChecked(true);
+                cardSwipe.setChecked(false);
             }
         }
     }
