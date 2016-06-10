@@ -12,16 +12,16 @@ import java.util.Locale;
  */
 public class NumberUtils {
 
-    public static String cleanCurrencyFormatedNumber(String s){
-        return s.replaceAll("[^\\d\\,\\.]", "").trim();
+    public static String cleanCurrencyFormatedNumber(String s) {
+        return s.replaceAll("[^[+-]?\\d\\,\\.]", "").trim();
     }
 
-    public static String cleanCurrencyFormatedNumber(EditText s){
-        return s.getText().toString().replaceAll("[^\\d\\,\\.]", "").trim();
+    public static String cleanCurrencyFormatedNumber(EditText s) {
+        return cleanCurrencyFormatedNumber(s.getText().toString());
     }
 
-    public static String cleanCurrencyFormatedNumber(StringBuilder s){
-        return s.toString().replaceAll("[^\\d\\,\\.]", "").trim();
+    public static String cleanCurrencyFormatedNumber(StringBuilder s) {
+        return cleanCurrencyFormatedNumber(s.toString());
     }
 
     public static void parseInputedCurrency(CharSequence s, EditText editText) {
