@@ -148,6 +148,22 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
 //    CustomKeyboard mCustomKeyboard;
 
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        rewardsWasRead = savedInstanceState.getBoolean("rewardsWasRead");
+        if (rewardsWasRead) {
+            OrderRewards_FR.getFrag().hideTapButton();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("rewardsWasRead", rewardsWasRead);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -1319,6 +1335,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPreExecute() {
+            int orientation = Global.getScreenOrientation(OrderingMain_FA.this);
+            setRequestedOrientation(orientation);
             myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
             myProgressDialog.setMessage("Processing Balance Inquiry...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1368,7 +1386,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
 
             if (wasProcessed) // payment processing succeeded
             {
