@@ -404,7 +404,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70()|| myPref.isHandpoint() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isHandpoint() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         }
     }
@@ -828,7 +828,10 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             Boolean printSuccessful = Boolean.valueOf(result.get("printSuccessful"));
             if (!printSuccessful) {
                 showPrintDlg(result);
+            } else {
+                finish();
             }
+
         }
     }
 }
