@@ -260,7 +260,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 if (myPref.isPAT215()) {
                     Global.embededMSR = edm.getManager();
                     Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "");
-                } else if (myPref.getPrinterType() != Global.POWA) {
+                }
+                if (myPref.getPrinterType() != Global.POWA) {
                     if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
                             isPOS, _portName, _portNumber))
                         sb.append(_peripheralName).append(": ").append("Connected\n");
