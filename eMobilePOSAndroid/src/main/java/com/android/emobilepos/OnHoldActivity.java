@@ -661,7 +661,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 String[] tempVal = prodAddonHandler.getAddonDetails(temp.prod_id, ord.prod_id);
 
 
-                global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{isAdded, tempVal[1]});
+                global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{isAdded, tempVal[1], tempVal[0]});
 
 
                 global.orderProductAddons.add(ord);
