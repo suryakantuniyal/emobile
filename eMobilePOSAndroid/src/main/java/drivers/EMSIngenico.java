@@ -466,6 +466,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                     }
                     break;
                     default:
+                        loadCardReader(callBack, mIsDebit);
                         break;
                 }
             }
@@ -494,6 +495,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                     }
                     break;
                     default:
+                        loadCardReader(callBack, mIsDebit);
                 }
             }
             break;
