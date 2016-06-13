@@ -25,6 +25,7 @@ import com.android.emobilepos.models.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.Global;
+import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -280,7 +281,7 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
         @Override
         protected Payment doInBackground(Payment... params) {
 
-            if (Global.isConnectedToInternet(TipAdjustmentFA.this)) {
+            if (NetworkUtils.isConnectedToInternet(TipAdjustmentFA.this)) {
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
