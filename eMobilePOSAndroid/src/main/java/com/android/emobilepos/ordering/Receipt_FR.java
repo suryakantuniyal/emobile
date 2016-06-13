@@ -2197,7 +2197,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordProd = new OrderProduct();
                         anOrder = new Orders();
                     }
-                    receiptListView.invalidateViews();
+//                    receiptListView.invalidateViews();
+                    setupListView();
                     reCalculate();
                     dlog.dismiss();
                 }
