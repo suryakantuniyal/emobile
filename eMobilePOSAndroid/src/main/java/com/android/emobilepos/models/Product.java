@@ -11,8 +11,7 @@ public class Product {
     @SerializedName("prod_id")
     private String id;
     @SerializedName("prod_disc_type")
-    private
-    String prod_disc_type;
+    private String prod_disc_type;
     @SerializedName("assignedSeat")
     private String assignedSeat;
     @SerializedName("prod_desc")
@@ -43,10 +42,10 @@ public class Product {
     private String prodType;
     @SerializedName("cat_id")
     private String catId;
-    @SerializedName("prodPricePoints")
-    private String prodPricePoints;
-    @SerializedName("prodValuePoints")
-    private String prodValuePoints;
+    @SerializedName("prod_price_points")
+    private int prodPricePoints;
+    @SerializedName("prod_value_points")
+    private int prodValuePoints;
     @SerializedName("prod_taxtype")
     private String prodTaxType;
     @SerializedName("prod_taxcode")
@@ -216,19 +215,19 @@ public class Product {
         this.catId = catId;
     }
 
-    public String getProdPricePoints() {
+    public int getProdPricePoints() {
         return prodPricePoints;
     }
 
-    public void setProdPricePoints(String prodPricePoints) {
+    public void setProdPricePoints(int prodPricePoints) {
         this.prodPricePoints = prodPricePoints;
     }
 
-    public String getProdValuePoints() {
+    public int getProdValuePoints() {
         return prodValuePoints;
     }
 
-    public void setProdValuePoints(String prodValuePoints) {
+    public void setProdValuePoints(int prodValuePoints) {
         this.prodValuePoints = prodValuePoints;
     }
 
