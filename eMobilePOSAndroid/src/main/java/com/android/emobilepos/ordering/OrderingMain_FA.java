@@ -52,6 +52,7 @@ import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.soundmanager.SoundManager;
@@ -146,6 +147,22 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
 //    CustomKeyboard mCustomKeyboard;
+
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        rewardsWasRead = savedInstanceState.getBoolean("rewardsWasRead");
+        if (rewardsWasRead) {
+            OrderRewards_FR.getFrag().hideTapButton();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("rewardsWasRead", rewardsWasRead);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -568,7 +585,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         } else if (resultCode == 1) {
 
             Bundle extras = data.getExtras();
@@ -613,7 +630,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             finish();
         else {
             DBManager dbManager = new DBManager(MainMenu_FA.activity, Global.FROM_SYNCH_ACTIVITY);
-            if (myPref.getPreferences(MyPreferences.pref_automatic_sync)) {
+            if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && Global.isConnectedToInternet(this)) {
                 dbManager.synchSend(false, true);
             }
 
@@ -866,6 +883,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         });
         dlog.show();
+    }
+
+    public Receipt_FR getLeftFragment() {
+        return leftFragment;
     }
 
     private TextWatcher textWatcher() {
@@ -1314,6 +1335,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPreExecute() {
+            int orientation = Global.getScreenOrientation(OrderingMain_FA.this);
+            setRequestedOrientation(orientation);
             myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
             myProgressDialog.setMessage("Processing Balance Inquiry...");
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1363,7 +1386,11 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPostExecute(String unused) {
-            myProgressDialog.dismiss();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
 
             if (wasProcessed) // payment processing succeeded
             {
@@ -1448,6 +1475,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<OrdProdAttrHolder> ordProdAttr) {
         if (!order.ord_id.isEmpty()) {
+
             OrdersHandler dbOrders = new OrdersHandler(activity);
             if (order.ord_id.isEmpty()) {
                 Global global = (Global) activity.getApplication();
@@ -1458,16 +1486,29 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdProd.insert(orderProducts);
                 dbOrdAttr.insert(ordProdAttr);
             }
-            dbOrders.updateIsVoid(order.ord_id);
-            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
-            Order order2 = new Order(activity);
-            order2.ord_id = order.ord_id;
-            order2.ord_type = order.ord_type;
-            voidHandler.insert(order2);
+            new VoidTransactionTask().execute(activity, order);
+//            SelectPayMethod_FA.voidTransaction(activity, order.ord_id, order.ord_type);
+
+//            dbOrders.updateIsVoid(order.ord_id);
+//            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
+//            Order order2 = new Order(activity);
+//            order2.ord_id = order.ord_id;
+//            order2.ord_type = order.ord_type;
+//            voidHandler.insert(order2);
 
         }
     }
 
+    private static class VoidTransactionTask extends AsyncTask<Object, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Object... params) {
+            Order order = (Order) params[1];
+            SelectPayMethod_FA.voidTransaction((Activity) params[0], order.ord_id, order.ord_type);
+
+            return null;
+        }
+    }
 
     private void deleteTransaction() {
         if (!Global.lastOrdID.isEmpty()) {
@@ -1544,8 +1585,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ord.cat_id = product.getCatId();
 
         try {
-            ord.prod_price_points = product.getProdPricePoints();
-            ord.prod_value_points = product.getProdValuePoints();
+            ord.prod_price_points = String.valueOf(product.getProdPricePoints());
+            ord.prod_value_points = String.valueOf(product.getProdValuePoints());
         } catch (Exception ignored) {
 
         }

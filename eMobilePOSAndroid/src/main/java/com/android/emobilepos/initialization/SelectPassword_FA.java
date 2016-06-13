@@ -15,8 +15,9 @@ import com.android.emobilepos.R;
 import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-public class SelectPassword_FA extends FragmentActivity {
+public class SelectPassword_FA extends BaseFragmentActivityActionBar {
     private Activity activity;
     private MyPreferences myPref;
 
@@ -48,7 +49,7 @@ public class SelectPassword_FA extends FragmentActivity {
                     dbManager.updateDB();
                     myPref.setCacheDir(activity.getApplicationContext().getCacheDir().getAbsolutePath());
                 } else {
-                    Toast.makeText(activity, "Password not acceptable, try again...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, R.string.wrong_password, Toast.LENGTH_LONG).show();
                 }
             }
         });

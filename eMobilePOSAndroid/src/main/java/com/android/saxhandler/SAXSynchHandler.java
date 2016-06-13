@@ -435,15 +435,15 @@ public class SAXSynchHandler extends DefaultHandler {
 				vpHandler.emptyTable();
 			}
 			break;
-		case Global.S_UOM:
-			if(isInsert)
-				uomHandler.insert(dataList,dictionaryListMap);
-			else
-			{
-				uomHandler = new UOMHandler(activity);
-				uomHandler.emptyTable();
-			}
-			break;
+//		case Global.S_UOM:
+//			if(isInsert)
+//				uomHandler.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				uomHandler = new UOMHandler(activity);
+//				uomHandler.emptyTable();
+//			}
+//			break;
 		case Global.S_TEMPLATES:
 			if(isInsert)
 				templatesHandler.insert(dataList,dictionaryListMap);

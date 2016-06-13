@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply from: '../artifacts.gradle'
 apply plugin: 'realm-android'
+apply plugin: 'io.fabric'
 android {
     signingConfigs {
         config {
@@ -28,7 +29,6 @@ android {
         multiDexEnabled = true
     }
 
-
 //    splits {
 //        abi {
 //            enable true
@@ -48,24 +48,40 @@ android {
         ems {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.2.0.19"
-            versionCode 95
+            versionName "1.2.0.23"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
         emsblue {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.2.0.19"
-            versionCode 95
+            versionName "1.2.0.23"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
         ivupos {
             minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.19"
-            versionCode 95
+            versionName "1.2.0.23"
+            versionCode 98
+            targetSdkVersion 23
+            multiDexEnabled = true
+        }
+        restoff {
+            minSdkVersion 15
+            applicationId = 'com.emobilepos.app'
+            versionName "1.1.1.9"
+            versionCode 98
+            targetSdkVersion 23
+            multiDexEnabled = true
+        }
+        restoffivupos {
+            minSdkVersion 15
+            applicationId = 'com.emobilepos.ivupos.app'
+            versionName "1.1.1.9"
+            versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
         }
@@ -84,6 +100,7 @@ android {
 }
 
 repositories {
+    maven { url 'https://maven.fabric.io/public' }
     flatDir {
         dirs 'libs'
     }
@@ -142,4 +159,7 @@ dependencies {
     compile files('libs/bixolon_printer.jar')
     compile files('libs/jpos114-controls.jar')
     compile files('libs/xerces.jar')
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true;
+    }
 }

@@ -57,7 +57,7 @@ public class EMSPayGate_Default {
         ChargeLoyaltyCardAction(1019), CreditCardAuthAction(1020), ChargeRewardAction(1021),
         CreditCardAdjustTipAmountAction(1011), VoidCreditCardAction(2010), VoidCheckAction(2012),
         ReturnCreditCardAction(3010), ReturnDebitAction(3014), ReturnGeniusAction(3017), VoidGiftCardAction(2018),
-        ReturnGiftCardAction(3018), ActivateGiftCardAction(5000),
+        ReturnGiftCardAction(3018), ActivateGiftCardAction(5000), VoidRewardCardAction(2021),
         //        DeactivateGiftCardAction(5010),
         AddValueGiftCardAction(5010), BalanceGiftCardAction(5020), ActivateLoyaltyCardAction(6000),
         AddValueLoyaltyCardAction(6010), BalanceLoyaltyCardAction(6020), ActivateRewardAction(6100),
@@ -354,6 +354,7 @@ public class EMSPayGate_Default {
                     break;
                 }
                 case VoidGiftCardAction:
+                case VoidRewardCardAction:
                 case VoidCreditCardAction:
                 case VoidCheckAction: {
                     if (isSwipe)
@@ -873,11 +874,11 @@ public class EMSPayGate_Default {
         serializer.endTag(empstr, "tipAmount");
         if (isTupyx) {
             serializer.startTag(empstr, "originalTotalAmount");
-            serializer.text(totalAmount);
+            serializer.text(NumberUtils.cleanCurrencyFormatedNumber(totalAmount));
             serializer.endTag(empstr, "originalTotalAmount");
         } else if (!payment.originalTotalAmount.isEmpty()) {
             serializer.startTag(empstr, "originalTotalAmount");
-            serializer.text(payment.originalTotalAmount);
+            serializer.text(NumberUtils.cleanCurrencyFormatedNumber(payment.originalTotalAmount));
             serializer.endTag(empstr, "originalTotalAmount");
         }
 

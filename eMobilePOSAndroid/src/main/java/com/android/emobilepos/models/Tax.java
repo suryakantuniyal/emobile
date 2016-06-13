@@ -14,6 +14,7 @@ public class Tax {
 
     public Tax(String taxId) {
         this.taxId = taxId;
+        this.taxRate = "0.0";
     }
 
     public String getTaxName() {

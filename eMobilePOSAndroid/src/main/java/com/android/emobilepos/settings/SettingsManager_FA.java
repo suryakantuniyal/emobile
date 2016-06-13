@@ -24,6 +24,7 @@ import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
@@ -1029,7 +1030,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 }
                 c.close();
                 String _portName;
-                String _peripheralName = "";
+                String _peripheralName;
                 if ((myPref.getSwiperType() != -1)
                         && (Global.btSwiper == null || Global.btSwiper.currentDevice == null)) {
                     edm = new EMSDeviceManager();
@@ -1067,6 +1068,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
                     sb.append(_peripheralName).append(": ").append("Connected\n");
 
+                } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
+                    if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
+                            "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
+                        sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n");
+                    else
+                        sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
                 }
 
                 return null;

@@ -1118,7 +1118,7 @@
     <string name="amount_zero_lbl">0.00</string>
     <string name="none_uppercase_lbl">NONE</string>
     <string name="enabler_prefix">EN</string>
-    <string name="enabler_website">www.e-nabler.com</string>
+    <string name="enabler_website">www.emobilepos.com/</string>
     <string name="powered_by_enabler">Powered by Enabler</string>
     <string name="ivuloto_control_label">"CONTROL: "</string>
     <string name="menu_back">Back</string>
@@ -1209,7 +1209,7 @@
     <string name="void_fail">Error processing void</string>
     <string name="select_number_guests">Select number of guests</string>
     <string name="fail_to_connect">Failed to connect</string>
-    <string name="connecting_bluetooth_device">Connecting Bletooth Device...</string>
+    <string name="connecting_bluetooth_device">Connecting Bluetooth Device...</string>
     <string name="move_items_to_seat">"Move items to seat "</string>
     <string name="join_with_seat">"Join with seat "</string>
     <string name="tip_adjustment">Tip Adjustment</string>
@@ -1227,7 +1227,7 @@
     <string name="handpoint_log_file">Handpoint Log File</string>
     <string name="send_email">Send Email</string>
     <string name="config_send_handpoint_log">Send Handpoint Log</string>
-    <string name="config_handpoint_utils">Handopint Tools</string>
+    <string name="config_handpoint_utils">Handpoint Tools</string>
     <string name="config_handpoint_update">Update Firmware</string>
     <string name="device_update_completed">Device update request completed.</string>
     <string name="device_update_fail">Device update request fail.</string>
@@ -1235,6 +1235,8 @@
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
     <string name="sales_associates">Sales Associates</string>
+    <string name="wrong_password">Password not acceptable, try again...</string>
+    <string name="reward_payment_succeed">Reward payment succeed</string>
 
 
 </resources>

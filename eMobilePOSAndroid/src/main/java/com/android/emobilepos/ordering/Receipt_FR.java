@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -214,7 +215,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         Button addSeatButton = (Button) view.findViewById(R.id.addSeatButton);
         addSeatButton.setOnClickListener(this);
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || !myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
             addSeatButton.setVisibility(View.GONE);
         }
         ImageView plusBut = (ImageView) view.findViewById(R.id.plusButton);
@@ -448,60 +449,61 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                                 int which) {
                                 String value = NumberUtils.cleanCurrencyFormatedNumber(input);
                                 if (!value.isEmpty()) {
-                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
-                                    BigDecimal prod_qty;
-                                    BigDecimal new_subtotal;
-                                    try {
-                                        prod_qty = new BigDecimal(
-                                                global.orderProducts
-                                                        .get(position).ordprod_qty);
-                                    } catch (Exception e) {
-                                        prod_qty = new BigDecimal("0");
-                                    }
+                                    global.orderProducts.get(position).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
 
-                                    String temp = Double.toString(Global
-                                            .formatNumFromLocale(value));
-                                    if (!map.isEmpty()) {
-                                        if (map.get("discount_type")
-                                                .toUpperCase(
-                                                        Locale.getDefault())
-                                                .trim().equals("FIXED")) {
-                                            new_subtotal = new_price
-                                                    .multiply(prod_qty)
-                                                    .subtract(
-                                                            new BigDecimal(
-                                                                    map.get("discount_price")));
-
-                                        } else {
-                                            BigDecimal rate = new BigDecimal(
-                                                    map.get("discount_price"))
-                                                    .divide(new BigDecimal(
-                                                            "100"));
-                                            rate = rate.multiply(new_price
-                                                    .multiply(prod_qty));
-
-                                            new_subtotal = new_price.multiply(
-                                                    prod_qty).subtract(rate);
-
-                                            global.orderProducts.get(position).disTotal = Global
-                                                    .getRoundBigDecimal(rate);
-                                            global.orderProducts.get(position).discount_value = Global
-                                                    .getRoundBigDecimal(rate);
-
-                                        }
-                                    } else
-                                        new_subtotal = new_price
-                                                .multiply(prod_qty);
-
-                                    global.orderProducts.get(position).overwrite_price = temp;
-                                    global.orderProducts.get(position).prod_price = temp;
-                                    global.orderProducts.get(position).itemSubtotal = Global
-                                            .getRoundBigDecimal(new_subtotal);
-                                    global.orderProducts.get(position).itemTotal = Global
-                                            .getRoundBigDecimal(new_subtotal);
-                                    global.orderProducts.get(position).pricelevel_id = "";
-                                    global.orderProducts.get(position).prod_price_updated = "0";
-
+//                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
+//                                    BigDecimal prod_qty;
+//                                    BigDecimal new_subtotal;
+//                                    try {
+//                                        prod_qty = new BigDecimal(
+//                                                global.orderProducts
+//                                                        .get(position).ordprod_qty);
+//                                    } catch (Exception e) {
+//                                        prod_qty = new BigDecimal("0");
+//                                    }
+//
+//                                    String temp = Double.toString(Global
+//                                            .formatNumFromLocale(value));
+//                                    if (!map.isEmpty()) {
+//                                        if (map.get("discount_type")
+//                                                .toUpperCase(
+//                                                        Locale.getDefault())
+//                                                .trim().equals("FIXED")) {
+//                                            new_subtotal = new_price
+//                                                    .multiply(prod_qty)
+//                                                    .subtract(
+//                                                            new BigDecimal(
+//                                                                    map.get("discount_price")));
+//
+//                                        } else {
+//                                            BigDecimal rate = new BigDecimal(
+//                                                    map.get("discount_price"))
+//                                                    .divide(new BigDecimal(
+//                                                            "100"));
+//                                            rate = rate.multiply(new_price
+//                                                    .multiply(prod_qty));
+//
+//                                            new_subtotal = new_price.multiply(
+//                                                    prod_qty).subtract(rate);
+//
+//                                            global.orderProducts.get(position).disTotal = Global
+//                                                    .getRoundBigDecimal(rate);
+//                                            global.orderProducts.get(position).discount_value = Global
+//                                                    .getRoundBigDecimal(rate);
+//
+//                                        }
+//                                    } else
+//                                        new_subtotal = new_price
+//                                                .multiply(prod_qty);
+//
+//                                    global.orderProducts.get(position).overwrite_price = temp;
+//                                    global.orderProducts.get(position).prod_price = temp;
+//                                    global.orderProducts.get(position).itemSubtotal = Global
+//                                            .getRoundBigDecimal(new_subtotal);
+//                                    global.orderProducts.get(position).itemTotal = Global
+//                                            .getRoundBigDecimal(new_subtotal);
+//                                    global.orderProducts.get(position).pricelevel_id = "";
+//                                    global.orderProducts.get(position).prod_price_updated = "0";
                                     receiptListView.invalidateViews();
                                     reCalculate();
                                 }
@@ -900,6 +902,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
         OrderProductsAttr_DB productsAttrDb = new OrderProductsAttr_DB(activity);
         if (caseSelected != Global.TransactionType.REFUND) {
+            if ((Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) ||
+                    (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty())) {
+                BigDecimal total = Global.getBigDecimalNum(order.ord_total);
+                if (total.compareTo(new BigDecimal(0)) == 0) {
+                    order.processed = "1";
+                }
+            }
             if (orderingAction == OrderingMain_FA.OrderingAction.HOLD) {
                 global.order.isOnHold = "1";
 
@@ -2286,4 +2295,26 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         view.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
     }
 
+    public BigDecimal applyRewardDiscount(BigDecimal rewardAmount, List<OrderProduct> orderProducts) {
+        BigDecimal discountedAmount = new BigDecimal(0);
+        for (OrderProduct product : orderProducts) {
+            BigDecimal price = Global.getBigDecimalNum(product.prod_price);
+            BigDecimal newPrice;
+            if (rewardAmount.compareTo(price) < 0) {
+                newPrice = price.subtract(rewardAmount);
+                discountedAmount = discountedAmount.add(rewardAmount);
+                rewardAmount = new BigDecimal(0);
+            } else {
+                newPrice = new BigDecimal(0);
+                rewardAmount = rewardAmount.subtract(price);
+                discountedAmount = discountedAmount.add(price);
+            }
+            product.setOverwritePrice(newPrice, getActivity());
+            if (rewardAmount.doubleValue() <= 0) {
+                break;
+            }
+        }
+        refreshView();
+        return discountedAmount;
+    }
 }

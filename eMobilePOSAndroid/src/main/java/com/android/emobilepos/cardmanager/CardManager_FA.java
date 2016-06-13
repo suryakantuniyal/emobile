@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
@@ -263,7 +264,14 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 LOADING_MSG = getString(R.string.adding_balance_message);
                 fieldAmountToAdd = (EditText) findViewById(R.id.fieldAmountToAdd);
                 fieldAmountToAdd.setVisibility(View.VISIBLE);
-                fieldAmountToAdd.addTextChangedListener(getTextWatcher(fieldAmountToAdd));
+
+                // Loyalty is based on points (whole numbers only) so we adjust the input for that case
+                if (cardTypeCase == CASE_LOYALTY) {
+                    fieldAmountToAdd.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                } else {
+                    fieldAmountToAdd.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                    fieldAmountToAdd.addTextChangedListener(getTextWatcher(fieldAmountToAdd));
+                }
 
                 break;
         }
@@ -396,7 +404,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70()|| myPref.isHandpoint() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isHandpoint() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         }
     }
@@ -820,7 +828,10 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             Boolean printSuccessful = Boolean.valueOf(result.get("printSuccessful"));
             if (!printSuccessful) {
                 showPrintDlg(result);
+            } else {
+                finish();
             }
+
         }
     }
 }

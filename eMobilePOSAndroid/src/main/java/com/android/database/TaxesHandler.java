@@ -204,12 +204,12 @@ public class TaxesHandler {
         return list;
     }
 
+    public Tax getTax(String taxID, String taxType, double prodPrice) {
+        Tax tax = new Tax(taxID);
 
-    public String getTaxRate(String taxID, String taxType, double prodPrice) {
-        //SQLiteDatabase db = dbManager.openReadableDB();
-        String taxRate = "0.0";
+        String taxRate;
 
-        String subquery1 = "SELECT tax_rate, tax_type FROM ";
+        String subquery1 = "SELECT tax_rate,tax_name, tax_type FROM ";
         String subquery2 = " WHERE tax_id = '";
 
         StringBuilder sb = new StringBuilder();
@@ -224,6 +224,8 @@ public class TaxesHandler {
         boolean isGroupTax = false;
         if (cursor.moveToFirst()) {
             taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
+            tax.setTaxRate(taxRate);
+            tax.setTaxName(cursor.getString(cursor.getColumnIndex("tax_name")));
             if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
                 isGroupTax = true;
         }
@@ -249,11 +251,65 @@ public class TaxesHandler {
                 } while (cursor.moveToNext());
 
                 taxRate = Double.toString(total_tax_rate);
+                tax.setTaxRate(taxRate);
             }
         }
-        //db.close();
         cursor.close();
-        return taxRate;
+        return tax;
+    }
+
+
+    public String getTaxRate(String taxID, String taxType, double prodPrice) {
+
+        return getTax(taxID, taxType, prodPrice).getTaxRate();
+//        //SQLiteDatabase db = dbManager.openReadableDB();
+//        String taxRate = "0.0";
+//
+//        String subquery1 = "SELECT tax_rate, tax_type FROM ";
+//        String subquery2 = " WHERE tax_id = '";
+//
+//        StringBuilder sb = new StringBuilder();
+//
+//        sb.append(subquery1).append(table_name).append(subquery2).append(taxID).append("'");
+//
+//        if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
+//            sb.append(" AND tax_code_id = '").append(taxType).append("'");
+//        }
+//
+//        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+//        boolean isGroupTax = false;
+//        if (cursor.moveToFirst()) {
+//            taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
+//            if (cursor.getString(cursor.getColumnIndex("tax_type")).equals("G"))
+//                isGroupTax = true;
+//        }
+//
+//        cursor.close();
+//
+//        if (isGroupTax && myPref.getPreferences(MyPreferences.pref_retail_taxes) && !taxType.isEmpty()) {
+//            sb.setLength(0);
+//            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
+//            cursor = DBManager._db.rawQuery(sb.toString(), new String[]{taxID, taxType});
+//            if (cursor.moveToFirst()) {
+//                int i_tax_rate = cursor.getColumnIndex("tax_rate");
+//                int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
+//                int i_taxHighRange = cursor.getColumnIndex("taxHighRange");
+//
+//                double total_tax_rate = 0;
+//                do {
+//                    double lowRange = cursor.getDouble(i_taxLowRange);
+//                    double highRange = cursor.getDouble(i_taxHighRange);
+//
+//                    if (prodPrice >= lowRange && prodPrice <= highRange)
+//                        total_tax_rate += cursor.getDouble(i_tax_rate);
+//                } while (cursor.moveToNext());
+//
+//                taxRate = Double.toString(total_tax_rate);
+//            }
+//        }
+//        //db.close();
+//        cursor.close();
+//        return taxRate;
     }
 
     public List<HashMap<String, String>> getTaxDetails(String taxID, String taxType) {

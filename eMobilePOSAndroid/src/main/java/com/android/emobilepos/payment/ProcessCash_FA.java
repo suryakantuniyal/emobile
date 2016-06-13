@@ -47,8 +47,8 @@ import java.util.concurrent.ExecutionException;
 
 import util.NumberUtil;
 
-public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnClickListener {
-//    private ProgressDialog myProgressDialog;
+public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
+    //    private ProgressDialog myProgressDialog;
     private AlertDialog.Builder dialog;
     private Context thisContext = this;
     private Activity activity = this;
@@ -209,7 +209,8 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
             public void onClick(View v) {
                 btnProcess.setEnabled(false);
                 double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-                if (enteredAmount <= 0) {
+                double amountDueDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+                if (enteredAmount <= 0 && amountDueDbl > 0) {
                     paid.setBackgroundResource(R.drawable.edittext_wrong_input);
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.error_wrong_amount));
                 } else {
@@ -405,14 +406,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         });
     }
 
-    public static void calculateAmountDue(EditText subtotal, EditText tax1, EditText tax2, EditText amount) {
-        double subtotalDbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
-        double tax1Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1));
-        double tax2Dbl = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2));
-        double amountDueDbl = subtotalDbl + tax1Dbl + tax2Dbl;
-
-        amount.setText(Global.getCurrencyFormat(Global.formatNumToLocale(amountDueDbl)));
-    }
 
     public static void setTaxLabels(List<GroupTax> groupTaxRate, TextView tax1Lbl, TextView tax2Lbl) {
         if (groupTaxRate.size() > 0)
@@ -570,8 +563,6 @@ public class ProcessCash_FA extends BaseFragmentActivityActionBar implements OnC
         });
         dialog.show();
     }
-
-
 
 
     public static void calculateTaxes(List<GroupTax> groupTaxRate, EditText subtotal, EditText tax1, EditText tax2) {

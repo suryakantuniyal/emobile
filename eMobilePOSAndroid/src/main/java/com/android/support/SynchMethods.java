@@ -10,15 +10,14 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateDAO;
+import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.CustomersHandler;
@@ -61,10 +60,7 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 import org.xml.sax.InputSource;
@@ -73,7 +69,6 @@ import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -95,8 +90,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
-import io.realm.RealmResults;
 
 public class SynchMethods {
     private Post post;
@@ -1786,13 +1779,24 @@ public class SynchMethods {
     }
 
     private void synchUoM(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_uom));
-        post.postData(7, activity, "UoM");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_UOM);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_uom));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        try {
+            task.updateProgress(getString(R.string.sync_dload_uom));
+            client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("UoM"));
+            task.updateProgress(getString(R.string.sync_saving_uom));
+            try {
+                UomDAO.truncate();
+                UomDAO.insert(jsonRequest);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {

@@ -342,6 +342,7 @@ public class TaxesCalculator {
         TaxesHandler taxesHandler = new TaxesHandler(activity);
         TaxesGroupHandler taxesGroupHandler = new TaxesGroupHandler(activity);
         Global.taxAmount = Global.getBigDecimalNum(taxSelected.getTaxRate());
+
         if (!myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
             listMapTaxes = taxesHandler.getTaxDetails(taxID, "");
             if (listMapTaxes.size() > 0 && listMapTaxes.get(0).get("tax_type").equals("G")) {
@@ -349,6 +350,8 @@ public class TaxesCalculator {
                         listMapTaxes.get(0).get("tax_code_id"));
             }
         } else {
+            Tax tax = taxesHandler.getTax(taxID, orderProduct.prod_taxtype,
+                    Double.parseDouble(orderProduct.overwrite_price));
             if (listMapTaxes == null) {
                 listMapTaxes = new ArrayList<HashMap<String, String>>();
             } else {
@@ -356,8 +359,8 @@ public class TaxesCalculator {
             }
             HashMap<String, String> mapTax = new HashMap<String, String>();
             mapTax.put("tax_id", taxID);
-            mapTax.put("tax_name", taxSelected.getTaxName());
-            mapTax.put("tax_rate", taxSelected.getTaxRate());
+            mapTax.put("tax_name", tax.getTaxName());
+            mapTax.put("tax_rate", tax.getTaxRate());
             listMapTaxes.add(mapTax);
         }
     }
@@ -534,7 +537,7 @@ public class TaxesCalculator {
         order.ord_taxamount = Global.getRoundBigDecimal(taxes.taxableAmount);
     }
 
-    public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax){
+    public static OrderProduct getTaxableOrderProduct(Order order, OrderProduct orderProduct, Tax tax) {
 
         return new OrderProduct();
     }
