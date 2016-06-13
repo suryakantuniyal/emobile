@@ -922,10 +922,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.PAT100);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(activity, Global.PAT100, false);
-            } else if (myPref.isEM100()) {
-//                myPref.setPrinterType(Global.EM100);
-//                Global.mainPrinterManager = edm.getManager();
-//                Global.mainPrinterManager.loadDrivers(activity, Global.EM100, false);
+            } else if (myPref.isPAT215()) {
+                myPref.setPrinterType(Global.PAT215);
+                Global.embededMSR = edm.getManager();
+                Global.embededMSR.loadDrivers(activity, Global.PAT215, false);
+            }else if (myPref.isEM100()) {
+
             } else if (myPref.isEM70()) {
                 myPref.setPrinterType(Global.EM70);
                 Global.mainPrinterManager = edm.getManager();

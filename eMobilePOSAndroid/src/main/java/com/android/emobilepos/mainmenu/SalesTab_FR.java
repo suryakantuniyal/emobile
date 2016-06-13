@@ -650,9 +650,9 @@ public class SalesTab_FR extends Fragment {
                 myListview.setOnItemClickListener(new MyListener());
             }
 
-            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
+//            if (myPref.isSam4s(true, true) || myPref.isPAT100() || myPref.isPAT215()) {
                 Global.showCDTDefault(activity);
-            }
+//            }
         }
     }
 
@@ -837,6 +837,9 @@ public class SalesTab_FR extends Fragment {
             return false;
         } else if (model.equals("PAT100")) {
             myPref.setIsPAT100(true);
+            return true;
+        } else if (model.equals("PAT-215")) {
+            myPref.setIsPAT215(true);
             return true;
         } else if (model.equals("EM100")) {
             myPref.setIsEM100(true);

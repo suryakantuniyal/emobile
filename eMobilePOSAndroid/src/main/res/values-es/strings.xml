@@ -1227,7 +1227,6 @@
     <string name="handpoint_log_file">Handpoint Log File</string>
     <string name="send_email">Send Email</string>
     <string name="config_send_handpoint_log">Send Handpoint Log</string>
-    <string name="config_handpoint_utils">Handpoint Tools</string>
     <string name="config_handpoint_update">Update Firmware</string>
     <string name="device_update_completed">Device update request completed.</string>
     <string name="device_update_fail">Device update request fail.</string>
@@ -1235,6 +1234,8 @@
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
     <string name="sales_associates">Sales Associates</string>
+    <string name="config_handpoint_utils">Handopint Tools</string>
+    <string name="connecting_device">Connecting Device...</string>
     <string name="wrong_password">Password not acceptable, try again...</string>
     <string name="reward_payment_succeed">Reward payment succeed</string>
 
