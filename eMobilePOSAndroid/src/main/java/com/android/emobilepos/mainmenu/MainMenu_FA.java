@@ -250,18 +250,24 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             }
             if ((myPref.getPrinterType() != -1) && (Global.mainPrinterManager == null)) // ||(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice==null)))
             {
-                edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
+
                 _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
                 _portName = myPref.getPrinterMACAddress();
                 String _portNumber = myPref.getStarPort();
                 boolean isPOS = myPref.posPrinter(true, false);
                 int txtAreaSize = myPref.printerAreaSize(true, -1);
                 if (myPref.isPAT215()) {
+                    edm = new EMSDeviceManager();
                     Global.embededMSR = edm.getManager();
-                    Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "");
+                    if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
+                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n");
+                    } else {
+                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n");
+                    }
                 }
                 if (myPref.getPrinterType() != Global.POWA) {
+                    edm = new EMSDeviceManager();
+                    Global.mainPrinterManager = edm.getManager();
                     if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
                             isPOS, _portName, _portNumber))
                         sb.append(_peripheralName).append(": ").append("Connected\n");

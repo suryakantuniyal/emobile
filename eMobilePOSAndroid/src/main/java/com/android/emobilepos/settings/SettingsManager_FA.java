@@ -1072,7 +1072,15 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     else
                         sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
                 }
-
+                if (myPref.isPAT215()) {
+                    edm = new EMSDeviceManager();
+                    Global.embededMSR = edm.getManager();
+                    if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
+                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n");
+                    } else {
+                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n");
+                    }
+                }
                 return null;
             }
 

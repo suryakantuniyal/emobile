@@ -78,9 +78,9 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
         thisInstance = this;
-        Looper.prepare();
+//        Looper.prepare();
         new processConnectionAsync().execute(0);
-        Looper.loop();
+//        Looper.loop();
     }
 
     @Override
@@ -234,11 +234,10 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     private void initMSR() {
-        releaseCardReader();
-        EMSPAT215.runReader = true;
         if (msrApiContext == null)
             msrApiContext = MsrManager.getDefault(activity);
-
+        releaseCardReader();
+        EMSPAT215.runReader = true;
         int reader = msrApiContext.getMsrReading();
         int setMsrReading;
         if (reader == 0) {
