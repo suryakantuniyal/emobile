@@ -702,6 +702,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         return true;
                     }
                 });
+                popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Integer.parseInt(orderSeatProduct.orderProduct.prod_price_points) > 0);
                 popup.show();
 
             }
@@ -2197,7 +2198,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordProd = new OrderProduct();
                         anOrder = new Orders();
                     }
-                    receiptListView.invalidateViews();
+//                    receiptListView.invalidateViews();
+                    setupListView();
                     reCalculate();
                     dlog.dismiss();
                 }
