@@ -25,6 +25,7 @@ import com.android.database.PrintersHandler;
 import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.lang.reflect.Method;
@@ -107,7 +108,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             global.promptForMandatoryLogin(activity);
         }
 
-        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && Global.isConnectedToInternet(activity)) {
+        if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
             DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
             // SQLiteDatabase db = dbManager.openWritableDB();
             dbManager.synchSend(false, true);

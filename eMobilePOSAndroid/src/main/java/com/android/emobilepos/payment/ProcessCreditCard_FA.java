@@ -53,6 +53,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -1381,7 +1382,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected Payment doInBackground(Object... params) {
 
-            if (Global.isConnectedToInternet(activity) && !livePaymentRunning) {
+            if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
 
                 Post httpClient = new Post();
@@ -1465,7 +1466,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected Payment doInBackground(Payment... params) {
 
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
