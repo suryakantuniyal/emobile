@@ -1071,7 +1071,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     else
                         sb.append(_peripheralName).append(": ").append("Failed to connect\n");
 
-                } else if (myPref.getPrinterType() != -1 && Global.mainPrinterManager != null
+                } else if (myPref.getPrinterType() != -1 && myPref.getPrinterType() != Global.PAT215
+                        && Global.mainPrinterManager != null
                         && Global.mainPrinterManager.currentDevice != null) {
                     _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
                     sb.append(_peripheralName).append(": ").append("Connected\n");
