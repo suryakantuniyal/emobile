@@ -825,6 +825,18 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isPAT215() {
+        String device_pat215 = "device_pat215";
+        return prefs.getBoolean(device_pat215, false);
+    }
+
+    public boolean setIsPAT215(boolean value) {
+        String device_pat215 = "device_pat215";
+        prefEditor.putBoolean(device_pat215, value);
+        prefEditor.commit();
+        return false;
+    }
+
     public boolean isEM100() {
         String device_pat100 = "device_em100";
         return prefs.getBoolean(device_pat100, false);

@@ -1,15 +1,19 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CardParser {
 
-    public static boolean parseCreditCard(Activity activity, String swiped_raw_data, CreditCardInfo tempCardData) {
+    public static boolean parseCreditCard(Context context, String swiped_raw_data, CreditCardInfo tempCardData) {
         boolean isCardParsed = false;
         Pattern track1FormatBPattern = Pattern.compile("(%([A-Z])([0-9]{1,19})\\^([^\\^]{2,26})\\^([0-9]{4}|\\^)([0-9]{3}|\\^)([^\\?]+)\\?)");
         Pattern track2Pattern = Pattern.compile("(;([0-9]{4,19})=?([0-9]{2})?(0[1-9]|1[0-2])?[0-9]{0,50}\\?)");
@@ -23,7 +27,7 @@ public class CardParser {
 
         if (hasTrack1 || hasTrack2) {
             tempCardData.setWasSwiped(true);
-            Encrypt encrypt = new Encrypt(activity);
+            Encrypt encrypt = new Encrypt(context);
 
             if (hasTrack1) {
                 String rawTrack1 = getGroup(matchTrack1, 1);
@@ -120,5 +124,72 @@ public class CardParser {
         } else {
             return "";
         }
+    }
+
+    public static CreditCardInfo parseIDTechOriginal(Context context, byte[] cardReadBuffer) {
+        CreditCardInfo creditCardInfo = new CreditCardInfo();
+        String ascii = convertHexToAscii(convertByteToString(cardReadBuffer));
+        byte[] ksnB = Arrays.copyOfRange(cardReadBuffer, cardReadBuffer.length - 13, cardReadBuffer.length - 3);
+        String ksn = convertByteToString(ksnB);
+        String encType = convertByteToString(new byte[]{cardReadBuffer[3]});
+        if (encType.equalsIgnoreCase("03")) {
+            parseCreditCard(context, ascii, creditCardInfo);
+            return creditCardInfo;
+        } else {
+            int t1LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[5]}), 16);
+            int t2LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[6]}), 16);
+            int t3LenInt = Integer.parseInt(convertByteToString(new byte[]{cardReadBuffer[7]}), 16);
+            int encBlockStart = t1LenInt + t2LenInt + t3LenInt + 8;
+            int encBlockEnd = cardReadBuffer.length - 13;
+
+            if (t1LenInt > 0) {
+                encBlockEnd -= 20;
+            }
+            if (t2LenInt > 0) {
+                encBlockEnd -= 20;
+            }
+
+            String encBlock = convertByteToString(Arrays.copyOfRange(cardReadBuffer, encBlockStart, encBlockEnd));
+//                        Message message = handler.obtainMessage();
+            creditCardInfo.setTrackDataKSN(ksn);
+            creditCardInfo.setEncryptedBlock(encBlock);
+            creditCardInfo.setCardExpMonth("01");
+            creditCardInfo.setCardExpYear(DateUtils.getYearAdd(1));
+            creditCardInfo.setWasSwiped(true);
+            Encrypt encrypt = new Encrypt(context);
+            String maskNumber = ascii.substring(ascii.indexOf(';') + 1);
+            maskNumber = maskNumber.substring(0, ascii.indexOf('='));
+            creditCardInfo.setCardNumUnencrypted(maskNumber);
+            creditCardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(maskNumber));
+            return creditCardInfo;
+        }
+    }
+
+    private static String convertByteToString(byte[] byteData) {
+        String str;
+        StringBuffer hexString = new StringBuffer();
+        for (int i = 0; i < byteData.length; i++) {
+            str = Integer.toHexString(0xFF & byteData[i]);
+            if (str.length() == 1)
+                str = "0" + str;
+            hexString.append(str);
+        }
+        return hexString.toString();
+    }
+
+    private static String convertHexToAscii(String hexString) {
+        StringBuffer asciiString = new StringBuffer();
+        for (int i = 0; i < hexString.length(); i += 2) {
+            String subs = hexString.substring(i, i + 2);
+            asciiString.append((char) Integer.parseInt(subs, 16));
+        }
+        return asciiString.toString();
+    }
+
+    private short getByteShort(byte[] bytes) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        short l = byteBuffer.getShort();
+        return l;
     }
 }

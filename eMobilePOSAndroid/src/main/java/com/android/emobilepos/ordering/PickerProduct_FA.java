@@ -310,8 +310,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderProduct.tax_type = extras.getString("prod_taxtype");
         orderProduct.cat_id = extras.getString("cat_id");
         orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
-        orderProduct.prod_price_points = extras.getString("prod_price_points") == null ? "0" : extras.getString("prod_price_points");
-        orderProduct.prod_value_points = extras.getString("prod_value_points") == null ? "0" : extras.getString("prod_value_points");
+        orderProduct.prod_price_points = String.valueOf(extras.getInt("prod_price_points"));
+        orderProduct.prod_value_points = String.valueOf(extras.getInt("prod_value_points"));
 
         if (Global.isConsignment) {
             orderProduct.consignment_qty = extras.getString("consignment_qty");
@@ -1068,20 +1068,20 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         global.orderProducts.add(ord);
 
 
-        if (myPref.isSam4s(true, true)) {
+//        if (myPref.isSam4s(true, true)) {
             String row1 = ord.ordprod_name;
             String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
             TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
-        } else if (myPref.isPAT100()) {
-            String row1 = ord.ordprod_name;
-            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        } else if (myPref.isESY13P1()) {
-            String row1 = ord.ordprod_name;
-            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        }
+//        } else if (myPref.isPAT100()) {
+//            String row1 = ord.ordprod_name;
+//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        } else if (myPref.isESY13P1()) {
+//            String row1 = ord.ordprod_name;
+//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        }
 
         if (OrderingMain_FA.returnItem) {
             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;

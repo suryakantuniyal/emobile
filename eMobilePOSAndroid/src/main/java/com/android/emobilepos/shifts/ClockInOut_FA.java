@@ -25,6 +25,7 @@ import com.android.emobilepos.models.TimeClock;
 import com.android.saxhandler.SAXPostHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.Post;
 
 import org.xml.sax.InputSource;
@@ -205,7 +206,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             // DBManager dbManager = new DBManager(activity);
             // SQLiteDatabase db = dbManager.openWritableDB();
             receiveTimeClock = params[0];
-            if (timeClockHandler.getNumUnsyncTimeClock() > 0 && Global.isConnectedToInternet(activity)) {
+            if (timeClockHandler.getNumUnsyncTimeClock() > 0 && NetworkUtils.isConnectedToInternet(activity)) {
                 publishProgress();
                 Post httpClient = new Post();
                 SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -287,7 +288,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             // sdf3.setTimeZone(TimeZone.getDefault());
             List<TimeClock> listTC = new ArrayList<TimeClock>();
             dateOutIn = new Date[2];
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();

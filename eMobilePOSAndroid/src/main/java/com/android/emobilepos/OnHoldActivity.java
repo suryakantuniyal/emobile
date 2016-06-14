@@ -37,6 +37,7 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXdownloadHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -156,7 +157,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             global.setSelectedComments(myCursor.getString(myCursor.getColumnIndex("ord_comment")));
 
 
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
 
@@ -290,7 +291,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             }
 
-            if (Global.isConnectedToInternet(activity))
+            if (NetworkUtils.isConnectedToInternet(activity))
                 proceed = true;
 
             return intent;

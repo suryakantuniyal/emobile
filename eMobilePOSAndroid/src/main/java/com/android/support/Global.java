@@ -115,6 +115,8 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager terminalDisplayManager;
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
+    public static EMSDeviceManager embededMSR;
+
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<String, Integer>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<EMSDeviceManager>();
 
@@ -141,11 +143,11 @@ public class Global extends MultiDexApplication {
     public static final int ICMPEVO = 16;
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
-
+    public static final int PAT215 = 19;
 
 
     public enum BuildModel {
-        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
 
         @Override
         public String toString() {
@@ -543,6 +545,9 @@ public class Global extends MultiDexApplication {
                 break;
             case PAT100:
                 _name = "PAT100";
+                break;
+            case PAT215:
+                _name = "PAT215";
                 break;
             case ISMP:
                 _name = "iSMP";
@@ -1346,47 +1351,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-    public static boolean isConnectedToInternet(Activity activity) {
-        ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo myWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo myMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        NetworkInfo myEthernet = connManager.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
-        if ((myWifi != null && myWifi.isAvailable() && myWifi.isConnected())
-                || (myMobile != null && myMobile.isAvailable() && myMobile.isConnected())
-                || (myEthernet != null && myEthernet.isAvailable() && myEthernet.isConnected())) {
-            InetAddress inetAddress;
-            Socket socket = null;
-            try {
-                inetAddress = InetAddress.getByName("sync.enablermobile.com");
-
-                socket = new Socket();
-                SocketAddress socketAddress = new InetSocketAddress(inetAddress, 443);
-                socket.connect(socketAddress, 5000);// try for 3 seconds
-
-                // Process p = Runtime.getRuntime().exec("/system/bin/ping -c 1
-                // www.google.com");
-                // Thread.sleep(1000);
-                // int i = p.exitValue();
-                // if(i==0)
-                // return true;
-                // return false;
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                return false;
-            } finally {
-                if (socket != null && socket.isConnected()) {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        return false;
-                    }
-                } else
-                    return false;
-            }
-        } else
-            return false;
-        return true;
-    }
 
     public static Object getFormatedNumber(boolean isDecimal, String val) {
         Object returnedVal = new Object();
@@ -1606,9 +1570,9 @@ public class Global extends MultiDexApplication {
         MyPreferences myPref = new MyPreferences(activity);
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-        uart uart_tool = new uart();
-        uart_tool.config(3, 9600, 8, 1);
-        uart_tool.write(3, Global.emptySpaces(40, 0, false));
+//        uart uart_tool = new uart();
+//        uart_tool.config(3, 9600, 8, 1);
+//        uart_tool.write(3, Global.emptySpaces(40, 0, false));
 
         String msg1 = myPref.cdtLine1(true, "");
         String msg2 = myPref.cdtLine2(true, "");
@@ -1631,7 +1595,7 @@ public class Global extends MultiDexApplication {
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
-                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
+                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 ||_printer_type == Global.PAT215 );
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
@@ -1704,7 +1668,7 @@ public class Global extends MultiDexApplication {
             }
             case Surface.ROTATION_180: {
                 if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT ||
-                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ) {
+                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
                     return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                 } else {
                     return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;

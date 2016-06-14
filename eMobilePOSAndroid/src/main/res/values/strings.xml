@@ -1167,6 +1167,7 @@
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
     <string name="config_mix_match"><![CDATA[Use Mix & Match]]></string>
+    <string name="connecting_device">Connecting Device...</string>
     <string name="wrong_password">Password not acceptable, try again...</string>
     <string name="reward_payment_succeed">Reward payment succeed</string>
 

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.android.emobilepos.R;
@@ -21,6 +22,7 @@ import com.android.support.MyPreferences;
 import org.springframework.util.support.Base64;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -58,9 +60,10 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         thisInstance = this;
         this.edm = edm;
-
+        sdkEventHandler = this;
         new processConnectionAsync().execute(0);
     }
+
 
     @Override
     public boolean autoConnect(Activity _activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -72,23 +75,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         this.edm = edm;
         boolean didConnect = false;
         sdkEventHandler = this;
-
-        RBA_API.Initialize();
-        RBA_API.SetMessageCallBack(sdkEventHandler);
-
-        Comm_Settings commSettings = new Comm_Settings();
-        commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
-        commSettings.BT_Name = myPref.getSwiperName();
-//        commSettings.AutoDetect = 1;
-
-        setCommTimeOuts();
-        ERROR_ID connectionRequest;
-        try {
-            connectionRequest = RBA_API.Connect(commSettings);
-        } catch (Exception e) {
-            connectionRequest = ERROR_ID.RESULT_ERROR;
-        }
-        switch (connectionRequest) {
+        switch (initRBA()) {
             case RESULT_SUCCESS:
             case RESULT_ERROR_ALREADY_CONNECTED:
                 didConnect = true;
@@ -96,7 +83,6 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
             default:
                 break;
         }
-
         if (didConnect) {
             edm.driverDidConnectToDevice(thisInstance, false);
         } else {
@@ -124,28 +110,16 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         @Override
         protected String doInBackground(Integer... params) {
-            RBA_API.Initialize();
-            RBA_API.SetMessageCallBack(sdkEventHandler);
-
-            Comm_Settings commSettings = new Comm_Settings();
-            commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
-            commSettings.BT_Name = myPref.getSwiperName();//"iCM122-20454197";//myPref.getSwiperName();
-//            commSettings.AutoDetect = 1;
-
-            setCommTimeOuts();
-            ERROR_ID connectionRequest = RBA_API.Connect(commSettings);
-
-            switch (connectionRequest) {
+            ERROR_ID error_id = initRBA();
+            switch (error_id) {
                 case RESULT_SUCCESS:
                 case RESULT_ERROR_ALREADY_CONNECTED:
-
                     didConnect = true;
                     break;
                 default:
-                    msg = getString(R.string.fail_to_connect) + ": \nError - " + connectionRequest;
+                    msg = getString(R.string.fail_to_connect) + ": \nError - " + error_id;
                     break;
             }
-
             return null;
         }
 
@@ -161,6 +135,23 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
             }
 
         }
+    }
+
+
+    private ERROR_ID initRBA() {
+        RBA_API.Initialize();
+        RBA_API.SetMessageCallBack(sdkEventHandler);
+        Comm_Settings commSettings = new Comm_Settings();
+        commSettings.Interface_id = Comm_Settings_Constants.BLUETOOTH_INTERFACE;
+        commSettings.BT_Name = myPref.getSwiperName();
+        setCommTimeOuts();
+        ERROR_ID connectionRequest;
+        try {
+            connectionRequest = RBA_API.Connect(commSettings);
+        } catch (Exception e) {
+            connectionRequest = ERROR_ID.RESULT_ERROR;
+        }
+        return connectionRequest;
     }
 
     /*
@@ -262,12 +253,14 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         new Thread(new Runnable() {
             public void run() {
-
+                if (!isConnected()) {
+                    initRBA();
+                }
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_FORM_NAME, "CCOD.K3Z");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_PROMPT_INDEX, "Slide, Tap or Insert Card");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, "MCS");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_OPTIONS, "1");
-                if (!getConnectionStatus()) {
+                if (!isConnected()) {
                     autoConnect(activity, edm, 0, isPOSPrinter, "", "");
                 }
                 ERROR_ID result = RBA_API.ProcessMessage(MESSAGE_ID.M23_CARD_READ);
@@ -345,6 +338,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     @Override
     public void releaseCardReader() {
         MSG94_BarcodeConfig("01", "00", null);
+        if (isConnected()) {
+            RBA_API.SetParam(PARAMETER_ID.P00_REQ_REASON_CODE, ("0000"));
+            RBA_API.ProcessMessage(MESSAGE_ID.M00_OFFLINE);
+        }
+
         barcodeReaderLoaded = false;
     }
 
@@ -445,7 +443,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
             case M23_CARD_READ: {
                 String exitType = RBA_API.GetParam(PARAMETER_ID.P23_RES_EXIT_TYPE);
 
-                switch (Integer.parseInt(exitType)) {
+                switch (TextUtils.isEmpty(exitType) ? 99 : Integer.parseInt(exitType)) {
                     case 0: {
                         String track1 = RBA_API.GetParam(PARAMETER_ID.P23_RES_TRACK1);
                         String track2 = RBA_API.GetParam(PARAMETER_ID.P23_RES_TRACK2);
@@ -477,6 +475,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                     }
                     break;
                     default:
+                        loadCardReader(callBack, mIsDebit);
                         break;
                 }
             }
@@ -505,6 +504,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
                     }
                     break;
                     default:
+                        loadCardReader(callBack, mIsDebit);
                 }
             }
             break;
@@ -623,7 +623,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     public String MSG29_GetVariable(String variable) {
-        if (!getConnectionStatus()) {
+        if (!isConnected()) {
             return null;
         }
 
@@ -650,7 +650,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
      * ------------------------------ Get Connection Status
      * ------------------------------
      */
-    public boolean getConnectionStatus() {
+    public boolean isConnected() {
         return RBA_API.GetConnectionStatus() == RBA_API.ConnectionStatus.CONNECTED;
     }
 

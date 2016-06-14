@@ -31,6 +31,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -339,7 +340,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 				{
 					myCursor.moveToPosition(i);
 					//new processLivePaymentAsync().execute(myCursor.getString(i_payment_xml));
-					if (Global.isConnectedToInternet(activity) && !livePaymentRunning) {
+					if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
 						livePaymentRunning = true;
 
 						

@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import io.realm.RealmObject;
@@ -111,6 +112,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public void setPricesXGroupid(String pricesXGroupid) {
         this.pricesXGroupid = pricesXGroupid;
     }
+
     public void setOverwritePrice(BigDecimal overwriteAmount, Activity activity) {
         ProductsHandler productsHandler = new ProductsHandler(activity);
         HashMap<String, String> map = productsHandler
@@ -165,7 +167,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         pricelevel_id = "";
         prod_price_updated = "0";
     }
-}
+
 
     public String getPricesXGroupid() {
         return pricesXGroupid;

@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.dao.SalesAssociateTableDAO;
@@ -41,6 +42,7 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.Device;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
@@ -403,7 +405,7 @@ public class SynchMethods {
         protected String doInBackground(String... params) {
 
             updateProgress("Please Wait...");
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
                     synchStage = getString(R.string.sync_sending_reverse);
@@ -681,7 +683,7 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
 
@@ -832,7 +834,7 @@ public class SynchMethods {
         protected String doInBackground(Boolean[]... params) {
             //downloadHoldList = params[0][0];
             try {
-                if (Global.isConnectedToInternet(activity)) {
+                if (NetworkUtils.isConnectedToInternet(activity)) {
                     //onCheckOutOnHold = params[0][1];
                     err_msg = sendOrdersOnHold(this);
                     if (err_msg.isEmpty()) {
@@ -1407,12 +1409,16 @@ public class SynchMethods {
 
     private void synchPrinters(resynchAsync task) throws IOException, SAXException {
         task.updateProgress(getString(R.string.sync_dload_printers));
-        post.postData(7, activity, "Printers");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRINTERS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_printers));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(activity);
+        String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Printers"));
+        try {
+            DeviceTableDAO.truncate();
+            DeviceTableDAO.insert(jsonRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+    }
     }
 
     private void synchProdCatXref(resynchAsync task) throws IOException, SAXException {

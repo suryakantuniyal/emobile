@@ -53,6 +53,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -522,6 +523,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
+        } else if (myPref.isPAT215() && Global.btSwiper == null) {
+            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
+                Global.embededMSR.currentDevice.loadCardReader(callBack, isDebit);
+                cardSwipe.setChecked(false);
+            }
         }
     }
 
@@ -1376,7 +1382,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected Payment doInBackground(Object... params) {
 
-            if (Global.isConnectedToInternet(activity) && !livePaymentRunning) {
+            if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
 
                 Post httpClient = new Post();
@@ -1460,7 +1466,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected Payment doInBackground(Payment... params) {
 
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -1832,7 +1838,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        if(isDebit){
+        if (isDebit) {
             cardManager.setCardType("DebitCard");
         }
         this.cardInfoManager = cardManager;
@@ -1884,8 +1890,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         cardInfoManager.setCardExpYear(formatedYear);
         year.setText(formatedYear);
         ownersName.setText(cardInfoManager.getCardOwnerName());
-        cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
-
+        if (!TextUtils.isEmpty(cardInfoManager.getCardNumAESEncrypted()))
+            cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
+        else if (!TextUtils.isEmpty(cardInfoManager.getEncryptedBlock())) {
+            cardNum.setText(cardInfoManager.getEncryptedBlock());
+        }
         creditCardType = cardInfoManager.getCardType();
         scrollView.fullScroll(ScrollView.FOCUS_UP);
     }
