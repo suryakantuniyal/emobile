@@ -918,10 +918,11 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(activity, Global.PAT100, false);
             } else if (myPref.isPAT215()) {
+                edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);
                 Global.embededMSR = edm.getManager();
                 Global.embededMSR.loadDrivers(activity, Global.PAT215, false);
-            }else if (myPref.isEM100()) {
+            } else if (myPref.isEM100()) {
 
             } else if (myPref.isEM70()) {
                 myPref.setPrinterType(Global.EM70);
@@ -1044,7 +1045,17 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                     sb.append(_peripheralName).append(": ").append("Connected\n");
                 }
-                if ((myPref.getPrinterType() != -1)
+
+                if (myPref.isPAT215()) {
+                    edm = new EMSDeviceManager();
+                    Global.embededMSR = edm.getManager();
+                    if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
+                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n");
+                    } else {
+                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n");
+                    }
+                }
+                if ((myPref.getPrinterType() != -1 && myPref.getPrinterType() != Global.PAT215)
                         && (Global.mainPrinterManager == null || (Global.mainPrinterManager.currentDevice == null))) {
                     edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
@@ -1072,15 +1083,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     else
                         sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
                 }
-                if (myPref.isPAT215()) {
-                    edm = new EMSDeviceManager();
-                    Global.embededMSR = edm.getManager();
-                    if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
-                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n");
-                    } else {
-                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n");
-                    }
-                }
+
+
                 return null;
             }
 

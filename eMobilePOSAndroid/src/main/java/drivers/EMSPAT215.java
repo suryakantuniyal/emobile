@@ -128,6 +128,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             terminalDisp = new DisplayManager();
             terminalDisp.open();
             int res = terminalDisp.initialize();
+            initMSR();
             if (res == 0) {
                 didConnect = true;
             }
