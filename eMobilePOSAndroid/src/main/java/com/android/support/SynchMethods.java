@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateTableDAO;
 import com.android.dao.UomDAO;
@@ -42,6 +43,7 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.Device;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
@@ -1407,12 +1409,16 @@ public class SynchMethods {
 
     private void synchPrinters(resynchAsync task) throws IOException, SAXException {
         task.updateProgress(getString(R.string.sync_dload_printers));
-        post.postData(7, activity, "Printers");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRINTERS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_printers));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(activity);
+        String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Printers"));
+        try {
+            DeviceTableDAO.truncate();
+            DeviceTableDAO.insert(jsonRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchProdCatXref(resynchAsync task) throws IOException, SAXException {

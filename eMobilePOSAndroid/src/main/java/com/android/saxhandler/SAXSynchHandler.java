@@ -21,7 +21,6 @@ import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PriceLevelHandler;
 import com.android.database.PriceLevelItemsHandler;
-import com.android.database.PrintersHandler;
 import com.android.database.ProdCatXrefHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductAliases_DB;
@@ -78,7 +77,6 @@ public class SAXSynchHandler extends DefaultHandler {
 	private PayMethodsHandler payMethodsHandler;
 	private PriceLevelHandler priceLevelHandler;
 	private PriceLevelItemsHandler priceLevItemsHandler;
-	private PrintersHandler printerHandler;
 	private ProdCatXrefHandler prodCatHandler;
 	private ProductChainXrefHandler prodChainHandler;
 	private ProductAddonsHandler prodAddonsHandler;
@@ -307,15 +305,15 @@ public class SAXSynchHandler extends DefaultHandler {
 //				priceLevItemsHandler.emptyTable();
 //			}
 //			break;
-		case Global.S_PRINTERS:
-			if(isInsert)
-				printerHandler.insert(dataList,dictionaryListMap);
-			else
-			{
-				printerHandler = new PrintersHandler(activity);
-				printerHandler.emptyTable();
-			}
-			break;
+//		case Global.S_PRINTERS:
+//			if(isInsert)
+//				printerHandler.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				printerHandler = new PrintersHandler(activity);
+//				printerHandler.emptyTable();
+//			}
+//			break;
 		case Global.S_PRODCATXREF:
 			if(isInsert)
 				prodCatHandler.insert(dataList,dictionaryListMap);
