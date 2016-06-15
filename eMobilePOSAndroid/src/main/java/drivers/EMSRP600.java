@@ -46,6 +46,7 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     private final int LINE_WIDTH = 32;
     private EMSCallBack callback;
     Handler handler;
+    private POSUSBAPI posInterfaceAPI;
 
 
     private void setHandler() {

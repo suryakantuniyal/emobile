@@ -73,7 +73,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import POSAPI.POSInterfaceAPI;
 import POSSDK.POSSDK;
 import datamaxoneil.connection.Connection_Bluetooth;
 import datamaxoneil.printer.DocumentLP;
@@ -108,7 +107,6 @@ public class EMSDeviceDriver {
     protected POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
     protected POSPrinter bixolonPrinter;
-    POSInterfaceAPI posInterfaceAPI;
 
 
     protected final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
@@ -264,7 +262,7 @@ public class EMSDeviceDriver {
             }
         } else if (this instanceof EMSPowaPOS) {
             powaPOS.printText(str);
-        } else if (this instanceof EMSsnbc || this instanceof EMSPAT215) {
+        } else if (this instanceof EMSsnbc) {
             byte[] send_buf;
             try {
                 send_buf = str.getBytes("GB18030");
