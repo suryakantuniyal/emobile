@@ -253,7 +253,6 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         int setMsrEnable = msrApiContext.setMsrEnable();
         int startReadData = msrApiContext.startReadData();
-
         activity.runOnUiThread(doUpdateDidConnect);
     }
 
@@ -356,6 +355,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public void releaseCardReader() {
         EMSPAT215.runReader = false;
+        msrApiContext.readBufferData();
         msrApiContext.stopReadData();
 //        msrApiContext.setMsrDisable();
 //        msrApiContext.setMsrReading(0);
