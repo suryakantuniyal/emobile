@@ -187,7 +187,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             int i = 0;
             for (String[] arr : payType) {
                 if (arr[0].equals(default_paymethod_id)) {
-                    selectPayment(i + 1);
+                    selectPayment(i);
                     break;
                 }
                 i++;
@@ -799,88 +799,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
     }
 
-//    public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
-//        HashMap<String, String> parsedMap = new HashMap<String, String>();
-//
-//        @Override
-//        protected void onPreExecute() {
-//            myProgressDialog = new ProgressDialog(activity);
-//            myProgressDialog.setMessage("Voiding Payments...");
-//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            myProgressDialog.setCancelable(false);
-//            myProgressDialog.show();
-//
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            int size = listVoidPayments.size();
-//            EMSPayGate_Default payGate;
-//
-//            Post post = new Post();
-//            SAXParserFactory spf = SAXParserFactory.newInstance();
-//            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-//            String xml;
-//            InputSource inSource;
-//            SAXParser sp;
-//            XMLReader xr;
-//
-//            try {
-//                sp = spf.newSAXParser();
-//                xr = sp.getXMLReader();
-//                String paymentType;
-//                for (int i = 0; i < size; i++) {
-//                    paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
-//                    if (paymentType.equals("GIFTCARD")) {
-//                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-//                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false,
-//                                listVoidPayments.get(i).card_type, null));
-//                        inSource = new InputSource(new StringReader(xml));
-//
-//                        xr.setContentHandler(handler);
-//                        xr.parse(inSource);
-//                        parsedMap = handler.getData();
-//
-//                        if (parsedMap != null && parsedMap.size() > 0
-//                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
-//                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-//
-//                        parsedMap.clear();
-//                    } else if (paymentType.equals("CASH")) {
-//
-//                        // payHandler.updateIsVoid(pay_id);
-//                        payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
-//                    } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
-//                        payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-//                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false,
-//                                listVoidPayments.get(i).card_type, null));
-//                        inSource = new InputSource(new StringReader(xml));
-//
-//                        xr.setContentHandler(handler);
-//                        xr.parse(inSource);
-//                        parsedMap = handler.getData();
-//
-//                        if (parsedMap != null && parsedMap.size() > 0
-//                                && parsedMap.get("epayStatusCode").equals("APPROVED"))
-//                            payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-//
-//                        parsedMap.clear();
-//                    }
-//                }
-//            } catch (Exception e) {
-//
-//            }
-//
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Void unused) {
-//            myProgressDialog.dismiss();
-//            setResult(3);
-//            finish();
-//        }
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

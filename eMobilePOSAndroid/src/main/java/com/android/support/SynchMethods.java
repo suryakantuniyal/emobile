@@ -390,7 +390,7 @@ public class SynchMethods {
         protected String doInBackground(String... params) {
 
             updateProgress("Please Wait...");
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
                     synchStage = getString(R.string.sync_sending_reverse);
@@ -672,7 +672,7 @@ public class SynchMethods {
         protected String doInBackground(String... params) {
             // TODO Auto-generated method stub
 
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
 
@@ -823,7 +823,7 @@ public class SynchMethods {
         protected String doInBackground(Boolean[]... params) {
             //downloadHoldList = params[0][0];
             try {
-                if (Global.isConnectedToInternet(activity)) {
+                if (NetworkUtils.isConnectedToInternet(activity)) {
                     //onCheckOutOnHold = params[0][1];
                     err_msg = sendOrdersOnHold(this);
                     if (err_msg.isEmpty()) {
