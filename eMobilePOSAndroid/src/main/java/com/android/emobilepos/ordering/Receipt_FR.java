@@ -74,6 +74,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
@@ -701,6 +702,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         return true;
                     }
                 });
+                popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Integer.parseInt(orderSeatProduct.orderProduct.prod_price_points) > 0);
                 popup.show();
 
             }
@@ -1771,7 +1773,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         @Override
         protected Boolean doInBackground(Object... arg0) {
 
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
                 switch ((Integer) arg0[0]) {
                     case UPDATE_HOLD_STATUS:
@@ -2196,7 +2198,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordProd = new OrderProduct();
                         anOrder = new Orders();
                     }
-                    receiptListView.invalidateViews();
+//                    receiptListView.invalidateViews();
+                    setupListView();
                     reCalculate();
                     dlog.dismiss();
                 }

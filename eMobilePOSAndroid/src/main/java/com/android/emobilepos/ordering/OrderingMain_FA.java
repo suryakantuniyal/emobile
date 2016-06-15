@@ -61,6 +61,7 @@ import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -630,7 +631,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             finish();
         else {
             DBManager dbManager = new DBManager(MainMenu_FA.activity, Global.FROM_SYNCH_ACTIVITY);
-            if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && Global.isConnectedToInternet(this)) {
+            if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && NetworkUtils.isConnectedToInternet(this)) {
                 dbManager.synchSend(false, true);
             }
 
@@ -1386,7 +1387,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         @Override
         protected void onPostExecute(String unused) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            if (Global.isTablet(OrderingMain_FA.this))
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
                 myProgressDialog.dismiss();
