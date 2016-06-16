@@ -13,8 +13,6 @@ import android.graphics.PorterDuff.Mode;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.multidex.MultiDexApplication;
 import android.text.Html;
@@ -31,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
-import com.android.dao.RealMigration;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -40,18 +37,15 @@ import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
-import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
-import com.android.support.GenerateNewID.IdType;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.zzzapi.uart.uart;
 
 import org.springframework.util.support.Base64;
 
@@ -61,7 +55,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -80,10 +73,10 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -398,8 +391,8 @@ public class Global extends MultiDexApplication {
     // For new addon views
     public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
 
-    public HashMap<String, String> ordProdAttrPending = new HashMap<String, String>();
-    public List<OrdProdAttrHolder> ordProdAttr = new ArrayList<OrdProdAttrHolder>();
+    public List<ProductAttribute> ordProdAttrPending;
+    public List<ProductAttribute> ordProdAttr = new ArrayList<ProductAttribute>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
     public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
@@ -585,8 +578,8 @@ public class Global extends MultiDexApplication {
 
         if (ordProdAttr != null)
             ordProdAttr.clear();
-        if (ordProdAttrPending != null)
-            ordProdAttrPending.clear();
+//        if (ordProdAttrPending != null)
+//            ordProdAttrPending.clear();
 
         if (this.orderProductAddons != null)
             this.orderProductAddons.clear();
@@ -1351,7 +1344,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-
     public static Object getFormatedNumber(boolean isDecimal, String val) {
         Object returnedVal = new Object();
         if (isDecimal) {
@@ -1595,7 +1587,7 @@ public class Global extends MultiDexApplication {
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
-                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 ||_printer_type == Global.PAT215 );
+                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 || _printer_type == Global.PAT215);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
