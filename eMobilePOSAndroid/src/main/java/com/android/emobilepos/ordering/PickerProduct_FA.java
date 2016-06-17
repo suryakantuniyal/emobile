@@ -599,12 +599,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
     private void addProductToOrder() {
-        OrderProduct product = global.orderProducts.get(modifyOrderPosition);
+        OrderProduct product = global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
         List<OrderProduct> products = new ArrayList<OrderProduct>();
-        products.add(product);
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global, products)){
+        if (product != null) {
+            products.add(product);
+        }
+        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global, products)) {
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
-        }else{
+        } else {
             double onHandQty = 0;
             if (!headerOnHand.getText().toString().isEmpty())
                 onHandQty = Double.parseDouble(headerOnHand.getText().toString());
