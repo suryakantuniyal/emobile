@@ -17,50 +17,56 @@ import java.net.SocketAddress;
 public class NetworkUtils {
 
     public static boolean isConnectedToInternet(final Activity activity) {
-
-        final ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         final boolean[] retVal = {false};
-        synchronized (connManager) {
-            if (connManager.getActiveNetworkInfo().isAvailable() && connManager.getActiveNetworkInfo().isConnected()) {
+        try {
+            final ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connManager == null)
+                return false;
+            synchronized (connManager) {
+                if (connManager.getActiveNetworkInfo().isAvailable() && connManager.getActiveNetworkInfo().isConnected()) {
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        InetAddress inetAddress;
-                        Socket socket = null;
-                        try {
-                            inetAddress = InetAddress.getByName("sync.enablermobile.com");
-                            socket = new Socket();
-                            SocketAddress socketAddress = new InetSocketAddress(inetAddress, 443);
-                            socket.connect(socketAddress, 5000);// try for 3 seconds
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        } finally {
-                            if (socket != null && socket.isConnected()) {
-                                try {
-                                    socket.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            InetAddress inetAddress;
+                            Socket socket = null;
+                            try {
+                                inetAddress = InetAddress.getByName("sync.enablermobile.com");
+                                socket = new Socket();
+                                SocketAddress socketAddress = new InetSocketAddress(inetAddress, 443);
+                                socket.connect(socketAddress, 5000);// try for 3 seconds
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            } finally {
+                                if (socket != null && socket.isConnected()) {
+                                    try {
+                                        socket.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
+                            retVal[0] = true;
+                            synchronized (connManager) {
+                                connManager.notify();
+                            }
                         }
-                        retVal[0] = true;
-                        synchronized (connManager) {
-                            connManager.notify();
-                        }
+                    }).start();
+                    try {
+                        connManager.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                }).start();
-                try {
-                    connManager.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
         return retVal[0];
     }
