@@ -191,6 +191,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         protected String doInBackground(String... params) {
             boolean loadMultiPrinter = Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0;
             String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
+            if (myPref.getPrinterType() == Global.POWA) {
+                isUSB = true;
+            }
             return autoConnect;
 //            RealmResults<Device> devices = DeviceTableDAO.getAll();
 //            HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
@@ -290,9 +293,11 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String result) {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
-            else if (isUSB && Global.mainPrinterManager.currentDevice == null) {
+            else if (isUSB && (Global.mainPrinterManager == null || Global.mainPrinterManager.currentDevice == null)) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
+                EMSDeviceManager edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
         }
