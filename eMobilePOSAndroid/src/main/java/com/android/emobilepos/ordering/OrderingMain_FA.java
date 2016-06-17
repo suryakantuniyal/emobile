@@ -1678,8 +1678,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         this.associateId = associateId;
     }
 
-    public static boolean isRequiredAttributeConmpleted(Global global) {
-        for (OrderProduct product : global.orderProducts) {
+    public static boolean isRequiredAttributeConmpleted(Global global, List<OrderProduct> products) {
+        for (OrderProduct product : products) {
             RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.prod_id);
             for (ProductAttribute attribute : attributes) {
                 if(!product.requiredProductAttributes.contains(attribute)){
