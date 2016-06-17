@@ -21,7 +21,7 @@ public class NetworkUtils {
         final ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         final boolean[] retVal = {false};
         synchronized (connManager) {
-            if (connManager.getActiveNetworkInfo().isAvailable() && connManager.getActiveNetworkInfo().isConnected()) {
+            if (connManager != null && connManager.getActiveNetworkInfo().isAvailable() && connManager.getActiveNetworkInfo().isConnected()) {
 
                 new Thread(new Runnable() {
                     @Override

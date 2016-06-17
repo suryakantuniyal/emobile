@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -50,6 +51,7 @@ import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
+import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -145,6 +147,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_backup_data").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
 
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
@@ -328,6 +331,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_force_upload:
                     confirmTroubleshoot(R.string.config_force_upload);
+                    break;
+                case R.string.config_check_updates:
+                    HttpClient.downloadFile("", Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk");
                     break;
                 case R.string.config_backup_data:
                     confirmTroubleshoot(R.string.config_backup_data);

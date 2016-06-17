@@ -11,9 +11,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Created by Guarionex on 4/21/2016.
@@ -28,6 +32,61 @@ public class HttpClient {
 //	Ciphers ciphers = new Ciphers();
 
 
+    public static void downloadFile(String urlAddress, String path) {
+        InputStream input = null;
+        OutputStream output = null;
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(urlAddress);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+
+            // expect HTTP 200 OK, so we don't mistakenly save error report
+            // instead of the file
+//            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+//                return "Server returned HTTP " + connection.getResponseCode()
+//                        + " " + connection.getResponseMessage();
+//            }
+
+            // this will be useful to display download percentage
+            // might be -1: server did not report the length
+            int fileLength = connection.getContentLength();
+
+            // download the file
+            input = connection.getInputStream();
+            output = new FileOutputStream(path);
+
+            byte data[] = new byte[4096];
+            long total = 0;
+            int count;
+            while ((count = input.read(data)) != -1) {
+                // allow canceling with back button
+//                if (isCancelled()) {
+//                    input.close();
+//                    return null;
+//                }
+                total += count;
+                // publishing the progress....
+//                if (fileLength > 0) // only if total length is known
+//                    publishProgress((int) (total * 100 / fileLength));
+                output.write(data, 0, count);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (output != null)
+                    output.close();
+                if (input != null)
+                    input.close();
+            } catch (IOException ignored) {
+            }
+
+            if (connection != null)
+                connection.disconnect();
+        }
+    }
+
     public InputStream httpInputStreamRequest(String url) throws ClientProtocolException,
             IOException {
         HttpGet httpGet = new HttpGet(url);
@@ -35,7 +94,7 @@ public class HttpClient {
         response = client.execute(httpGet);
         entity = response.getEntity();
         if (entity != null) {
-           return entity.getContent();
+            return entity.getContent();
         }
         return null;
     }
@@ -109,7 +168,7 @@ public class HttpClient {
 
     private static String convertStreamToString(InputStream is) {
         /*
-		 * To convert the InputStream to String we use the
+         * To convert the InputStream to String we use the
 		 * BufferedReader.readLine() method. We iterate until the BufferedReader
 		 * return null which means there's no more data to read. Each line will
 		 * appended to a StringBuilder and returned as String.
