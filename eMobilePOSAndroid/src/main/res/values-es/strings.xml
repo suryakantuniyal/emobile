@@ -1238,6 +1238,9 @@
     <string name="wrong_password">Password not acceptable, try again...</string>
     <string name="reward_payment_succeed">Reward payment succeed</string>
     <string name="config_check_updates">Check for Updates</string>
+    <string name="check_update_fail">Error checking for application updates.</string>
+    <string name="downloadig_update">Downloading application update.</string>
+    <string name="install">Install</string>
 
 
 </resources>
