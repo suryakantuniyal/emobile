@@ -801,7 +801,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             // swiper
                             {
                                 myPref.setSwiperType(Global.MAGTEK);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
@@ -839,7 +839,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
                                 myPref.setSwiperType(Global.ISMP);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
@@ -872,7 +872,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
                                 myPref.setSwiperType(Global.HANDPOINT);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();

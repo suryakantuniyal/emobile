@@ -629,16 +629,26 @@ public class MyPreferences {
         return 32;
     }
 
-    public String swiperMACAddress(boolean isGet, String value) {
+    public String getSwiperMACAddress(){
         String swiper_mac_address = "swiper_mac_address";
-        if (isGet)
-            return prefs.getString(swiper_mac_address, empstr);
-        else {
-            prefEditor.putString(swiper_mac_address, value);
-            prefEditor.commit();
-        }
-        return empstr;
+        return prefs.getString(swiper_mac_address, empstr);
     }
+    public void setSwiperMACAddress(String macAddress){
+        String swiper_mac_address = "swiper_mac_address";
+        prefEditor.putString(swiper_mac_address, macAddress);
+        prefEditor.commit();
+    }
+
+//    public String swiperMACAddress(boolean isGet, String value) {
+//        String swiper_mac_address = "swiper_mac_address";
+//        if (isGet)
+//            return prefs.getString(swiper_mac_address, empstr);
+//        else {
+//            prefEditor.putString(swiper_mac_address, value);
+//            prefEditor.commit();
+//        }
+//        return empstr;
+//    }
 
     public void setPrinterMACAddress(String value) {
         String printer_mac_address = "printer_mac_address";
