@@ -470,7 +470,10 @@
             android:key="pref_backup_data"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_backup_data" />
-
+        <Preference
+            android:key="pref_check_updates"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_check_updates" />
     </PreferenceCategory>
 
 </PreferenceScreen>

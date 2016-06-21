@@ -161,5 +161,4 @@ dependencies {
     compile files('libs/PAT215Cashdrawer1.0.0.jar')
     compile files('libs/PAT215Display.1.0.0.jar')
     compile files('libs/pat215msr1.0.0.jar')
-
 }

@@ -20,3 +20,4 @@ eMobilePOSAndroid/.idea/
 local.properties
 .gradle/2.10/taskArtifacts/cache.properties
 build/generated/mockable-android-14.jar
+build/
