@@ -223,7 +223,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
 
-        return false;
+        return true;
     }
 
     @Override
