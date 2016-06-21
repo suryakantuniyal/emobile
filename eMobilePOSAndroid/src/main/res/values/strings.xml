@@ -894,7 +894,7 @@
 
     <string name="config_display_also_redeem">Display Also Redeem</string>
     <string name="config_display_redeem_all">Display Redeem All</string>
-    <string name="config_use_loyal_patron">Use Loyal Patron</string>
+    <string name="config_use_loyal_patron">Use Tupyx Gift &amp; Loyalty</string>
 
 
     <string name="config_pay_with_tupyx">Pay with Tupyx</string>
