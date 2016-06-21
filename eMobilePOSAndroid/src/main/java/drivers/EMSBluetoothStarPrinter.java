@@ -128,7 +128,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 enableCenter = new byte[]{0x1b, 0x61, 0x01};
                 disableCenter = new byte[]{0x1b, 0x61, 0x00};
             } else {
-                if (portName.contains("TCP") && !portNumber.equals("9100"))
+                if (portName.contains("TCP") && portNumber != null && !portNumber.equals("9100"))
                     portSettings = portNumber;
                 else
                     portSettings = "";
