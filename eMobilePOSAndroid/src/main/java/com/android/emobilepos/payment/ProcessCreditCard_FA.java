@@ -523,6 +523,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
+        } else if (myPref.isPAT215() && Global.btSwiper == null) {
+            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
+                Global.embededMSR.currentDevice.loadCardReader(callBack, isDebit);
+                cardSwipe.setChecked(false);
+            }
         }
     }
 
@@ -1833,7 +1838,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        if(isDebit){
+        if (isDebit) {
             cardManager.setCardType("DebitCard");
         }
         this.cardInfoManager = cardManager;
@@ -1885,8 +1890,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         cardInfoManager.setCardExpYear(formatedYear);
         year.setText(formatedYear);
         ownersName.setText(cardInfoManager.getCardOwnerName());
-        cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
-
+        if (!TextUtils.isEmpty(cardInfoManager.getCardNumAESEncrypted()))
+            cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
+        else if (!TextUtils.isEmpty(cardInfoManager.getEncryptedBlock())) {
+            cardNum.setText(cardInfoManager.getEncryptedBlock());
+        }
         creditCardType = cardInfoManager.getCardType();
         scrollView.fullScroll(ScrollView.FOCUS_UP);
     }

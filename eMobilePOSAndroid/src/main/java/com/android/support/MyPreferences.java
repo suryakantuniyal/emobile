@@ -92,7 +92,6 @@ public class MyPreferences {
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
 
 
-
     public static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
@@ -630,16 +629,26 @@ public class MyPreferences {
         return 32;
     }
 
-    public String swiperMACAddress(boolean isGet, String value) {
+    public String getSwiperMACAddress(){
         String swiper_mac_address = "swiper_mac_address";
-        if (isGet)
-            return prefs.getString(swiper_mac_address, empstr);
-        else {
-            prefEditor.putString(swiper_mac_address, value);
-            prefEditor.commit();
-        }
-        return empstr;
+        return prefs.getString(swiper_mac_address, empstr);
     }
+    public void setSwiperMACAddress(String macAddress){
+        String swiper_mac_address = "swiper_mac_address";
+        prefEditor.putString(swiper_mac_address, macAddress);
+        prefEditor.commit();
+    }
+
+//    public String swiperMACAddress(boolean isGet, String value) {
+//        String swiper_mac_address = "swiper_mac_address";
+//        if (isGet)
+//            return prefs.getString(swiper_mac_address, empstr);
+//        else {
+//            prefEditor.putString(swiper_mac_address, value);
+//            prefEditor.commit();
+//        }
+//        return empstr;
+//    }
 
     public void setPrinterMACAddress(String value) {
         String printer_mac_address = "printer_mac_address";
@@ -674,12 +683,12 @@ public class MyPreferences {
         return empstr;
     }
 
-    public int getSwiperType(){
+    public int getSwiperType() {
         String swiper_type = "swiper_type";
         return prefs.getInt(swiper_type, -1);
     }
 
-    public void setSwiperType(int type){
+    public void setSwiperType(int type) {
         String swiper_type = "swiper_type";
         prefEditor.putInt(swiper_type, type);
         prefEditor.commit();
@@ -817,6 +826,18 @@ public class MyPreferences {
     public boolean setIsPAT100(boolean value) {
         String device_em100 = "device_pat100";
         prefEditor.putBoolean(device_em100, value);
+        prefEditor.commit();
+        return false;
+    }
+
+    public boolean isPAT215() {
+        String device_pat215 = "device_pat215";
+        return prefs.getBoolean(device_pat215, false);
+    }
+
+    public boolean setIsPAT215(boolean value) {
+        String device_pat215 = "device_pat215";
+        prefEditor.putBoolean(device_pat215, value);
         prefEditor.commit();
         return false;
     }

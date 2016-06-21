@@ -8,9 +8,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -37,19 +38,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DeviceTableDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
-import com.android.database.PrintersHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
+import com.android.emobilepos.models.Device;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
-import com.android.support.CreditCardInfo;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
+import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -61,7 +64,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import interfaces.EMSCallBack;
+import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends BaseFragmentActivityActionBar {
@@ -109,7 +112,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+
+    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -145,6 +149,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_backup_data").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
 
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
@@ -329,6 +334,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 case R.string.config_force_upload:
                     confirmTroubleshoot(R.string.config_force_upload);
                     break;
+                case R.string.config_check_updates:
+                    new HttpClient().downloadFileAsync(getString(R.string.check_update_url), Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                    break;
                 case R.string.config_backup_data:
                     confirmTroubleshoot(R.string.config_backup_data);
                     break;
@@ -345,6 +353,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             }
             return false;
         }
+
 
         private void changePassword(final boolean isReenter, final String origPwd) {
             final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -795,7 +804,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             // swiper
                             {
                                 myPref.setSwiperType(Global.MAGTEK);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
@@ -833,7 +842,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
                                 myPref.setSwiperType(Global.ISMP);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
@@ -866,7 +875,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
                                 myPref.setSwiperType(Global.HANDPOINT);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -917,10 +926,13 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.PAT100);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(activity, Global.PAT100, false);
+            } else if (myPref.isPAT215()) {
+                edm = new EMSDeviceManager();
+                myPref.setPrinterType(Global.PAT215);
+                Global.embededMSR = edm.getManager();
+                Global.embededMSR.loadDrivers(activity, Global.PAT215, false);
             } else if (myPref.isEM100()) {
-//                myPref.setPrinterType(Global.EM100);
-//                Global.mainPrinterManager = edm.getManager();
-//                Global.mainPrinterManager.loadDrivers(activity, Global.EM100, false);
+
             } else if (myPref.isEM70()) {
                 myPref.setPrinterType(Global.EM70);
                 Global.mainPrinterManager = edm.getManager();
@@ -963,15 +975,26 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 sb.append(e.getMessage())
                         .append(" [com.android.emobilepos.SettingsMenuActiv (at Class.getPairedDevices)]");
 
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
             }
             return null;
         }
 
-        private class autoConnectPrinter extends AsyncTask<Void, Void, Void> {
+        @Override
+        public void downloadCompleted(String path) {
+            final File file = new File(path);
+            final Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+            this.startActivity(i);
+        }
 
-            StringBuilder sb = new StringBuilder();
+        @Override
+        public void downloadFail() {
+            Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.check_update_fail));
+        }
+
+        private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
+
+            //            StringBuilder sb = new StringBuilder();
             private ProgressDialog progressDlog;
 
             @Override
@@ -984,101 +1007,16 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             }
 
             @Override
-            protected Void doInBackground(Void... params) {
+            protected String doInBackground(Void... params) {
+                return DeviceUtils.autoConnect(getActivity(), true);
 
-                PrintersHandler ph = new PrintersHandler(activity);
-                Cursor c = ph.getPrinters();
-                HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
-                EMSDeviceManager edm;
-
-                int size = c.getCount();
-
-                if (size > 0) {
-                    Global.multiPrinterManager.clear();
-                    Global.multiPrinterMap.clear();
-                    int i = 0;
-                    int i_printer_id = c.getColumnIndex("printer_id");
-                    int i_printer_type = c.getColumnIndex("printer_type");
-                    int i_cat_id = c.getColumnIndex("cat_id");
-                    int i_printer_ip = c.getColumnIndex("printer_ip");
-                    int i_printer_port = c.getColumnIndex("printer_port");
-                    do {
-                        if (tempMap.containsKey(c.getString(i_printer_id))) {
-                            Global.multiPrinterMap.put(c.getString(i_cat_id), tempMap.get(c.getString(i_printer_id)));
-                        } else {
-                            tempMap.put(c.getString(i_printer_id), i);
-                            Global.multiPrinterMap.put(c.getString(i_cat_id), i);
-
-                            edm = new EMSDeviceManager();
-                            Global.multiPrinterManager.add(edm);
-
-                            if (Global.multiPrinterManager.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
-                                    "TCP:" + c.getString(i_printer_ip), c.getString(i_printer_port)))
-                                sb.append(c.getString(i_printer_ip)).append(": ").append("Connected\n");
-                            else
-                                sb.append(c.getString(i_printer_ip)).append(": ").append("Failed to connect\n");
-
-                            i++;
-                        }
-
-                    } while (c.moveToNext());
-                }
-                c.close();
-                String _portName;
-                String _peripheralName;
-                if ((myPref.getSwiperType() != -1)
-                        && (Global.btSwiper == null || Global.btSwiper.currentDevice == null)) {
-                    edm = new EMSDeviceManager();
-                    _portName = myPref.swiperMACAddress(true, null);
-                    _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
-                    Global.btSwiper = edm.getManager();
-                    if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
-                            myPref.swiperMACAddress(true, null), null))
-                        sb.append(_peripheralName).append(": ").append("Connected\n");
-                    else
-                        sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-                } else if (myPref.getSwiperType() != -1 && Global.btSwiper != null
-                        && Global.btSwiper.currentDevice != null) {
-                    _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
-                    sb.append(_peripheralName).append(": ").append("Connected\n");
-                }
-                if ((myPref.getPrinterType() != -1)
-                        && (Global.mainPrinterManager == null || (Global.mainPrinterManager.currentDevice == null))) {
-                    edm = new EMSDeviceManager();
-                    Global.mainPrinterManager = edm.getManager();
-                    _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
-                    _portName = myPref.getPrinterMACAddress();
-                    String _portNumber = myPref.getStarPort();
-                    boolean isPOS = myPref.posPrinter(true, false);
-                    int txtAreaSize = myPref.printerAreaSize(true, -1);
-
-                    if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
-                            isPOS, _portName, _portNumber))
-                        sb.append(_peripheralName).append(": ").append("Connected\n");
-                    else
-                        sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-
-                } else if (myPref.getPrinterType() != -1 && Global.mainPrinterManager != null
-                        && Global.mainPrinterManager.currentDevice != null) {
-                    _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
-                    sb.append(_peripheralName).append(": ").append("Connected\n");
-
-                } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
-                    if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
-                            "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
-                        sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n");
-                    else
-                        sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
-                }
-
-                return null;
             }
 
             @Override
-            protected void onPostExecute(Void unused) {
+            protected void onPostExecute(String result) {
                 progressDlog.dismiss();
-                if (sb.toString().length() > 0)
-                    Global.showPrompt(activity, R.string.dlog_title_confirm, sb.toString());
+                if (result.toString().length() > 0)
+                    Global.showPrompt(activity, R.string.dlog_title_confirm, result.toString());
             }
         }
 

@@ -72,7 +72,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.1.9"
+            versionName "1.1.1.16"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -80,7 +80,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.9"
+            versionName "1.1.1.16"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -158,4 +158,8 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
+    compile files('libs/PAT215Cashdrawer1.0.0.jar')
+    compile files('libs/PAT215Display.1.0.0.jar')
+    compile files('libs/pat215msr1.0.0.jar')
+
 }

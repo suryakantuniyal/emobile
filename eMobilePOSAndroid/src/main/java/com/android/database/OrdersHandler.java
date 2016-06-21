@@ -7,10 +7,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.dao.DinningTableOrderDAO;
-import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.ordering.OrdProdAttrHolder;
-import com.android.support.Customer;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -296,8 +294,8 @@ public class OrdersHandler {
             OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(activity);
             dbOrders.deleteOrder(orderId);
             dbOrdProd.deleteAllOrdProd(orderId);
-            for (OrdProdAttrHolder val : global.ordProdAttr)
-                dbOrdAttr.deleteOrderProduct(val.ordprod_id);
+            for (ProductAttribute val : global.ordProdAttr)
+                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getId()));
         }
     }
 

@@ -18,12 +18,17 @@ public class NetworkUtils {
 
     public static boolean isConnectedToInternet(final Activity activity) {
         final boolean[] retVal = {false};
+<<<<<<< HEAD
+        synchronized (connManager) {
+            if (connManager != null && connManager.getActiveNetworkInfo().isAvailable() && connManager.getActiveNetworkInfo().isConnected()) {
+=======
         try {
             final ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
             if (connManager == null)
                 return false;
             synchronized (connManager) {
                 if (connManager.getActiveNetworkInfo().isAvailable() && connManager.getActiveNetworkInfo().isConnected()) {
+>>>>>>> feature/PAT_215
 
                     new Thread(new Runnable() {
                         @Override

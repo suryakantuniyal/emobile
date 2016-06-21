@@ -10,14 +10,14 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
+import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.SalesAssociateTableDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
@@ -62,10 +62,7 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 import org.xml.sax.InputSource;
@@ -74,7 +71,6 @@ import org.xml.sax.XMLReader;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -96,8 +92,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
-import io.realm.RealmResults;
 
 public class SynchMethods {
     private Post post;
@@ -1407,12 +1401,16 @@ public class SynchMethods {
 
     private void synchPrinters(resynchAsync task) throws IOException, SAXException {
         task.updateProgress(getString(R.string.sync_dload_printers));
-        post.postData(7, activity, "Printers");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRINTERS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_printers));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        client = new HttpClient();
+        GenerateXML xml = new GenerateXML(activity);
+        String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                xml.downloadAll("Printers"));
+        try {
+            DeviceTableDAO.truncate();
+            DeviceTableDAO.insert(jsonRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchProdCatXref(resynchAsync task) throws IOException, SAXException {
@@ -1808,13 +1806,23 @@ public class SynchMethods {
     }
 
     private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_ordprodattr));
-        post.postData(7, activity, "GetOrderProductsAttr");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_GET_ORDER_PRODUCTS_ATTR);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_ordprodattr));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+
+        try {
+            task.updateProgress(getString(R.string.sync_dload_ordprodattr));
+            client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("GetOrderProductsAttr"));
+            task.updateProgress(getString(R.string.sync_saving_uom));
+            try {
+                OrderProductAttributeDAO.truncate();
+                OrderProductAttributeDAO.insert(jsonRequest);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String _server_time = "";

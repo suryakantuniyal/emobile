@@ -7,8 +7,10 @@ import com.android.support.Global;
 import com.google.gson.Gson;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import io.realm.RealmObject;
@@ -68,7 +70,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String prod_taxtype;
 
     public String priceLevelName = "";
-
+    public List<ProductAttribute> requiredProductAttributes=new ArrayList<ProductAttribute>();
 
     public String hasAddons = "0"; //0 no addons, 1 it has addons
     public String addon_section_name = "";
@@ -94,7 +96,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (o == null) {
             return false;
         }
-        return this.ordprod_id.equalsIgnoreCase(((OrderProduct) o).ordprod_id);
+        if (o instanceof String) {
+            return this.ordprod_id.equalsIgnoreCase((String) o);
+        } else {
+            return this.ordprod_id.equalsIgnoreCase(((OrderProduct) o).ordprod_id);
+        }
     }
 
     @Override
@@ -155,5 +161,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
                 .getRoundBigDecimal(new_subtotal);
         pricelevel_id = "";
         prod_price_updated = "0";
+    }
+
+    public static OrderProduct getInstance(String ordprod_id) {
+        OrderProduct product = new OrderProduct();
+        product.ordprod_id = ordprod_id;
+        return product;
     }
 }

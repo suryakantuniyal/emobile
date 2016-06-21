@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -20,9 +19,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.DeviceTableDAO;
 import com.android.database.DBManager;
-import com.android.database.PrintersHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.Device;
+import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
@@ -32,6 +33,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
@@ -177,7 +179,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
 
-        StringBuilder sb = new StringBuilder();
+        //        StringBuilder sb = new StringBuilder();
         boolean isUSB = false;
 
         @Override
@@ -187,108 +189,115 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(String... params) {
-            PrintersHandler ph = new PrintersHandler(activity);
-            Cursor c = ph.getPrinters();
-            HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
-            EMSDeviceManager edm;
-
-            int size = c.getCount();
-
-            if (size > 0 && (Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0)) {
-                int i = 0;
-                int i_printer_id = c.getColumnIndex("printer_id");
-                int i_printer_type = c.getColumnIndex("printer_type");
-                int i_cat_id = c.getColumnIndex("cat_id");
-                int i_printer_ip = c.getColumnIndex("printer_ip");
-                int i_printer_port = c.getColumnIndex("printer_port");
-                do {
-                    if (tempMap.containsKey(c.getString(i_printer_id))) {
-                        Global.multiPrinterMap.put(c.getString(i_cat_id), tempMap.get(c.getString(i_printer_id)));
-                    } else {
-                        tempMap.put(c.getString(i_printer_id), i);
-                        Global.multiPrinterMap.put(c.getString(i_cat_id), i);
-
-                        edm = new EMSDeviceManager();
-                        Global.multiPrinterManager.add(edm);
-
-                        if (Global.multiPrinterManager.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
-                                "TCP:" + c.getString(i_printer_ip), c.getString(i_printer_port)))
-                            sb.append(c.getString(i_printer_ip)).append(": ").append("Connected\n");
-                        else
-                            sb.append(c.getString(i_printer_ip)).append(": ").append("Failed to connect\n");
-
-                        i++;
-                    }
-
-                } while (c.moveToNext());
+            boolean loadMultiPrinter = Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0;
+            String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
+            if (myPref.getPrinterType() == Global.POWA) {
+                isUSB = true;
             }
-            c.close();
-            String _portName;
-            String _peripheralName;
-            if ((myPref.getSwiperType() != -1) && (Global.btSwiper == null)) {
-                edm = new EMSDeviceManager();
-                _portName = myPref.swiperMACAddress(true, null);
-                _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
-                Global.btSwiper = edm.getManager();
-                // Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
-                // -2), false);
-                if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
-                        myPref.swiperMACAddress(true, null), null))
-                    sb.append(_peripheralName).append(": ").append("Connected\n");
-                else
-                    sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-            }
-            if ((myPref.sledType(true, -2) != -1) && (Global.btSled == null)) {
-                edm = new EMSDeviceManager();
-                Global.btSled = edm.getManager();
-                _peripheralName = Global.getPeripheralName(myPref.sledType(true, -2));
-                // Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
-                // -2), false);
-                if (Global.btSled.loadMultiDriver(activity, myPref.sledType(true, -2), 0, false, null, null))
-                    sb.append(_peripheralName).append(": ").append("Connected\n");
-                else
-                    sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-            }
-            if ((myPref.getPrinterType() != -1) && (Global.mainPrinterManager == null)) // ||(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice==null)))
-            {
-                edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
-                _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
-                _portName = myPref.getPrinterMACAddress();
-                String _portNumber = myPref.getStarPort();
-                boolean isPOS = myPref.posPrinter(true, false);
-                int txtAreaSize = myPref.printerAreaSize(true, -1);
+            return autoConnect;
+//            RealmResults<Device> devices = DeviceTableDAO.getAll();
+//            HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
+//            EMSDeviceManager edm;
+//            if (Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0) {
+//                int i=0;
+//                for (Device device : devices) {
+//                    if (tempMap.containsKey(device.getId())) {
+//                        Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getId()));
+//                    } else {
+//                        tempMap.put(device.getId(), i);
+//                        Global.multiPrinterMap.put(device.getCategoryId(), i);
+//
+//                        edm = new EMSDeviceManager();
+//                        Global.multiPrinterManager.add(edm);
+//
+//                        if (Global.multiPrinterManager.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
+//                                "TCP:" + device.getIpAddress(),device.getTcpPort()))
+//                            sb.append(device.getIpAddress()).append(": ").append("Connected\n");
+//                        else
+//                            sb.append(device.getIpAddress()).append(": ").append("Failed to connect\n");
+//
+//                        i++;
+//                    }
+//                }
+//            }
+//
+//            String _portName;
+//            String _peripheralName;
+//            if ((myPref.getSwiperType() != -1) && (Global.btSwiper == null)) {
+//                edm = new EMSDeviceManager();
+//                _portName = myPref.swiperMACAddress(true, null);
+//                _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
+//                Global.btSwiper = edm.getManager();
+//                // Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
+//                // -2), false);
+//                if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
+//                        myPref.swiperMACAddress(true, null), null))
+//                    sb.append(_peripheralName).append(": ").append("Connected\n");
+//                else
+//                    sb.append(_peripheralName).append(": ").append("Failed to connect\n");
+//            }
+//            if ((myPref.sledType(true, -2) != -1) && (Global.btSled == null)) {
+//                edm = new EMSDeviceManager();
+//                Global.btSled = edm.getManager();
+//                _peripheralName = Global.getPeripheralName(myPref.sledType(true, -2));
+//                // Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
+//                // -2), false);
+//                if (Global.btSled.loadMultiDriver(activity, myPref.sledType(true, -2), 0, false, null, null))
+//                    sb.append(_peripheralName).append(": ").append("Connected\n");
+//                else
+//                    sb.append(_peripheralName).append(": ").append("Failed to connect\n");
+//            }
+//            if ((myPref.getPrinterType() != -1) && (Global.mainPrinterManager == null)) // ||(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice==null)))
+//            {
+//
+//                _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
+//                _portName = myPref.getPrinterMACAddress();
+//                String _portNumber = myPref.getStarPort();
+//                boolean isPOS = myPref.posPrinter(true, false);
+//                int txtAreaSize = myPref.printerAreaSize(true, -1);
+//                if (myPref.isPAT215()) {
+//                    edm = new EMSDeviceManager();
+//                    Global.embededMSR = edm.getManager();
+//                    if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
+//                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n");
+//                    } else {
+//                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n");
+//                    }
+//                }
+//                if (myPref.getPrinterType() != Global.POWA) {
+//                    edm = new EMSDeviceManager();
+//                    Global.mainPrinterManager = edm.getManager();
+//                    if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
+//                            isPOS, _portName, _portNumber))
+//                        sb.append(_peripheralName).append(": ").append("Connected\n");
+//                    else
+//                        sb.append(_peripheralName).append(": ").append("Failed to connect\n");
+//                } else
+//                    isUSB = true;
+//
+//            } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
+//                edm = new EMSDeviceManager();
+//                Global.mainPrinterManager = edm.getManager();
+//
+//                if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
+//                        "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
+//                    sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n");
+//                else
+//                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
+//            }
 
-                if (myPref.getPrinterType() != Global.POWA) {
-                    if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
-                            isPOS, _portName, _portNumber))
-                        sb.append(_peripheralName).append(": ").append("Connected\n");
-                    else
-                        sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-                } else
-                    isUSB = true;
-
-            } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
-                edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
-
-                if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
-                        "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
-                    sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n");
-                else
-                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
-            }
-
-            return null;
+//            return null;
         }
 
         @Override
-        protected void onPostExecute(String unused) {
-            if (!isUSB && sb.toString().length() > 0)
-                Toast.makeText(activity, sb.toString(), Toast.LENGTH_LONG).show();
-            else if (isUSB && Global.mainPrinterManager.currentDevice == null) {
+        protected void onPostExecute(String result) {
+            if (!isUSB && result.toString().length() > 0)
+                Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
+            else if (isUSB && (Global.mainPrinterManager == null || Global.mainPrinterManager.currentDevice == null)) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
+                EMSDeviceManager edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
         }

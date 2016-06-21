@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.AddressHandler;
 import com.android.database.CustomerInventoryHandler;
 import com.android.database.DBManager;
@@ -52,6 +53,7 @@ import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -93,6 +95,7 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
+import io.realm.RealmResults;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
@@ -605,9 +608,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.resetOrderDetailsValues();
             global.clearListViewData();
 
-            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
-                Global.showCDTDefault(this);
-            }
+//            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
+            Global.showCDTDefault(this);
+//            }
 
             reloadDefaultTransaction();
         } else if (resultCode == 9) {
@@ -1475,7 +1478,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 //        }
 //    }
 
-    public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<OrdProdAttrHolder> ordProdAttr) {
+    public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<ProductAttribute> ordProdAttr) {
         if (!order.ord_id.isEmpty()) {
 
             OrdersHandler dbOrders = new OrdersHandler(activity);
@@ -1519,8 +1522,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
             dbOrders.deleteOrder(Global.lastOrdID);
             dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
-            for (OrdProdAttrHolder val : global.ordProdAttr)
-                dbOrdAttr.deleteOrderProduct(val.ordprod_id);
+            for (ProductAttribute val : global.ordProdAttr)
+                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getProductId()));
         }
     }
 
@@ -1673,5 +1676,28 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public void setAssociateId(String associateId) {
         this.associateId = associateId;
+    }
+
+    public static boolean isRequiredAttributeConmpleted(Global global, List<OrderProduct> products) {
+        for (OrderProduct product : products) {
+            RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.prod_id);
+            for (ProductAttribute attribute : attributes) {
+                if(!product.requiredProductAttributes.contains(attribute)){
+                    return false;
+                }
+            }
+        }
+        return true;
+//        if (global.ordProdAttrPending.size() == 0) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//        for (ProductAttribute attribute : global.ordProdAttrPending) {
+//            if (!global.ordProdAttr.contains(attribute)) {
+//                return false;
+//            }
+//        }
+//        return true;
     }
 }
