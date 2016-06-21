@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -111,7 +112,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+
+    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -333,7 +335,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     confirmTroubleshoot(R.string.config_force_upload);
                     break;
                 case R.string.config_check_updates:
-                    HttpClient.downloadFile("", Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk");
+                    new HttpClient().downloadFileAsync(getString(R.string.check_update_url), Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
                     break;
                 case R.string.config_backup_data:
                     confirmTroubleshoot(R.string.config_backup_data);
@@ -351,6 +353,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             }
             return false;
         }
+
 
         private void changePassword(final boolean isReenter, final String origPwd) {
             final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -974,6 +977,19 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
             }
             return null;
+        }
+
+        @Override
+        public void downloadCompleted(String path) {
+            final File file = new File(path);
+            final Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+            this.startActivity(i);
+        }
+
+        @Override
+        public void downloadFail() {
+            Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.check_update_fail));
         }
 
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
