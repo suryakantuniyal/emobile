@@ -50,7 +50,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private int PAPER_WIDTH;
     private String portSettings, portName;
 
-    private StarIOPort portForCardReader;
+    //    private StarIOPort portForCardReader;
     private EMSCallBack callBack, scannerCallBack;
     private StarIoExtManager mStarIoExtManager;
     private Handler handler;// = new Handler();
@@ -149,15 +149,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             }
 
-            if (didConnect) {
-                this.edm.driverDidConnectToDevice(thisInstance, false);
-            } else {
-
-                this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
-            }
-
         } catch (StarIOPortException e) {
             e.printStackTrace();
+        }
+        if (didConnect) {
+            this.edm.driverDidConnectToDevice(thisInstance, false);
+        } else {
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
         }
 
         return didConnect;
@@ -270,8 +268,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
             setPaperWidth(LINE_WIDTH);
-
-//            verifyConnectivity();
+            if (port == null) {
+                verifyConnectivity();
+            }
 
             Thread.sleep(1000);
 
@@ -461,8 +460,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         if (!isPOSPrinter) {
             callBack = null;
             try {
-                if (portForCardReader != null) {
-                    portForCardReader.writePort(new byte[]{0x04}, 0, 1);
+                if (port != null) {
+                    port.writePort(new byte[]{0x04}, 0, 1);
                     stopLoop = true;
                     try {
                         Thread.sleep(500);
@@ -474,12 +473,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 e.printStackTrace();
 
             } finally {
-                if (portForCardReader != null) try {
-                    StarIOPort.releasePort(portForCardReader);
-                    portForCardReader = null;
-                } catch (StarIOPortException e1) {
-                    e1.printStackTrace();
-                }
+//                if (portForCardReader != null) try {
+//                    StarIOPort.releasePort(portForCardReader);
+//                    portForCardReader = null;
+//                } catch (StarIOPortException e1) {
+//                    e1.printStackTrace();
+//                }
             }
         }
     }
@@ -499,17 +498,18 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         public void run() {
 
             try {
-                if (portForCardReader == null) {
-                    stopLoop = false;
-                    portForCardReader = getStarIOPort();
-
-                    ReceiveThread receiveThread = new ReceiveThread();
-                    receiveThread.start();
-                    portForCardReader.writePort(new byte[]{0x1b, 0x4d, 0x45}, 0, 3);
-                    handler.post(doUpdateDidConnect);
+                if (port == null) {
+                    port = getStarIOPort();
                 }
+                stopLoop = false;
+                ReceiveThread receiveThread = new ReceiveThread();
+                receiveThread.start();
+                port.writePort(new byte[]{0x1b, 0x4d, 0x45}, 0, 3);
+                handler.post(doUpdateDidConnect);
 
-            } catch (StarIOPortException ignored) {
+
+            } catch (StarIOPortException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -528,7 +528,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
                 while (!stopLoop) {
 
-                    if (portForCardReader.readPort(mcrData1, 0, 1) > 0) {
+                    if (port.readPort(mcrData1, 0, 1) > 0) {
 
                         if (!doneParsing) {
                             t = new String(mcrData1, "windows-1252");
@@ -950,7 +950,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             }
             try {
                 port = StarIOPort.getPort(portName, portSettings, 30000, activity);
-            }catch (StarIOPortException e){
+            } catch (StarIOPortException e) {
                 port = StarIOPort.getPort(portName, portSettings, 30000, activity);
             }
         }
