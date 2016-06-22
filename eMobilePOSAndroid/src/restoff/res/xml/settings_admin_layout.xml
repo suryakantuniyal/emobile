@@ -127,6 +127,10 @@
             android:key="pref_display_redeem_all"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_display_redeem_all" />
+        <Preference
+            android:key="pref_units_name"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_units_name" />
         <CheckBoxPreference
             android:key="pref_use_loyal_patron"
             android:layout="@layout/settings_custom_layout"

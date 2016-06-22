@@ -898,8 +898,8 @@
 
 
     <string name="config_pay_with_tupyx">Pay with Tupyx</string>
-    <string name="config_mw_with_genius">MW with Genius</string>
-    <string name="config_mw_with_evo">MW with EVO</string>
+    <string name="config_mw_with_genius">Cayan Genius</string>
+    <string name="config_mw_with_evo">Pay with EVO</string>
     <string name="config_genius_peripheral">Configure Genius Peripheral</string>
     <string name="config_pay_with_boloro">Pay with Boloro</string>
 
@@ -1173,6 +1173,9 @@
     <string name="check_update_fail">Error checking for application updates.</string>
     <string name="downloadig_update">Downloading application update.</string>
     <string name="install">Install</string>
+    <string name="config_units_name">Default unit name</string>
+    <string name="enter_default_units_name">Enter default unit name</string>
+    <string name="default_unit_name_format">%s Management</string>
 
 
 </resources>

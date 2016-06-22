@@ -150,7 +150,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
-
+                    prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
                     configureDefaultCategory();
@@ -260,6 +260,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     break;
                 case R.string.config_customer_display:
                     configureCustomerDisplayTerminal();
+                    break;
+                case R.string.config_units_name:
+                    setDefaultUnitsName();
                     break;
                 case R.string.config_clear_images_cache:
                     clearCache();
@@ -399,6 +402,45 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+
+        private void setDefaultUnitsName() {
+            final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(true);
+            globalDlog.setCanceledOnTouchOutside(true);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+            final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT);
+            if (!TextUtils.isEmpty(myPref.getDefaultUnitsName())) {
+                viewField.setText(myPref.getDefaultUnitsName());
+            }
+            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewTitle.setText(R.string.enter_default_units_name);
+            viewMsg.setVisibility(View.GONE);
+            Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
+            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String value = viewField.getText().toString().trim();
+                    myPref.setDefaultUnitsName(value);
+                }
+            });
+            globalDlog.show();
+        }
+
 
         private void configureDefaultCategory() {
             ListPreference lp = (ListPreference) getPreferenceManager()

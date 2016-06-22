@@ -30,9 +30,10 @@ public class LoyaltyCard_FA extends BaseFragmentActivityActionBar implements OnI
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         global = (Global) getApplication();
+        MyPreferences myPref = new MyPreferences(this);
         setContentView(R.layout.gift_loyal_reward_main_layout);
         TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
-        headerTitle.setText(getString(R.string.header_title_loyalty_card));
+        headerTitle.setText(String.format(getString(R.string.default_unit_name_format), myPref.getDefaultUnitsName()));
 
         ListView lView = (ListView) findViewById(R.id.listView);
         GiftLoyaltyRewardLV_Adapter adapter = new GiftLoyaltyRewardLV_Adapter(this, 1);
