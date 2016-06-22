@@ -131,6 +131,10 @@
             android:key="pref_display_redeem_all"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_display_redeem_all" />
+        <Preference
+            android:key="pref_units_name"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_units_name" />
         <CheckBoxPreference
             android:key="pref_use_loyal_patron"
             android:layout="@layout/settings_custom_layout"
@@ -457,7 +461,10 @@
             android:key="pref_backup_data"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_backup_data" />
-
+        <Preference
+            android:key="pref_check_updates"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_check_updates" />
     </PreferenceCategory>
 
 </PreferenceScreen>

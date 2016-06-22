@@ -8,8 +8,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -50,6 +52,7 @@ import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
+import com.android.support.HttpClient;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -109,7 +112,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
-    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener {
+
+    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
@@ -145,7 +149,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_backup_data").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
-
+                    prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
                     configureDefaultCategory();
@@ -256,6 +261,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 case R.string.config_customer_display:
                     configureCustomerDisplayTerminal();
                     break;
+                case R.string.config_units_name:
+                    setDefaultUnitsName();
+                    break;
                 case R.string.config_clear_images_cache:
                     clearCache();
                     break;
@@ -329,6 +337,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 case R.string.config_force_upload:
                     confirmTroubleshoot(R.string.config_force_upload);
                     break;
+                case R.string.config_check_updates:
+                    new HttpClient().downloadFileAsync(getString(R.string.check_update_url), Environment.getExternalStorageDirectory().getAbsolutePath() + "/emobilepos.apk", this, getActivity());
+                    break;
                 case R.string.config_backup_data:
                     confirmTroubleshoot(R.string.config_backup_data);
                     break;
@@ -345,6 +356,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             }
             return false;
         }
+
 
         private void changePassword(final boolean isReenter, final String origPwd) {
             final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -390,6 +402,45 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             });
             globalDlog.show();
         }
+
+        private void setDefaultUnitsName() {
+            final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            globalDlog.setCancelable(true);
+            globalDlog.setCanceledOnTouchOutside(true);
+            globalDlog.setContentView(R.layout.dlog_field_single_layout);
+
+            final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
+            viewField.setInputType(InputType.TYPE_CLASS_TEXT);
+            if (!TextUtils.isEmpty(myPref.getDefaultUnitsName())) {
+                viewField.setText(myPref.getDefaultUnitsName());
+            }
+            TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
+            TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
+            viewTitle.setText(R.string.dlog_title_confirm);
+            viewTitle.setText(R.string.enter_default_units_name);
+            viewMsg.setVisibility(View.GONE);
+            Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
+            btnCancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                }
+            });
+            Button btnOk = (Button) globalDlog.findViewById(R.id.btnDlogSingle);
+            btnOk.setText(R.string.button_ok);
+            btnOk.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    globalDlog.dismiss();
+                    String value = viewField.getText().toString().trim();
+                    myPref.setDefaultUnitsName(value);
+                }
+            });
+            globalDlog.show();
+        }
+
 
         private void configureDefaultCategory() {
             ListPreference lp = (ListPreference) getPreferenceManager()
@@ -795,7 +846,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             // swiper
                             {
                                 myPref.setSwiperType(Global.MAGTEK);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
@@ -833,7 +884,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
                                 myPref.setSwiperType(Global.ISMP);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
@@ -866,7 +917,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
                                 myPref.setSwiperType(Global.HANDPOINT);
-                                myPref.swiperMACAddress(false, macAddressList.get(pos));
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
@@ -968,6 +1019,19 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
             }
             return null;
+        }
+
+        @Override
+        public void downloadCompleted(String path) {
+            final File file = new File(path);
+            final Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+            this.startActivity(i);
+        }
+
+        @Override
+        public void downloadFail() {
+            Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.check_update_fail));
         }
 
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {

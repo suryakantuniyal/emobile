@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.MixMatchDAO;
+import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.SalesAssociateTableDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
@@ -42,7 +43,6 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
-import com.android.emobilepos.models.Device;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
@@ -1840,13 +1840,23 @@ public class SynchMethods {
     }
 
     private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {
+
+        try {
         task.updateProgress(getString(R.string.sync_dload_ordprodattr));
-        post.postData(7, activity, "GetOrderProductsAttr");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_GET_ORDER_PRODUCTS_ATTR);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_ordprodattr));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+            client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("GetOrderProductsAttr"));
+            task.updateProgress(getString(R.string.sync_saving_uom));
+            try {
+                OrderProductAttributeDAO.truncate();
+                OrderProductAttributeDAO.insert(jsonRequest);
+            } catch (Exception e) {
+                e.printStackTrace();
+    }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String _server_time = "";

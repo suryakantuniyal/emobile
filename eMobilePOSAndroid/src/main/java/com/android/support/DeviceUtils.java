@@ -50,11 +50,11 @@ public class DeviceUtils {
         if (myPref.getSwiperType() != -1)
             if (Global.btSwiper == null || forceReload) {
                 edm = new EMSDeviceManager();
-                _portName = myPref.swiperMACAddress(true, null);
+                _portName = myPref.getSwiperMACAddress();
                 _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                 Global.btSwiper = edm.getManager();
                 if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
-                        myPref.swiperMACAddress(true, null), null))
+                        myPref.getSwiperMACAddress(), null))
                     sb.append(_peripheralName).append(": ").append("Connected\n\r");
                 else
                     sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
@@ -96,15 +96,16 @@ public class DeviceUtils {
 //                    sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
 //                }
 //            }
-            if (myPref.getPrinterType() != Global.POWA && myPref.getPrinterType() != Global.PAT215) {
-                edm = new EMSDeviceManager();
-                Global.mainPrinterManager = edm.getManager();
-                if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
-                        isPOS, _portName, _portNumber))
-                    sb.append(_peripheralName).append(": ").append("Connected\n\r");
-                else
-                    sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
-            }
+            if (myPref.getPrinterType() != Global.POWA && myPref.getPrinterType() != Global.PAT215)
+                if (Global.mainPrinterManager == null || forceReload) {
+                    edm = new EMSDeviceManager();
+                    Global.mainPrinterManager = edm.getManager();
+                    if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
+                            isPOS, _portName, _portNumber))
+                        sb.append(_peripheralName).append(": ").append("Connected\n\r");
+                    else
+                        sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
+                }
 
         } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
             edm = new EMSDeviceManager();

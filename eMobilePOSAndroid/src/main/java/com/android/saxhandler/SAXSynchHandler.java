@@ -532,15 +532,15 @@ public class SAXSynchHandler extends DefaultHandler {
 			else
 				orderProdHandler = new OrderProductsHandler(activity);
 			break;
-		case Global.S_GET_ORDER_PRODUCTS_ATTR:
-			if(isInsert)
-				ordProdAttrList.insert(dataList, dictionaryListMap);
-			else
-			{
-				ordProdAttrList = new OrdProdAttrList_DB(activity);
-				ordProdAttrList.emptyTable();
-			}
-			break;
+//		case Global.S_GET_ORDER_PRODUCTS_ATTR:
+//			if(isInsert)
+//				ordProdAttrList.insert(dataList, dictionaryListMap);
+//			else
+//			{
+//				ordProdAttrList = new OrdProdAttrList_DB(activity);
+//				ordProdAttrList.emptyTable();
+//			}
+//			break;
 		case Global.S_LOCATIONS:
 			if(isInsert)
 				locationsDB.insert(dataList, dictionaryListMap);
