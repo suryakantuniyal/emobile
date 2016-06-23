@@ -59,10 +59,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         activity = this;
         global = (Global) getApplication();
-//		myBar = this.getActionBar();
-//
-//		myBar.setDisplayShowTitleEnabled(false);
-//		myBar.setDisplayShowHomeEnabled(false);
+
         setTabsAdapter(new AdapterTabs(this, viewPager));
 
         getTabsAdapter().addTab(myBar.newTab().setText(R.string.sales_title), SalesTab_FR.class, null);
@@ -112,7 +109,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
             DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-            // SQLiteDatabase db = dbManager.openWritableDB();
             dbManager.synchSend(false, true);
         }
 
@@ -178,8 +174,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     }
 
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
-
-        //        StringBuilder sb = new StringBuilder();
         boolean isUSB = false;
 
         @Override
@@ -195,98 +189,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 isUSB = true;
             }
             return autoConnect;
-//            RealmResults<Device> devices = DeviceTableDAO.getAll();
-//            HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
-//            EMSDeviceManager edm;
-//            if (Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0) {
-//                int i=0;
-//                for (Device device : devices) {
-//                    if (tempMap.containsKey(device.getId())) {
-//                        Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getId()));
-//                    } else {
-//                        tempMap.put(device.getId(), i);
-//                        Global.multiPrinterMap.put(device.getCategoryId(), i);
-//
-//                        edm = new EMSDeviceManager();
-//                        Global.multiPrinterManager.add(edm);
-//
-//                        if (Global.multiPrinterManager.get(i).loadMultiDriver(activity, Global.STAR, 48, true,
-//                                "TCP:" + device.getIpAddress(),device.getTcpPort()))
-//                            sb.append(device.getIpAddress()).append(": ").append("Connected\n");
-//                        else
-//                            sb.append(device.getIpAddress()).append(": ").append("Failed to connect\n");
-//
-//                        i++;
-//                    }
-//                }
-//            }
-//
-//            String _portName;
-//            String _peripheralName;
-//            if ((myPref.getSwiperType() != -1) && (Global.btSwiper == null)) {
-//                edm = new EMSDeviceManager();
-//                _portName = myPref.swiperMACAddress(true, null);
-//                _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
-//                Global.btSwiper = edm.getManager();
-//                // Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
-//                // -2), false);
-//                if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
-//                        myPref.swiperMACAddress(true, null), null))
-//                    sb.append(_peripheralName).append(": ").append("Connected\n");
-//                else
-//                    sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-//            }
-//            if ((myPref.sledType(true, -2) != -1) && (Global.btSled == null)) {
-//                edm = new EMSDeviceManager();
-//                Global.btSled = edm.getManager();
-//                _peripheralName = Global.getPeripheralName(myPref.sledType(true, -2));
-//                // Global.btSwiper.loadDrivers(activity, myPref.swiperType(true,
-//                // -2), false);
-//                if (Global.btSled.loadMultiDriver(activity, myPref.sledType(true, -2), 0, false, null, null))
-//                    sb.append(_peripheralName).append(": ").append("Connected\n");
-//                else
-//                    sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-//            }
-//            if ((myPref.getPrinterType() != -1) && (Global.mainPrinterManager == null)) // ||(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice==null)))
-//            {
-//
-//                _peripheralName = Global.getPeripheralName(myPref.getPrinterType());
-//                _portName = myPref.getPrinterMACAddress();
-//                String _portNumber = myPref.getStarPort();
-//                boolean isPOS = myPref.posPrinter(true, false);
-//                int txtAreaSize = myPref.printerAreaSize(true, -1);
-//                if (myPref.isPAT215()) {
-//                    edm = new EMSDeviceManager();
-//                    Global.embededMSR = edm.getManager();
-//                    if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
-//                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n");
-//                    } else {
-//                        sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n");
-//                    }
-//                }
-//                if (myPref.getPrinterType() != Global.POWA) {
-//                    edm = new EMSDeviceManager();
-//                    Global.mainPrinterManager = edm.getManager();
-//                    if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
-//                            isPOS, _portName, _portNumber))
-//                        sb.append(_peripheralName).append(": ").append("Connected\n");
-//                    else
-//                        sb.append(_peripheralName).append(": ").append("Failed to connect\n");
-//                } else
-//                    isUSB = true;
-//
-//            } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
-//                edm = new EMSDeviceManager();
-//                Global.mainPrinterManager = edm.getManager();
-//
-//                if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
-//                        "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
-//                    sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n");
-//                else
-//                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n");
-//            }
-
-//            return null;
         }
 
         @Override
@@ -356,19 +258,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             }
 
             if (myTabs.get(0) == tag && hasBeenCreated) {
-                // Toast.makeText(activity, "launch default trans",
-                // Toast.LENGTH_LONG).show();
                 SalesTab_FR.startDefault(activity, myPref.getPreferencesValue(MyPreferences.pref_default_transaction));
             }
-//            else if (selectedPage == 1) // Sync tab
-//            {
-//                childViewPager = myViewPager;
-//                ListView listView = (ListView) myViewPager.findViewById(R.id.synchListView);
-//                if (listView != null) {
-//                    SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
-//                    adapter.notifyDataSetChanged();
-//                }
-//            }
         }
 
         @Override

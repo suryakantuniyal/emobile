@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="genius_token_url">https://epay.enablermobile.com/index.ashx</string>
+    <string name="sync_enablermobile_deviceasxmltrans">https://sync.enablermobile.com/deviceASXMLTrans/</string>
+    <string name="sync_enablermobile_getxmlorders">https://sync.enablermobile.com/deviceASXMLTrans/getXMLOrders.aspx</string>
+    <string name="sync_enablermobile_getxmlsalesassociate">getXMLSalesAssociate.ashx</string>
+    <string name="sync_enablermobile_getxmldinnertables">getXMLMesas.ashx</string>
+    <string name="sync_enabler_submitordersonhold">https://sync.enablermobile.com/deviceASXMLTrans/submitOrdersOnHold.ashx</string>
+    <string name="sync_enabler_submitpayments">https://sync.enablermobile.com/deviceASXMLTrans/submitPayments.aspx</string>
+    <string name="sync_enabler_submittimeclock">https://sync.enablermobile.com/deviceASXMLTrans/submitTimeClock.ashx</string>
+    <string name="sync_enabler_submitvoidtrans">https://sync.enablermobile.com/deviceASXMLTrans/submitVoidTrans.aspx</string>
+    <string name="sync_enabler_submitcustomer">https://sync.enablermobile.com/deviceASXMLTrans/submitCustomer.aspx</string>
+    <string name="epay_enablermobile_tupix"> https://epay.enablermobile.com/tupyx.ashx</string>
+    <string name="sync_enabler_submittempletes">https://sync.enablermobile.com/deviceASXMLTrans/subitTemplates.aspx</string>
+    <string name="sync_enablersubmitconsignmenttransaction">https://sync.enablermobile.com/deviceASXMLTrans/submitConsignmentTransaction.aspx</string>
+    <string name="sync_enabler_submitcustomerinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitCustomerInventory.aspx</string>
+    <string name="sync_enabler_submitshiftperiods">https://sync.enablermobile.com/deviceASXMLTrans/submitShiftPeriods.aspx</string>
+    <string name="sync_enabler_submitwalletreceipt">https://sync.enablermobile.com/deviceASXMLTrans/submitwalletReceipt.ashx</string>
+    <string name="dinningTables">[{\"mesa_id\":\"17B7021B-A321-4284-8D1A-17880D5AADC4\",\"loc_id\":\"K1\",\"mesa_desc\":\"#2\",\"mesa_seats\":4,\"isactive\":true,\"isreadonly\":false,\"map_json\":\"{\\\"id\\\":\\\"17B7021B-A321-4284-8D1A-17880D5AADC4\\\",\\\"name\\\":\\\"#2\\\",\\\"defaultSeats\\\":4,\\\"type\\\":1,\\\"dimensions\\\":{\\\"height\\\":60,\\\"width\\\":60,\\\"radius\\\":30},\\\"position\\\":{\\\"x\\\":720,\\\"y\\\":20}}\",\"_update\":\"2016-04-08T14:53:06.217\"},{\"mesa_id\":\"1B195246-E1F8-41F2-9271-EACE1A75529B\",\"loc_id\":\"K1\",\"mesa_desc\":\"#3\",\"mesa_seats\":4,\"isactive\":true,\"isreadonly\":false,\"map_json\":\"{\\\"id\\\":\\\"1B195246-E1F8-41F2-9271-EACE1A75529B\\\",\\\"name\\\":\\\"#3\\\",\\\"defaultSeats\\\":4,\\\"type\\\":1,\\\"dimensions\\\":{\\\"height\\\":60,\\\"width\\\":60,\\\"radius\\\":30},\\\"position\\\":{\\\"x\\\":20,\\\"y\\\":520}}\",\"_update\":\"2016-04-08T14:53:28.623\"},{\"mesa_id\":\"CC9BDE3C-D97A-44D4-AC2F-82BCB7DFF2A0\",\"loc_id\":\"K1\",\"mesa_desc\":\"#1\",\"mesa_seats\":2,\"isactive\":true,\"isreadonly\":false,\"map_json\":\"{\\\"id\\\":\\\"CC9BDE3C-D97A-44D4-AC2F-82BCB7DFF2A0\\\",\\\"name\\\":\\\"#1\\\",\\\"defaultSeats\\\":2,\\\"type\\\":1,\\\"dimensions\\\":{\\\"height\\\":60,\\\"width\\\":60,\\\"radius\\\":30},\\\"position\\\":{\\\"x\\\":20,\\\"y\\\":20}}\",\"_update\":\"2016-04-08T14:52:51.607\"}]</string>
+    <string name="sqlLimit">200</string>
+    <string name="check_update_url">https://emobilepos.blob.core.windows.net/crm/ivupos.apk</string>
+</resources>

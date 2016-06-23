@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="genius_token_url">https://epay.enablermobile.com/index.ashx</string>
+    <string name="sync_enablermobile_deviceasxmltrans">https://sync.enablermobile.com/deviceASXMLTrans/</string>
+    <string name="sync_enablermobile_getxmlorders">https://sync.enablermobile.com/deviceASXMLTrans/getXMLOrders.aspx</string>
+    <string name="sync_enablermobile_getxmlsalesassociate">getXMLSalesAssociate.ashx</string>
+    <string name="sync_enablermobile_getxmldinnertables">getXMLMesas.ashx</string>
+    <string name="sync_enabler_submitordersonhold">https://sync.enablermobile.com/deviceASXMLTrans/submitOrdersOnHold.ashx</string>
+    <string name="sync_enabler_submitpayments">https://sync.enablermobile.com/deviceASXMLTrans/submitPayments.aspx</string>
+    <string name="sync_enabler_submittimeclock">https://sync.enablermobile.com/deviceASXMLTrans/submitTimeClock.ashx</string>
+    <string name="sync_enabler_submitvoidtrans">https://sync.enablermobile.com/deviceASXMLTrans/submitVoidTrans.aspx</string>
+    <string name="sync_enabler_submitcustomer">https://sync.enablermobile.com/deviceASXMLTrans/submitCustomer.aspx</string>
+    <string name="epay_enablermobile_tupix">https://epay.enablermobile.com/tupyx.ashx</string>
+    <string name="sync_enabler_submittempletes">https://sync.enablermobile.com/deviceASXMLTrans/subitTemplates.aspx</string>
+    <string name="sync_enablersubmitconsignmenttransaction">https://sync.enablermobile.com/deviceASXMLTrans/submitConsignmentTransaction.aspx</string>
+    <string name="sync_enabler_submitcustomerinventory">https://sync.enablermobile.com/deviceASXMLTrans/submitCustomerInventory.aspx</string>
+    <string name="sync_enabler_submitshiftperiods">https://sync.enablermobile.com/deviceASXMLTrans/submitShiftPeriods.aspx</string>
+    <string name="sync_enabler_submitwalletreceipt">https://sync.enablermobile.com/deviceASXMLTrans/submitwalletReceipt.ashx</string>
+    <string name="dinningTables">[{"number":1,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":2,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":3,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":4,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":5,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":6,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":7,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":8,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":9,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":10,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":11,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":12,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":13,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":14,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}},{"number":15,"seats":4,"style":"square","location":{"positionX":5,"positionY":5}}]</string>
+
+    <string name="sqlLimit">200</string>
+    <string name="check_update_url">https://emobilepos.blob.core.windows.net/crm/ivupos.apk</string>
+</resources>
