@@ -734,6 +734,11 @@ public class EMSDeviceDriver {
                 print(String.format("%s %s %s\n", getString(R.string.receipt_reward_balance), Global.loyaltyPointsAvailable, getString(R.string.points)));
                 print(textHandler.newLines(1), FORMAT);
             }
+            if (Global.rewardCardInfo != null && !TextUtils.isEmpty(Global.rewardCardInfo.getCardNumAESEncrypted())) {
+                print(String.format("%s *%s\n", getString(R.string.receipt_cardnum), Global.rewardCardInfo.getCardLast4()));
+                print(String.format("%s %s %s\n", getString(R.string.receipt_reward_balance), Global.rewardCardInfo.getOriginalTotalAmount(), getString(R.string.points)));
+                print(textHandler.newLines(1), FORMAT);
+            }
             receiptSignature = anOrder.ord_signature;
             if (!receiptSignature.isEmpty()) {
                 encodedSignature = receiptSignature;
