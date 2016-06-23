@@ -1505,7 +1505,7 @@ public class EMSDeviceDriver {
             // SQLiteDatabase db = dbManager.openWritableDB();
             Order anOrder = orderHandler.getPrintedOrder(ordID);
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder("\n");
             int size = orders.size();
 
             if (!anOrder.ord_HoldName.isEmpty())
@@ -1538,6 +1538,7 @@ public class EMSDeviceDriver {
 
             sb.append("\n");
             sb.append(textHandler.newDivider('=', lineWidth / 2)); //add double line divider
+            sb.append("\n");
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
             print(sb.toString(), FORMAT);
             sb.setLength(0);
@@ -1570,6 +1571,7 @@ public class EMSDeviceDriver {
                         sb.append("  ").append(orders.get(m).getOrderProdComment()).append("\n");
 
                     sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
+                    sb.append("\n");
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
@@ -1593,11 +1595,11 @@ public class EMSDeviceDriver {
 //            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter) {
-                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
-                characterExpansion[2] = (byte) (0 + '0');
-                characterExpansion[3] = (byte) (0 + '0');
-
-                port.writePort(characterExpansion, 0, characterExpansion.length);
+//                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
+//                characterExpansion[2] = (byte) (0 + '0');
+//                characterExpansion[3] = (byte) (0 + '0');
+//
+//                port.writePort(characterExpansion, 0, characterExpansion.length);
                 cutPaper();
             }
 
