@@ -99,7 +99,7 @@ public class Global extends MultiDexApplication {
                 .build();
         Realm.setDefaultConfiguration(config);
     }
-
+    public static String loyaltyPointsAvailable;
     public static boolean isIvuLoto = false;
     public static boolean isForceUpload = false;
     public static boolean isEncryptSwipe = true;

@@ -1,7 +1,6 @@
 package com.android.emobilepos.models;
 
 public class Orders {
-	private String empStr = "";
 	String _qty;
 	String _name;
 	String _value;
@@ -22,15 +21,16 @@ public class Orders {
 	String _addon;
 	String _isAdded;
 	String _hasAddons;
-	
+	private int priceLoyaltyPoints;
+	private int loyaltyPointBalance;
 	
 	String _overwritePrice;
 	String _prodDescription;
 
 	public Orders() {
-		_qty = empStr;
-		_name = empStr;
-		_value = empStr;
+		_qty = "";
+		_name = "";
+		_value = "";
 		_discountAmount = "0.00";
 		_taxAmount = "0.00";
 		_taxQty = "0";
@@ -38,15 +38,16 @@ public class Orders {
 		_addon = "0";
 		_isAdded = "0";
 		_hasAddons = "0";
-		_total = empStr;
-		_prod_id  = empStr;
-		_cat_id = empStr;
-		_attr_desc = empStr;
-		_ordprod_comment = empStr;
+		_total = "";
+		_prod_id  = "";
+		_cat_id = "";
+		_attr_desc = "";
+		_ordprod_comment = "";
 		
-		_overwritePrice = empStr;
-		_prodDescription = empStr;
-		_ordprod_id = empStr;
+		_overwritePrice = "";
+		_prodDescription = "";
+		_ordprod_id = "";
+
 	}
 
 	public Orders(String qty, String name, String val, String distAmount, String taxAmount, String taxQty, String distQty, String total) {
@@ -232,5 +233,21 @@ public class Orders {
 	public String getProdDescription()
 	{
 		return this._prodDescription;
+	}
+
+	public int getPriceLoyaltyPoints() {
+		return priceLoyaltyPoints;
+	}
+
+	public void setPriceLoyaltyPoints(int priceLoyaltyPoints) {
+		this.priceLoyaltyPoints = priceLoyaltyPoints;
+	}
+
+	public int getLoyaltyPointBalance() {
+		return loyaltyPointBalance;
+	}
+
+	public void setLoyaltyPointBalance(int loyaltyPointBalance) {
+		this.loyaltyPointBalance = loyaltyPointBalance;
 	}
 }
