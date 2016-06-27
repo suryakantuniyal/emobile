@@ -5,7 +5,6 @@ import android.app.Activity;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
-import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Order;
@@ -17,7 +16,6 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -351,7 +349,7 @@ public class TaxesCalculator {
             }
         } else {
             Tax tax = taxesHandler.getTax(taxID, orderProduct.prod_taxtype,
-                    Double.parseDouble(orderProduct.overwrite_price));
+                    Double.parseDouble(orderProduct.getFinalPrice()));
             if (listMapTaxes == null) {
                 listMapTaxes = new ArrayList<HashMap<String, String>>();
             } else {

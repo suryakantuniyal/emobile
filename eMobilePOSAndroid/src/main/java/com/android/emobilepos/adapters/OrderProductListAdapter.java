@@ -3,7 +3,6 @@ package com.android.emobilepos.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -336,7 +335,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         holder.itemQty.setText(product.ordprod_qty);
         holder.itemName.setText(product.ordprod_name);
 
-        String temp = Global.formatNumToLocale(Double.parseDouble(product.overwrite_price));
+        String temp = Global.formatNumToLocale(Double.parseDouble(product.getFinalPrice()));
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
 

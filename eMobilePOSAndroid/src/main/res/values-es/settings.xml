@@ -20,4 +20,5 @@
 
     <string name="sqlLimit">200</string>
     <string name="check_update_url">https://emobilepos.blob.core.windows.net/crm/empos.apk</string>
+    <string name="sync_enablermobile_getxmlmixmatch">getXMLMixAndMatch.ashx</string>
 </resources>

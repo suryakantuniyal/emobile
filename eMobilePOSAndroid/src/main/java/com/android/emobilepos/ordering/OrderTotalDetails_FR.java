@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.dao.MixMatchDAO;
+import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
@@ -28,6 +29,7 @@ import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Tax;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -435,7 +437,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         HashMap<String, MixMatchProductGroup> mixMatchProductGroupHashMap = new HashMap<String, MixMatchProductGroup>();
         for (OrderProduct product : orderProducts) {
             BigDecimal overwrite = Global.getBigDecimalNum(product.overwrite_price);
-
+            PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
             if (TextUtils.isEmpty(product.pricesXGroupid) || product.isVoid()) {
                 continue;
             } else if (overwrite.compareTo(new BigDecimal(0.00)) > 0 || !TextUtils.isEmpty(product.discount_id)) {
@@ -443,7 +445,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             } else {
 
                 product.mixAndMatchDiscounts = new ArrayList<MixAndMatchDiscount>();
-
+                List<PriceLevel> fixedPriceLevel = priceLevelHandler.getFixedPriceLevel(product.prod_id);
                 MixMatchProductGroup mixMatchProductGroup = mixMatchProductGroupHashMap.get(product.pricesXGroupid);
                 if (mixMatchProductGroup != null) {
                     mixMatchProductGroup.getOrderProducts().add(product);
@@ -483,16 +485,16 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 if (firstMixMatch.getDiscountType().equalsIgnoreCase("Fixed")) {
                     product.prod_price = String.valueOf(firstMixMatch.getPrice());
                 } else {
-                    double percent = 100 - firstMixMatch.getPrice();
-                    product.prod_price = Global.getBigDecimalNum(product.prod_price)
-                            .multiply(new BigDecimal(percent)).toString();
+                    double percent = (100 - firstMixMatch.getPrice()) / 100;
+                    product.prod_price = Global.getRoundBigDecimal(Global.getBigDecimalNum(product.prod_price)
+                            .multiply(new BigDecimal(percent))).toString();
                 }
             }
         } else {
             int itemsRemaining = group.getQuantity();
             for (MixMatch mixMatch : mixMatches) {
                 int volumeQty = mixMatch.getQty();
-                if (volumeQty > itemsRemaining) {
+                if (volumeQty < itemsRemaining) {
                     int itemsToDiscount = volumeQty * (itemsRemaining / volumeQty);
                     for (OrderProduct product : group.getOrderProducts()) {
                         if (product.mixMatchQtyApplied < Integer.parseInt(product.ordprod_qty)) {
@@ -531,7 +533,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         discountSplitAmount = new BigDecimal(mixMatch.getPrice())
                                 .multiply(BigDecimal.valueOf(mixMatch.getQty()));
                     } else {
-                        BigDecimal percent = new BigDecimal(100 - mixMatch.getPrice());
+                        BigDecimal percent = new BigDecimal(100 - mixMatch.getPrice()).divide(new BigDecimal(100));
                         discountSplitAmount = new BigDecimal(product.prod_price)
                                 .multiply(percent)
                                 .multiply(BigDecimal.valueOf(mixMatch.getQty()));
@@ -544,7 +546,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             .multiply(product.mixMatchOriginalPrice);
                     lineTotal = lineTotal.add(amountNotDiscounted);
                 }
-                product.prod_price = lineTotal.divide(new BigDecimal(product.consignment_qty)).toString();
+                product.prod_price = lineTotal.divide(new BigDecimal(product.ordprod_qty)).toString();
             }
         }
     }

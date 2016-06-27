@@ -1,20 +1,16 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
 import com.android.support.Global;
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import io.realm.RealmObject;
 
 
 public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
@@ -72,7 +68,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String prod_taxtype;
 
     public String priceLevelName = "";
-    public List<ProductAttribute> requiredProductAttributes=new ArrayList<ProductAttribute>();
+    public List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
 
     public String hasAddons = "0"; //0 no addons, 1 it has addons
     public String addon_section_name = "";
@@ -87,6 +83,31 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public BigDecimal mixMatchOriginalPrice;
     public List<MixAndMatchDiscount> mixAndMatchDiscounts;
     public String consignment_qty;
+    public String productPriceLevelTotal;
+
+    public OrderProduct(Product product) {
+        this.assignedSeat = product.getAssignedSeat();
+        this.cat_id = product.getCatId();
+        this.prod_id = product.getId();
+        this.prod_sku = product.getProd_sku();
+        this.prod_upc = product.getProd_upc();
+        this.prod_price = product.getProdPrice();
+        this.imgURL = product.getProdImgName();
+        this.prod_type = product.getProdType();
+        this.onHand = product.getProdOnHand();
+        this.prod_istaxable = product.getProdIstaxable();
+        this.ordprod_desc = product.getProdDesc();
+        this.prod_taxcode = product.getProdTaxCode();
+        this.tax_type = product.getProdTaxType();
+        this.prod_price_points = String.valueOf(product.getProdPricePoints());
+        this.prod_value_points = String.valueOf(product.getProdValuePoints());
+        this.pricesXGroupid = product.getPricesXGroupid();
+    }
+
+    public OrderProduct() {
+
+    }
+
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -105,8 +126,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (o instanceof String) {
             return this.ordprod_id.equalsIgnoreCase((String) o);
         } else {
-        return this.ordprod_id.equalsIgnoreCase(((OrderProduct) o).ordprod_id);
-    }
+            return this.ordprod_id.equalsIgnoreCase(((OrderProduct) o).ordprod_id);
+        }
     }
 
     @Override
@@ -177,9 +198,18 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String getPricesXGroupid() {
         return pricesXGroupid;
     }
+
     public static OrderProduct getInstance(String ordprod_id) {
         OrderProduct product = new OrderProduct();
         product.ordprod_id = ordprod_id;
         return product;
+    }
+
+    public String getFinalPrice() {
+        if (!TextUtils.isEmpty(overwrite_price)) {
+            return overwrite_price;
+        } else {
+            return prod_price;
+        }
     }
 }

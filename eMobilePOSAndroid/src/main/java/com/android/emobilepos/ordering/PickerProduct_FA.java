@@ -42,6 +42,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.PriceLevel;
+import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.models.UOM;
 import com.android.support.GenerateNewID;
@@ -313,26 +315,28 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void setOrderProductValues() {
-        orderProduct.prod_id = extras.getString("prod_id");
-        orderProduct.prod_sku = extras.getString("prod_sku");
-        orderProduct.prod_upc = extras.getString("prod_upc");
-        orderProduct.ordprod_name = extras.getString("prod_name");
-        orderProduct.prod_price = extras.getString("prod_price");
-        orderProduct.imgURL = extras.getString("url");
-        orderProduct.prod_type = extras.getString("prod_type");
-        orderProduct.onHand = extras.getString("prod_on_hand");
-        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
-        orderProduct.prod_istaxable = extras.getString("prod_istaxable");
-        orderProduct.ordprod_desc = extras.getString("prod_desc");
-        orderProduct.prod_taxcode = extras.getString("prod_taxcode");
-        orderProduct.tax_type = extras.getString("prod_taxtype");
-        orderProduct.cat_id = extras.getString("cat_id");
-        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
-        orderProduct.prod_price_points = String.valueOf(extras.getInt("prod_price_points"));
-        orderProduct.prod_value_points = String.valueOf(extras.getInt("prod_value_points"));
-
+//        orderProduct.prod_id = extras.getString("prod_id");
+//        orderProduct.prod_sku = extras.getString("prod_sku");
+//        orderProduct.prod_upc = extras.getString("prod_upc");
+//        orderProduct.ordprod_name = extras.getString("prod_name");
+//        orderProduct.prod_price = extras.getString("prod_price");
+//        orderProduct.imgURL = extras.getString("url");
+//        orderProduct.prod_type = extras.getString("prod_type");
+//        orderProduct.onHand = extras.getString("prod_on_hand");
+//        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
+//        orderProduct.prod_istaxable = extras.getString("prod_istaxable");
+//        orderProduct.ordprod_desc = extras.getString("prod_desc");
+//        orderProduct.prod_taxcode = extras.getString("prod_taxcode");
+//        orderProduct.tax_type = extras.getString("prod_taxtype");
+//        orderProduct.cat_id = extras.getString("cat_id");
+//        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
+//        orderProduct.prod_price_points = String.valueOf(extras.getInt("prod_price_points"));
+//        orderProduct.prod_value_points = String.valueOf(extras.getInt("prod_value_points"));
+        Gson gson = new Gson();
+        Product product = gson.fromJson(extras.getString("product"), Product.class);
+        orderProduct = new OrderProduct(product);
         if (Global.isConsignment) {
-            orderProduct.consignment_qty = extras.getString("consignment_qty");
+            this.orderProduct.consignment_qty = extras.getString("consignment_qty");
 
         }
     }
@@ -373,14 +377,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
             if (myPref.isCustSelected()) {
                 PriceLevelHandler plHandler = new PriceLevelHandler();
-                List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
+                List<PriceLevel> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
 
                 int i = 0;
-                for (String[] arr : _listPriceLevel) {
-                    if (arr[1].equals(myPref.getCustPriceLevel())) {
+                for (PriceLevel priceLevel : _listPriceLevel) {
+                    if (priceLevel.getPricelevelId().equals(myPref.getCustPriceLevel())) {
                         pricelevel_position = i;
-                        priceLevelName = arr[0];
-                        priceLevelID = arr[1];
+                        priceLevelName = priceLevel.getPricelevelName();
+                        priceLevelID = priceLevel.getPricelevelId();
                     }
                     i++;
                 }
@@ -414,7 +418,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void updateSavedDetails() {
         PriceLevelHandler plHandler = new PriceLevelHandler();
 
-        List<String[]> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
+        List<PriceLevel> priceLevels = plHandler.getFixedPriceLevel(prodID);
 
         ProductsHandler handler = new ProductsHandler(activity);
         List<Discount> discounts = handler.getDiscounts();
@@ -438,7 +442,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             arr[2] = uom.getUomConversion();
             _listUOM.add(arr);
         }
-        int plSize = _listPriceLevel.size();
+        int plSize = priceLevels.size();
         int disSize = _listDiscounts.size();
         int uomSize = uoms.size();
 
@@ -450,7 +454,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         int _plIndex = 0, _disIndex = 0, _uomIndex = 0;
         for (int i = 0; i < maxSize; i++) {
-            if (i < plSize && _listPriceLevel.get(i)[1].equals(global.orderProducts.get(modifyOrderPosition).pricelevel_id)) {
+            if (i < plSize && priceLevels.get(i).getPricelevelId().equals(global.orderProducts.get(modifyOrderPosition).pricelevel_id)) {
                 _plIndex = i + 1;
             }
             if (i < disSize && _listDiscounts.get(i)[4].equals(global.orderProducts.get(modifyOrderPosition).discount_id)) {
@@ -461,7 +465,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 _uomIndex = i + 1;
             }
         }
-
+        List<String[]> _listPriceLevel = new ArrayList<String[]>();
+        for (PriceLevel priceLevel : priceLevels) {
+            String[] arr = new String[3];
+            arr[0] = priceLevel.getPricelevelName();
+            arr[1] = priceLevel.getPricelevelId();
+            arr[2] = priceLevel.getCalcResult();
+            _listPriceLevel.add(arr);
+        }
         setTextView(_plIndex, INDEX_PRICE_LEVEL + OFFSET, _listPriceLevel);
         setTextView(_disIndex, INDEX_DISCOUNT + OFFSET, _listDiscounts);
         setTextView(_uomIndex, INDEX_UOM + OFFSET, _listUOM);
@@ -782,7 +793,16 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             {
                 if (!myPref.getPreferences(MyPreferences.pref_block_price_level_change)) {
                     PriceLevelHandler handler1 = new PriceLevelHandler();
-                    listData_LV = handler1.getFixedPriceLevel(prodID);
+                    List<PriceLevel> priceLevels = handler1.getFixedPriceLevel(prodID);
+
+                    listData_LV = new ArrayList<String[]>();
+                    for (PriceLevel priceLevel : priceLevels) {
+                        String[] arr = new String[3];
+                        arr[0] = priceLevel.getPricelevelName();
+                        arr[1] = priceLevel.getPricelevelId();
+                        arr[2] = priceLevel.getCalcResult();
+                        listData_LV.add(arr);
+                    }
 
                 } else {
                     listData_LV.clear();
@@ -965,14 +985,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.ordprod_name = orderProduct.ordprod_name;
         ord.ordprod_desc = orderProduct.ordprod_desc;
         ord.prod_id = prodID;
-        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal);
+        ord.productPriceLevelTotal = Global.getRoundBigDecimal(productPriceLevelTotal);
         ord.onHand = orderProduct.onHand;
         ord.imgURL = orderProduct.imgURL;
         ord.cat_id = orderProduct.cat_id;
         ord.assignedSeat = orderProduct.assignedSeat;
         ord.prod_sku = orderProduct.prod_sku;
         ord.prod_upc = orderProduct.prod_upc;
-
+        ord.pricesXGroupid = orderProduct.getPricesXGroupid();
 
         BigDecimal pricePoints = new BigDecimal(orderProduct.prod_price_points);
         BigDecimal valuePoints = new BigDecimal(orderProduct.prod_value_points);
@@ -1001,6 +1021,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.priceLevelName = priceLevelName;
 
         ord.prod_price = productPriceLevelTotal.toString();
+        ord.mixMatchOriginalPrice = productPriceLevelTotal;
+
         ord.tax_position = Integer.toString(tax_position);
         ord.discount_position = Integer.toString(discount_position);
         ord.pricelevel_position = Integer.toString(pricelevel_position);

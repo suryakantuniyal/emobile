@@ -1248,6 +1248,8 @@
     <string name="receipt_point_used">Points Used:</string>
     <string name="receipt_reward_balance">Reward Balance:</string>
     <string name="points">Points</string>
+    <string name="sync_saving_mixmatch">Saving Mix &amp; Match</string>
+    <string name="config_mix_match"><![CDATA[Use Mix & Match]]></string>
 
 
 </resources>
