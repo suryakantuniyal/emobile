@@ -668,6 +668,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
                 // windows-1252
             } else {
+                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
                 port.writePort(new byte[]{0x1b, 0x1d, 0x74, 0x20}, 0, 4);
                 byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
                 characterExpansion[2] = (byte) (1 + '0');
@@ -681,8 +682,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
 
             // db.close();
-        } catch (StarIOPortException ignored) {
-
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
         }
     }
 

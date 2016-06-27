@@ -112,8 +112,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         boolean didConnect = false;
 
         String macAddress = myPref.getPrinterMACAddress();
-        BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
         try {
+            BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
             socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
             socket.connect();
 
@@ -123,7 +123,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
                 didConnect = true;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
         }
 
         if (didConnect) {

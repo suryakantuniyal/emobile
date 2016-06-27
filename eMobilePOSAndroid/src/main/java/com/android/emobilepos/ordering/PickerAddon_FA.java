@@ -101,7 +101,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         global = (Global) activity.getApplication();
         prodAddonsHandler = new ProductAddonsHandler(activity);
         _prod_id = extras.getString("prod_id");
-        List<OrderProduct> orderProductAddons = OrderProductsHandler.getOrderProductAddons(_prod_id);
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(0).get("cat_id"));
         myGridView = (GridView) findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);

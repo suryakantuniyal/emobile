@@ -107,16 +107,17 @@ public class DeviceUtils {
                         sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
                 }
 
-        } else if (!TextUtils.isEmpty(myPref.getStarIPAddress())) {
-            edm = new EMSDeviceManager();
-            Global.mainPrinterManager = edm.getManager();
+        } else if (!TextUtils.isEmpty(myPref.getStarIPAddress()))
+            if (Global.mainPrinterManager == null || forceReload) {
+                edm = new EMSDeviceManager();
+                Global.mainPrinterManager = edm.getManager();
 
-            if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
-                    "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
-                sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n\r");
-            else
-                sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
-        }
+                if (Global.mainPrinterManager.loadMultiDriver(activity, Global.STAR, 48, true,
+                        "TCP:" + myPref.getStarIPAddress(), myPref.getStarPort()))
+                    sb.append(myPref.getStarIPAddress()).append(": ").append("Connected\n\r");
+                else
+                    sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
+            }
         return sb.toString();
     }
 }
