@@ -351,7 +351,7 @@ public class EMSReceiptHelper {
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
 
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getOrdprod_name(), prod.getProd_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 0));
             }
             listProd.clear();
         }
@@ -363,7 +363,7 @@ public class EMSReceiptHelper {
             sb.append(centerText("Items Returned"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getOrdprod_name(), prod.getProd_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 0));
             }
             listProd.clear();
         }
@@ -375,7 +375,7 @@ public class EMSReceiptHelper {
             sb.append(centerText("Department Sales"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getCat_name(), prod.getCat_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 0));
             }
             listProd.clear();
         }
@@ -387,7 +387,7 @@ public class EMSReceiptHelper {
             sb.append(centerText("Department Returns"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getCat_name(), prod.getCat_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 0));
             }
             listProd.clear();
         }

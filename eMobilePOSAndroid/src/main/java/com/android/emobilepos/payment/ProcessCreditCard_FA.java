@@ -71,7 +71,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -86,7 +85,6 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import interfaces.EMSCallBack;
-import util.StringUtil;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -231,7 +229,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         List<OrderProduct> orderProducts = global.orderProducts;
         double subtotalDbl = 0;
         for (OrderProduct products : orderProducts) {
-            subtotalDbl += Double.parseDouble(products.itemSubtotal);
+            subtotalDbl += Double.parseDouble(products.getItemSubtotal());
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         this.amountDueField = (EditText) findViewById(R.id.processCardAmount);

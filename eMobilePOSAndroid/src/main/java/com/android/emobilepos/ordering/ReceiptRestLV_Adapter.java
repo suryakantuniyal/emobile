@@ -186,7 +186,7 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
     public void setHolderValues(ViewHolder holder, int position) {
 
 		final int pos = position;
-		final String tempId = global.orderProducts.get(pos).ordprod_id;
+		final String tempId = global.orderProducts.get(pos).getOrdprod_id();
 		
 		if(!myPref.getPreferences(MyPreferences.pref_restaurant_mode)||(myPref.getPreferences(MyPreferences.pref_restaurant_mode)&&(Global.addonSelectionMap==null||(Global.addonSelectionMap!=null&&!Global.addonSelectionMap.containsKey(tempId)))))
 		{
@@ -204,7 +204,7 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						Intent intent = new Intent(activity, PickerAddon_FA.class);
-						String prodID = global.orderProducts.get(pos).prod_id;
+						String prodID = global.orderProducts.get(pos).getProd_id();
 						global.addonSelectionType = Global.addonSelectionMap.get(tempId);
 						
 						intent.putExtra("addon_map_key", tempId);
@@ -221,20 +221,20 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
 			}
 		}
 		
-		holder.itemQty.setText(global.orderProducts.get(position).ordprod_qty);
-		holder.itemName.setText(global.orderProducts.get(position).ordprod_name);
+		holder.itemQty.setText(global.orderProducts.get(position).getOrdprod_qty());
+		holder.itemName.setText(global.orderProducts.get(position).getOrdprod_name());
 		
-		String temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).overwrite_price));
+		String temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getOverwrite_price()));
 		holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 		
 		
-		holder.distQty.setText(global.orderProducts.get(position).disAmount);
-		temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).disTotal));
+		holder.distQty.setText(global.orderProducts.get(position).getDisAmount());
+		temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getDisTotal()));
 		holder.distAmount.setText(Global.getCurrencyFormat(temp));
 
 		// to-do calculate tax
 
-		temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).itemTotal));
+		temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getItemTotal()));
 		holder.granTotal.setText(Global.getCurrencyFormat(temp));
 
 	}

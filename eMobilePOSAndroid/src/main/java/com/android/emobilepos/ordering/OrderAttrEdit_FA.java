@@ -28,11 +28,11 @@ import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.ProductAttribute;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -566,7 +566,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                         temp.setProductId(ordprod_id);
                         temp.setId(ordprodattr_id);
                         global.ordProdAttr.add(temp);
-                        product.requiredProductAttributes.add(temp);
+                        product.getRequiredProductAttributes().add(temp);
                     } else {
                         if (modifyPosition == -1) {
                             ProductAttribute temp = new ProductAttribute();
@@ -576,7 +576,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                             temp.setProductId(ordprod_id);
                             temp.setId(ordprodattr_id);
                             global.ordProdAttr.add(temp);
-                            product.requiredProductAttributes.add(temp);
+                            product.getRequiredProductAttributes().add(temp);
                         } else
                             global.ordProdAttr.get(modifyPosition).setValue(attr_value);
                     }

@@ -109,17 +109,17 @@ public class TemplateHandler {
 				OrderProduct prod = global.orderProducts.get(i);
 				insert.bindString(index(_id), empStr); // _id
 				insert.bindString(index(cust_id), custID); // cust_id
-                insert.bindString(index(product_id), prod.prod_id == null ? "" : prod.prod_id); // product_id
-                insert.bindString(index(prod_sku), prod.prod_sku == null ? "" : prod.prod_sku); // product_sku
-                insert.bindString(index(prod_upc), prod.prod_upc == null ? "" : prod.prod_upc); // product_upc
-				insert.bindString(index(quantity), prod.ordprod_qty == null ? "0" : prod.ordprod_qty); // quantity
-				insert.bindString(index(price_level_id), prod.pricelevel_id == null ? "" : prod.pricelevel_id); // price_level_id
-				insert.bindString(index(price_level), prod.priceLevelName == null ? "" : prod.priceLevelName); // price_level
+                insert.bindString(index(product_id), prod.getProd_id() == null ? "" : prod.getProd_id()); // product_id
+                insert.bindString(index(prod_sku), prod.getProd_sku() == null ? "" : prod.getProd_sku()); // product_sku
+                insert.bindString(index(prod_upc), prod.getProd_upc() == null ? "" : prod.getProd_upc()); // product_upc
+				insert.bindString(index(quantity), prod.getOrdprod_qty() == null ? "0" : prod.getOrdprod_qty()); // quantity
+				insert.bindString(index(price_level_id), prod.getPricelevel_id() == null ? "" : prod.getPricelevel_id()); // price_level_id
+				insert.bindString(index(price_level), prod.getPriceLevelName() == null ? "" : prod.getPriceLevelName()); // price_level
 
-				insert.bindString(index(name), prod.ordprod_name == null ? "" : prod.ordprod_name); // name
+				insert.bindString(index(name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name()); // name
 				// insert.bindString(index(price),
 				// global.cur_orders.get(i).getValue());
-				insert.bindString(index(overwrite_price), prod.overwrite_price == null ? "0" : prod.overwrite_price); // cust_id
+				insert.bindString(index(overwrite_price), prod.getOverwrite_price() == null ? "0" : prod.getOverwrite_price()); // cust_id
 				// insert.bindString(index(itemTotal),
 				// global.orderProducts.get(i).getSetData(itemTotal, true,
 				// empStr));

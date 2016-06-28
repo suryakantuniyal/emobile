@@ -47,6 +47,7 @@ import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
 import com.android.support.Global;
 import com.android.support.MyEditText;
@@ -61,6 +62,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import util.JsonUtils;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
         MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback {
@@ -709,9 +712,10 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
-            Gson gson = new Gson();
+            Gson gson = JsonUtils.getInstance();
             product.setAssignedSeat(((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
-            intent.putExtra("product", gson.toJson(product));
+            String json = gson.toJson(new OrderProduct(product));
+            intent.putExtra("orderProduct", json);
 //            intent.putExtra("prod_id", product.getId());
 //            intent.putExtra("prod_name", product.getProdName());
 //            intent.putExtra("prod_on_hand", product.getProdOnHand());

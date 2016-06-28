@@ -39,7 +39,6 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.TaxesCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -151,24 +150,24 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
                 temp = Global.consignSummaryMap.get(Global.consignMapKey.get(i)).get("return_index");
                 if (temp != null) {
                     index = Integer.parseInt(temp);
-                    temp = Global.cons_return_products.get(index).ordprod_qty;
-                    onHandQty = Double.parseDouble(Global.cons_return_products.get(index).onHand);
+                    temp = Global.cons_return_products.get(index).getOrdprod_qty();
+                    onHandQty = Double.parseDouble(Global.cons_return_products.get(index).getOnHand());
                     returnQty = Double.parseDouble(temp);
 
                     consTransaction.ConsReturn_Qty = temp;
-                    temp = Global.cons_return_products.get(index).ord_id;
+                    temp = Global.cons_return_products.get(index).getOrd_id();
                     consTransaction.ConsReturn_ID = temp;
                 }
 
                 temp = Global.consignSummaryMap.get(Global.consignMapKey.get(i)).get("fillup_index");
                 if (temp != null) {
                     index = Integer.parseInt(temp);
-                    temp = Global.cons_fillup_products.get(index).ordprod_qty;
-                    onHandQty = Double.parseDouble(Global.cons_fillup_products.get(index).onHand);
+                    temp = Global.cons_fillup_products.get(index).getOrdprod_qty();
+                    onHandQty = Double.parseDouble(Global.cons_fillup_products.get(index).getOnHand());
                     fillupQty = Double.parseDouble(temp);
 
                     consTransaction.ConsDispatch_Qty = temp;
-                    temp = Global.cons_fillup_products.get(index).ord_id;
+                    temp = Global.cons_fillup_products.get(index).getOrd_id();
                     consTransaction.ConsDispatch_ID = temp;
 
                 }
@@ -218,12 +217,12 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             double temp = Double.parseDouble(consTransaction.ConsInvoice_Qty);
 
             // add order to db
-            ord.ordprod_qty = Double.toString(temp);
-            ord.ordprod_name = Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("ordprod_name");
-            ord.ordprod_desc = Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("ordprod_desc");
-            ord.prod_id = Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_id");
-            ord.overwrite_price = Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_price");
-            ord.ord_id = Global.consignment_order.ord_id;
+            ord.setOrdprod_qty(Double.toString(temp));
+            ord.setOrdprod_name(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("ordprod_name"));
+            ord.setOrdprod_desc(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("ordprod_desc"));
+            ord.setProd_id(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_id"));
+            ord.setOverwrite_price(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_price"));
+            ord.setOrd_id(Global.consignment_order.ord_id);
 
 
             if (global.orderProducts == null) {
@@ -234,7 +233,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             String randomUUIDString = uuid.toString();
 
             global.orderProducts.add(ord);
-            ord.ordprod_id = randomUUIDString;
+            ord.setOrdprod_id(randomUUIDString);
 
             // end of adding to db;
             ordTotal += Double.parseDouble(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("invoice_total"));
@@ -454,7 +453,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             Global.cons_return_order.ord_type = Global.OrderType.CONSIGNMENT_RETURN.getCodeString();
             ordersHandler.insert(Global.cons_return_order);
             for (OrderProduct product : Global.cons_return_products) {
-                product.ord_id = Global.cons_return_order.ord_id;
+                product.setOrd_id(Global.cons_return_order.ord_id);
             }
             orderProductsHandler.insert(Global.cons_return_products);
             updateConsignmentTransactionIds(Global.OrderType.CONSIGNMENT_RETURN, Global.cons_return_order.ord_id);
@@ -467,7 +466,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             Global.cons_fillup_order.ord_signature = encodedImage;
             ordersHandler.insert(Global.cons_fillup_order);
             for (OrderProduct product : Global.cons_fillup_products) {
-                product.ord_id = Global.cons_fillup_order.ord_id;
+                product.setOrd_id(Global.cons_fillup_order.ord_id);
             }
             orderProductsHandler.insert(Global.cons_fillup_products);
             updateConsignmentTransactionIds(Global.OrderType.CONSIGNMENT_FILLUP, Global.cons_fillup_order.ord_id);

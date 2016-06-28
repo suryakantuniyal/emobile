@@ -50,7 +50,6 @@ import com.android.emobilepos.models.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
-import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -892,11 +891,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         int ind = position - allInfoLeft.size() - 2;
 
 
-                        holder.textLine1.setText(orderedProd.get(ind).ordprod_name);
-                        holder.textLine2.setText(orderedProd.get(ind).ordprod_desc);
+                        holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
+                        holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
 
-                        holder.ordProdQty.setText(orderedProd.get(ind).ordprod_qty + " x");
-                        holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).overwrite_price));
+                        holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
+                        holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getOverwrite_price()));
 
 
                         break;
@@ -948,14 +947,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             } else if (type == 2) {
                 int ind = position - allInfoLeft.size() - 2;
 
-                holder.textLine1.setText(orderedProd.get(ind).ordprod_name);
-                holder.textLine2.setText(orderedProd.get(ind).ordprod_desc);
+                holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
+                holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
 
-                holder.ordProdQty.setText(orderedProd.get(ind).ordprod_qty + " x");
-                holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).overwrite_price));
+                holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
+                holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getOverwrite_price()));
 
 
-                imageLoader.displayImage(imgHandler.getSpecificLink("I", orderedProd.get(ind).prod_id), holder.iconImage, options);
+                imageLoader.displayImage(imgHandler.getSpecificLink("I", orderedProd.get(ind).getProd_id()), holder.iconImage, options);
             }
 
             return convertView;

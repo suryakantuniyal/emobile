@@ -1,8 +1,5 @@
 package com.android.emobilepos.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 
 /**
@@ -23,7 +20,7 @@ public class OrderSeatProduct {
 
     public OrderSeatProduct(OrderProduct orderProduct) {
         this.orderProduct = orderProduct;
-        this.orderProduct.seatGroupId = this.seatGroupId;
+        this.orderProduct.setSeatGroupId(this.seatGroupId);
         this.rowType = OrderProductListAdapter.RowType.TYPE_ITEM;
     }
 
@@ -34,7 +31,7 @@ public class OrderSeatProduct {
     public void setSeatGroupId(int seatGroupId) {
         this.seatGroupId = seatGroupId;
         if (orderProduct != null) {
-            orderProduct.seatGroupId = seatGroupId;
+            orderProduct.setSeatGroupId(seatGroupId);
         }
     }
 }

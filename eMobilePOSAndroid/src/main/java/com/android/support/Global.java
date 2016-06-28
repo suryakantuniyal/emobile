@@ -76,7 +76,6 @@ import java.util.TimerTask;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -1090,7 +1089,7 @@ public class Global extends MultiDexApplication {
         boolean found = false;
 
         for (int i = size - 1; i >= 0; i--) {
-            if (this.orderProducts.get(i).prod_id.equals(prodID) && !orderProducts.get(i).isReturned) {
+            if (this.orderProducts.get(i).getProd_id().equals(prodID) && !orderProducts.get(i).isReturned()) {
                 orderIndex = i;
                 found = true;
                 break;
@@ -1108,12 +1107,12 @@ public class Global extends MultiDexApplication {
             value = new String();
             if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                 value = Global.formatNumber(true, sum);
-                this.orderProducts.get(orderIndex).ordprod_qty = value;
+                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
                 this.qtyCounter.put(prodID, Double.toString(sum));
             } else {
                 value = Global.formatNumber(false, sum);
-                this.orderProducts.get(orderIndex).ordprod_qty = value;
+                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
                 this.qtyCounter.put(prodID, Integer.toString((int) sum));
             }
@@ -1124,7 +1123,7 @@ public class Global extends MultiDexApplication {
     public void refreshParticularOrder(Activity activity, int position, Product product) {
         OrderProduct orderedProducts = this.orderProducts.get(position);
         MyPreferences myPref = new MyPreferences(activity);
-        String newPickedOrders = orderedProducts.ordprod_qty;
+        String newPickedOrders = orderedProducts.getOrdprod_qty();
         double sum;
 
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
@@ -1155,18 +1154,18 @@ public class Global extends MultiDexApplication {
         if (itemTotal < 0)
             itemTotal = 0.00;
 
-        orderedProducts.itemSubtotal = Double.toString(itemTotal);
+        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
         double discountRate = 0;
-        if (orderedProducts.discount_is_fixed.equals("1")) {
-            discountRate = Double.parseDouble(orderedProducts.discount_value);
+        if (orderedProducts.getDiscount_is_fixed().equals("1")) {
+            discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
         } else {
-            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.discount_value))).doubleValue();
+            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.getDiscount_value()))).doubleValue();
             discountRate = (val / 100);
         }
 
-        orderedProducts.itemTotal = Double.toString(total.doubleValue() - discountRate);
-        orderedProducts.overwrite_price = priceLevel.toString();
-        orderedProducts.prod_price_updated = "0";
+        orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
+        orderedProducts.setOverwrite_price(priceLevel.toString());
+        orderedProducts.setProd_price_updated("0");
 
 
         StringBuilder sb = new StringBuilder();
