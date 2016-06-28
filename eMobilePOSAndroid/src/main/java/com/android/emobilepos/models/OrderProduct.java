@@ -741,4 +741,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public void setProductPriceLevelTotal(String productPriceLevelTotal) {
         this.productPriceLevelTotal = productPriceLevelTotal;
     }
+
+    public void resetMixMatch() {
+        this.setMixAndMatchDiscounts(null);
+        this.setMixMatchQtyApplied(0);
+    }
 }

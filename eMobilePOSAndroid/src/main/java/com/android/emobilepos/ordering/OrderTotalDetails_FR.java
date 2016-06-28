@@ -437,6 +437,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         HashMap<String, MixMatchProductGroup> mixMatchProductGroupHashMap = new HashMap<String, MixMatchProductGroup>();
         for (OrderProduct product : orderProducts) {
             BigDecimal overwrite = Global.getBigDecimalNum(product.getOverwrite_price());
+            product.resetMixMatch();
+
             PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
             if (TextUtils.isEmpty(product.getPricesXGroupid()) || product.isVoid()) {
                 continue;
@@ -452,7 +454,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 MixMatchProductGroup mixMatchProductGroup = mixMatchProductGroupHashMap.get(product.getPricesXGroupid());
                 if (mixMatchProductGroup != null) {
                     mixMatchProductGroup.getOrderProducts().add(product);
-                    mixMatchProductGroup.setQuantity(Integer.parseInt(mixMatchProductGroup.getQuantity() + product.getOrdprod_qty()));
+                    mixMatchProductGroup.setQuantity(mixMatchProductGroup.getQuantity() + Integer.parseInt(product.getOrdprod_qty()));
                 } else {
                     mixMatchProductGroup = new MixMatchProductGroup();
                     mixMatchProductGroup.setOrderProducts(new ArrayList<OrderProduct>());
@@ -538,12 +540,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     BigDecimal discountSplitAmount;
                     if (mixMatch.getDiscountType().equalsIgnoreCase("Fixed")) {
                         discountSplitAmount = new BigDecimal(mixMatch.getPrice())
-                                .multiply(BigDecimal.valueOf(mixMatch.getQty()));
+                                .multiply(BigDecimal.valueOf(discount.getQty()));
                     } else {
                         BigDecimal percent = new BigDecimal(100 - mixMatch.getPrice()).divide(new BigDecimal(100));
-                        discountSplitAmount = new BigDecimal(product.getProd_price())
+                        discountSplitAmount = product.getMixMatchOriginalPrice()
                                 .multiply(percent)
-                                .multiply(BigDecimal.valueOf(mixMatch.getQty()));
+                                .multiply(BigDecimal.valueOf(discount.getQty()));
                     }
                     lineTotal = lineTotal.add(discountSplitAmount);
                 }
@@ -553,7 +555,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             .multiply(product.getMixMatchOriginalPrice());
                     lineTotal = lineTotal.add(amountNotDiscounted);
                 }
-                String prod_price = lineTotal.divide(new BigDecimal(product.getOrdprod_qty())).toString();
+                String prod_price = lineTotal.divide(new BigDecimal(product.getOrdprod_qty()), 4, RoundingMode.HALF_UP).toString();
                 product.setPrices(prod_price, product.getOrdprod_qty());
             }
         }

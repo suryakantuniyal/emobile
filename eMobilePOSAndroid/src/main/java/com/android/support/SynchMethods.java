@@ -83,7 +83,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -1418,7 +1417,7 @@ public class SynchMethods {
             DeviceTableDAO.insert(jsonRequest);
         } catch (Exception e) {
             e.printStackTrace();
-    }
+        }
     }
 
     private void synchProdCatXref(resynchAsync task) throws IOException, SAXException {
@@ -1771,6 +1770,8 @@ public class SynchMethods {
             int i = 0;
             while (reader.hasNext()) {
                 MixMatch mixMatch = gson.fromJson(reader, MixMatch.class);
+                //TODO remove setDiscountOddsItems false
+                mixMatch.setDiscountOddsItems(false);
                 mixMatches.add(mixMatch);
                 i++;
                 if (i == 1000) {
@@ -1842,7 +1843,7 @@ public class SynchMethods {
     private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {
 
         try {
-        task.updateProgress(getString(R.string.sync_dload_ordprodattr));
+            task.updateProgress(getString(R.string.sync_dload_ordprodattr));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
             String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1853,7 +1854,7 @@ public class SynchMethods {
                 OrderProductAttributeDAO.insert(jsonRequest);
             } catch (Exception e) {
                 e.printStackTrace();
-    }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
