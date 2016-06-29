@@ -151,4 +151,12 @@ public class MixMatch extends RealmObject {
     public void setXyzSequence(int xyzSequence) {
         this.xyzSequence = xyzSequence;
     }
+
+    public boolean isPercent() {
+        return this.getDiscountType().equalsIgnoreCase("Percent");
+    }
+
+    public boolean isFixed() {
+        return this.getDiscountType().equalsIgnoreCase("Fixed");
+    }
 }

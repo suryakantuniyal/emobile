@@ -28,6 +28,7 @@ import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.MixAndMatchDiscount;
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
+import com.android.emobilepos.models.MixMatchXYZProduct;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Tax;
@@ -39,6 +40,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -475,18 +478,88 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 if (mixMatchType == 1) {
                     applyMixMatch(group, mixMatches);
                 } else {
-                    applyXYZMixMatchToGroup(group, mixMatch);
+                    if (mixMatches.size() == 2) {
+                        applyXYZMixMatchToGroup(group, mixMatches);
+                    }
                 }
             }
         }
     }
 
-    private void applyXYZMixMatchToGroup(MixMatchProductGroup group, MixMatch mixMatch) {
-        for (OrderProduct product : group.getOrderProducts()) {
-            if(TextUtils.isEmpty(product.getPricesXGroupid()) || product.isVoid()){
-                continue;
-            }
+    private void applyXYZMixMatchToGroup(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches) {
+        MixMatch mixMatch1 = mixMatches.get(0);
+        MixMatch mixMatch2 = mixMatches.get(1);
+        int qtyRequired = mixMatch1.getQty();
+        int qtyDiscounted = mixMatch2.getQty();
+        Double amount = mixMatch2.getPrice();
+        boolean isPercent = mixMatch2.isPercent();
+        if (group.getQuantity() < qtyRequired) {
+            return;
+        }
 
+        int qtyAtRegularPrice;
+        int qtyAtDiscountPrice;
+        int groupQty = group.getQuantity();
+        int completeGroupSize = qtyRequired + qtyDiscounted;
+        int numberOfCompletedGroups = groupQty / completeGroupSize;
+        int remainingItems = groupQty % completeGroupSize;
+
+        qtyAtRegularPrice = numberOfCompletedGroups * qtyRequired;
+        qtyAtDiscountPrice = numberOfCompletedGroups * qtyDiscounted;
+
+        if (remainingItems > qtyRequired) {
+            qtyAtRegularPrice += qtyRequired;
+            qtyAtDiscountPrice += (remainingItems - qtyRequired);
+        } else {
+            qtyAtRegularPrice += remainingItems;
+        }
+        List<MixMatchXYZProduct> mixMatchXYZProducts = new ArrayList<MixMatchXYZProduct>();
+
+        for (OrderProduct product : group.getOrderProducts()) {
+            if (mixMatchXYZProducts.contains(product.getProd_id())) {
+                int indexOf = mixMatchXYZProducts.indexOf(product.getProd_id());
+                MixMatchXYZProduct mmxyz = mixMatchXYZProducts.get(indexOf);
+                mmxyz.setQuantity(mmxyz.getQuantity() + Integer.parseInt(product.getOrdprod_qty()));
+                mmxyz.getOrderProducts().add(product);
+                mmxyz.setPrice(product.getMixMatchOriginalPrice());
+                mixMatchXYZProducts.set(indexOf, mmxyz);
+            } else {
+                MixMatchXYZProduct mmxyz = new MixMatchXYZProduct();
+                mmxyz.setProductId(product.getProd_id());
+                mmxyz.setQuantity(Integer.parseInt(product.getOrdprod_qty()));
+                mmxyz.getOrderProducts().add(product);
+                mmxyz.setPrice(product.getMixMatchOriginalPrice());
+                mixMatchXYZProducts.add(mmxyz);
+            }
+        }
+        Collections.sort(mixMatchXYZProducts, new Comparator<MixMatchXYZProduct>() {
+            @Override
+            public int compare(MixMatchXYZProduct a, MixMatchXYZProduct b) {
+                return a.getPrice().compareTo(b.getPrice());
+            }
+        });
+        global.orderProducts.clear();
+
+
+        boolean isGroupBySKU = myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku);
+        for (MixMatchXYZProduct xyzProduct : mixMatchXYZProducts) {
+            int prodQty = xyzProduct.getQuantity();
+            if (prodQty <= qtyAtRegularPrice) {
+                if (isGroupBySKU) {
+                    OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
+                    orderProduct.setOrdprod_qty(String.valueOf(prodQty));
+                    orderProduct.setMixMatchQtyApplied(prodQty);
+                    global.orderProducts.add(orderProduct);
+                } else {
+                    for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
+                        orderProduct.setOrdprod_qty("1");
+                        orderProduct.setMixMatchQtyApplied(1);
+                    }
+                }
+                qtyAtRegularPrice -= prodQty;
+            } else {
+
+            }
         }
 
     }
@@ -495,7 +568,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         MixMatch firstMixMatch = mixMatches.get(0);
         if (group.getQuantity() >= firstMixMatch.getQty() && firstMixMatch.isDiscountOddsItems()) {
             for (OrderProduct product : group.getOrderProducts()) {
-                if (firstMixMatch.getDiscountType().equalsIgnoreCase("Fixed")) {
+                if (firstMixMatch.isFixed()) {
                     product.setProd_price(String.valueOf(firstMixMatch.getPrice()));
                 } else {
                     double percent = (100 - firstMixMatch.getPrice()) / 100;
@@ -546,7 +619,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 for (MixAndMatchDiscount discount : product.getMixAndMatchDiscounts()) {
                     MixMatch mixMatch = discount.getMixMatch();
                     BigDecimal discountSplitAmount;
-                    if (mixMatch.getDiscountType().equalsIgnoreCase("Fixed")) {
+                    if (mixMatch.isFixed()) {
                         discountSplitAmount = new BigDecimal(mixMatch.getPrice())
                                 .multiply(BigDecimal.valueOf(discount.getQty()));
                     } else {
