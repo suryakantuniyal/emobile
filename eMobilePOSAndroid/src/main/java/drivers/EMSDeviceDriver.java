@@ -520,11 +520,11 @@ public class EMSDeviceDriver {
                             for (OrderProduct addon : addons) {
                                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                         "- " + addon.getOrdprod_name(),
-                                        Global.getCurrencyFormat(addon.getOverwrite_price()), lineWidth, 2));
+                                        Global.getCurrencyFormat(addon.getFinalPrice()), lineWidth, 2));
                             }
                         }
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                Global.getCurrencyFormat(orderProducts.get(i).getOverwrite_price()), lineWidth, 3))
+                                Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()), lineWidth, 3))
                                 .append("\n");
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                 Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3)).append("\n");
@@ -539,7 +539,7 @@ public class EMSDeviceDriver {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
                                 orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name(), lineWidth, 1));
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                Global.getCurrencyFormat(orderProducts.get(i).getOverwrite_price()), lineWidth, 3))
+                                Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()), lineWidth, 3))
                                 .append("\n");
 
                         if (orderProducts.get(i).getDiscount_id() != null && !orderProducts.get(i).getDiscount_id().isEmpty()) {
@@ -578,7 +578,7 @@ public class EMSDeviceDriver {
                             .append("\n");
 
                     sb.append(String.format(tempSB.toString(), "   ", orderProducts.get(i).getOrdprod_qty(),
-                            Global.getCurrencyFormat(orderProducts.get(i).getOverwrite_price()),
+                            Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()),
                             Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()))).append("\n\n");
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
@@ -2170,7 +2170,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
 
             for (OrderProduct prod : listProd) {
-                sb.append(textHandler.threeColumnLineItem(prod.getOrdprod_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 20, lineWidth, 0));
+                sb.append(textHandler.threeColumnLineItem(prod.getOrdprod_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.getProd_upc(), "", lineWidth, 3));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("SKU:" + prod.getProd_sku(), "", lineWidth, 3));
@@ -2257,7 +2257,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString("Items Returned", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
             for (OrderProduct prod : listProd) {
-                sb.append(textHandler.threeColumnLineItem(prod.getOrdprod_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 20, lineWidth, 0));
+                sb.append(textHandler.threeColumnLineItem(prod.getOrdprod_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 20, lineWidth, 0));
                 if (printDetails) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("UPC:" + prod.getProd_upc(), "", lineWidth, 3));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("SKU:" + prod.getProd_sku(), "", lineWidth, 3));
@@ -2272,7 +2272,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString("Department Sales", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
             for (OrderProduct prod : listProd) {
-                sb.append(textHandler.threeColumnLineItem(prod.getCat_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 20, lineWidth, 0));
+                sb.append(textHandler.threeColumnLineItem(prod.getCat_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 20, lineWidth, 0));
             }
             listProd.clear();
         }
@@ -2283,7 +2283,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString("Department Returns", lineWidth));
             sb.append(textHandler.threeColumnLineItem("Name", 60, "Qty", 20, "Total", 20, lineWidth, 0));
             for (OrderProduct prod : listProd) {
-                sb.append(textHandler.threeColumnLineItem(prod.getCat_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getOverwrite_price()), 20, lineWidth, 0));
+                sb.append(textHandler.threeColumnLineItem(prod.getCat_name(), 60, prod.getOrdprod_qty(), 20, Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 20, lineWidth, 0));
             }
             listProd.clear();
         }

@@ -48,10 +48,10 @@ public class OrderCalculator {
         BigDecimal prodQty = new BigDecimal(product.getOrdprod_qty());
         if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
             if (!taxId.isEmpty()) {
-                taxRate = taxHandler.getTaxRate(taxId, product.getProd_taxtype(), Double.parseDouble(product.getOverwrite_price()));
+                taxRate = taxHandler.getTaxRate(taxId, product.getProd_taxtype(), Double.parseDouble(product.getFinalPrice()));
                 prod_taxId = product.getProd_taxtype();
             } else {
-                taxRate = taxHandler.getTaxRate(product.getProd_taxcode(), product.getProd_taxtype(), Double.parseDouble(product.getOverwrite_price()));
+                taxRate = taxHandler.getTaxRate(product.getProd_taxcode(), product.getProd_taxtype(), Double.parseDouble(product.getFinalPrice()));
                 prod_taxId = product.getProd_taxcode();
             }
         } else {
@@ -64,7 +64,7 @@ public class OrderCalculator {
         if (isVAT) {
             if (product.getProd_istaxable().equals("1")) {
                 if (product.getProd_price_updated().equals("0")) {
-                    BigDecimal curr_prod_price = new BigDecimal(product.getOverwrite_price());
+                    BigDecimal curr_prod_price = new BigDecimal(product.getFinalPrice());
                     BigDecimal new_prod_price = getProductPrice(curr_prod_price,
                             new BigDecimal(taxRate).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP));
                     new_prod_price = new_prod_price.setScale(4, RoundingMode.HALF_UP);

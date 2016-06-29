@@ -13,6 +13,7 @@ import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,8 +146,11 @@ public class OrderProductsHandler {
                 insert.bindString(index(prod_sku), prod.getProd_sku() == null ? "" : prod.getProd_sku()); // prod_sku
                 insert.bindString(index(prod_upc), prod.getProd_upc() == null ? "" : prod.getProd_upc()); // prod_upc
                 insert.bindString(index(ordprod_qty), TextUtils.isEmpty(prod.getOrdprod_qty()) ? "0" : prod.getOrdprod_qty()); // ordprod_qty
-                insert.bindString(index(overwrite_price),
-                        TextUtils.isEmpty(prod.getOverwrite_price()) ? "0" : prod.getOverwrite_price()); // overwrite_price
+                if (prod.getOverwrite_price() != null) {
+                    insert.bindDouble(index(overwrite_price), prod.getOverwrite_price().doubleValue());
+                } else {
+                    insert.bindNull(index(overwrite_price));
+                }
                 insert.bindString(index(reason_id), prod.getReason_id() == null ? "" : prod.getReason_id()); // reason_id
                 insert.bindString(index(ordprod_name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name()); // ordprod_name
                 if (prod.getOrdprod_comment() != null && !prod.getOrdprod_comment().isEmpty())
@@ -224,7 +228,7 @@ public class OrderProductsHandler {
             insert.bindString(index(prod_id), prod.getProd_id() == null ? "" : prod.getProd_id()); // prod_id
             insert.bindString(index(ordprod_qty), TextUtils.isEmpty(prod.getOrdprod_qty()) ? "0" : prod.getOrdprod_qty()); // ordprod_qty
             insert.bindString(index(overwrite_price),
-                    TextUtils.isEmpty(prod.getOverwrite_price()) ? "0" : prod.getOverwrite_price()); // overwrite_price
+                    prod.getOverwrite_price() == null ? "0" : prod.getOverwrite_price().toString()); // overwrite_price
             insert.bindString(index(reason_id), prod.getReason_id() == null ? "" : prod.getReason_id()); // reason_id
             insert.bindString(index(ordprod_name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name()); // ordprod_name
             insert.bindString(index(ordprod_desc), prod.getOrdprod_desc() == null ? "" : prod.getOrdprod_desc());
@@ -348,7 +352,7 @@ public class OrderProductsHandler {
 
     public void deleteAllOrdProd(String _ord_id) {
         DBManager._db.delete(table_name, "ord_id = ?", new String[]{_ord_id});
-        Log.d("Delete all order products:", _ord_id);
+        Log.d("Delete all orderprod:", _ord_id);
     }
 
     public void emptyTable() {
@@ -410,7 +414,8 @@ public class OrderProductsHandler {
         product.setProd_sku(cursor.getString(cursor.getColumnIndex(prod_sku)));
         product.setProd_upc(cursor.getString(cursor.getColumnIndex(prod_upc)));
         product.setOrdprod_qty(cursor.getString(cursor.getColumnIndex(ordprod_qty)));
-        product.setOverwrite_price(cursor.getString(cursor.getColumnIndex(overwrite_price)));
+        product.setOverwrite_price(cursor.getString(cursor.getColumnIndex(overwrite_price)) == null
+                ? null : new BigDecimal(cursor.getString(cursor.getColumnIndex(overwrite_price))));
         product.setReason_id(cursor.getString(cursor.getColumnIndex(reason_id)));
         product.setOrdprod_name(cursor.getString(cursor.getColumnIndex(ordprod_name)));
         product.setOrdprod_desc(cursor.getString(cursor.getColumnIndex(ordprod_desc)));
@@ -451,8 +456,7 @@ public class OrderProductsHandler {
         Cursor cursor = getCursorData(orderId);
         if (cursor.moveToFirst()) {
             do {
-                OrderProduct prod = new OrderProduct();
-                products.add(prod);
+                products.add(getOrderProduct(cursor));
             } while (cursor.moveToNext());
         }
         return products;
@@ -491,7 +495,7 @@ public class OrderProductsHandler {
                 orders[i].setOrdprod_id(cursor.getString(cursor.getColumnIndex(ordprod_id)));
                 orders[i].setOrdprod_name(cursor.getString(cursor.getColumnIndex(ordprod_name)));
                 orders[i].setOrdprod_desc(cursor.getString(cursor.getColumnIndex(ordprod_desc)));
-                orders[i].setOverwrite_price((format(cursor.getString(cursor.getColumnIndex(overwrite_price)))));
+                orders[i].setOverwrite_price(new BigDecimal(format(cursor.getString(cursor.getColumnIndex(overwrite_price)))));
                 orders[i].setItemTotal((format(cursor.getString(cursor.getColumnIndex("total")))));
                 orders[i].setOrdprod_qty((cursor.getString(cursor.getColumnIndex(ordprod_qty))));
                 orders[i].setAddon((cursor.getString(cursor.getColumnIndex(addon))));
@@ -664,7 +668,7 @@ public class OrderProductsHandler {
                 products.setOrdprod_qty(data);
 
                 data = cursor.getString(cursor.getColumnIndex(overwrite_price));
-                products.setOverwrite_price(data);
+                products.setOverwrite_price(new BigDecimal(format(data)));
 
                 products.setProd_price_points(cursor.getString(cursor.getColumnIndex(prodPricePoints)));
 
@@ -725,7 +729,7 @@ public class OrderProductsHandler {
                 ordProd.setProd_sku(c.getString(i_prod_sku));
                 ordProd.setProd_upc(c.getString(i_prod_upc));
                 ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
-                ordProd.setOverwrite_price(c.getString(i_overwrite_price));
+                ordProd.setOverwrite_price(new BigDecimal(c.getDouble(i_overwrite_price)));
 
                 listOrdProd.add(ordProd);
             } while (c.moveToNext());
@@ -782,7 +786,7 @@ public class OrderProductsHandler {
                 ordProd.setCat_name(c.getString(i_cat_name));
                 ordProd.setCat_id(c.getString(i_cat_id));
                 ordProd.setOrdprod_qty(c.getString(i_ordprod_qty));
-                ordProd.setOverwrite_price(c.getString(i_overwrite_price));
+                ordProd.setOverwrite_price(new BigDecimal(c.getDouble(i_overwrite_price)));
 
                 listOrdProd.add(ordProd);
             } while (c.moveToNext());

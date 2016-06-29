@@ -676,7 +676,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         orderedProducts.setOrdprod_qty(val);
-        orderedProducts.setOverwrite_price("0.00"); //Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
+        orderedProducts.setOverwrite_price(null); //Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
 
         orderedProducts.setProd_taxValue(taxTotal);
         orderedProducts.setDiscount_value(disTotal);
@@ -1120,7 +1120,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 //        if (myPref.isSam4s(true, true)) {
         String row1 = ord.getOrdprod_name();
-        String row2 = Global.formatDoubleStrToCurrency(ord.getOverwrite_price());
+        String row2 = Global.formatDoubleStrToCurrency(ord.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
 //        } else if (myPref.isPAT100()) {
@@ -1272,7 +1272,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);
 
-        orderedProducts.setOverwrite_price(prLevTotal);
+        orderedProducts.setProd_price(prLevTotal);
         orderedProducts.setProd_taxValue(taxTotal);
         orderedProducts.setDiscount_value(disTotal);
 
@@ -1451,7 +1451,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 int pos = modifyOrderPosition;
                 itemName = global.orderProducts.get(pos).getOrdprod_name();
 
-                rightTitle[INDEX_PRICE_LEVEL] = global.orderProducts.get(pos).getOverwrite_price();
+                rightTitle[INDEX_PRICE_LEVEL] = global.orderProducts.get(pos).getFinalPrice();
                 taxTotal = global.orderProducts.get(pos).getTaxTotal();
                 disTotal = global.orderProducts.get(pos).getDisTotal();
 

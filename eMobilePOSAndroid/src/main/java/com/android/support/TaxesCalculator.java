@@ -2,7 +2,6 @@ package com.android.support;
 
 import android.app.Activity;
 
-import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
@@ -61,22 +60,19 @@ public class TaxesCalculator {
 
     public void calculateTaxes() {
         TaxesHandler taxHandler = new TaxesHandler(activity);
-        ProductsHandler productsHandler = new ProductsHandler(activity);
-        List<Discount> discountList = productsHandler.getDiscounts();
         String taxAmount = "0.00";
         String prod_taxId = "";
-        List<Tax> taxList = taxHandler.getTaxes();
 
         if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
             if (!taxID.isEmpty()) {
                 taxAmount = Global.formatNumToLocale(
                         Double.parseDouble(taxHandler.getTaxRate(taxID, orderProduct.getProd_taxtype(),
-                                Global.getBigDecimalNum(orderProduct.getOverwrite_price()).doubleValue())));
+                                Global.getBigDecimalNum(orderProduct.getFinalPrice()).doubleValue())));
                 prod_taxId = orderProduct.getProd_taxtype();
             } else {
                 taxAmount = Global.formatNumToLocale(Double.parseDouble(taxHandler.getTaxRate(
                         orderProduct.getProd_taxcode(), orderProduct.getProd_taxtype(),
-                        Global.getBigDecimalNum(orderProduct.getOverwrite_price()).doubleValue())));
+                        Global.getBigDecimalNum(orderProduct.getFinalPrice()).doubleValue())));
                 prod_taxId = orderProduct.getProd_taxcode();
             }
         } else {
@@ -93,7 +89,7 @@ public class TaxesCalculator {
         if (isVAT) {
             if (orderProduct.getProd_istaxable().equals("1")) {
                 if (orderProduct.getProd_price_updated().equals("0")) {
-                    BigDecimal _curr_prod_price = Global.getBigDecimalNum(orderProduct.getOverwrite_price());
+                    BigDecimal _curr_prod_price = Global.getBigDecimalNum(orderProduct.getFinalPrice());
                     BigDecimal _new_prod_price = getProductPrice(_curr_prod_price,
                             new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(6, RoundingMode.HALF_UP));
                     _new_prod_price = _new_prod_price.setScale(6, RoundingMode.HALF_UP);
@@ -257,7 +253,6 @@ public class TaxesCalculator {
     private void calculateGlobalTax(BigDecimal _subtotal, BigDecimal qty, boolean isVat) {
         int size = listMapTaxes.size();
 
-        List<BigDecimal> listOrderTaxesTotal = new ArrayList<BigDecimal>();
 
         String val = "0";
         BigDecimal temp = new BigDecimal("0");
@@ -305,7 +300,6 @@ public class TaxesCalculator {
     private void calculateRetailGlobalTax(BigDecimal _sub_total, String tax_rate, BigDecimal qty, boolean isVat) {
         int size = listMapTaxes.size();
         String val = "0";
-        List<BigDecimal> listOrderTaxesTotal = new ArrayList<BigDecimal>();
 
         BigDecimal temp = new BigDecimal("0");
         BigDecimal _total_tax = new BigDecimal("0");

@@ -193,8 +193,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.getOrdprod_id());
 
             BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
-            orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.getOverwrite_price()).multiply(qty));
-            globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getOverwrite_price()).setScale(4, RoundingMode.HALF_UP)
+            orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
+            globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)
                     .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
 //            orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.prod_taxValue));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
@@ -206,9 +206,9 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
             for (OrderProduct addon : addons) {
                 addProductLine("- " + addon.getOrdprod_name(),
-                        Global.getCurrencyFormat(addon.getOverwrite_price()), 3);
+                        Global.getCurrencyFormat(addon.getFinalPrice()), 3);
             }
-            ((TextView) productSectionLL.findViewById(R.id.productPricetextView)).setText(Global.getCurrencyFormat(product.getOverwrite_price()));
+            ((TextView) productSectionLL.findViewById(R.id.productPricetextView)).setText(Global.getCurrencyFormat(product.getFinalPrice()));
 
             ((TextView) productSectionLL.findViewById(R.id.productDiscounttextView)).setText(Global.getCurrencyFormat(product.getDiscount_value()));
 

@@ -1,7 +1,6 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
-import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
 import com.android.support.Global;
@@ -25,7 +24,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String prod_sku = "";
     private String prod_upc = "";
     private String ordprod_qty = "";
-    private String overwrite_price = "";
+    private BigDecimal overwrite_price;
     private String reason_id = "";
     private String ordprod_name = "";
     private String ordprod_desc = "";
@@ -186,7 +185,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
             new_subtotal = overwriteAmount
                     .multiply(prod_qty);
 
-        setOverwrite_price(Global.getRoundBigDecimal(overwriteAmount));
+        setOverwrite_price(overwriteAmount);
         setProd_price(Global.getRoundBigDecimal(overwriteAmount));
         setItemSubtotal(Global
                 .getRoundBigDecimal(new_subtotal));
@@ -208,9 +207,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     }
 
     public String getFinalPrice() {
-        if (!TextUtils.isEmpty(getOverwrite_price())
-                && new BigDecimal(getOverwrite_price()).compareTo(new BigDecimal(0)) != 0) {
-            return getOverwrite_price();
+        if (getOverwrite_price() != null) {
+            return getOverwrite_price().toString();
         } else {
             return getProd_price();
         }
@@ -310,11 +308,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.ordprod_qty = ordprod_qty;
     }
 
-    public String getOverwrite_price() {
+    public BigDecimal getOverwrite_price() {
         return overwrite_price;
     }
 
-    public void setOverwrite_price(String overwrite_price) {
+    public void setOverwrite_price(BigDecimal overwrite_price) {
         this.overwrite_price = overwrite_price;
     }
 

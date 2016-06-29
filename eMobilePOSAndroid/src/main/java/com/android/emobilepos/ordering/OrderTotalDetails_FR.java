@@ -40,7 +40,6 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -436,7 +435,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     private void calculateMixAndMatch(List<OrderProduct> orderProducts) {
         HashMap<String, MixMatchProductGroup> mixMatchProductGroupHashMap = new HashMap<String, MixMatchProductGroup>();
         for (OrderProduct product : orderProducts) {
-            BigDecimal overwrite = Global.getBigDecimalNum(product.getOverwrite_price());
+            BigDecimal overwrite = product.getOverwrite_price();
             product.resetMixMatch();
 
             PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
@@ -466,9 +465,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 }
             }
         }
-        Iterator<Map.Entry<String, MixMatchProductGroup>> iterator = mixMatchProductGroupHashMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            MixMatchProductGroup group = iterator.next().getValue();
+        for (Map.Entry<String, MixMatchProductGroup> mixMatchProductGroupEntry : mixMatchProductGroupHashMap.entrySet()) {
+            MixMatchProductGroup group = mixMatchProductGroupEntry.getValue();
             RealmResults<MixMatch> mixMatches = MixMatchDAO.getDiscountsBygroupId(group);
             mixMatches.sort("qty", Sort.DESCENDING);
             if (!mixMatches.isEmpty()) {
@@ -477,10 +475,20 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 if (mixMatchType == 1) {
                     applyMixMatch(group, mixMatches);
                 } else {
-
+                    applyXYZMixMatchToGroup(group, mixMatch);
                 }
             }
         }
+    }
+
+    private void applyXYZMixMatchToGroup(MixMatchProductGroup group, MixMatch mixMatch) {
+        for (OrderProduct product : group.getOrderProducts()) {
+            if(TextUtils.isEmpty(product.getPricesXGroupid()) || product.isVoid()){
+                continue;
+            }
+
+        }
+
     }
 
     private void applyMixMatch(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches) {
@@ -574,7 +582,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
         int size = orderProducts.size();
         taxableSubtotal = new BigDecimal("0.00");
-        BigDecimal taxableDueAmount = new BigDecimal("0.00");
         tempTaxableAmount = new BigDecimal("0");
         itemsDiscountTotal = new BigDecimal(0);
         setupTaxesHolder();

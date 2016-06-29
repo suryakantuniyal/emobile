@@ -667,7 +667,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 if (!Boolean.parseBoolean(global.orderProducts.get(orderProductIdx).getPayWithPoints())) {
                                     String price = orderSeatProduct.orderProduct.getProd_price_points();
                                     if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                                        orderSeatProduct.orderProduct.setOverwrite_price("0.00");
+                                        orderSeatProduct.orderProduct.setOverwrite_price(null);
                                         orderSeatProduct.orderProduct.setItemTotal("0.00");
                                         orderSeatProduct.orderProduct.setItemSubtotal("0.00");
                                         orderSeatProduct.orderProduct.setPayWithPoints("true");
@@ -1281,10 +1281,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             "invoice_total",
                             Double.toString(sold
                                     * Double.parseDouble(Global.consignment_products
-                                    .get(i).getOverwrite_price())));
+                                    .get(i).getFinalPrice())));
 
                     tempMap.put("prod_price",
-                            Global.consignment_products.get(i).getOverwrite_price());
+                            Global.consignment_products.get(i).getFinalPrice());
                     summaryMap.put(Global.consignment_products.get(i).getProd_id(),
                             tempMap);
                     tempMap = new HashMap<String, String>();
@@ -1341,7 +1341,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         tempMap.put("ordprod_name",
                                 Global.cons_return_products.get(i).getOrdprod_name());
                         tempMap.put("prod_price",
-                                Global.cons_return_products.get(i).getOverwrite_price());
+                                Global.cons_return_products.get(i).getFinalPrice());
                     } else {
                         invoiceTotal = Double.parseDouble(tempMap
                                 .get("invoice_total"));
@@ -1402,7 +1402,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     tempMap.put("fillup",
                             Global.cons_fillup_products.get(i).getOrdprod_qty());
                     tempMap.put("prod_price",
-                            Global.cons_fillup_products.get(i).getOverwrite_price());
+                            Global.cons_fillup_products.get(i).getFinalPrice());
                     if (tempMap.get("invoice") != null)
                         invoiceTotalTemp = Double.parseDouble(tempMap
                                 .get("invoice"))
@@ -1475,7 +1475,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     tempMap.put("ordprod_name",
                             Global.consignment_products.get(i).getOrdprod_name());
                     tempMap.put("prod_price",
-                            Global.consignment_products.get(i).getOverwrite_price());
+                            Global.consignment_products.get(i).getFinalPrice());
 
                     temp = Global.custInventoryMap.get(Global.consignment_products
                             .get(i).getProd_id());
@@ -2086,7 +2086,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             String val = product.getOrdprod_name();
 
             product.setOrdprod_name(val + " [VOIDED]");
-            product.setOverwrite_price("0");
+            product.setOverwrite_price(null);
         } else {
             OrderProductsHandler ordProdDB = new OrderProductsHandler(activity);
             ordProdDB.deleteOrderProduct(product.getOrdprod_id());
@@ -2175,8 +2175,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordProd.setOrdprod_id(mapList.get(i).get("ordprod_id"));
                         ordProd.setProd_id(mapList.get(i).get("prod_id"));
                         ordProd.setOrdprod_name(mapList.get(i).get("prod_name"));
-                        ordProd.setOverwrite_price(mapList.get(i).get(
-                                "overwrite_price"));
+                        ordProd.setOverwrite_price(new BigDecimal(mapList.get(i).get(
+                                "overwrite_price")));
                         ordProd.setOrdprod_qty(mapList.get(i).get("ordprod_qty"));
                         ordProd.setItemTotal(mapList.get(i).get("itemTotal"));
                         ordProd.setItemSubtotal(mapList.get(i).get(

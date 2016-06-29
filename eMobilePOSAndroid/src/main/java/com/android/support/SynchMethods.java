@@ -1771,7 +1771,7 @@ public class SynchMethods {
             while (reader.hasNext()) {
                 MixMatch mixMatch = gson.fromJson(reader, MixMatch.class);
                 //TODO remove setDiscountOddsItems false
-                mixMatch.setDiscountOddsItems(false);
+//                mixMatch.setDiscountOddsItems(false);
                 mixMatches.add(mixMatch);
                 i++;
                 if (i == 1000) {

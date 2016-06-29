@@ -119,7 +119,7 @@ public class TemplateHandler {
 				insert.bindString(index(name), prod.getOrdprod_name() == null ? "" : prod.getOrdprod_name()); // name
 				// insert.bindString(index(price),
 				// global.cur_orders.get(i).getValue());
-				insert.bindString(index(overwrite_price), prod.getOverwrite_price() == null ? "0" : prod.getOverwrite_price()); // cust_id
+				insert.bindString(index(overwrite_price), prod.getOverwrite_price() == null ? "0" : prod.getOverwrite_price().toString()); // cust_id
 				// insert.bindString(index(itemTotal),
 				// global.orderProducts.get(i).getSetData(itemTotal, true,
 				// empStr));

@@ -1566,7 +1566,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
         ord.setPricesXGroupid(product.getPricesXGroupid());
-        ord.setOverwrite_price("0.00");
         ord.setProd_price(total.toString());
         ord.setAssignedSeat(selectedSeatNumber);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));

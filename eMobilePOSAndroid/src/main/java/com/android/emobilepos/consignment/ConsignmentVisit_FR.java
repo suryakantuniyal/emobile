@@ -221,7 +221,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             ord.setOrdprod_name(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("ordprod_name"));
             ord.setOrdprod_desc(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("ordprod_desc"));
             ord.setProd_id(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_id"));
-            ord.setOverwrite_price(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_price"));
+            ord.setProd_price(Global.consignSummaryMap.get(Global.consignMapKey.get(pos)).get("prod_price"));
             ord.setOrd_id(Global.consignment_order.ord_id);
 
 

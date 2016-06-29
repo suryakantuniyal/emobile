@@ -1164,7 +1164,7 @@ public class Global extends MultiDexApplication {
         }
 
         orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
-        orderedProducts.setOverwrite_price(priceLevel.toString());
+//        orderedProducts.setOverwrite_price(priceLevel.toString());
         orderedProducts.setProd_price_updated("0");
 
 

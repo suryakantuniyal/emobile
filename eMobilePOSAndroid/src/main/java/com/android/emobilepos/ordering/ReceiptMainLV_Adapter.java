@@ -138,7 +138,7 @@ public class ReceiptMainLV_Adapter extends BaseAdapter {
         holder.itemQty.setText(global.orderProducts.get(position).getOrdprod_qty());
         holder.itemName.setText(global.orderProducts.get(position).getOrdprod_name());
 
-        String temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getOverwrite_price()));
+        String temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getFinalPrice()));
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
 

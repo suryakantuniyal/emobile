@@ -282,7 +282,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                 removedAddon = removedAddon.add(Global.getBigDecimalNum(tempPrice));
             }
 
-            ord.setOverwrite_price(tempPrice);
+            ord.setOverwrite_price(new BigDecimal(tempPrice));
             ord.setOnHand(c.getString(c.getColumnIndex("master_prod_onhand")));
             ord.setImgURL(c.getString(c.getColumnIndex("prod_img_name")));
 
@@ -345,7 +345,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         temp = temp.add(addedAddon);
         if (temp.compareTo(new BigDecimal("0")) == -1)
             temp = new BigDecimal("0");
-        ordProd.setOverwrite_price(Global.getRoundBigDecimal(temp));
+        ordProd.setOverwrite_price(temp);
         ordProd.setItemSubtotal(Global.getRoundBigDecimal(temp));
         ordProd.setItemTotal(Global.getRoundBigDecimal(temp));
         ordProd.setOrdprod_desc(itemData[3] + _ord_desc.toString());

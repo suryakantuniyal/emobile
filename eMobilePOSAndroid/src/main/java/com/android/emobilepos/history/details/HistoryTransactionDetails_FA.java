@@ -165,7 +165,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         order_id = extras.getString("ord_id");
         order = ordersHandler.getOrder(order_id);
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        orderedProd = orderProductsHandler.getOrderedProducts(order_id);
+        orderedProd = orderProductsHandler.getOrderProducts(order_id);
 
         CustomersHandler customersHandler = new CustomersHandler(activity);
 
@@ -895,7 +895,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
 
                         holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
-                        holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getOverwrite_price()));
+                        holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
 
 
                         break;
@@ -951,7 +951,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
 
                 holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
-                holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getOverwrite_price()));
+                holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
 
 
                 imageLoader.displayImage(imgHandler.getSpecificLink("I", orderedProd.get(ind).getProd_id()), holder.iconImage, options);
