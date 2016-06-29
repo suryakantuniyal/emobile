@@ -402,7 +402,7 @@ public class OrderProductsHandler {
         return orderProducts;
     }
 
-    private static OrderProduct getOrderProduct(Cursor cursor) {
+    public static OrderProduct getOrderProduct(Cursor cursor) {
         OrderProduct product = new OrderProduct();
         product.setAddon(cursor.getString(cursor.getColumnIndex(addon)));
         product.setIsAdded(cursor.getString(cursor.getColumnIndex(isAdded)));

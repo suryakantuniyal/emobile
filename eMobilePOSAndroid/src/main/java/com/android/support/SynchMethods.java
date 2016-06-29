@@ -64,10 +64,7 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 import org.xml.sax.InputSource;
@@ -97,7 +94,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
+import util.JsonUtils;
 
 public class SynchMethods {
     private Post post;
@@ -121,19 +118,20 @@ public class SynchMethods {
     private Intent onHoldIntent;
     private Realm realm;
     private HttpClient client;
-    private Gson gson = new GsonBuilder()
-            .setExclusionStrategies(new ExclusionStrategy() {
-                @Override
-                public boolean shouldSkipField(FieldAttributes f) {
-                    return f.getDeclaringClass().equals(RealmObject.class);
-                }
-
-                @Override
-                public boolean shouldSkipClass(Class<?> clazz) {
-                    return false;
-                }
-            }).setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-            .create();
+    private Gson gson = JsonUtils.getInstance();
+//    new GsonBuilder()
+//            .setExclusionStrategies(new ExclusionStrategy() {
+//                @Override
+//                public boolean shouldSkipField(FieldAttributes f) {
+//                    return f.getDeclaringClass().equals(RealmObject.class);
+//                }
+//
+//                @Override
+//                public boolean shouldSkipClass(Class<?> clazz) {
+//                    return false;
+//                }
+//            }).setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+//            .create();
 
 
     public SynchMethods(DBManager managerInst) {
