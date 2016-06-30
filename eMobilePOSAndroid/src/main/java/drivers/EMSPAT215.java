@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 
@@ -239,6 +238,8 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             msrApiContext = MsrManager.getDefault(activity);
         releaseCardReader();
         EMSPAT215.runReader = true;
+        int msrDefault = msrApiContext.setMsrDefault();
+        msrApiContext.setMsrOutputMode(0);
         int reader = msrApiContext.getMsrReading();
         int setMsrReading;
         if (reader == 0) {
