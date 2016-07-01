@@ -1579,6 +1579,7 @@ public class EMSDeviceDriver {
 
                     sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
+                    sb.append("\n");
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
                 }
