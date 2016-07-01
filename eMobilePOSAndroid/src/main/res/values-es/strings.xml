@@ -1247,6 +1247,7 @@
     <string name="receipt_point_used">Points Used:</string>
     <string name="receipt_reward_balance">Reward Balance:</string>
     <string name="points">Points</string>
+    <string name="connecting_devices">Connecting devices...</string>
 
 
 </resources>
