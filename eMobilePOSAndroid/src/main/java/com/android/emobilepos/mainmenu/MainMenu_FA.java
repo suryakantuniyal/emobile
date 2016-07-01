@@ -13,16 +13,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.dao.DeviceTableDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Device;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -31,9 +28,8 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import io.realm.RealmResults;
+import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
@@ -117,7 +113,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         else
             tvStoreForward.setVisibility(View.GONE);
 
-        new autoConnectPrinter().execute("");
+        new autoConnectPrinter().execute();
         super.onResume();
     }
 
@@ -187,6 +183,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA) {
                 isUSB = true;
+            }
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null &&
+                    Global.mainPrinterManager.currentDevice instanceof EMSsnbc) {
+                ((EMSsnbc) Global.mainPrinterManager.currentDevice).closeUsbInterface();
             }
             return autoConnect;
         }

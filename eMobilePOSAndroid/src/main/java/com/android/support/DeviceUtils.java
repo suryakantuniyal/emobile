@@ -21,7 +21,7 @@ public class DeviceUtils {
         StringBuilder sb = new StringBuilder();
         RealmResults<Device> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
-        EMSDeviceManager edm;
+        EMSDeviceManager edm = null;
         if (forceReload) {
             int i = 0;
             for (Device device : devices) {
@@ -87,26 +87,20 @@ public class DeviceUtils {
             String _portNumber = myPref.getStarPort();
             boolean isPOS = myPref.posPrinter(true, false);
             int txtAreaSize = myPref.printerAreaSize(true, -1);
-//            if (myPref.isPAT215()) {
-//                edm = new EMSDeviceManager();
-//                Global.embededMSR = edm.getManager();
-//                if (Global.embededMSR.loadMultiDriver(activity, Global.PAT215, 0, false, "", "")) {
-//                    sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Connected\n\r");
-//                } else {
-//                    sb.append(Global.BuildModel.PAT215.name()).append(": ").append("Failed to connect\n\r");
-//                }
-//            }
-            if (myPref.getPrinterType() != Global.POWA && myPref.getPrinterType() != Global.PAT215)
+            if (myPref.getPrinterType() != Global.POWA && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager == null || forceReload) {
-                    edm = new EMSDeviceManager();
-                    Global.mainPrinterManager = edm.getManager();
+                    if (Global.mainPrinterManager == null) {
+                        edm = new EMSDeviceManager();
+                        Global.mainPrinterManager = edm.getManager();
+                    }
                     if (Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), txtAreaSize,
                             isPOS, _portName, _portNumber))
                         sb.append(_peripheralName).append(": ").append("Connected\n\r");
                     else
                         sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
+                    Global.multiPrinterManager.add(edm);
                 }
-
+            }
         } else if (!TextUtils.isEmpty(myPref.getStarIPAddress()))
             if (Global.mainPrinterManager == null || forceReload) {
                 edm = new EMSDeviceManager();
