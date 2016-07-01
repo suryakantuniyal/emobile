@@ -24,13 +24,15 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.soundmanager.SoundManager;
 import com.android.support.CreditCardInfo;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.honeywell.decodemanager.DecodeManager;
 import com.honeywell.decodemanager.DecodeManager.SymConfigActivityOpeartor;
 import com.honeywell.decodemanager.SymbologyConfigs;
@@ -69,7 +71,8 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
     public EMSIDTechUSB _msrUsbSams;
     private EMSMagtekAudioCardReader magtekReader;
     private LinearLayout cardLayoutHolder, commentLayoutHolder, lastSavedHolder;
-    private String ordprodattr_id, attr_id, attr_name, attr_value, ordprod_id;
+    private String attr_id, attr_name, attr_value, ordprod_id;
+    int ordprodattr_id;
     private boolean isModify = false;
     private int modifyPosition = -1;
 
@@ -104,7 +107,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         Bundle extras = getIntent().getExtras();
         attr_id = extras.getString("attr_id", "");
         attr_name = extras.getString("attr_name", "");
-        ordprodattr_id = extras.getString("ordprodattr_id", "");
+        ordprodattr_id = extras.getInt("ordprodattr_id");
         isModify = extras.getBoolean("isModify", false);
         ordprod_id = extras.getString("ordprod_id", "");
         isRequired = extras.getBoolean("required", false);
@@ -216,10 +219,10 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         if (isModify) {
             int size = global.ordProdAttr.size();
             for (int i = 0; i < size; i++) {
-                if (global.ordProdAttr.get(i).ordprod_id.equals(ordprod_id)
-                        && global.ordProdAttr.get(i).Attrid.equals(attr_id)) {
+                if (global.ordProdAttr.get(i).getProductId().equals(ordprod_id)
+                        && global.ordProdAttr.get(i).getAttributeId().equals(attr_id)) {
                     modifyPosition = i;
-                    attr_value = global.ordProdAttr.get(i).value;
+                    attr_value = global.ordProdAttr.get(i).getValue();
                     break;
                 }
             }
@@ -287,7 +290,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
                 checkBox.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()|| myPref.isHandpoint()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000() || myPref.isHandpoint()) {
             checkBox.setChecked(true);
         }
     }
@@ -535,10 +538,17 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         }
     };
 
+    private void serOrderProductRequiredAttributes() {
+        for (OrderProduct product : global.orderProducts) {
+
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnSave:
+                OrderProduct product = global.orderProducts.get(global.orderProducts.indexOf(OrderProduct.getInstance(ordprod_id)));
                 if (isCardInfo) {
                     attr_value = fieldCardNum.getText().toString();
                 } else {
@@ -549,22 +559,26 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                     Global.showPrompt(this, R.string.dlog_title_error, getString(R.string.validation_failed));
                 else {
                     if (!isModify) {
-                        OrdProdAttrHolder temp = new OrdProdAttrHolder();
-                        temp.Attrid = attr_id;
-                        temp.ordprod_attr_name = attr_name;
-                        temp.value = attr_value;
-                        temp.ordprod_id = ordprod_id;
+                        ProductAttribute temp = new ProductAttribute();
+                        temp.setAttributeId(attr_id);
+                        temp.setAttributeName(attr_name);
+                        temp.setValue(attr_value);
+                        temp.setProductId(ordprod_id);
+                        temp.setId(ordprodattr_id);
                         global.ordProdAttr.add(temp);
+                        product.getRequiredProductAttributes().add(temp);
                     } else {
                         if (modifyPosition == -1) {
-                            OrdProdAttrHolder temp = new OrdProdAttrHolder();
-                            temp.Attrid = attr_id;
-                            temp.ordprod_attr_name = attr_name;
-                            temp.value = attr_value;
-                            temp.ordprod_id = ordprod_id;
+                            ProductAttribute temp = new ProductAttribute();
+                            temp.setAttributeId(attr_id);
+                            temp.setAttributeName(attr_name);
+                            temp.setValue(attr_value);
+                            temp.setProductId(ordprod_id);
+                            temp.setId(ordprodattr_id);
                             global.ordProdAttr.add(temp);
+                            product.getRequiredProductAttributes().add(temp);
                         } else
-                            global.ordProdAttr.get(modifyPosition).value = attr_value;
+                            global.ordProdAttr.get(modifyPosition).setValue(attr_value);
                     }
                     if (isRequired) {
                         Intent result = new Intent();

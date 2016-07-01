@@ -3,7 +3,6 @@ package com.android.support;
 import android.app.Activity;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Xml;
 
 import com.android.database.AddressHandler;
@@ -24,8 +23,8 @@ import com.android.database.TransferInventory_DB;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -205,6 +204,18 @@ public class GenerateXML {
         return sb.toString();
     }
 
+    public String getMixMatch() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            sb.append(thisActivity.getString(R.string.sync_enablermobile_getxmlmixmatch)).append("?regid=")
+                    .append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
+            sb.append(ending.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return sb.toString();
+    }
 
     public String updateSyncTime(String time) {
         StringBuilder sb = new StringBuilder();
@@ -994,100 +1005,100 @@ public class GenerateXML {
 
         for (int i = 0; i < size; i++) {
             try {
-
+                OrderProduct product = OrderProductsHandler.getOrderProduct(cursor);
                 if (!isRestMode || (isRestMode && ((cursor.getString(cursor.getColumnIndex("addon")).equals("0"))
                         || (cursor.getString(cursor.getColumnIndex("addon")).equals("1") && isOnHold)))) {
                     serializer.startTag(empstr, "OrderProduct");
 
-                    String assignedSeat = cursor.getString(cursor.getColumnIndex("assignedSeat"));
+                    String assignedSeat = product.getAssignedSeat();//cursor.getString(cursor.getColumnIndex("assignedSeat"));
                     serializer.startTag(empstr, "assignedSeat");
                     serializer.text(assignedSeat == null ? "" : assignedSeat);
                     serializer.endTag(empstr, "assignedSeat");
 
-                    String seatGroupId = cursor.getString(cursor.getColumnIndex("seatGroupId"));
+                    String seatGroupId = String.valueOf(product.getSeatGroupId());// cursor.getString(cursor.getColumnIndex("seatGroupId"));
                     serializer.startTag(empstr, "seatGroupId");
                     serializer.text(seatGroupId == null ? "" : seatGroupId);
                     serializer.endTag(empstr, "seatGroupId");
 
 
                     serializer.startTag(empstr, "isAddon");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("addon")));
+                    serializer.text(product.getAddon());//cursor.getString(cursor.getColumnIndex("addon")));
                     serializer.endTag(empstr, "isAddon");
 
                     serializer.startTag(empstr, "isAdded");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("isAdded")));
+                    serializer.text(product.getIsAdded());//cursor.getString(cursor.getColumnIndex("isAdded")));
                     serializer.endTag(empstr, "isAdded");
 
                     serializer.startTag(empstr, "isPrinted");
 
                     if (!isOnHold)
-                        serializer.text(cursor.getString(cursor.getColumnIndex("isPrinted")));
+                        serializer.text(product.getIsPrinted());//cursor.getString(cursor.getColumnIndex("isPrinted")));
                     else
                         serializer.text("1");
 
                     serializer.endTag(empstr, "isPrinted");
 
-                    String itemVoid = cursor.getString(cursor.getColumnIndex("item_void"));
+                    String itemVoid = product.getItem_void();//cursor.getString(cursor.getColumnIndex("item_void"));
                     if (!TextUtils.isEmpty(itemVoid)) {
                         serializer.startTag(empstr, "item_void");
-                        serializer.text(cursor.getString(cursor.getColumnIndex("item_void")));
+                        serializer.text(product.getItem_void());//cursor.getString(cursor.getColumnIndex("item_void")));
                         serializer.endTag(empstr, "item_void");
                     }
                     serializer.startTag(empstr, "ordprod_id");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_id")));
+                    serializer.text(product.getOrdprod_id());//cursor.getString(cursor.getColumnIndex("ordprod_id")));
                     serializer.endTag(empstr, "ordprod_id");
 
                     serializer.startTag(empstr, "ord_id");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("ord_id")));
+                    serializer.text(product.getOrd_id());//cursor.getString(cursor.getColumnIndex("ord_id")));
                     serializer.endTag(empstr, "ord_id");
 
                     serializer.startTag(empstr, "prod_id");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("prod_id")));
+                    serializer.text(product.getProd_id());//cursor.getString(cursor.getColumnIndex("prod_id")));
                     serializer.endTag(empstr, "prod_id");
 
                     serializer.startTag(empstr, "ordprod_qty");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_qty")));
+                    serializer.text(product.getOrdprod_qty());//cursor.getString(cursor.getColumnIndex("ordprod_qty")));
                     serializer.endTag(empstr, "ordprod_qty");
 
                     serializer.startTag(empstr, "overwrite_price");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("overwrite_price")));
+                    serializer.text(product.getFinalPrice());//cursor.getString(cursor.getColumnIndex("overwrite_price")));
                     serializer.endTag(empstr, "overwrite_price");
 
                     serializer.startTag(empstr, "reason_id");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("reason_id")));
+                    serializer.text(product.getReason_id());//cursor.getString(cursor.getColumnIndex("reason_id")));
                     serializer.endTag(empstr, "reason_id");
 
                     serializer.startTag(empstr, "ordprod_name");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_name")));
+                    serializer.text(product.getOrdprod_name());//cursor.getString(cursor.getColumnIndex("ordprod_name")));
                     serializer.endTag(empstr, "ordprod_name");
 
                     serializer.startTag(empstr, "ordprod_desc");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_desc")));
+                    serializer.text(product.getOrdprod_desc());//cursor.getString(cursor.getColumnIndex("ordprod_desc")));
                     serializer.endTag(empstr, "ordprod_desc");
 
                     serializer.startTag(empstr, "pricelevel_id");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("pricelevel_id")));
+                    serializer.text(product.getPricelevel_id());//cursor.getString(cursor.getColumnIndex("pricelevel_id")));
                     serializer.endTag(empstr, "pricelevel_id");
 
                     serializer.startTag(empstr, "prod_seq");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("prod_seq")));
+                    serializer.text(product.getProd_seq());//cursor.getString(cursor.getColumnIndex("prod_seq")));
                     serializer.endTag(empstr, "prod_seq");
 
                     serializer.startTag(empstr, "uom_name");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("uom_name")));
+                    serializer.text(product.getUom_name());//cursor.getString(cursor.getColumnIndex("uom_name")));
                     serializer.endTag(empstr, "uom_name");
 
                     // <uom_id>Packet</uom_id>
                     serializer.startTag(empstr, "uom_id");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("uom_id")));
+                    serializer.text(product.getUom_id());//cursor.getString(cursor.getColumnIndex("uom_id")));
                     serializer.endTag(empstr, "uom_id");
 
                     serializer.startTag(empstr, "uom_conversion");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("uom_conversion")));
+                    serializer.text(product.getUom_conversion());//cursor.getString(cursor.getColumnIndex("uom_conversion")));
                     serializer.endTag(empstr, "uom_conversion");
 
                     serializer.startTag(empstr, "prod_taxId");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("prod_taxId")));
+                    serializer.text(product.getProd_taxId());//cursor.getString(cursor.getColumnIndex("prod_taxId")));
                     serializer.endTag(empstr, "prod_taxId");
 
                     serializer.startTag(empstr, "totalLineValue");
@@ -1095,15 +1106,15 @@ public class GenerateXML {
                     serializer.endTag(empstr, "totalLineValue");
 
                     serializer.startTag(empstr, "prod_taxValue");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("prod_taxValue")));
+                    serializer.text(product.getProd_taxValue());//cursor.getString(cursor.getColumnIndex("prod_taxValue")));
                     serializer.endTag(empstr, "prod_taxValue");
 
                     serializer.startTag(empstr, "prod_discountId");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("discount_id")));
+                    serializer.text(product.getDiscount_id());//cursor.getString(cursor.getColumnIndex("discount_id")));
                     serializer.endTag(empstr, "prod_discountId");
 
                     serializer.startTag(empstr, "prod_discountValue");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("discount_value")));
+                    serializer.text(product.getDiscount_value());//cursor.getString(cursor.getColumnIndex("discount_value")));
                     serializer.endTag(empstr, "prod_discountValue");
 
                     // <Attributes/>

@@ -19,7 +19,6 @@ import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
 import com.android.database.OrdersHandler;
-import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
@@ -191,33 +190,33 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             getView();
             LinearLayout productSectionLL = (LinearLayout) View.inflate(getActivity(), R.layout.receipt_product_layout_item, null);
 
-            List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.ordprod_id);
+            List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.getOrdprod_id());
 
-            BigDecimal qty = Global.getBigDecimalNum(product.ordprod_qty);
-            orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.overwrite_price).multiply(qty));
-            globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.overwrite_price).setScale(4, RoundingMode.HALF_UP)
+            BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
+            orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
+            globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)
                     .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
 //            orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.prod_taxValue));
-            itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.discount_value));
+            itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
 //            orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
 //                    .add(Global.getBigDecimalNum(product.prod_taxValue)));
-            ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(String.format("%sx %s", product.ordprod_qty, product.ordprod_name));
+            ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(String.format("%sx %s", product.getOrdprod_qty(), product.getOrdprod_name()));
 
             productAddonsSection = (LinearLayout) productSectionLL.findViewById(R.id.productAddonSectionLinearLayout);
 
             for (OrderProduct addon : addons) {
-                addProductLine("- " + addon.ordprod_name,
-                        Global.getCurrencyFormat(addon.overwrite_price), 3);
+                addProductLine("- " + addon.getOrdprod_name(),
+                        Global.getCurrencyFormat(addon.getFinalPrice()), 3);
             }
-            ((TextView) productSectionLL.findViewById(R.id.productPricetextView)).setText(Global.getCurrencyFormat(product.overwrite_price));
+            ((TextView) productSectionLL.findViewById(R.id.productPricetextView)).setText(Global.getCurrencyFormat(product.getFinalPrice()));
 
-            ((TextView) productSectionLL.findViewById(R.id.productDiscounttextView)).setText(Global.getCurrencyFormat(product.discount_value));
+            ((TextView) productSectionLL.findViewById(R.id.productDiscounttextView)).setText(Global.getCurrencyFormat(product.getDiscount_value()));
 
-            ((TextView) productSectionLL.findViewById(R.id.productTotaltextView)).setText(Global.getCurrencyFormat(Global.getBigDecimalNum(product.itemTotal)
+            ((TextView) productSectionLL.findViewById(R.id.productTotaltextView)).setText(Global.getCurrencyFormat(Global.getBigDecimalNum(product.getItemTotal())
                     .multiply(qty).toString()));
 
-            if (product.ordprod_desc != null && !product.ordprod_desc.isEmpty()) {
-                ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText(product.ordprod_desc.replace("<br/>", "\n\r"));
+            if (product.getOrdprod_desc() != null && !product.getOrdprod_desc().isEmpty()) {
+                ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText(product.getOrdprod_desc().replace("<br/>", "\n\r"));
             } else {
                 ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText("");
             }
@@ -454,7 +453,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
             Global global = (Global) getActivity().getApplication();
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
-                product.ord_id = global.order.ord_id;
+                product.setOrd_id(global.order.ord_id);
                 if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
                             .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_subtotal)).toString();
@@ -496,7 +495,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         for (OrderProduct product : products) {
             for (OrderSeatProduct seatProduct : seatProducts) {
                 if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM &&
-                        seatProduct.orderProduct.ordprod_id.equalsIgnoreCase(product.ordprod_id)) {
+                        seatProduct.orderProduct.getOrdprod_id().equalsIgnoreCase(product.getOrdprod_id())) {
                     summaryFa.orderSeatProducts.remove(seatProduct);
                 }
             }

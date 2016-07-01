@@ -13,8 +13,6 @@ import android.graphics.PorterDuff.Mode;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Environment;
 import android.support.multidex.MultiDexApplication;
 import android.text.Html;
@@ -31,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
-import com.android.dao.RealMigration;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -40,18 +37,15 @@ import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
-import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
-import com.android.support.GenerateNewID.IdType;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.zzzapi.uart.uart;
 
 import org.springframework.util.support.Base64;
 
@@ -61,7 +55,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -80,7 +73,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -106,7 +98,7 @@ public class Global extends MultiDexApplication {
                 .build();
         Realm.setDefaultConfiguration(config);
     }
-
+    public static String loyaltyPointsAvailable;
     public static boolean isIvuLoto = false;
     public static boolean isForceUpload = false;
     public static boolean isEncryptSwipe = true;
@@ -144,7 +136,6 @@ public class Global extends MultiDexApplication {
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
-
 
 
     public enum BuildModel {
@@ -399,8 +390,8 @@ public class Global extends MultiDexApplication {
     // For new addon views
     public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
 
-    public HashMap<String, String> ordProdAttrPending = new HashMap<String, String>();
-    public List<OrdProdAttrHolder> ordProdAttr = new ArrayList<OrdProdAttrHolder>();
+    public List<ProductAttribute> ordProdAttrPending;
+    public List<ProductAttribute> ordProdAttr = new ArrayList<ProductAttribute>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
     public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
@@ -586,8 +577,8 @@ public class Global extends MultiDexApplication {
 
         if (ordProdAttr != null)
             ordProdAttr.clear();
-        if (ordProdAttrPending != null)
-            ordProdAttrPending.clear();
+//        if (ordProdAttrPending != null)
+//            ordProdAttrPending.clear();
 
         if (this.orderProductAddons != null)
             this.orderProductAddons.clear();
@@ -1098,7 +1089,7 @@ public class Global extends MultiDexApplication {
         boolean found = false;
 
         for (int i = size - 1; i >= 0; i--) {
-            if (this.orderProducts.get(i).prod_id.equals(prodID) && !orderProducts.get(i).isReturned) {
+            if (this.orderProducts.get(i).getProd_id().equals(prodID) && !orderProducts.get(i).isReturned()) {
                 orderIndex = i;
                 found = true;
                 break;
@@ -1116,12 +1107,12 @@ public class Global extends MultiDexApplication {
             value = new String();
             if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                 value = Global.formatNumber(true, sum);
-                this.orderProducts.get(orderIndex).ordprod_qty = value;
+                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
                 this.qtyCounter.put(prodID, Double.toString(sum));
             } else {
                 value = Global.formatNumber(false, sum);
-                this.orderProducts.get(orderIndex).ordprod_qty = value;
+                this.orderProducts.get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
                 this.qtyCounter.put(prodID, Integer.toString((int) sum));
             }
@@ -1132,7 +1123,7 @@ public class Global extends MultiDexApplication {
     public void refreshParticularOrder(Activity activity, int position, Product product) {
         OrderProduct orderedProducts = this.orderProducts.get(position);
         MyPreferences myPref = new MyPreferences(activity);
-        String newPickedOrders = orderedProducts.ordprod_qty;
+        String newPickedOrders = orderedProducts.getOrdprod_qty();
         double sum;
 
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
@@ -1163,18 +1154,18 @@ public class Global extends MultiDexApplication {
         if (itemTotal < 0)
             itemTotal = 0.00;
 
-        orderedProducts.itemSubtotal = Double.toString(itemTotal);
+        orderedProducts.setItemSubtotal(Double.toString(itemTotal));
         double discountRate = 0;
-        if (orderedProducts.discount_is_fixed.equals("1")) {
-            discountRate = Double.parseDouble(orderedProducts.discount_value);
+        if (orderedProducts.getDiscount_is_fixed().equals("1")) {
+            discountRate = Double.parseDouble(orderedProducts.getDiscount_value());
         } else {
-            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.discount_value))).doubleValue();
+            double val = total.multiply(new BigDecimal(Global.formatNumFromLocale(orderedProducts.getDiscount_value()))).doubleValue();
             discountRate = (val / 100);
         }
 
-        orderedProducts.itemTotal = Double.toString(total.doubleValue() - discountRate);
-        orderedProducts.overwrite_price = priceLevel.toString();
-        orderedProducts.prod_price_updated = "0";
+        orderedProducts.setItemTotal(Double.toString(total.doubleValue() - discountRate));
+//        orderedProducts.setOverwrite_price(priceLevel.toString());
+        orderedProducts.setProd_price_updated("0");
 
 
         StringBuilder sb = new StringBuilder();
@@ -1351,48 +1342,6 @@ public class Global extends MultiDexApplication {
         return cardManager;
     }
 
-
-    public static boolean isConnectedToInternet(Activity activity) {
-        ConnectivityManager connManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo myWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo myMobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        NetworkInfo myEthernet = connManager.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
-        if ((myWifi != null && myWifi.isAvailable() && myWifi.isConnected())
-                || (myMobile != null && myMobile.isAvailable() && myMobile.isConnected())
-                || (myEthernet != null && myEthernet.isAvailable() && myEthernet.isConnected())) {
-            InetAddress inetAddress;
-            Socket socket = null;
-            try {
-                inetAddress = InetAddress.getByName("sync.enablermobile.com");
-
-                socket = new Socket();
-                SocketAddress socketAddress = new InetSocketAddress(inetAddress, 443);
-                socket.connect(socketAddress, 5000);// try for 3 seconds
-
-                // Process p = Runtime.getRuntime().exec("/system/bin/ping -c 1
-                // www.google.com");
-                // Thread.sleep(1000);
-                // int i = p.exitValue();
-                // if(i==0)
-                // return true;
-                // return false;
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                return false;
-            } finally {
-                if (socket != null && socket.isConnected()) {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        return false;
-                    }
-                } else
-                    return false;
-            }
-        } else
-            return false;
-        return true;
-    }
 
     public static Object getFormatedNumber(boolean isDecimal, String val) {
         Object returnedVal = new Object();
@@ -1637,7 +1586,7 @@ public class Global extends MultiDexApplication {
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
-                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 ||_printer_type == Global.PAT215 );
+                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 || _printer_type == Global.PAT215);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
@@ -1710,7 +1659,7 @@ public class Global extends MultiDexApplication {
             }
             case Surface.ROTATION_180: {
                 if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT ||
-                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ) {
+                        orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
                     return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
                 } else {
                     return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;

@@ -5,14 +5,12 @@ import android.app.Activity;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Tax;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,15 +44,15 @@ public class OrderCalculator {
         TaxesHandler taxHandler = new TaxesHandler(activity);
         String taxRate = "0";
         String prod_taxId = "";
-        BigDecimal subtotal = new BigDecimal(product.itemSubtotal);
-        BigDecimal prodQty = new BigDecimal(product.ordprod_qty);
+        BigDecimal subtotal = new BigDecimal(product.getItemSubtotal());
+        BigDecimal prodQty = new BigDecimal(product.getOrdprod_qty());
         if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
             if (!taxId.isEmpty()) {
-                taxRate = taxHandler.getTaxRate(taxId, product.prod_taxtype, Double.parseDouble(product.overwrite_price));
-                prod_taxId = product.prod_taxtype;
+                taxRate = taxHandler.getTaxRate(taxId, product.getProd_taxtype(), Double.parseDouble(product.getFinalPrice()));
+                prod_taxId = product.getProd_taxtype();
             } else {
-                taxRate = taxHandler.getTaxRate(product.prod_taxcode, product.prod_taxtype, Double.parseDouble(product.overwrite_price));
-                prod_taxId = product.prod_taxcode;
+                taxRate = taxHandler.getTaxRate(product.getProd_taxcode(), product.getProd_taxtype(), Double.parseDouble(product.getFinalPrice()));
+                prod_taxId = product.getProd_taxcode();
             }
         } else {
             if (!taxId.isEmpty() && tax != null) {
@@ -64,55 +62,55 @@ public class OrderCalculator {
         }
 
         if (isVAT) {
-            if (product.prod_istaxable.equals("1")) {
-                if (product.prod_price_updated.equals("0")) {
-                    BigDecimal curr_prod_price = new BigDecimal(product.overwrite_price);
+            if (product.getProd_istaxable().equals("1")) {
+                if (product.getProd_price_updated().equals("0")) {
+                    BigDecimal curr_prod_price = new BigDecimal(product.getFinalPrice());
                     BigDecimal new_prod_price = getProductPrice(curr_prod_price,
                             new BigDecimal(taxRate).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP));
                     new_prod_price = new_prod_price.setScale(4, RoundingMode.HALF_UP);
 
                     subtotal = new_prod_price.multiply(prodQty).setScale(2, RoundingMode.HALF_UP);
 
-                    product.price_vat_exclusive = new_prod_price.setScale(2, RoundingMode.HALF_UP)
-                            .toString();
-                    product.prod_price_updated = "1";
+                    product.setPrice_vat_exclusive(new_prod_price.setScale(2, RoundingMode.HALF_UP)
+                            .toString());
+                    product.setProd_price_updated("1");
                     BigDecimal disc;
-                    if (product.discount_is_fixed.equals("0")) {
+                    if (product.getDiscount_is_fixed().equals("0")) {
                         BigDecimal val = subtotal
-                                .multiply(Global.getBigDecimalNum(product.disAmount))
+                                .multiply(Global.getBigDecimalNum(product.getDisAmount()))
                                 .setScale(4, RoundingMode.HALF_UP);
                         disc = val.divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
                     } else {
-                        disc = new BigDecimal(product.disAmount);
+                        disc = new BigDecimal(product.getDisAmount());
                     }
 
-                    product.discount_value = Global.getRoundBigDecimal(disc);
-                    product.disTotal = Global.getRoundBigDecimal(disc);
+                    product.setDiscount_value(Global.getRoundBigDecimal(disc));
+                    product.setDisTotal(Global.getRoundBigDecimal(disc));
 
-                    product.itemTotalVatExclusive = Global
-                            .getRoundBigDecimal(subtotal.subtract(disc));
+                    product.setItemTotalVatExclusive(Global
+                            .getRoundBigDecimal(subtotal.subtract(disc)));
                 }
                 if (prodQty.compareTo(new BigDecimal("1")) == 1) {
-                    subtotal = new BigDecimal(product.price_vat_exclusive).setScale(2,
+                    subtotal = new BigDecimal(product.getPrice_vat_exclusive()).setScale(2,
                             RoundingMode.HALF_UP);
                 } else {
-                    subtotal = new BigDecimal(product.price_vat_exclusive).multiply(prodQty)
+                    subtotal = new BigDecimal(product.getPrice_vat_exclusive()).multiply(prodQty)
                             .setScale(2, RoundingMode.HALF_UP);
                 }
             } else
-                product.itemTotalVatExclusive = subtotal.toString();
+                product.setItemTotalVatExclusive(subtotal.toString());
         }
         BigDecimal taxableSubtotal;
         BigDecimal taxAmount=new BigDecimal(0);
-        if (product.prod_istaxable.equals("1") &&
-                (product.item_void.isEmpty() || product.item_void.equals("0"))) {
+        if (product.getProd_istaxable().equals("1") &&
+                (product.getItem_void().isEmpty() || product.getItem_void().equals("0"))) {
             BigDecimal taxableDueAmount = subtotal;
 
-            if (product.discount_is_taxable.equals("1")) {
+            if (product.getDiscount_is_taxable().equals("1")) {
                 BigDecimal taxRateScaled = new BigDecimal(taxRate).divide(new BigDecimal("100")).setScale(4,
                         RoundingMode.HALF_UP);
-                subtotal = subtotal.abs().subtract(new BigDecimal(product.discount_value).abs());
-                if (product.isReturned && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+                subtotal = subtotal.abs().subtract(new BigDecimal(product.getDiscount_value()).abs());
+                if (product.isReturned() && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
                     subtotal = subtotal.negate();
                 }
                 taxAmount = subtotal.multiply(taxRateScaled);
@@ -185,8 +183,8 @@ public class OrderCalculator {
         if (taxAmount.compareTo(new BigDecimal("0")) < -1)
             taxAmount = new BigDecimal(0);
 
-        product.prod_taxValue = taxAmount.toString();
-        product.prod_taxId = prod_taxId;
+        product.setProd_taxValue(taxAmount.toString());
+        product.setProd_taxId(prod_taxId);
     }
 
     private BigDecimal getProductPrice(BigDecimal prod_with_tax_price, BigDecimal tax) {

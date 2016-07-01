@@ -1,10 +1,6 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.android.support.Customer;
 
 import java.util.List;
 
@@ -30,7 +26,7 @@ public class SplitedOrder extends Order implements Cloneable, Comparable<Splited
 
     public void syncOrderProductIds() {
         for (OrderProduct product : orderProducts) {
-            product.ord_id = ord_id;
+            product.setOrd_id(ord_id);
         }
     }
 

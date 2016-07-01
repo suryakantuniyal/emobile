@@ -37,6 +37,7 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXdownloadHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -44,6 +45,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -156,7 +158,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             global.setSelectedComments(myCursor.getString(myCursor.getColumnIndex("ord_comment")));
 
 
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
 
@@ -290,7 +292,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             }
 
-            if (Global.isConnectedToInternet(activity))
+            if (NetworkUtils.isConnectedToInternet(activity))
                 proceed = true;
 
             return intent;
@@ -556,73 +558,73 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
         for (int i = 0; i < size; i++) {
             double discAmount = 0;
-            ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
+            ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
             global.qtyCounter.put(c.getString(c.getColumnIndex("prod_id")), c.getString(c.getColumnIndex("ordprod_qty")));
 
-            ord.assignedSeat = c.getString(c.getColumnIndex("assignedSeat"));
-            ord.seatGroupId = c.getInt(c.getColumnIndex("seatGroupId"));
-            ord.ordprod_qty = c.getString(c.getColumnIndex("ordprod_qty"));
-            ord.ordprod_name = c.getString(c.getColumnIndex("ordprod_name"));
-            ord.ordprod_desc = c.getString(c.getColumnIndex("ordprod_desc"));
-            ord.prod_id = c.getString(c.getColumnIndex("prod_id"));
-            ord.overwrite_price = c.getString(c.getColumnIndex("overwrite_price"));
-            ord.onHand = c.getString(c.getColumnIndex("onHand"));
-            ord.imgURL = c.getString(c.getColumnIndex("ordprod_qty"));
-            ord.isPrinted = c.getString(c.getColumnIndex("isPrinted"));
-            ord.uom_conversion = TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion"));
+            ord.setAssignedSeat(c.getString(c.getColumnIndex("assignedSeat")));
+            ord.setSeatGroupId(c.getInt(c.getColumnIndex("seatGroupId")));
+            ord.setOrdprod_qty(c.getString(c.getColumnIndex("ordprod_qty")));
+            ord.setOrdprod_name(c.getString(c.getColumnIndex("ordprod_name")));
+            ord.setOrdprod_desc(c.getString(c.getColumnIndex("ordprod_desc")));
+            ord.setProd_id(c.getString(c.getColumnIndex("prod_id")));
+            ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
+            ord.setOnHand(c.getString(c.getColumnIndex("onHand")));
+            ord.setImgURL(c.getString(c.getColumnIndex("ordprod_qty")));
+            ord.setIsPrinted(c.getString(c.getColumnIndex("isPrinted")));
+            ord.setUom_conversion(TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion")));
 
-            total = (Double.parseDouble(ord.ordprod_qty)) * Double.parseDouble(ord.overwrite_price) * Double.parseDouble(ord.uom_conversion);
-            ord.prod_taxValue = c.getString(c.getColumnIndex("prod_taxValue"));
-            ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
-            ord.prod_taxtype = c.getString(c.getColumnIndex("prod_taxtype"));
+            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice()) * Double.parseDouble(ord.getUom_conversion());
+            ord.setProd_taxValue(c.getString(c.getColumnIndex("prod_taxValue")));
+            ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
+            ord.setProd_taxtype(c.getString(c.getColumnIndex("prod_taxtype")));
 
 
             // for calculating taxes and discount at receipt
-            ord.prod_taxId = c.getString(c.getColumnIndex("prod_taxId"));
-            ord.discount_id = c.getString(c.getColumnIndex("discount_id"));
+            ord.setProd_taxId(c.getString(c.getColumnIndex("prod_taxId")));
+            ord.setDiscount_id(c.getString(c.getColumnIndex("discount_id")));
 
 
-            ord.pricelevel_id = c.getString(c.getColumnIndex("pricelevel_id"));
+            ord.setPricelevel_id(c.getString(c.getColumnIndex("pricelevel_id")));
 
-            ord.prod_price = c.getString(c.getColumnIndex("overwrite_price"));
-            ord.overwrite_price = c.getString(c.getColumnIndex("overwrite_price"));
+            ord.setProd_price(c.getString(c.getColumnIndex("prod_price")));
+            ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
 
-            ord.prod_type = c.getString(c.getColumnIndex("prod_type"));
+            ord.setProd_type(c.getString(c.getColumnIndex("prod_type")));
 
             //Add UOM attributes to the order
-            ord.uom_name = c.getString(c.getColumnIndex("uom_name"));
-            ord.uom_id = c.getString(c.getColumnIndex("uom_id"));
+            ord.setUom_name(c.getString(c.getColumnIndex("uom_name")));
+            ord.setUom_id(c.getString(c.getColumnIndex("uom_id")));
 
-            discountInfo = prodHandler.getDiscount(ord.discount_id, ord.overwrite_price);
+            discountInfo = prodHandler.getDiscount(ord.getDiscount_id(), ord.getFinalPrice());
 
             if (discountInfo != null) {
                 if (discountInfo[1] != null && discountInfo[1].equals("Fixed")) {
-                    ord.discount_is_fixed = "1";
+                    ord.setDiscount_is_fixed("1");
                 }
                 if (discountInfo[2] != null) {
                     discAmount = Double.parseDouble(discountInfo[4]);
                 }
                 if (discountInfo[3] != null) {
-                    ord.discount_is_taxable = discountInfo[3];
+                    ord.setDiscount_is_taxable(discountInfo[3]);
                 }
                 if (discountInfo[4] != null) {
-                    ord.disTotal = discountInfo[4];
+                    ord.setDisTotal(discountInfo[4]);
                     discAmount = Double.parseDouble(discountInfo[4]);
-                    ord.discount_value = discountInfo[4];
+                    ord.setDiscount_value(discountInfo[4]);
                 }
             }
 
 
-            ord.disAmount = ord.discount_value;
+            ord.setDisAmount(ord.getDiscount_value());
 
 
             if (itemTotal < 0)
                 itemTotal = 0;
 
-            ord.itemTotal = Double.toString(total - discAmount);
-            ord.itemSubtotal = Double.toString(total);
+            ord.setItemTotal(Double.toString(total - discAmount));
+            ord.setItemSubtotal(Double.toString(total));
 
-            ord.ord_id = c.getString(c.getColumnIndex("ord_id"));
+            ord.setOrd_id(c.getString(c.getColumnIndex("ord_id")));
 
 
             if (global.orderProducts == null) {
@@ -630,14 +632,14 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
 
 
-            ord.ordprod_id = c.getString(c.getColumnIndex("ordprod_id"));
+            ord.setOrdprod_id(c.getString(c.getColumnIndex("ordprod_id")));
 
-            ord.addon = c.getString(c.getColumnIndex("addon"));
-            ord.isAdded = c.getString(c.getColumnIndex("isAdded"));
-            ord.item_void = c.getString(c.getColumnIndex("item_void"));
+            ord.setAddon(c.getString(c.getColumnIndex("addon")));
+            ord.setIsAdded(c.getString(c.getColumnIndex("isAdded")));
+            ord.setItem_void(c.getString(c.getColumnIndex("item_void")));
 
-            ord.addon_section_name = c.getString(c.getColumnIndex("addon_section_name"));
-            ord.addon_position = c.getString(c.getColumnIndex("addon_position"));
+            ord.setAddon_section_name(c.getString(c.getColumnIndex("addon_section_name")));
+            ord.setAddon_position(c.getString(c.getColumnIndex("addon_position")));
 
 
             if (c.getString(c.getColumnIndex("addon")).equals("1"))        //is an addon
@@ -658,7 +660,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     temp = global.orderProducts.get(pos - 1);
 
 
-                String[] tempVal = prodAddonHandler.getAddonDetails(temp.prod_id, ord.prod_id);
+                String[] tempVal = prodAddonHandler.getAddonDetails(temp.getProd_id(), ord.getProd_id());
 
 
                 global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{isAdded, tempVal[1], tempVal[0]});
@@ -674,8 +676,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
                     if (global.addonSelectionType.size() > 0 && temp != null) {
-                        Global.addonSelectionMap.put(temp.ordprod_id, global.addonSelectionType);
-                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductAddons);
+                        Global.addonSelectionMap.put(temp.getOrdprod_id(), global.addonSelectionType);
+                        Global.orderProductAddonsMap.put(temp.getOrdprod_id(), global.orderProductAddons);
 
 
                         global.orderProductAddons = new ArrayList<OrderProduct>();
@@ -697,8 +699,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                         Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
 
                     if (global.addonSelectionType.size() > 0 && temp != null) {
-                        Global.addonSelectionMap.put(temp.ordprod_id, global.addonSelectionType);
-                        Global.orderProductAddonsMap.put(temp.ordprod_id, global.orderProductAddons);
+                        Global.addonSelectionMap.put(temp.getOrdprod_id(), global.addonSelectionType);
+                        Global.orderProductAddonsMap.put(temp.getOrdprod_id(), global.orderProductAddons);
 
 
                         global.orderProductAddons = new ArrayList<OrderProduct>();

@@ -3,7 +3,6 @@ package com.android.emobilepos.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,7 +114,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     public List<OrderProduct> getOrderProducts(String seatNumber) {
         List<OrderProduct> l = new ArrayList<OrderProduct>();
         for (OrderProduct product : orderProducts) {
-            if (product.assignedSeat.equalsIgnoreCase(seatNumber)) {
+            if (product.getAssignedSeat().equalsIgnoreCase(seatNumber)) {
                 l.add(product);
             }
         }
@@ -146,9 +145,9 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public void addSeat(OrderProduct orderProduct) {
-        if (getSeat(orderProduct.assignedSeat) == null) {
-            OrderSeatProduct product = new OrderSeatProduct(orderProduct.assignedSeat, orderProduct.seatGroupId);
-            product.setSeatGroupId(orderProduct.seatGroupId == 0 ? getNextGroupId() : orderProduct.seatGroupId);
+        if (getSeat(orderProduct.getAssignedSeat()) == null) {
+            OrderSeatProduct product = new OrderSeatProduct(orderProduct.getAssignedSeat(), orderProduct.getSeatGroupId());
+            product.setSeatGroupId(orderProduct.getSeatGroupId() == 0 ? getNextGroupId() : orderProduct.getSeatGroupId());
             orderSeatProductList.add(product);
             orderSeatProductFullList.add(product);
         }
@@ -166,7 +165,7 @@ public class OrderProductListAdapter extends BaseAdapter {
 
     public void moveSeatItems(List<OrderProduct> orderProducts, String targetSeat) {
         for (OrderProduct product : orderProducts) {
-            product.assignedSeat = targetSeat;
+            product.setAssignedSeat(targetSeat);
         }
         notifyDataSetChanged();
     }
@@ -191,8 +190,8 @@ public class OrderProductListAdapter extends BaseAdapter {
                     osp.setSeatGroupId(seatProduct.getSeatGroupId());
                     l.add(osp);
                     for (OrderProduct product : orderProducts) {
-                        if (product != null && product.assignedSeat != null &&
-                                product.assignedSeat.equalsIgnoreCase(seatProduct.seatNumber)) {
+                        if (product != null && product.getAssignedSeat() != null &&
+                                product.getAssignedSeat().equalsIgnoreCase(seatProduct.seatNumber)) {
                             OrderSeatProduct sp = new OrderSeatProduct(product);
                             sp.setSeatGroupId(osp.getSeatGroupId());
                             l.add(sp);
@@ -302,7 +301,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
         final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
-        final String tempId = product.ordprod_id;
+        final String tempId = product.getOrdprod_id();
 
         if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {
             if (holder.addonButton != null)
@@ -315,9 +314,9 @@ public class OrderProductListAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(activity, PickerAddon_FA.class);
-                        String prodID = product.prod_id;
+                        String prodID = product.getProd_id();
                         global.addonSelectionType = Global.addonSelectionMap.get(tempId);
-                        intent.putExtra("selectedSeatNumber", product.assignedSeat);
+                        intent.putExtra("selectedSeatNumber", product.getAssignedSeat());
                         intent.putExtra("addon_map_key", tempId);
                         intent.putExtra("isEditAddon", true);
                         intent.putExtra("prod_id", prodID);
@@ -333,18 +332,18 @@ public class OrderProductListAdapter extends BaseAdapter {
             }
         }
 
-        holder.itemQty.setText(product.ordprod_qty);
-        holder.itemName.setText(product.ordprod_name);
+        holder.itemQty.setText(product.getOrdprod_qty());
+        holder.itemName.setText(product.getOrdprod_name());
 
-        String temp = Global.formatNumToLocale(Double.parseDouble(product.overwrite_price));
+        String temp = Global.formatNumToLocale(Double.parseDouble(product.getFinalPrice()));
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
 
-        holder.distQty.setText(product.disAmount);
-        temp = Global.formatNumToLocale(Double.parseDouble(product.disTotal));
+        holder.distQty.setText(product.getDisAmount());
+        temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
 
-        temp = Global.formatNumToLocale(Double.parseDouble(product.itemTotal));
+        temp = Global.formatNumToLocale(Double.parseDouble(product.getItemTotal()));
         holder.granTotal.setText(Global.getCurrencyFormat(temp));
 
     }

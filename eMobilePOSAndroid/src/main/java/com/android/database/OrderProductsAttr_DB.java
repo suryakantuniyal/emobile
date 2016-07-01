@@ -3,7 +3,8 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.emobilepos.ordering.OrdProdAttrHolder;
+
+import com.android.emobilepos.models.ProductAttribute;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -49,7 +50,7 @@ public class OrderProductsAttr_DB {
 		return attrHash.get(tag);
 	}
 	
-	public void insert(List<OrdProdAttrHolder> data) {
+	public void insert(List<ProductAttribute> data) {
 
 		// SQLiteDatabase db = dbManager.openWritableDB();
 		DBManager._db.beginTransaction();
@@ -64,10 +65,10 @@ public class OrderProductsAttr_DB {
 			int size = data.size();
 
 			for (int i = 0; i < size; i++) {
-				insert.bindString(index(ordprod_id), data.get(i).ordprod_id); // addon
-				insert.bindString(index(attribute_id), data.get(i).Attrid);
-				insert.bindString(index(name), data.get(i).ordprod_attr_name);
-				insert.bindString(index(value), data.get(i).value);
+				insert.bindString(index(ordprod_id), String.valueOf(data.get(i).getProductId())); // addon
+				insert.bindString(index(attribute_id), data.get(i).getAttributeId());
+				insert.bindString(index(name), data.get(i).getAttributeName());
+				insert.bindString(index(value), data.get(i).getValue());
 
 				insert.execute();
 				insert.clearBindings();

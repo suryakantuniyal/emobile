@@ -653,6 +653,7 @@
     <string name="sync_dload_clerks">Downloading Clerks\u002E\u002E\u002E</string>
     <string name="sync_dload_dinnertables">Downloading Dinner Tables\u002E\u002E\u002E</string>
     <string name="sync_dload_salesassociate">Downloading Sales Associate\u002E\u002E\u002E</string>
+    <string name="sync_dload_mixmatch">Downloading Mix &amp; Match\u002E\u002E\u002E</string>
 
     <string name="sync_dload_termsandconditions">Downloading TermsAndConditions\u002E\u002E\u002E</string>
     <string name="sync_dload_locations">Downloading Locations\u002E\u002E\u002E</string>
@@ -950,12 +951,12 @@
 
     <string name="config_display_also_redeem">Display Also Redeem</string>
     <string name="config_display_redeem_all">Display Redeem All</string>
-    <string name="config_use_loyal_patron">Use Loyal Patron</string>
+    <string name="config_use_loyal_patron">Use Tupyx Gift &amp; Loyalty</string>
 
 
     <string name="config_pay_with_tupyx">Pay with Tupyx</string>
-    <string name="config_mw_with_genius">MW with Genius</string>
-    <string name="config_mw_with_evo">MW with EVO</string>
+    <string name="config_mw_with_genius">Cayan Genius</string>
+    <string name="config_mw_with_evo">Pay with EVO</string>
     <string name="config_genius_peripheral">Configure Genius Peripheral</string>
     <string name="config_pay_with_boloro">Pay with Boloro</string>
 
@@ -1238,6 +1239,18 @@
     <string name="connecting_device">Connecting Device...</string>
     <string name="wrong_password">Password not acceptable, try again...</string>
     <string name="reward_payment_succeed">Reward payment succeed</string>
+    <string name="config_check_updates">Check for Updates</string>
+    <string name="check_update_fail">Error checking for application updates.</string>
+    <string name="downloadig_update">Downloading application update.</string>
+    <string name="install">Install</string>
+    <string name="config_units_name">Default unit name</string>
+    <string name="enter_default_units_name">Enter default unit name</string>
+    <string name="default_unit_name_format">%s Management</string>
+    <string name="receipt_point_used">Points Used:</string>
+    <string name="receipt_reward_balance">Reward Balance:</string>
+    <string name="points">Points</string>
+    <string name="sync_saving_mixmatch">Saving Mix &amp; Match</string>
+    <string name="config_mix_match"><![CDATA[Use Mix & Match]]></string>
 
 
 </resources>

@@ -53,6 +53,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -70,7 +71,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -85,7 +85,6 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import interfaces.EMSCallBack;
-import util.StringUtil;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -230,7 +229,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         List<OrderProduct> orderProducts = global.orderProducts;
         double subtotalDbl = 0;
         for (OrderProduct products : orderProducts) {
-            subtotalDbl += Double.parseDouble(products.itemSubtotal);
+            subtotalDbl += Double.parseDouble(products.getItemSubtotal());
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         this.amountDueField = (EditText) findViewById(R.id.processCardAmount);
@@ -1381,7 +1380,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected Payment doInBackground(Object... params) {
 
-            if (Global.isConnectedToInternet(activity) && !livePaymentRunning) {
+            if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
 
                 Post httpClient = new Post();
@@ -1465,7 +1464,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         @Override
         protected Payment doInBackground(Payment... params) {
 
-            if (Global.isConnectedToInternet(activity)) {
+            if (NetworkUtils.isConnectedToInternet(activity)) {
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();

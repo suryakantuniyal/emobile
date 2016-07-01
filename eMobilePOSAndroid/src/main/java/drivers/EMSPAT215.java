@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 
@@ -78,9 +77,9 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
         thisInstance = this;
-        Looper.prepare();
+//        Looper.prepare();
         new processConnectionAsync().execute(0);
-        Looper.loop();
+//        Looper.loop();
     }
 
     @Override
@@ -95,10 +94,9 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         terminalDisp.open();
         int res = terminalDisp.initialize();
         msrApiContext = MsrManager.getDefault(activity);
-        msrApiContext.setMsrOutputMode(0);
 
         int reader = msrApiContext.getMsrReading();
-        initMSR();
+        initMSR(false);
         if (res == 0) {
             this.edm.driverDidConnectToDevice(thisInstance, false);
             return true;
@@ -128,6 +126,8 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
             terminalDisp = new DisplayManager();
             terminalDisp.open();
             int res = terminalDisp.initialize();
+
+            initMSR(true);
             if (res == 0) {
                 didConnect = true;
             }
@@ -226,19 +226,26 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         new Thread() {
             public void run() {
-                initMSR();
+                initMSR(false);
                 Thread thread = new Thread(setViewThread);
                 thread.start();
             }
         }.start();
     }
 
-    private void initMSR() {
-        releaseCardReader();
-        EMSPAT215.runReader = true;
+    private void fullReload() {
+        int msrDefault = msrApiContext.setMsrDefault();
+        msrApiContext.setMsrOutputMode(0);
+    }
+
+    private void initMSR(boolean fullReload) {
         if (msrApiContext == null)
             msrApiContext = MsrManager.getDefault(activity);
-
+        releaseCardReader();
+        EMSPAT215.runReader = true;
+        if (fullReload) {
+            fullReload();
+        }
         int reader = msrApiContext.getMsrReading();
         int setMsrReading;
         if (reader == 0) {
@@ -253,7 +260,6 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         int setMsrEnable = msrApiContext.setMsrEnable();
         int startReadData = msrApiContext.startReadData();
-
         activity.runOnUiThread(doUpdateDidConnect);
     }
 
@@ -356,6 +362,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     @Override
     public void releaseCardReader() {
         EMSPAT215.runReader = false;
+        msrApiContext.readBufferData();
         msrApiContext.stopReadData();
 //        msrApiContext.setMsrDisable();
 //        msrApiContext.setMsrReading(0);

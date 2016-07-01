@@ -233,7 +233,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
             BCRManager.getDefault().BCREnable();
             IntentFilter filter = new IntentFilter();
             filter.addAction(BCRIntents.ACTION_NEW_DATA);
-            activity.getApplicationContext().registerReceiver(mBroadcastReceiver, filter);
+            activity.registerReceiver(mBroadcastReceiver, filter);
         }
     }
 

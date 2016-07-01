@@ -71,7 +71,6 @@ public class SalesTab_FR extends Fragment {
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
     private String associateId;
-//    GridView gridView;
 
 
     @Override
@@ -83,7 +82,6 @@ public class SalesTab_FR extends Fragment {
         myPref.setLogIn(true);
         PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_layout, false);
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
-//        gridView = (GridView) view.findViewById(R.id.salesGridLayout);
 
         thisContext = getActivity();
         selectedCust = (TextView) view.findViewById(R.id.salesCustomerName);

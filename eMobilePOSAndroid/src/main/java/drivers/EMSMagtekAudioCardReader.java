@@ -79,7 +79,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         } else {
             MyPreferences myPref = new MyPreferences(activity);
             mMTSCRA.setDeviceType(MagTekSCRA.DEVICE_TYPE_BLUETOOTH);
-            mMTSCRA.setDeviceID(myPref.swiperMACAddress(true, null));
+            mMTSCRA.setDeviceID(myPref.getSwiperMACAddress());
             openDevice();
         }
     }
@@ -389,7 +389,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
             // TODO Auto-generated method stub
             MyPreferences myPref = new MyPreferences(activity);
             mMTSCRA.setDeviceType(MagTekSCRA.DEVICE_TYPE_BLUETOOTH);
-            mMTSCRA.setDeviceID(myPref.swiperMACAddress(true, null));
+            mMTSCRA.setDeviceID(myPref.getSwiperMACAddress());
             openDevice();
             try {
                 Thread.sleep(6000);

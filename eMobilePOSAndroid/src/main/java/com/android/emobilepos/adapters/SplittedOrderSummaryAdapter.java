@@ -13,16 +13,9 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.support.Global;
-import com.android.support.NumberUtils;
-import com.google.zxing.common.StringUtils;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.StringTokenizer;
-
-import util.StringUtil;
 
 public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
@@ -58,8 +51,8 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         HashSet<String> items = new HashSet<String>();
 
         for (OrderProduct product : order.getOrderProducts()) {
-            seats.add(product.assignedSeat);
-            items.add(product.ordprod_name);
+            seats.add(product.getAssignedSeat());
+            items.add(product.getOrdprod_name());
         }
 
         holder.seatNumber.setText(org.springframework.util.StringUtils.arrayToDelimitedString(seats.toArray(), ", "));
