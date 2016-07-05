@@ -132,9 +132,7 @@ public class ProductAddonsHandler {
 //    }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
 
@@ -196,7 +194,7 @@ public class ProductAddonsHandler {
         LinkedHashMap<String, Cursor> linkedHashMap = new LinkedHashMap<String, Cursor>();
 
 
-        String priceLevelID = new String();
+        String priceLevelID;
 
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
@@ -227,8 +225,7 @@ public class ProductAddonsHandler {
             sb2.append("' AND c.cat_id = '").append(addonParentList.get(i).get(cat_id)).append("' ORDER BY p.prod_name");
             cursor = DBManager._db.rawQuery(sb.toString() + sb2.toString(), new String[]{myPref.getCustID()});
             if (cursor.moveToFirst()) {
-                Cursor tempCursor = cursor;
-                linkedHashMap.put(addonParentList.get(i).get(cat_id), tempCursor);
+                linkedHashMap.put(addonParentList.get(i).get(cat_id), cursor);
             }
 
             sb2.setLength(0);
@@ -248,7 +245,7 @@ public class ProductAddonsHandler {
         int size = addonParentList.size();
 
 
-        String priceLevelID = new String();
+        String priceLevelID;
 
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
@@ -284,9 +281,8 @@ public class ProductAddonsHandler {
 
         sb.append(sb2.toString()).append(") ORDER BY pa.rest_addons ASC,p.prod_name");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
         //db.close();
-        return c;
+        return DBManager._db.rawQuery(sb.toString(), null);
     }
 
     public Cursor getSpecificChildAddons(String prodID, String _parent_cat_id) {
@@ -297,7 +293,7 @@ public class ProductAddonsHandler {
         //int size = addonParentList.size();
 
 
-        String priceLevelID = new String();
+        String priceLevelID;
 
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
@@ -323,22 +319,17 @@ public class ProductAddonsHandler {
 
         sb.append("' AND c.cat_id IN (");
 
-        StringBuilder sb2 = new StringBuilder();
-
-        sb2.append("'").append(_parent_cat_id).append("'");
-
-//		for(int i = 0 ;i < size;i++)
+        //		for(int i = 0 ;i < size;i++)
 //		{
 //			sb2.append("'").append(addonParentList.get(i).get(cat_id)).append("'");
 //			if(i+1<size)
 //				sb2.append(",");
 //		}
 
-        sb.append(sb2.toString()).append(") ORDER BY pa.rest_addons ASC,p.prod_name");
+        sb.append("'" + _parent_cat_id + "'").append(") ORDER BY pa.rest_addons ASC,p.prod_name");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
         //db.close();
-        return c;
+        return DBManager._db.rawQuery(sb.toString(), null);
     }
 
 

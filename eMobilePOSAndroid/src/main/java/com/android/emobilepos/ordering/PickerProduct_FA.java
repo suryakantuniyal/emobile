@@ -303,9 +303,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                         })
                         .create();
                 Intent intent = new Intent(activity, OrderAttributes_FA.class);
+                intent.putExtra("isModify", isModify);
                 intent.putExtra("prod_id", prodID);
                 if (isModify) {
-                    intent.putExtra("isModify", isModify);
                     intent.putExtra("ordprod_id", global.orderProducts.get(modifyOrderPosition).getOrdprod_id());
                 }
                 startActivity(intent);
