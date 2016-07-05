@@ -387,10 +387,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             }
         }
 
-        // if(discount_amount.compareTo(sub_total)!=-1)
-        // {
-        // discount_amount = sub_total;
-        // }
 
         globalDiscount.setText(Global.getCurrencyFormat(frmt.format(discount_amount)));
 
@@ -699,7 +695,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             return;
         }
 
-        if (myPref.isMixAnMatch()) {
+        if (myPref.isMixAnMatch() && orderProducts != null && !orderProducts.isEmpty()) {
             calculateMixAndMatch(orderProducts);
         }
 
