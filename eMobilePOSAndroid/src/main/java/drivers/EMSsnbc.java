@@ -349,16 +349,15 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
         openUsbInterface();
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
 
     }
 
     @Override
     public void openCashDrawer() {
-
-
+        openUsbInterface();
         new Thread(new Runnable() {
             public void run() {
                 pos_sdk.cashdrawerOpen(0, 100, 100);

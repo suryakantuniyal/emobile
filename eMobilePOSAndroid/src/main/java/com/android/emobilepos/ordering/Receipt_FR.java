@@ -91,6 +91,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import interfaces.EMSDeviceManagerPrinterDelegate;
 import util.JsonUtils;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
@@ -1885,24 +1886,30 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     false);
                 }
             } else {
-                OrderProductsHandler handler2 = new OrderProductsHandler(
+                OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
                         activity);
-                HashMap<String, List<Orders>> temp = handler2
+                HashMap<String, List<Orders>> temp = orderProductsHandler
                         .getStationPrinterProducts(global.order.ord_id);
 
                 String[] sArr = temp.keySet().toArray(
                         new String[temp.keySet().size()]);
                 int printMap;
+                boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
+                EMSDeviceManagerPrinterDelegate currentDevice = null;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
-//                        Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
+//                      Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
-                                && Global.multiPrinterManager.get(printMap).currentDevice != null)
-                            Global.multiPrinterManager.get(printMap).currentDevice
-                                    .printStationPrinter(temp.get(aSArr),
-                                            global.order.ord_id);
+                                && Global.multiPrinterManager.get(printMap).currentDevice != null) {
+                            currentDevice = Global.multiPrinterManager.get(printMap).currentDevice;
+                            currentDevice.printStationPrinter(temp.get(aSArr),
+                                    global.order.ord_id, splitByCat);
+                        }
                     }
+                }
+                if (currentDevice != null && !splitByCat) {
+                    currentDevice.cutPaper();
                 }
             }
             return null;

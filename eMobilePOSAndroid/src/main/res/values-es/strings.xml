@@ -1250,6 +1250,8 @@
     <string name="points">Points</string>
     <string name="sync_saving_mixmatch">Saving Mix &amp; Match</string>
     <string name="config_mix_match"><![CDATA[Use Mix & Match]]></string>
+    <string name="connecting_devices">Connecting devices...</string>
+    <string name="config_split_stationprint_by_categories">Split station print receipt by categories</string>
 
 
 </resources>

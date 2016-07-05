@@ -22,7 +22,6 @@ import com.android.support.MyPreferences;
 import org.springframework.util.support.Base64;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -599,7 +598,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper) {
 
     }
 

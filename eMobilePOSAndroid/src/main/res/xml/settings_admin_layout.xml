@@ -312,6 +312,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_automatic_printing" />
         <CheckBoxPreference
+            android:key="pref_split_stationprint_by_categories"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_split_stationprint_by_categories" />
+        <CheckBoxPreference
             android:key="pref_wholesale_printout"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_wholesale_printout" />

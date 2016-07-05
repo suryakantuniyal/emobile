@@ -28,7 +28,6 @@ import com.starmicronics.starioextension.starioextmanager.StarIoExtManagerListen
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,11 +37,6 @@ import drivers.star.utils.PrinterSetting;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
-import util.RasterDocument;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
-import util.StarBitmap;
 
 public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
@@ -654,7 +648,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
         try {
             port = getStarIOPort();
 
@@ -679,7 +673,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // center
             }
 
-            printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
+            printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
 
             // db.close();
         } catch (StarIOPortException e) {

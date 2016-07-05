@@ -18,7 +18,6 @@ import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
-import com.android.database.DBManager;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -1467,7 +1466,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth) {
+    protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth, boolean cutPaper) {
         try {
 
             try {
@@ -1496,8 +1495,6 @@ public class EMSDeviceDriver {
 
             OrdersHandler orderHandler = new OrdersHandler(activity);
             OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
-            DBManager dbManager = new DBManager(activity);
-            // SQLiteDatabase db = dbManager.openWritableDB();
             Order anOrder = orderHandler.getPrintedOrder(ordID);
 
             StringBuilder sb = new StringBuilder("\n");
@@ -1590,7 +1587,7 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
 //            printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
+            if (isPOSPrinter && cutPaper) {
 //                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
 //                characterExpansion[2] = (byte) (0 + '0');
 //                characterExpansion[3] = (byte) (0 + '0');

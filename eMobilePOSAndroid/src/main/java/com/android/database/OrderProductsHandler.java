@@ -191,7 +191,7 @@ public class OrderProductsHandler {
 
                 insert.bindString(index(assignedSeat), prod.getAssignedSeat() == null ? "" : prod.getAssignedSeat());
                 insert.bindLong(index(seatGroupId), prod.getSeatGroupId());
-                insert.bindLong(index(prodPricePoints), Long.parseLong(prod.getProd_price_points()));
+                insert.bindLong(index(prodPricePoints), new Double(prod.getProd_price_points()).longValue());
 
                 insert.execute();
                 insert.clearBindings();
