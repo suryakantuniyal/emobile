@@ -357,8 +357,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void openCashDrawer() {
-
-
+        openUsbInterface();
         new Thread(new Runnable() {
             public void run() {
                 pos_sdk.cashdrawerOpen(0, 100, 100);
