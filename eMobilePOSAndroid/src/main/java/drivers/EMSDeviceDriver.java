@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.os.Environment;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -16,11 +15,9 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
-import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.ClerksHandler;
-import com.android.database.DBManager;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -47,7 +44,6 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.handpoint.api.Device;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
@@ -55,8 +51,6 @@ import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1472,7 +1466,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth) {
+    protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth, boolean cutPaper) {
         try {
 
             try {
@@ -1501,8 +1495,6 @@ public class EMSDeviceDriver {
 
             OrdersHandler orderHandler = new OrdersHandler(activity);
             OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
-            DBManager dbManager = new DBManager(activity);
-            // SQLiteDatabase db = dbManager.openWritableDB();
             Order anOrder = orderHandler.getPrintedOrder(ordID);
 
             StringBuilder sb = new StringBuilder("\n");
@@ -1595,7 +1587,7 @@ public class EMSDeviceDriver {
             print(sb.toString(), FORMAT);
 //            printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter) {
+            if (isPOSPrinter && cutPaper) {
 //                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
 //                characterExpansion[2] = (byte) (0 + '0');
 //                characterExpansion[3] = (byte) (0 + '0');

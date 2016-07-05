@@ -135,7 +135,9 @@ public class MyPreferences {
     public static final String pref_require_full_payment = "pref_require_full_payment";
     public static final String pref_printek_info = "pref_printek_info";
     public static final String pref_automatic_printing = "pref_automatic_printing";
+    public static final String pref_split_stationprint_by_categories = "pref_split_stationprint_by_categories";
     public static final String pref_enable_printing = "pref_enable_printing";
+
     public static final String pref_wholesale_printout = "pref_wholesale_printout";
     public static final String pref_handwritten_signature = "pref_handwritten_signature";
     public static final String pref_prompt_customer_copy = "pref_prompt_customer_copy";

@@ -38,9 +38,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 //com.mpowa.android.sdk.powapos.core.callbacks.PowaPOSCallbackBas
 public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
@@ -389,8 +389,8 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
 
     }
 
