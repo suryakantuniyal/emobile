@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.database.OrderProductsHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
