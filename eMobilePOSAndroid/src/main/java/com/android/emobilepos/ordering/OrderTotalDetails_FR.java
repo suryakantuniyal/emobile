@@ -556,7 +556,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 qtyAtRegularPrice -= prodQty;
             } else {
                 int regularPriced = qtyAtRegularPrice;
-                int discountPriced = prodQty - qtyAtDiscountPrice;
+                int discountPriced = prodQty - qtyAtRegularPrice;
                 if (regularPriced < 0) {
                     if (isGroupBySKU) {
                         OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
@@ -603,6 +603,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             global.orderProducts.add(orderProduct);
                         }
                     }
+                    qtyAtDiscountPrice -= discountPriced;
                 }
 
             }
