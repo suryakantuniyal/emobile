@@ -2248,12 +2248,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
+        reCalculate();
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
             receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
         } else
             restLVAdapter.notifyDataSetChanged();
-        reCalculate();
     }
 
     private void reloadDefaultTransaction() {

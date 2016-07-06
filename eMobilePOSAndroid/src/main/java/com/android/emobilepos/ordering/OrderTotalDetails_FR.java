@@ -475,14 +475,17 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     applyMixMatch(group, mixMatches);
                 } else {
                     if (mixMatches.size() == 2) {
-                        applyXYZMixMatchToGroup(group, mixMatches);
+                        orderProducts.clear();
+                        orderProducts.addAll(applyXYZMixMatchToGroup(group, mixMatches));
                     }
                 }
             }
         }
     }
 
-    private void applyXYZMixMatchToGroup(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches) {
+    private List<OrderProduct> applyXYZMixMatchToGroup(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches) {
+
+        List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
         MixMatch mixMatch1 = mixMatches.get(0);
         MixMatch mixMatch2 = mixMatches.get(1);
         int qtyRequired = mixMatch1.getQty();
@@ -490,7 +493,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         Double amount = mixMatch2.getPrice();
         boolean isPercent = mixMatch2.isPercent();
         if (group.getQuantity() < qtyRequired) {
-            return;
+            return null;
         }
 
         int qtyAtRegularPrice;
@@ -534,7 +537,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 return a.getPrice().compareTo(b.getPrice());
             }
         });
-        global.orderProducts.clear();
+        orderProducts.clear();
 
 
         boolean isGroupBySKU = myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku);
@@ -545,34 +548,48 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
                     orderProduct.setOrdprod_qty(String.valueOf(prodQty));
                     orderProduct.setMixMatchQtyApplied(prodQty);
-                    global.orderProducts.add(orderProduct);
+                    orderProducts.add(orderProduct);
                 } else {
                     for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
                         orderProduct.setOrdprod_qty("1");
                         orderProduct.setMixMatchQtyApplied(1);
-                        global.orderProducts.add(orderProduct);
+                        orderProduct.setItemTotal("1");
+                        orderProduct.setItemSubtotal("1");
+                        orderProducts.add(orderProduct);
                     }
                 }
                 qtyAtRegularPrice -= prodQty;
             } else {
                 int regularPriced = qtyAtRegularPrice;
                 int discountPriced = prodQty - qtyAtRegularPrice;
-                if (regularPriced < 0) {
+                if (regularPriced > 0) {
                     if (isGroupBySKU) {
                         OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
                         orderProduct.setOrdprod_qty(String.valueOf(regularPriced));
                         orderProduct.setMixMatchQtyApplied(regularPriced);
-                        global.orderProducts.add(orderProduct);
+                        orderProducts.add(orderProduct);
                     } else {
-                        for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
-                            orderProduct.setOrdprod_qty("1");
-                            orderProduct.setMixMatchQtyApplied(1);
-                            global.orderProducts.add(orderProduct);
+                        for (int i = 0; i < regularPriced; i++) {
+                            try {
+                                OrderProduct clone = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
+                                clone.setOrdprod_qty("1");
+                                clone.setMixMatchQtyApplied(1);
+                                clone.setItemTotal(clone.getProd_price());
+                                clone.setItemSubtotal(clone.getProd_price());
+                                orderProducts.add(clone);
+                            } catch (CloneNotSupportedException e) {
+                                e.printStackTrace();
+                            }
                         }
+//                        for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
+//                            orderProduct.setOrdprod_qty("1");
+//                            orderProduct.setMixMatchQtyApplied(1);
+//                            global.orderProducts.add(orderProduct);
+//                        }
                     }
                     qtyAtRegularPrice -= regularPriced;
                 }
-                if (discountPriced < 0) {
+                if (discountPriced > 0) {
                     if (isGroupBySKU) {
                         OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
                         orderProduct.setOrdprod_qty(String.valueOf(discountPriced));
@@ -586,22 +603,45 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             discountPrice = BigDecimal.valueOf(amount);
                         }
                         orderProduct.setProd_price(String.valueOf(discountPrice));
-                        global.orderProducts.add(orderProduct);
+                        orderProducts.add(orderProduct);
                     } else {
-                        for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
-                            orderProduct.setOrdprod_qty("1");
-                            orderProduct.setMixMatchQtyApplied(1);
-                            BigDecimal discountPrice;
-                            if (isPercent) {
-                                BigDecimal hundred = new BigDecimal(100);
-                                BigDecimal percent = (hundred.subtract(new BigDecimal(amount))).divide(hundred);
-                                discountPrice = new BigDecimal(orderProduct.getProd_price()).multiply(percent);
-                            } else {
-                                discountPrice = BigDecimal.valueOf(amount);
+                        for (int i = 0; i < discountPriced; i++) {
+                            try {
+                                OrderProduct clone = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
+                                clone.setOrdprod_qty("1");
+                                clone.setMixMatchQtyApplied(1);
+
+                                BigDecimal discountPrice;
+                                if (isPercent) {
+                                    BigDecimal hundred = new BigDecimal(100);
+                                    BigDecimal percent = (hundred.subtract(new BigDecimal(amount))).divide(hundred);
+                                    discountPrice = new BigDecimal(clone.getProd_price()).multiply(percent);
+                                } else {
+                                    discountPrice = BigDecimal.valueOf(amount);
+                                }
+                                clone.setProd_price(String.valueOf(discountPrice));
+                                clone.setItemTotal(clone.getProd_price());
+                                clone.setItemSubtotal(clone.getProd_price());
+                                orderProducts.add(clone);
+                            } catch (CloneNotSupportedException e) {
+                                e.printStackTrace();
                             }
-                            orderProduct.setProd_price(String.valueOf(discountPrice));
-                            global.orderProducts.add(orderProduct);
                         }
+
+//                        for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
+//                            orderProduct.setOrdprod_qty("1");
+//                            orderProduct.setMixMatchQtyApplied(1);
+//                            BigDecimal discountPrice;
+//                            if (isPercent) {
+//                                BigDecimal hundred = new BigDecimal(100);
+//                                BigDecimal percent = (hundred.subtract(new BigDecimal(amount))).divide(hundred);
+//                                discountPrice = new BigDecimal(orderProduct.getProd_price()).multiply(percent);
+//                            } else {
+//                                discountPrice = BigDecimal.valueOf(amount);
+//                            }
+//                            orderProduct.setProd_price(String.valueOf(discountPrice));
+//                            global.orderProducts.add(orderProduct);
+//                        }
                     }
                     qtyAtDiscountPrice -= discountPriced;
                 }
@@ -609,6 +649,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             }
         }
 
+        return orderProducts;
     }
 
     private void applyMixMatch(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches) {

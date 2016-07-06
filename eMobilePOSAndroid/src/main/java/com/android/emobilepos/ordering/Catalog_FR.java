@@ -716,23 +716,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             product.setAssignedSeat(((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
             String json = gson.toJson(new OrderProduct(product));
             intent.putExtra("orderProduct", json);
-//            intent.putExtra("prod_id", product.getId());
-//            intent.putExtra("prod_name", product.getProdName());
-//            intent.putExtra("prod_on_hand", product.getProdOnHand());
-//            intent.putExtra("prod_price", product.getProdPrice());
-//            intent.putExtra("prod_desc", product.getProdDesc());
-//            intent.putExtra("url", product.getProdImgName());
-//            intent.putExtra("prod_istaxable", product.getProdIstaxable());
-//            intent.putExtra("prod_type", product.getProdType());
-//            intent.putExtra("prod_taxcode", product.getProdTaxCode());
-//            intent.putExtra("prod_taxtype", product.getProdTaxType());
-//            intent.putExtra("cat_id", product.getCatId());
-//            intent.putExtra("prod_price_points", product.getProdPricePoints());
-//            intent.putExtra("prod_value_points", product.getProdValuePoints());
-//            intent.putExtra("prod_sku", product.getProd_sku());
-//            intent.putExtra("prod_upc", product.getProd_upc());
-//            intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
-
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));
