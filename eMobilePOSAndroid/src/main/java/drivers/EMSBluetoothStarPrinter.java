@@ -44,10 +44,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     private int PAPER_WIDTH;
     private String portSettings, portName;
 
-    //    private StarIOPort portForCardReader;
     private EMSCallBack callBack, scannerCallBack;
     private StarIoExtManager mStarIoExtManager;
-    private Handler handler;// = new Handler();
+    private Handler handler;
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
     private boolean stopLoop = false;
@@ -673,9 +672,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // center
             }
 
-            printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
+            printStationPrinterReceipt(orders, ordID, 42, cutPaper);
 
-            // db.close();
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }

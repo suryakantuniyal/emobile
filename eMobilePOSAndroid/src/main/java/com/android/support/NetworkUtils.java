@@ -3,18 +3,31 @@ package com.android.support;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
+import android.net.NetworkInfo;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Guarionex on 6/13/2016.
  */
 public class NetworkUtils {
+
+    private static List<NetworkInfo> getConnectedNetworkInfo(ConnectivityManager connectivityManager) {
+        NetworkInfo[] allNetworkInfo = connectivityManager.getAllNetworkInfo();
+        List<NetworkInfo> connectedNetworks = new ArrayList<NetworkInfo>();
+        for (NetworkInfo networkInfo : allNetworkInfo) {
+            if (networkInfo.isConnected()) {
+                connectedNetworks.add(networkInfo);
+            }
+        }
+        return connectedNetworks;
+    }
 
     public static boolean isConnectedToInternet(final Activity activity) {
         final boolean[] retVal = {false};
@@ -23,7 +36,7 @@ public class NetworkUtils {
             if (connManager == null)
                 return false;
             synchronized (connManager) {
-                if (connManager.getActiveNetworkInfo().isAvailable() && connManager.getActiveNetworkInfo().isConnected()) {
+                if (!getConnectedNetworkInfo(connManager).isEmpty()) {
 
                     new Thread(new Runnable() {
                         @Override
