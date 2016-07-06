@@ -127,6 +127,7 @@ public class EMSDeviceDriver {
                 case 32:
                     PAPER_WIDTH = 408;
                     break;
+                case 44:
                 case 48:
                     PAPER_WIDTH = 576;
                     break;
@@ -336,9 +337,20 @@ public class EMSDeviceDriver {
             eloPrinterApi.print(str);
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                port.writePort(str.getBytes(FORMAT), 0, str.length());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                ArrayList<byte[]> commands = new ArrayList<byte[]>();
+                commands.add(new byte[]{0x1b, 0x40}); // Initialization
+                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+                characterheightExpansion[2] = 49;
+                commands.add(characterheightExpansion);
+                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+                characterwidthExpansion[2] = 49;
+                commands.add(characterwidthExpansion);
+                commands.add(str.getBytes());
+                commands.add(new byte[]{0x0a});
+                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+
+//              port.writePort(str.getBytes(FORMAT), 0, str.length());
             } catch (StarIOPortException e) {
                 e.printStackTrace();
             }
@@ -794,45 +806,27 @@ public class EMSDeviceDriver {
         }
     }
 
-//    public void PrintBitmapImage(Bitmap tempBitmap, boolean compressionEnable, int lineWidth)
-//            throws StarIOPortException {
-//
-//        if (PRINT_TO_LOG) {
-//            Log.d("Print", "*******Image Print***********");
-//            return;
-//        }
-//
-//        ArrayList<Byte> commands = new ArrayList<Byte>();
-//        Byte[] tempList;
-//
-//        RasterDocument rasterDoc = new RasterDocument(RasSpeed.Medium, RasPageEndMode.None, RasPageEndMode.None,
-//                RasTopMargin.Standard, 0, lineWidth / 3, 0);
-//        // Bitmap bm = BitmapFactory.decodeResource(res, source);
-//        util.StarBitmap starbitmap = new util.StarBitmap(tempBitmap, false, 350, PAPER_WIDTH);
-//
-//        byte[] command = rasterDoc.BeginDocumentCommandData();
-//        tempList = new Byte[command.length];
-//        CopyArray(command, tempList);
-//        commands.addAll(Arrays.asList(tempList));
-//
-//        command = starbitmap.getImageRasterDataForPrinting();
-//        tempList = new Byte[command.length];
-//        CopyArray(command, tempList);
-//        commands.addAll(Arrays.asList(tempList));
-//
-//        command = rasterDoc.EndDocumentCommandData();
-//        tempList = new Byte[command.length];
-//        CopyArray(command, tempList);
-//        commands.addAll(Arrays.asList(tempList));
-//
-//        byte[] commandToSendToPrinter = convertFromListByteArrayTobyteArray(commands);
-//        port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-//    }
 
     private static byte[] convertFromListByteArrayTobyteArray(List<Byte> ByteArray) {
         byte[] byteArray = new byte[ByteArray.size()];
         for (int index = 0; index < byteArray.length; index++) {
             byteArray[index] = ByteArray.get(index);
+        }
+
+        return byteArray;
+    }
+
+    private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
+        int dataLength = 0;
+        for (int i = 0; i < ByteArray.size(); i++) {
+            dataLength += ByteArray.get(i).length;
+        }
+
+        int distPosition = 0;
+        byte[] byteArray = new byte[dataLength];
+        for (int i = 0; i < ByteArray.size(); i++) {
+            System.arraycopy(ByteArray.get(i), 0, byteArray, distPosition, ByteArray.get(i).length);
+            distPosition += ByteArray.get(i).length;
         }
 
         return byteArray;
