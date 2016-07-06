@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
-import com.android.database.MemoTextHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -21,7 +20,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.starmicronics.stario.StarIOPortException;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,10 +27,9 @@ import java.util.List;
 import POSAPI.POSInterfaceAPI;
 import POSAPI.POSUSBAPI;
 import POSSDK.POSSDK;
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     private final int LINE_WIDTH = 42;
@@ -48,8 +45,8 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     private final int ERR_PARAM = 1002;        //parameter error
 
 
-    public static POSSDK pos_usb = null;
-    private POSInterfaceAPI interface_usb = null;
+    private static POSSDK pos_usb;
+    private static POSInterfaceAPI interface_usb;
     private int error_code = 0;
 
     @Override
@@ -58,7 +55,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         myPref = new MyPreferences(this.activity);
         thisInstance = this;
         this.edm = edm;
-        interface_usb = new POSUSBAPI(activity);
+        if (interface_usb == null) {
+            interface_usb = new POSUSBAPI(activity);
+        }
         new processConnectionAsync().execute(0);
     }
 
@@ -70,13 +69,17 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
         thisInstance = this;
-        //isUSBConnected();
-        interface_usb = new POSUSBAPI(activity);
-
+        if (interface_usb == null) {
+            interface_usb = new POSUSBAPI(activity);
+        } else {
+            interface_usb.CloseDevice();
+        }
 
         error_code = interface_usb.OpenDevice();
         if (error_code == POS_SUCCESS) {
-            pos_usb = new POSSDK(interface_usb);
+            if (pos_usb == null) {
+                pos_usb = new POSSDK(interface_usb);
+            }
             pos_sdk = pos_usb;
             if (setupPrinter())
                 didConnect = true;
@@ -98,7 +101,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
                     didConnect = true;
             }
         }
-
         if (didConnect) {
             this.edm.driverDidConnectToDevice(thisInstance, false);
         } else {
@@ -129,12 +131,13 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
         @Override
         protected String doInBackground(Integer... params) {
-            // TODO Auto-generated method stub
 
 
             error_code = interface_usb.OpenDevice();
             if (error_code == POS_SUCCESS) {
-                pos_usb = new POSSDK(interface_usb);
+                if (pos_usb == null) {
+                    pos_usb = new POSSDK(interface_usb);
+                }
                 pos_sdk = pos_usb;
 
                 if (setupPrinter())
@@ -147,7 +150,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         @Override
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
-
             if (didConnect) {
                 edm.driverDidConnectToDevice(thisInstance, true);
             } else {
@@ -164,18 +166,6 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         this.registerPrinter();
     }
 
-
-    private void printString(String s) {
-        byte[] send_buf = null;
-        try {
-            send_buf = s.getBytes("GB18030");
-            error_code = pos_sdk.textPrint(send_buf, send_buf.length);
-            send_buf = null;
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 
     private boolean setupPrinter() {
         error_code = pos_sdk.textStandardModeAlignment(0);
@@ -198,20 +188,17 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return true;
     }
 
-//	private String getString(int id)
-//	{
-//		return(activity.getResources().getString(id));
-//	}
-
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        openUsbInterface();
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        openUsbInterface();
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
@@ -219,15 +206,15 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+        openUsbInterface();
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
-
-
         return true;
     }
 
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
+        openUsbInterface();
         return printBalanceInquiry(values, LINE_WIDTH);
     }
 
@@ -250,17 +237,20 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        openUsbInterface();
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
+        openUsbInterface();
         printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
 
     @Override
     public boolean printReport(String curDate) {
+        openUsbInterface();
         printReportReceipt(curDate, LINE_WIDTH);
         return true;
     }
@@ -274,83 +264,61 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void unregisterPrinter() {
+        interface_usb.CloseDevice();
         edm.currentDevice = null;
     }
 
+    public boolean openUsbInterface() {
+        boolean didConnect = false;
 
-    public void printHeader() {
-
-        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-        StringBuilder sb = new StringBuilder();
-
-        MemoTextHandler handler = new MemoTextHandler(activity);
-        String[] header = handler.getHeader();
-
-        if (header[0] != null && !header[0].isEmpty())
-            sb.append(textHandler.formatLongString(header[0], LINE_WIDTH)).append("\n");
-        if (header[1] != null && !header[1].isEmpty())
-            sb.append(textHandler.formatLongString(header[1], LINE_WIDTH)).append("\n");
-        if (header[2] != null && !header[2].isEmpty())
-            sb.append(textHandler.formatLongString(header[2], LINE_WIDTH)).append("\n");
-
-
-        if (!sb.toString().isEmpty()) {
-            sb.append(textHandler.newLines(2));
-            pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
-            this.printString(sb.toString());
-            pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
-        }
-    }
-
-
-    public void printFooter() {
-
-        EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-        StringBuilder sb = new StringBuilder();
-        MemoTextHandler handler = new MemoTextHandler(activity);
-        String[] footer = handler.getFooter();
-
-        if (footer[0] != null && !footer[0].isEmpty())
-            sb.append(textHandler.formatLongString(footer[0], LINE_WIDTH)).append("\n");
-        if (footer[1] != null && !footer[1].isEmpty())
-            sb.append(textHandler.formatLongString(footer[1], LINE_WIDTH)).append("\n");
-        if (footer[2] != null && !footer[2].isEmpty())
-            sb.append(textHandler.formatLongString(footer[2], LINE_WIDTH)).append("\n");
-
-
-        if (!sb.toString().isEmpty()) {
-            sb.append(textHandler.newLines(2));
-            pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
-            this.printString(sb.toString());
-            pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
+        if (interface_usb == null) {
+            interface_usb = new POSUSBAPI(activity);
+        } else {
+            interface_usb.CloseDevice();
         }
 
+        error_code = interface_usb.OpenDevice();
+        if (error_code == POS_SUCCESS) {
+            if (pos_usb == null) {
+                pos_usb = new POSSDK(interface_usb);
+            }
+            pos_sdk = pos_usb;
+            if (setupPrinter())
+                didConnect = true;
+        } else if (error_code == ERR_PROCESSING) {
+            int _time_out = 0;
+            while (error_code == ERR_PROCESSING || _time_out > 10) {
+                error_code = interface_usb.OpenDevice();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+                _time_out++;
+            }
+
+            if (error_code == POS_SUCCESS) {
+                pos_usb = new POSSDK(interface_usb);
+                pos_sdk = pos_usb;
+                if (setupPrinter())
+                    didConnect = true;
+            }
+        }
+        return didConnect;
     }
 
-    public void cutPaper() {
-
-        // ******************************************************************************************
-        // print in page mode
-        error_code = pos_sdk.pageModePrint();
-
-        error_code = pos_sdk.systemCutPaper(66, 0);
-
-        // *****************************************************************************************
-        // clear buffer in page mode
-        error_code = pos_sdk.pageModeClearBuffer();
+    public void closeUsbInterface() {
+        interface_usb.CloseDevice();
     }
 
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
-
+        openUsbInterface();
         printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
 
         return true;
     }
-
-
 
 
     @Override
@@ -365,7 +333,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     @Override
     public boolean printConsignmentPickup(
             List<ConsignmentTransaction> myConsignment, String encodedSig) {
-
+        openUsbInterface();
         printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
         return true;
@@ -373,6 +341,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public boolean printOpenInvoices(String invID) {
+        openUsbInterface();
         printOpenInvoicesReceipt(invID, LINE_WIDTH);
 
         return true;
@@ -380,15 +349,15 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
+        openUsbInterface();
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
 
     }
 
     @Override
     public void openCashDrawer() {
-
-
+        openUsbInterface();
         new Thread(new Runnable() {
             public void run() {
                 pos_sdk.cashdrawerOpen(0, 100, 100);
@@ -397,10 +366,20 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
+    @Override
+    public void printHeader() {
+        super.printHeader(LINE_WIDTH);
+    }
+
+    @Override
+    public void printFooter() {
+        super.printFooter(LINE_WIDTH);
+    }
+
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-
+        openUsbInterface();
         printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
         return true;
@@ -434,6 +413,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void printReceiptPreview(View view) {
+        openUsbInterface();
         try {
             setPaperWidth(LINE_WIDTH);
             Bitmap bitmap = loadBitmapFromView(view);

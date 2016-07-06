@@ -35,12 +35,11 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-
 import drivers.elo.utils.MagStripDriver;
 import drivers.elo.utils.PrinterAPI;
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 12/3/2015.
@@ -275,11 +274,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper) {
         try {
             SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
             eloPrinterApi = new PrinterAPI(eloPrinterPort);
-            super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH);
+            super.printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper);
             eloPrinterPort.getInputStream().close();
             eloPrinterPort.getOutputStream().close();
             eloPrinterPort.close();

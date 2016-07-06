@@ -28,7 +28,6 @@ import com.starmicronics.starioextension.starioextmanager.StarIoExtManagerListen
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,11 +37,6 @@ import drivers.star.utils.PrinterSetting;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
-import util.RasterDocument;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
-import util.StarBitmap;
 
 public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
@@ -654,7 +648,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
         try {
             port = getStarIOPort();
 
@@ -668,6 +662,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
                 // windows-1252
             } else {
+                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
                 port.writePort(new byte[]{0x1b, 0x1d, 0x74, 0x20}, 0, 4);
                 byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
                 characterExpansion[2] = (byte) (1 + '0');
@@ -678,11 +673,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // center
             }
 
-            printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
+            printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
 
             // db.close();
-        } catch (StarIOPortException ignored) {
-
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
         }
     }
 

@@ -41,7 +41,7 @@
     <TextView
         android:layout_width="@dimen/catalog_image_size"
         android:layout_height="@dimen/catalog_image_size"
-        android:text="New Text"
+        android:text=""
         android:id="@+id/gridCatalogProducttNametextView"
         android:layout_gravity="center"
         android:textSize="@dimen/text_default"

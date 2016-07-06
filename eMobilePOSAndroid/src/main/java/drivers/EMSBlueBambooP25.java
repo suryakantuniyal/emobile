@@ -34,10 +34,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.Vector;
 
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import interfaces.EMSPrintingDelegate;
+import main.EMSDeviceManager;
 import util.NumberUtil;
 import util.PocketPos;
 import util.StringUtil;
@@ -112,8 +112,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         boolean didConnect = false;
 
         String macAddress = myPref.getPrinterMACAddress();
-        BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
         try {
+            BluetoothDevice btDev = mBtAdapter.getRemoteDevice(macAddress);
             socket = btDev.createRfcommSocketToServiceRecord(UUID.fromString(SPP_UUID));
             socket.connect();
 
@@ -123,7 +123,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
                 didConnect = true;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
         }
 
         if (didConnect) {
@@ -652,8 +652,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
 
     }
 

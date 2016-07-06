@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -13,16 +14,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.dao.DeviceTableDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Device;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -31,9 +29,8 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import io.realm.RealmResults;
+import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
@@ -117,7 +114,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         else
             tvStoreForward.setVisibility(View.GONE);
 
-        new autoConnectPrinter().execute("");
+        new autoConnectPrinter().execute();
         super.onResume();
     }
 
@@ -175,18 +172,34 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
+        private boolean loadMultiPrinter;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
+            loadMultiPrinter = Global.multiPrinterManager == null
+                    || Global.multiPrinterManager.size() == 0;
 
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.connecting_devices));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            if (loadMultiPrinter) {
+                myProgressDialog.show();
+            }
         }
 
         @Override
         protected String doInBackground(String... params) {
-            boolean loadMultiPrinter = Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0;
             String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA) {
                 isUSB = true;
+            }
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null &&
+                    Global.mainPrinterManager.currentDevice instanceof EMSsnbc) {
+                ((EMSsnbc) Global.mainPrinterManager.currentDevice).closeUsbInterface();
             }
             return autoConnect;
         }
@@ -202,6 +215,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
+            if (myProgressDialog != null && myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
         }
     }
 
