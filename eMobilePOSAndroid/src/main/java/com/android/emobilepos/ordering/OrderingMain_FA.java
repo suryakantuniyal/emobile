@@ -63,6 +63,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.OrderProductUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -1020,7 +1021,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public boolean validAutomaticAddQty(Product product) {
-        String addedQty = global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
+        String addedQty = OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId());//global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());
         return !((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
@@ -1539,14 +1540,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
 
-        int sum = 0;
-        if (global.qtyCounter.containsKey(product.getId()))
-            sum = Integer.parseInt(global.qtyCounter.get(product.getId()));
+//        int sum;
 
-        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
-            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
-        else
-            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
+//        if (indexOf>=0)//global.qtyCounter.containsKey(product.getId()))
+        int sum = Integer.parseInt(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));//Integer.parseInt(global.qtyCounter.get(product.getId()));
+
+//        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
+//            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
+//        else
+//            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
         if (OrderingMain_FA.returnItem)
             ord.setReturned(true);
         order.setName(product.getProdName());
@@ -1680,7 +1682,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         for (OrderProduct product : products) {
             RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {
-                if(!product.getRequiredProductAttributes().contains(attribute)){
+                if (!product.getRequiredProductAttributes().contains(attribute)) {
                     return false;
                 }
             }

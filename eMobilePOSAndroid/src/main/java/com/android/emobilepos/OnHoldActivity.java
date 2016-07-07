@@ -559,7 +559,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         for (int i = 0; i < size; i++) {
             double discAmount = 0;
             ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
-            global.qtyCounter.put(c.getString(c.getColumnIndex("prod_id")), c.getString(c.getColumnIndex("ordprod_qty")));
+//            global.qtyCounter.put(c.getString(c.getColumnIndex("prod_id")), c.getString(c.getColumnIndex("ordprod_qty")));
 
             ord.setAssignedSeat(c.getString(c.getColumnIndex("assignedSeat")));
             ord.setSeatGroupId(c.getInt(c.getColumnIndex("seatGroupId")));

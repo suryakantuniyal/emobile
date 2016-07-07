@@ -49,6 +49,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.OrderProductUtils;
 import com.android.support.TerminalDisplay;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -614,7 +615,17 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
 
     private void addProductToOrder() {
-        OrderProduct product = global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
+        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
+            global.orderProducts.clear();
+            global.orderProducts.addAll(orderProductsGroupBySKU);
+        }
+        OrderProduct product;
+        if (isModify) {
+            product = global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
+        } else {
+            product = orderProduct;
+        }
         List<OrderProduct> products = new ArrayList<OrderProduct>();
         if (product != null) {
             products.add(product);
@@ -633,7 +644,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             }
             double selectedQty = Double.parseDouble(qty_picked);
             double newQty = 0;
-            String addedQty = global.qtyCounter.get(prodID);
+            String addedQty = "0";
+            List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.orderProducts, prodID);
+            if (!list.isEmpty()) {
+                addedQty = list.get(0).getOrdprod_qty();
+            }
+//            String addedQty = indexOf == -1 ? "0" : global.orderProducts.get(indexOf).getOrdprod_qty();
+//            OrderProductUtils.getOrderProductQty(global.orderProducts, prodID);
+            //global.qtyCounter.get(prodID);
 
 
             if (addedQty != null && !addedQty.isEmpty())
@@ -666,10 +684,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         String val = qty_picked;
         BigDecimal sum = new BigDecimal(val);
 
-        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
-        else
-            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
+//        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
+//            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
+//        else
+//            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
         orderProduct.setProd_istaxable(orderedProducts.getProd_istaxable());
         BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal).multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);
@@ -883,7 +901,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private boolean validConsignment(double selectedQty, double onHandQty) {
         if (Global.isConsignment) {
-            String temp = global.qtyCounter.get(prodID);
+            String temp = OrderProductUtils.getOrderProductQty(global.orderProducts, prodID);//global.qtyCounter.get(prodID);
             if (temp != null && !isModify) {
                 double val = Double.parseDouble(temp);
                 selectedQty += val;
@@ -917,34 +935,34 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         MyPreferences myPref = new MyPreferences(activity);
 
         if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-            int size = global.orderProducts.size();
-            int index = 0;
-            boolean found = false;
+//            int size = global.orderProducts.size();
+//            int index = 0;
+//            boolean found = false;
+            List<OrderProduct> orderProducts = OrderProductUtils.getOrderProducts(global.orderProducts, prodID);
+//            for (int i = 0; i < size; i++) {
+//                if (global.orderProducts.get(i).getProd_id().equals(prodID)) {
+//                    index = i;
+//                    found = true;
+//                    break;
+//                }
+//            }
 
-            for (int i = 0; i < size; i++) {
-                if (global.orderProducts.get(i).getProd_id().equals(prodID)) {
-                    index = i;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found) {
-                String value = global.qtyCounter.get(prodID);
+            if (!orderProducts.isEmpty()) {
+                String value = orderProducts.get(0).getOrdprod_qty();//OrderProductUtils.getOrderProductQty(global.orderProducts, prodID);// global.qtyCounter.get(prodID);
                 double previousQty = 0.0;
                 if (value != null && !value.isEmpty())
                     previousQty = Double.parseDouble(value);
                 double sum = Global.formatNumFromLocale(qty_picked) + previousQty;
                 if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                     value = Global.formatNumber(true, sum);
-                    global.orderProducts.get(index).setOrdprod_qty(value);
-                    global.qtyCounter.put(prodID, Double.toString(sum));
+                    orderProducts.get(0).setOrdprod_qty(value);
+//                    global.qtyCounter.put(prodID, Double.toString(sum));
                 } else {
                     value = Global.formatNumber(false, sum);
-                    global.orderProducts.get(index).setOrdprod_qty(value);
-                    global.qtyCounter.put(prodID, Integer.toString((int) sum));
+                    orderProducts.get(0).setOrdprod_qty(value);
+//                    global.qtyCounter.put(prodID, Integer.toString((int) sum));
                 }
-                updateSKUProduct(index);
+                updateSKUProduct(orderProduct);
             } else {
                 generateNewProduct();
             }
@@ -958,7 +976,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         String val = qty_picked;
         BigDecimal num = new BigDecimal(val);
-        BigDecimal sum = num.add(getQty(prodID)).setScale(4, RoundingMode.HALF_EVEN);
+//        BigDecimal sum = num.add(new BigDecimal(OrderProductUtils.getOrderProductQty(global.orderProducts,prodID))).setScale(4, RoundingMode.HALF_EVEN);
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
 
         if (OrderingMain_FA.returnItem)
@@ -978,9 +996,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         if (!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             val = Integer.toString((int) Double.parseDouble(val));
-            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
+//            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
         } else {
-            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
+//            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
         }
 
 
@@ -1256,51 +1274,51 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
     }
 
-    private void updateSKUProduct(int position) {
-        OrderProduct orderedProducts = global.orderProducts.get(position);
+    private void updateSKUProduct(OrderProduct orderProduct) {
+//        OrderProduct orderedProducts = global.orderProducts.get(position);
 
-        String newPickedOrders = orderedProducts.getOrdprod_qty();
+        String newPickedOrders = orderProduct.getOrdprod_qty();
         BigDecimal sum;
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
             sum = Global.getBigDecimalNum(newPickedOrders);
         else
             sum = Global.getBigDecimalNum(newPickedOrders);
 
-        if (global.orderProducts.get(position).isReturned())
+        if (orderProduct.isReturned())
             sum = sum.negate();
 
         BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);
 
-        orderedProducts.setProd_price(prLevTotal);
-        orderedProducts.setProd_taxValue(taxTotal);
-        orderedProducts.setDiscount_value(disTotal);
+        orderProduct.setProd_price(prLevTotal);
+        orderProduct.setProd_taxValue(taxTotal);
+        orderProduct.setDiscount_value(disTotal);
 
 
         // for calculating taxes and discount at receipt
-        orderedProducts.setTaxAmount(taxAmount);
-        orderedProducts.setTaxTotal(taxTotal);
-        orderedProducts.setDisAmount(disAmount);
-        orderedProducts.setDisTotal(disTotal);
+        orderProduct.setTaxAmount(taxAmount);
+        orderProduct.setTaxTotal(taxTotal);
+        orderProduct.setDisAmount(disAmount);
+        orderProduct.setDisTotal(disTotal);
 
         BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
 
 
         if (discountIsTaxable) {
-            orderedProducts.setDiscount_is_taxable("1");
+            orderProduct.setDiscount_is_taxable("1");
         } else
-            orderedProducts.setDiscount_is_taxable("0");
+            orderProduct.setDiscount_is_taxable("0");
 
 
         if (isFixed)
-            orderedProducts.setDiscount_is_fixed("1");
+            orderProduct.setDiscount_is_fixed("1");
         else
-            orderedProducts.setDiscount_is_fixed("0");
+            orderProduct.setDiscount_is_fixed("0");
 
-        orderedProducts.setProd_price_updated("0");
+        orderProduct.setProd_price_updated("0");
 
-        orderedProducts.setItemTotal(itemTotal.toString());
-        orderedProducts.setItemSubtotal(total.toString());
+        orderProduct.setItemTotal(itemTotal.toString());
+        orderProduct.setItemSubtotal(total.toString());
 
         if (OrderingMain_FA.returnItem) {
             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
@@ -1308,11 +1326,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
     }
 
-    public BigDecimal getQty(String id) {
-        Global global = (Global) activity.getApplication();
-        String value = global.qtyCounter.get(id);
-        return Global.getBigDecimalNum(value);
-    }
+//    public BigDecimal getQty(String id) {
+//        Global global = (Global) activity.getApplication();
+//        String value = global.qtyCounter.get(id);
+//        return Global.getBigDecimalNum(value);
+//    }
 
 
     //------------------------Custom adapter for Dialog and ListView------------------------
@@ -1688,10 +1706,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         public void updateVolumePrice(BigDecimal qty) {
             String[] temp;
-            if (global.qtyCounter != null && global.qtyCounter.containsKey(prodID)) {
-                temp = volPriceHandler.getVolumePrice(qty.toString(), prodID);
-            } else
-                temp = volPriceHandler.getVolumePrice(String.valueOf(qty), prodID);
+//            if (global.qtyCounter != null && global.qtyCounter.containsKey(prodID)) {
+//                temp = volPriceHandler.getVolumePrice(qty.toString(), prodID);
+//            } else
+            temp = volPriceHandler.getVolumePrice(String.valueOf(qty), prodID);
+
             if (temp[1] != null && !temp[1].isEmpty()) {
                 basePrice = temp[1];
                 rightTitle[INDEX_PRICE_LEVEL] = Global.formatDoubleToCurrency(Double.parseDouble(basePrice)) + " <Base Price>";

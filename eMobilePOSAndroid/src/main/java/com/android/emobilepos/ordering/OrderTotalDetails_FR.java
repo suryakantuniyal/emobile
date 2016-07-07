@@ -432,6 +432,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
 
     private void calculateMixAndMatch(List<OrderProduct> orderProducts) {
+        List<OrderProduct> noMixMatchProducts = new ArrayList<OrderProduct>();
         HashMap<String, MixMatchProductGroup> mixMatchProductGroupHashMap = new HashMap<String, MixMatchProductGroup>();
         for (OrderProduct product : orderProducts) {
             BigDecimal overwrite = product.getOverwrite_price();
@@ -439,8 +440,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
             PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
             if (TextUtils.isEmpty(product.getPricesXGroupid()) || product.isVoid()) {
+                noMixMatchProducts.add(product);
                 continue;
             } else if (overwrite != null || !TextUtils.isEmpty(product.getDiscount_id())) {
+                noMixMatchProducts.add(product);
                 continue;
             } else {
 
@@ -459,7 +462,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     mixMatchProductGroup.getOrderProducts().add(product);
                     mixMatchProductGroup.setGroupId(product.getPricesXGroupid());
                     mixMatchProductGroup.setPriceLevelId(product.getPricelevel_id());
-                    mixMatchProductGroup.setQuantity(Integer.parseInt(product.getOrdprod_qty()));
+                    mixMatchProductGroup.setQuantity(new Double(product.getOrdprod_qty()).intValue());
                     mixMatchProductGroupHashMap.put(product.getPricesXGroupid(), mixMatchProductGroup);
                 }
             }
@@ -477,6 +480,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     if (mixMatches.size() == 2) {
                         orderProducts.clear();
                         orderProducts.addAll(applyXYZMixMatchToGroup(group, mixMatches));
+                        orderProducts.addAll(noMixMatchProducts);
                     }
                 }
             }
@@ -518,14 +522,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             if (mixMatchXYZProducts.contains(product.getProd_id())) {
                 int indexOf = mixMatchXYZProducts.indexOf(product.getProd_id());
                 MixMatchXYZProduct mmxyz = mixMatchXYZProducts.get(indexOf);
-                mmxyz.setQuantity(mmxyz.getQuantity() + Integer.parseInt(product.getOrdprod_qty()));
+                mmxyz.setQuantity(mmxyz.getQuantity() + new Double(product.getOrdprod_qty()).intValue());
                 mmxyz.getOrderProducts().add(product);
                 mmxyz.setPrice(product.getMixMatchOriginalPrice());
                 mixMatchXYZProducts.set(indexOf, mmxyz);
             } else {
                 MixMatchXYZProduct mmxyz = new MixMatchXYZProduct();
                 mmxyz.setProductId(product.getProd_id());
-                mmxyz.setQuantity(Integer.parseInt(product.getOrdprod_qty()));
+                mmxyz.setQuantity(new Double(product.getOrdprod_qty()).intValue());
                 mmxyz.getOrderProducts().add(product);
                 mmxyz.setPrice(product.getMixMatchOriginalPrice());
                 mixMatchXYZProducts.add(mmxyz);
@@ -545,17 +549,32 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             int prodQty = xyzProduct.getQuantity();
             if (prodQty <= qtyAtRegularPrice) {
                 if (isGroupBySKU) {
-                    OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
+                    OrderProduct orderProduct = null;
+                    try {
+                        orderProduct = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                    orderProduct.setProd_price(String.valueOf(xyzProduct.getPrice()));
                     orderProduct.setOrdprod_qty(String.valueOf(prodQty));
                     orderProduct.setMixMatchQtyApplied(prodQty);
+                    orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+                    orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice().multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
                     orderProducts.add(orderProduct);
                 } else {
                     for (OrderProduct orderProduct : xyzProduct.getOrderProducts()) {
-                        orderProduct.setOrdprod_qty("1");
-                        orderProduct.setMixMatchQtyApplied(1);
-                        orderProduct.setItemTotal("1");
-                        orderProduct.setItemSubtotal("1");
-                        orderProducts.add(orderProduct);
+                        OrderProduct clone = null;
+                        try {
+                            clone = (OrderProduct) orderProduct.clone();
+                        } catch (CloneNotSupportedException e) {
+                            e.printStackTrace();
+                        }
+                        clone.setOrdprod_qty("1");
+                        clone.setProd_price(String.valueOf(xyzProduct.getPrice()));
+                        clone.setMixMatchQtyApplied(1);
+                        clone.setItemTotal(orderProduct.getProd_price());
+                        clone.setItemSubtotal(orderProduct.getProd_price());
+                        orderProducts.add(clone);
                     }
                 }
                 qtyAtRegularPrice -= prodQty;
@@ -564,14 +583,26 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 int discountPriced = prodQty - qtyAtRegularPrice;
                 if (regularPriced > 0) {
                     if (isGroupBySKU) {
-                        OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
+                        OrderProduct orderProduct = null;
+                        try {
+                            orderProduct = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
+                        } catch (CloneNotSupportedException e) {
+                            e.printStackTrace();
+                        }
+                        orderProduct.setProd_price(String.valueOf(xyzProduct.getPrice()));
                         orderProduct.setOrdprod_qty(String.valueOf(regularPriced));
                         orderProduct.setMixMatchQtyApplied(regularPriced);
+                        orderProduct.setItemTotal(String.valueOf(xyzProduct.getPrice()
+                                .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+                        orderProduct.setItemSubtotal(String.valueOf(xyzProduct.getPrice()
+                                .multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+
                         orderProducts.add(orderProduct);
                     } else {
                         for (int i = 0; i < regularPriced; i++) {
                             try {
                                 OrderProduct clone = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
+                                clone.setProd_price(String.valueOf(xyzProduct.getPrice()));
                                 clone.setOrdprod_qty("1");
                                 clone.setMixMatchQtyApplied(1);
                                 clone.setItemTotal(clone.getProd_price());
@@ -591,18 +622,26 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 }
                 if (discountPriced > 0) {
                     if (isGroupBySKU) {
-                        OrderProduct orderProduct = xyzProduct.getOrderProducts().get(0);
+                        OrderProduct orderProduct = null;
+                        try {
+                            orderProduct = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
+                        } catch (CloneNotSupportedException e) {
+                            e.printStackTrace();
+                        }
                         orderProduct.setOrdprod_qty(String.valueOf(discountPriced));
                         orderProduct.setMixMatchQtyApplied(discountPriced);
                         BigDecimal discountPrice;
                         if (isPercent) {
                             BigDecimal hundred = new BigDecimal(100);
                             BigDecimal percent = (hundred.subtract(new BigDecimal(amount))).divide(hundred);
-                            discountPrice = new BigDecimal(orderProduct.getProd_price()).multiply(percent);
+                            discountPrice = xyzProduct.getPrice().multiply(percent);
                         } else {
                             discountPrice = BigDecimal.valueOf(amount);
                         }
                         orderProduct.setProd_price(String.valueOf(discountPrice));
+                        orderProduct.setItemTotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+                        orderProduct.setItemSubtotal(String.valueOf(Global.getBigDecimalNum(orderProduct.getProd_price()).multiply(Global.getBigDecimalNum(orderProduct.getOrdprod_qty()))));
+
                         orderProducts.add(orderProduct);
                     } else {
                         for (int i = 0; i < discountPriced; i++) {
