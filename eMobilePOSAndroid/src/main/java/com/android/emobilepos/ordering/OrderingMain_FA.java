@@ -1021,7 +1021,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public boolean validAutomaticAddQty(Product product) {
-        String addedQty = OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId());//global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
+        List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.orderProducts, product.getId());
+        String addedQty = list.isEmpty() ? "0" : list.get(0).getOrdprod_qty();
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());
         return !((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
@@ -1543,7 +1544,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 //        int sum;
 
 //        if (indexOf>=0)//global.qtyCounter.containsKey(product.getId()))
-        int sum = Integer.parseInt(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));//Integer.parseInt(global.qtyCounter.get(product.getId()));
+        int sum = new Double(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
 
 //        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
 //            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));

@@ -664,7 +664,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
             }
         } else if (global.orderProducts.contains(product.getId())) {
-            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.orderProducts,product.getId()));
+            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));
             BigDecimal newQty = origQty.add(Global.getBigDecimalNum("1"));
             //String [] temp = volPriceHandler.getVolumePrice(global.qtyCounter.get(data[0]),data[0]);
             String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), product.getId());
@@ -710,7 +710,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
-
+        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
+            global.orderProducts.clear();
+            global.orderProducts.addAll(orderProductsGroupBySKU);
+        }
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
             Gson gson = JsonUtils.getInstance();

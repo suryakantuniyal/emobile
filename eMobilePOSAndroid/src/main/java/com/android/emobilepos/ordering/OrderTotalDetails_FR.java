@@ -455,7 +455,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 MixMatchProductGroup mixMatchProductGroup = mixMatchProductGroupHashMap.get(product.getPricesXGroupid());
                 if (mixMatchProductGroup != null) {
                     mixMatchProductGroup.getOrderProducts().add(product);
-                    mixMatchProductGroup.setQuantity(mixMatchProductGroup.getQuantity() + Integer.parseInt(product.getOrdprod_qty()));
+                    mixMatchProductGroup.setQuantity(mixMatchProductGroup.getQuantity() + new Double(product.getOrdprod_qty()).intValue());
                 } else {
                     mixMatchProductGroup = new MixMatchProductGroup();
                     mixMatchProductGroup.setOrderProducts(new ArrayList<OrderProduct>());
@@ -497,7 +497,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         Double amount = mixMatch2.getPrice();
         boolean isPercent = mixMatch2.isPercent();
         if (group.getQuantity() < qtyRequired) {
-            return null;
+            return group.getOrderProducts();
         }
 
         int qtyAtRegularPrice;
@@ -572,8 +572,8 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         clone.setOrdprod_qty("1");
                         clone.setProd_price(String.valueOf(xyzProduct.getPrice()));
                         clone.setMixMatchQtyApplied(1);
-                        clone.setItemTotal(orderProduct.getProd_price());
-                        clone.setItemSubtotal(orderProduct.getProd_price());
+                        clone.setItemTotal(clone.getProd_price());
+                        clone.setItemSubtotal(clone.getProd_price());
                         orderProducts.add(clone);
                     }
                 }
@@ -654,7 +654,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 if (isPercent) {
                                     BigDecimal hundred = new BigDecimal(100);
                                     BigDecimal percent = (hundred.subtract(new BigDecimal(amount))).divide(hundred);
-                                    discountPrice = new BigDecimal(clone.getProd_price()).multiply(percent);
+                                    discountPrice = xyzProduct.getPrice().multiply(percent);
                                 } else {
                                     discountPrice = BigDecimal.valueOf(amount);
                                 }
