@@ -647,7 +647,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
         try {
             port = getStarIOPort();
 
@@ -672,7 +672,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 // center
             }
 
-            printStationPrinterReceipt(orders, ordID, 42, cutPaper);
+            printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
 
         } catch (StarIOPortException e) {
             e.printStackTrace();

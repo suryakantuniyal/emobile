@@ -1468,7 +1468,7 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth, boolean cutPaper) {
+    protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth, boolean cutPaper, boolean printheader) {
         try {
 
             try {
@@ -1534,7 +1534,9 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newDivider('=', lineWidth / 2)); //add double line divider
             sb.append("\n");
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-            print(sb.toString(), FORMAT, true);
+            if (printheader) {
+                print(sb.toString(), FORMAT, true);
+            }
             sb.setLength(0);
 
             int m = 0;
@@ -1573,8 +1575,8 @@ public class EMSDeviceDriver {
                     ordProdHandler.updateIsPrinted(orders.get(i).getOrdprodID());
                     sb.append(orders.get(i).getQty()).append("x ").append(orders.get(i).getName()).append("\n");
 
-                    if (!orders.get(m).getOrderProdComment().isEmpty())
-                        sb.append("  ").append(orders.get(m).getOrderProdComment()).append("\n");
+                    if (!orders.get(i).getOrderProdComment().isEmpty())
+                        sb.append("  ").append(orders.get(i).getOrderProdComment()).append("\n");
 
                     sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());

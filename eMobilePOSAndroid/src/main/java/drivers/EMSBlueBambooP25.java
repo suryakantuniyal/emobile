@@ -652,8 +652,8 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
 
     }
 
