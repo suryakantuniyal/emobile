@@ -91,7 +91,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import interfaces.EMSDeviceManagerPrinterDelegate;
+import drivers.EMSBluetoothStarPrinter;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
@@ -1892,26 +1892,27 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         new String[temp.keySet().size()]);
                 int printMap;
                 boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
-                EMSDeviceManagerPrinterDelegate currentDevice = null;
+                EMSBluetoothStarPrinter currentDevice = null;
                 boolean printHeader = true;
-                int currentPrinter = -1;
-                boolean forceCut = false;
+                String currentPrinterName = null;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
 //                      Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
                                 && Global.multiPrinterManager.get(printMap).currentDevice != null) {
-                            if (currentPrinter != printMap) {
+                            if (currentPrinterName == null || !currentPrinterName.equalsIgnoreCase(((EMSBluetoothStarPrinter)
+                                    Global.multiPrinterManager.get(printMap).currentDevice).getPortName())) {
                                 printHeader = true;
-                                forceCut = true;
+                                if (currentDevice != null) {
+                                    currentDevice.cutPaper();
+                                }
                             }
-                            currentDevice = Global.multiPrinterManager.get(printMap).currentDevice;
+                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).currentDevice;
                             currentDevice.printStationPrinter(temp.get(aSArr),
-                                    global.order.ord_id, (splitByCat || forceCut), printHeader);
-                            forceCut = false;
+                                    global.order.ord_id, splitByCat, printHeader);
                             printHeader = splitByCat;
-                            currentPrinter = printMap;
+                            currentPrinterName = currentDevice.getPortName();
                         }
                     }
                 }
