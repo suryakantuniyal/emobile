@@ -328,6 +328,10 @@ public class EMSDeviceDriver {
     }
 
     protected void print(String str, String FORMAT) {
+        print(str, FORMAT, false);
+    }
+
+    protected void print(String str, String FORMAT, boolean isLargeFont) {
         str = removeAccents(str);
         if (PRINT_TO_LOG) {
             Log.d("Print", str);
@@ -337,21 +341,25 @@ public class EMSDeviceDriver {
             eloPrinterApi.print(str);
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                ArrayList<byte[]> commands = new ArrayList<byte[]>();
-                commands.add(new byte[]{0x1b, 0x40}); // Initialization
-                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-                characterheightExpansion[2] = 49;
-                commands.add(characterheightExpansion);
-                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-                characterwidthExpansion[2] = 49;
-                commands.add(characterwidthExpansion);
-                commands.add(str.getBytes());
-                commands.add(new byte[]{0x0a});
-                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-
-//              port.writePort(str.getBytes(FORMAT), 0, str.length());
+                if (isLargeFont) {
+                    ArrayList<byte[]> commands = new ArrayList<byte[]>();
+                    commands.add(new byte[]{0x1b, 0x40}); // Initialization
+                    byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+                    characterheightExpansion[2] = 49;
+                    commands.add(characterheightExpansion);
+                    byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+                    characterwidthExpansion[2] = 49;
+                    commands.add(characterwidthExpansion);
+                    commands.add(str.getBytes());
+                    commands.add(new byte[]{0x0a});
+                    byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+                    port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+                } else {
+                    port.writePort(str.getBytes(FORMAT), 0, str.length());
+                }
             } catch (StarIOPortException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPAT100) {
