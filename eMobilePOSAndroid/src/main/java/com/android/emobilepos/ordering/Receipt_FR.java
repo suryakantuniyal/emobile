@@ -1896,15 +1896,25 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 int printMap;
                 boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
                 EMSDeviceManagerPrinterDelegate currentDevice = null;
+                boolean printHeader = true;
+                int currentPrinter = -1;
+                boolean forceCut = false;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
 //                      Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
                                 && Global.multiPrinterManager.get(printMap).currentDevice != null) {
+                            if (currentPrinter != printMap) {
+                                printHeader = true;
+                                forceCut = true;
+                            }
                             currentDevice = Global.multiPrinterManager.get(printMap).currentDevice;
                             currentDevice.printStationPrinter(temp.get(aSArr),
-                                    global.order.ord_id, splitByCat);
+                                    global.order.ord_id, (splitByCat || forceCut), printHeader);
+                            forceCut = false;
+                            printHeader = splitByCat;
+                            currentPrinter = printMap;
                         }
                     }
                 }

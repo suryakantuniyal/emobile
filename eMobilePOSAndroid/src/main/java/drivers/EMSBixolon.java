@@ -280,8 +280,8 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper) {
-        printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper);
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
 
     }
 

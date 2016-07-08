@@ -530,7 +530,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
         try {
 
             if (!device.getIsOpen())

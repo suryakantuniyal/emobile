@@ -349,9 +349,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
         openUsbInterface();
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper);
+        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
 
     }
 

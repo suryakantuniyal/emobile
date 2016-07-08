@@ -257,7 +257,7 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper) {
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
     }
 
     @Override
