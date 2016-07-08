@@ -1534,7 +1534,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newDivider('=', lineWidth / 2)); //add double line divider
             sb.append("\n");
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-            print(sb.toString(), FORMAT);
+            print(sb.toString(), FORMAT, true);
             sb.setLength(0);
 
             int m = 0;
@@ -1567,7 +1567,7 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
                     sb.append("\n");
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
-                    print(sb.toString(), FORMAT);
+                    print(sb.toString(), FORMAT, true);
                     sb.setLength(0);
                 } else {
                     ordProdHandler.updateIsPrinted(orders.get(i).getOrdprodID());
@@ -1579,14 +1579,14 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                     sb.append("\n");
-                    print(sb.toString(), FORMAT);
+                    print(sb.toString(), FORMAT, true);
                     sb.setLength(0);
                 }
             }
             sb.append(textHandler.newLines(1));
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
 
-            print(sb.toString(), FORMAT);
+            print(sb.toString(), FORMAT, true);
 //            printEnablerWebSite(lineWidth);
 
             if (isPOSPrinter && cutPaper) {
