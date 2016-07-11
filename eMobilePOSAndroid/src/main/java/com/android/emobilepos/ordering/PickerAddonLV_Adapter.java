@@ -155,15 +155,15 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
         public int i_prod_name,i_prod_price,i_prod_img_name,i_prod_id,i_cat_id;
 	}
 	
-	public String getQty(String id) {
-		Global global = (Global) activity.getApplication();
-		String value = global.qtyCounter.get(id);
-
-		if (value == null) {
-			return "0";
-		}
-		return value;
-	}
+//	public String getQty(String id) {
+//		Global global = (Global) activity.getApplication();
+//		String value = global.qtyCounter.get(id);
+//
+//		if (value == null) {
+//			return "0";
+//		}
+//		return value;
+//	}
 
 	@Override
 	public void onClick(View view) {

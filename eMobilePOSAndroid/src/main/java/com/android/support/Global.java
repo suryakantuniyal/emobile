@@ -397,7 +397,7 @@ public class Global extends MultiDexApplication {
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
     // public List<Orders> cur_orders = new ArrayList<Orders>();
-    public HashMap<String, String> qtyCounter = new HashMap<String, String>();
+//    public HashMap<String, String> qtyCounter = new HashMap<String, String>();
 
     // ----- Consignment Variables
     public static List<CustomerInventory> custInventoryList;
@@ -572,8 +572,8 @@ public class Global extends MultiDexApplication {
         // this.cur_orders.clear();
         if (this.orderProducts != null)
             this.orderProducts.clear();
-        if (this.qtyCounter != null)
-            this.qtyCounter.clear();
+//        if (this.qtyCounter != null)
+//            this.qtyCounter.clear();
 
         if (ordProdAttr != null)
             ordProdAttr.clear();
@@ -1097,24 +1097,24 @@ public class Global extends MultiDexApplication {
         }
 
         if (found && !OrderingMain_FA.returnItem) {
-            String value = this.qtyCounter.get(prodID);
+            String value = OrderProductUtils.getOrderProductQty(this.orderProducts, prodID);//this.qtyCounter.get(prodID);
             double previousQty = 0.0;
             if (value != null && !value.isEmpty())
                 previousQty = Double.parseDouble(value);
             double sum = Double.parseDouble(pickedQty) + previousQty;
             sum = OrderingMain_FA.returnItem ? sum * -1 : sum;
 
-            value = new String();
+            value = "";
             if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                 value = Global.formatNumber(true, sum);
                 this.orderProducts.get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
-                this.qtyCounter.put(prodID, Double.toString(sum));
+//                this.qtyCounter.put(prodID, Double.toString(sum));
             } else {
                 value = Global.formatNumber(false, sum);
                 this.orderProducts.get(orderIndex).setOrdprod_qty(value);
                 // this.cur_orders.get(0).setQty(value);
-                this.qtyCounter.put(prodID, Integer.toString((int) sum));
+//                this.qtyCounter.put(prodID, Integer.toString((int) sum));
             }
         }
         return orderIndex;

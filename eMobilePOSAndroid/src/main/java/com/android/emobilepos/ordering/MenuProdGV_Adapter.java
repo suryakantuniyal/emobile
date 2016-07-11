@@ -18,12 +18,14 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.OrderProductUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 public class MenuProdGV_Adapter extends CursorAdapter {
+    private final Global global;
     LayoutInflater inflater;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
@@ -55,7 +57,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         attrToDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
         isFastScanning = myPref.getPreferences(MyPreferences.pref_fast_scanning_mode);
         isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
-
+        global = (Global) activity.getApplication();
         if (isPortrait) {
             options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true)
                     .imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
@@ -112,7 +114,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
 
             if (isPortrait) {
                 String prod_id = cursor.getString(holder.i_id);
-                holder.qty.setText(getQty(prod_id));
+                holder.qty.setText(OrderProductUtils.getOrderProductQty(global.orderProducts, prod_id));//getQty(prod_id));
                 String tempPrice = cursor.getString(holder.i_volume_price);
                 if (tempPrice == null || tempPrice.isEmpty()) {
                     tempPrice = cursor.getString(holder.i_pricelevel_price);
@@ -122,7 +124,7 @@ public class MenuProdGV_Adapter extends CursorAdapter {
                             tempPrice = cursor.getString(holder.i_master_price);
                     }
                 } else {
-                    String[] temp = volPriceHandler.getVolumePrice(getQty(prod_id), prod_id);
+                    String[] temp = volPriceHandler.getVolumePrice(OrderProductUtils.getOrderProductQty(global.orderProducts, prod_id), prod_id);
                     if (temp[1] != null && !temp[1].isEmpty())
                         tempPrice = temp[1];
                 }
@@ -204,13 +206,13 @@ public class MenuProdGV_Adapter extends CursorAdapter {
         int i_id, i_prod_name, i_chain_price, i_master_price, i_volume_price, i_pricelevel_price, i_prod_desc, i_prod_img_name, i_consignment_qty;
     }
 
-    public String getQty(String id) {
-        Global global = (Global) activity.getApplication();
-        String value = global.qtyCounter.get(id);
-
-        if (value == null) {
-            return "0";
-        }
-        return value;
-    }
+//    public String getQty(String id) {
+//        Global global = (Global) activity.getApplication();
+//        String value = global.qtyCounter.get(id);
+//
+//        if (value == null) {
+//            return "0";
+//        }
+//        return value;
+//    }
 }

@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -171,15 +172,27 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
+        private boolean loadMultiPrinter;
+        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
+            loadMultiPrinter = Global.multiPrinterManager == null
+                    || Global.multiPrinterManager.size() == 0;
 
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage(getString(R.string.connecting_devices));
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            if (myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
+            if (loadMultiPrinter) {
+                myProgressDialog.show();
+            }
         }
 
         @Override
         protected String doInBackground(String... params) {
-            boolean loadMultiPrinter = Global.multiPrinterManager == null || Global.multiPrinterManager.size() == 0;
             String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA) {
                 isUSB = true;
@@ -202,6 +215,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
+            if (myProgressDialog != null && myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
         }
     }
 

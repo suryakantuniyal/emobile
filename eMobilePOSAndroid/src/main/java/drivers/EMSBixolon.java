@@ -29,7 +29,6 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 import jpos.JposConst;
 import jpos.JposException;
 import jpos.POSPrinter;
-import jpos.POSPrinterConst;
 import jpos.config.JposEntry;
 import jpos.events.ErrorEvent;
 import jpos.events.ErrorListener;
@@ -281,8 +280,8 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
-        printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH);
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        printStationPrinterReceipt(orderProducts, ordID, LINE_WIDTH, cutPaper, printHeader);
 
     }
 

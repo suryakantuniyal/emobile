@@ -18,9 +18,9 @@ import com.android.support.MyPreferences;
 import java.util.HashMap;
 import java.util.List;
 
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 12/3/2015.
@@ -93,7 +93,7 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
 
     }
 

@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
+import com.android.database.DBManager;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.OrderProductsHandler;
@@ -23,7 +24,6 @@ import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
-import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.starmicronics.stario.StarIOPortException;
@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.Locale;
 
 import datamaxoneil.connection.Connection_Bluetooth;
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import interfaces.EMSPrintingDelegate;
+import main.EMSDeviceManager;
+import plaintext.EMSPlainTextHelper;
 
 public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
@@ -530,8 +530,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
-        // TODO Auto-generated method stub
+    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
         try {
 
             if (!device.getIsOpen())
@@ -610,10 +609,8 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             // db.close();
 
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (Exception e) {
 

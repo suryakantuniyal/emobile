@@ -29,9 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import drivers.OT310.utils.BCRAppBroadcastReceiver;
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 /**
  * Created by Guarionex on 12/8/2015.
@@ -150,7 +150,7 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
 
     }
 

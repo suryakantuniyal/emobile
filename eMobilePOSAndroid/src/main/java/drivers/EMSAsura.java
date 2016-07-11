@@ -51,10 +51,10 @@ import java.util.List;
 import java.util.Locale;
 
 import drivers.EMSBluetoothStarPrinter.ReceiveThread;
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
+import plaintext.EMSPlainTextHelper;
 
 public class EMSAsura extends EMSDeviceDriver
         implements EMSDeviceManagerPrinterDelegate, IMSRListener, IBarcodeListener {
@@ -1098,20 +1098,17 @@ public class EMSAsura extends EMSDeviceDriver
             printer.cut(true);
 
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             return true;
         }
         return true;
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
-        // TODO Auto-generated method stub
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
     }
 
     @Override
     public void openCashDrawer() {
-        // TODO Auto-generated method stub
 
         new Thread(new Runnable() {
             public void run() {
@@ -1119,7 +1116,6 @@ public class EMSAsura extends EMSDeviceDriver
                     printer.openCashDrawer(JAPrinter.JAPrintCashDrawer.JAPRINT_CASHDRAWER_1);
                     printer.openCashDrawer(JAPrinter.JAPrintCashDrawer.JAPRINT_CASHDRAWER_2);
                 } catch (JAException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
@@ -1255,7 +1251,6 @@ public class EMSAsura extends EMSDeviceDriver
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
-        // TODO Auto-generated method stub
         try {
             _scannerCallBack = _callBack;
             if (handler == null)

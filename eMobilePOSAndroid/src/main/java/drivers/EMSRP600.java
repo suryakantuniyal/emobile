@@ -13,21 +13,13 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.internal.misccomm.MsrApiContext;
-import com.android.internal.misccomm.MsrManager;
-import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.partner.pt215.cashdrawer.CashDrawerApiContext;
 import com.partner.pt215.cashdrawer.CashDrawerManage;
-import com.partner.pt215.display.DisplayLineApiContext;
-import com.partner.pt215.display.DisplayManager;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -265,7 +257,7 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
     }
 
     @Override

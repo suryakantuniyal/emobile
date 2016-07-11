@@ -1,7 +1,5 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.google.gson.ExclusionStrategy;
@@ -77,6 +75,9 @@ public class MixMatchDAO {
                 .equalTo("isActive", true)
                 .lessThanOrEqualTo("startDate", now)
                 .greaterThanOrEqualTo("endDate", now)
+                .findAll().where()
+                .equalTo("mixMatchType", 1)
+                .lessThanOrEqualTo("qty", group.getQuantity())
                 .or()
                 .equalTo("mixMatchType", 2)
                 .findAll();
