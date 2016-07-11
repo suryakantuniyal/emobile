@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -1894,6 +1895,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
                 EMSBluetoothStarPrinter currentDevice = null;
                 boolean printHeader = true;
+                StringBuffer receipt = new StringBuffer();
                 String currentPrinterName = null;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
@@ -1905,18 +1907,28 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     Global.multiPrinterManager.get(printMap).currentDevice).getPortName())) {
                                 printHeader = true;
                                 if (currentDevice != null) {
+                                    currentDevice.print(receipt.toString(), true);
+                                    receipt.setLength(0);
                                     currentDevice.cutPaper();
                                 }
                             }
                             currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).currentDevice;
-                            currentDevice.printStationPrinter(temp.get(aSArr),
-                                    global.order.ord_id, splitByCat, printHeader);
+                            receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
+                                    global.order.ord_id, splitByCat, printHeader));
+
                             printHeader = splitByCat;
                             currentPrinterName = currentDevice.getPortName();
+                            if (splitByCat && currentDevice != null) {
+                                currentDevice.print(receipt.toString(), true);
+                                receipt.setLength(0);
+                                currentDevice.cutPaper();
+                            }
                         }
                     }
                 }
-                if (currentDevice != null && !splitByCat) {
+                if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
+                    currentDevice.print(receipt.toString(), true);
+                    receipt.setLength(0);
                     currentDevice.cutPaper();
                 }
             }
