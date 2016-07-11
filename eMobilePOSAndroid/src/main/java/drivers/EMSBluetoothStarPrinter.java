@@ -676,7 +676,6 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 commands.add(new byte[]{0x0a});
                 byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
                 port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-
             }
             super.print(str, "", isLargeFont);
         } catch (StarIOPortException e) {
