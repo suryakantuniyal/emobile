@@ -495,7 +495,9 @@ public class OrderProductsHandler {
                 orders[i].setOrdprod_id(cursor.getString(cursor.getColumnIndex(ordprod_id)));
                 orders[i].setOrdprod_name(cursor.getString(cursor.getColumnIndex(ordprod_name)));
                 orders[i].setOrdprod_desc(cursor.getString(cursor.getColumnIndex(ordprod_desc)));
-                orders[i].setOverwrite_price(new BigDecimal(format(cursor.getString(cursor.getColumnIndex(overwrite_price)))));
+                if (!TextUtils.isEmpty(cursor.getString(cursor.getColumnIndex(overwrite_price)))) {
+                    orders[i].setOverwrite_price(new BigDecimal(format(cursor.getString(cursor.getColumnIndex(overwrite_price)))));
+                }
                 orders[i].setItemTotal((format(cursor.getString(cursor.getColumnIndex("total")))));
                 orders[i].setOrdprod_qty((cursor.getString(cursor.getColumnIndex(ordprod_qty))));
                 orders[i].setAddon((cursor.getString(cursor.getColumnIndex(addon))));
@@ -601,7 +603,7 @@ public class OrderProductsHandler {
     private String format(String text) {
         DecimalFormat frmt = new DecimalFormat("0.00");
 
-        if (text.isEmpty())
+        if (TextUtils.isEmpty(text))
             return "0.00";
 
         return frmt.format(Double.parseDouble(text));
@@ -668,7 +670,9 @@ public class OrderProductsHandler {
                 products.setOrdprod_qty(data);
 
                 data = cursor.getString(cursor.getColumnIndex(overwrite_price));
-                products.setOverwrite_price(new BigDecimal(format(data)));
+                if(!TextUtils.isEmpty(data)) {
+                    products.setOverwrite_price(new BigDecimal(format(data)));
+                }
 
                 products.setProd_price_points(cursor.getString(cursor.getColumnIndex(prodPricePoints)));
 
