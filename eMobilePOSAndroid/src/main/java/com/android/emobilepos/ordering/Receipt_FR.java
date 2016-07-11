@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -94,6 +95,7 @@ import java.util.List;
 
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import util.JsonUtils;
+import drivers.EMSBluetoothStarPrinter;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
@@ -1895,30 +1897,42 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         new String[temp.keySet().size()]);
                 int printMap;
                 boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
-                EMSDeviceManagerPrinterDelegate currentDevice = null;
+                EMSBluetoothStarPrinter currentDevice = null;
                 boolean printHeader = true;
-                int currentPrinter = -1;
-                boolean forceCut = false;
+                StringBuffer receipt = new StringBuffer();
+                String currentPrinterName = null;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
 //                      Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
                                 && Global.multiPrinterManager.get(printMap).currentDevice != null) {
-                            if (currentPrinter != printMap) {
+                            if (currentPrinterName == null || !currentPrinterName.equalsIgnoreCase(((EMSBluetoothStarPrinter)
+                                    Global.multiPrinterManager.get(printMap).currentDevice).getPortName())) {
                                 printHeader = true;
-                                forceCut = true;
+                                if (currentDevice != null) {
+                                    currentDevice.print(receipt.toString(), true);
+                                    receipt.setLength(0);
+                                    currentDevice.cutPaper();
+                                }
                             }
-                            currentDevice = Global.multiPrinterManager.get(printMap).currentDevice;
-                            currentDevice.printStationPrinter(temp.get(aSArr),
-                                    global.order.ord_id, (splitByCat || forceCut), printHeader);
-                            forceCut = false;
+                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).currentDevice;
+                            receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
+                                    global.order.ord_id, splitByCat, printHeader));
+
                             printHeader = splitByCat;
-                            currentPrinter = printMap;
+                            currentPrinterName = currentDevice.getPortName();
+                            if (splitByCat && currentDevice != null) {
+                                currentDevice.print(receipt.toString(), true);
+                                receipt.setLength(0);
+                                currentDevice.cutPaper();
+                            }
                         }
                     }
                 }
-                if (currentDevice != null && !splitByCat) {
+                if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
+                    currentDevice.print(receipt.toString(), true);
+                    receipt.setLength(0);
                     currentDevice.cutPaper();
                 }
             }

@@ -1104,7 +1104,8 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
     @Override

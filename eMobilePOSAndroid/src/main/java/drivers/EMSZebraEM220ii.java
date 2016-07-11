@@ -498,8 +498,8 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
 
     }
 
