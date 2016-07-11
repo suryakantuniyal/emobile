@@ -453,59 +453,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 if (!value.isEmpty()) {
                                     global.orderProducts.get(position).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
 
-//                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
-//                                    BigDecimal prod_qty;
-//                                    BigDecimal new_subtotal;
-//                                    try {
-//                                        prod_qty = new BigDecimal(
-//                                                global.orderProducts
-//                                                        .get(position).ordprod_qty);
-//                                    } catch (Exception e) {
-//                                        prod_qty = new BigDecimal("0");
-//                                    }
-//
-//                                    String temp = Double.toString(Global
-//                                            .formatNumFromLocale(value));
-//                                    if (!map.isEmpty()) {
-//                                        if (map.get("discount_type")
-//                                                .toUpperCase(
-//                                                        Locale.getDefault())
-//                                                .trim().equals("FIXED")) {
-//                                            new_subtotal = new_price
-//                                                    .multiply(prod_qty)
-//                                                    .subtract(
-//                                                            new BigDecimal(
-//                                                                    map.get("discount_price")));
-//
-//                                        } else {
-//                                            BigDecimal rate = new BigDecimal(
-//                                                    map.get("discount_price"))
-//                                                    .divide(new BigDecimal(
-//                                                            "100"));
-//                                            rate = rate.multiply(new_price
-//                                                    .multiply(prod_qty));
-//
-//                                            new_subtotal = new_price.multiply(
-//                                                    prod_qty).subtract(rate);
-//
-//                                            global.orderProducts.get(position).disTotal = Global
-//                                                    .getRoundBigDecimal(rate);
-//                                            global.orderProducts.get(position).discount_value = Global
-//                                                    .getRoundBigDecimal(rate);
-//
-//                                        }
-//                                    } else
-//                                        new_subtotal = new_price
-//                                                .multiply(prod_qty);
-//
-//                                    global.orderProducts.get(position).overwrite_price = temp;
-//                                    global.orderProducts.get(position).prod_price = temp;
-//                                    global.orderProducts.get(position).itemSubtotal = Global
-//                                            .getRoundBigDecimal(new_subtotal);
-//                                    global.orderProducts.get(position).itemTotal = Global
-//                                            .getRoundBigDecimal(new_subtotal);
-//                                    global.orderProducts.get(position).pricelevel_id = "";
-//                                    global.orderProducts.get(position).prod_price_updated = "0";
                                     receiptListView.invalidateViews();
                                     reCalculate();
                                 }
@@ -2268,6 +2215,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
+        if (((OrderingMain_FA) activity).isToGo && !mainLVAdapter.isEmpty()) {
+            mainLVAdapter.selectedPosition = mainLVAdapter.getCount();
+        }
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
             receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
