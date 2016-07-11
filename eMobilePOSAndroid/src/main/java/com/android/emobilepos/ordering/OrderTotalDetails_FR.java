@@ -522,14 +522,14 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             if (mixMatchXYZProducts.contains(product.getProd_id())) {
                 int indexOf = mixMatchXYZProducts.indexOf(product.getProd_id());
                 MixMatchXYZProduct mmxyz = mixMatchXYZProducts.get(indexOf);
-                mmxyz.setQuantity(mmxyz.getQuantity() + new Double(product.getOrdprod_qty()).intValue());
+                mmxyz.setQuantity(mmxyz.getQuantity() + Double.valueOf(product.getOrdprod_qty()).intValue());
                 mmxyz.getOrderProducts().add(product);
                 mmxyz.setPrice(product.getMixMatchOriginalPrice());
                 mixMatchXYZProducts.set(indexOf, mmxyz);
             } else {
                 MixMatchXYZProduct mmxyz = new MixMatchXYZProduct();
                 mmxyz.setProductId(product.getProd_id());
-                mmxyz.setQuantity(new Double(product.getOrdprod_qty()).intValue());
+                mmxyz.setQuantity(Double.valueOf(product.getOrdprod_qty()).intValue());
                 mmxyz.getOrderProducts().add(product);
                 mmxyz.setPrice(product.getMixMatchOriginalPrice());
                 mixMatchXYZProducts.add(mmxyz);

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
@@ -606,7 +607,7 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
 
     public String format(String text) {
         DecimalFormat frmt = new DecimalFormat("0.00");
-        if (text.isEmpty())
+        if (TextUtils.isEmpty(text))
             return "0.00";
         return frmt.format(Double.parseDouble(text));
     }

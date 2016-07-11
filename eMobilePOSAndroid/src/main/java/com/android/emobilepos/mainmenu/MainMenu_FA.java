@@ -177,8 +177,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPreExecute() {
-            loadMultiPrinter = Global.multiPrinterManager == null
-                    || Global.multiPrinterManager.size() == 0;
+            loadMultiPrinter = (Global.multiPrinterManager == null
+                    || Global.multiPrinterManager.size() == 0)
+                    && (Global.mainPrinterManager == null
+                    || Global.mainPrinterManager.currentDevice == null);
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage(getString(R.string.connecting_devices));
