@@ -72,7 +72,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId = 'com.emobilepos.app'
-            versionName "1.1.1.32"
+            versionName "1.1.1.33"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -80,7 +80,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId = 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.32"
+            versionName "1.1.1.33"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
