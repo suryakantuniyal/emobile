@@ -3,7 +3,8 @@ package com.android.emobilepos.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.text.Html;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -284,7 +285,7 @@ public class OrderProductListAdapter extends BaseAdapter {
                 holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
                 holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
                 holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
-
+                holder.addonsTextView = (TextView) convertView.findViewById(R.id.addonsTextView);
                 holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
                 if (holder.addonButton != null)
                     holder.addonButton.setFocusable(false);
@@ -305,27 +306,50 @@ public class OrderProductListAdapter extends BaseAdapter {
         final String tempId = product.ordprod_id;
 
         if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {
-            if (holder.addonButton != null)
+            if (holder.addonButton != null) {
                 holder.addonButton.setVisibility(View.INVISIBLE);
+                holder.addonsTextView.setVisibility(View.GONE);
+            }
         } else {
             if (holder.addonButton != null) {
+                holder.addonsTextView.setVisibility(View.VISIBLE);
+                StringBuffer addonSb = new StringBuffer();
+                StringBuffer addonNoSb = new StringBuffer();
+
+                int i = 0;
+                for (OrderProduct orderProduct : product.addonsProducts) {
+                    if (orderProduct.isAdded()) {
+                        addonSb.append(" <font color='black'>" + orderProduct.ordprod_name + "</font>");
+                        addonSb.append(", ");
+                    } else {
+                        addonNoSb.append(" <font color='red'>" + orderProduct.ordprod_name + "</font>");
+                        addonNoSb.append(", ");
+                    }
+                    i++;
+                }
+                addonSb = addonSb.delete(addonSb.length() - 2, addonSb.length() - 1);
+                addonNoSb = addonNoSb.delete(addonNoSb.length() - 2, addonNoSb.length() - 1);
+                String concat = addonSb.toString();
+                if (!TextUtils.isEmpty(addonNoSb.toString())) {
+                    concat += ", " + addonNoSb.toString();
+                }
+                holder.addonsTextView.setText(Html.fromHtml(concat));
                 holder.addonButton.setVisibility(View.VISIBLE);
                 holder.addonButton.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(activity, PickerAddon_FA.class);
-                        String prodID = product.prod_id;
                         global.addonSelectionType = Global.addonSelectionMap.get(tempId);
                         intent.putExtra("selectedSeatNumber", product.assignedSeat);
                         intent.putExtra("addon_map_key", tempId);
                         intent.putExtra("isEditAddon", true);
-                        intent.putExtra("prod_id", prodID);
+                        intent.putExtra("prod_id", product.prod_id);
                         intent.putExtra("item_position", orderProductIdx);
 
 
                         ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
-                        Global.productParentAddons = prodAddonsHandler.getParentAddons(prodID);
+                        Global.productParentAddons = prodAddonsHandler.getParentAddons(product.prod_id);
 
                         activity.startActivityForResult(intent, 0);
                     }
@@ -357,6 +381,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         TextView distAmount;
         TextView granTotal;
         Button addonButton;
+        TextView addonsTextView;
     }
 
 
