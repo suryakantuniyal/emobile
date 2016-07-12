@@ -584,9 +584,15 @@ public class EMSDeviceDriver {
                         if (orderProducts.get(i).getHasAddons().equals("1")) {
                             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
                             for (OrderProduct addon : addons) {
-                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                        "- " + addon.getOrdprod_name(),
-                                        Global.getCurrencyFormat(addon.getFinalPrice()), lineWidth, 2));
+                                if (addon.isAdded.equals("1")) {
+                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                            " >" + addon.ordprod_name,
+                                            Global.getCurrencyFormat(addon.overwrite_price), lineWidth, 2));
+                                } else {
+                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                            " >NO " + addon.ordprod_name,
+                                            Global.getCurrencyFormat(addon.overwrite_price), lineWidth, 2));
+                                }
                             }
                         }
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),

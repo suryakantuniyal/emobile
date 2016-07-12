@@ -137,17 +137,13 @@ public class ProductAddonsHandler {
 
 
     public List<HashMap<String, String>> getParentAddons(String prodID) {
-        //SQLiteDatabase db = dbManager.openReadableDB();
-//		if(db==null||!db.isOpen())
-//			db = dbManager.openReadableDB();
 
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("SELECT c.cat_id,c.cat_name,c.url_icon as 'url',Count(*) as 'qty' FROM Product_addons pa LEFT OUTER JOIN Products p ");
-        sb.append("ON pa.cat_id = p.cat_id LEFT OUTER JOIN Categories c ON pa.cat_id = c.cat_id WHERE pa.prod_id = '");
-        sb.append(prodID).append("'  GROUP BY cat_name ORDER BY pa.rest_addons ASC");
+        String sb = "SELECT c.cat_id,c.cat_name,c.url_icon as 'url',Count(*) as 'qty' FROM Product_addons pa LEFT OUTER JOIN Products p " +
+                "ON pa.cat_id = p.cat_id LEFT OUTER JOIN Categories c ON pa.cat_id = c.cat_id WHERE pa.prod_id = '" +
+                prodID + "'  GROUP BY cat_name ORDER BY pa.rest_addons ASC";
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery(sb, null);
         List<HashMap<String, String>> listHashMap = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> hashMap = new HashMap<String, String>();
         Global.productParentAddonsDictionary = new HashMap<String, Integer>();
