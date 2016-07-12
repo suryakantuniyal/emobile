@@ -171,7 +171,6 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
 
-
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -587,8 +586,8 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     // }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper) {
-
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
     @Override
@@ -603,7 +602,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
- //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
 

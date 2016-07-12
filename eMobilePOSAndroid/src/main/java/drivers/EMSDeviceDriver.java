@@ -222,8 +222,11 @@ public class EMSDeviceDriver {
             eloPrinterApi.print(str);
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                port.writePort(str.getBytes(), 0, str.length());
+                printStar(str, false);
+//                port.writePort(str.getBytes(), 0, str.length());
             } catch (StarIOPortException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPAT100) {
@@ -328,6 +331,41 @@ public class EMSDeviceDriver {
     }
 
     protected void print(String str, String FORMAT) {
+        print(str, FORMAT, false);
+    }
+
+    private void printStar(String str, boolean isLargeFont) throws StarIOPortException, UnsupportedEncodingException {
+        if (isLargeFont) {
+            ArrayList<byte[]> commands = new ArrayList<byte[]>();
+            commands.add(new byte[]{0x1b, 0x40}); // Initialization
+            byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+            characterheightExpansion[2] = 48;
+            commands.add(characterheightExpansion);
+            byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+            characterwidthExpansion[2] = 49;
+            commands.add(characterwidthExpansion);
+            commands.add(str.getBytes());
+            commands.add(new byte[]{0x0a});
+            byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+            port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+        } else {
+            ArrayList<byte[]> commands = new ArrayList<byte[]>();
+            commands.add(new byte[]{0x1b, 0x40}); // Initialization
+            byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+            characterheightExpansion[2] = 48;
+            commands.add(characterheightExpansion);
+            byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+            characterwidthExpansion[2] = 48;
+            commands.add(characterwidthExpansion);
+//            commands.add(str.getBytes());
+            commands.add(new byte[]{0x0a});
+            byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+            port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+            port.writePort(str.getBytes(FORMAT), 0, str.length());
+        }
+    }
+
+    protected void print(String str, String FORMAT, boolean isLargeFont) {
         str = removeAccents(str);
         if (PRINT_TO_LOG) {
             Log.d("Print", str);
@@ -337,21 +375,38 @@ public class EMSDeviceDriver {
             eloPrinterApi.print(str);
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                ArrayList<byte[]> commands = new ArrayList<byte[]>();
-                commands.add(new byte[]{0x1b, 0x40}); // Initialization
-                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-                characterheightExpansion[2] = 49;
-                commands.add(characterheightExpansion);
-                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-                characterwidthExpansion[2] = 49;
-                commands.add(characterwidthExpansion);
-                commands.add(str.getBytes());
-                commands.add(new byte[]{0x0a});
-                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-
-//              port.writePort(str.getBytes(FORMAT), 0, str.length());
+                printStar(str, isLargeFont);
+//                if (isLargeFont) {
+//                    ArrayList<byte[]> commands = new ArrayList<byte[]>();
+//                    commands.add(new byte[]{0x1b, 0x40}); // Initialization
+//                    byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+//                    characterheightExpansion[2] = 49;
+//                    commands.add(characterheightExpansion);
+//                    byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+//                    characterwidthExpansion[2] = 48;
+//                    commands.add(characterwidthExpansion);
+//                    commands.add(str.getBytes());
+//                    commands.add(new byte[]{0x0a});
+//                    byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+//                    port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+//                } else {
+//                    ArrayList<byte[]> commands = new ArrayList<byte[]>();
+//                    commands.add(new byte[]{0x1b, 0x40}); // Initialization
+//                    byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+//                    characterheightExpansion[2] = 48;
+//                    commands.add(characterheightExpansion);
+//                    byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+//                    characterwidthExpansion[2] = 48;
+//                    commands.add(characterwidthExpansion);
+//                    commands.add(str.getBytes());
+//                    commands.add(new byte[]{0x0a});
+//                    byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+//                    port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+////                    port.writePort(str.getBytes(FORMAT), 0, str.length());
+//                }
             } catch (StarIOPortException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPAT100) {
@@ -529,9 +584,15 @@ public class EMSDeviceDriver {
                         if (orderProducts.get(i).hasAddons.equals("1")) {
                             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).ordprod_id);
                             for (OrderProduct addon : addons) {
-                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                        "- " + addon.ordprod_name,
-                                        Global.getCurrencyFormat(addon.overwrite_price), lineWidth, 2));
+                                if (addon.isAdded.equals("1")) {
+                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                            " >" + addon.ordprod_name,
+                                            Global.getCurrencyFormat(addon.overwrite_price), lineWidth, 2));
+                                } else {
+                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                            " >NO " + addon.ordprod_name,
+                                            Global.getCurrencyFormat(addon.overwrite_price), lineWidth, 2));
+                                }
                             }
                         }
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
@@ -816,7 +877,7 @@ public class EMSDeviceDriver {
         return byteArray;
     }
 
-    private static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
+    public static byte[] convertFromListbyteArrayTobyteArray(List<byte[]> ByteArray) {
         int dataLength = 0;
         for (int i = 0; i < ByteArray.size(); i++) {
             dataLength += ByteArray.get(i).length;
@@ -1460,28 +1521,8 @@ public class EMSDeviceDriver {
         }
     }
 
-    protected void printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth, boolean cutPaper) {
+    protected String printStationPrinterReceipt(List<Orders> orders, String ordID, int lineWidth, boolean cutPaper, boolean printheader) {
         try {
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            } else {
-                port.writePort(new byte[]{0x1b, 0x1d, 0x74, 0x20}, 0, 4);
-                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
-                characterExpansion[2] = (byte) (1 + '0');
-                characterExpansion[3] = (byte) (1 + '0');
-
-                port.writePort(characterExpansion, 0, characterExpansion.length);
-                port.writePort(disableCenter, 0, disableCenter.length); // disable
-                // center
-            }
 
             setPaperWidth(lineWidth);
 
@@ -1491,43 +1532,46 @@ public class EMSDeviceDriver {
             OrderProductsHandler ordProdHandler = new OrderProductsHandler(activity);
             Order anOrder = orderHandler.getPrintedOrder(ordID);
 
-            StringBuilder sb = new StringBuilder("\n");
+            StringBuilder sb = new StringBuilder();
             int size = orders.size();
+            if (printheader) {
+                if (!anOrder.ord_HoldName.isEmpty())
+                    sb.append(getString(R.string.receipt_name)).append(anOrder.ord_HoldName).append("\n");
 
-            if (!anOrder.ord_HoldName.isEmpty())
-                sb.append(getString(R.string.receipt_name)).append(anOrder.ord_HoldName).append("\n");
+                if (!anOrder.cust_name.isEmpty())
+                    sb.append(anOrder.cust_name).append("\n");
 
-            if (!anOrder.cust_name.isEmpty())
-                sb.append(anOrder.cust_name).append("\n");
+                sb.append(getString(R.string.order)).append(": ").append(ordID).append("\n");
+                sb.append(getString(R.string.receipt_started)).append(" ")
+                        .append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append("\n");
 
-            sb.append(getString(R.string.order)).append(": ").append(ordID).append("\n");
-            sb.append(getString(R.string.receipt_started)).append(" ")
-                    .append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append("\n");
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
+                Date startedDate = sdf1.parse(anOrder.ord_timecreated);
+                Date sentDate = new Date();
 
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-            sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
-            Date startedDate = sdf1.parse(anOrder.ord_timecreated);
-            Date sentDate = new Date();
+                sb.append(getString(R.string.receipt_sent_by)).append(" ").append(myPref.getEmpName()).append(" (");
 
-            sb.append(getString(R.string.receipt_sent_by)).append(" ").append(myPref.getEmpName()).append(" (");
+                if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
+                    sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), activity, -1)).append(")");
+                else
+                    sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append(")");
 
-            if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
-                sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), activity, -1)).append(")");
-            else
-                sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append(")");
+                String ordComment = anOrder.ord_comment;
+                if (ordComment != null && !ordComment.isEmpty()) {
+                    sb.append("\nComments:\n");
+                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment, lineWidth, 3));
+                }
 
-            String ordComment = anOrder.ord_comment;
-            if (ordComment != null && !ordComment.isEmpty()) {
-                sb.append("\nComments:\n");
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(ordComment, lineWidth, 3));
+                sb.append("\n");
+                sb.append(textHandler.newDivider('=', lineWidth / 2)); //add double line divider
+                sb.append("\n");
             }
-
-            sb.append("\n");
-            sb.append(textHandler.newDivider('=', lineWidth / 2)); //add double line divider
-            sb.append("\n");
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
-            print(sb.toString(), FORMAT);
-            sb.setLength(0);
+//            if (printheader) {
+//                print(sb.toString(), FORMAT, true);
+//            }
+//            sb.setLength(0);
 
             int m = 0;
             for (int i = 0; i < size; i++) {
@@ -1542,9 +1586,9 @@ public class EMSDeviceDriver {
                         for (int j = i + 1; j < size; j++) {
                             ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
                             if (orders.get(j).getIsAdded().equals("1"))
-                                sb.append("  ").append(orders.get(j).getName()).append("\n");
+                                sb.append("  >").append(orders.get(j).getName()).append("\n");
                             else
-                                sb.append("  NO ").append(orders.get(j).getName()).append("\n");
+                                sb.append("  >NO ").append(orders.get(j).getName()).append("\n");
 
                             if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
                                 i = j;
@@ -1559,50 +1603,43 @@ public class EMSDeviceDriver {
                     sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
                     sb.append("\n");
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
-                    print(sb.toString(), FORMAT);
-                    sb.setLength(0);
+//                    print(sb.toString(), FORMAT, true);
+//                    sb.setLength(0);
                 } else {
                     ordProdHandler.updateIsPrinted(orders.get(i).getOrdprodID());
                     sb.append(orders.get(i).getQty()).append("x ").append(orders.get(i).getName()).append("\n");
 
-                    if (!orders.get(m).getOrderProdComment().isEmpty())
-                        sb.append("  ").append(orders.get(m).getOrderProdComment()).append("\n");
+                    if (!orders.get(i).getOrderProdComment().isEmpty())
+                        sb.append("  ").append(orders.get(i).getOrderProdComment()).append("\n");
 
                     sb.append(textHandler.newDivider('_', lineWidth / 2)); //add line divider
 //                    port.writePort(sb.toString().getBytes(FORMAT), 0, sb.toString().length());
                     sb.append("\n");
-                    print(sb.toString(), FORMAT);
-                    sb.setLength(0);
+//                    print(sb.toString(), FORMAT, true);
+//                    sb.setLength(0);
                 }
             }
             sb.append(textHandler.newLines(1));
 //            port.writePort(sb.toString().getBytes(), 0, sb.toString().length());
 
-            print(sb.toString(), FORMAT);
+//            print(sb.toString(), FORMAT, true);
 //            printEnablerWebSite(lineWidth);
 
-            if (isPOSPrinter && cutPaper) {
+//            if (isPOSPrinter && cutPaper) {
 //                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
 //                characterExpansion[2] = (byte) (0 + '0');
 //                characterExpansion[3] = (byte) (0 + '0');
 //
 //                port.writePort(characterExpansion, 0, characterExpansion.length);
-                cutPaper();
-            }
+//                cutPaper();
+//            }
 
             // db.close();
-        } catch (StarIOPortException e) {
-            /*
-             * Builder dialog = new AlertDialog.Builder(this.activity);
-			 * dialog.setNegativeButton("Ok", null); AlertDialog alert =
-			 * dialog.create(); alert.setTitle("Failure"); alert.setMessage(
-			 * "Failed to connect to printer"); alert.show();
-			 */
-            // Toast.makeText(activity, e.getMessage(),
-            // Toast.LENGTH_LONG).show();
+            return sb.toString();
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        return "";
     }
 
     protected void printOpenInvoicesReceipt(String invID, int lineWidth) {

@@ -102,8 +102,8 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper) {
-
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
     @Override

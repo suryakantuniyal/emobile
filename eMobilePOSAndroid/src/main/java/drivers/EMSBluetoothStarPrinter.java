@@ -42,7 +42,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
-    private String portSettings, portName;
+    private String portSettings;
+    private String portName;
 
     private EMSCallBack callBack, scannerCallBack;
     private StarIoExtManager mStarIoExtManager;
@@ -121,7 +122,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 enableCenter = new byte[]{0x1b, 0x61, 0x01};
                 disableCenter = new byte[]{0x1b, 0x61, 0x00};
             } else {
-                if (portName.contains("TCP") && portNumber != null && !portNumber.equals("9100"))
+                if (getPortName().contains("TCP") && portNumber != null && !portNumber.equals("9100"))
                     portSettings = portNumber;
                 else
                     portSettings = "";
@@ -154,6 +155,10 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return didConnect;
     }
 
+    public String getPortName() {
+        return portName;
+    }
+
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {
 
         String msg = "";
@@ -179,7 +184,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     enableCenter = new byte[]{0x1b, 0x61, 0x01};
                     disableCenter = new byte[]{0x1b, 0x61, 0x00};
                 } else {
-                    if (portName.contains("TCP") && !portNumber.equals("9100"))
+                    if (getPortName().contains("TCP") && !portNumber.equals("9100"))
                         portSettings = portNumber;
                     else
                         portSettings = "";
@@ -646,8 +651,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return true;
     }
 
-    @Override
-    public void printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper) {
+    public void print(String str, boolean isLargeFont) {
         try {
             port = getStarIOPort();
 
@@ -661,22 +665,76 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
                 // windows-1252
             } else {
-                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
-                port.writePort(new byte[]{0x1b, 0x1d, 0x74, 0x20}, 0, 4);
-                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
-                characterExpansion[2] = (byte) (1 + '0');
-                characterExpansion[3] = (byte) (1 + '0');
-
-                port.writePort(characterExpansion, 0, characterExpansion.length);
-                port.writePort(disableCenter, 0, disableCenter.length); // disable
-                // center
+                ArrayList<byte[]> commands = new ArrayList<byte[]>();
+                commands.add(new byte[]{0x1b, 0x40}); // Initialization
+                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+                characterheightExpansion[2] = 48;
+                commands.add(characterheightExpansion);
+                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+                characterwidthExpansion[2] = 48;
+                commands.add(characterwidthExpansion);
+                commands.add(new byte[]{0x0a});
+                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
             }
-
-            printStationPrinterReceipt(orders, ordID, 42, cutPaper);
-
+            super.print(str, "", isLargeFont);
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper,
+                                      boolean printHeader) {
+        String receipt;
+//        try {
+//            port = getStarIOPort();
+//
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException ignored) {
+//            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            } else {
+//                ArrayList<byte[]> commands = new ArrayList<byte[]>();
+//                commands.add(new byte[]{0x1b, 0x40}); // Initialization
+//                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+//                characterheightExpansion[2] = 48;
+//                commands.add(characterheightExpansion);
+//                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+//                characterwidthExpansion[2] = 48;
+//                commands.add(characterwidthExpansion);
+//                commands.add(new byte[]{0x0a});
+//                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+//                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+////                port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
+////                port.writePort(new byte[]{0x1b, 0x1d, 0x74, 0x20}, 0, 4);
+////                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
+////                characterExpansion[2] = (byte) (1 + '0');
+////                characterExpansion[3] = (byte) (1 + '0');
+////
+////                port.writePort(characterExpansion, 0, characterExpansion.length);
+////                port.writePort(disableCenter, 0, disableCenter.length); // disable
+//                // center
+//            }
+
+        receipt = printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
+
+//    }
+//
+//    catch(
+//    StarIOPortException e
+//    )
+//
+//    {
+//        e.printStackTrace();
+//    }
+
+        return receipt;
     }
 
     @Override
@@ -762,7 +820,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             if (handler == null)
                 handler = new Handler();
             if (_callBack != null) {
-                mStarIoExtManager = new StarIoExtManager(StarIoExtManager.Type.OnlyBarcodeReader, portName, "", 10000,
+                mStarIoExtManager = new StarIoExtManager(StarIoExtManager.Type.OnlyBarcodeReader, getPortName(), "", 10000,
                         this.activity); // 10000mS!!!
                 mStarIoExtManager.setListener(mStarIoExtManagerListener);
                 // mStarIoExtManager.disconnect();
@@ -924,13 +982,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     private StarIOPort getStarIOPort() throws StarIOPortException {
-        if (!portName.toUpperCase().contains("TCP")) {
+        if (!getPortName().toUpperCase().contains("TCP")) {
             releasePrinter();
             port = null;
         }
         if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline) {
-            if (portName.toUpperCase().contains("TCP")) {
-                String ip = portName.replace("TCP:", "");
+            if (getPortName().toUpperCase().contains("TCP")) {
+                String ip = getPortName().replace("TCP:", "");
                 int port = 80;
                 try {
                     port = TextUtils.isEmpty(portSettings) ? 80 : Integer.parseInt(portSettings);
@@ -942,9 +1000,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 }
             }
             try {
-                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
+                port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
             } catch (StarIOPortException e) {
-                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
+                port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
             }
         }
         return port;

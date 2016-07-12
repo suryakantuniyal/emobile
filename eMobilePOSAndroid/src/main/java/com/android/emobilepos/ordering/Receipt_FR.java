@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -91,7 +92,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import interfaces.EMSDeviceManagerPrinterDelegate;
+import drivers.EMSBluetoothStarPrinter;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
@@ -452,59 +453,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 if (!value.isEmpty()) {
                                     global.orderProducts.get(position).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
 
-//                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
-//                                    BigDecimal prod_qty;
-//                                    BigDecimal new_subtotal;
-//                                    try {
-//                                        prod_qty = new BigDecimal(
-//                                                global.orderProducts
-//                                                        .get(position).ordprod_qty);
-//                                    } catch (Exception e) {
-//                                        prod_qty = new BigDecimal("0");
-//                                    }
-//
-//                                    String temp = Double.toString(Global
-//                                            .formatNumFromLocale(value));
-//                                    if (!map.isEmpty()) {
-//                                        if (map.get("discount_type")
-//                                                .toUpperCase(
-//                                                        Locale.getDefault())
-//                                                .trim().equals("FIXED")) {
-//                                            new_subtotal = new_price
-//                                                    .multiply(prod_qty)
-//                                                    .subtract(
-//                                                            new BigDecimal(
-//                                                                    map.get("discount_price")));
-//
-//                                        } else {
-//                                            BigDecimal rate = new BigDecimal(
-//                                                    map.get("discount_price"))
-//                                                    .divide(new BigDecimal(
-//                                                            "100"));
-//                                            rate = rate.multiply(new_price
-//                                                    .multiply(prod_qty));
-//
-//                                            new_subtotal = new_price.multiply(
-//                                                    prod_qty).subtract(rate);
-//
-//                                            global.orderProducts.get(position).disTotal = Global
-//                                                    .getRoundBigDecimal(rate);
-//                                            global.orderProducts.get(position).discount_value = Global
-//                                                    .getRoundBigDecimal(rate);
-//
-//                                        }
-//                                    } else
-//                                        new_subtotal = new_price
-//                                                .multiply(prod_qty);
-//
-//                                    global.orderProducts.get(position).overwrite_price = temp;
-//                                    global.orderProducts.get(position).prod_price = temp;
-//                                    global.orderProducts.get(position).itemSubtotal = Global
-//                                            .getRoundBigDecimal(new_subtotal);
-//                                    global.orderProducts.get(position).itemTotal = Global
-//                                            .getRoundBigDecimal(new_subtotal);
-//                                    global.orderProducts.get(position).pricelevel_id = "";
-//                                    global.orderProducts.get(position).prod_price_updated = "0";
                                     receiptListView.invalidateViews();
                                     reCalculate();
                                 }
@@ -1892,20 +1840,42 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         new String[temp.keySet().size()]);
                 int printMap;
                 boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
-                EMSDeviceManagerPrinterDelegate currentDevice = null;
+                EMSBluetoothStarPrinter currentDevice = null;
+                boolean printHeader = true;
+                StringBuffer receipt = new StringBuffer();
+                String currentPrinterName = null;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
 //                      Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
                                 && Global.multiPrinterManager.get(printMap).currentDevice != null) {
-                            currentDevice = Global.multiPrinterManager.get(printMap).currentDevice;
-                            currentDevice.printStationPrinter(temp.get(aSArr),
-                                    global.order.ord_id, splitByCat);
+                            if (currentPrinterName == null || !currentPrinterName.equalsIgnoreCase(((EMSBluetoothStarPrinter)
+                                    Global.multiPrinterManager.get(printMap).currentDevice).getPortName())) {
+                                printHeader = true;
+                                if (currentDevice != null) {
+                                    currentDevice.print(receipt.toString(), true);
+                                    receipt.setLength(0);
+                                    currentDevice.cutPaper();
+                                }
+                            }
+                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).currentDevice;
+                            receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
+                                    global.order.ord_id, splitByCat, printHeader));
+
+                            printHeader = splitByCat;
+                            currentPrinterName = currentDevice.getPortName();
+                            if (splitByCat && currentDevice != null) {
+                                currentDevice.print(receipt.toString(), true);
+                                receipt.setLength(0);
+                                currentDevice.cutPaper();
+                            }
                         }
                     }
                 }
-                if (currentDevice != null && !splitByCat) {
+                if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
+                    currentDevice.print(receipt.toString(), true);
+                    receipt.setLength(0);
                     currentDevice.cutPaper();
                 }
             }
@@ -2245,6 +2215,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
+        if (((OrderingMain_FA) activity).isToGo && !mainLVAdapter.isEmpty()) {
+            mainLVAdapter.selectedPosition = mainLVAdapter.getCount();
+        }
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
             receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);

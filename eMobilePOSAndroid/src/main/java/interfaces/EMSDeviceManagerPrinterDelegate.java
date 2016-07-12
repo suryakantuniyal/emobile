@@ -29,7 +29,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup);
 
-    void printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper);
+    String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader);
 
     boolean printOpenInvoices(String invID);
 
