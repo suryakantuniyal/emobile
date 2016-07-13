@@ -1,6 +1,7 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
 import com.android.support.Global;
@@ -68,12 +69,12 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String discount_is_fixed = "0";
     private String prod_taxtype;
 
-    private String priceLevelName = "";
-    private List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
-
-    private String hasAddons = "0"; //0 no addons, 1 it has addons
-    private String addon_section_name = "";
-    private String addon_position = "";
+    public String priceLevelName = "";
+    public List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
+    public List<OrderProduct> addonsProducts = new ArrayList<OrderProduct>();
+    public String hasAddons = "0"; //0 no addons, 1 it has addons
+    public String addon_section_name = "";
+    public String addon_position = "";
 
     private String prod_price_updated = "0";
 
@@ -743,5 +744,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public void resetMixMatch() {
         this.setMixAndMatchDiscounts(null);
         this.setMixMatchQtyApplied(0);
+    }
+
+    public boolean isAdded() {
+        return !TextUtils.isEmpty(isAdded) && isAdded.equalsIgnoreCase("1");
     }
 }
