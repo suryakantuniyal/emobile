@@ -319,16 +319,20 @@ public class OrderProductListAdapter extends BaseAdapter {
                 int i = 0;
                 for (OrderProduct orderProduct : product.addonsProducts) {
                     if (orderProduct.isAdded()) {
-                        addonSb.append(" <font color='black'>" + orderProduct.getOrdprod_name() + "</font>");
+                        addonSb.append(" <font color='black'>").append(orderProduct.getOrdprod_name()).append("</font>");
                         addonSb.append(", ");
                     } else {
-                        addonNoSb.append(" <font color='red'>" + orderProduct.getOrdprod_name() + "</font>");
+                        addonNoSb.append(" <font color='red'>").append(activity.getString(R.string.button_no)).append(" ").append(orderProduct.getOrdprod_name()).append("</font>");
                         addonNoSb.append(", ");
                     }
                     i++;
                 }
-                addonSb = addonSb.delete(addonSb.length() - 2, addonSb.length() - 1);
-                addonNoSb = addonNoSb.delete(addonNoSb.length() - 2, addonNoSb.length() - 1);
+                if (!TextUtils.isEmpty(addonSb.toString())) {
+                    addonSb = addonSb.delete(addonSb.length() - 2, addonSb.length() - 1);
+                }
+                if (!TextUtils.isEmpty(addonNoSb.toString())) {
+                    addonNoSb = addonNoSb.delete(addonNoSb.length() - 2, addonNoSb.length() - 1);
+                }
                 String concat = addonSb.toString();
                 if (!TextUtils.isEmpty(addonNoSb.toString())) {
                     concat += ", " + addonNoSb.toString();

@@ -1568,6 +1568,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (isFromAddon) {
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
+        ord.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
         ord.setPricesXGroupid(product.getPricesXGroupid());
         ord.setProd_price(total.toString());
         ord.setAssignedSeat(selectedSeatNumber);
