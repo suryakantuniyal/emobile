@@ -2,38 +2,23 @@ package com.android.dao;
 
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import util.JsonUtils;
 
 /**
  * Created by Guarionex on 4/12/2016.
  */
 public class MixMatchDAO {
     public static void insert(String json) {
-        Gson gson = new GsonBuilder()
-                .setExclusionStrategies(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes f) {
-                        return f.getDeclaringClass().equals(RealmObject.class);
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> clazz) {
-                        return false;
-                    }
-                })
-                .create();
+        Gson gson = JsonUtils.getInstance();
 
         Type listType = new com.google.gson.reflect.TypeToken<List<MixMatch>>() {
         }.getType();

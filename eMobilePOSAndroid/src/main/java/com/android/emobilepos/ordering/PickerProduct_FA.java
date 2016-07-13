@@ -51,10 +51,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
 import com.android.support.TerminalDisplay;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -67,7 +64,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 import util.JsonUtils;
 
@@ -290,19 +286,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 activity.finish();
                 break;
             case SEC_ADDITIONAL_INFO:
-                Gson gson = new GsonBuilder()
-                        .setExclusionStrategies(new ExclusionStrategy() {
-                            @Override
-                            public boolean shouldSkipField(FieldAttributes f) {
-                                return f.getDeclaringClass().equals(RealmObject.class);
-                            }
-
-                            @Override
-                            public boolean shouldSkipClass(Class<?> clazz) {
-                                return false;
-                            }
-                        })
-                        .create();
+                Gson gson = JsonUtils.getInstance();
                 Intent intent = new Intent(activity, OrderAttributes_FA.class);
                 intent.putExtra("isModify", isModify);
                 intent.putExtra("prod_id", prodID);

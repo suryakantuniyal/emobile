@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import util.JsonUtils;
+
 /**
  * Created by Guarionex on 2/8/2016.
  */
@@ -202,7 +204,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         Bundle extras = this.getIntent().getExtras();
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
-        Gson gson = new Gson();
+        Gson gson = JsonUtils.getInstance();
         if (extras != null) {
             Type listType = new TypeToken<List<OrderSeatProduct>>() {
             }.getType();
@@ -407,7 +409,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         itemSubtotal = itemSubtotal.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
 
                         product.setItemSubtotal(itemSubtotal.toString());
-                        product.setOverwrite_price(product.getOverwrite_price().divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP));
+                        product.setProd_price(new BigDecimal(product.getFinalPrice()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                         product.setProd_taxValue(Global.getBigDecimalNum(product.getProd_taxValue()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                         product.setDiscount_value(Global.getBigDecimalNum(product.getDiscount_value()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                         product.setItemTotal(Global.getBigDecimalNum(product.getItemTotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
