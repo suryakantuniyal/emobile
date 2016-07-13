@@ -282,8 +282,11 @@ public class EMSDeviceDriver {
             eloPrinterApi.print(new String(byteArray));
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
-                port.writePort(byteArray, 0, byteArray.length);
+                printStar(new String(byteArray), false);
+//                port.writePort(byteArray, 0, byteArray.length);
             } catch (StarIOPortException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         } else if (this instanceof EMSPAT100) {
@@ -330,12 +333,22 @@ public class EMSDeviceDriver {
         return str;
     }
 
-    protected void print(String str, String FORMAT) {
+    public void print(String str, String FORMAT) {
         print(str, FORMAT, false);
     }
 
+    public void print(String str, boolean isLargeFont) {
+        print(str, FORMAT, isLargeFont);
+    }
+
     private void printStar(String str, boolean isLargeFont) throws StarIOPortException, UnsupportedEncodingException {
-        if (isLargeFont) {
+        if (!isPOSPrinter) {
+            port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+            port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+            port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+            // windows-1252
+            port.writePort(str.getBytes(), 0, str.length());
+        } else if (isLargeFont) {
             ArrayList<byte[]> commands = new ArrayList<byte[]>();
             commands.add(new byte[]{0x1b, 0x40}); // Initialization
             byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
@@ -376,34 +389,6 @@ public class EMSDeviceDriver {
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 printStar(str, isLargeFont);
-//                if (isLargeFont) {
-//                    ArrayList<byte[]> commands = new ArrayList<byte[]>();
-//                    commands.add(new byte[]{0x1b, 0x40}); // Initialization
-//                    byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-//                    characterheightExpansion[2] = 49;
-//                    commands.add(characterheightExpansion);
-//                    byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-//                    characterwidthExpansion[2] = 48;
-//                    commands.add(characterwidthExpansion);
-//                    commands.add(str.getBytes());
-//                    commands.add(new byte[]{0x0a});
-//                    byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-//                    port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-//                } else {
-//                    ArrayList<byte[]> commands = new ArrayList<byte[]>();
-//                    commands.add(new byte[]{0x1b, 0x40}); // Initialization
-//                    byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
-//                    characterheightExpansion[2] = 48;
-//                    commands.add(characterheightExpansion);
-//                    byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
-//                    characterwidthExpansion[2] = 48;
-//                    commands.add(characterwidthExpansion);
-//                    commands.add(str.getBytes());
-//                    commands.add(new byte[]{0x0a});
-//                    byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
-//                    port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
-////                    port.writePort(str.getBytes(FORMAT), 0, str.length());
-//                }
             } catch (StarIOPortException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
@@ -1254,7 +1239,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(footer[2], lineWidth));
 
         if (!sb.toString().isEmpty()) {
-            sb.append(textHandler.newLines(3));
+            sb.append(textHandler.newLines(2));
             print(sb.toString());
 
         }
@@ -1375,26 +1360,26 @@ public class EMSDeviceDriver {
                         .append("\n\n");
 
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray.getCust_name(),
-                        lineWidth, 0));
+                        lineWidth, 0)).append("\n");
 
                 if (payArray.getJob_id() != null && !payArray.getJob_id().isEmpty())
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
-                            payArray.getJob_id(), lineWidth, 0));
+                            payArray.getJob_id(), lineWidth, 0)).append("\n");
                 else if (payArray.getInv_id() != null && !payArray.getInv_id().isEmpty()) // invoice
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
-                            payArray.getInv_id(), lineWidth, 0));
+                            payArray.getInv_id(), lineWidth, 0)).append("\n");
 
                 if (!isStoredFwd)
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
-                            lineWidth, 0));
+                            lineWidth, 0)).append("\n");
 
                 if (!isCashPayment && !isCheckPayment) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
-                            "*" + payArray.getCcnum_last4(), lineWidth, 0));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0));
+                            "*" + payArray.getCcnum_last4(), lineWidth, 0)).append("\n");
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0)).append("\n");
                 } else if (isCheckPayment) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
-                            payArray.getPay_check(), lineWidth, 0));
+                            payArray.getPay_check(), lineWidth, 0)).append("\n");
                 }
 
                 print(sb.toString());
