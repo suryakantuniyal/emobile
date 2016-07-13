@@ -252,7 +252,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, _cat_id);
         if (c != null && c.moveToPosition(pos)) {
             OrderProduct ord = new OrderProduct();
-            ord.assignedSeat=selectedSeatNumber;
+            ord.assignedSeat = selectedSeatNumber;
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             ord.ordprod_qty = "1";
             ord.ordprod_name = c.getString(c.getColumnIndex("prod_name"));
@@ -348,6 +348,8 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         ordProd.ordprod_desc = itemData[3] + _ord_desc.toString();
         ordProd.prod_sku = itemData[13];
         ordProd.prod_upc = itemData[14];
+        ordProd.addonsProducts.clear();
+        ordProd.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
         global.orderProducts.set(position, ordProd);
     }
 

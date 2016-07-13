@@ -42,7 +42,6 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
-import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -1566,7 +1565,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (isFromAddon) {
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
-
+        ord.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
         ord.overwrite_price = total.toString();
         ord.prod_price = total.toString();
         ord.assignedSeat = selectedSeatNumber;
@@ -1682,7 +1681,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         for (OrderProduct product : products) {
             RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.prod_id);
             for (ProductAttribute attribute : attributes) {
-                if(!product.requiredProductAttributes.contains(attribute)){
+                if (!product.requiredProductAttributes.contains(attribute)) {
                     return false;
                 }
             }
