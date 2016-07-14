@@ -6,10 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,9 +46,10 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import util.JsonUtils;
 
 /**
  * Created by Guarionex on 2/8/2016.
@@ -206,7 +204,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         Bundle extras = this.getIntent().getExtras();
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
-        Gson gson = new Gson();
+        Gson gson = JsonUtils.getInstance();
         if (extras != null) {
             Type listType = new TypeToken<List<OrderSeatProduct>>() {
             }.getType();

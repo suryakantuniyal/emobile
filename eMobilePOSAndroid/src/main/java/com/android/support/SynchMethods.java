@@ -92,6 +92,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
+import util.JsonUtils;
 
 public class SynchMethods {
     private Post post;
@@ -1339,7 +1340,7 @@ public class SynchMethods {
     private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
             task.updateProgress(getString(R.string.sync_dload_price_levels));
-            Gson gson = new Gson();
+            Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevel"));
@@ -1371,7 +1372,7 @@ public class SynchMethods {
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
             task.updateProgress(getString(R.string.sync_dload_item_price_levels));
-            Gson gson = new Gson();
+            Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevelItems"));
@@ -1436,7 +1437,7 @@ public class SynchMethods {
     private void synchProdAddon(resynchAsync task) throws IOException, SAXException {
         try {
             task.updateProgress(getString(R.string.sync_dload_product_addons));
-            Gson gson = new Gson();
+            Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Product_addons"));
@@ -1468,7 +1469,7 @@ public class SynchMethods {
         try {
             ProductsHandler productsHandler = new ProductsHandler(activity);
             task.updateProgress(getString(R.string.sync_dload_products));
-            Gson gson = new Gson();
+            Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1513,7 +1514,7 @@ public class SynchMethods {
         try {
             ProductAliases_DB productAliasesDB = new ProductAliases_DB(activity);
             task.updateProgress(getString(R.string.sync_dload_product_aliases));
-            Gson gson = new Gson();
+            Gson gson =JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
