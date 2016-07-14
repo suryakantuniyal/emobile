@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import util.JsonUtils;
+
 /**
  * Created by Guarionex on 2/8/2016.
  */
@@ -202,7 +204,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         Bundle extras = this.getIntent().getExtras();
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
-        Gson gson = new Gson();
+        Gson gson = JsonUtils.getInstance();
         if (extras != null) {
             Type listType = new TypeToken<List<OrderSeatProduct>>() {
             }.getType();
