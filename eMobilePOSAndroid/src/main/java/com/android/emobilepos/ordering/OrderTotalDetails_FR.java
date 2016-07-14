@@ -419,7 +419,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     }
 
     private BigDecimal tempTaxableAmount = new BigDecimal("0");
-    private BigDecimal taxableDueAmount = new BigDecimal("0");
 
 
     public void reCalculate(List<OrderProduct> orderProducts) {
@@ -429,7 +428,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         }
         int size = orderProducts.size();
         taxableSubtotal = new BigDecimal("0.00");
-        taxableDueAmount = new BigDecimal("0.00");
         tempTaxableAmount = new BigDecimal("0");
         itemsDiscountTotal = new BigDecimal(0);
         setupTaxesHolder();
