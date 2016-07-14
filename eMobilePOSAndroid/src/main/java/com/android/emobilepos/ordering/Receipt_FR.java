@@ -93,6 +93,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
+import util.JsonUtils;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
@@ -1508,7 +1509,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void showSplitedOrderPreview() {
-        Gson gson = new Gson();
+        Gson gson = JsonUtils.getInstance();
         Type listType = new TypeToken<List<OrderSeatProduct>>() {
         }.getType();
         Intent intent = new Intent(activity, SplittedOrderSummary_FA.class);

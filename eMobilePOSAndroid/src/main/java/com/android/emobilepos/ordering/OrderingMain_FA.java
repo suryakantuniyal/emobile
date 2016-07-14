@@ -95,6 +95,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
 import io.realm.RealmResults;
+import util.JsonUtils;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
@@ -192,7 +193,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         String onHoldOrderJson = extras.getString("onHoldOrderJson");
         Order onHoldOrder = null;
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
-            Gson gson = new Gson();
+            Gson gson = JsonUtils.getInstance();
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;

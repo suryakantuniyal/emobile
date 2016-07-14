@@ -1,7 +1,6 @@
 package com.android.emobilepos.payment;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -60,6 +59,8 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import util.JsonUtils;
 
 public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private String paymethod_id;
@@ -243,7 +244,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
         @Override
         protected GeniusResponse doInBackground(String... params) {
-            Gson gson = new Gson();
+            Gson gson = JsonUtils.getInstance();
             GeniusResponse geniusResponse = null;
             if (pingGeniusDevice()) {
                 geniusConnected = true;
