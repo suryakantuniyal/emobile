@@ -223,7 +223,9 @@ public class CategoriesHandler {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories FROM Categories c1 ");
+		sb.append("SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  " +
+				"FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories " +
+				"FROM Categories c1 ");
 		
 		if(!Global.cat_id.equals("0"))
 			sb.append("  WHERE c1.cat_id ='").append(Global.cat_id).append("' ");

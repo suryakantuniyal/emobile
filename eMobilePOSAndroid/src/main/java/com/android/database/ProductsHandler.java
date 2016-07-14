@@ -3,7 +3,6 @@ package com.android.database;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.text.TextUtils;
 
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Product;
@@ -12,8 +11,6 @@ import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteStatement;
-
-import org.springframework.util.StringUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -236,11 +233,18 @@ public class ProductsHandler {
         if (Global.cat_id.equals("0")) {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
+                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price'," +
+                            "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
             sb.append(
-                    "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
+                    "CASE WHEN pl.pricelevel_type = 'FixedPercentage' " +
+                            "THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
             sb.append(
-                    "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc, p.prod_sku, p.prod_upc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
+                    "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points," +
+                            "p.prod_value_points,p.prod_name,p.prod_desc, p.prod_sku, p.prod_upc," +
+                            "p.prod_extradesc,p.prod_onhand as 'master_prod_onhand'," +
+                            "ei.prod_onhand as 'local_prod_onhand',i.prod_img_name," +
+                            "CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  " +
+                            "END AS 'prod_istaxable' ");
             sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
 
             if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
@@ -289,19 +293,39 @@ public class ProductsHandler {
                     sb2.append("WHERE p.prod_type != 'Discount' ");// ORDER BY
                 // p.prod_name");
             }
+            if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
+                sb.append(
+                        "FROM Products p " +
+                                "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                                "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
+                                "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
+                                "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
+                                "BETWEEN vp.minQty AND vp.maxQty  AND ");
+            } else {
+                sb.append(
+                        "FROM Products p " +
+                                "INNER JOIN Categories c ON c.cat_id = p.cat_id " +
+                                "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
+                                "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
+                                "BETWEEN vp.minQty AND vp.maxQty  AND ");
+            }
+
 
             sb.append(
-                    "FROM Products p LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' BETWEEN vp.minQty AND vp.maxQty  AND ");
+                    "vp.pricelevel_id = ?  " +
+                            "LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id ");
             sb.append(
-                    "vp.pricelevel_id = ?  LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id ");
+                    "AND pli.pricelevel_id = ? " +
+                            "LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? " +
+                            "LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
             sb.append(
-                    "AND pli.pricelevel_id = ? LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
-            sb.append(
-                    "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
+                    "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                            "LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
 
             sb.append(sb2);
 
-            if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
+            if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name) ||
+                    myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
                 sb.append(" GROUP BY p.prod_name ORDER BY p.prod_name");
             } else {
                 sb.append(" ORDER BY p.prod_name");
@@ -367,28 +391,43 @@ public class ProductsHandler {
                 // p.prod_name");
 
             }
+            if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
+                sb.append("FROM Products p " +
+                        "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
+                        "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
+                        "INNER JOIN Categories c ON c.cat_id = xr.cat_id AND " +
+                        "xr.cat_id = " + Global.cat_id);
+            } else {
+                sb.append("FROM Products p " +
+                        "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
+                        "INNER JOIN Categories c ON c.cat_id = p.cat_id ");
+            }
 
+
+//            sb.append("OR xr.cat_id = c.cat_id ");
+            sb.append(" LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
+                    "BETWEEN vp.minQty AND ");
             sb.append(
-                    "FROM Products p LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id LEFT OUTER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id ");
-            sb.append("OR xr.cat_id = c.cat_id ");
-            sb.append("LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' BETWEEN vp.minQty AND ");
+                    "vp.maxQty AND vp.pricelevel_id = ? " +
+                            "LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id AND ");
             sb.append(
-                    "vp.maxQty AND vp.pricelevel_id = ? LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id AND ");
+                    "pli.pricelevel_id = ? " +
+                            "LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? " +
+                            "LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
             sb.append(
-                    "pli.pricelevel_id = ? LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
-            sb.append(
-                    "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
+                    "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                            "LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
 
             sb.append(sb2);
 
-            if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
-
-                sb.append("AND (c.cat_id= '").append(Global.cat_id).append("' OR c.parentID = '").append(Global.cat_id)
-                        .append("' ");
-                sb.append(" OR xr.cat_id = '").append(Global.cat_id).append("') ");
-
-            } else
-                sb.append("AND c.cat_id = '").append(Global.cat_id).append("'");
+//            if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
+//
+//                sb.append("AND (c.cat_id= '").append(Global.cat_id).append("' OR c.parentID = '").append(Global.cat_id)
+//                        .append("' ");
+//                sb.append(" OR xr.cat_id = '").append(Global.cat_id).append("') ");
+//
+//            } else
+//                sb.append("AND c.cat_id = '").append(Global.cat_id).append("'");
 
             if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
                 sb.append(" GROUP BY p.prod_name ORDER BY p.prod_name");
