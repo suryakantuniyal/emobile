@@ -93,8 +93,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import interfaces.EMSDeviceManagerPrinterDelegate;
-import util.JsonUtils;
 import drivers.EMSBluetoothStarPrinter;
 import util.JsonUtils;
 
