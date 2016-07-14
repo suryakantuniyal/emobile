@@ -1868,7 +1868,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                             printHeader = splitByCat;
                             currentPrinterName = currentDevice.getPortName();
-                            if (splitByCat && currentDevice != null) {
+                            if (splitByCat) {
                                 currentDevice.print(receipt.toString(), true);
                                 receipt.setLength(0);
                                 currentDevice.cutPaper();
