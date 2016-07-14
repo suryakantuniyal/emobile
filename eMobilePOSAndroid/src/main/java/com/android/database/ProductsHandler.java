@@ -297,7 +297,7 @@ public class ProductsHandler {
                 sb.append(
                         "FROM Products p " +
                                 "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                                "INNER JOIN Categories c ON c.cat_id = xr.cat_id "+
+                                "INNER JOIN Categories c ON c.cat_id = xr.cat_id " +
                                 "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                                 "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                                 "BETWEEN vp.minQty AND vp.maxQty  AND ");
@@ -324,7 +324,8 @@ public class ProductsHandler {
 
             sb.append(sb2);
 
-            if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
+            if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name) ||
+                    myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
                 sb.append(" GROUP BY p.prod_name ORDER BY p.prod_name");
             } else {
                 sb.append(" ORDER BY p.prod_name");
@@ -394,7 +395,8 @@ public class ProductsHandler {
                 sb.append("FROM Products p " +
                         "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                         "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
-                        "INNER JOIN Categories c ON c.cat_id = xr.cat_id ");
+                        "INNER JOIN Categories c ON c.cat_id = xr.cat_id AND " +
+                        "xr.cat_id = " + Global.cat_id);
             } else {
                 sb.append("FROM Products p " +
                         "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
@@ -402,8 +404,8 @@ public class ProductsHandler {
             }
 
 
-            sb.append("OR xr.cat_id = c.cat_id ");
-            sb.append("LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
+//            sb.append("OR xr.cat_id = c.cat_id ");
+            sb.append(" LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                     "BETWEEN vp.minQty AND ");
             sb.append(
                     "vp.maxQty AND vp.pricelevel_id = ? " +
