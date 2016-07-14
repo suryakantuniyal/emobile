@@ -56,7 +56,7 @@ public class ProductsHandler {
             prod_sku, prod_upc, prod_name, prod_desc, prod_extradesc, prod_onhand, prod_onorder, prod_uom, prod_price,
             prod_cost, prod_taxcode, prod_taxtype, prod_glaccount, prod_mininv, prod_update, isactive, prod_showOnline,
             prod_ispromo, prod_shipping, prod_weight, prod_expense, prod_disc_type_points, prod_price_points,
-            prod_value_points,prod_prices_group_id);
+            prod_value_points, prod_prices_group_id);
 
     private static final String table_name = "Products";
     private StringBuilder sb1, sb2;
@@ -235,7 +235,8 @@ public class ProductsHandler {
         if (Global.cat_id.equals("0")) {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price'," +
+                    "SELECT  p.prod_id as '_id',  p.prod_prices_group_id as 'prod_prices_group_id'," +
+                            " p.prod_price as 'master_price'," +
                             "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' " +
@@ -398,11 +399,12 @@ public class ProductsHandler {
                         "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                         "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
                         "INNER JOIN Categories c ON c.cat_id = xr.cat_id AND " +
-                        "xr.cat_id = " + Global.cat_id);
+                        "xr.cat_id = '" + Global.cat_id + "'");
             } else {
                 sb.append("FROM Products p " +
                         "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
-                        "INNER JOIN Categories c ON c.cat_id = p.cat_id ");
+                        "INNER JOIN Categories c ON c.cat_id = p.cat_id AND " +
+                        "p.cat_id = '" + Global.cat_id + "'");
             }
 
 
