@@ -50,7 +50,7 @@ public class Product {
     private String prodTaxType;
     @SerializedName("prod_taxcode")
     private String prodTaxCode;
-    @SerializedName("prodOnHand")
+    @SerializedName("prod_onhand")
     private String prodOnHand;
     @SerializedName("prod_price")
     private String prodPrice;
