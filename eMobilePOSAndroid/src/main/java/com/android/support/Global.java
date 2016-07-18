@@ -10,10 +10,11 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
@@ -42,6 +43,8 @@ import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -76,10 +79,10 @@ import java.util.TimerTask;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
+    private static com.android.support.LocationServices locationServices;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
 //    static {
@@ -98,7 +101,10 @@ public class Global extends MultiDexApplication {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(config);
+
     }
+
+
     public static String loyaltyPointsAvailable;
     public static boolean isIvuLoto = false;
     public static boolean isForceUpload = false;
@@ -352,7 +358,6 @@ public class Global extends MultiDexApplication {
 
     public static OrderType consignmentType = OrderType.ORDER;
     public static OrderType ord_type = OrderType.ORDER;
-    private static String empStr = "";
     public static String amountPaid = "";
     public static double subtotalAmount;
     public static String tipPaid = "0";
@@ -468,15 +473,15 @@ public class Global extends MultiDexApplication {
 
     public void resetOrderDetailsValues() {
         selectedShippingMethod = -1;
-        selectedShippingMethodString = empStr;
+        selectedShippingMethodString = "";
         selectedTermsMethod = -1;
-        selectedTermsMethodString = empStr;
+        selectedTermsMethodString = "";
         selectedAddressMethod = -1;
-        selectedAddressMethodString = empStr;
-        selectedDeliveryDate = empStr;
-        selectedComments = empStr;
-        selectedPO = empStr;
-        taxID = empStr;
+        selectedAddressMethodString = "";
+        selectedDeliveryDate = "";
+        selectedComments = "";
+        selectedPO = "";
+        taxID = "";
         taxPosition = 0;
 
         ord_type = null;
@@ -591,24 +596,62 @@ public class Global extends MultiDexApplication {
     }
 
     public static String[] getCurrLocation(Activity activity) {
-        String bestProvider;
-        String[] values = new String[2];
-        values[0] = empStr;
-        values[1] = empStr;
+        final String[] values = new String[2];
+        values[0] = "";
+        values[1] = "";
 
-        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        bestProvider = lm.getBestProvider(criteria, false);
+        if (locationServices == null) {
+            locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(@Nullable Bundle bundle) {
+                    Location mLastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
+                            locationServices.mGoogleApiClient);
+                    if (mLastLocation != null) {
+                        values[0] = String.valueOf(mLastLocation.getLatitude());
+                        values[1] = String.valueOf(mLastLocation.getLongitude());
+                    }
+                    locationServices.disconnect();
+                    locationServices.notifyAll();
+                }
 
-        if (bestProvider == null)
-            return values;
-        Location location = lm.getLastKnownLocation(bestProvider);
-        if (location == null)
-            return values;
-        else {
-            values[0] = Double.toString(location.getLatitude());
-            values[1] = Double.toString(location.getLongitude());
+                @Override
+                public void onConnectionSuspended(int i) {
+
+                }
+            }, new GoogleApiClient.OnConnectionFailedListener() {
+                @Override
+                public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                }
+            });
+
         }
+        synchronized (locationServices) {
+            locationServices.connect();
+            try {
+                locationServices.wait(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+//        String bestProvider;
+
+
+//        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+//        Criteria criteria = new Criteria();
+//        bestProvider = lm.getBestProvider(criteria, false);
+//
+//        if (bestProvider == null)
+//            return values;
+//        Location location = lm.getLastKnownLocation(bestProvider);
+//        if (location == null)
+//            return values;
+//        else {
+//            values[0] = Double.toString(location.getLatitude());
+//            values[1] = Double.toString(location.getLongitude());
+//        }
         return values;
     }
 
@@ -640,7 +683,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedComments() {
         if (this.selectedComments == null)
-            return empStr;
+            return "";
         return this.selectedComments;
     }
 
@@ -650,7 +693,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedPO() {
         if (this.selectedPO == null)
-            return empStr;
+            return "";
         return this.selectedPO;
     }
 
@@ -668,7 +711,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedShippingMethodString() {
         if (this.selectedAddressMethodString == null)
-            return empStr;
+            return "";
         return this.selectedShippingMethodString;
     }
 
@@ -686,7 +729,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedTermsMethodsString() {
         if (this.selectedTermsMethodString == null)
-            return empStr;
+            return "";
         return this.selectedTermsMethodString;
     }
 
@@ -704,7 +747,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedAddressString() {
         if (this.selectedAddressMethodString == null)
-            return empStr;
+            return "";
         return this.selectedAddressMethodString;
     }
 
@@ -714,7 +757,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedDeliveryDate() {
         if (this.selectedDeliveryDate == null)
-            return empStr;
+            return "";
         return this.selectedDeliveryDate;
     }
 

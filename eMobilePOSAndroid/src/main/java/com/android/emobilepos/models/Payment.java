@@ -1,16 +1,12 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.android.database.DrawInfoHandler;
-import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.google.gson.annotations.Expose;
 
 public class Payment {
 
@@ -130,6 +126,9 @@ public class Payment {
         pay_date = date;
 
         emp_id = myPref.getEmpID();
+        String[] location = Global.getCurrLocation(activity);
+        pay_latitude = location[0];
+        pay_longitude = location[1];
 
     }
 
