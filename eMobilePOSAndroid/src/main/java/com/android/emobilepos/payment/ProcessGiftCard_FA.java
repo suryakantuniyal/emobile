@@ -305,7 +305,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()|| myPref.isHandpoint()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000() || myPref.isHandpoint()) {
             cardSwipe.setChecked(true);
         }
     }
@@ -399,7 +399,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         payment.track_one = cardInfoManager.getEncryptedAESTrack1();
         payment.track_two = cardInfoManager.getEncryptedAESTrack2();
 
-        Location location = Global.getCurrLocation(activity);
+        Location location = Global.getCurrLocation(activity, false);
         payment.pay_latitude = String.valueOf(location.getLatitude());
         payment.pay_longitude = String.valueOf(location.getLongitude());
 

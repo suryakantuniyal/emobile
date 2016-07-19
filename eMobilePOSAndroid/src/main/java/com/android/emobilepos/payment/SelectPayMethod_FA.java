@@ -227,7 +227,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     public void onPause() {
         super.onPause();
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isInteractive();
+        boolean isScreenOn;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+            isScreenOn = powerManager.isInteractive();
+        }else{
+            isScreenOn = powerManager.isScreenOn();
+        }
         if (!isScreenOn)
             global.loggedIn = false;
         global.startActivityTransitionTimer();

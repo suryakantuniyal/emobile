@@ -324,7 +324,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         global.order.total_lines = Integer.toString(global.orderProducts.size());
         global.order.ord_signature = encodedImage;
 
-        Location location = Global.getCurrLocation(activity);
+        Location location = Global.getCurrLocation(activity, false);
         global.order.ord_latitude = String.valueOf(location.getLatitude());
         global.order.ord_longitude = String.valueOf(location.getLongitude());
         global.order.processed = "1";

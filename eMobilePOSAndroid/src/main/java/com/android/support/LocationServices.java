@@ -1,7 +1,13 @@
 package com.android.support;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -13,7 +19,27 @@ public class LocationServices {
 
     private Context context;
     public GoogleApiClient mGoogleApiClient;
-    private Location lastLocation;
+    public static Location mLastLocation;
+
+//    public LocationServices(Context context) {
+//        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+//        LocationListener locationListener = new LocationListener() {
+//            public void onLocationChanged(Location location) {
+//                mLastLocation = location;
+//            }
+//
+//            public void onStatusChanged(String provider, int status, Bundle extras) {
+//            }
+//
+//            public void onProviderEnabled(String provider) {
+//            }
+//
+//            public void onProviderDisabled(String provider) {
+//            }
+//        };
+//
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+//    }
 
     public LocationServices(Context context, GoogleApiClient.ConnectionCallbacks connectionCallbacks, GoogleApiClient.OnConnectionFailedListener onConnectionFailedListener) {
         this.context = context;
@@ -30,13 +56,6 @@ public class LocationServices {
         }
     }
 
-    public Location getLastLocation() {
-        return lastLocation;
-    }
-
-    public void setLastLocation(Location lastLocation) {
-        this.lastLocation = lastLocation;
-    }
 
     public void connect() {
         mGoogleApiClient.connect();

@@ -101,7 +101,6 @@ public class Global extends MultiDexApplication {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(config);
-
     }
 
 
@@ -595,15 +594,14 @@ public class Global extends MultiDexApplication {
         // this.
     }
 
-    public static Location getCurrLocation(Activity activity) {
+    public static Location getCurrLocation(Activity activity, boolean reload) {
 
         if (locationServices == null) {
             locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
                 @Override
                 public void onConnected(@Nullable Bundle bundle) {
-                    Location mLastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
+                    LocationServices.mLastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
                             locationServices.mGoogleApiClient);
-                    locationServices.setLastLocation(mLastLocation);
                     locationServices.disconnect();
                     synchronized (locationServices) {
                         locationServices.notifyAll();
@@ -623,7 +621,7 @@ public class Global extends MultiDexApplication {
 
         }
         synchronized (locationServices) {
-            if (locationServices.getLastLocation() == null) {
+            if (LocationServices.mLastLocation == null || reload) {
                 locationServices.connect();
                 try {
                     locationServices.wait(15000);
@@ -632,10 +630,10 @@ public class Global extends MultiDexApplication {
                 }
             }
         }
-        if (locationServices.getLastLocation() == null) {
-            return new Location("");
+        if (LocationServices.mLastLocation == null) {
+            LocationServices.mLastLocation = new Location("");
         }
-        return locationServices.getLastLocation();
+        return LocationServices.mLastLocation;
     }
 
     public static String base64QRCode(String ivuLottoNumber, String ivuLottoDrawDate) {

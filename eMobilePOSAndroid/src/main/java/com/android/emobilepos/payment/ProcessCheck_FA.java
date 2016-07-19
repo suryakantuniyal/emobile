@@ -445,7 +445,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.pay_email = field[CHECK_EMAIL].getText().toString();
         payment.pay_check = this.field[CHECK_NUMBER].getText().toString();
 
-        Location location = Global.getCurrLocation(activity);
+        Location location = Global.getCurrLocation(activity, false);
         payment.pay_latitude = String.valueOf(location.getLatitude());
         payment.pay_longitude = String.valueOf(location.getLongitude());
 
@@ -638,7 +638,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.processed = "1";
         payment.pay_check = this.field[CHECK_NUMBER].getText().toString();
 
-        Location location = Global.getCurrLocation(activity);
+        Location location = Global.getCurrLocation(activity, false);
         payment.pay_latitude = String.valueOf(location.getLatitude());
         payment.pay_longitude = String.valueOf(location.getLongitude());
 

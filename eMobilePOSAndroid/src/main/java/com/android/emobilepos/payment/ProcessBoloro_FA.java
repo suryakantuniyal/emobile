@@ -223,7 +223,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         }
 
 
-        Location location = Global.getCurrLocation(activity);
+        Location location = Global.getCurrLocation(activity, false);
         payment.pay_latitude = String.valueOf(location.getLatitude());
         payment.pay_longitude = String.valueOf(location.getLongitude());
 

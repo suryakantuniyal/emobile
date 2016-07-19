@@ -127,7 +127,7 @@ public class Payment {
         pay_date = date;
 
         emp_id = myPref.getEmpID();
-        Location currLocation = Global.getCurrLocation(activity);
+        Location currLocation = Global.getCurrLocation(activity, false);
         pay_latitude = String.valueOf(currLocation.getLatitude());
         pay_longitude = String.valueOf(currLocation.getLongitude());
 
@@ -199,7 +199,7 @@ public class Payment {
                 Tax2_name = taxName2;
             }
         }
-        Location currLocation = Global.getCurrLocation(activity);
+        Location currLocation = Global.getCurrLocation(activity, false);
         pay_latitude = String.valueOf(currLocation.getLatitude());
         pay_longitude = String.valueOf(currLocation.getLongitude());
         is_refund = isRefund;
