@@ -611,7 +611,9 @@ public class Global extends MultiDexApplication {
                         values[1] = String.valueOf(mLastLocation.getLongitude());
                     }
                     locationServices.disconnect();
-                    locationServices.notifyAll();
+                    synchronized (locationServices) {
+                        locationServices.notifyAll();
+                    }
                 }
 
                 @Override
