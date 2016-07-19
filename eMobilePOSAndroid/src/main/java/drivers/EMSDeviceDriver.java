@@ -83,7 +83,7 @@ import plaintext.EMSPlainTextHelper;
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = true;
+    public static final boolean PRINT_TO_LOG = false;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
@@ -349,7 +349,7 @@ public class EMSDeviceDriver {
             // windows-1252
             port.writePort(str.getBytes(), 0, str.length());
         } else if (isLargeFont) {
-            ArrayList<byte[]> commands = new ArrayList<byte[]>();
+            ArrayList<byte[]> commands = new ArrayList<>();
             commands.add(new byte[]{0x1b, 0x40}); // Initialization
             byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
             characterheightExpansion[2] = 48;
@@ -362,7 +362,7 @@ public class EMSDeviceDriver {
             byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
             port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
         } else {
-            ArrayList<byte[]> commands = new ArrayList<byte[]>();
+            ArrayList<byte[]> commands = new ArrayList<>();
             commands.add(new byte[]{0x1b, 0x40}); // Initialization
             byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
             characterheightExpansion[2] = 48;
@@ -953,7 +953,7 @@ public class EMSDeviceDriver {
                     int size = arrayList.size();
                     for (int i = 0; i < size; i++) {
 
-                        byteArray[i] = arrayList.get(i).byteValue();
+                        byteArray[i] = arrayList.get(i);
 
                     }
                     try {
@@ -1047,8 +1047,8 @@ public class EMSDeviceDriver {
         Canvas c = new Canvas(b);
         v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
         v.draw(c);
-        int margins = new Double(PAPER_WIDTH * .10).intValue();
-        float ratio = new Integer(PAPER_WIDTH - margins).floatValue() / new Integer(b.getWidth()).floatValue();
+        int margins = Double.valueOf(PAPER_WIDTH * .10).intValue();
+        float ratio = Integer.valueOf(PAPER_WIDTH - margins).floatValue() / Integer.valueOf(b.getWidth()).floatValue();
         int width = Math.round(ratio * b.getWidth());
         int height = Math.round(ratio * b.getHeight());
         b = Bitmap.createScaledBitmap(b, width, height, true);
@@ -1103,7 +1103,7 @@ public class EMSDeviceDriver {
                     int size = arrayList.size();
                     for (int i = 0; i < size; i++) {
 
-                        byteArray[i] = arrayList.get(i).byteValue();
+                        byteArray[i] = arrayList.get(i);
 
                     }
                     try {
@@ -1558,7 +1558,7 @@ public class EMSDeviceDriver {
 //            }
 //            sb.setLength(0);
 
-            int m = 0;
+            int m;
             for (int i = 0; i < size; i++) {
 
                 if (orders.get(i).getHasAddon().equals("1")) {
@@ -1632,8 +1632,8 @@ public class EMSDeviceDriver {
 
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             StringBuilder sb = new StringBuilder();
-            String[] rightInfo = new String[]{};
-            List<String[]> productInfo = new ArrayList<String[]>();
+            String[] rightInfo;
+            List<String[]> productInfo;
             printPref = myPref.getPrintingPreferences();
 
             InvoicesHandler invHandler = new InvoicesHandler(activity);
@@ -1717,8 +1717,6 @@ public class EMSDeviceDriver {
 
         } catch (JAException e) {
             e.printStackTrace();
-        } finally {
-
         }
     }
 
@@ -1734,8 +1732,8 @@ public class EMSDeviceDriver {
             ProductsHandler productDBHandler = new ProductsHandler(activity);
             // String value = new String();
             HashMap<String, String> map;
-            double ordTotal = 0, totalSold = 0, totalReturned = 0, totalDispached = 0, totalLines = 0, returnAmount = 0,
-                    subtotalAmount = 0;
+            double ordTotal = 0, totalSold = 0, totalReturned = 0, totalDispached = 0, totalLines = 0, returnAmount,
+                    subtotalAmount;
 
             int size = myConsignment.size();
             setPaperWidth(lineWidth);
@@ -1861,7 +1859,7 @@ public class EMSDeviceDriver {
             printPref = myPref.getPrintingPreferences();
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             StringBuilder sb = new StringBuilder();
-            String prodDesc = "";
+            String prodDesc;
 
             int size = c.getCount();
             setPaperWidth(lineWidth);
@@ -1990,7 +1988,7 @@ public class EMSDeviceDriver {
             // SQLiteDatabase db = new DBManager(activity).openReadableDB();
             ProductsHandler productDBHandler = new ProductsHandler(activity);
             HashMap<String, String> map;
-            String prodDesc = "";
+            String prodDesc;
 
             int size = myConsignment.size();
             setPaperWidth(lineWidth);
@@ -2324,12 +2322,12 @@ public class EMSDeviceDriver {
         MyPreferences myPreferences = new MyPreferences(activity);
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", myPreferences.getEmpName(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
-        sb.append("From: " + shift.get(7)); //startTime
+        sb.append("From: ").append(shift.get(7)); //startTime
         sb.append(textHandler.newLines(1));
         if (shift.get(8).isEmpty()) {
-            sb.append("To: " + shift.get(9)); //display Open
+            sb.append("To: ").append(shift.get(9)); //display Open
         } else {
-            sb.append("To: " + shift.get(8)); //show endTime
+            sb.append("To: ").append(shift.get(8)); //show endTime
 
         }
         sb.append(textHandler.newLines(2));
