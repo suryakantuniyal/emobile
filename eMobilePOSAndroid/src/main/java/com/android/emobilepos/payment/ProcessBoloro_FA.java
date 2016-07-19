@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.location.Location;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
@@ -222,9 +223,9 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         }
 
 
-        String[] location = Global.getCurrLocation(activity);
-        payment.pay_latitude = location[0];
-        payment.pay_longitude = location[1];
+        Location location = Global.getCurrLocation(activity);
+        payment.pay_latitude = String.valueOf(location.getLatitude());
+        payment.pay_longitude = String.valueOf(location.getLongitude());
 
 
         if (Global.isIvuLoto) {

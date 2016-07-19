@@ -1,6 +1,7 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
+import android.location.Location;
 import android.text.TextUtils;
 
 import com.android.database.DrawInfoHandler;
@@ -126,9 +127,9 @@ public class Payment {
         pay_date = date;
 
         emp_id = myPref.getEmpID();
-        String[] location = Global.getCurrLocation(activity);
-        pay_latitude = location[0];
-        pay_longitude = location[1];
+        Location currLocation = Global.getCurrLocation(activity);
+        pay_latitude = String.valueOf(currLocation.getLatitude());
+        pay_longitude = String.valueOf(currLocation.getLongitude());
 
     }
 
@@ -198,9 +199,9 @@ public class Payment {
                 Tax2_name = taxName2;
             }
         }
-        String[] location = Global.getCurrLocation(activity);
-        pay_latitude = location[0];
-        pay_longitude = location[1];
+        Location currLocation = Global.getCurrLocation(activity);
+        pay_latitude = String.valueOf(currLocation.getLatitude());
+        pay_longitude = String.valueOf(currLocation.getLongitude());
         is_refund = isRefund;
         pay_type = paymentType;
 

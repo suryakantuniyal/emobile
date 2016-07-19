@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -1145,9 +1146,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.ord_comment = global.getSelectedComments();
         order.ord_po = global.getSelectedPO();
 
-        String[] location = Global.getCurrLocation(activity);
-        order.ord_latitude = location[0];
-        order.ord_longitude = location[1];
+        Location currLocation = Global.getCurrLocation(activity);
+        order.ord_latitude = String.valueOf(currLocation.getLatitude());
+        order.ord_longitude = String.valueOf(currLocation.getLongitude());
 
         return order;
     }

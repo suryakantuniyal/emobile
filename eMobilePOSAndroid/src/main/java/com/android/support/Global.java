@@ -595,10 +595,7 @@ public class Global extends MultiDexApplication {
         // this.
     }
 
-    public static String[] getCurrLocation(Activity activity) {
-        final String[] values = new String[2];
-        values[0] = "";
-        values[1] = "";
+    public static Location getCurrLocation(Activity activity) {
 
         if (locationServices == null) {
             locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
@@ -606,10 +603,7 @@ public class Global extends MultiDexApplication {
                 public void onConnected(@Nullable Bundle bundle) {
                     Location mLastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
                             locationServices.mGoogleApiClient);
-                    if (mLastLocation != null) {
-                        values[0] = String.valueOf(mLastLocation.getLatitude());
-                        values[1] = String.valueOf(mLastLocation.getLongitude());
-                    }
+                    locationServices.setLastLocation(mLastLocation);
                     locationServices.disconnect();
                     synchronized (locationServices) {
                         locationServices.notifyAll();
@@ -629,32 +623,19 @@ public class Global extends MultiDexApplication {
 
         }
         synchronized (locationServices) {
-            locationServices.connect();
-            try {
-                locationServices.wait(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (locationServices.getLastLocation() == null) {
+                locationServices.connect();
+                try {
+                    locationServices.wait(15000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
-
-//        String bestProvider;
-
-
-//        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-//        Criteria criteria = new Criteria();
-//        bestProvider = lm.getBestProvider(criteria, false);
-//
-//        if (bestProvider == null)
-//            return values;
-//        Location location = lm.getLastKnownLocation(bestProvider);
-//        if (location == null)
-//            return values;
-//        else {
-//            values[0] = Double.toString(location.getLatitude());
-//            values[1] = Double.toString(location.getLongitude());
-//        }
-        return values;
+        if (locationServices.getLastLocation() == null) {
+            return new Location("");
+        }
+        return locationServices.getLastLocation();
     }
 
     public static String base64QRCode(String ivuLottoNumber, String ivuLottoDrawDate) {

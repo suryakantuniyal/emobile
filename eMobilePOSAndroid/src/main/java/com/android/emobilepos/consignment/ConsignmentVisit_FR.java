@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,7 +40,6 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.TaxesCalculator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -324,9 +324,9 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         global.order.total_lines = Integer.toString(global.orderProducts.size());
         global.order.ord_signature = encodedImage;
 
-        String[] location = Global.getCurrLocation(activity);
-        global.order.ord_latitude = location[0];
-        global.order.ord_longitude = location[1];
+        Location location = Global.getCurrLocation(activity);
+        global.order.ord_latitude = String.valueOf(location.getLatitude());
+        global.order.ord_longitude = String.valueOf(location.getLongitude());
         global.order.processed = "1";
         ordersHandler.insert(global.order);
 
