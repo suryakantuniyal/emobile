@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,12 +35,12 @@ import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -304,7 +305,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()|| myPref.isHandpoint()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000() || myPref.isHandpoint()) {
             cardSwipe.setChecked(true);
         }
     }
@@ -398,9 +399,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         payment.track_one = cardInfoManager.getEncryptedAESTrack1();
         payment.track_two = cardInfoManager.getEncryptedAESTrack2();
 
-        String[] location = Global.getCurrLocation(activity);
-        payment.pay_latitude = location[0];
-        payment.pay_longitude = location[1];
+        Location location = Global.getCurrLocation(activity, false);
+        payment.pay_latitude = String.valueOf(location.getLatitude());
+        payment.pay_longitude = String.valueOf(location.getLongitude());
+
         payment.card_type = cardType;
 
         if (Global.isIvuLoto) {
