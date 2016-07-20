@@ -2,6 +2,8 @@ package com.android.emobilepos.ordering;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -32,6 +35,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -76,6 +80,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         printAllReceiptBtn.setOnClickListener(this);
         checkoutBtn.setOnClickListener(this);
         printReceiptBtn.setOnClickListener(this);
+        File imgFile = new File(myPref.getAccountLogoPath());
+        if (imgFile.exists()) {
+            Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            ImageView imageView = (ImageView) detailView.findViewById(R.id.logoimageView);
+            imageView.setImageBitmap(bitmap);
+        }
         TextView header1 = (TextView) detailView.findViewById(R.id.memo_headerLine1textView);
         TextView header2 = (TextView) detailView.findViewById(R.id.memo_headerLine2textView16);
         TextView header3 = (TextView) detailView.findViewById(R.id.memo_headerLine3textView18);

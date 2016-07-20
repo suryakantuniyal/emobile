@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -34,7 +35,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
 import com.android.support.Post;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -445,9 +445,9 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.pay_email = field[CHECK_EMAIL].getText().toString();
         payment.pay_check = this.field[CHECK_NUMBER].getText().toString();
 
-        String[] location = Global.getCurrLocation(activity);
-        payment.pay_latitude = location[0];
-        payment.pay_longitude = location[1];
+        Location location = Global.getCurrLocation(activity, false);
+        payment.pay_latitude = String.valueOf(location.getLatitude());
+        payment.pay_longitude = String.valueOf(location.getLongitude());
 
 
         if (Global.isIvuLoto) {
@@ -638,10 +638,9 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.processed = "1";
         payment.pay_check = this.field[CHECK_NUMBER].getText().toString();
 
-        String[] location = Global.getCurrLocation(activity);
-        payment.pay_latitude = location[0];
-        payment.pay_longitude = location[1];
-
+        Location location = Global.getCurrLocation(activity, false);
+        payment.pay_latitude = String.valueOf(location.getLatitude());
+        payment.pay_longitude = String.valueOf(location.getLongitude());
 
         if (Global.isIvuLoto) {
             payment.IvuLottoNumber = extras.getString("IvuLottoNumber");
