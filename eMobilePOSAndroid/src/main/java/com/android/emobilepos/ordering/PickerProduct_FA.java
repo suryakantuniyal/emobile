@@ -664,6 +664,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderedProducts.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
 
         orderedProducts.prod_taxValue = taxTotal;
+        if (Double.parseDouble(orderedProducts.overwrite_price) <= Double.parseDouble(disTotal)) {
+            disTotal = orderedProducts.overwrite_price;
+        }
         orderedProducts.discount_value = disTotal;
 
 
@@ -985,6 +988,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         // Still need to do add the appropriate tax/discount value
         ord.prod_taxValue = taxTotal;
+        if (Double.parseDouble(ord.overwrite_price) <= Double.parseDouble(disTotal)) {
+            disTotal = ord.overwrite_price;
+        }
         ord.discount_value = disTotal;
         ord.prod_taxtype = orderProduct.tax_type;
 

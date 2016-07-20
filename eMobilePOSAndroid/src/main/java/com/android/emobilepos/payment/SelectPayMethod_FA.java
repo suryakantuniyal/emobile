@@ -40,7 +40,6 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -228,7 +227,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     public void onPause() {
         super.onPause();
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean isScreenOn = powerManager.isScreenOn();
+        boolean isScreenOn;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+            isScreenOn = powerManager.isInteractive();
+        }else{
+            isScreenOn = powerManager.isScreenOn();
+        }
         if (!isScreenOn)
             global.loggedIn = false;
         global.startActivityTransitionTimer();
@@ -489,9 +493,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 holder.textLine2.setTag(name);
                 holder.textLine2.setText(name);
 
-                if (convertView != null) {
-                    convertView.setTag(holder);
-                }
+                convertView.setTag(holder);
 
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -725,7 +727,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             StoredPayments_DB dbStoredPayments = new StoredPayments_DB(activity);
             dbStoredPayments.deletePaymentFromJob(job_id);
         }
-        HashMap<String, String> parsedMap = new HashMap<String, String>();
+        HashMap<String, String> parsedMap;
         PaymentsHandler payHandler = new PaymentsHandler(activity);
         List<Payment> listVoidPayments = payHandler.getOrderPayments(job_id);
         int size = listVoidPayments.size();
@@ -735,7 +737,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler(activity);
-            String xml = null;
+            String xml;
             InputSource inSource;
             SAXParser sp;
             XMLReader xr;
@@ -920,18 +922,18 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             public void onClick(View v) {
                 dlog.dismiss();
                 if (withPrintRequest) {
-//                    if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-//                        processInquiry(true);
-//                    } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-//                        processInquiry(false);
-//                    } else {
-                    if (myPref.getPreferences(MyPreferences.pref_enable_printing)
-                            && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
-                        showPrintDlg(false, false, emvContainer);
-                    } else if (overAllRemainingBalance <= 0) {
-                        finish();
+                    if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
+                        processInquiry(true);
+                    } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
+                        processInquiry(false);
+                    } else {
+                        if (myPref.getPreferences(MyPreferences.pref_enable_printing)
+                                && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
+                            showPrintDlg(false, false, emvContainer);
+                        } else if (overAllRemainingBalance <= 0) {
+                            finish();
+                        }
                     }
-//                    }
                 } else if (overAllRemainingBalance <= 0) {
                     finish();
                 }
@@ -1083,28 +1085,31 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             try {
                 String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
-                if (xml.equals(Global.TIME_OUT)) {
-                    errorMsg = "TIME OUT, would you like to try again?";
-                } else if (xml.equals(Global.NOT_VALID_URL)) {
-                    errorMsg = "Loyalty could not be processed....";
-                } else {
-                    InputSource inSource = new InputSource(new StringReader(xml));
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = "TIME OUT, would you like to try again?";
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = "Loyalty could not be processed....";
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    parsedMap = handler.getData();
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
 
-                    if (parsedMap != null && parsedMap.size() > 0
-                            && parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                        wasProcessed = true;
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                            wasProcessed = true;
                         /*
                          * xml = httpClient.postData(13, activity,
 						 * reqAddLoyalty); inSource = new InputSource(new
 						 * StringReader(xml)); xr.parse(inSource); parsedMap =
 						 * handler.getData();
-						 * 
+						 *
 						 * if (parsedMap != null && parsedMap.size() > 0 &&
 						 * parsedMap.get("epayStatusCode").equals("APPROVED")) {
 						 * wasProcessed = true; } else if (parsedMap != null &&
@@ -1115,10 +1120,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 						 * sb.toString(); } else errorMsg = xml;
 						 */
 
-                    } else if (parsedMap != null && parsedMap.size() > 0) {
-                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                    } else
-                        errorMsg = xml;
+                        } else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
                 }
 
             } catch (Exception e) {
@@ -1144,7 +1150,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     private class processRewardAsync extends AsyncTask<Void, Void, Void> {
 
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private HashMap<String, String> parsedMap = new HashMap<>();
         private boolean wasProcessed = false;
         private String errorMsg = "Reward could not be processed.";
 
@@ -1168,26 +1174,30 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             try {
                 String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
                 Global.generateDebugFile(reqChargeLoyaltyReward);
-                if (xml.equals(Global.TIME_OUT)) {
-                    errorMsg = "TIME OUT, would you like to try again?";
-                } else if (xml.equals(Global.NOT_VALID_URL)) {
-                    errorMsg = "Loyalty could not be processed....";
-                } else {
-                    InputSource inSource = new InputSource(new StringReader(xml));
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = "TIME OUT, would you like to try again?";
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = "Loyalty could not be processed....";
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    parsedMap = handler.getData();
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
 
-                    if (parsedMap != null && parsedMap.size() > 0
-                            && parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                        wasProcessed = true;
-                    } else if (parsedMap != null && parsedMap.size() > 0) {
-                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                    } else
-                        errorMsg = xml;
+                        if (parsedMap != null && parsedMap.size() > 0
+                                && parsedMap.get("epayStatusCode").equals("APPROVED")) {
+                            wasProcessed = true;
+                        } else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
                 }
 
             } catch (Exception e) {
@@ -1202,6 +1212,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             if (wasProcessed) // payment processing succeeded
             {
+                String balance = (parsedMap.get("CardBalance") == null ? "0.0" : parsedMap.get("CardBalance"));
+                Global.rewardCardInfo.setOriginalTotalAmount(balance);
                 loyaltyRewardPayment.pay_issync = "1";
                 paymentHandlerDB.insert(loyaltyRewardPayment);
                 showBalancePrompt("Card was processed");

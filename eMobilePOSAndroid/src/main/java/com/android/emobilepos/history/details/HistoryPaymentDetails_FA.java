@@ -12,7 +12,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.text.InputType;
@@ -43,7 +42,6 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
@@ -53,7 +51,6 @@ import org.xml.sax.XMLReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -67,6 +64,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 
 public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -394,9 +392,16 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
-            Global.mainPrinterManager.currentDevice.loadCardReader(this, false);
-            Global.mainPrinterManager.currentDevice.saleReversal(paymentToBeRefunded, paymentToBeRefunded.pay_transid);
+            EMSDeviceManagerPrinterDelegate device;
+            if (Global.btSwiper != null && Global.btSwiper.currentDevice != null) {
+                device = Global.btSwiper.currentDevice;
+            } else {
+                device = Global.mainPrinterManager.currentDevice;
+            }
+            if (device != null) {
+                device.loadCardReader(this, false);
+                device.saleReversal(paymentToBeRefunded, paymentToBeRefunded.pay_transid);
+            }
         } else if (paymethod_name.equals("Card")) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
             new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.card_type, null));

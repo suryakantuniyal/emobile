@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,7 +13,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -321,6 +319,13 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (myCursor != null || !myCursor.isClosed()) {
+            myCursor.close();
+        }
+    }
 
     public class CustomCursorAdapter extends CursorAdapter {
         LayoutInflater inflater;
