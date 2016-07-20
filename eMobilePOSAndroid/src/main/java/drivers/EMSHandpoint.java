@@ -118,7 +118,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
         InputSource inSource = new InputSource(new StringReader(xml));
         String workingKey = "";
-        SAXParser sp = null;
+        SAXParser sp;
         try {
             sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
@@ -168,7 +168,12 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
             if (hapi == null) {
                 hapi = HapiFactory.getAsyncInterface(EMSHandpoint.this, activity).defaultSharedSecret(sharedSecret);
             }
-            discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
+            if (!TextUtils.isEmpty(sharedSecret)) {
+                discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
+            } else {
+                dismissDialog();
+                edm.driverDidNotConnectToDevice(EMSHandpoint.this, msg, true);
+            }
         }
     }
 
@@ -337,7 +342,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     public void discoverDevices(String deviceName, String macAddress) {
         device = new Device(deviceName, macAddress, "", ConnectionMethod.BLUETOOTH);
-        if (device != null && !TextUtils.isEmpty(device.getAddress()) && !TextUtils.isEmpty(sharedSecret)) {
+        if (!TextUtils.isEmpty(device.getAddress()) && !TextUtils.isEmpty(sharedSecret)) {
             EMSHandpoint.hapi.useDevice(EMSHandpoint.device);
             connected = true;
             if (myProgressDialog != null && myProgressDialog.isShowing()) {
