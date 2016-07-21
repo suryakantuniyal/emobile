@@ -43,6 +43,7 @@ import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;

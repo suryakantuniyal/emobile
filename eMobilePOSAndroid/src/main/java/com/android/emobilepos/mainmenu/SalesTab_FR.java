@@ -53,10 +53,8 @@ import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class SalesTab_FR extends Fragment {
     private SalesMenuAdapter myAdapter;
