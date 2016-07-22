@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.26"
+            versionName "1.2.0.27"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -58,7 +58,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.26"
+            versionName "1.2.0.27"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -66,7 +66,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.26"
+            versionName "1.2.0.27"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -74,7 +74,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.37"
+            versionName "1.1.1.38"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -82,7 +82,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.37"
+            versionName "1.1.1.38"
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
@@ -112,13 +112,6 @@ dependencies {
     compile(name: 'gridHeaderLibrary-release', ext: 'aar')
     compile(name: 'nostraLoader-release', ext: 'aar')
     compile(name: 'viewPagerIndicator-release', ext: 'aar')
-//        compile(name: 'play-services-release', ext: 'aar')
-//        compile(name: 'play-services-base-release', ext: 'aar')
-//        compile(name: 'play-services-location-release', ext: 'aar')
-//        compile(name: 'play-services-maps-release', ext: 'aar')
-//        compile(name: 'play-services-gcm-release', ext: 'aar')
-
-
     compile files('libs/Android_Platform_Adapter.jar')
     compile files('libs/bouncycastle.jar')
     compile files('libs/commons-codec-1.4.0.jar')
@@ -173,4 +166,3 @@ dependencies {
     compile 'com.google.firebase:firebase-core:9.2.1'
     compile 'com.google.android.gms:play-services:9.2.1'
 }
-//apply plugin: 'com.google.gms.google-services'

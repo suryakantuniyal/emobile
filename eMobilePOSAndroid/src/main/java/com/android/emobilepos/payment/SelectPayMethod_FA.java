@@ -230,7 +230,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         boolean isScreenOn;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
             isScreenOn = powerManager.isInteractive();
-        }else{
+        } else {
             isScreenOn = powerManager.isScreenOn();
         }
         if (!isScreenOn)
@@ -597,7 +597,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(isReprint, emvContainer);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, emvContainer);
 
             }
         });

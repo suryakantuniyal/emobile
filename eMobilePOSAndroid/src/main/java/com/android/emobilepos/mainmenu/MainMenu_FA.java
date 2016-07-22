@@ -114,7 +114,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         else
             tvStoreForward.setVisibility(View.GONE);
 
-        new autoConnectPrinter().execute();
+        new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         super.onResume();
     }
 
