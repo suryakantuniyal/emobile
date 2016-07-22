@@ -54,6 +54,12 @@ android {
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
+            repositories {
+                maven { url 'https://maven.fabric.io/public' }
+                flatDir {
+                    dirs 'libs'
+                }
+            }
         }
         icmpevo {
             minSdkVersion 15
@@ -62,6 +68,12 @@ android {
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
+            repositories {
+                maven { url 'https://maven.fabric.io/public' }
+                flatDir {
+                    dirs 'src/icmpevo/libs'
+                }
+            }
         }
         emsblue {
             minSdkVersion 15
@@ -70,6 +82,12 @@ android {
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
+            repositories {
+                maven { url 'https://maven.fabric.io/public' }
+                flatDir {
+                    dirs 'libs'
+                }
+            }
         }
         ivupos {
             minSdkVersion 15
@@ -78,6 +96,12 @@ android {
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
+            repositories {
+                maven { url 'https://maven.fabric.io/public' }
+                flatDir {
+                    dirs 'libs'
+                }
+            }
         }
         restoff {
             minSdkVersion 15
@@ -86,6 +110,12 @@ android {
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
+            repositories {
+                maven { url 'https://maven.fabric.io/public' }
+                flatDir {
+                    dirs 'libs'
+                }
+            }
         }
         restoffivupos {
             minSdkVersion 15
@@ -94,6 +124,12 @@ android {
             versionCode 98
             targetSdkVersion 23
             multiDexEnabled = true
+            repositories {
+                maven { url 'https://maven.fabric.io/public' }
+                flatDir {
+                    dirs 'libs'
+                }
+            }
         }
     }
     buildTypes {
@@ -105,12 +141,7 @@ android {
     }
 }
 
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-    flatDir {
-        dirs 'libs'
-    }
-}
+
 dependencies {
     compile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
     compile(name: 'dragSortLibrary-release', ext: 'aar')
