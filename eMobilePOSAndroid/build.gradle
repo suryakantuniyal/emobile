@@ -55,6 +55,14 @@ android {
             targetSdkVersion 23
             multiDexEnabled = true
         }
+        icmpevo {
+            minSdkVersion 15
+            applicationId 'com.emobilepos.icmpevo.app'
+            versionName "1.2.0.27"
+            versionCode 98
+            targetSdkVersion 23
+            multiDexEnabled = true
+        }
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
