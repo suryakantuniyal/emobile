@@ -43,7 +43,6 @@ import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
@@ -83,6 +82,7 @@ import io.realm.RealmConfiguration;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
+    public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
     private static com.android.support.LocationServices locationServices;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
