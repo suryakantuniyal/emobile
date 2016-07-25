@@ -56,13 +56,13 @@ android {
             multiDexEnabled = true
             repositories {
                 maven { url 'https://maven.fabric.io/public' }
-//                flatDir {
-//                    dirs 'libs'
-//                }
+                flatDir {
+                    dirs 'libs', 'evosnaplibs'
+                }
             }
 
             dependencies {
-//                compile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
+                compile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
 
                 compile(name: 'dragSortLibrary-release', ext: 'aar')
                 compile(name: 'mDOpenCV-release', ext: 'aar')
@@ -136,12 +136,12 @@ android {
             repositories {
                 maven { url 'https://maven.fabric.io/public' }
                 flatDir {
-                    dirs 'src/icmpevo/libs'
+                    dirs 'src/icmpevo/libs', 'src/icmpevo/libs/evosnaplibs'
                 }
             }
 
             dependencies {
-//                compile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
+                compile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
                 compile(name: 'dragSortLibrary-release', ext: 'aar')
                 compile(name: 'mDOpenCV-release', ext: 'aar')
                 compile(name: 'honeywell-release', ext: 'aar')
