@@ -84,7 +84,13 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         Bundle extras = activity.getIntent().getExtras();
         if (extras != null && extras.getBoolean("unsynched_items", false))
             myBar.setSelectedNavigationItem(1);
-        global.getCurrLocation(this, true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                global.getCurrLocation(MainMenu_FA.this, true);
+            }
+        }).start();
+
         hasBeenCreated = true;
     }
 
