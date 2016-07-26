@@ -112,7 +112,6 @@ public class MyPreferences {
     public static final String pref_use_loyal_patron = "pref_use_loyal_patron";
     public static final String pref_pay_with_tupyx = "pref_pay_with_tupyx";
     public static final String pref_mw_with_genius = "pref_mw_with_genius";
-    public static final String pref_mw_with_evo = "pref_mw_with_evo";
     public static final String pref_config_genius_peripheral = "pref_config_genius_peripheral";
     public static final String pref_use_clerks = "pref_use_clerks";
     public static final String pref_enable_location_inventory = "pref_enable_location_inventory";

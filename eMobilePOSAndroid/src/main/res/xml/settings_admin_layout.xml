@@ -231,10 +231,7 @@
             android:key="pref_pay_with_tupyx"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_pay_with_tupyx" />
-        <CheckBoxPreference
-            android:key="pref_mw_with_evo"
-            android:layout="@layout/settings_custom_layout"
-            android:title="@string/config_mw_with_evo" />
+
         <CheckBoxPreference
             android:key="pref_mw_with_genius"
             android:layout="@layout/settings_custom_layout"

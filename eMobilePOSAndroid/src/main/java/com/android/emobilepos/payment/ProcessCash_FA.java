@@ -32,20 +32,14 @@ import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Payment;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.NumberUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-
-import util.NumberUtil;
 
 public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener {
     //    private ProgressDialog myProgressDialog;

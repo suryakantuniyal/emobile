@@ -395,16 +395,15 @@ public class ProductsHandler {
 
             }
             if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
-                sb.append("FROM Products p " +
-                        "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
+                sb.append("FROM Products p " + "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                         "INNER JOIN ProdCatXref xr ON p.prod_id = xr.prod_id  " +
                         "INNER JOIN Categories c ON c.cat_id = xr.cat_id AND " +
-                        "xr.cat_id = '" + Global.cat_id + "'");
+                        "xr.cat_id = '").append(Global.cat_id).append("'");
             } else {
                 sb.append("FROM Products p " +
                         "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                         "INNER JOIN Categories c ON c.cat_id = p.cat_id AND " +
-                        "p.cat_id = '" + Global.cat_id + "'");
+                        "p.cat_id = '").append(Global.cat_id).append("'");
             }
 
 

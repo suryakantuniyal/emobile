@@ -884,7 +884,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
-                                    !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
+                                    !activity.getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME))) {
                                 myPref.setSwiperType(Global.ISMP);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
@@ -927,7 +927,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.btSwiper.loadDrivers(activity, Global.HANDPOINT, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
-                                    myPref.getPreferences(MyPreferences.pref_mw_with_evo)) {
+                                   activity.getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
                                 myPref.setSwiperType(Global.ICMPEVO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);

@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.view.View;
-import android.view.Window;
 
 import com.android.support.Global;
 import com.android.support.MyPreferences;
