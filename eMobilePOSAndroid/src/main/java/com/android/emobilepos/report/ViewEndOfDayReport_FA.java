@@ -1,11 +1,9 @@
 package com.android.emobilepos.report;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -22,7 +20,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportEndDayAdapter;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.android.support.MyPreferences;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

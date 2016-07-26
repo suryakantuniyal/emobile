@@ -6,9 +6,6 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -19,8 +16,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ShiftDetailsAdapter;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-
-import java.util.Date;
 
 public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar implements View.OnClickListener {
 	

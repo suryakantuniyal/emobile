@@ -82,6 +82,7 @@ import io.realm.RealmConfiguration;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
+    public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
     private static com.android.support.LocationServices locationServices;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
@@ -600,10 +601,17 @@ public class Global extends MultiDexApplication {
             locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
                 @Override
                 public void onConnected(@Nullable Bundle bundle) {
-                    LocationServices.mLastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
+                    Location lastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
                             locationServices.mGoogleApiClient);
+                    if (lastLocation == null) {
+                        LocationServices.mLastLocation = new Location("");
+                    } else {
+                        LocationServices.mLastLocation = lastLocation;
+                    }
                     locationServices.disconnect();
-                    synchronized (locationServices) {
+                    synchronized (locationServices)
+
+                    {
                         locationServices.notifyAll();
                     }
                 }
@@ -620,7 +628,10 @@ public class Global extends MultiDexApplication {
             });
 
         }
-        synchronized (locationServices) {
+
+        synchronized (locationServices)
+
+        {
             if (LocationServices.mLastLocation == null || reload) {
                 locationServices.connect();
                 try {
@@ -630,9 +641,13 @@ public class Global extends MultiDexApplication {
                 }
             }
         }
-        if (LocationServices.mLastLocation == null) {
+
+        if (LocationServices.mLastLocation == null)
+
+        {
             LocationServices.mLastLocation = new Location("");
         }
+
         return LocationServices.mLastLocation;
     }
 

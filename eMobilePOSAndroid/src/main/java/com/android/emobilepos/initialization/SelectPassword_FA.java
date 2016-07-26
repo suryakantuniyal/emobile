@@ -3,7 +3,6 @@ package com.android.emobilepos.initialization;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.Window;
@@ -23,8 +22,8 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.initialization_register_password);
 
 

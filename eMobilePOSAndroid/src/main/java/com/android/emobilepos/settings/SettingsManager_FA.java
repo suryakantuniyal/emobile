@@ -38,7 +38,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.dao.DeviceTableDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
@@ -47,7 +46,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
-import com.android.emobilepos.models.Device;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DeviceUtils;
@@ -59,12 +57,10 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class SettingsManager_FA extends BaseFragmentActivityActionBar {
@@ -882,7 +878,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
-                                    !myPref.getPreferences(MyPreferences.pref_mw_with_evo))) {
+                                    !activity.getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME))) {
                                 myPref.setSwiperType(Global.ISMP);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
@@ -925,7 +921,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 Global.btSwiper.loadDrivers(activity, Global.HANDPOINT, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
-                                    myPref.getPreferences(MyPreferences.pref_mw_with_evo)) {
+                                   activity.getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
                                 myPref.setSwiperType(Global.ICMPEVO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);

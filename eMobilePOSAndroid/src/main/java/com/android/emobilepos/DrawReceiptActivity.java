@@ -199,19 +199,13 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
                     }
 
                 } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
                     StringBuilder sb = new StringBuilder();
                     sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.onClick)]");
 
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     StringBuilder sb = new StringBuilder();
                     sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.onClick)]");
 
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(sb.toString(), false).build());
                 }
                 finish();
                 break;
