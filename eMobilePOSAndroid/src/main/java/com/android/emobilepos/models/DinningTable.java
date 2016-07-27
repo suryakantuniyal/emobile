@@ -11,7 +11,6 @@ import util.JsonUtils;
  * Created by Guarionex on 1/19/2016.
  */
 public class DinningTable extends RealmObject {
-    private static final Gson GSON = JsonUtils.getInstance();
 
     @SerializedName("mesa_id")
     @PrimaryKey
