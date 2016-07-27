@@ -81,7 +81,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
         // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.saveConsignButton:
-                new processAsync().execute();
+                new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 break;
         }
     }
@@ -206,7 +206,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 dlog.dismiss();
-                new printAsync().execute("");
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {
@@ -285,7 +285,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
             if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                 showPrintDlg(R.string.dlog_title_confirm, R.string.dlog_msg_want_to_print);
             else
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else
             finishConsignment();
 

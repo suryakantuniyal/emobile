@@ -32,12 +32,12 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
-import com.android.support.NumberUtils;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -378,34 +378,34 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
-                    && !cardReaderConnected) {
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
                 Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
-            } else if (_printer_type != -1 && (_printer_type == Global.STAR || _printer_type == Global.BAMBOO
-                    || _printer_type == Global.ZEBRA)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
-                        && !cardReaderConnected)
+            } else if (_printer_type != -1
+                    && (_printer_type == Global.STAR || _printer_type == Global.BAMBOO || _printer_type == Global.ZEBRA)) {
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null && !cardReaderConnected)
                     Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
             }
         }
         // }
         if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
-            ourIntentAction = getString(R.string.intentAction5);
+            ourIntentAction = getString(R.string.intentAction3);
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s(true, false)) {
+        } else if (myPref.isSam4s(true, false) || myPref.isPAT100()) {
             cardSwipe.setChecked(true);
-            _msrUsbSams = new EMSIDTechUSB(activity, msrCallBack);
-            if (_msrUsbSams.OpenDevice())
-                _msrUsbSams.StartReadingThread();
         } else if (myPref.isESY13P1()) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
                 Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
-        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isHandpoint() || myPref.isOT310() || myPref.isKDC5000()) {
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
+        } else if (myPref.isPAT215() && Global.btSwiper == null) {
+            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
+                Global.embededMSR.currentDevice.loadCardReader(msrCallBack, false);
+                cardSwipe.setChecked(false);
+            }
         }
     }
 
@@ -555,7 +555,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             generatedURL = payGate.paymentWithAction(PAYMENT_ACTION, wasReadFromReader, cardType, cardInfoManager);
 
-            new processAsync().execute(generatedURL);
+            new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
         } else {
             Global.showPrompt(activity, R.string.dlog_title_error, "Card has already been processed");
         }
@@ -685,7 +685,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(parsedMap);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parsedMap);
 
             }
         });

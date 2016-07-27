@@ -883,7 +883,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     productsAttrDb.insert(global.ordProdAttr);
 
                     if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
-                        new printAsync().execute(true);
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     }
 
                     DBManager dbManager = new DBManager(activity);
@@ -915,7 +915,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                     if (myPref
                             .getPreferences(MyPreferences.pref_restaurant_mode))
-                        new printAsync().execute(true);
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
                     DBManager dbManager = new DBManager(activity);
                     dbManager.synchSendOrdersOnHold(false, true);
@@ -936,7 +936,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordTaxesDB.insert(global.listOrderTaxes,
                                 global.order.ord_id);
 
-                    new OnHoldAsync().execute(CHECK_OUT_HOLD, voidOnHold);
+                    new OnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, CHECK_OUT_HOLD, voidOnHold);
                 }
             } else {
                 if (global.orderProducts.size() > 0 ||
@@ -964,7 +964,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     }
                 }
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode))
-                    new printAsync().execute(true);
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
             }
         }
@@ -994,7 +994,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
                             if (myPref
                                     .getPreferences(MyPreferences.pref_automatic_printing)) {
-                                new printAsync().execute(false);
+                                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                             } else
                                 showPrintDlg(false);
                         } else {
@@ -1050,7 +1050,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 .getPreferences(MyPreferences.pref_enable_printing)) {
                             if (myPref
                                     .getPreferences(MyPreferences.pref_automatic_printing)) {
-                                new printAsync().execute(false);
+                                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                             } else
                                 showPrintDlg(false);
                         } else
@@ -1677,7 +1677,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dinningTableOrder.setNumberOfGuest(mainLVAdapter.getSeatsAmount());
         dinningTableOrder.setOrderStartDate(new Date());
         DinningTableOrderDAO.insert(dinningTableOrder);
-        new printAsync().execute(true);
+        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
 
         if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
@@ -1782,7 +1782,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(false);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
 
             }
         });
@@ -1972,7 +1972,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref
                             .getPreferences(MyPreferences.pref_automatic_printing)) {
-                        new printAsync().execute(false);
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                     } else
                         showPrintDlg(false);
                 } else {
@@ -2033,7 +2033,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref
                             .getPreferences(MyPreferences.pref_automatic_printing)) {
-                        new printAsync().execute(false);
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                     } else
                         showPrintDlg(false);
                 } else

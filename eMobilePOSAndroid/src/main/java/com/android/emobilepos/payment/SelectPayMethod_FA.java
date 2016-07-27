@@ -298,7 +298,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                         showPrintDlg(false, false, null);
                     else
-                        new printAsync().execute(false);
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 } else {
                     if (Global.overallPaidAmount == 0)
                         setResult(-1);
@@ -959,7 +959,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 if ((emvContainer != null && emvContainer.getGeniusResponse() != null &&
                         emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("APPROVED")) ||
                         emvContainer == null || emvContainer.getGeniusResponse() == null) {
-                    new printAsync().execute(false);
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 }
             }
         }
@@ -1039,7 +1039,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     cardInfoManager);
             loyaltyRewardPayment.pay_amount = Global.loyaltyCharge;
 
-            new processLoyaltyAsync().execute();
+            new processLoyaltyAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             BigDecimal bdOrigAmount = new BigDecimal(cardInfoManager.getOriginalTotalAmount());
 
@@ -1055,7 +1055,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, wasSwiped, cardType,
                     cardInfoManager);
 
-            new processRewardAsync().execute();
+            new processRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
     }
@@ -1245,7 +1245,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                     if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                         showPrintDlg(false, false, null);
                     else
-                        new printAsync().execute(false);
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 } else {
                     finish();
                 }

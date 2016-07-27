@@ -78,7 +78,7 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
-        new processConnectionAsync().execute();
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
 

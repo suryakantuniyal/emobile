@@ -87,7 +87,7 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
     private void getOrders() {
         listOrdTypes = ordHandler.getOrderDayReport(clerk_id, mDate);
-        listSummary = new ArrayList<Order>();
+        listSummary = new ArrayList<>();
 
         BigDecimal returnAmount = new BigDecimal("0");
         BigDecimal salesAmount = new BigDecimal("0");
@@ -96,22 +96,34 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         for (Order ord : listOrdTypes) {
             switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
                 case RETURN:
-                    ord.ord_type_name = "Return";
+                    ord.ord_type_name = activity.getString(R.string.eod_report_return);
                     returnAmount = new BigDecimal(ord.ord_total);
                     break;
                 case ESTIMATE:
-                    ord.ord_type_name = "Estimate";
+                    ord.ord_type_name = activity.getString(R.string.eod_report_estimate);
                     break;
                 case ORDER:
-                    ord.ord_type_name = "Order";
+                    ord.ord_type_name = activity.getString(R.string.eod_report_order);
                     break;
                 case SALES_RECEIPT:
-                    ord.ord_type_name = "Sales Receipt";
+                    ord.ord_type_name = activity.getString(R.string.eod_report_salesreceipt);
                     salesAmount = new BigDecimal(ord.ord_total);
                     break;
                 case INVOICE:
-                    ord.ord_type_name = "Invoice";
+                    ord.ord_type_name = activity.getString(R.string.eod_report_invoice);
                     invoiceAmount = new BigDecimal(ord.ord_total);
+                    break;
+                case CONSIGNMENT_FILLUP:
+                    ord.ord_type_name = activity.getString(R.string.eod_report_consignment_fillup);
+                    break;
+                case CONSIGNMENT_PICKUP:
+                    ord.ord_type_name = activity.getString(R.string.eod_report_consignment_pickup);
+                    break;
+                case CONSIGNMENT_INVOICE:
+                    ord.ord_type_name = activity.getString(R.string.eod_report_consignment_invoice);
+                    break;
+                case CONSIGNMENT_RETURN:
+                    ord.ord_type_name = activity.getString(R.string.eod_report_consignment_return);
                     break;
             }
         }
@@ -393,37 +405,37 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
 
         switch ((int) getHeaderId(position)) {
             case TYPE_SUMMARY:
-                mHeaderHolder.tvHeaderTitle.setText("Summary");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_summary);
                 break;
             case TYPE_SHIFTS:
-                mHeaderHolder.tvHeaderTitle.setText("Shifts");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_shifts);
                 break;
             case TYPE_ORD_TYPES:
-                mHeaderHolder.tvHeaderTitle.setText("Order Types");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_ordertypes);
                 break;
             case TYPE_ITEMS_SOLD:
-                mHeaderHolder.tvHeaderTitle.setText("Items Sold");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_itemsold);
                 break;
             case TYPE_ITEMS_RETURNED:
-                mHeaderHolder.tvHeaderTitle.setText("Items Returned");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_itemsreturned);
                 break;
             case TYPE_DEPT_SALES:
-                mHeaderHolder.tvHeaderTitle.setText("Dept Sales");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_dept_sales);
                 break;
             case TYPE_DEPT_RETURNS:
-                mHeaderHolder.tvHeaderTitle.setText("Dept Returns");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_dept_returns);
                 break;
             case TYPE_PAYMENT:
-                mHeaderHolder.tvHeaderTitle.setText("Payment");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_payment);
                 break;
             case TYPE_VOID:
-                mHeaderHolder.tvHeaderTitle.setText("Void");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_void);
                 break;
             case TYPE_REFUND:
-                mHeaderHolder.tvHeaderTitle.setText("Refund");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_refund);
                 break;
             case TYPE_AR_TRANS:
-                mHeaderHolder.tvHeaderTitle.setText("AR Trans");
+                mHeaderHolder.tvHeaderTitle.setText(R.string.eod_report_ar_trans);
                 break;
         }
 

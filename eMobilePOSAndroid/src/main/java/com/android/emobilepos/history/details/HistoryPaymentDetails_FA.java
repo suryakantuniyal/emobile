@@ -224,7 +224,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         switch (v.getId()) {
             case R.id.printButton:
                 printButton.setEnabled(false);
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 printButton.setEnabled(true);
                 break;
             case R.id.histpayVoidBut:
@@ -369,7 +369,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -404,16 +404,16 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             }
         } else if (paymethod_name.equals("Card")) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
-            new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.card_type, null));
+            new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidCreditCardAction, false, paymentToBeRefunded.card_type, null));
         } else if (paymethod_name.equals("GiftCard") || paymethod_name.equals("LoyaltyCard")) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
-            new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidGiftCardAction, false, paymentToBeRefunded.card_type, null));
+            new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidGiftCardAction, false, paymentToBeRefunded.card_type, null));
         } else if (paymethod_name.equals("Check")) {
             if (paymentToBeRefunded.pay_transid.isEmpty()) {
                 payHandler.createVoidPayment(paymentToBeRefunded, false, null);
             } else {
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, paymentToBeRefunded);
-                new processCardVoidAsync().execute(payGate.paymentWithAction(EAction.VoidCheckAction, false, paymentToBeRefunded.card_type, null));
+                new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidCheckAction, false, paymentToBeRefunded.card_type, null));
             }
         } else {
             //payHandler.updateIsVoid(pay_id);
