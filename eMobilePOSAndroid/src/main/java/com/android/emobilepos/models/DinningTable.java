@@ -151,4 +151,12 @@ public class DinningTable extends RealmObject {
     public void setPosition(Position position) {
         this.position = position;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DinningTable) {
+            return ((DinningTable) o).getNumber().equalsIgnoreCase(getNumber());
+        }
+        return super.equals(o);
+    }
 }

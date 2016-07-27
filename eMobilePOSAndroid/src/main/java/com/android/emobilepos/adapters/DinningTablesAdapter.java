@@ -23,10 +23,13 @@ import com.android.support.Global;
 import java.util.Collections;
 import java.util.List;
 
+import io.realm.RealmList;
+
 public class DinningTablesAdapter extends BaseAdapter implements Filterable {
     private LayoutInflater mInflater;
     private List<DinningTable> dinningTables;
     private Activity activity;
+    private RealmList<DinningTable> selectedDinningTables;
 
 
     public DinningTablesAdapter(Activity activity, List<DinningTable> dinningTables) {
@@ -35,6 +38,9 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
         this.dinningTables = dinningTables;
     }
 
+    public void setSelectedDinningTables(RealmList<DinningTable> selectedDinningTables) {
+        this.selectedDinningTables = selectedDinningTables;
+    }
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -64,7 +70,10 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
         holder.image.setImageResource(R.drawable.table_round_lg);
         holder.tableNumber.setText(dinningTables.get(position).getNumber());
         holder.dinningTable = dinningTables.get(position);
-
+        if (selectedDinningTables != null && !selectedDinningTables.isEmpty()) {
+            boolean selected = selectedDinningTables.contains(tableOrder.getDinningTable());
+            holder.isSelectedCheckBox.setChecked(selected);
+        }
         if (tableOrder != null) {
             holder.time.setBackgroundResource(R.color.seat7);
             holder.guests.setBackgroundResource(R.color.seat7);

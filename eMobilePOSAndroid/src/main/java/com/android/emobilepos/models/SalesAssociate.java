@@ -27,6 +27,7 @@ public class SalesAssociate extends RealmObject {
     private boolean TupyWalletDevice;
     private boolean VAT;
     private RealmList<DinningTableOrder> dinningTableOrders;
+    private RealmList<DinningTable> assignedDinningTables;
 
 
     public int getEmp_id() {
@@ -163,6 +164,9 @@ public class SalesAssociate extends RealmObject {
     }
 
     public RealmList<DinningTableOrder> getDinningTableOrders() {
+        if (dinningTableOrders == null) {
+            dinningTableOrders = new RealmList<>();
+        }
         return dinningTableOrders;
     }
 
@@ -173,5 +177,13 @@ public class SalesAssociate extends RealmObject {
     @Override
     public String toString() {
         return String.format("%s (%s)", getEmp_name(), String.valueOf(getEmp_id()));
+    }
+
+    public RealmList<DinningTable> getAssignedDinningTables() {
+        return assignedDinningTables;
+    }
+
+    public void setAssignedDinningTables(RealmList<DinningTable> assignedDinningTables) {
+        this.assignedDinningTables = assignedDinningTables;
     }
 }

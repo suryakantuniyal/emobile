@@ -49,10 +49,10 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         realmResults.sort("number");
         final List<DinningTable> dinningTables = realmResults;
         gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
+        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
         adapter = new DinningTablesAdapter(getActivity(), dinningTables);
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(this);
-        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
         setSalesAssociateInfo(activity.getSelectedSalesAssociate());
     }
 
@@ -61,7 +61,8 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         final DinningTable table = (DinningTable) adapterView.getItemAtPosition(i);
         DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
-
+        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+        activity.getSelectedSalesAssociate().getAssignedDinningTables().add(tableOrder.getDinningTable());
     }
 
     public void setSalesAssociateInfo(SalesAssociate selectedSalesAssociate) {
@@ -71,5 +72,6 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         } else {
             name.setText("");
         }
+        adapter.setSelectedDinningTables(selectedSalesAssociate.getAssignedDinningTables());
     }
 }
