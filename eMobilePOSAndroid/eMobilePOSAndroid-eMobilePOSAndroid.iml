@@ -43,12 +43,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevoDebug/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevoDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevoDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/icmpevo/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/icmpevo/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevoDebug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevoDebug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevoDebug/assets" type="java-test-resource" />
@@ -57,6 +51,12 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevoDebug/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevoDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevoDebug/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/icmpevo/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/icmpevo/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/icmpevo/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevo/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevo/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevo/assets" type="java-resource" />
@@ -65,14 +65,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevo/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevo/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/icmpevo/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevo/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevo/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevo/assets" type="java-test-resource" />
@@ -81,6 +73,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevo/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevo/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testIcmpevo/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestIcmpevo/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
@@ -123,7 +123,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
@@ -198,17 +197,12 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/stickyListHeaders-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/viewPagerIndicator-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />

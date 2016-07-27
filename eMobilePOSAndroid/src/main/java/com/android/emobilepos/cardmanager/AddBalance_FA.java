@@ -170,17 +170,7 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
                     roverReader.initializeReader(activity, false);
                 }
             }
-//			if (!myPref.getPreferences(MyPreferences.pref_use_magtek_card_reader)) {
-//				uniMagReader = new EMSUniMagDriver();
-//				uniMagReader.initializeReader(this);
-//			} else {
-//				magtekReader = new EMSMagtekAudioCardReader(this);
-//				new Thread(new Runnable() {
-//					public void run() {
-//						magtekReader.connectMagtek(true,msrCallBack);
-//					}
-//				}).start();
-//			}
+
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
@@ -194,12 +184,24 @@ public class AddBalance_FA extends BaseFragmentActivityActionBar implements EMSC
         }
         // }
         if (myPref.isET1(true, false) || myPref.isMC40(true, false)) {
-            ourIntentAction = getString(R.string.intentAction2);
+            ourIntentAction = getString(R.string.intentAction3);
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s(true, false)) {
+        } else if (myPref.isSam4s(true, false) || myPref.isPAT100()) {
             cardSwipe.setChecked(true);
+        } else if (myPref.isESY13P1()) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
+                cardSwipe.setChecked(true);
+            }
+        } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
+            cardSwipe.setChecked(true);
+        } else if (myPref.isPAT215() && Global.btSwiper == null) {
+            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
+                Global.embededMSR.currentDevice.loadCardReader(msrCallBack, false);
+                cardSwipe.setChecked(false);
+            }
         }
     }
 
