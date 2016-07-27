@@ -101,7 +101,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         clockOut.setOnClickListener(this);
         clockIn.setOnClickListener(this);
 
-        new sendUnsyncTimeClock().execute(true);
+        new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
         // if(Global.isConnectedToInternet(activity))
         // {
@@ -151,7 +151,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     listTimeClock.add(createTimeClock(false, Global.getCurrentDate()));
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
-                    new sendUnsyncTimeClock().execute(false);
+                    new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 }
 
                 break;
@@ -249,7 +249,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         protected void onPostExecute(Void n) {
             myProgressDialog.dismiss();
             if (receiveTimeClock)
-                new getLastUpdate().execute();
+                new getLastUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             else
                 activity.finish();
         }
@@ -585,7 +585,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
 
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
-                    new sendUnsyncTimeClock().execute(false);
+                    new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                 } else {
                     globalDlog.dismiss();
                     validPassword = false;

@@ -108,7 +108,7 @@ public class EMSAsura extends EMSDeviceDriver
         msr = new JAMagstripeReader();
         barcodeReader = new JABarcodeReader();
 
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
     @Override

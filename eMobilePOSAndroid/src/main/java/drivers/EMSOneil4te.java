@@ -61,7 +61,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         thisInstance = this;
         this.edm = edm;
         resources = this.activity.getResources();
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
     @Override
@@ -169,8 +169,6 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
-
-
 
 
     @Override
@@ -722,21 +720,20 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-	public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
 //		printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
-	@Override
-	public void printShiftDetailsReport(String shiftID) {
-	//	printShiftDetailsReceipt(LINE_WIDTH, shiftID);
-	}
+    @Override
+    public void printShiftDetailsReport(String shiftID) {
+        //	printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+    }
 
 
-
-	@Override
-	public boolean printReport(String curDate) {
-		// TODO Auto-generated method stub
-		try {
+    @Override
+    public boolean printReport(String curDate) {
+        // TODO Auto-generated method stub
+        try {
 
             if (!device.getIsOpen())
                 device.open();

@@ -582,7 +582,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
             ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
         }
-        new VoidTransaction().execute(global.order.ord_id);
+        new VoidTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, global.order.ord_id);
     }
 
     private class VoidTransaction extends AsyncTask<String, Void, Void> {

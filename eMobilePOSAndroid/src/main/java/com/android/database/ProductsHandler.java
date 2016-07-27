@@ -306,7 +306,7 @@ public class ProductsHandler {
             } else {
                 sb.append(
                         "FROM Products p " +
-                                "INNER JOIN Categories c ON c.cat_id = p.cat_id " +
+                                "LEFT OUTER JOIN Categories c ON c.cat_id = p.cat_id " +
                                 "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
                                 "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                                 "BETWEEN vp.minQty AND vp.maxQty  AND ");

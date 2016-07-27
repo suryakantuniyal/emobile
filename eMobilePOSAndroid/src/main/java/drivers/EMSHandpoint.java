@@ -77,7 +77,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
-        new WorkingKeyRequest().execute();
+        new WorkingKeyRequest().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 

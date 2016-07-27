@@ -1,16 +1,10 @@
 package com.android.support;
 
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 
 import com.android.emobilepos.R;
@@ -254,7 +248,7 @@ public class HttpClient {
         handlerMsg.what = COPY_STARTED;
         handlerMsg.arg1 = 1;
         handler.sendMessage(handlerMsg);
-        new DownloadFileTask().execute(urlAddress, path);
+        new DownloadFileTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlAddress, path);
     }
 
     private class DownloadFileTask extends AsyncTask<Object, Void, String> {

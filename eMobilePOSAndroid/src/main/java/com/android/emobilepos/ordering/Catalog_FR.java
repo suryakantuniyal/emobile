@@ -160,7 +160,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     int lastInScreen = firstVisibleItem + visibleItemCount;
                     if (lastInScreen == totalItemCount) {
                         page++;
-                        new CatalogProductLoader().execute(totalItemCount);
+                        new CatalogProductLoader().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, totalItemCount);
                     }
                 }
             }

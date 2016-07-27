@@ -294,7 +294,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         switch (v.getId()) {
             case R.id.printButton:
                 btnPrint.setClickable(false);
-                new printAsync().execute("");
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                 btnPrint.setClickable(true);
                 break;
             case R.id.btnVoid:
@@ -429,7 +429,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 dlog.dismiss();
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -717,7 +717,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 paymentsToVoid.remove(0);
 //                }
             } else {
-                new voidPaymentAsync().execute();
+                new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         } else
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));

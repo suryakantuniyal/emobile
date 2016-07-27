@@ -205,7 +205,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         } else
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGeniusAction, false, "", null);
 
-        new processLivePaymentAsync().execute(generatedURL);
+        new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
     private class processLivePaymentAsync extends AsyncTask<String, String, GeniusResponse> {
@@ -382,7 +382,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
                     dlog.dismiss();
-                    new printAsync().execute();
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             });
             btnNo.setOnClickListener(new View.OnClickListener() {

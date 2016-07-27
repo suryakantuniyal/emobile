@@ -96,7 +96,7 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         init(activity, paperSize, edm);
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
     @Override
