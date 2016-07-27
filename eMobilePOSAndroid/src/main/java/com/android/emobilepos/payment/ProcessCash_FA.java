@@ -215,9 +215,9 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                     }
 
                     if (!isInvoice || (isInvoice && !isMultiInvoice))
-                        new processPaymentAsync().execute(false);
+                        new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
                     else {
-                        new processPaymentAsync().execute(true);
+                        new processPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                     }
                 }
                 btnProcess.setEnabled(true);
@@ -824,7 +824,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
             if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment) && !isFromMainMenu) {
 
-                new printAsync().execute(payment);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
 
                 if (amountToBePaid > actualAmount)
                     showChangeDlg();
@@ -910,7 +910,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(payment);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
 
             }
         });

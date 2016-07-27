@@ -459,7 +459,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     cardInfoManager);
         }
 
-        new processLivePaymentAsync().execute(generatedURL);
+        new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
     private class processLivePaymentAsync extends AsyncTask<String, String, String> {

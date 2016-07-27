@@ -74,7 +74,6 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
     private NumberUtils numberUtils = new NumberUtils();
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -290,7 +289,7 @@ public class ManualAddBalance_FA extends BaseFragmentActivityActionBar implement
         if (typeCase == CASE_GIFT)
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueGiftCardAction, wasReadFromReader, cardType, cardInfoManager);
 
-        new processAsync().execute(generatedURL);
+        new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
     private class processAsync extends AsyncTask<String, String, String> {

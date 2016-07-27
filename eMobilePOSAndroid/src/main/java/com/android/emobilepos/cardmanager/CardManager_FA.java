@@ -32,12 +32,12 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateNewID;
-import com.android.support.NumberUtils;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.android.support.textwatcher.GiftCardTextWatcher;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NumberUtils;
 import com.android.support.Post;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.android.support.textwatcher.GiftCardTextWatcher;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -555,7 +555,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             generatedURL = payGate.paymentWithAction(PAYMENT_ACTION, wasReadFromReader, cardType, cardInfoManager);
 
-            new processAsync().execute(generatedURL);
+            new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
         } else {
             Global.showPrompt(activity, R.string.dlog_title_error, "Card has already been processed");
         }
@@ -685,7 +685,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(parsedMap);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parsedMap);
 
             }
         });

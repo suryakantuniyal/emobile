@@ -105,7 +105,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 OrdersHandler ordersHandler = new OrdersHandler(getActivity());
                 ordersHandler.insert(order);
                 global.order = order;
-                new ProcessRewardPaymentTask().execute(new BigDecimal(subtotal));
+                new ProcessRewardPaymentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new BigDecimal(subtotal));
 
 //                Global global = (Global) getActivity().getApplication();
 //                BigDecimal bdBalance = new BigDecimal(balance);

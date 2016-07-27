@@ -113,7 +113,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {
@@ -150,7 +150,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(true);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {
@@ -158,7 +158,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(false);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             }
         });
         dlog.show();

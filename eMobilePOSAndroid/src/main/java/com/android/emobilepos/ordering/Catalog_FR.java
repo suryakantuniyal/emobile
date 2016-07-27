@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap.CompressFormat;
@@ -44,7 +43,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.database.CategoriesHandler;
-import com.android.database.DBManager;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
@@ -156,7 +154,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     int lastInScreen = firstVisibleItem + visibleItemCount;
                     if (lastInScreen == totalItemCount) {
                         page++;
-                        new CatalogProductLoader().execute(totalItemCount);
+                        new CatalogProductLoader().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, totalItemCount);
                     }
                 }
             }

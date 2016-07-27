@@ -58,7 +58,7 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         posInterfaceAPI = new POSUSBAPI(activity);
         this.edm = edm;
         thisInstance = this;
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
     @Override
