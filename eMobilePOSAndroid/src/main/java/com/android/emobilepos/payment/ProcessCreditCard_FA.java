@@ -71,7 +71,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -86,7 +85,6 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import interfaces.EMSCallBack;
-import util.StringUtil;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -1223,12 +1221,23 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                                 case 39:
                                     ccType = CREDITCARD_TYPE_DINERS;
                                     break;
+                                case 22:
+                                case 23:
+                                case 24:
+                                case 25:
+                                case 26:
+                                case 27:
                                 case 51:
                                 case 52:
                                 case 53:
                                 case 54:
                                 case 55:
-                                    ccType = CREDITCARD_TYPE_MASTERCARD;
+                                    if ((Integer.parseInt(number.substring(0, 6)) >= 222100 &&
+                                            Integer.parseInt(number.substring(0, 6)) <= 272099) ||
+                                            (Integer.parseInt(number.substring(0, 6)) >= 510000 &&
+                                                    Integer.parseInt(number.substring(0, 6)) <= 559999)) {
+                                        ccType = CREDITCARD_TYPE_MASTERCARD;
+                                    }
                                     break;
                                 case 65:
                                     ccType = CREDITCARD_TYPE_DISCOVER;
