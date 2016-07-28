@@ -6,14 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.DinningTable;
@@ -68,10 +65,10 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
     public void setSalesAssociateInfo(SalesAssociate selectedSalesAssociate) {
         TextView name = (TextView) getView().findViewById(R.id.salesAssociateNametextView16);
         if (selectedSalesAssociate != null) {
+            adapter.setSelectedDinningTables(selectedSalesAssociate.getAssignedDinningTables());
             name.setText(selectedSalesAssociate.toString());
         } else {
             name.setText("");
         }
-        adapter.setSelectedDinningTables(selectedSalesAssociate.getAssignedDinningTables());
     }
 }
