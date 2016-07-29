@@ -37,17 +37,17 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         list = (ListView) view.findViewById(R.id.salesAssociatelistView);
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-//                R.layout.simple_list_item_1, android.R.id.text1, getListValues());
+
         list.setOnItemClickListener(this);
         adapter = new SalesAssociateListAdapter(getActivity());
         list.setAdapter(adapter);
-
-        if (!associates.isEmpty()) {
+        if (associates != null && !associates.isEmpty()) {
             SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
             activity.setSelectedSalesAssociate(associates.get(0));
+//            activity.getDinningTablesGridFragment().setSalesAssociateInfo(associates.get(0));
         }
     }
+
 
     private String[] getListValues() {
         String[] vals = new String[associates.size()];
@@ -66,7 +66,7 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
         SalesAssociate associate = SalesAssociateDAO.getByEmpId(associates.get(i).getEmp_id());
         SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
         activity.setSelectedSalesAssociate(associate);
-        activity.getDinningTablesGridFragment().setSalesAssociateInfo(associate);
+        activity.getDinningTablesGridFragment().refreshGrid();
         adapter.notifyDataSetChanged();
     }
 }

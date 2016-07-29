@@ -19,11 +19,25 @@
         android:textAppearance="@style/black_text_appearance"
         android:textSize="@dimen/text_default" />
 
-    <ImageView
-        android:id="@+id/dinningtableimageView3"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/table_round_lg" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/dinningtableimageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/table_round_lg" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/selectedCheckboximageView"
+            android:layout_centerInParent="true"
+            android:src="@android:drawable/checkbox_off_background" />
+
+
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="horizontal"

@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -16,11 +15,9 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.SalesAssociate;
 import com.android.emobilepos.settings.SalesAssociateConfiguration;
 import com.android.support.Global;
 
-import java.util.Collections;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -55,7 +52,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder.amount = (TextView) convertView.findViewById(R.id.amounttextView23);
             holder.image = (ImageView) convertView.findViewById(R.id.dinningtableimageView3);
             holder.tableNumber = (TextView) convertView.findViewById(R.id.tableNumbertextView);
-            holder.isSelectedCheckBox = (CheckBox) convertView.findViewById(R.id.selectedDinningTablecheckBox);
+            holder.isSelectedCheckBox = (ImageView) convertView.findViewById(R.id.selectedCheckboximageView);
             if (activity instanceof SalesAssociateConfiguration) {
                 holder.isSelectedCheckBox.setVisibility(View.VISIBLE);
             } else {
@@ -70,9 +67,13 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
         holder.image.setImageResource(R.drawable.table_round_lg);
         holder.tableNumber.setText(dinningTables.get(position).getNumber());
         holder.dinningTable = dinningTables.get(position);
-        if (selectedDinningTables != null && !selectedDinningTables.isEmpty()) {
-            boolean selected = selectedDinningTables.contains(tableOrder.getDinningTable());
-            holder.isSelectedCheckBox.setChecked(selected);
+        if (selectedDinningTables != null) {
+            boolean selected = selectedDinningTables.contains(dinningTables.get(position));
+            if (selected) {
+                holder.isSelectedCheckBox.setImageResource(android.R.drawable.checkbox_on_background);
+            } else {
+                holder.isSelectedCheckBox.setImageResource(android.R.drawable.checkbox_off_background);
+            }
         }
         if (tableOrder != null) {
             holder.time.setBackgroundResource(R.color.seat7);
@@ -100,7 +101,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
     public class ViewHolder {
         TextView tableNumber, guests, time, amount;
         ImageView image;
-        CheckBox isSelectedCheckBox;
+        ImageView isSelectedCheckBox;
         public DinningTable dinningTable;
     }
 
