@@ -30,61 +30,62 @@
             android:src="@drawable/table_round_lg" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/selectedCheckboximageView"
-            android:layout_centerInParent="true"
-            android:src="@android:drawable/checkbox_off_background" />
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/check_mark_green"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
 
     </RelativeLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginTop="1dp">
+        android:layout_marginTop="1dp"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="2/4"
-            android:drawableLeft="@drawable/ic_group_black_18dp"
             android:id="@+id/gueststextView16"
-            android:layout_weight="1"
-            android:background="@color/seat12"
-            android:textColor="@color/black"
-            android:layout_marginRight="1dp"
-            android:singleLine="true" />
-
-        <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_access_time_black_18dp"
-            android:text="00:15"
-            android:id="@+id/timetextView21"
+            android:layout_marginRight="1dp"
             android:layout_weight="1"
             android:background="@color/seat12"
-            android:textColor="@color/black"
-            android:singleLine="true" />
+            android:drawableLeft="@drawable/ic_group_black_18dp"
+            android:singleLine="true"
+            android:text="2/4"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/timetextView21"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/seat12"
+            android:drawableLeft="@drawable/ic_access_time_black_18dp"
+            android:singleLine="true"
+            android:text="00:15"
+            android:textColor="@color/black" />
 
     </LinearLayout>
 
     <TextView
+        android:id="@+id/amounttextView23"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/ic_attach_money_black_18dp"
-        android:text="$84.95"
-        android:id="@+id/amounttextView23"
-        android:background="@color/seat12"
-        android:textColor="@color/black"
         android:layout_marginTop="1dp"
-        android:singleLine="true" />
+        android:background="@color/seat12"
+        android:drawableLeft="@drawable/ic_attach_money_black_18dp"
+        android:singleLine="true"
+        android:text="$84.95"
+        android:textColor="@color/black" />
 
     <CheckBox
+        android:id="@+id/selectedDinningTablecheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/selectedDinningTablecheckBox"
         android:checked="false"
         android:visibility="gone" />
 

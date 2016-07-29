@@ -3,6 +3,8 @@ package com.android.emobilepos.models;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import util.JsonUtils;
@@ -29,7 +31,7 @@ public class DinningTable extends RealmObject {
     private boolean isReaonly;
     @SerializedName("_update")
     private String lastUpdateDate;
-
+    private Date reservationDate;
 
     @SerializedName("type")
     private String style;
@@ -158,5 +160,13 @@ public class DinningTable extends RealmObject {
             return ((DinningTable) o).getNumber().equalsIgnoreCase(getNumber());
         }
         return super.equals(o);
+    }
+
+    public Date getReservationDate() {
+        return reservationDate;
+    }
+
+    public void setReservationDate(Date reservationDate) {
+        this.reservationDate = reservationDate;
     }
 }

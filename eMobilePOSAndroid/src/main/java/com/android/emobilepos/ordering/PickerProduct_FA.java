@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -1014,8 +1015,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         // Still need to do add the appropriate tax/discount value
         ord.setProd_taxValue(taxTotal);
-        if (Double.parseDouble(ord.getFinalPrice()) <= Double.parseDouble(disTotal)) {
-            disTotal = ord.getFinalPrice();
+        double ordFinalPrice = TextUtils.isEmpty(ord.getFinalPrice()) ? 0
+                : Double.parseDouble(ord.getFinalPrice());
+
+        if (ordFinalPrice <= Double.parseDouble(disTotal)) {
+            disTotal = String.valueOf(ordFinalPrice);
         }
         ord.setDiscount_value(disTotal);
         ord.setProd_taxtype(orderProduct.getTax_type());

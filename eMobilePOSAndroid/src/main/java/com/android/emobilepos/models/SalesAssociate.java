@@ -1,8 +1,5 @@
 package com.android.emobilepos.models;
 
-import java.util.Date;
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -26,7 +23,6 @@ public class SalesAssociate extends RealmObject {
     private String lastSync;
     private boolean TupyWalletDevice;
     private boolean VAT;
-    private RealmList<DinningTableOrder> dinningTableOrders;
     private RealmList<DinningTable> assignedDinningTables;
 
 
@@ -163,16 +159,6 @@ public class SalesAssociate extends RealmObject {
         this.VAT = VAT;
     }
 
-    public RealmList<DinningTableOrder> getDinningTableOrders() {
-        if (dinningTableOrders == null) {
-            dinningTableOrders = new RealmList<>();
-        }
-        return dinningTableOrders;
-    }
-
-    public void setDinningTableOrders(RealmList<DinningTableOrder> dinningTableOrders) {
-        this.dinningTableOrders = dinningTableOrders;
-    }
 
     @Override
     public String toString() {
@@ -180,6 +166,9 @@ public class SalesAssociate extends RealmObject {
     }
 
     public RealmList<DinningTable> getAssignedDinningTables() {
+        if(assignedDinningTables==null){
+            assignedDinningTables = new RealmList<>();
+        }
         return assignedDinningTables;
     }
 

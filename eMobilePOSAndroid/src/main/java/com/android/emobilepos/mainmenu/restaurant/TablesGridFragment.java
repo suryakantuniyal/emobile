@@ -14,11 +14,15 @@ import android.widget.PopupMenu;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.SalesAssociate;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
+import com.android.support.Global;
+import com.android.support.MyPreferences;
 
 import java.util.List;
 
@@ -31,6 +35,7 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
 
     private GridView gridView;
     private DinningTablesAdapter adapter;
+    private SalesAssociate associate;
 
     public TablesGridFragment() {
     }
@@ -50,18 +55,28 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
         final List<DinningTable> dinningTables = realmResults;
         gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         adapter = new DinningTablesAdapter(getActivity(), dinningTables);
+        MyPreferences preferences = new MyPreferences(getActivity());
+        associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(preferences.getEmpID()));
+        if (associate != null) {
+            adapter.setSelectedDinningTables(associate.getAssignedDinningTables());
+        }
         gridView.setAdapter(adapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 DinningTable table = (DinningTable) parent.getItemAtPosition(position);
-                DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
-                if (tableOrder == null) {
-                    Intent result = new Intent();
-                    result.putExtra("tableId", table.getId());
-                    getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
-                    getActivity().finish();
+                if (associate != null && associate.getAssignedDinningTables().contains(table)) {
+                    DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
+                    if (tableOrder == null) {
+                        Intent result = new Intent();
+                        result.putExtra("tableId", table.getId());
+                        getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+                        getActivity().finish();
+                    }
+                } else {
+                    Global.showPrompt(getActivity(), R.string.title_activity_dinning_tables, getActivity().getString(R.string.dinningtablenotassigned));
+
                 }
             }
         });

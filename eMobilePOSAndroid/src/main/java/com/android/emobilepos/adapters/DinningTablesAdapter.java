@@ -15,7 +15,6 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.settings.SalesAssociateConfiguration;
 import com.android.support.Global;
 
 import java.util.List;
@@ -53,11 +52,7 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
             holder.image = (ImageView) convertView.findViewById(R.id.dinningtableimageView3);
             holder.tableNumber = (TextView) convertView.findViewById(R.id.tableNumbertextView);
             holder.isSelectedCheckBox = (ImageView) convertView.findViewById(R.id.selectedCheckboximageView);
-            if (activity instanceof SalesAssociateConfiguration) {
-                holder.isSelectedCheckBox.setVisibility(View.VISIBLE);
-            } else {
-                holder.isSelectedCheckBox.setVisibility(View.GONE);
-            }
+
             convertView.setTag(holder);
 
         } else {
@@ -67,13 +62,16 @@ public class DinningTablesAdapter extends BaseAdapter implements Filterable {
         holder.image.setImageResource(R.drawable.table_round_lg);
         holder.tableNumber.setText(dinningTables.get(position).getNumber());
         holder.dinningTable = dinningTables.get(position);
+
         if (selectedDinningTables != null) {
             boolean selected = selectedDinningTables.contains(dinningTables.get(position));
             if (selected) {
-                holder.isSelectedCheckBox.setImageResource(android.R.drawable.checkbox_on_background);
+                holder.isSelectedCheckBox.setVisibility(View.VISIBLE);
             } else {
-                holder.isSelectedCheckBox.setImageResource(android.R.drawable.checkbox_off_background);
+                holder.isSelectedCheckBox.setVisibility(View.GONE);
             }
+        }else{
+            holder.isSelectedCheckBox.setVisibility(View.GONE);
         }
         if (tableOrder != null) {
             holder.time.setBackgroundResource(R.color.seat7);
