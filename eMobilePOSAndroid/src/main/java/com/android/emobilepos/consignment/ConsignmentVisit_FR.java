@@ -315,7 +315,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         ordTotal = _order_total.setScale(2, RoundingMode.HALF_UP).doubleValue();
 
         global.order.ord_id = Global.consignment_order.ord_id;
-        global.order.qbord_id = Global.lastOrdID.replace("-", "");
+        global.order.qbord_id = GenerateNewID.getQBOrderId(Global.lastOrdID);
 
         global.order.cust_id = myPref.getCustID();
 
