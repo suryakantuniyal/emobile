@@ -553,7 +553,26 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             //Global.cat_id = new String(_catID);
             Global.cat_id = catID;
 
-            if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
+//            if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
+//                restModeViewingProducts = true;
+//                btnListID.add(catID);
+//                btnListName.add(catName);
+//                addCategoryButton(catName, catID);
+//
+//                _typeCase = CASE_PRODUCTS;
+//                loadCursor();
+//            } else {
+
+
+            int num_subcategories = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("num_subcategories")));
+            if (num_subcategories > 0 && !showAllProducts) {
+
+                btnListID.add(catID);
+                btnListName.add(catName);
+                addCategoryButton(catName, catID);
+                _typeCase = CASE_SUBCATEGORY;
+                loadCursor();
+            } else {
                 restModeViewingProducts = true;
                 btnListID.add(catID);
                 btnListName.add(catName);
@@ -561,27 +580,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                 _typeCase = CASE_PRODUCTS;
                 loadCursor();
-            } else {
-
-
-                int num_subcategories = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("num_subcategories")));
-                if (num_subcategories > 0 && !showAllProducts) {
-
-                    btnListID.add(catID);
-                    btnListName.add(catName);
-                    addCategoryButton(catName, catID);
-                    _typeCase = CASE_SUBCATEGORY;
-                    loadCursor();
-                } else {
-                    restModeViewingProducts = true;
-                    btnListID.add(catID);
-                    btnListName.add(catName);
-                    addCategoryButton(catName, catID);
-
-                    _typeCase = CASE_PRODUCTS;
-                    loadCursor();
-                }
             }
+//            }
         }
     }
 
