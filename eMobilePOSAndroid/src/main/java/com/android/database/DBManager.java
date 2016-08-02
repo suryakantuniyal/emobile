@@ -318,6 +318,7 @@ public class DBManager {
             "CREATE INDEX prod_id_index ON EmpInv (prod_id)",
             "CREATE INDEX VolumePrices_prod_id_index ON VolumePrices (prod_id)",
             "CREATE INDEX minQty_index ON VolumePrices (minQty)",
+            "CREATE INDEX maxQty_index ON VolumePrices (maxQty)",
             "CREATE INDEX pricelevel_id_index ON VolumePrices (pricelevel_id)",
             "CREATE INDEX Products_Images_prod_id_index ON Products_Images (prod_id)",
             "CREATE INDEX type_index ON Products_Images (type)",
@@ -325,10 +326,14 @@ public class DBManager {
             "CREATE INDEX prod_upc_index ON Products (prod_upc)",
             "CREATE INDEX prod_name_index ON Products (prod_name)",
             "CREATE INDEX prod_type_index ON Products (prod_type)",
-            "CREATE INDEX ProductChainXRef_prod_id_index ON ProductChainXRef (prod_id)",
+            "CREATE INDEX prod_taxcode_index ON Products (prod_taxcode)",
+            "CREATE INDEX productchainxref_prod_id_index ON ProductChainXRef (prod_id)",
             "CREATE INDEX cust_chain_index ON ProductChainXRef (cust_chain)",
-            "CREATE INDEX prod_alias_index ON ProductAliases (prod_alias)"
-
+            "CREATE INDEX productaliases_alias_index ON ProductAliases (prod_alias)",
+            "CREATE INDEX productaliases_prod_id_index ON ProductAliases (prod_id)",
+            "CREATE INDEX pricelevelitems_prod_id_index ON PriceLevelItems (pricelevel_prod_id)",
+            "CREATE INDEX pricepevel_pricelevel_id_index ON PriceLevel (pricelevel_id)",
+            "CREATE INDEX salestaxcodes_taxcode_id_index ON SalesTaxCodes (taxcode_id)"
     };
 
     private final String CREATE_ADDRESS = "CREATE TABLE [Address] ([addr_id] varchar NOT NULL ,[cust_id]varchar NOT NULL ,[addr_b_str1]varchar,"
