@@ -190,7 +190,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         protected void onPostExecute(Catalog_Loader catalog_loader) {
-            myCursor.close();
+//            myCursor.close();
             myCursor = catalog_loader.loadInBackground();
             prodListAdapter.swapCursor(myCursor);
             prodListAdapter.notifyDataSetChanged();
