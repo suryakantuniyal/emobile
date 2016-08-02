@@ -83,7 +83,7 @@ import plaintext.EMSPlainTextHelper;
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = false;
+    public static final boolean PRINT_TO_LOG = true;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
@@ -590,7 +590,7 @@ public class EMSDeviceDriver {
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                     getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
                             sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                    orderProducts.get(i).ordprod_desc, lineWidth, 5)).append("\n");
+                                    orderProducts.get(i).ordprod_desc.replace("<br/>", "\n"), lineWidth, 5)).append("\n");
                         }
                     } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
