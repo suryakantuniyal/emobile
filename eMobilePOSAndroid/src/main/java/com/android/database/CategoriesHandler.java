@@ -231,6 +231,9 @@ public class CategoriesHandler {
 			sb.append("  WHERE  c1.parentID='' AND c1.cat_id ='").append(Global.cat_id).append("' ");
 		else if(myPref.getPreferences(MyPreferences.pref_enable_multi_category))
 			sb.append("  WHERE c1.parentID='' AND c1.cat_id !='' ");
+		else{
+			sb.append("  WHERE c1.parentID='' ");
+		}
 		
 		sb.append(" ORDER BY c1.cat_name");
 		
