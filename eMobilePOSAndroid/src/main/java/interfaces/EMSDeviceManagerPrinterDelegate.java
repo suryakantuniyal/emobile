@@ -5,13 +5,11 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,7 +29,7 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup);
 
-    void printStationPrinter(List<Orders> orderProducts, String ordID);
+    String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader);
 
     boolean printOpenInvoices(String invID);
 
@@ -40,6 +38,9 @@ public interface EMSDeviceManagerPrinterDelegate {
     void setBitmap(Bitmap bmp);
 
     void playSound();
+
+    void cutPaper();
+
 
     boolean printReport(String curDate);
 
@@ -77,9 +78,9 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void refundReversal(Payment payment, String originalTransactionId);
 
-    void  printEMVReceipt(String text);
+    void printEMVReceipt(String text);
 
-    void  sendEmailLog();
+    void sendEmailLog();
 
-    void  updateFirmware();
+    void updateFirmware();
 }

@@ -53,10 +53,8 @@ import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class SalesTab_FR extends Fragment {
     private SalesMenuAdapter myAdapter;
@@ -71,7 +69,6 @@ public class SalesTab_FR extends Fragment {
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
     private String associateId;
-//    GridView gridView;
 
 
     @Override
@@ -83,7 +80,6 @@ public class SalesTab_FR extends Fragment {
         myPref.setLogIn(true);
         PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_layout, false);
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
-//        gridView = (GridView) view.findViewById(R.id.salesGridLayout);
 
         thisContext = getActivity();
         selectedCust = (TextView) view.findViewById(R.id.salesCustomerName);
@@ -650,9 +646,9 @@ public class SalesTab_FR extends Fragment {
                 myListview.setOnItemClickListener(new MyListener());
             }
 
-            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
+//            if (myPref.isSam4s(true, true) || myPref.isPAT100() || myPref.isPAT215()) {
                 Global.showCDTDefault(activity);
-            }
+//            }
         }
     }
 
@@ -837,6 +833,9 @@ public class SalesTab_FR extends Fragment {
             return false;
         } else if (model.equals("PAT100")) {
             myPref.setIsPAT100(true);
+            return true;
+        } else if (model.equals("PAT-215")) {
+            myPref.setIsPAT215(true);
             return true;
         } else if (model.equals("EM100")) {
             myPref.setIsEM100(true);

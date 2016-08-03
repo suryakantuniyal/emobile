@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -91,7 +92,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+
+import drivers.EMSBluetoothStarPrinter;
+import util.JsonUtils;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {
@@ -411,7 +414,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private int addHoldOrderSeats() {
-        HashSet<String> seats = new HashSet<String>();
+        HashSet<String> seats = new HashSet<>();
         for (OrderProduct product : global.orderProducts) {
             mainLVAdapter.addSeat(product);
         }
@@ -452,59 +455,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 if (!value.isEmpty()) {
                                     global.orderProducts.get(position).setOverwritePrice(Global.getBigDecimalNum(value), getActivity());
 
-//                                    BigDecimal new_price = Global.getBigDecimalNum(Double.toString((Global.formatNumFromLocale(value))));
-//                                    BigDecimal prod_qty;
-//                                    BigDecimal new_subtotal;
-//                                    try {
-//                                        prod_qty = new BigDecimal(
-//                                                global.orderProducts
-//                                                        .get(position).ordprod_qty);
-//                                    } catch (Exception e) {
-//                                        prod_qty = new BigDecimal("0");
-//                                    }
-//
-//                                    String temp = Double.toString(Global
-//                                            .formatNumFromLocale(value));
-//                                    if (!map.isEmpty()) {
-//                                        if (map.get("discount_type")
-//                                                .toUpperCase(
-//                                                        Locale.getDefault())
-//                                                .trim().equals("FIXED")) {
-//                                            new_subtotal = new_price
-//                                                    .multiply(prod_qty)
-//                                                    .subtract(
-//                                                            new BigDecimal(
-//                                                                    map.get("discount_price")));
-//
-//                                        } else {
-//                                            BigDecimal rate = new BigDecimal(
-//                                                    map.get("discount_price"))
-//                                                    .divide(new BigDecimal(
-//                                                            "100"));
-//                                            rate = rate.multiply(new_price
-//                                                    .multiply(prod_qty));
-//
-//                                            new_subtotal = new_price.multiply(
-//                                                    prod_qty).subtract(rate);
-//
-//                                            global.orderProducts.get(position).disTotal = Global
-//                                                    .getRoundBigDecimal(rate);
-//                                            global.orderProducts.get(position).discount_value = Global
-//                                                    .getRoundBigDecimal(rate);
-//
-//                                        }
-//                                    } else
-//                                        new_subtotal = new_price
-//                                                .multiply(prod_qty);
-//
-//                                    global.orderProducts.get(position).overwrite_price = temp;
-//                                    global.orderProducts.get(position).prod_price = temp;
-//                                    global.orderProducts.get(position).itemSubtotal = Global
-//                                            .getRoundBigDecimal(new_subtotal);
-//                                    global.orderProducts.get(position).itemTotal = Global
-//                                            .getRoundBigDecimal(new_subtotal);
-//                                    global.orderProducts.get(position).pricelevel_id = "";
-//                                    global.orderProducts.get(position).prod_price_updated = "0";
                                     receiptListView.invalidateViews();
                                     reCalculate();
                                 }
@@ -622,7 +572,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             mainLVAdapter.notifyDataSetChanged();
         } else {
             String isVoidedItem = orderSeatProduct.orderProduct.item_void;
-            final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
+            final HashMap<Integer, String> subMenus = new HashMap<>();
             if (!isVoidedItem.equals("1")) {
                 PopupMenu popup = new PopupMenu(getActivity(), view);
                 popup.getMenuInflater().inflate(R.menu.receiptlist_product_menu, popup.getMenu());
@@ -690,8 +640,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             case R.id.cancel:
                                 break;
                             default:
-                                if (subMenus.containsKey(Integer.valueOf(item.getItemId()))) {
-                                    String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
+                                if (subMenus.containsKey(item.getItemId())) {
+                                    String targetSeat = subMenus.get(item.getItemId());
                                     ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(targetSeat);
                                     orderSeatProduct.orderProduct.assignedSeat = targetSeat;
                                     orderSeatProduct.setSeatGroupId(mainLVAdapter.getSeat(targetSeat).getSeatGroupId());
@@ -713,7 +663,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
 
     public void checkoutOrder() {
-        if (receiptListView.getCount() == 0 && caseSelected != Global.TransactionType.CONSIGNMENT) {
+        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global, global.orderProducts)) {
+            Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes));
+        } else if (receiptListView.getCount() == 0 && caseSelected != Global.TransactionType.CONSIGNMENT) {
             Toast.makeText(activity,
                     getString(R.string.warning_empty_products),
                     Toast.LENGTH_SHORT).show();
@@ -1107,8 +1059,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                     if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
                         processConsignment();
-                        global.orderProducts = new ArrayList<OrderProduct>();
-                        global.qtyCounter = new HashMap<String, String>();
+                        global.orderProducts = new ArrayList<>();
+                        global.qtyCounter = new HashMap<>();
                         Intent intent = new Intent(activity,
                                 ConsignmentCheckout_FA.class);
                         intent.putExtra("consignmentType", consignmentType);
@@ -1144,7 +1096,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
-        order.qbord_id = Global.lastOrdID.replace("-", "");
+        order.qbord_id = GenerateNewID.getQBOrderId(Global.lastOrdID);
         order.ord_HoldName = ord_HoldName;
         order.c_email = _email;
 
@@ -1194,9 +1146,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.ord_comment = global.getSelectedComments();
         order.ord_po = global.getSelectedPO();
 
-        String[] location = Global.getCurrLocation(activity);
-        order.ord_latitude = location[0];
-        order.ord_longitude = location[1];
+        Location currLocation = Global.getCurrLocation(activity, false);
+        order.ord_latitude = String.valueOf(currLocation.getLatitude());
+        order.ord_longitude = String.valueOf(currLocation.getLongitude());
 
         return order;
     }
@@ -1233,8 +1185,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     private void processConsignment() {
-        HashMap<String, HashMap<String, String>> summaryMap = new HashMap<String, HashMap<String, String>>();
-        HashMap<String, String> tempMap = new HashMap<String, String>();
+        HashMap<String, HashMap<String, String>> summaryMap = new HashMap<>();
+        HashMap<String, String> tempMap = new HashMap<>();
         CustomerInventory custInventory;
         int size, size2;
         String[] temp;
@@ -1244,7 +1196,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case ORDER:// Rack
                 Global.consignment_order = global.order;
                 Global.consignment_products = global.orderProducts;
-                Global.consignment_qtyCounter = new HashMap<String, String>(
+                Global.consignment_qtyCounter = new HashMap<>(
                         global.qtyCounter);
 
                 size2 = Global.custInventoryKey.size();
@@ -1283,7 +1235,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             Global.consignment_products.get(i).overwrite_price);
                     summaryMap.put(Global.consignment_products.get(i).prod_id,
                             tempMap);
-                    tempMap = new HashMap<String, String>();
+                    tempMap = new HashMap<>();
                 }
 
                 for (int i = 0; i < size2; i++) {
@@ -1307,7 +1259,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         tempMap.put("prod_price", temp[3]);
                         summaryMap.put(temp[0], tempMap);
                         Global.consignMapKey.add(temp[0]);
-                        tempMap = new HashMap<String, String>();
+                        tempMap = new HashMap<>();
                     }
                 }
 
@@ -1329,7 +1281,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     tempMap = Global.consignSummaryMap
                             .get(Global.cons_return_products.get(i).prod_id);
                     if (tempMap == null) {
-                        tempMap = new HashMap<String, String>();
+                        tempMap = new HashMap<>();
                         Global.consignMapKey
                                 .add(Global.cons_return_products.get(i).prod_id);
                         tempMap.put("prod_id",
@@ -1368,7 +1320,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 Global.cons_fillup_products = global.orderProducts;
                 Global.cons_fillup_qtyCounter = global.qtyCounter;
 
-                Global.custInventoryList = new ArrayList<CustomerInventory>();
+                Global.custInventoryList = new ArrayList<>();
                 custInventory = new CustomerInventory();
                 double invoiceTotalTemp;
                 size = Global.cons_fillup_products.size();
@@ -1383,7 +1335,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     tempMap = Global.consignSummaryMap
                             .get(Global.cons_fillup_products.get(i).prod_id);
                     if (tempMap == null) {
-                        tempMap = new HashMap<String, String>();
+                        tempMap = new HashMap<>();
                         Global.consignMapKey
                                 .add(Global.cons_fillup_products.get(i).prod_id);
                         tempMap.put("prod_id",
@@ -1458,7 +1410,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 size = Global.consignment_products.size();
 
-                Global.custInventoryList = new ArrayList<CustomerInventory>();
+                Global.custInventoryList = new ArrayList<>();
                 custInventory = new CustomerInventory();
 
                 for (int i = 0; i < size; i++) {
@@ -1492,7 +1444,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     summaryMap.put(Global.consignment_products.get(i).prod_id,
                             tempMap);
 
-                    tempMap = new HashMap<String, String>();
+                    tempMap = new HashMap<>();
                 }
 
                 Global.consignSummaryMap = summaryMap;
@@ -1546,19 +1498,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 break;
         }
 
-        global.orderProducts = new ArrayList<OrderProduct>();
-        global.qtyCounter = new HashMap<String, String>();
+        global.orderProducts = new ArrayList<>();
+        global.qtyCounter = new HashMap<>();
         if (mainLVAdapter != null)
             mainLVAdapter.notifyDataSetChanged();
         else
             restLVAdapter.notifyDataSetChanged();
         callBackUpdateHeaderTitle.updateHeaderTitle(title);
-
+        setupListView();
         reCalculate();
     }
 
     private void showSplitedOrderPreview() {
-        Gson gson = new Gson();
+        Gson gson = JsonUtils.getInstance();
         Type listType = new TypeToken<List<OrderSeatProduct>>() {
         }.getType();
         Intent intent = new Intent(activity, SplittedOrderSummary_FA.class);
@@ -1726,7 +1678,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
                 || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
-            global.orderProducts = new ArrayList<OrderProduct>();
+            global.orderProducts = new ArrayList<>();
             global.qtyCounter.clear();
             global.resetOrderDetailsValues();
         }
@@ -1881,24 +1833,52 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     false);
                 }
             } else {
-                OrderProductsHandler handler2 = new OrderProductsHandler(
+                OrderProductsHandler orderProductsHandler = new OrderProductsHandler(
                         activity);
-                HashMap<String, List<Orders>> temp = handler2
+                HashMap<String, List<Orders>> temp = orderProductsHandler
                         .getStationPrinterProducts(global.order.ord_id);
 
                 String[] sArr = temp.keySet().toArray(
                         new String[temp.keySet().size()]);
                 int printMap;
+                boolean splitByCat = myPref.getPreferences(MyPreferences.pref_split_stationprint_by_categories);
+                EMSBluetoothStarPrinter currentDevice = null;
+                boolean printHeader = true;
+                StringBuffer receipt = new StringBuffer();
+                String currentPrinterName = null;
                 for (String aSArr : sArr) {
                     if (Global.multiPrinterMap.containsKey(aSArr)) {
                         printMap = Global.multiPrinterMap.get(aSArr);
-//                        Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
+//                      Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
-                                && Global.multiPrinterManager.get(printMap).currentDevice != null)
-                            Global.multiPrinterManager.get(printMap).currentDevice
-                                    .printStationPrinter(temp.get(aSArr),
-                                            global.order.ord_id);
+                                && Global.multiPrinterManager.get(printMap).currentDevice != null) {
+                            if (currentPrinterName == null || !currentPrinterName.equalsIgnoreCase(((EMSBluetoothStarPrinter)
+                                    Global.multiPrinterManager.get(printMap).currentDevice).getPortName())) {
+                                printHeader = true;
+                                if (currentDevice != null) {
+                                    currentDevice.print(receipt.toString(), true);
+                                    receipt.setLength(0);
+                                    currentDevice.cutPaper();
+                                }
+                            }
+                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).currentDevice;
+                            receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
+                                    global.order.ord_id, splitByCat, printHeader));
+
+                            printHeader = splitByCat;
+                            currentPrinterName = currentDevice.getPortName();
+                            if (splitByCat) {
+                                currentDevice.print(receipt.toString(), true);
+                                receipt.setLength(0);
+                                currentDevice.cutPaper();
+                            }
+                        }
                     }
+                }
+                if (currentDevice != null && !TextUtils.isEmpty(receipt)) {
+                    currentDevice.print(receipt.toString(), true);
+                    receipt.setLength(0);
+                    currentDevice.cutPaper();
                 }
             }
             return null;
@@ -2163,7 +2143,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     List<HashMap<String, String>> mapList = handleTemplate
                             .getTemplate(myPref.getCustID());
                     int size = mapList.size();
-                    global.orderProducts = new ArrayList<OrderProduct>();
+                    global.orderProducts = new ArrayList<>();
 
                     OrderProduct ordProd = new OrderProduct();
                     Orders anOrder = new Orders();
@@ -2237,6 +2217,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
+        if (((OrderingMain_FA) activity).isToGo && !mainLVAdapter.isEmpty()) {
+            mainLVAdapter.selectedPosition = mainLVAdapter.getCount();
+        }
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
             receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);

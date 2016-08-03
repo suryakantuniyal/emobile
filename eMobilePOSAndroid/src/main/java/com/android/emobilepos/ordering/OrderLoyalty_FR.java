@@ -104,18 +104,20 @@ public class OrderLoyalty_FR extends Fragment implements OnClickListener {
 
 
     public static void recalculatePoints(String pointsSubTotal, String pointsUsed, String pointsAcumulable, String grandTotal) {
+        int temp = 0;
         if (fieldPointsSubTotal != null) {
             fieldPointsSubTotal.setText(pointsSubTotal);
             grandTotalValue.setText(grandTotal);
             fieldPointsInUse.setText(pointsUsed);
             fieldPointsAcumulable.setText(pointsAcumulable);
-            int temp = (int) (Double.parseDouble(balance) - Double.parseDouble(pointsUsed));
+            temp = (int) (Double.parseDouble(balance) - Double.parseDouble(pointsUsed));
             fieldPointsAvailable.setText(Integer.toString(temp));
         }
 
         //Used for later loyalty sync at checkout
         Global.loyaltyCharge = pointsUsed;
         Global.loyaltyAddAmount = pointsAcumulable;
+        Global.loyaltyPointsAvailable = Integer.toString(temp);
     }
 
 

@@ -28,7 +28,6 @@ import com.starmicronics.starioextension.starioextmanager.StarIoExtManagerListen
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,22 +37,17 @@ import drivers.star.utils.PrinterSetting;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
-import util.RasterDocument;
-import util.RasterDocument.RasPageEndMode;
-import util.RasterDocument.RasSpeed;
-import util.RasterDocument.RasTopMargin;
-import util.StarBitmap;
 
 public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
-    private String portSettings, portName;
+    private String portSettings;
+    private String portName;
 
-    private StarIOPort portForCardReader;
     private EMSCallBack callBack, scannerCallBack;
     private StarIoExtManager mStarIoExtManager;
-    private Handler handler;// = new Handler();
+    private Handler handler;
     private ProgressDialog myProgressDialog;
     private EMSDeviceDriver thisInstance;
     private boolean stopLoop = false;
@@ -128,7 +122,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 enableCenter = new byte[]{0x1b, 0x61, 0x01};
                 disableCenter = new byte[]{0x1b, 0x61, 0x00};
             } else {
-                if (portName.contains("TCP") && !portNumber.equals("9100"))
+                if (getPortName().contains("TCP") && portNumber != null && !portNumber.equals("9100"))
                     portSettings = portNumber;
                 else
                     portSettings = "";
@@ -149,18 +143,20 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             }
 
-            if (didConnect) {
-                this.edm.driverDidConnectToDevice(thisInstance, false);
-            } else {
-
-                this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
-            }
-
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
+        if (didConnect) {
+            this.edm.driverDidConnectToDevice(thisInstance, false);
+        } else {
+            this.edm.driverDidNotConnectToDevice(thisInstance, null, false);
+        }
 
         return didConnect;
+    }
+
+    public String getPortName() {
+        return portName;
     }
 
     public class processConnectionAsync extends AsyncTask<Integer, String, String> {
@@ -188,7 +184,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     enableCenter = new byte[]{0x1b, 0x61, 0x01};
                     disableCenter = new byte[]{0x1b, 0x61, 0x00};
                 } else {
-                    if (portName.contains("TCP") && !portNumber.equals("9100"))
+                    if (getPortName().contains("TCP") && !portNumber.equals("9100"))
                         portSettings = portNumber;
                     else
                         portSettings = "";
@@ -270,17 +266,18 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
             setPaperWidth(LINE_WIDTH);
-
-//            verifyConnectivity();
+            if (port == null) {
+                verifyConnectivity();
+            }
 
             Thread.sleep(1000);
 
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
             printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
 
         } catch (StarIOPortException e) {
@@ -301,27 +298,20 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-        try {
             setPaperWidth(LINE_WIDTH);
 //            verifyConnectivity();
 
-            Thread.sleep(1000);
-
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            Thread.sleep(1000);
+//
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
 
             printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
-        } catch (StarIOPortException e) {
-            return false;
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return true;
     }
 
@@ -402,12 +392,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             verifyConnectivity();
 
             Thread.sleep(1000);
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
 
             printReportReceipt(curDate, LINE_WIDTH);
 
@@ -438,12 +428,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             Thread.sleep(1000);
 
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
 
             printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
@@ -461,8 +451,8 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         if (!isPOSPrinter) {
             callBack = null;
             try {
-                if (portForCardReader != null) {
-                    portForCardReader.writePort(new byte[]{0x04}, 0, 1);
+                if (port != null) {
+                    port.writePort(new byte[]{0x04}, 0, 1);
                     stopLoop = true;
                     try {
                         Thread.sleep(500);
@@ -474,12 +464,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 e.printStackTrace();
 
             } finally {
-                if (portForCardReader != null) try {
-                    StarIOPort.releasePort(portForCardReader);
-                    portForCardReader = null;
-                } catch (StarIOPortException e1) {
-                    e1.printStackTrace();
-                }
+//                if (portForCardReader != null) try {
+//                    StarIOPort.releasePort(portForCardReader);
+//                    portForCardReader = null;
+//                } catch (StarIOPortException e1) {
+//                    e1.printStackTrace();
+//                }
             }
         }
     }
@@ -499,17 +489,18 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         public void run() {
 
             try {
-                if (portForCardReader == null) {
-                    stopLoop = false;
-                    portForCardReader = getStarIOPort();
-
-                    ReceiveThread receiveThread = new ReceiveThread();
-                    receiveThread.start();
-                    portForCardReader.writePort(new byte[]{0x1b, 0x4d, 0x45}, 0, 3);
-                    handler.post(doUpdateDidConnect);
+                if (port == null) {
+                    port = getStarIOPort();
                 }
+                stopLoop = false;
+                ReceiveThread receiveThread = new ReceiveThread();
+                receiveThread.start();
+                port.writePort(new byte[]{0x1b, 0x4d, 0x45}, 0, 3);
+                handler.post(doUpdateDidConnect);
 
-            } catch (StarIOPortException ignored) {
+
+            } catch (StarIOPortException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -528,7 +519,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
                 while (!stopLoop) {
 
-                    if (portForCardReader.readPort(mcrData1, 0, 1) > 0) {
+                    if (port.readPort(mcrData1, 0, 1) > 0) {
 
                         if (!doneParsing) {
                             t = new String(mcrData1, "windows-1252");
@@ -612,12 +603,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             verifyConnectivity();
 
             Thread.sleep(1000);
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
 
             printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
 
@@ -636,12 +627,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
             Thread.sleep(1000);
 
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
 
             printOpenInvoicesReceipt(invID, LINE_WIDTH);
 
@@ -653,37 +644,44 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         return true;
     }
 
+//    public void print(String str, boolean isLargeFont) {
+//        try {
+//            port = getStarIOPort();
+//
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException ignored) {
+//            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            } else {
+//                ArrayList<byte[]> commands = new ArrayList<byte[]>();
+//                commands.add(new byte[]{0x1b, 0x40}); // Initialization
+//                byte[] characterheightExpansion = new byte[]{0x1b, 0x68, 0x00};
+//                characterheightExpansion[2] = 48;
+//                commands.add(characterheightExpansion);
+//                byte[] characterwidthExpansion = new byte[]{0x1b, 0x57, 0x00};
+//                characterwidthExpansion[2] = 48;
+//                commands.add(characterwidthExpansion);
+//                commands.add(new byte[]{0x0a});
+//                byte[] commandToSendToPrinter = convertFromListbyteArrayTobyteArray(commands);
+//                port.writePort(commandToSendToPrinter, 0, commandToSendToPrinter.length);
+//            }
+//            super.print(str, "", isLargeFont);
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
-        try {
-            port = getStarIOPort();
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignored) {
-            }
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            } else {
-                port.writePort(new byte[]{0x1b, 0x1d, 0x74, 0x20}, 0, 4);
-                byte[] characterExpansion = new byte[]{0x1b, 0x69, 0x00, 0x00};
-                characterExpansion[2] = (byte) (1 + '0');
-                characterExpansion[3] = (byte) (1 + '0');
-
-                port.writePort(characterExpansion, 0, characterExpansion.length);
-                port.writePort(disableCenter, 0, disableCenter.length); // disable
-                // center
-            }
-
-            printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
-
-            // db.close();
-        } catch (StarIOPortException ignored) {
-
-        }
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper,
+                                      boolean printHeader) {
+        String receipt;
+        receipt = printStationPrinterReceipt(orders, ordID, 42, cutPaper, printHeader);
+        return receipt;
     }
 
     @Override
@@ -716,12 +714,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             verifyConnectivity();
 
             Thread.sleep(1000);
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
 
             printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
 
@@ -744,12 +742,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             verifyConnectivity();
 
             Thread.sleep(1000);
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
 
             printShiftDetailsReceipt(LINE_WIDTH, shiftID);
         } catch (StarIOPortException e) {
@@ -769,7 +767,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
             if (handler == null)
                 handler = new Handler();
             if (_callBack != null) {
-                mStarIoExtManager = new StarIoExtManager(StarIoExtManager.Type.OnlyBarcodeReader, portName, "", 10000,
+                mStarIoExtManager = new StarIoExtManager(StarIoExtManager.Type.OnlyBarcodeReader, getPortName(), "", 10000,
                         this.activity); // 10000mS!!!
                 mStarIoExtManager.setListener(mStarIoExtManagerListener);
                 // mStarIoExtManager.disconnect();
@@ -931,13 +929,13 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
     }
 
     private StarIOPort getStarIOPort() throws StarIOPortException {
-        if (!portName.toUpperCase().contains("TCP")) {
+        if (!getPortName().toUpperCase().contains("TCP")) {
             releasePrinter();
             port = null;
         }
         if (port == null || port.retreiveStatus() == null || port.retreiveStatus().offline) {
-            if (portName.toUpperCase().contains("TCP")) {
-                String ip = portName.replace("TCP:", "");
+            if (getPortName().toUpperCase().contains("TCP")) {
+                String ip = getPortName().replace("TCP:", "");
                 int port = 80;
                 try {
                     port = TextUtils.isEmpty(portSettings) ? 80 : Integer.parseInt(portSettings);
@@ -949,9 +947,9 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 }
             }
             try {
-                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
-            }catch (StarIOPortException e){
-                port = StarIOPort.getPort(portName, portSettings, 30000, activity);
+                port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
+            } catch (StarIOPortException e) {
+                port = StarIOPort.getPort(getPortName(), portSettings, 30000, activity);
             }
         }
         return port;

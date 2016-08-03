@@ -5,7 +5,6 @@ import android.app.Activity;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
-import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Order;
@@ -17,7 +16,6 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 39;
+    public static final int VERSION = 41;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -319,6 +319,7 @@ public class DBManager {
             "CREATE INDEX prod_id_index ON EmpInv (prod_id)",
             "CREATE INDEX VolumePrices_prod_id_index ON VolumePrices (prod_id)",
             "CREATE INDEX minQty_index ON VolumePrices (minQty)",
+            "CREATE INDEX maxQty_index ON VolumePrices (maxQty)",
             "CREATE INDEX pricelevel_id_index ON VolumePrices (pricelevel_id)",
             "CREATE INDEX Products_Images_prod_id_index ON Products_Images (prod_id)",
             "CREATE INDEX type_index ON Products_Images (type)",
@@ -326,10 +327,14 @@ public class DBManager {
             "CREATE INDEX prod_upc_index ON Products (prod_upc)",
             "CREATE INDEX prod_name_index ON Products (prod_name)",
             "CREATE INDEX prod_type_index ON Products (prod_type)",
-            "CREATE INDEX ProductChainXRef_prod_id_index ON ProductChainXRef (prod_id)",
+            "CREATE INDEX prod_taxcode_index ON Products (prod_taxcode)",
+            "CREATE INDEX productchainxref_prod_id_index ON ProductChainXRef (prod_id)",
             "CREATE INDEX cust_chain_index ON ProductChainXRef (cust_chain)",
-            "CREATE INDEX prod_alias_index ON ProductAliases (prod_alias)"
-
+            "CREATE INDEX productaliases_alias_index ON ProductAliases (prod_alias)",
+            "CREATE INDEX productaliases_prod_id_index ON ProductAliases (prod_id)",
+            "CREATE INDEX pricelevelitems_prod_id_index ON PriceLevelItems (pricelevel_prod_id)",
+            "CREATE INDEX pricepevel_pricelevel_id_index ON PriceLevel (pricelevel_id)",
+            "CREATE INDEX salestaxcodes_taxcode_id_index ON SalesTaxCodes (taxcode_id)"
     };
 
     private final String CREATE_ADDRESS = "CREATE TABLE [Address] ([addr_id] varchar NOT NULL ,[cust_id]varchar NOT NULL ,[addr_b_str1]varchar,"
@@ -395,7 +400,7 @@ public class DBManager {
             + "[uom_id] [varchar],[prod_istaxable][tinyint] NULL,[discount_is_taxable][tinyint],[discount_is_fixed][tinyint],[onHand][double],"
             + "[imgURL][varchar],[prod_price][money],[prod_type][varchar],[cardIsActivated][tinyint] DEFAULT 0,[itemTotal][money],[itemSubtotal][money],[addon_section_name][varchar],"
             + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, " +
-            " [prod_upc] [varchar](50) NULL, [assignedSeat] [varchar](10), [seatGroupId][int] NULL)";
+            " [prod_upc] [varchar](50) NULL, [assignedSeat] [varchar](10), [seatGroupId][int] NULL, [prod_price_points] [int] NULL)";
 
     private final String CREATE_ORDERS = "CREATE TABLE [Orders]( [ord_id] [varchar](50) PRIMARY KEY NOT NULL, [qbord_id] [varchar](50) NULL, "
             + "[qbtxid] [varchar](255) NULL, [emp_id] [int] NULL, [cust_id] [varchar](50) NULL,[custidkey] [varchar], [ord_po] [varchar](50) NULL, [total_lines] [int] NULL, "

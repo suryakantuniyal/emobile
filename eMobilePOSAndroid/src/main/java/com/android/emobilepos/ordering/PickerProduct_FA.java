@@ -31,24 +31,28 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.UomDAO;
-import com.android.database.OrdProdAttrList_DB;
 import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsAttrHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesHandler;
-import com.android.database.UOMHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.ShowProductImageActivity;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.models.UOM;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TerminalDisplay;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -61,6 +65,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
+import io.realm.RealmObject;
 import io.realm.RealmResults;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
@@ -198,18 +203,18 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         headerProductID.setText(prodID);
         imageLoader.displayImage(imgURL, headerImage, options);
 
-        OrdProdAttrList_DB ordProdAttrDB = new OrdProdAttrList_DB(activity);
-        ordProdAttr = ordProdAttrDB.getRequiredOrdAttr(prodID);
+//        OrdProdAttrList_DB ordProdAttrDB = new OrdProdAttrList_DB(activity);
+        ordProdAttr = "";
+        global.ordProdAttrPending = new ArrayList<ProductAttribute>(OrderProductAttributeDAO.getByProdId(prodID, true));
 
+        for (ProductAttribute attribute : global.ordProdAttrPending) {
+            ordProdAttr += attribute.getAttributeName() + "\n";
+        }
         setupTax();
-
         lView.addHeaderView(header);
-
-
         lv_adapter = new ListViewAdapter(activity);
         lView.setAdapter(lv_adapter);
         lView.setOnItemClickListener(this);
-
         hasBeenCreated = true;
     }
 
@@ -282,6 +287,19 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 activity.finish();
                 break;
             case SEC_ADDITIONAL_INFO:
+                Gson gson = new GsonBuilder()
+                        .setExclusionStrategies(new ExclusionStrategy() {
+                            @Override
+                            public boolean shouldSkipField(FieldAttributes f) {
+                                return f.getDeclaringClass().equals(RealmObject.class);
+                            }
+
+                            @Override
+                            public boolean shouldSkipClass(Class<?> clazz) {
+                                return false;
+                            }
+                        })
+                        .create();
                 Intent intent = new Intent(activity, OrderAttributes_FA.class);
                 intent.putExtra("prod_id", prodID);
                 if (isModify) {
@@ -579,8 +597,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         lView.setAdapter(lv_adapter);
     }
 
+
     private void addProductToOrder() {
-        if (global.ordProdAttrPending.size() > 0) {
+        OrderProduct product = global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
+        List<OrderProduct> products = new ArrayList<OrderProduct>();
+        if (product != null) {
+            products.add(product);
+        }
+        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global, products)) {
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
         } else {
             double onHandQty = 0;
@@ -640,6 +664,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderedProducts.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
 
         orderedProducts.prod_taxValue = taxTotal;
+        if (Double.parseDouble(orderedProducts.overwrite_price) <= Double.parseDouble(disTotal)) {
+            disTotal = orderedProducts.overwrite_price;
+        }
         orderedProducts.discount_value = disTotal;
 
 
@@ -961,6 +988,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         // Still need to do add the appropriate tax/discount value
         ord.prod_taxValue = taxTotal;
+        if (Double.parseDouble(ord.overwrite_price) <= Double.parseDouble(disTotal)) {
+            disTotal = ord.overwrite_price;
+        }
         ord.discount_value = disTotal;
         ord.prod_taxtype = orderProduct.tax_type;
 
@@ -1029,8 +1059,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         int size = global.ordProdAttr.size();
         for (int i = 0; i < size; i++) {
-            if (global.ordProdAttr.get(i).ordprod_id == null || global.ordProdAttr.get(i).ordprod_id.isEmpty())
-                global.ordProdAttr.get(i).ordprod_id = randomUUIDString;
+            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty())
+                global.ordProdAttr.get(i).setProductId(randomUUIDString);
         }
 
 
@@ -1050,6 +1080,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                 sb.append(ord.ordprod_desc);
                 int tempSize = global.orderProductAddons.size();
+                ord.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
+
                 for (int i = 0; i < tempSize; i++) {
 
                     if (global.orderProductAddons.get(i).isAdded.equals("0"))//Not added
@@ -1068,20 +1100,20 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         global.orderProducts.add(ord);
 
 
-        if (myPref.isSam4s(true, true)) {
-            String row1 = ord.ordprod_name;
-            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        if (myPref.isSam4s(true, true)) {
+        String row1 = ord.ordprod_name;
+        String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+        TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
 
-        } else if (myPref.isPAT100()) {
-            String row1 = ord.ordprod_name;
-            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        } else if (myPref.isESY13P1()) {
-            String row1 = ord.ordprod_name;
-            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        }
+//        } else if (myPref.isPAT100()) {
+//            String row1 = ord.ordprod_name;
+//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        } else if (myPref.isESY13P1()) {
+//            String row1 = ord.ordprod_name;
+//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
+//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
+//        }
 
         if (OrderingMain_FA.returnItem) {
             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;

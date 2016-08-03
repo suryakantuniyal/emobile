@@ -29,10 +29,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
+import plaintext.EMSPlainTextHelper;
 
 public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
     static final int MESSAGE_START_WORK = Integer.MAX_VALUE - 4;
@@ -169,8 +169,6 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
 
-
-
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
 
@@ -215,7 +213,7 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-  //      printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        //      printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
@@ -414,7 +412,6 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
                             }
 
 
-
                             zebraHandler.post(doUpdateViews);
                         }
 
@@ -501,8 +498,8 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orders, String ordID) {
-        printStationPrinterReceipt(orders, ordID, LINE_WIDTH);
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
 
     }
 

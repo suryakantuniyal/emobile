@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -62,13 +63,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     private EMSDeviceManager edm;
     static Hapi hapi;
-    String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
+    private static String sharedSecret = "A110AEBBF5E0160A6F4427E052584C95CAD0C14072225CDD8B6E439FF0B976C1";
     protected static Device device;
     private Handler handler;
     private EMSCallBack msrCallBack;
     String msg = "Failed to connect";
     static boolean connected = false;
-    private ProgressDialog myProgressDialog;
+    private static ProgressDialog myProgressDialog;
     com.handpoint.api.Currency currency = com.handpoint.api.Currency.valueOf(java.util.Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 
     @Override
@@ -95,13 +96,15 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
             Post httpClient = new Post();
             String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
             sharedSecret = getWorkingKey(xml);
-
+            if (TextUtils.isEmpty(sharedSecret)) {
+                return false;
+            }
             hapi = HapiFactory.getAsyncInterface(this, activity).defaultSharedSecret(sharedSecret);
         }
         synchronized (hapi) {
-            discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
+            discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
             try {
-                hapi.wait();
+                hapi.wait(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -115,7 +118,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
         InputSource inSource = new InputSource(new StringReader(xml));
         String workingKey = "";
-        SAXParser sp = null;
+        SAXParser sp;
         try {
             sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
@@ -165,8 +168,12 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
             if (hapi == null) {
                 hapi = HapiFactory.getAsyncInterface(EMSHandpoint.this, activity).defaultSharedSecret(sharedSecret);
             }
-            discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
-            dismissDialog();
+            if (!TextUtils.isEmpty(sharedSecret)) {
+                discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
+            } else {
+                dismissDialog();
+                edm.driverDidNotConnectToDevice(EMSHandpoint.this, msg, true);
+            }
         }
     }
 
@@ -206,8 +213,8 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
-
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
     @Override
@@ -281,7 +288,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         msrCallBack = callBack;
         if (!connected) {
             synchronized (hapi) {
-                discoverDevices(myPref.getPrinterName(), myPref.getPrinterMACAddress());
+                discoverDevices(myPref.getPrinterName(), myPref.getSwiperMACAddress());
                 try {
                     hapi.wait();
                 } catch (InterruptedException e) {
@@ -334,8 +341,33 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
 
     public void discoverDevices(String deviceName, String macAddress) {
-//        device = new Device(deviceName, macAddress, "", ConnectionMethod.BLUETOOTH);
-        hapi.listDevices(ConnectionMethod.BLUETOOTH);
+        device = new Device(deviceName, macAddress, "", ConnectionMethod.BLUETOOTH);
+        if (!TextUtils.isEmpty(device.getAddress()) && !TextUtils.isEmpty(sharedSecret)) {
+            EMSHandpoint.hapi.useDevice(EMSHandpoint.device);
+            connected = true;
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                dismissDialog();
+//                Looper.prepare();
+                if (connected) {
+                    this.edm.driverDidConnectToDevice(this, true);
+                } else {
+                    this.edm.driverDidNotConnectToDevice(this, msg, true);
+                }
+//                Looper.loop();
+            } else {
+                synchronized (hapi) {
+                    hapi.notifyAll();
+                    if (connected) {
+                        this.edm.driverDidConnectToDevice(this, false);
+                    } else {
+                        this.edm.driverDidNotConnectToDevice(this, msg, false);
+                    }
+                }
+            }
+        } else {
+            this.edm.driverDidNotConnectToDevice(this, msg, false);
+        }
+//        hapi.listDevices(ConnectionMethod.BLUETOOTH);
     }
 
 
@@ -385,6 +417,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void deviceDiscoveryFinished(List<Device> devices) {
+
         for (Device device : devices) {
             if (device.getName() != null) {
                 if (device.getName().equals(myPref.getSwiperName())) {
@@ -444,6 +477,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         hapi.getPendingTransaction();
         boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".", "")), currency);
         if (!succeed) {
+            dismissDialog();
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
     }

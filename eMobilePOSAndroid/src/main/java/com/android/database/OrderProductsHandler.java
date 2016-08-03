@@ -64,11 +64,14 @@ public class OrderProductsHandler {
 
     private static final String assignedSeat = "assignedSeat";
     private static final String seatGroupId = "seatGroupId";
+    private static final String prodPricePoints = "prod_price_points";
+
     public static final List<String> attr = Arrays.asList(addon, isAdded, isPrinted, item_void, ordprod_id,
             ord_id, prod_id, prod_sku, prod_upc, ordprod_qty, overwrite_price, reason_id, ordprod_name, ordprod_comment, ordprod_desc,
             pricelevel_id, prod_seq, uom_name, uom_conversion, uom_id, prod_taxId, prod_taxValue, discount_id,
             discount_value, prod_istaxable, discount_is_taxable, discount_is_fixed, onHand, imgURL, prod_price,
-            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, assignedSeat, seatGroupId, addon_ordprod_id);
+            prod_type, itemTotal, itemSubtotal, addon_section_name, addon_position, hasAddons, cat_id, assignedSeat,
+            seatGroupId, addon_ordprod_id, prodPricePoints);
 
 
     public StringBuilder sb1, sb2, sb3;
@@ -184,6 +187,7 @@ public class OrderProductsHandler {
 
                 insert.bindString(index(assignedSeat), prod.assignedSeat == null ? "" : prod.assignedSeat);
                 insert.bindLong(index(seatGroupId), prod.seatGroupId);
+                insert.bindLong(index(prodPricePoints), new Double(prod.prod_price_points).longValue());
 
                 insert.execute();
                 insert.clearBindings();
@@ -198,7 +202,7 @@ public class OrderProductsHandler {
             DBManager._db.setTransactionSuccessful();
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             DBManager._db.endTransaction();
         }
@@ -436,6 +440,7 @@ public class OrderProductsHandler {
         product.assignedSeat = cursor.getString(cursor.getColumnIndex(assignedSeat));
         product.addon = cursor.getString(cursor.getColumnIndex(addon));
         String groupId = cursor.getString(cursor.getColumnIndex(seatGroupId));
+        product.prod_price_points = cursor.getString(cursor.getColumnIndex(prodPricePoints));
         product.seatGroupId = groupId == null || groupId.isEmpty() ? 0 : Integer.parseInt(groupId);
 
         return product;
@@ -465,31 +470,37 @@ public class OrderProductsHandler {
         return count;
     }
 
-    public List<Orders> getPrintOrderedProducts(String ordID) {
+    public List<OrderProduct> getPrintOrderedProducts(String ordID) {
 
 
-        List<Orders> list = new ArrayList<Orders>();
+        List<OrderProduct> list = new ArrayList<OrderProduct>();
 
 
-        Cursor cursor = DBManager._db.rawQuery(("SELECT ordprod_name, ordprod_id,ordprod_desc,overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty) ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon,isAdded,hasAddons,discount_id,discount_value FROM " + table_name + " WHERE addon = '0' AND ord_id = '") + ordID + "'", null);
+        Cursor cursor = DBManager._db.rawQuery(("SELECT ordprod_name, prod_price_points, ordprod_id,ordprod_desc," +
+                "overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty)" +
+                " ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon," +
+                "isAdded,hasAddons,discount_id,discount_value FROM " + table_name +
+                " WHERE addon = '0' AND ord_id = '") + ordID + "'", null);
 
-        Orders[] orders = new Orders[cursor.getCount()];
+        OrderProduct[] orders = new OrderProduct[cursor.getCount()];
 
         if (cursor.moveToFirst()) {
             int i = 0;
             do {
-                orders[i] = new Orders();
-                orders[i].setOrdprodID(cursor.getString(cursor.getColumnIndex(ordprod_id)));
-                orders[i].setName(cursor.getString(cursor.getColumnIndex(ordprod_name)));
-                orders[i].setProdDescription(cursor.getString(cursor.getColumnIndex(ordprod_desc)));
-                orders[i].setOverwritePrice(format(cursor.getString(cursor.getColumnIndex(overwrite_price))));
-                orders[i].setTotal(format(cursor.getString(cursor.getColumnIndex("total"))));
-                orders[i].setQty(cursor.getString(cursor.getColumnIndex(ordprod_qty)));
-                orders[i].setAddon(cursor.getString(cursor.getColumnIndex(addon)));
-                orders[i].setIsAdded(cursor.getString(cursor.getColumnIndex(isAdded)));
-                orders[i].setHasAddon(cursor.getString(cursor.getColumnIndex(hasAddons)));
-                orders[i].setDiscountID(cursor.getString(cursor.getColumnIndex(discount_id)));
-                orders[i].setItemDiscount(cursor.getString(cursor.getColumnIndex(discount_value)));
+                orders[i] = new OrderProduct();
+                orders[i].ordprod_id = cursor.getString(cursor.getColumnIndex(ordprod_id));
+                orders[i].ordprod_name = cursor.getString(cursor.getColumnIndex(ordprod_name));
+                orders[i].ordprod_desc = cursor.getString(cursor.getColumnIndex(ordprod_desc));
+                orders[i].overwrite_price = (format(cursor.getString(cursor.getColumnIndex(overwrite_price))));
+                orders[i].itemTotal = (format(cursor.getString(cursor.getColumnIndex("total"))));
+                orders[i].ordprod_qty = (cursor.getString(cursor.getColumnIndex(ordprod_qty)));
+                orders[i].addon = (cursor.getString(cursor.getColumnIndex(addon)));
+                orders[i].isAdded = (cursor.getString(cursor.getColumnIndex(isAdded)));
+                orders[i].hasAddons = (cursor.getString(cursor.getColumnIndex(hasAddons)));
+                orders[i].discount_id = (cursor.getString(cursor.getColumnIndex(discount_id)));
+                orders[i].discount_value = (cursor.getString(cursor.getColumnIndex(discount_value)));
+                orders[i].prod_price_points = (cursor.getString(cursor.getColumnIndex(prodPricePoints)));
+
                 list.add(orders[i]);
                 i++;
             } while (cursor.moveToNext());
@@ -627,7 +638,7 @@ public class OrderProductsHandler {
     public List<OrderProduct> getOrderedProducts(String ordID) {
         List<OrderProduct> list = new ArrayList<OrderProduct>();
 
-        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
+        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, prod_price_points, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
 
         Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
         OrderProduct products;
@@ -654,6 +665,8 @@ public class OrderProductsHandler {
 
                 data = cursor.getString(cursor.getColumnIndex(overwrite_price));
                 products.overwrite_price = data;
+
+                products.prod_price_points = cursor.getString(cursor.getColumnIndex(prodPricePoints));
 
                 list.add(products);
             } while (cursor.moveToNext());

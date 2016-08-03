@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.database.OrderProductsHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
@@ -101,7 +100,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         global = (Global) activity.getApplication();
         prodAddonsHandler = new ProductAddonsHandler(activity);
         _prod_id = extras.getString("prod_id");
-        List<OrderProduct> orderProductAddons = OrderProductsHandler.getOrderProductAddons(_prod_id);
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(0).get("cat_id"));
         myGridView = (GridView) findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
@@ -254,7 +252,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, _cat_id);
         if (c != null && c.moveToPosition(pos)) {
             OrderProduct ord = new OrderProduct();
-            ord.assignedSeat=selectedSeatNumber;
+            ord.assignedSeat = selectedSeatNumber;
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             ord.ordprod_qty = "1";
             ord.ordprod_name = c.getString(c.getColumnIndex("prod_name"));
@@ -350,6 +348,8 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         ordProd.ordprod_desc = itemData[3] + _ord_desc.toString();
         ordProd.prod_sku = itemData[13];
         ordProd.prod_upc = itemData[14];
+        ordProd.addonsProducts.clear();
+        ordProd.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
         global.orderProducts.set(position, ordProd);
     }
 

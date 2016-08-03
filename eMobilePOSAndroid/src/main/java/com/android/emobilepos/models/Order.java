@@ -7,10 +7,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
-import java.util.List;
-
-import io.realm.RealmList;
-import io.realm.RealmObject;
+import util.JsonUtils;
 
 public class Order implements Cloneable {
     public String ord_id = "";
@@ -94,7 +91,7 @@ public class Order implements Cloneable {
 
 
     public String toJson() {
-        Gson gson = new Gson();
+        Gson gson = JsonUtils.getInstance();
         String json = gson.toJson(this, Order.class);
         return json;
     }

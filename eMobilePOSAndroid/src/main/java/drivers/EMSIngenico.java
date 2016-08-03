@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.android.emobilepos.R;
@@ -251,12 +252,14 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
         new Thread(new Runnable() {
             public void run() {
-
+                if (!isConnected()) {
+                    initRBA();
+                }
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_FORM_NAME, "CCOD.K3Z");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_PROMPT_INDEX, "Slide, Tap or Insert Card");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_ENABLE_DEVICES, "MCS");
                 RBA_API.SetParam(PARAMETER_ID.P23_REQ_OPTIONS, "1");
-                if (!getConnectionStatus()) {
+                if (!isConnected()) {
                     autoConnect(activity, edm, 0, isPOSPrinter, "", "");
                 }
                 ERROR_ID result = RBA_API.ProcessMessage(MESSAGE_ID.M23_CARD_READ);
@@ -334,6 +337,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     @Override
     public void releaseCardReader() {
         MSG94_BarcodeConfig("01", "00", null);
+        if (isConnected()) {
+            RBA_API.SetParam(PARAMETER_ID.P00_REQ_REASON_CODE, ("0000"));
+            RBA_API.ProcessMessage(MESSAGE_ID.M00_OFFLINE);
+        }
+
         barcodeReaderLoaded = false;
     }
 
@@ -434,7 +442,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
             case M23_CARD_READ: {
                 String exitType = RBA_API.GetParam(PARAMETER_ID.P23_RES_EXIT_TYPE);
 
-                switch (Integer.parseInt(exitType)) {
+                switch (TextUtils.isEmpty(exitType) ? 99 : Integer.parseInt(exitType)) {
                     case 0: {
                         String track1 = RBA_API.GetParam(PARAMETER_ID.P23_RES_TRACK1);
                         String track2 = RBA_API.GetParam(PARAMETER_ID.P23_RES_TRACK2);
@@ -590,8 +598,8 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
-
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
     @Override
@@ -614,7 +622,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     public String MSG29_GetVariable(String variable) {
-        if (!getConnectionStatus()) {
+        if (!isConnected()) {
             return null;
         }
 
@@ -641,7 +649,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
      * ------------------------------ Get Connection Status
      * ------------------------------
      */
-    public boolean getConnectionStatus() {
+    public boolean isConnected() {
         return RBA_API.GetConnectionStatus() == RBA_API.ConnectionStatus.CONNECTED;
     }
 

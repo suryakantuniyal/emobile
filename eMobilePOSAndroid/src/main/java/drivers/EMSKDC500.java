@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import interfaces.EMSCallBack;
+import interfaces.EMSDeviceManagerPrinterDelegate;
 import koamtac.kdc.sdk.KDCBarcodeDataReceivedListener;
 import koamtac.kdc.sdk.KDCConnectionListener;
 import koamtac.kdc.sdk.KDCConstants;
@@ -39,8 +41,6 @@ import koamtac.kdc.sdk.KPOSConstants;
 import koamtac.kdc.sdk.KPOSData;
 import koamtac.kdc.sdk.KPOSDataReceivedListener;
 import main.EMSDeviceManager;
-import interfaces.EMSCallBack;
-import interfaces.EMSDeviceManagerPrinterDelegate;
 
 /**
  * Created by Guarionex on 12/8/2015.
@@ -193,8 +193,8 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
-
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
     @Override

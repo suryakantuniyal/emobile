@@ -30,9 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import main.EMSDeviceManager;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
 
 
 public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
@@ -79,7 +79,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         } else {
             MyPreferences myPref = new MyPreferences(activity);
             mMTSCRA.setDeviceType(MagTekSCRA.DEVICE_TYPE_BLUETOOTH);
-            mMTSCRA.setDeviceID(myPref.swiperMACAddress(true, null));
+            mMTSCRA.setDeviceID(myPref.getSwiperMACAddress());
             openDevice();
         }
     }
@@ -389,7 +389,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
             // TODO Auto-generated method stub
             MyPreferences myPref = new MyPreferences(activity);
             mMTSCRA.setDeviceType(MagTekSCRA.DEVICE_TYPE_BLUETOOTH);
-            mMTSCRA.setDeviceID(myPref.swiperMACAddress(true, null));
+            mMTSCRA.setDeviceID(myPref.getSwiperMACAddress());
             openDevice();
             try {
                 Thread.sleep(6000);
@@ -458,7 +458,8 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
 

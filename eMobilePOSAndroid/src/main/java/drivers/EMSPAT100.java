@@ -32,10 +32,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import main.EMSDeviceManager;
-import plaintext.EMSPlainTextHelper;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
+import main.EMSDeviceManager;
+import plaintext.EMSPlainTextHelper;
 
 //import com.partner.pt100.cashdrawer.CashDrawerApiContext;
 //import com.partner.pt100.cashdrawer.CashDrawerManage;
@@ -171,10 +171,8 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
 
-
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-        // TODO Auto-generated method stub
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         printPref = myPref.getPrintingPreferences();
 
@@ -207,10 +205,8 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         try {
             printImage(0);
         } catch (StarIOPortException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JAException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -287,14 +283,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                     Global.formatDoubleToCurrency(chg), LINE_WIDTH, 0));
         }
 
-        // port.writePort(sb.toString().getBytes(FORMAT), 0,
-        // sb.toString().length());
         printerApi.printData(sb.toString());
 
         sb.setLength(0);
         printerApi.printData(textHandler.newLines(1));
-        // port.writePort(textHandler.newLines(4).getBytes(FORMAT), 0,
-        // textHandler.newLines(2).length());
+
 
         if (!isCashPayment && !isCheckPayment) {
             if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
@@ -304,14 +297,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                 try {
                     this.printImage(1);
                 } catch (StarIOPortException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 } catch (JAException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
-            // port.writePort(enableCenter, 0, enableCenter.length); // center
             sb.append("x").append(textHandler.lines(LINE_WIDTH / 2)).append("\n");
             sb.append(getString(R.string.receipt_signature)).append(textHandler.newLines(1));
             printerApi.printData(sb.toString());
@@ -327,29 +317,14 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
                 sb.append("\n");
                 sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
                 sb.append(textHandler.centeredString("CONTROL: " + paymentDetails.getIvuLottoNumber(), LINE_WIDTH));
-//				sb.append(textHandler.centeredString(payArray[12], LINE_WIDTH));
                 sb.append(textHandler.centeredString(textHandler.ivuLines(2 * LINE_WIDTH / 3), LINE_WIDTH));
                 sb.append("\n");
 
                 printerApi.printData(sb.toString());
             } else {
-                // encodedQRCode = payArray[14];
-
-//				try {
-////					this.printImage(2);
-//				} catch (StarIOPortException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (JAException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-
                 sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
                 sb.append("\t").append("CONTROL: ").append(paymentDetails.getIvuLottoNumber()).append("\n");
-//				sb.append(payArray[12]).append("\n");
                 sb.append(textHandler.ivuLines(2 * LINE_WIDTH / 3)).append("\n");
-
                 printerApi.printData(sb.toString());
             }
             sb.setLength(0);
@@ -357,7 +332,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
         this.printFooter();
         // port.writePort(enableCenter, 0, enableCenter.length); // center
-        String temp = new String();
+        String temp;
         if (!isCashPayment && !isCheckPayment) {
 
             printerApi.printData(creditCardFooting);
@@ -382,32 +357,26 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public void setBitmap(Bitmap bmp) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -417,25 +386,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public boolean printReport(String curDate) {
-        // TODO Auto-generated method stub
         try {
-            // port = StarIOPort.getPort(portName, portSettings, 10000,
-            // this.activity);
-            // verifyConnectivity();
-
-            // Thread.sleep(1000);
-            // if(!isPOSPrinter)
-            // {
-            // port.writePort(new byte[] { 0x1d, 0x57, (byte) 0x80, 0x31 }, 0,
-            // 4);
-            // port.writePort(new byte[] { 0x1d, 0x21, 0x00 }, 0, 3);
-            // port.writePort(new byte[]{0x1b,0x74,0x11}, 0,3); //set to
-            // windows-1252
-            // }
-            // else
-            // {
-            // //port.writePort(new byte[]{0x1b,0x1d,0x74,0x20}, 0,2);
-            // }
 
             PaymentsHandler paymentHandler = new PaymentsHandler(activity);
             PayMethodsHandler payMethodHandler = new PayMethodsHandler(activity);
@@ -506,32 +457,25 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
         edm.currentDevice = this;
     }
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void releaseCardReader() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -539,54 +483,9 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         cashDrawerApiContext.OpenCashDrawerA();
     }
 
-    // public void printHeader() {
-    //
-    // EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-    // StringBuilder sb = new StringBuilder();
-    //
-    // MemoTextHandler handler = new MemoTextHandler(activity);
-    // String[] header = handler.getHeader();
-    //
-    // if(header[0]!=null&&!header[0].isEmpty())
-    // sb.append(textHandler.centeredString(header[0], LINE_WIDTH));
-    // if(header[1]!=null&&!header[1].isEmpty())
-    // sb.append(textHandler.centeredString(header[1], LINE_WIDTH));
-    // if(header[2]!=null&&!header[2].isEmpty())
-    // sb.append(textHandler.centeredString(header[2], LINE_WIDTH));
-    //
-    // if(!sb.toString().isEmpty())
-    // {
-    // sb.append(textHandler.newLines(2));
-    // printerApi.printData(sb.toString());
-    // }
-    // }
-    //
-    // public void printFooter() {
-    //
-    // EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
-    // StringBuilder sb = new StringBuilder();
-    // MemoTextHandler handler = new MemoTextHandler(activity);
-    // String[] footer = handler.getFooter();
-    //
-    // if(footer[0]!=null&&!footer[0].isEmpty())
-    // sb.append(textHandler.centeredString(footer[0], LINE_WIDTH));
-    // if(footer[1]!=null&&!footer[1].isEmpty())
-    // sb.append(textHandler.centeredString(footer[1], LINE_WIDTH));
-    // if(footer[2]!=null&&!footer[2].isEmpty())
-    // sb.append(textHandler.centeredString(footer[2], LINE_WIDTH));
-    //
-    //
-    // if(!sb.toString().isEmpty())
-    // {
-    // sb.append(textHandler.newLines(2));
-    // printerApi.printData(sb.toString());
-    //
-    // }
-    //
-    // }
+
     @Override
     public boolean isUSBConnected() {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -687,14 +586,12 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     // }
 
     @Override
-    public void printStationPrinter(List<Orders> orderProducts, String ordID) {
-        // TODO Auto-generated method stub
-
+    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
+        return "";
     }
 
     @Override
     public boolean printOnHold(Object onHold) {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -705,7 +602,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
- //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
+        //       printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
 

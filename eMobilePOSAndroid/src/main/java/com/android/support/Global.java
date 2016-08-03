@@ -10,12 +10,11 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.multidex.MultiDexApplication;
 import android.text.Html;
 import android.text.InputType;
@@ -31,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
-import com.android.dao.RealMigration;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -40,18 +38,17 @@ import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
-import com.android.emobilepos.ordering.OrdProdAttrHolder;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
-import com.android.support.GenerateNewID.IdType;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.zzzapi.uart.uart;
 
 import org.springframework.util.support.Base64;
 
@@ -61,7 +58,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -80,13 +76,14 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
+    public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
+    private static com.android.support.LocationServices locationServices;
     //Load JNI from the library project. Refer MainActivity.java from library project elotouchCashDrawer.
     // In constructor we are loading .so file for Cash Drawer.
 //    static {
@@ -107,6 +104,8 @@ public class Global extends MultiDexApplication {
         Realm.setDefaultConfiguration(config);
     }
 
+
+    public static String loyaltyPointsAvailable;
     public static boolean isIvuLoto = false;
     public static boolean isForceUpload = false;
     public static boolean isEncryptSwipe = true;
@@ -115,6 +114,8 @@ public class Global extends MultiDexApplication {
     public static EMSDeviceManager terminalDisplayManager;
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
+    public static EMSDeviceManager embededMSR;
+
     public static HashMap<String, Integer> multiPrinterMap = new HashMap<String, Integer>();
     public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<EMSDeviceManager>();
 
@@ -141,10 +142,11 @@ public class Global extends MultiDexApplication {
     public static final int ICMPEVO = 16;
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
+    public static final int PAT215 = 19;
 
 
     public enum BuildModel {
-        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
+        ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
 
         @Override
         public String toString() {
@@ -356,7 +358,6 @@ public class Global extends MultiDexApplication {
 
     public static OrderType consignmentType = OrderType.ORDER;
     public static OrderType ord_type = OrderType.ORDER;
-    private static String empStr = "";
     public static String amountPaid = "";
     public static double subtotalAmount;
     public static String tipPaid = "0";
@@ -395,8 +396,8 @@ public class Global extends MultiDexApplication {
     // For new addon views
     public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
 
-    public HashMap<String, String> ordProdAttrPending = new HashMap<String, String>();
-    public List<OrdProdAttrHolder> ordProdAttr = new ArrayList<OrdProdAttrHolder>();
+    public List<ProductAttribute> ordProdAttrPending;
+    public List<ProductAttribute> ordProdAttr = new ArrayList<ProductAttribute>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
     public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
@@ -472,15 +473,15 @@ public class Global extends MultiDexApplication {
 
     public void resetOrderDetailsValues() {
         selectedShippingMethod = -1;
-        selectedShippingMethodString = empStr;
+        selectedShippingMethodString = "";
         selectedTermsMethod = -1;
-        selectedTermsMethodString = empStr;
+        selectedTermsMethodString = "";
         selectedAddressMethod = -1;
-        selectedAddressMethodString = empStr;
-        selectedDeliveryDate = empStr;
-        selectedComments = empStr;
-        selectedPO = empStr;
-        taxID = empStr;
+        selectedAddressMethodString = "";
+        selectedDeliveryDate = "";
+        selectedComments = "";
+        selectedPO = "";
+        taxID = "";
         taxPosition = 0;
 
         ord_type = null;
@@ -543,6 +544,9 @@ public class Global extends MultiDexApplication {
             case PAT100:
                 _name = "PAT100";
                 break;
+            case PAT215:
+                _name = "PAT215";
+                break;
             case ISMP:
                 _name = "iSMP";
                 break;
@@ -579,8 +583,8 @@ public class Global extends MultiDexApplication {
 
         if (ordProdAttr != null)
             ordProdAttr.clear();
-        if (ordProdAttrPending != null)
-            ordProdAttrPending.clear();
+//        if (ordProdAttrPending != null)
+//            ordProdAttrPending.clear();
 
         if (this.orderProductAddons != null)
             this.orderProductAddons.clear();
@@ -591,26 +595,60 @@ public class Global extends MultiDexApplication {
         // this.
     }
 
-    public static String[] getCurrLocation(Activity activity) {
-        String bestProvider;
-        String[] values = new String[2];
-        values[0] = empStr;
-        values[1] = empStr;
+    public static Location getCurrLocation(Activity activity, boolean reload) {
 
-        LocationManager lm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        bestProvider = lm.getBestProvider(criteria, false);
+        if (locationServices == null) {
+            locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
+                @Override
+                public void onConnected(@Nullable Bundle bundle) {
+                    Location lastLocation = com.google.android.gms.location.LocationServices.FusedLocationApi.getLastLocation(
+                            locationServices.mGoogleApiClient);
+                    if (lastLocation == null) {
+                        LocationServices.mLastLocation = new Location("");
+                    } else {
+                        LocationServices.mLastLocation = lastLocation;
+                    }
+                    locationServices.disconnect();
+                    synchronized (locationServices)
 
-        if (bestProvider == null)
-            return values;
-        Location location = lm.getLastKnownLocation(bestProvider);
-        if (location == null)
-            return values;
-        else {
-            values[0] = Double.toString(location.getLatitude());
-            values[1] = Double.toString(location.getLongitude());
+                    {
+                        locationServices.notifyAll();
+                    }
+                }
+
+                @Override
+                public void onConnectionSuspended(int i) {
+
+                }
+            }, new GoogleApiClient.OnConnectionFailedListener() {
+                @Override
+                public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                }
+            });
+
         }
-        return values;
+
+        synchronized (locationServices)
+
+        {
+            if (LocationServices.mLastLocation == null || reload) {
+                locationServices.connect();
+                try {
+                    locationServices.wait(15000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (LocationServices.mLastLocation == null)
+
+        {
+            LocationServices.mLastLocation = new Location("");
+        }
+
+        return LocationServices.mLastLocation;
     }
 
     public static String base64QRCode(String ivuLottoNumber, String ivuLottoDrawDate) {
@@ -641,7 +679,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedComments() {
         if (this.selectedComments == null)
-            return empStr;
+            return "";
         return this.selectedComments;
     }
 
@@ -651,7 +689,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedPO() {
         if (this.selectedPO == null)
-            return empStr;
+            return "";
         return this.selectedPO;
     }
 
@@ -669,7 +707,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedShippingMethodString() {
         if (this.selectedAddressMethodString == null)
-            return empStr;
+            return "";
         return this.selectedShippingMethodString;
     }
 
@@ -687,7 +725,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedTermsMethodsString() {
         if (this.selectedTermsMethodString == null)
-            return empStr;
+            return "";
         return this.selectedTermsMethodString;
     }
 
@@ -705,7 +743,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedAddressString() {
         if (this.selectedAddressMethodString == null)
-            return empStr;
+            return "";
         return this.selectedAddressMethodString;
     }
 
@@ -715,7 +753,7 @@ public class Global extends MultiDexApplication {
 
     public String getSelectedDeliveryDate() {
         if (this.selectedDeliveryDate == null)
-            return empStr;
+            return "";
         return this.selectedDeliveryDate;
     }
 
@@ -1345,7 +1383,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-
     public static Object getFormatedNumber(boolean isDecimal, String val) {
         Object returnedVal = new Object();
         if (isDecimal) {
@@ -1564,9 +1601,9 @@ public class Global extends MultiDexApplication {
         MyPreferences myPref = new MyPreferences(activity);
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-        uart uart_tool = new uart();
-        uart_tool.config(3, 9600, 8, 1);
-        uart_tool.write(3, Global.emptySpaces(40, 0, false));
+//        uart uart_tool = new uart();
+//        uart_tool.config(3, 9600, 8, 1);
+//        uart_tool.write(3, Global.emptySpaces(40, 0, false));
 
         String msg1 = myPref.cdtLine1(true, "");
         String msg2 = myPref.cdtLine2(true, "");
@@ -1589,7 +1626,7 @@ public class Global extends MultiDexApplication {
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
-                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1);
+                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 || _printer_type == Global.PAT215);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {

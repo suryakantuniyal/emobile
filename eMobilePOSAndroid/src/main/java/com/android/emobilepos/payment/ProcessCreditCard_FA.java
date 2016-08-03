@@ -71,7 +71,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -86,7 +85,6 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import interfaces.EMSCallBack;
-import util.StringUtil;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -360,6 +358,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         tipAmount.setVisibility(View.GONE);
         findViewById(R.id.accountInformationTextView).setVisibility(View.GONE);
         findViewById(R.id.tipAmountBut).setVisibility(View.GONE);
+        findViewById(R.id.expirationDateTextView).setVisibility(View.GONE);
 
     }
 
@@ -523,6 +522,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
+        } else if (myPref.isPAT215() && Global.btSwiper == null) {
+            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
+                Global.embededMSR.currentDevice.loadCardReader(callBack, isDebit);
+                cardSwipe.setChecked(false);
+            }
         }
     }
 
@@ -1740,7 +1744,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected void onPostExecute(Payment payment) {
-            if (myProgressDialog.isShowing())
+            if (myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             if (printingSuccessful) {
                 if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
@@ -1784,7 +1788,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(isReprint, payment);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, payment);
 
             }
         });
@@ -1833,7 +1837,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
-        if(isDebit){
+        if (isDebit) {
             cardManager.setCardType("DebitCard");
         }
         this.cardInfoManager = cardManager;
@@ -1854,7 +1858,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 processPayment();
             } else {
                 String errorMsg = getString(R.string.coundnot_proceess_payment);
-                if (cardManager.getResultMessage() != null && !cardManager.getResultMessage().isEmpty()) {
+                 if (cardManager.getResultMessage() != null && !cardManager.getResultMessage().isEmpty()) {
                     errorMsg += "\n\r" + cardManager.getResultMessage();
                 }
                 Global.showPrompt(activity, R.string.payment, errorMsg);
@@ -1885,8 +1889,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         cardInfoManager.setCardExpYear(formatedYear);
         year.setText(formatedYear);
         ownersName.setText(cardInfoManager.getCardOwnerName());
-        cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
-
+        if (!TextUtils.isEmpty(cardInfoManager.getCardNumAESEncrypted()))
+            cardNum.setText(cardInfoManager.getCardNumAESEncrypted());
+        else if (!TextUtils.isEmpty(cardInfoManager.getEncryptedBlock())) {
+            cardNum.setText(cardInfoManager.getEncryptedBlock());
+        }
         creditCardType = cardInfoManager.getCardType();
         scrollView.fullScroll(ScrollView.FOCUS_UP);
     }
@@ -1939,7 +1946,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         } else {
                             Payment p = new Payment(activity);
                             p.pay_amount = NumberUtils.cleanCurrencyFormatedNumber(amountPaidField);
-                            Global.btSwiper.currentDevice.salePayment(p);
+                            if (Global.btSwiper != null && Global.btSwiper.currentDevice != null) {
+                                Global.btSwiper.currentDevice.salePayment(p);
+                            }
                         }
                     }
                 } else if (myPref.getSwiperType() != Global.WALKER) {

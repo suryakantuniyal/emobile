@@ -181,6 +181,14 @@
                     android:textSize="@dimen/txt_receipt_large"
                     android:textStyle="bold" />
             </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/addonsTextView"
+                style="@style/text_shadow"
+                android:textSize="@dimen/txt_receipt_small" />
+
         </LinearLayout>
 
     </LinearLayout>

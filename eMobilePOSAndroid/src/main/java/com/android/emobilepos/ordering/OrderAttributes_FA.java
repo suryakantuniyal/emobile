@@ -5,29 +5,29 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.OrderProductAttributeDAO;
 import com.android.database.OrdProdAttrList_DB;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.ProductAttribute;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements OnItemClickListener{
 		
 	
-	private ArrayList<OrdProdAttrHolder>listAttr;
+	private List<ProductAttribute> listAttr;
 	private boolean hasBeenCreated = false;
 	private Global global;
 	private boolean isModify = false;
@@ -52,7 +52,7 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 		isModify = extras.getBoolean("isModify",false);
 		ordprod_id = extras.getString("ordprod_id","");
 		OrdProdAttrList_DB ordProdAttrList = new OrdProdAttrList_DB(this);
-		listAttr = ordProdAttrList.getRequiredOrdAttrList(prodID);
+		listAttr = OrderProductAttributeDAO.getByProdId(prodID);
 		mAdapter = new OrdProdAttrListAdapter(this,listAttr);
 		
 		ListView listView = (ListView)findViewById(R.id.listView);
@@ -99,22 +99,22 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 			int size = global.ordProdAttr.size();
 		for(int i = 0 ; i < size;i++)
 		{
-			if(global.ordProdAttr.get(i).ordprod_id.equals(ordprod_id))
+			if(String.valueOf(global.ordProdAttr.get(i).getProductId()).equals(ordprod_id))
 			{
 				//attr_value = ;
-				savedAttr.put(global.ordProdAttr.get(i).Attrid, global.ordProdAttr.get(i).value);
+				savedAttr.put(global.ordProdAttr.get(i).getAttributeId(), global.ordProdAttr.get(i).getValue());
 				break;
 			}
 		}
 		}
 	}
 	
-	private class OrdProdAttrListAdapter extends ArrayAdapter<OrdProdAttrHolder> {
+	private class OrdProdAttrListAdapter extends ArrayAdapter<ProductAttribute> {
 		ViewHolder holder;
 		final int TYPE_REQUIRED = 0;
 		int viewType;
 
-		public OrdProdAttrListAdapter(Context context, ArrayList<OrdProdAttrHolder> users) {
+		public OrdProdAttrListAdapter(Context context, List<ProductAttribute> users) {
 			super(context, R.layout.lv_adapter_two_column, users);
 		}
 
@@ -125,7 +125,7 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 
 		@Override
 		public int getItemViewType(int position) {
-			if (listAttr.get(position).required)
+			if (listAttr.get(position).isRequired())
 				return TYPE_REQUIRED;
 			return 1;
 		}
@@ -148,18 +148,16 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 
 			//holder.rightText.setVisibility(View.INVISIBLE);
 			if (viewType == TYPE_REQUIRED) {
-				holder.leftText.setText(listAttr.get(position).ordprod_attr_name);
+				holder.leftText.setText(listAttr.get(position).getAttributeName());
 				holder.leftText.setTextColor(Color.RED);
 			} else {
-				holder.leftText.setText(listAttr.get(position).ordprod_attr_name);
+				holder.leftText.setText(listAttr.get(position).getAttributeName());
 			}
-			if(savedAttr.containsKey(listAttr.get(position).Attrid))
+			if(savedAttr.containsKey(listAttr.get(position).getAttributeId()))
 			{
-				String val = savedAttr.get(listAttr.get(position).Attrid);
+				String val = savedAttr.get(listAttr.get(position).getAttributeId());
 				holder.rightText.setText(val);
 			}
-
-
 			return v;
 		}
 
@@ -176,13 +174,13 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 		// TODO Auto-generated method stub
 		Intent intent = new Intent(this,OrderAttrEdit_FA.class);
 		
-		intent.putExtra("ordprodattr_id", listAttr.get(pos).ordprodattr_id);
-		intent.putExtra("attr_id", listAttr.get(pos).Attrid);
-		intent.putExtra("attr_name", listAttr.get(pos).ordprod_attr_name);
+		intent.putExtra("ordprodattr_id", listAttr.get(pos).getId());
+		intent.putExtra("attr_id", listAttr.get(pos).getAttributeId());
+		intent.putExtra("attr_name", listAttr.get(pos).getAttributeName());
 		intent.putExtra("isModify", isModify);
 		intent.putExtra("ordprod_id", ordprod_id);
 		
-		if (listAttr.get(pos).required)
+		if (listAttr.get(pos).isRequired())
 		{
 			intent.putExtra("required", true);
 			startActivityForResult(intent,REQUEST_REQ_ATTR);
@@ -201,7 +199,8 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 			if(resultCode==0&&data!=null)	//success
 			{
 				Bundle extras = data.getExtras();
-				global.ordProdAttrPending.remove(extras.get("ordprodattr_id"));
+                int id = extras.getInt("ordprodattr_id");
+				global.ordProdAttrPending.remove(OrderProductAttributeDAO.getById(id));
 			}
 			loadSavedAttributes();
 			mAdapter.notifyDataSetChanged();

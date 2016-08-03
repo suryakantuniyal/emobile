@@ -1,23 +1,17 @@
 package com.android.emobilepos.models;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.RealmClass;
+import util.JsonUtils;
 
 /**
  * Created by Guarionex on 1/19/2016.
  */
 public class DinningTable extends RealmObject {
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = JsonUtils.getInstance();
 
     @SerializedName("mesa_id")
     @PrimaryKey
@@ -120,19 +114,7 @@ public class DinningTable extends RealmObject {
     }
 
     public void parseAdditionalInfo() {
-        Gson gson = new GsonBuilder()
-                .setExclusionStrategies(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes f) {
-                        return f.getDeclaringClass().equals(RealmObject.class);
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> clazz) {
-                        return false;
-                    }
-                })
-                .create();
+        Gson gson = JsonUtils.getInstance();
         DinningTable table = gson.fromJson(additionalInfoJson, DinningTable.class);
         this.dimensions = table.getDimensions();
         this.setPosition(table.getPosition());
