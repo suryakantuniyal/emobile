@@ -585,11 +585,17 @@ public class ProductsHandler {
             priceLevelID = myPref.getEmployeePriceLevel();
 
         sb.append(
-                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
+                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', " +
+                        "ch.over_price_net as 'chain_price',");
         sb.append(
-                "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
+                "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN " +
+                        "(p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(
-                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points,p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand',ei.prod_onhand as 'local_prod_onhand',i.prod_img_name,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
+                "ELSE pli.pricelevel_price END AS 'pricelevel_price',p.prod_price_points,p.prod_value_points," +
+                        "p.prod_name,p.prod_desc,p.prod_extradesc,p.prod_onhand as 'master_prod_onhand'," +
+                        "ei.prod_onhand as 'local_prod_onhand',i.prod_img_name," +
+                        "CASE WHEN p.prod_taxcode='' THEN '0' " +
+                        "ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' ");
         sb.append(",p.prod_taxcode,p.prod_taxtype, p.prod_type,p.cat_id ");
 
         if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
@@ -632,20 +638,28 @@ public class ProductsHandler {
                     sb2.append("AND ci.qty>0 ");
                 sb2.append("AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ?) ");
             } else
-                sb2.append(
-                        "WHERE p.prod_type != 'Discount' AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ? ) ");// ORDER
+                sb2.append("WHERE p.prod_type != 'Discount' AND " +
+                        " (p.prod_sku = ? OR pa.prod_alias = ? OR p.prod_upc = ? )" +
+                        " AND (i.type = 'I' OR i.type is NULL )" +
+                        " AND ( vp.minQty is NULL OR vp.maxQty is NULL OR ('1' BETWEEN vp.minQty AND vp.maxQty)) "
+                );
+//                sb2.append(
+//                        "WHERE p.prod_type != 'Discount' AND (pa.prod_alias = ? OR p.prod_upc = ? OR p.prod_sku = ? ) AND (i.type = 'I' OR i.type is NULL) ");// ORDER
             // BY
             // p.prod_name");
 
         }
 
         sb.append(
-                "FROM Products p LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' BETWEEN vp.minQty AND vp.maxQty  AND ");
-        sb.append("vp.pricelevel_id = ? LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id ");
-        sb.append(
-                "AND pli.pricelevel_id = ? LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = ? LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id AND i.type = 'I' ");
-        sb.append(
-                "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
+                "FROM Products p " +
+                        " LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
+                        "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id  AND vp.pricelevel_id = ? " +
+                        "LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id  AND pli.pricelevel_id = ? " +
+                        " LEFT OUTER JOIN PriceLevel pl ON pl.pricelevel_id = pli.pricelevel_id " +
+                        " LEFT OUTER JOIN Products_Images i ON p.prod_id = i.prod_id " +
+                        " LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                        " LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
+
         sb.append("LEFT JOIN ProductAliases pa ON p.prod_id = pa.prod_id ");
 
         sb.append(sb2);
@@ -656,8 +670,7 @@ public class ProductsHandler {
             sb.append(" LIMIT 1");
         }
 
-        String[] parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), value, value,
-                value};
+        String[] parameters = new String[]{priceLevelID, priceLevelID, myPref.getCustID(), value, value, value};
         query = sb.toString();
 
         Cursor cursor = DBManager._db.rawQuery(query, parameters);
