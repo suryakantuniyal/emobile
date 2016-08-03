@@ -358,6 +358,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         tipAmount.setVisibility(View.GONE);
         findViewById(R.id.accountInformationTextView).setVisibility(View.GONE);
         findViewById(R.id.tipAmountBut).setVisibility(View.GONE);
+        findViewById(R.id.expirationDateTextView).setVisibility(View.GONE);
 
     }
 
@@ -1754,7 +1755,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected void onPostExecute(Payment payment) {
-            if (myProgressDialog.isShowing())
+            if (myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             if (printingSuccessful) {
                 if (!wasReprint && myPref.getPreferences(MyPreferences.pref_prompt_customer_copy))
@@ -1798,7 +1799,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(isReprint, payment);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, payment);
 
             }
         });
@@ -1868,7 +1869,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 processPayment();
             } else {
                 String errorMsg = getString(R.string.coundnot_proceess_payment);
-                if (cardManager.getResultMessage() != null && !cardManager.getResultMessage().isEmpty()) {
+                 if (cardManager.getResultMessage() != null && !cardManager.getResultMessage().isEmpty()) {
                     errorMsg += "\n\r" + cardManager.getResultMessage();
                 }
                 Global.showPrompt(activity, R.string.payment, errorMsg);
@@ -1956,7 +1957,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         } else {
                             Payment p = new Payment(activity);
                             p.pay_amount = NumberUtils.cleanCurrencyFormatedNumber(amountPaidField);
-                            Global.btSwiper.currentDevice.salePayment(p);
+                            if (Global.btSwiper != null && Global.btSwiper.currentDevice != null) {
+                                Global.btSwiper.currentDevice.salePayment(p);
+                            }
                         }
                     }
                 } else if (myPref.getSwiperType() != Global.WALKER) {

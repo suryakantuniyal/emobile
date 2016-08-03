@@ -1096,7 +1096,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         order.ord_id = Global.lastOrdID;
         order.ord_signature = global.encodedImage;
-        order.qbord_id = Global.lastOrdID.replace("-", "");
+        order.qbord_id = GenerateNewID.getQBOrderId(Global.lastOrdID);
         order.ord_HoldName = ord_HoldName;
         order.c_email = _email;
 

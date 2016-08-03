@@ -228,9 +228,12 @@ public class CategoriesHandler {
 				"FROM Categories c1 ");
 		
 		if(!Global.cat_id.equals("0"))
-			sb.append("  WHERE c1.cat_id ='").append(Global.cat_id).append("' ");
+			sb.append("  WHERE  c1.parentID='' AND c1.cat_id ='").append(Global.cat_id).append("' ");
 		else if(myPref.getPreferences(MyPreferences.pref_enable_multi_category))
 			sb.append("  WHERE c1.parentID='' AND c1.cat_id !='' ");
+		else{
+			sb.append("  WHERE c1.parentID='' ");
+		}
 		
 		sb.append(" ORDER BY c1.cat_name");
 		

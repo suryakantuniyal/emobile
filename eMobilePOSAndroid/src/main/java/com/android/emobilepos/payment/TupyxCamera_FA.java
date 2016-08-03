@@ -9,8 +9,6 @@ import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.support.v4.app.FragmentActivity;
-import android.view.Window;
 import android.widget.FrameLayout;
 
 import com.android.emobilepos.R;

@@ -8,14 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
-import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
-import com.android.emobilepos.cardmanager.GiftCard_FA;
-import com.android.emobilepos.cardmanager.LoyaltyCard_FA;
-import com.android.emobilepos.cardmanager.RewardCard_FA;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
-import com.android.emobilepos.payment.SelectPayMethod_FA;
-import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.support.MyPreferences;
 import com.crashlytics.android.Crashlytics;
 

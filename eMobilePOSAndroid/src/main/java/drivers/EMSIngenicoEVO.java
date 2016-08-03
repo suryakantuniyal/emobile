@@ -61,6 +61,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     private ProgressDialog myProgressDialog;
     private ApiConfiguration apiConfig;
     private boolean deviceFound;
+    private EMSDeviceDriver thisInstance;
 
 
     @Override
@@ -68,14 +69,23 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
+        thisInstance = this;
         showDialog(R.string.connecting_bluetooth_device);
+//        apiConfig = new ApiConfiguration(false);
+//        apiConfig.setApplicationProfileId("6883");
+//        apiConfig.setServiceKey("1F8BA60D09400001");
+//        apiConfig.setServiceId("39C6700001");
+        setApiConfig();
+        new EVOConnectAsync().execute(true);
+    }
+
+    private void setApiConfig() {
         apiConfig = new ApiConfiguration(false);
         apiConfig.setApplicationProfileId("6883");
         apiConfig.setServiceKey("1F8BA60D09400001");
         apiConfig.setServiceId("39C6700001");
-        new EVOConnectAsync().execute(true);
+        apiConfig.setWorkflowId("A121700011");
     }
-
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
@@ -83,10 +93,12 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
-        apiConfig = new ApiConfiguration(false);
-        apiConfig.setApplicationProfileId("6883");
-        apiConfig.setServiceKey("1F8BA60D09400001");
-        apiConfig.setServiceId("39C6700001");
+        thisInstance = this;
+//        apiConfig = new ApiConfiguration(false);
+//        apiConfig.setApplicationProfileId("6883");
+//        apiConfig.setServiceKey("1F8BA60D09400001");
+//        apiConfig.setServiceId("39C6700001");
+        setApiConfig();
         new EVOConnectAsync().execute(false);
         return true;
     }
@@ -100,7 +112,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
             showMsg = params[0];
             deviceFound = true;
             EvoSnapApi.init(activity, apiConfig);
-            SignOnRequest request = new SignOnRequest("enabler1", "Testing!2$");
+            SignOnRequest request = new SignOnRequest("enabler1", "Android!2$");
             return EvoSnapApi.signOn(request);
         }
 
@@ -109,9 +121,9 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
             dismissDialog();
             connected = signOnResponse.isSuccessful() && deviceFound;
             if (connected) {
-                edm.driverDidConnectToDevice(EMSIngenicoEVO.this, showMsg);
+                edm.driverDidConnectToDevice(thisInstance, showMsg);
             } else {
-                edm.driverDidNotConnectToDevice(EMSIngenicoEVO.this, msg, showMsg);
+                edm.driverDidNotConnectToDevice(thisInstance, msg, showMsg);
             }
         }
     }

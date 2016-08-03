@@ -1,6 +1,5 @@
 package com.android.emobilepos.consignment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
