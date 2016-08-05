@@ -477,7 +477,7 @@ public class EMSDeviceDriver {
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
             List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-            List<OrderProduct> orderProducts = handler.getPrintOrderedProducts(ordID);
+            List<OrderProduct> orderProducts = handler.getOrderProducts(ordID); //handler.getPrintOrderedProducts(ordID);
 
             OrdersHandler orderHandler = new OrdersHandler(activity);
             Order anOrder = orderHandler.getPrintedOrder(ordID);
@@ -564,9 +564,15 @@ public class EMSDeviceDriver {
                         payWithLoyalty = true;
                     }
                     totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).ordprod_qty) ? 0 : Integer.parseInt(orderProducts.get(i).ordprod_qty);
+                    String uomDescription = "";
+                    if (!TextUtils.isEmpty(orderProducts.get(i).uom_name)) {
+                        uomDescription = orderProducts.get(i).uom_name + "(" + orderProducts.get(i).uom_conversion + ")";
+                    }
                     if (isRestMode) {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                orderProducts.get(i).ordprod_qty + "x " + orderProducts.get(i).ordprod_name, lineWidth, 1));
+                                orderProducts.get(i).ordprod_qty + "x " + orderProducts.get(i).ordprod_name
+                                        + " "
+                                        + uomDescription, lineWidth, 1));
                         if (orderProducts.get(i).hasAddons.equals("1")) {
                             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).ordprod_id);
                             for (OrderProduct addon : addons) {
@@ -582,7 +588,7 @@ public class EMSDeviceDriver {
                             }
                         }
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                Global.getCurrencyFormat(orderProducts.get(i).overwrite_price), lineWidth, 3))
+                                Global.getCurrencyFormat(orderProducts.get(i).itemSubtotal), lineWidth, 3))
                                 .append("\n");
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                 Global.getCurrencyFormat(orderProducts.get(i).itemTotal), lineWidth, 3)).append("\n");
@@ -595,7 +601,9 @@ public class EMSDeviceDriver {
                         }
                     } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                orderProducts.get(i).ordprod_qty + "x " + orderProducts.get(i).ordprod_name, lineWidth, 1));
+                                orderProducts.get(i).ordprod_qty + "x " + orderProducts.get(i).ordprod_name
+                                        + " "
+                                        + uomDescription, lineWidth, 1));
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
                                 Global.getCurrencyFormat(orderProducts.get(i).overwrite_price), lineWidth, 3))
                                 .append("\n");
@@ -632,6 +640,7 @@ public class EMSDeviceDriver {
                     if (!TextUtils.isEmpty(orderProducts.get(i).prod_price_points) && Integer.parseInt(orderProducts.get(i).prod_price_points) > 0) {
                         payWithLoyalty = true;
                     }
+                    totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).ordprod_qty) ? 0 : Integer.parseInt(orderProducts.get(i).ordprod_qty);
                     sb.append(orderProducts.get(i).ordprod_name).append("-").append(orderProducts.get(i).ordprod_desc)
                             .append("\n");
 

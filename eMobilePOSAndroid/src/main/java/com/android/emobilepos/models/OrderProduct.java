@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
 import com.android.support.Global;
+import com.google.android.gms.vision.text.Text;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
