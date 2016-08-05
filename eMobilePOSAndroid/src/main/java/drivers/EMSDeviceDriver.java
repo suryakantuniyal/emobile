@@ -555,7 +555,7 @@ public class EMSDeviceDriver {
             print(sb.toString());
 
             sb.setLength(0);
-
+            int totalItemstQty = 0;
             if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
                 boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
 
@@ -563,6 +563,7 @@ public class EMSDeviceDriver {
                     if (!TextUtils.isEmpty(orderProducts.get(i).prod_price_points) && Integer.parseInt(orderProducts.get(i).prod_price_points) > 0) {
                         payWithLoyalty = true;
                     }
+                    totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).ordprod_qty) ? 0 : Integer.parseInt(orderProducts.get(i).ordprod_qty);
                     if (isRestMode) {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
                                 orderProducts.get(i).ordprod_qty + "x " + orderProducts.get(i).ordprod_name, lineWidth, 1));
@@ -651,10 +652,13 @@ public class EMSDeviceDriver {
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
             sb.append("\n\n");
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_itemsQtyTotal),
+                    String.valueOf(totalItemstQty), lineWidth, 0));
+            sb.append("\n");
             String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).toString();
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.formatDoubleStrToCurrency(granTotal), lineWidth, 0));
-
+            sb.append("\n");
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(ordID);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
