@@ -784,13 +784,15 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
 
             print(textHandler.newLines(1), FORMAT);
-            if (payWithLoyalty) {
+            if (payWithLoyalty && Global.loyaltyCardInfo != null && !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardNumAESEncrypted())
+                    && !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardLast4())) {
                 print(String.format("%s *%s\n", getString(R.string.receipt_cardnum), Global.loyaltyCardInfo.getCardLast4()));
                 print(String.format("%s %s %s\n", getString(R.string.receipt_point_used), Global.loyaltyCharge, getString(R.string.points)));
                 print(String.format("%s %s %s\n", getString(R.string.receipt_reward_balance), Global.loyaltyPointsAvailable, getString(R.string.points)));
                 print(textHandler.newLines(1), FORMAT);
             }
-            if (Global.rewardCardInfo != null && !TextUtils.isEmpty(Global.rewardCardInfo.getCardNumAESEncrypted())) {
+            if (Global.rewardCardInfo != null && !TextUtils.isEmpty(Global.rewardCardInfo.getCardNumAESEncrypted())
+                    && !TextUtils.isEmpty(Global.rewardCardInfo.getCardLast4())) {
                 print(String.format("%s *%s\n", getString(R.string.receipt_cardnum), Global.rewardCardInfo.getCardLast4()));
                 print(String.format("%s %s %s\n", getString(R.string.receipt_reward_balance), Global.rewardCardInfo.getOriginalTotalAmount(), getString(R.string.points)));
                 print(textHandler.newLines(1), FORMAT);
