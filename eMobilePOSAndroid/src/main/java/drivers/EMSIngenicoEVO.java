@@ -76,7 +76,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 //        apiConfig.setServiceKey("1F8BA60D09400001");
 //        apiConfig.setServiceId("39C6700001");
         setApiConfig();
-        new EVOConnectAsync().execute(true);
+        new EVOConnectAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
     }
 
     private void setApiConfig() {
@@ -99,7 +99,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 //        apiConfig.setServiceKey("1F8BA60D09400001");
 //        apiConfig.setServiceId("39C6700001");
         setApiConfig();
-        new EVOConnectAsync().execute(false);
+        new EVOConnectAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         return true;
     }
 
@@ -304,7 +304,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
-        new EVOCancelTransaction().execute(payment);
+        new EVOCancelTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
     }
 
     private class EVOCancelTransaction extends AsyncTask<Payment, Void, BankCardTransactionResponse> {

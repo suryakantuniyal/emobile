@@ -317,7 +317,7 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
         mAudioMgr = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
         cardManager = new CreditCardInfo();
         encrypt = new Encrypt(activity);
-        new connectAsync().execute();
+        new connectAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
 

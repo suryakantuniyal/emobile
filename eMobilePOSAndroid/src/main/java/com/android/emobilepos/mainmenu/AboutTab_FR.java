@@ -13,8 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.emobilepos.R;
 import com.android.database.DBManager;
+import com.android.emobilepos.R;
 import com.android.support.MyPreferences;
 
 public class AboutTab_FR extends Fragment implements OnClickListener {
@@ -62,7 +62,7 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
 			{
 				posLogo.setOnClickListener(null);
 				deleteIsRunning = true;
-				new deleteTablesAsync().execute();
+				new deleteTablesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 				_last_time = 0;
 				deleteIsRunning = false;
 				posLogo.setOnClickListener(this);

@@ -94,7 +94,7 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
             BigDecimal tipAmountDec = Global.getBigDecimalNum(NumberUtils.cleanCurrencyFormatedNumber(tipAmount));
             if (tipAmountDec.compareTo(BigDecimal.ZERO) > 0) {
                 messageText.setText("");
-                new AdjustTipTask().execute(getCreditCardType(), transactionId.getText().toString(), tipAmountDec.toString());
+                new AdjustTipTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, getCreditCardType(), transactionId.getText().toString(), tipAmountDec.toString());
             } else {
                 setMessage(R.string.adjust_tip_required_fields);
             }
@@ -146,7 +146,7 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                                      public void onClick(View v) {
                                          dlog.dismiss();
                                          if (reverse) {
-                                             new processReverseAsync().execute(payment);
+                                             new processReverseAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
                                          }
                                      }
                                  }

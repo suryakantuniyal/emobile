@@ -82,7 +82,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
         portName = myPref.getPrinterMACAddress();
         portNumber = myPref.getStarPort();
 
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
     @Override
@@ -298,7 +298,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
-            setPaperWidth(LINE_WIDTH);
+        setPaperWidth(LINE_WIDTH);
 //            verifyConnectivity();
 
 //            Thread.sleep(1000);
@@ -310,7 +310,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 //                // windows-1252
 //            }
 
-            printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
 
         return true;
     }

@@ -127,7 +127,7 @@ public class EMSIDTechUSB {
 	
 	public void StartReadingThread() {
 		startReading = true;
-		new getSwipeDataAsync().execute();
+		new getSwipeDataAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 	
 	/**

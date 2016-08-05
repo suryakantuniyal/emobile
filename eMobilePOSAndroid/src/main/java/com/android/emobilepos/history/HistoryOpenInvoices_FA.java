@@ -326,7 +326,7 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(myCursor.getString(myCursor.getColumnIndex("_id")));
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, myCursor.getString(myCursor.getColumnIndex("_id")));
 
             }
         });
@@ -366,7 +366,7 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute(_id);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, _id);
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {

@@ -97,7 +97,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 		}
 		
 		hasBeenCreated = true;
-		new initViewAsync().execute();
+		new initViewAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	
@@ -172,7 +172,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 					@Override
 					public void onClick(View v) {
 						if(!isShiftReport)
-							new printAsync().execute();
+							new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 					}
 				});
 			}
@@ -208,7 +208,7 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 			@Override
 			public void onClick(View v) {
 				dlog.dismiss();
-				new printAsync().execute();
+				new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			}
 		});
 		btnNo.setOnClickListener(new View.OnClickListener() {

@@ -503,7 +503,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment)) {
                 if (amountTender > actualAmount)
                     showChangeDlg();
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else if (amountTender > actualAmount)
                 showChangeDlg();
             else
@@ -555,7 +555,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReverseCheckAction, false, null, null);
             }
 
-            new processLivePaymentAsync().execute(generatedURL);
+            new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
         }
     }
 
@@ -685,7 +685,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment)) {
                 if (amountTender > actualAmount)
                     showChangeDlg();
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else if (amountTender > actualAmount)
                 showChangeDlg();
             else
@@ -826,7 +826,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
                 if (myPref.getPreferences(MyPreferences.pref_print_receipt_transaction_payment)) {
                     if (amountTender > actualAmount)
                         showChangeDlg();
-                    new printAsync().execute();
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else if (amountTender > actualAmount)
                     showChangeDlg();
                 else
@@ -931,7 +931,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             public void onClick(View v) {
                 dlog.dismiss();
                 if (timedOut)
-                    new processLivePaymentAsync().execute(urlToPost);
+                    new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlToPost);
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {

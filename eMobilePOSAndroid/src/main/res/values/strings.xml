@@ -1180,6 +1180,26 @@
     <string name="points">Points</string>
     <string name="connecting_devices">Connecting devices...</string>
     <string name="config_split_stationprint_by_categories">Split station print receipt by categories</string>
+    <string name="eod_report_return">Return</string>
+    <string name="eod_report_estimate">Estimate</string>
+    <string name="eod_report_order">Order</string>
+    <string name="eod_report_salesreceipt">Sales Receipt</string>
+    <string name="eod_report_invoice">Invoice</string>
+    <string name="eod_report_summary">Summary</string>
+    <string name="eod_report_ordertypes">Shifts</string>
+    <string name="eod_report_shifts">Shifts</string>
+    <string name="eod_report_itemsold">Items Sold</string>
+    <string name="eod_report_itemsreturned">Items Returned</string>
+    <string name="eod_report_dept_sales">Dept Sales</string>
+    <string name="eod_report_dept_returns">Dept Returns</string>
+    <string name="eod_report_payment">Payment</string>
+    <string name="eod_report_void">Void</string>
+    <string name="eod_report_refund">Refund</string>
+    <string name="eod_report_ar_trans">AR Trans</string>
+    <string name="eod_report_consignment_fillup">Consignment Fillup</string>
+    <string name="eod_report_consignment_pickup">Consignment Pickup</string>
+    <string name="eod_report_consignment_invoice">Consignment Invoice</string>
+    <string name="eod_report_consignment_return">Consignment Return</string>
     <string name="receipt_itemsQtyTotal">Total Items:</string>
 
 
