@@ -451,7 +451,7 @@ public class OrderProductsHandler {
         Cursor cursor = getCursorData(orderId);
         if (cursor.moveToFirst()) {
             do {
-                OrderProduct prod = new OrderProduct();
+                OrderProduct prod = getOrderProduct(cursor);//new OrderProduct();
                 products.add(prod);
             } while (cursor.moveToNext());
         }
@@ -636,43 +636,43 @@ public class OrderProductsHandler {
     }
 
     public List<OrderProduct> getOrderedProducts(String ordID) {
-        List<OrderProduct> list = new ArrayList<OrderProduct>();
+        List<OrderProduct> list;
 
-        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, prod_price_points, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
+//        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, prod_price_points, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
 
-        Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
-        OrderProduct products;
-        if (cursor.moveToFirst()) {
-            do {
-                products = new OrderProduct();
-                String data = cursor.getString(cursor.getColumnIndex(ordprod_name));
-                products.ordprod_name = data;
+//        Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
+        list = getOrderProducts(ordID);
+//        if (cursor.moveToFirst()) {
+//            do {
+//                products = new OrderProduct();
+//                String data = cursor.getString(cursor.getColumnIndex(ordprod_name));
+//                products.ordprod_name = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(ordprod_desc));
+//                products.ordprod_desc = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(prod_id));
+//                products.prod_id = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(prod_sku));
+//                products.prod_sku = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(prod_upc));
+//                products.prod_upc = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(ordprod_qty));
+//                products.ordprod_qty = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(overwrite_price));
+//                products.overwrite_price = data;
+//
+//                products.prod_price_points = cursor.getString(cursor.getColumnIndex(prodPricePoints));
+//
+//                list.add(products);
+//            } while (cursor.moveToNext());
+//        }
 
-                data = cursor.getString(cursor.getColumnIndex(ordprod_desc));
-                products.ordprod_desc = data;
-
-                data = cursor.getString(cursor.getColumnIndex(prod_id));
-                products.prod_id = data;
-
-                data = cursor.getString(cursor.getColumnIndex(prod_sku));
-                products.prod_sku = data;
-
-                data = cursor.getString(cursor.getColumnIndex(prod_upc));
-                products.prod_upc = data;
-
-                data = cursor.getString(cursor.getColumnIndex(ordprod_qty));
-                products.ordprod_qty = data;
-
-                data = cursor.getString(cursor.getColumnIndex(overwrite_price));
-                products.overwrite_price = data;
-
-                products.prod_price_points = cursor.getString(cursor.getColumnIndex(prodPricePoints));
-
-                list.add(products);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
+//        cursor.close();
         // db.close();
         return list;
     }
