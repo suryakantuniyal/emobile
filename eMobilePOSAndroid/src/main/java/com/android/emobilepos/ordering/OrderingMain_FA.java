@@ -1597,7 +1597,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         // Still need to do add the appropriate tax/discount value
-        ord.prod_taxValue = "0.00";
+        ord.prod_taxValue = new BigDecimal("0.00");
         ord.discount_value = "0.00";
 
         ord.taxAmount = "0";

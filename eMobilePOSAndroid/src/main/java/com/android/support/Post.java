@@ -84,8 +84,7 @@ public class Post {
 
         String postLink = "";
         String response = "";
-        postLink = activity.getString(R.string.sync_enablermobile_getxmlorders);
-        entity = xml.synchOrders(false);
+
         switch (type) {
             case 0: {
                 url = baseURL.append(xml.getAuth());
@@ -274,23 +273,23 @@ public class Post {
 //			e1.printStackTrace();
 //		}
         if (!isPost) {
-//            try {
-//                if (type != 11)
-//                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_XML_DINNER_TABLES) {
-//                        response = this.getRequest(new URL(url.toString()), true);
-//                    } else {
-//                        response = this.getRequest(new URL(url.toString()), false);
-//                    }
-//                else
-//                    response = getRequestUnsecure(new URI(url.toString()));
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (URISyntaxException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                if (type != 11)
+                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_XML_DINNER_TABLES) {
+                        response = this.getRequest(new URL(url.toString()), true);
+                    } else {
+                        response = this.getRequest(new URL(url.toString()), false);
+                    }
+                else
+                    response = getRequestUnsecure(new URI(url.toString()));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
         } else {
 //            Log.d("Request XMKL: ", entity);
-//            response = this.postRequest(postLink, entity);
+            response = this.postRequest(postLink, entity);
 //            Log.d("Request XMKL: ", response);
         }
 

@@ -13,6 +13,7 @@ import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,8 +162,9 @@ public class OrderProductsHandler {
                 insert.bindString(index(uom_conversion), prod.uom_conversion == null ? "" : prod.uom_conversion); // uom_conversion
                 insert.bindString(index(uom_id), prod.uom_id == null ? "" : prod.uom_id); // uom_id
                 insert.bindString(index(prod_taxId), prod.prod_taxId == null ? "" : prod.prod_taxId); // prod_taxId
-                insert.bindString(index(prod_taxValue),
-                        TextUtils.isEmpty(prod.prod_taxValue) ? "0" : prod.prod_taxValue); // prod_taxValue
+                insert.bindDouble(index(prod_taxValue),
+                        prod.prod_taxValue == null ? 0 : prod.prod_taxValue.doubleValue());
+
                 insert.bindString(index(discount_id), prod.discount_id == null ? "" : prod.discount_id); // discount_id
                 insert.bindString(index(discount_value),
                         TextUtils.isEmpty(prod.discount_value) ? "0" : prod.discount_value); // discount_value
@@ -235,7 +237,7 @@ public class OrderProductsHandler {
             insert.bindString(index(uom_conversion), prod.uom_conversion == null ? "" : prod.uom_conversion); // uom_conversion
             insert.bindString(index(uom_id), prod.uom_id == null ? "" : prod.uom_id); // uom_id
             insert.bindString(index(prod_taxId), prod.prod_taxId == null ? "" : prod.prod_taxId); // prod_taxId
-            insert.bindString(index(prod_taxValue), TextUtils.isEmpty(prod.prod_taxValue) ? "0" : prod.prod_taxValue); // prod_taxValue
+            insert.bindDouble(index(prod_taxValue), prod.prod_taxValue == null ? 0 : prod.prod_taxValue.doubleValue()); // prod_taxValue
             insert.bindString(index(discount_id), prod.discount_id == null ? "" : prod.discount_id); // discount_id
             insert.bindString(index(discount_value),
                     TextUtils.isEmpty(prod.discount_value) ? "0" : prod.discount_value); // discount_value
@@ -310,7 +312,7 @@ public class OrderProductsHandler {
                     insert.bindString(index(uom_conversion), getData(uom_conversion, i)); // cust_id
                     insert.bindString(index(uom_id), getData(uom_id, i));
                     insert.bindString(index(prod_taxId), getData(prod_taxId, i)); // cust_id
-                    insert.bindString(index(prod_taxValue), getData(prod_taxValue, i)); // cust_id
+                    insert.bindDouble(index(prod_taxValue), Double.parseDouble(getData(prod_taxValue, i))); // cust_id
                     insert.bindString(index(discount_id), getData(discount_id, i)); // cust_id
                     insert.bindString(index(discount_value), getData(discount_value, i)); // cust_id
                     insert.bindString(index(prod_istaxable), getData(prod_istaxable, i));
@@ -421,7 +423,7 @@ public class OrderProductsHandler {
         product.uom_conversion = cursor.getString(cursor.getColumnIndex(uom_conversion));
         product.uom_id = cursor.getString(cursor.getColumnIndex(uom_id));
         product.prod_taxId = cursor.getString(cursor.getColumnIndex(prod_taxId));
-        product.prod_taxValue = cursor.getString(cursor.getColumnIndex(prod_taxValue));
+        product.prod_taxValue = new BigDecimal(cursor.getDouble(cursor.getColumnIndex(prod_taxValue)));
         product.discount_id = cursor.getString(cursor.getColumnIndex(discount_id));
         product.discount_value = cursor.getString(cursor.getColumnIndex(discount_value));
         product.prod_istaxable = cursor.getString(cursor.getColumnIndex(prod_istaxable));

@@ -286,7 +286,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
             if (ord.prod_istaxable.equals("1")) {
                 BigDecimal temp1 = Global.taxAmount.divide(new BigDecimal("100"));
                 BigDecimal temp2 = temp1.multiply(Global.getBigDecimalNum(tempPrice)).setScale(2, RoundingMode.HALF_UP);
-                ord.prod_taxValue = temp2.toString();
+                ord.prod_taxValue = temp2;
                 ord.prod_taxId = Global.taxID;
             }
             ord.taxAmount = "";

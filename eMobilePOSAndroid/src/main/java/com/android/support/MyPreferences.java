@@ -264,8 +264,7 @@ public class MyPreferences {
     }
 
     public String getEmpID() {
-         return "796";
-//        return (prefs.getString(emp_id, ""));
+        return (prefs.getString(emp_id, ""));
     }
 
     /* Set/Get Password */

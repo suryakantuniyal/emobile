@@ -410,7 +410,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
                         product.itemSubtotal = itemSubtotal.toString();
                         product.overwrite_price = Global.getBigDecimalNum(product.overwrite_price).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
-                        product.prod_taxValue = Global.getBigDecimalNum(product.prod_taxValue).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+                        product.prod_taxValue = product.prod_taxValue.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
                         product.discount_value = Global.getBigDecimalNum(product.discount_value).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
                         product.itemTotal = Global.getBigDecimalNum(product.itemTotal).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
 
