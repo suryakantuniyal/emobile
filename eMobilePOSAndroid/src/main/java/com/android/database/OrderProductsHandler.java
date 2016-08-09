@@ -453,7 +453,7 @@ public class OrderProductsHandler {
         Cursor cursor = getCursorData(orderId);
         if (cursor.moveToFirst()) {
             do {
-                OrderProduct prod = getOrderProduct(cursor);//new OrderProduct();
+                OrderProduct prod = getOrderProduct(cursor);
                 products.add(prod);
             } while (cursor.moveToNext());
         }
@@ -475,36 +475,33 @@ public class OrderProductsHandler {
     public List<OrderProduct> getPrintOrderedProducts(String ordID) {
 
 
-        List<OrderProduct> list = new ArrayList<OrderProduct>();
+        List<OrderProduct> list = new ArrayList<>();
 
 
         Cursor cursor = DBManager._db.rawQuery(("SELECT ordprod_name, prod_price_points, ordprod_id,ordprod_desc," +
                 "overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty)" +
                 " ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon," +
-                "isAdded,hasAddons,discount_id,discount_value FROM " + table_name +
+                "isAdded,hasAddons,discount_id,discount_value, uom_conversion FROM " + table_name +
                 " WHERE addon = '0' AND ord_id = '") + ordID + "'", null);
 
-        OrderProduct[] orders = new OrderProduct[cursor.getCount()];
-
+        OrderProduct order;
         if (cursor.moveToFirst()) {
-            int i = 0;
             do {
-                orders[i] = new OrderProduct();
-                orders[i].ordprod_id = cursor.getString(cursor.getColumnIndex(ordprod_id));
-                orders[i].ordprod_name = cursor.getString(cursor.getColumnIndex(ordprod_name));
-                orders[i].ordprod_desc = cursor.getString(cursor.getColumnIndex(ordprod_desc));
-                orders[i].overwrite_price = (format(cursor.getString(cursor.getColumnIndex(overwrite_price))));
-                orders[i].itemTotal = (format(cursor.getString(cursor.getColumnIndex("total"))));
-                orders[i].ordprod_qty = (cursor.getString(cursor.getColumnIndex(ordprod_qty)));
-                orders[i].addon = (cursor.getString(cursor.getColumnIndex(addon)));
-                orders[i].isAdded = (cursor.getString(cursor.getColumnIndex(isAdded)));
-                orders[i].hasAddons = (cursor.getString(cursor.getColumnIndex(hasAddons)));
-                orders[i].discount_id = (cursor.getString(cursor.getColumnIndex(discount_id)));
-                orders[i].discount_value = (cursor.getString(cursor.getColumnIndex(discount_value)));
-                orders[i].prod_price_points = (cursor.getString(cursor.getColumnIndex(prodPricePoints)));
-
-                list.add(orders[i]);
-                i++;
+                order = new OrderProduct();
+                order.ordprod_id = cursor.getString(cursor.getColumnIndex(ordprod_id));
+                order.ordprod_name = cursor.getString(cursor.getColumnIndex(ordprod_name));
+                order.ordprod_desc = cursor.getString(cursor.getColumnIndex(ordprod_desc));
+                order.overwrite_price = (format(cursor.getString(cursor.getColumnIndex(overwrite_price))));
+                order.itemTotal = (format(cursor.getString(cursor.getColumnIndex("total"))));
+                order.ordprod_qty = (cursor.getString(cursor.getColumnIndex(ordprod_qty)));
+                order.addon = (cursor.getString(cursor.getColumnIndex(addon)));
+                order.isAdded = (cursor.getString(cursor.getColumnIndex(isAdded)));
+                order.hasAddons = (cursor.getString(cursor.getColumnIndex(hasAddons)));
+                order.discount_id = (cursor.getString(cursor.getColumnIndex(discount_id)));
+                order.discount_value = (cursor.getString(cursor.getColumnIndex(discount_value)));
+                order.prod_price_points = (cursor.getString(cursor.getColumnIndex(prodPricePoints)));
+                order.uom_conversion = (cursor.getString(cursor.getColumnIndex(uom_conversion)));
+                list.add(order);
             } while (cursor.moveToNext());
         }
         cursor.close();
