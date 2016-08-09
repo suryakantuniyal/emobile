@@ -50,8 +50,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.36"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -65,8 +65,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.36"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -79,8 +79,8 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.36"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -94,8 +94,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.36"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -109,8 +109,8 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.47"
-            versionCode 102
+            versionName "1.1.1.48"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -124,8 +124,8 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.47"
-            versionCode 102
+            versionName "1.1.1.48"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
