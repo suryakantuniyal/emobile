@@ -214,7 +214,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
 
             if (wasProcessed) {
-                new executeOnHoldAsync().execute(false);
+                new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             } else {
                 claimedTransactionPrompt();
             }
@@ -329,7 +329,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
     public void printOnHoldTransaction() {
-        new printAsync().execute();
+        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class printAsync extends AsyncTask<Void, Void, Void> {
@@ -389,7 +389,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -480,7 +480,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 {
                     validPassword = true;
                     isUpdateOnHold = true;
-                    new checkHoldStatus().execute();
+                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     validPassword = false;
                     askForManagerPassDlg();
@@ -522,7 +522,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new checkHoldStatus().execute();
+                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
             }
@@ -535,9 +535,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 myCursor.moveToPosition(selectedPos);
                 if (myCursor.getString(myCursor.getColumnIndex("ord_issync")).equals("0")) {
                     Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-                    new printAsync().execute();
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
-                    new executeOnHoldAsync().execute(true);
+                    new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                 }
             }
         });

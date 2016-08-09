@@ -60,7 +60,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         thisInstance = this;
         this.edm = edm;
         sdkEventHandler = this;
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
 

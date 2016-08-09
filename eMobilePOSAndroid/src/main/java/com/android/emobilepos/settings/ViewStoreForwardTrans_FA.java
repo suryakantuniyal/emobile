@@ -129,7 +129,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 		switch(v.getId())
 		{
 		case R.id.btnProcessAll:
-			new processLivePaymentAsync().execute();
+			new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			break;
 		}
 	}

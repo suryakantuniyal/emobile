@@ -122,7 +122,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             carrierSpinner = (Spinner) findViewById(R.id.spinnerBoloroCarrier);
             carrierSpinner.setOnItemSelectedListener(this);
             accountSpinner = (Spinner) findViewById(R.id.spinnerBoloroAccount);
-            new LoadBoloroDataAsync().execute();
+            new LoadBoloroDataAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         fieldAmountDue.addTextChangedListener(getTextWatcher(fieldAmountDue));
@@ -183,7 +183,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     protected void onNewIntent(Intent intent) {
         // NDEF exchange mode
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()))
-            new NdefReaderTask().execute(intent);
+            new NdefReaderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, intent);
     }
 
 
@@ -261,10 +261,10 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             int transmodePos = accountSpinner.getSelectedItemPosition();
             payment.telcoid = manualBoloroData.get(telcoPos).getTelcoID();
             payment.transmode = manualBoloroData.get(telcoPos).getCarrierAccounts().get(transmodePos).get("payment_mode_id");
-            new ManualCheckoutAsync().execute();
+            new ManualCheckoutAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             payment.tagid = boloroTagID;
-            new NFCCheckoutAsync().execute();
+            new NFCCheckoutAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -457,7 +457,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         protected void onPostExecute(Void result) {
             progressDlog.dismiss();
             if (!failed) {
-                new BoloroPollingAsync().execute();
+                new BoloroPollingAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else if (response.containsKey("error_message")) {
                 Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
             } else if (response.containsKey("epayStatusCode")) {
@@ -523,7 +523,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         protected void onPostExecute(Void result) {
             progressDlog.dismiss();
             if (!failed) {
-                new BoloroPollingAsync().execute();
+                new BoloroPollingAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 //Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("addnote"));
             } else if (response.containsKey("error_message")) {
                 Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
@@ -560,7 +560,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                                     isPolling = false;
                                     progressDlog.dismiss();
                                     //myTask.doInBackground();
-                                    new BoloroPollingAsync().execute();
+                                    new BoloroPollingAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
                             });
                 } else {

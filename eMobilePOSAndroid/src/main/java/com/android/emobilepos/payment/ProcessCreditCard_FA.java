@@ -662,7 +662,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
                 processStoreForward(generatedURL, payment);
             else
-                new processLivePaymentAsync().execute(generatedURL, payment);
+                new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL, payment);
         } else {
             if (!isRefund) {
                 payment.pay_type = "0";
@@ -810,7 +810,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         cardInfoManager);
         }
 
-        new processLivePaymentAsync().execute(generatedURL, payment);
+        new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL, payment);
 
     }
 
@@ -1222,12 +1222,23 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                                 case 39:
                                     ccType = CREDITCARD_TYPE_DINERS;
                                     break;
+                                case 22:
+                                case 23:
+                                case 24:
+                                case 25:
+                                case 26:
+                                case 27:
                                 case 51:
                                 case 52:
                                 case 53:
                                 case 54:
                                 case 55:
-                                    ccType = CREDITCARD_TYPE_MASTERCARD;
+                                    if ((Integer.parseInt(number.substring(0, 6)) >= 222100 &&
+                                            Integer.parseInt(number.substring(0, 6)) <= 272099) ||
+                                            (Integer.parseInt(number.substring(0, 6)) >= 510000 &&
+                                                    Integer.parseInt(number.substring(0, 6)) <= 559999)) {
+                                        ccType = CREDITCARD_TYPE_MASTERCARD;
+                                    }
                                     break;
                                 case 65:
                                     ccType = CREDITCARD_TYPE_DISCOVER;
@@ -1301,7 +1312,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 OrdersHandler dbOrders = new OrdersHandler(this);
                 dbOrders.updateOrderStoredFwd(payment.job_id, "1");
             }
-            new printAsync().execute(false, payment);
+            new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, payment);
         } else if (!isDebit) {
             Intent intent = new Intent(activity, DrawReceiptActivity.class);
             intent.putExtra("isFromPayment", true);
@@ -1571,7 +1582,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         payHandler.insert(payment);
         if (walkerReader == null) {
             if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-                new printAsync().execute(false, payment);
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, payment);
             } else if (!isDebit) {
 
                 Intent intent = new Intent(activity, DrawReceiptActivity.class);
@@ -1684,7 +1695,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                     if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                        new printAsync().execute(false, PaymentsHandler.getLastPaymentInserted());
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, PaymentsHandler.getLastPaymentInserted());
                     else
                         showPrintDlg(false, false, PaymentsHandler.getLastPaymentInserted());
                 } else
@@ -1822,10 +1833,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             public void onClick(View v) {
                 dlog.dismiss();
                 if (isFromReverse) {
-                    new processReverseAsync().execute(payment);
+                    new processReverseAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
                 } else {
                     if (_connectionFailed)
-                        new processReverseAsync().execute(payment);
+                        new processReverseAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payment);
                     else
                         finish();
                 }
@@ -1858,7 +1869,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 processPayment();
             } else {
                 String errorMsg = getString(R.string.coundnot_proceess_payment);
-                 if (cardManager.getResultMessage() != null && !cardManager.getResultMessage().isEmpty()) {
+                if (cardManager.getResultMessage() != null && !cardManager.getResultMessage().isEmpty()) {
                     errorMsg += "\n\r" + cardManager.getResultMessage();
                 }
                 Global.showPrompt(activity, R.string.payment, errorMsg);
@@ -1970,7 +1981,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
 
                 } else {
-                    new ProcessWalkerAsync().execute();
+                    new ProcessWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
                 break;
             case R.id.tipAmountBut:

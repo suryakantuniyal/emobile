@@ -1269,7 +1269,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     cardInfoManager);
         }
 
-        new processAsync().execute(generatedURL);
+        new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
     public int getSelectedSeatsAmount() {
@@ -1491,7 +1491,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdProd.insert(orderProducts);
                 dbOrdAttr.insert(ordProdAttr);
             }
-            new VoidTransactionTask().execute(activity, order);
+            new VoidTransactionTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, activity, order);
 //            SelectPayMethod_FA.voidTransaction(activity, order.ord_id, order.ord_type);
 
 //            dbOrders.updateIsVoid(order.ord_id);

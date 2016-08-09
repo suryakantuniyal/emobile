@@ -97,7 +97,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
         thisInstance = this;
         this.edm = edm;
         encrypt = new Encrypt(activity);
-        new processConnectionAsync().execute();
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override

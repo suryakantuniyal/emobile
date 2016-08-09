@@ -100,7 +100,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.edm = edm;
         thisInstance = this;
         playSound();
-        new processConnectionAsync().execute(true);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
     }
 
 
@@ -114,7 +114,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.edm = edm;
         thisInstance = this;
         playSound();
-        new processConnectionAsync().execute(false);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         return true;
     }
 

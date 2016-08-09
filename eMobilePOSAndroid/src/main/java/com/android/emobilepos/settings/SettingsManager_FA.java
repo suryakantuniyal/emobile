@@ -283,7 +283,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     connectUSBDevice();
                     break;
                 case R.string.config_redetect_peripherals:
-                    new autoConnectPrinter().execute();
+                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:
                     intent = new Intent(activity, ViewStoreForwardTrans_FA.class);
