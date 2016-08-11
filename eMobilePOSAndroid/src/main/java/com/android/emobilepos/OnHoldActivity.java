@@ -45,6 +45,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -573,7 +574,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.uom_conversion = TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion"));
 
             total = (Double.parseDouble(ord.ordprod_qty)) * Double.parseDouble(ord.overwrite_price) * Double.parseDouble(ord.uom_conversion);
-            ord.prod_taxValue = c.getString(c.getColumnIndex("prod_taxValue"));
+            ord.prod_taxValue = new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue")));
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             ord.prod_taxtype = c.getString(c.getColumnIndex("prod_taxtype"));
 

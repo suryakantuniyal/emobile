@@ -37,7 +37,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String uom_conversion = "";
     public String uom_id = "";
     public String prod_taxId = "";
-    public String prod_taxValue = "";
+    public BigDecimal prod_taxValue;
     public String discount_id = "";
     public String discount_value = "";
     public String prod_taxcode = "";

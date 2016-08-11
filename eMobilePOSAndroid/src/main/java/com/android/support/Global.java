@@ -1381,7 +1381,7 @@ public class Global extends MultiDexApplication {
     }
 
     public static String getRoundBigDecimal(BigDecimal val) {
-        return val.setScale(2, RoundingMode.HALF_UP).toString();
+        return val.setScale(4, RoundingMode.HALF_UP).toString();
     }
 
     public static String getCurrencyFrmt(String value) {

@@ -33,6 +33,7 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
@@ -1093,9 +1094,10 @@ public class GenerateXML {
                     serializer.startTag(empstr, "totalLineValue");
                     serializer.text(cursor.getString(cursor.getColumnIndex("totalLineValue")));
                     serializer.endTag(empstr, "totalLineValue");
+                    String prod_taxValue = Global.getRoundBigDecimal(new BigDecimal(cursor.getDouble(cursor.getColumnIndex("prod_taxValue"))));
 
                     serializer.startTag(empstr, "prod_taxValue");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("prod_taxValue")));
+                    serializer.text(prod_taxValue);
                     serializer.endTag(empstr, "prod_taxValue");
 
                     serializer.startTag(empstr, "prod_discountId");
@@ -2676,9 +2678,10 @@ public class GenerateXML {
                 serializer.startTag(empstr, "prod_taxId");
                 serializer.text(c.getString(c.getColumnIndex("prod_taxId")));
                 serializer.endTag(empstr, "prod_taxId");
+                String prod_taxValue = Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue"))));
 
                 serializer.startTag(empstr, "prod_taxValue");
-                serializer.text(c.getString(c.getColumnIndex("prod_taxValue")));
+                serializer.text(prod_taxValue);
                 serializer.endTag(empstr, "prod_taxValue");
 
                 serializer.startTag(empstr, "prod_discountId");
