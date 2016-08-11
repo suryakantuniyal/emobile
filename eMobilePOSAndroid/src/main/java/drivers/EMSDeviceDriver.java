@@ -83,7 +83,7 @@ import plaintext.EMSPlainTextHelper;
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = true;
+    public static final boolean PRINT_TO_LOG = false;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
