@@ -2049,7 +2049,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
         if (!isFromMainMenu) {
             double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-            double actualAmount = Double.parseDouble(extras.getString("amount"));
+            double actualAmount =  Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
 
             if (enteredAmount > actualAmount) {
                 errorMsg = getString(R.string.card_overpaid_error);
