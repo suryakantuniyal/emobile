@@ -1600,7 +1600,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         // Still need to do add the appropriate tax/discount value
-        ord.setProd_taxValue("0.00");
+        ord.setProd_taxValue(new BigDecimal("0.00"));
         ord.setDiscount_value("0.00");
 
         ord.setTaxAmount("0");

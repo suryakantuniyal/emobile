@@ -183,7 +183,7 @@ public class OrderCalculator {
         if (taxAmount.compareTo(new BigDecimal("0")) < -1)
             taxAmount = new BigDecimal(0);
 
-        product.setProd_taxValue(taxAmount.toString());
+        product.setProd_taxValue(taxAmount);
         product.setProd_taxId(prod_taxId);
     }
 

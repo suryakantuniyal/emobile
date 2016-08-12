@@ -265,7 +265,6 @@ public class MyPreferences {
     }
 
     public String getEmpID() {
-        // return "13";
         return (prefs.getString(emp_id, ""));
     }
 

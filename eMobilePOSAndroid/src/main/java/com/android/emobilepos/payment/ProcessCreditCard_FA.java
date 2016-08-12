@@ -1123,16 +1123,22 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     public static String getCardType(String number) {
         String ccType = "";
+        boolean isMasked = false;
         try {
             Long.parseLong(number);
         } catch (NumberFormatException e) {
-            return "";
+            try {
+                Long.parseLong(number.substring(0, 4));
+                isMasked = true;
+            } catch (NumberFormatException ex) {
+                return "";
+            }
         }
-        if (Integer.parseInt(number.substring(0, 6)) >= 622126
+        if (!isMasked && Integer.parseInt(number.substring(0, 6)) >= 622126
                 && Integer.parseInt(number.substring(0, 6)) <= 622925) {
             ccType = CREDITCARD_TYPE_CUP;
-        } else if (Integer.parseInt(number.substring(0, 6)) == 564182
-                || Integer.parseInt(number.substring(0, 6)) == 633110) {
+        } else if (!isMasked && (Integer.parseInt(number.substring(0, 6)) == 564182
+                || Integer.parseInt(number.substring(0, 6)) == 633110)) {
             ccType = CREDITCARD_TYPE_DISCOVER;
         } else {
             switch (Integer.parseInt(number.substring(0, 4))) {
@@ -1233,10 +1239,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                                 case 53:
                                 case 54:
                                 case 55:
-                                    if ((Integer.parseInt(number.substring(0, 6)) >= 222100 &&
-                                            Integer.parseInt(number.substring(0, 6)) <= 272099) ||
-                                            (Integer.parseInt(number.substring(0, 6)) >= 510000 &&
-                                                    Integer.parseInt(number.substring(0, 6)) <= 559999)) {
+                                    if ((Integer.parseInt(number.substring(0, 4)) >= 2221 &&
+                                            Integer.parseInt(number.substring(0, 4)) <= 2720) ||
+                                            (Integer.parseInt(number.substring(0, 4)) >= 5100 &&
+                                                    Integer.parseInt(number.substring(0, 4)) <= 5599)) {
                                         ccType = CREDITCARD_TYPE_MASTERCARD;
                                     }
                                     break;
@@ -2043,7 +2049,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
         if (!isFromMainMenu) {
             double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-            double actualAmount = Double.parseDouble(extras.getString("amount"));
+            double actualAmount =  Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
 
             if (enteredAmount > actualAmount) {
                 errorMsg = getString(R.string.card_overpaid_error);

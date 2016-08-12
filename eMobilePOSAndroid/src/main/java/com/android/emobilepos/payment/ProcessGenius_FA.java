@@ -271,7 +271,10 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                         geniusResponse = new GeniusResponse();
                         geniusResponse.setErrorMessage(geniusTransportToken.getStatusMessage() + "\r\n" + geniusTransportToken.getEpayStatusCode());
                     }
-                } catch (Exception ignored) {
+                } catch (Exception ex) {
+                    if (geniusResponse == null)
+                        geniusResponse = new GeniusResponse();
+                    geniusResponse.setErrorMessage(ex.getMessage());
                 }
 
             }

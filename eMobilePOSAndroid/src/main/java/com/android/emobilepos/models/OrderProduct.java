@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
 import com.android.support.Global;
+import com.google.android.gms.vision.text.Text;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String uom_conversion = "";
     private String uom_id = "";
     private String prod_taxId = "";
-    private String prod_taxValue = "";
+    private BigDecimal prod_taxValue;
     private String discount_id = "";
     private String discount_value = "";
     private String prod_taxcode = "";
@@ -397,11 +398,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.prod_taxId = prod_taxId;
     }
 
-    public String getProd_taxValue() {
+    public BigDecimal getProd_taxValue() {
         return prod_taxValue;
     }
 
-    public void setProd_taxValue(String prod_taxValue) {
+    public void setProd_taxValue(BigDecimal prod_taxValue) {
         this.prod_taxValue = prod_taxValue;
     }
 

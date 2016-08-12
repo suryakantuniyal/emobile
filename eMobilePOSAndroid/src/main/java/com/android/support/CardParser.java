@@ -158,9 +158,11 @@ public class CardParser {
             creditCardInfo.setWasSwiped(true);
             Encrypt encrypt = new Encrypt(context);
             String maskNumber = ascii.substring(ascii.indexOf(';') + 1);
-            maskNumber = maskNumber.substring(0, ascii.indexOf('='));
+            maskNumber = maskNumber.substring(0, maskNumber.indexOf('='));
             creditCardInfo.setCardNumUnencrypted(maskNumber);
             creditCardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(maskNumber));
+            creditCardInfo.setCardType(ProcessCreditCard_FA.getCardType(maskNumber));
+
             return creditCardInfo;
         }
     }
