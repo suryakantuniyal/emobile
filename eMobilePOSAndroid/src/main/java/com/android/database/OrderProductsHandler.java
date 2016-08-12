@@ -165,8 +165,8 @@ public class OrderProductsHandler {
                 insert.bindString(index(uom_conversion), prod.getUom_conversion() == null ? "" : prod.getUom_conversion()); // uom_conversion
                 insert.bindString(index(uom_id), prod.getUom_id() == null ? "" : prod.getUom_id()); // uom_id
                 insert.bindString(index(prod_taxId), prod.getProd_taxId() == null ? "" : prod.getProd_taxId()); // prod_taxId
-                insert.bindString(index(prod_taxValue),
-                        TextUtils.isEmpty(prod.getProd_taxValue()) ? "0" : prod.getProd_taxValue()); // prod_taxValue
+                insert.bindDouble(index(prod_taxValue),
+                        prod.getProd_taxValue() == null ? 0 : prod.getProd_taxValue().doubleValue());
                 insert.bindString(index(discount_id), prod.getDiscount_id() == null ? "" : prod.getDiscount_id()); // discount_id
                 insert.bindString(index(discount_value),
                         TextUtils.isEmpty(prod.getDiscount_value()) ? "0" : prod.getDiscount_value()); // discount_value
@@ -239,7 +239,7 @@ public class OrderProductsHandler {
             insert.bindString(index(uom_conversion), prod.getUom_conversion() == null ? "" : prod.getUom_conversion()); // uom_conversion
             insert.bindString(index(uom_id), prod.getUom_id() == null ? "" : prod.getUom_id()); // uom_id
             insert.bindString(index(prod_taxId), prod.getProd_taxId() == null ? "" : prod.getProd_taxId()); // prod_taxId
-            insert.bindString(index(prod_taxValue), TextUtils.isEmpty(prod.getProd_taxValue()) ? "0" : prod.getProd_taxValue()); // prod_taxValue
+            insert.bindDouble(index(prod_taxValue), prod.getProd_taxValue() == null ? 0 : prod.getProd_taxValue().doubleValue()); // prod_taxValue
             insert.bindString(index(discount_id), prod.getDiscount_id() == null ? "" : prod.getDiscount_id()); // discount_id
             insert.bindString(index(discount_value),
                     TextUtils.isEmpty(prod.getDiscount_value()) ? "0" : prod.getDiscount_value()); // discount_value
@@ -314,7 +314,7 @@ public class OrderProductsHandler {
                     insert.bindString(index(uom_conversion), getData(uom_conversion, i)); // cust_id
                     insert.bindString(index(uom_id), getData(uom_id, i));
                     insert.bindString(index(prod_taxId), getData(prod_taxId, i)); // cust_id
-                    insert.bindString(index(prod_taxValue), getData(prod_taxValue, i)); // cust_id
+                    insert.bindDouble(index(prod_taxValue), Double.parseDouble(getData(prod_taxValue, i))); // cust_id
                     insert.bindString(index(discount_id), getData(discount_id, i)); // cust_id
                     insert.bindString(index(discount_value), getData(discount_value, i)); // cust_id
                     insert.bindString(index(prod_istaxable), getData(prod_istaxable, i));
@@ -426,7 +426,7 @@ public class OrderProductsHandler {
         product.setUom_conversion(cursor.getString(cursor.getColumnIndex(uom_conversion)));
         product.setUom_id(cursor.getString(cursor.getColumnIndex(uom_id)));
         product.setProd_taxId(cursor.getString(cursor.getColumnIndex(prod_taxId)));
-        product.setProd_taxValue(cursor.getString(cursor.getColumnIndex(prod_taxValue)));
+        product.setProd_taxValue(new BigDecimal(cursor.getDouble(cursor.getColumnIndex(prod_taxValue))));
         product.setDiscount_id(cursor.getString(cursor.getColumnIndex(discount_id)));
         product.setDiscount_value(cursor.getString(cursor.getColumnIndex(discount_value)));
         product.setProd_istaxable(cursor.getString(cursor.getColumnIndex(prod_istaxable)));
@@ -477,38 +477,35 @@ public class OrderProductsHandler {
     public List<OrderProduct> getPrintOrderedProducts(String ordID) {
 
 
-        List<OrderProduct> list = new ArrayList<OrderProduct>();
+        List<OrderProduct> list = new ArrayList<>();
 
 
         Cursor cursor = DBManager._db.rawQuery(("SELECT ordprod_name, prod_price_points, ordprod_id,ordprod_desc," +
                 "overwrite_price, CASE WHEN discount_value = '' THEN (overwrite_price*ordprod_qty)" +
                 " ELSE ((overwrite_price*ordprod_qty)-discount_value) END AS 'total', ordprod_qty,addon," +
-                "isAdded,hasAddons,discount_id,discount_value FROM " + table_name +
+                "isAdded,hasAddons,discount_id,discount_value, uom_conversion FROM " + table_name +
                 " WHERE addon = '0' AND ord_id = '") + ordID + "'", null);
 
-        OrderProduct[] orders = new OrderProduct[cursor.getCount()];
-
+        OrderProduct order;
         if (cursor.moveToFirst()) {
-            int i = 0;
             do {
-                orders[i] = new OrderProduct();
-                orders[i].setOrdprod_id(cursor.getString(cursor.getColumnIndex(ordprod_id)));
-                orders[i].setOrdprod_name(cursor.getString(cursor.getColumnIndex(ordprod_name)));
-                orders[i].setOrdprod_desc(cursor.getString(cursor.getColumnIndex(ordprod_desc)));
+                order = new OrderProduct();
+                order.setOrdprod_id( cursor.getString(cursor.getColumnIndex(ordprod_id)));
+                order.setOrdprod_name( cursor.getString(cursor.getColumnIndex(ordprod_name)));
+                order.setOrdprod_desc( cursor.getString(cursor.getColumnIndex(ordprod_desc)));
                 if (!TextUtils.isEmpty(cursor.getString(cursor.getColumnIndex(overwrite_price)))) {
-                    orders[i].setOverwrite_price(new BigDecimal(format(cursor.getString(cursor.getColumnIndex(overwrite_price)))));
+                    order.setOverwrite_price(new BigDecimal(format(cursor.getString(cursor.getColumnIndex(overwrite_price)))));
                 }
-                orders[i].setItemTotal((format(cursor.getString(cursor.getColumnIndex("total")))));
-                orders[i].setOrdprod_qty((cursor.getString(cursor.getColumnIndex(ordprod_qty))));
-                orders[i].setAddon((cursor.getString(cursor.getColumnIndex(addon))));
-                orders[i].setIsAdded((cursor.getString(cursor.getColumnIndex(isAdded))));
-                orders[i].setHasAddons((cursor.getString(cursor.getColumnIndex(hasAddons))));
-                orders[i].setDiscount_id((cursor.getString(cursor.getColumnIndex(discount_id))));
-                orders[i].setDiscount_value((cursor.getString(cursor.getColumnIndex(discount_value))));
-                orders[i].setProd_price_points((cursor.getString(cursor.getColumnIndex(prodPricePoints))));
-
-                list.add(orders[i]);
-                i++;
+                order.setItemTotal( (format(cursor.getString(cursor.getColumnIndex("total")))));
+                order.setOrdprod_qty( (cursor.getString(cursor.getColumnIndex(ordprod_qty))));
+                order.setAddon( (cursor.getString(cursor.getColumnIndex(addon))));
+                order.setIsAdded( (cursor.getString(cursor.getColumnIndex(isAdded))));
+                order.hasAddons = (cursor.getString(cursor.getColumnIndex(hasAddons)));
+                order.setDiscount_id( (cursor.getString(cursor.getColumnIndex(discount_id))));
+                order.setDiscount_value( (cursor.getString(cursor.getColumnIndex(discount_value))));
+                order.setProd_price_points( (cursor.getString(cursor.getColumnIndex(prodPricePoints))));
+                order.setUom_conversion( (cursor.getString(cursor.getColumnIndex(uom_conversion))));
+                list.add(order);
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -642,45 +639,43 @@ public class OrderProductsHandler {
     }
 
     public List<OrderProduct> getOrderedProducts(String ordID) {
-        List<OrderProduct> list = new ArrayList<OrderProduct>();
+        List<OrderProduct> list;
 
-        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, prod_price_points, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
+//        String subquery1 = "SELECT ordprod_id as _id, ordprod_name, prod_price_points, ordprod_desc, prod_id, prod_sku, prod_upc, ordprod_qty,overwrite_price FROM " + table_name + " WHERE ord_id = '";
 
-        Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
-        OrderProduct products;
-        if (cursor.moveToFirst()) {
-            do {
-                products = new OrderProduct();
-                String data = cursor.getString(cursor.getColumnIndex(ordprod_name));
-                products.setOrdprod_name(data);
+//        Cursor cursor = DBManager._db.rawQuery(subquery1 + ordID + "'", null);
+        list = getOrderProducts(ordID);
+//        if (cursor.moveToFirst()) {
+//            do {
+//                products = new OrderProduct();
+//                String data = cursor.getString(cursor.getColumnIndex(ordprod_name));
+//                products.ordprod_name = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(ordprod_desc));
+//                products.ordprod_desc = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(prod_id));
+//                products.prod_id = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(prod_sku));
+//                products.prod_sku = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(prod_upc));
+//                products.prod_upc = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(ordprod_qty));
+//                products.ordprod_qty = data;
+//
+//                data = cursor.getString(cursor.getColumnIndex(overwrite_price));
+//                products.overwrite_price = data;
+//
+//                products.prod_price_points = cursor.getString(cursor.getColumnIndex(prodPricePoints));
+//
+//                list.add(products);
+//            } while (cursor.moveToNext());
+//        }
 
-                data = cursor.getString(cursor.getColumnIndex(ordprod_desc));
-                products.setOrdprod_desc(data);
-
-                data = cursor.getString(cursor.getColumnIndex(prod_id));
-                products.setProd_id(data);
-
-                data = cursor.getString(cursor.getColumnIndex(prod_sku));
-                products.setProd_sku(data);
-
-                data = cursor.getString(cursor.getColumnIndex(prod_upc));
-                products.setProd_upc(data);
-
-                data = cursor.getString(cursor.getColumnIndex(ordprod_qty));
-                products.setOrdprod_qty(data);
-
-                data = cursor.getString(cursor.getColumnIndex(overwrite_price));
-                if(!TextUtils.isEmpty(data)) {
-                    products.setOverwrite_price(new BigDecimal(format(data)));
-                }
-
-                products.setProd_price_points(cursor.getString(cursor.getColumnIndex(prodPricePoints)));
-
-                list.add(products);
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
+//        cursor.close();
         // db.close();
         return list;
     }

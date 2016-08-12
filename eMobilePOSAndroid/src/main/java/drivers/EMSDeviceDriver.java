@@ -83,7 +83,7 @@ import plaintext.EMSPlainTextHelper;
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = true;
+    public static final boolean PRINT_TO_LOG = false;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
@@ -477,7 +477,7 @@ public class EMSDeviceDriver {
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
             List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-            List<OrderProduct> orderProducts = handler.getPrintOrderedProducts(ordID);
+            List<OrderProduct> orderProducts = handler.getOrderProducts(ordID); //handler.getPrintOrderedProducts(ordID);
 
             OrdersHandler orderHandler = new OrdersHandler(activity);
             Order anOrder = orderHandler.getPrintedOrder(ordID);
@@ -555,7 +555,7 @@ public class EMSDeviceDriver {
             print(sb.toString());
 
             sb.setLength(0);
-
+            int totalItemstQty = 0;
             if (!myPref.getPreferences(MyPreferences.pref_wholesale_printout)) {
                 boolean isRestMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
 
@@ -563,10 +563,17 @@ public class EMSDeviceDriver {
                     if (!TextUtils.isEmpty(orderProducts.get(i).getProd_price_points()) && Integer.parseInt(orderProducts.get(i).getProd_price_points()) > 0) {
                         payWithLoyalty = true;
                     }
+                    totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).getOrdprod_qty()) ? 0 : Integer.parseInt(orderProducts.get(i).getOrdprod_qty());
+                    String uomDescription = "";
+                    if (!TextUtils.isEmpty(orderProducts.get(i).getUom_name())) {
+                        uomDescription = orderProducts.get(i).getUom_name() + "(" + orderProducts.get(i).getUom_conversion() + ")";
+                    }
                     if (isRestMode) {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name(), lineWidth, 1));
-                        if (orderProducts.get(i).getHasAddons().equals("1")) {
+                                orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name()
+                                        + " "
+                                        + uomDescription, lineWidth, 1));
+                        if (orderProducts.get(i).hasAddons.equals("1")) {
                             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
                             for (OrderProduct addon : addons) {
                                 if (addon.getIsAdded().equals("1")) {
@@ -581,7 +588,7 @@ public class EMSDeviceDriver {
                             }
                         }
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()), lineWidth, 3))
+                                Global.getCurrencyFormat(orderProducts.get(i).getItemSubtotal()), lineWidth, 3))
                                 .append("\n");
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                 Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3)).append("\n");
@@ -594,7 +601,9 @@ public class EMSDeviceDriver {
                         }
                     } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name(), lineWidth, 1));
+                                orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name()
+                                        + " "
+                                        + uomDescription, lineWidth, 1));
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
                                 Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()), lineWidth, 3))
                                 .append("\n");
@@ -631,6 +640,8 @@ public class EMSDeviceDriver {
                     if (!TextUtils.isEmpty(orderProducts.get(i).getProd_price_points()) && Integer.parseInt(orderProducts.get(i).getProd_price_points()) > 0) {
                         payWithLoyalty = true;
                     }
+                    totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).getOrdprod_qty()) ? 0
+                            : Integer.parseInt(orderProducts.get(i).getOrdprod_qty());
                     sb.append(orderProducts.get(i).getOrdprod_name()).append("-").append(orderProducts.get(i).getOrdprod_desc())
                             .append("\n");
 
@@ -651,10 +662,13 @@ public class EMSDeviceDriver {
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
             sb.append("\n\n");
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_itemsQtyTotal),
+                    String.valueOf(totalItemstQty), lineWidth, 0));
+            sb.append("\n");
             String granTotal = (anOrder.gran_total.isEmpty() ? new BigDecimal(0) : new BigDecimal(anOrder.gran_total)).toString();
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
                     Global.formatDoubleStrToCurrency(granTotal), lineWidth, 0));
-
+            sb.append("\n");
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(ordID);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
@@ -780,13 +794,15 @@ public class EMSDeviceDriver {
                 printFooter(lineWidth);
 
             print(textHandler.newLines(1), FORMAT);
-            if (payWithLoyalty) {
+            if (payWithLoyalty && Global.loyaltyCardInfo != null && !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardNumAESEncrypted())
+                    && !TextUtils.isEmpty(Global.loyaltyCardInfo.getCardLast4())) {
                 print(String.format("%s *%s\n", getString(R.string.receipt_cardnum), Global.loyaltyCardInfo.getCardLast4()));
                 print(String.format("%s %s %s\n", getString(R.string.receipt_point_used), Global.loyaltyCharge, getString(R.string.points)));
                 print(String.format("%s %s %s\n", getString(R.string.receipt_reward_balance), Global.loyaltyPointsAvailable, getString(R.string.points)));
                 print(textHandler.newLines(1), FORMAT);
             }
-            if (Global.rewardCardInfo != null && !TextUtils.isEmpty(Global.rewardCardInfo.getCardNumAESEncrypted())) {
+            if (Global.rewardCardInfo != null && !TextUtils.isEmpty(Global.rewardCardInfo.getCardNumAESEncrypted())
+                    && !TextUtils.isEmpty(Global.rewardCardInfo.getCardLast4())) {
                 print(String.format("%s *%s\n", getString(R.string.receipt_cardnum), Global.rewardCardInfo.getCardLast4()));
                 print(String.format("%s %s %s\n", getString(R.string.receipt_reward_balance), Global.rewardCardInfo.getOriginalTotalAmount(), getString(R.string.points)));
                 print(textHandler.newLines(1), FORMAT);

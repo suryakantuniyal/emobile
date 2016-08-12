@@ -219,7 +219,7 @@ public class TaxesCalculator {
         if (tempTaxTotal.compareTo(new BigDecimal("0")) < -1)
             taxTotal = Double.toString(0.0);
 
-        orderProduct.setProd_taxValue(taxTotal);
+        orderProduct.setProd_taxValue(new BigDecimal(taxTotal));
         orderProduct.setProd_taxId(prod_taxId);
     }
 
