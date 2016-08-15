@@ -1662,6 +1662,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void setOrderAsHold(String holdName, OrdersHandler ordersHandler, OrderProductsHandler orderProductsHandler) {
         global.order.ord_HoldName = holdName;
         global.order.processed = "10";
+        global.order.isOnHold = "1";
         global.order.numberOfSeats = mainLVAdapter.getSeatsAmount();
         ordersHandler.insert(global.order);
         global.encodedImage = "";
