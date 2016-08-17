@@ -30,6 +30,7 @@ import com.android.database.ProductsHandler;
 import com.android.database.ShiftExpensesDBHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.StoredPayments_DB;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.EMVContainer;
@@ -83,7 +84,7 @@ import plaintext.EMSPlainTextHelper;
 
 
 public class EMSDeviceDriver {
-    public static final boolean PRINT_TO_LOG = false;
+    public static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
     protected double itemDiscTotal = 0;
     protected double saveAmount;
