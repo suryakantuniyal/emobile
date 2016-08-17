@@ -2087,7 +2087,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         receiptListView.invalidateViews();
         reCalculate();
         Catalog_FR.instance.refreshListView();
-
+        refreshView();
         if (restLVAdapter != null) {
             restLVAdapter.updateDivisionPos(removePos);
         }
