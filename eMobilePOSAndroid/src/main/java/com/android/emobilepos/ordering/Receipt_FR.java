@@ -523,6 +523,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.signButton:
                 orientation = getResources().getConfiguration().orientation;
                 intent = new Intent(getActivity(), DrawReceiptActivity.class);
+                getActivity().setRequestedOrientation(orientation);
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
                     intent.putExtra("inPortrait", true);
                 else

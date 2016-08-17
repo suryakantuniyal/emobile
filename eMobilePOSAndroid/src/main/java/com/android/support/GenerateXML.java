@@ -1045,15 +1045,16 @@ public class GenerateXML {
                     serializer.endTag(empstr, "prod_id");
 
                     serializer.startTag(empstr, "ordprod_qty");
-                    int uom_conversion = TextUtils.isEmpty(cursor.getString(cursor.getColumnIndex("uom_conversion"))) ? 0
-                            : Integer.parseInt(cursor.getString(cursor.getColumnIndex("uom_conversion")));
-                    if (uom_conversion == 0) {
-                        serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_qty")));
-                    } else {
-                        serializer.text(cursor.getString(cursor.getColumnIndex("uom_conversion")));
-                    }
+//                    int uom_conversion = TextUtils.isEmpty(cursor.getString(cursor.getColumnIndex("uom_conversion"))) ? 0
+//                            : Integer.parseInt(cursor.getString(cursor.getColumnIndex("uom_conversion")));
+//                    if (uom_conversion == 0) {
+                    serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_qty")));
+//                    } else {
+//                        serializer.text(cursor.getString(cursor.getColumnIndex("uom_conversion")));
+//                    }
                     serializer.endTag(empstr, "ordprod_qty");
-
+                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
+                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
                     serializer.startTag(empstr, "overwrite_price");
                     serializer.text(cursor.getString(cursor.getColumnIndex("overwrite_price")));
                     serializer.endTag(empstr, "overwrite_price");

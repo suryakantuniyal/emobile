@@ -639,12 +639,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         String val = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
 
-        if (val.equals("prod_desc"))
-            product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
-        else if (val.equals("prod_name"))
-            product.setProdName(c.getString(c.getColumnIndex("prod_name")));
-        else
-            product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
+//        if (val.equals("prod_desc"))
+        product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
+//        else if (val.equals("prod_name"))
+        product.setProdName(c.getString(c.getColumnIndex("prod_name")));
+//        else
+        product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
 
 
         String tempPrice = c.getString(c.getColumnIndex("volume_price"));
@@ -711,6 +711,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             intent.putExtra("prod_on_hand", product.getProdOnHand());
             intent.putExtra("prod_price", product.getProdPrice());
             intent.putExtra("prod_desc", product.getProdDesc());
+            intent.putExtra("prod_extradesc", product.getProdExtraDesc());
             intent.putExtra("url", product.getProdImgName());
             intent.putExtra("prod_istaxable", product.getProdIstaxable());
             intent.putExtra("prod_type", product.getProdType());

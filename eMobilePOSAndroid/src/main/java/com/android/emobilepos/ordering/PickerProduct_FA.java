@@ -319,6 +319,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderProduct.ordprod_name = extras.getString("prod_name");
         orderProduct.prod_price = extras.getString("prod_price");
         orderProduct.imgURL = extras.getString("url");
+        orderProduct.prod_extradesc = extras.getString("prod_extradesc");
         orderProduct.prod_type = extras.getString("prod_type");
         orderProduct.onHand = extras.getString("prod_on_hand");
         orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
@@ -362,7 +363,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
 
             prodAttrHandler = new ProductsAttrHandler(activity);
-            attributesMap = prodAttrHandler.getAttributesMap(orderProduct.ordprod_name);
+            attributesMap = prodAttrHandler.getAttributesMap(orderProduct.prod_id);
             attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
             attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
             int attributesSize = attributesMap.size();
@@ -967,8 +968,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.ordprod_qty = val;
         ord.ordprod_name = orderProduct.ordprod_name;
         ord.ordprod_desc = orderProduct.ordprod_desc;
+        ord.prod_extradesc = orderProduct.prod_extradesc;
         ord.prod_id = prodID;
-        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal);
+        ord.overwrite_price = Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
         ord.onHand = orderProduct.onHand;
         ord.imgURL = orderProduct.imgURL;
         ord.cat_id = orderProduct.cat_id;

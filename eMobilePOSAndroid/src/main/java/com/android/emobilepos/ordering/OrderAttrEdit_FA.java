@@ -10,6 +10,7 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
@@ -549,7 +550,8 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         switch (v.getId()) {
             case R.id.btnSave:
                 OrderProduct product = null;
-                if (global.orderProducts != null && !global.orderProducts.isEmpty()) {
+                if (global.orderProducts != null && !global.orderProducts.isEmpty()
+                        && !TextUtils.isEmpty(ordprod_id)) {
                     product = global.orderProducts.get(global.orderProducts.indexOf(OrderProduct.getInstance(ordprod_id)));
                 }
                 if (isCardInfo) {
