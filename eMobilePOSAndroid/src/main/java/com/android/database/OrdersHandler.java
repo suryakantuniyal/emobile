@@ -330,7 +330,7 @@ public class OrdersHandler {
         order.numberOfSeats = cursor.getInt(cursor.getColumnIndex("numberOfSeats"));
         order.assignedTable = cursor.getString(cursor.getColumnIndex("assignedTable"));
         order.associateID = cursor.getString(cursor.getColumnIndex("associateID"));
-
+        order.isOnHold = cursor.getString(cursor.getColumnIndex("isOnHold"));
         order.ord_HoldName = cursor.getString(cursor.getColumnIndex("ord_HoldName"));
         order.ord_id = cursor.getString(cursor.getColumnIndex("ord_id"));
         order.qbord_id = cursor.getString(cursor.getColumnIndex("qbord_id"));

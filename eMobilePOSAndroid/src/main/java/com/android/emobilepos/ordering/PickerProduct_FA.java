@@ -1086,13 +1086,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         ord.setOrdprod_id(randomUUIDString);
 
-
+        ord.requiredProductAttributes = new ArrayList<>();
         int size = global.ordProdAttr.size();
         for (int i = 0; i < size; i++) {
-            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty())
+            if (global.ordProdAttr.get(i).getProductId() == null || global.ordProdAttr.get(i).getProductId().isEmpty()) {
                 global.ordProdAttr.get(i).setProductId(randomUUIDString);
+                ord.requiredProductAttributes.add(global.ordProdAttr.get(i));
+            }
         }
-
 
         if (isFromAddon) {
             Global.addonTotalAmount = 0;

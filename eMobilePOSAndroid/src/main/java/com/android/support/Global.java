@@ -79,6 +79,7 @@ import java.util.TimerTask;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -385,7 +386,7 @@ public class Global extends MultiDexApplication {
     public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
 
     public List<ProductAttribute> ordProdAttrPending;
-    public List<ProductAttribute> ordProdAttr = new ArrayList<ProductAttribute>();
+    public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
     public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;

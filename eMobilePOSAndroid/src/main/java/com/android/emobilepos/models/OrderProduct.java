@@ -107,6 +107,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setPricesXGroupid(product.getPricesXGroupid());
     }
 
+    public String prod_extradesc;
     public OrderProduct() {
 
     }

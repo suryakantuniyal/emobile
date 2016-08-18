@@ -572,7 +572,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setImgURL(c.getString(c.getColumnIndex("ordprod_qty")));
             ord.setIsPrinted(c.getString(c.getColumnIndex("isPrinted")));
             ord.setUom_conversion(TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion")));
-            
+
             total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice()) * Double.parseDouble(ord.getUom_conversion());
             ord.setProd_taxValue(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("prod_taxValue"))));
             ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));

@@ -343,7 +343,7 @@ public class SynchMethods {
         this.type = type;
         this.isFromMainMenu = isFromMainMenu;
         if (!isSending)
-            new sendAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
+            new sendAsync().execute("");
 
     }
 
@@ -645,7 +645,7 @@ public class SynchMethods {
         this.downloadHoldList = downloadHoldList;
         this.checkoutOnHold = checkoutOnHold;
         Boolean[] temp = new Boolean[]{downloadHoldList, checkoutOnHold};
-        new synchSendOrdersOnHold().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, temp);
+        new synchSendOrdersOnHold().execute(temp);
     }
 
 
