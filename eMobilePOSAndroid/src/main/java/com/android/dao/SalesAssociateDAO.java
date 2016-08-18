@@ -38,8 +38,7 @@ public class SalesAssociateDAO {
     }
 
     public static RealmResults<SalesAssociate> getAll() {
-        RealmResults<SalesAssociate> salesAssociates = Realm.getDefaultInstance().allObjects(SalesAssociate.class);
-        return salesAssociates;
+        return Realm.getDefaultInstance().allObjects(SalesAssociate.class);
     }
 
     public static void truncate() {
@@ -52,7 +51,6 @@ public class SalesAssociateDAO {
     public static SalesAssociate getByEmpId(int empId) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<SalesAssociate> where = realm.where(SalesAssociate.class);
-        SalesAssociate salesAssociate = where.equalTo("emp_id", empId).findFirst();
-        return salesAssociate;
+        return where.equalTo("emp_id", empId).findFirst();
     }
 }
