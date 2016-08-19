@@ -606,6 +606,7 @@ public class SalesTab_FR extends Fragment {
 
     public void selectDinnerTable() {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
+        intent.putExtra("associateId",associateId);
         startActivityForResult(intent, 0);
 
     }

@@ -535,195 +535,196 @@ public class GenerateXML {
         OrdersHandler ordersHandler = new OrdersHandler(thisActivity);
         CustomersHandler custHandler = new CustomersHandler(thisActivity);
         HashMap<String, String> custInfo = new HashMap<String, String>();
-        Cursor cursor;
-        if (!isOnHold)
-            cursor = ordersHandler.getUnsyncOrders();
-        else
-            cursor = ordersHandler.getUnsyncOrdersOnHold();
-        cursor.moveToFirst();
+        List<Order> orders;
+        if (!isOnHold) {
+            orders = ordersHandler.getUnsyncOrders();
+        } else
+            orders = ordersHandler.getUnsyncOrdersOnHold();
 
-        int size = cursor.getCount();
-        for (int i = 0; i < size; i++) {
-
+        for (Order order : orders) {
             try {
 
                 serializer.startTag(empstr, "Order");
 
                 if (isOnHold) {
                     serializer.startTag(empstr, "holdName");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("ord_HoldName")));
+                    serializer.text(order.ord_HoldName);//cursor.getString(cursor.getColumnIndex("ord_HoldName")));
                     serializer.endTag(empstr, "holdName");
                 }
 
-                String assignedTable = cursor.getString(cursor.getColumnIndex("assignedTable"));
+                String assignedTable = order.assignedTable;//cursor.getString(cursor.getColumnIndex("assignedTable"));
                 serializer.startTag(empstr, "assignedTable");
                 serializer.text(assignedTable == null ? "" : assignedTable);
                 serializer.endTag(empstr, "assignedTable");
 
-                String associateID = cursor.getString(cursor.getColumnIndex("associateID"));
+                String associateID = order.associateID;//cursor.getString(cursor.getColumnIndex("associateID"));
                 serializer.startTag(empstr, "associateID");
                 serializer.text(associateID == null ? "" : associateID);
                 serializer.endTag(empstr, "associateID");
 
-                String numberOfSeats = cursor.getString(cursor.getColumnIndex("numberOfSeats"));
+                String numberOfSeats = String.valueOf(order.numberOfSeats);//cursor.getString(cursor.getColumnIndex("numberOfSeats"));
                 serializer.startTag(empstr, "numberOfSeats");
-                serializer.text(numberOfSeats == null ? "" : numberOfSeats);
+                serializer.text(numberOfSeats);
                 serializer.endTag(empstr, "numberOfSeats");
 
+                serializer.startTag(empstr, "ord_startTime");
+                serializer.text(order.ord_startTime);
+                serializer.endTag(empstr, "ord_startTime");
+
                 serializer.startTag(empstr, "ord_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_id")));
+                serializer.text(order.ord_id);//cursor.getString(cursor.getColumnIndex("ord_id")));
                 serializer.endTag(empstr, "ord_id");
 
                 serializer.startTag(empstr, "qbord_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("qbord_id")));
+                serializer.text(order.qbord_id);//cursor.getString(cursor.getColumnIndex("qbord_id")));
                 serializer.endTag(empstr, "qbord_id");
 
                 serializer.startTag(empstr, "emp_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("emp_id")));
+                serializer.text(order.emp_id);//cursor.getString(cursor.getColumnIndex("emp_id")));
                 serializer.endTag(empstr, "emp_id");
 
                 serializer.startTag(empstr, "cust_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("cust_id")));
+                serializer.text(order.cust_id);//cursor.getString(cursor.getColumnIndex("cust_id")));
                 serializer.endTag(empstr, "cust_id");
 
                 serializer.startTag(empstr, "clerk_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("clerk_id")));
+                serializer.text(order.clerk_id);//cursor.getString(cursor.getColumnIndex("clerk_id")));
                 serializer.endTag(empstr, "clerk_id");
 
                 serializer.startTag(empstr, "cust_email");
-                serializer.text(cursor.getString(cursor.getColumnIndex("c_email")));
+                serializer.text(order.c_email);//cursor.getString(cursor.getColumnIndex("c_email")));
                 serializer.endTag(empstr, "cust_email");
 
                 serializer.startTag(empstr, "ord_signature");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_signature")));
+                serializer.text(order.ord_signature);// cursor.getString(cursor.getColumnIndex("ord_signature")));
                 serializer.endTag(empstr, "ord_signature");
 
                 serializer.startTag(empstr, "ord_po");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_po")));
+                serializer.text(order.ord_po);//cursor.getString(cursor.getColumnIndex("ord_po")));
                 serializer.endTag(empstr, "ord_po");
 
                 serializer.startTag(empstr, "total_lines");
-                serializer.text(cursor.getString(cursor.getColumnIndex("total_lines")));
+                serializer.text(order.total_lines);//cursor.getString(cursor.getColumnIndex("total_lines")));
                 serializer.endTag(empstr, "total_lines");
 
                 serializer.startTag(empstr, "total_lines_pay");
-                serializer.text(cursor.getString(cursor.getColumnIndex("total_lines_pay")));
+                serializer.text(order.total_lines_pay);//cursor.getString(cursor.getColumnIndex("total_lines_pay")));
                 serializer.endTag(empstr, "total_lines_pay");
 
                 serializer.startTag(empstr, "ord_total");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_total")));
+                serializer.text(order.ord_total);//cursor.getString(cursor.getColumnIndex("ord_total")));
                 serializer.endTag(empstr, "ord_total");
 
                 serializer.startTag(empstr, "ord_comment");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_comment")));
+                serializer.text(order.ord_comment);//cursor.getString(cursor.getColumnIndex("ord_comment")));
                 serializer.endTag(empstr, "ord_comment");
 
                 serializer.startTag(empstr, "ord_delivery");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_delivery")));
+                serializer.text(order.ord_delivery);//cursor.getString(cursor.getColumnIndex("ord_delivery")));
                 serializer.endTag(empstr, "ord_delivery");
 
                 serializer.startTag(empstr, "ord_timecreated");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_timecreated")));
+                serializer.text(order.ord_timecreated);//cursor.getString(cursor.getColumnIndex("ord_timecreated")));
                 serializer.endTag(empstr, "ord_timecreated");
 
                 serializer.startTag(empstr, "ord_timesync");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_timesync")));
+                serializer.text(order.ord_timesync);//cursor.getString(cursor.getColumnIndex("ord_timesync")));
                 serializer.endTag(empstr, "ord_timesync");
 
                 serializer.startTag(empstr, "qb_synctime");
-                serializer.text(cursor.getString(cursor.getColumnIndex("qb_synctime")));
+                serializer.text(order.qb_synctime);//cursor.getString(cursor.getColumnIndex("qb_synctime")));
                 serializer.endTag(empstr, "qb_synctime");
 
                 serializer.startTag(empstr, "emailed");
-                serializer.text(cursor.getString(cursor.getColumnIndex("emailed")));
+                serializer.text(order.emailed);//cursor.getString(cursor.getColumnIndex("emailed")));
                 serializer.endTag(empstr, "emailed");
 
                 serializer.startTag(empstr, "processed");
-                serializer.text(cursor.getString(cursor.getColumnIndex("processed")));
+                serializer.text(order.processed);//cursor.getString(cursor.getColumnIndex("processed")));
                 serializer.endTag(empstr, "processed");
 
                 serializer.startTag(empstr, "ord_type");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_type")));
+                serializer.text(order.ord_type);//cursor.getString(cursor.getColumnIndex("ord_type")));
                 serializer.endTag(empstr, "ord_type");
 
                 serializer.startTag(empstr, "ord_claimnumber");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_claimnumber")));
+                serializer.text(order.ord_claimnumber);//cursor.getString(cursor.getColumnIndex("ord_claimnumber")));
                 serializer.endTag(empstr, "ord_claimnumber");
 
                 serializer.startTag(empstr, "ord_rganumber");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_rganumber")));
+                serializer.text(order.ord_rganumber);//cursor.getString(cursor.getColumnIndex("ord_rganumber")));
                 serializer.endTag(empstr, "ord_rganumber");
 
                 serializer.startTag(empstr, "ord_returns_pu");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_returns_pu")));
+                serializer.text(order.ord_returns_pu);//cursor.getString(cursor.getColumnIndex("ord_returns_pu")));
                 serializer.endTag(empstr, "ord_returns_pu");
 
                 serializer.startTag(empstr, "ord_inventory");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_inventory")));
+                serializer.text(order.ord_inventory);//cursor.getString(cursor.getColumnIndex("ord_inventory")));
                 serializer.endTag(empstr, "ord_inventory");
 
                 serializer.startTag(empstr, "ord_issync");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_issync")));
+                serializer.text(order.ord_issync);//cursor.getString(cursor.getColumnIndex("ord_issync")));
                 serializer.endTag(empstr, "ord_issync");
 
                 serializer.startTag(empstr, "tax_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("tax_id")));
+                serializer.text(order.tax_id);//cursor.getString(cursor.getColumnIndex("tax_id")));
                 serializer.endTag(empstr, "tax_id");
 
                 serializer.startTag(empstr, "ord_shipvia");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_shipvia")));
+                serializer.text(order.ord_shipvia);//cursor.getString(cursor.getColumnIndex("ord_shipvia")));
                 serializer.endTag(empstr, "ord_shipvia");
 
                 serializer.startTag(empstr, "ord_shipto");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_shipto")));
+                serializer.text(order.ord_shipto);//cursor.getString(cursor.getColumnIndex("ord_shipto")));
                 serializer.endTag(empstr, "ord_shipto");
 
                 serializer.startTag(empstr, "ord_terms");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_terms")));
+                serializer.text(order.ord_terms);//cursor.getString(cursor.getColumnIndex("ord_terms")));
                 serializer.endTag(empstr, "ord_terms");
 
                 serializer.startTag(empstr, "ord_custmsg");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_custmsg")));
+                serializer.text(order.ord_custmsg);//cursor.getString(cursor.getColumnIndex("ord_custmsg")));
                 serializer.endTag(empstr, "ord_custmsg");
 
                 serializer.startTag(empstr, "ord_class");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_class")));
+                serializer.text(order.ord_class);//cursor.getString(cursor.getColumnIndex("ord_class")));
                 serializer.endTag(empstr, "ord_class");
 
                 serializer.startTag(empstr, "ord_subtotal");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_subtotal")));
+                serializer.text(order.ord_subtotal);//cursor.getString(cursor.getColumnIndex("ord_subtotal")));
                 serializer.endTag(empstr, "ord_subtotal");
 
                 serializer.startTag(empstr, "ord_taxamount");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_taxamount")));
+                serializer.text(order.ord_taxamount);//cursor.getString(cursor.getColumnIndex("ord_taxamount")));
                 serializer.endTag(empstr, "ord_taxamount");
 
                 serializer.startTag(empstr, "ord_discount");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_discount")));
+                serializer.text(order.ord_discount);//cursor.getString(cursor.getColumnIndex("ord_discount")));
                 serializer.endTag(empstr, "ord_discount");
 
                 serializer.startTag(empstr, "ord_discount_id");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_discount_id")));
+                serializer.text(order.ord_discount_id);//cursor.getString(cursor.getColumnIndex("ord_discount_id")));
                 serializer.endTag(empstr, "ord_discount_id");
 
                 serializer.startTag(empstr, "ord_latitude");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_latitude")));
+                serializer.text(order.ord_latitude);//cursor.getString(cursor.getColumnIndex("ord_latitude")));
                 serializer.endTag(empstr, "ord_latitude");
 
                 serializer.startTag(empstr, "ord_longitude");
-                serializer.text(cursor.getString(cursor.getColumnIndex("ord_longitude")));
+                serializer.text(order.ord_longitude);//cursor.getString(cursor.getColumnIndex("ord_longitude")));
                 serializer.endTag(empstr, "ord_longitude");
 
                 serializer.startTag(empstr, "tipAmount");
-                serializer.text(cursor.getString(cursor.getColumnIndex("tipAmount")));
+                serializer.text(order.tipAmount);//cursor.getString(cursor.getColumnIndex("tipAmount")));
                 serializer.endTag(empstr, "tipAmount");
 
                 serializer.startTag(empstr, "VAT");
                 serializer.text(
-                        Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1")));
+                        Boolean.toString(order.VAT.equals("1")));//cursor.getString(cursor.getColumnIndex("VAT")).equals("1")));
                 serializer.endTag(empstr, "VAT");
 
-                custInfo = custHandler.getXMLCustAddr(cursor.getString(cursor.getColumnIndex("cust_id")));
+                custInfo = custHandler.getXMLCustAddr(order.cust_id);//cursor.getString(cursor.getColumnIndex("cust_id")));
                 serializer.startTag(empstr, "cust_fname");
                 serializer.text(getCustAddr(custInfo, "cust_fname"));
                 serializer.endTag(empstr, "cust_fname");
@@ -788,27 +789,23 @@ public class GenerateXML {
 
                 serializer.startTag(empstr, "OrderProducts");
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)) {
-                    if (cursor.getString(cursor.getColumnIndex("isOnHold")).equals("0")) // not
+                    if (order.isOnHold.equalsIgnoreCase("0"))//cursor.getString(cursor.getColumnIndex("isOnHold")).equals("0")) // not
                         // on
                         // hold
-                        buildOrderProducts(serializer, cursor.getString(cursor.getColumnIndex("ord_id")), true, false);
+                        buildOrderProducts(serializer, order.ord_id, true, false);
                     else
-                        buildOrderProducts(serializer, cursor.getString(cursor.getColumnIndex("ord_id")), true, true);
+                        buildOrderProducts(serializer, order.ord_id, true, true);
                 } else {
-                    buildOrderProducts(serializer, cursor.getString(cursor.getColumnIndex("ord_id")), false, false);
+                    buildOrderProducts(serializer, order.ord_id, false, false);
                 }
-
                 serializer.endTag(empstr, "OrderProducts");
-
                 serializer.endTag(empstr, "Order");
 
-                cursor.moveToNext();
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
-        cursor.close();
     }
 
     public void buildOrder(XmlSerializer serializer, boolean isOnHold, Order order)

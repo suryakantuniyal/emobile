@@ -26,10 +26,13 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
      */
     private ViewPager mViewPager;
     private PageIndicator titlePageIndicator;
+    public String associateId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        associateId = extras.getString("associateId");
         setContentView(R.layout.activity_dinning_tables);
         refresh(0);
 //        setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));

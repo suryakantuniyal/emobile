@@ -393,7 +393,17 @@ public class OrdersHandler {
         return order;
     }
 
-    public Cursor getUnsyncOrders() // Will populate all unsynchronized orders
+    private List<Order> getOrders(Cursor cursor) {
+        List<Order> orders = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                orders.add(getOrder(cursor, activity));
+            } while (cursor.moveToNext());
+        }
+        return orders;
+    }
+
+    public List<Order> getUnsyncOrders() // Will populate all unsynchronized orders
     // for XML post
     {
         StringBuilder sb = new StringBuilder();
@@ -403,7 +413,10 @@ public class OrdersHandler {
             sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
                     .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0'");
 
-        return DBManager._db.rawQuery(sb.toString(), null);
+        net.sqlcipher.Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        List<Order> orders = getOrders(cursor);
+        cursor.close();
+        return orders;
     }
 
     public Cursor getTupyxOrders() {
@@ -417,8 +430,11 @@ public class OrdersHandler {
         return count;
     }
 
-    public Cursor getUnsyncOrdersOnHold() {
-        return DBManager._db.rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'", null);
+    public List<Order> getUnsyncOrdersOnHold() {
+        net.sqlcipher.Cursor cursor = DBManager._db.rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'", null);
+        List<Order> orders = getOrders(cursor);
+        cursor.close();
+        return orders;
     }
 
     public long getNumUnsyncOrdersOnHold() {

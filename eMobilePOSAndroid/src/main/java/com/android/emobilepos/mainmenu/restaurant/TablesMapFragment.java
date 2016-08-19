@@ -46,7 +46,8 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
         MyPreferences preferences = new MyPreferences(getActivity());
-        associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(preferences.getEmpID()));
+        DinningTablesActivity activity = (DinningTablesActivity) getActivity();
+        associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(activity.associateId));
         dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getActivity());
         return rootView;
     }
@@ -167,7 +168,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 DinningTable table = (DinningTable) v.getTag();
-                if (associate.getAssignedDinningTables().contains(table)) {
+                if (associate!=null && associate.getAssignedDinningTables().contains(table)) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder == null) {
                         Intent result = new Intent();
