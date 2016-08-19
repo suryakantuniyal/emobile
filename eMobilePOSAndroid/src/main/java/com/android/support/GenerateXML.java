@@ -567,9 +567,9 @@ public class GenerateXML {
                 serializer.text(numberOfSeats);
                 serializer.endTag(empstr, "numberOfSeats");
 
-                serializer.startTag(empstr, "ord_startTime");
-                serializer.text(order.ord_startTime);
-                serializer.endTag(empstr, "ord_startTime");
+                serializer.startTag(empstr, "ord_timeStarted");
+                serializer.text(order.ord_timeStarted);
+                serializer.endTag(empstr, "ord_timeStarted");
 
                 serializer.startTag(empstr, "ord_id");
                 serializer.text(order.ord_id);//cursor.getString(cursor.getColumnIndex("ord_id")));
@@ -1057,8 +1057,8 @@ public class GenerateXML {
                     serializer.startTag(empstr, "ordprod_qty");
                     serializer.text(product.getOrdprod_qty());//cursor.getString(cursor.getColumnIndex("ordprod_qty")));
                     serializer.endTag(empstr, "ordprod_qty");
-                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
-                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
+//                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
+//                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
                     serializer.startTag(empstr, "overwrite_price");
                     serializer.text(product.getFinalPrice());//cursor.getString(cursor.getColumnIndex("overwrite_price")));
                     serializer.endTag(empstr, "overwrite_price");

@@ -567,7 +567,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setOrdprod_name(c.getString(c.getColumnIndex("ordprod_name")));
             ord.setOrdprod_desc(c.getString(c.getColumnIndex("ordprod_desc")));
             ord.setProd_id(c.getString(c.getColumnIndex("prod_id")));
+            ord.setProd_price(c.getString(c.getColumnIndex("prod_price")));
             ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
+            ord.setOverwrite_price(c.getString(c.getColumnIndex("overwrite_price")) != null
+                    ? new BigDecimal(c.getString(c.getColumnIndex("overwrite_price")))
+                    : null);
             ord.setOnHand(c.getString(c.getColumnIndex("onHand")));
             ord.setImgURL(c.getString(c.getColumnIndex("ordprod_qty")));
             ord.setIsPrinted(c.getString(c.getColumnIndex("isPrinted")));
@@ -578,23 +582,15 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
             ord.setProd_taxtype(c.getString(c.getColumnIndex("prod_taxtype")));
 
-
             // for calculating taxes and discount at receipt
             ord.setProd_taxId(c.getString(c.getColumnIndex("prod_taxId")));
             ord.setDiscount_id(c.getString(c.getColumnIndex("discount_id")));
-
-
             ord.setPricelevel_id(c.getString(c.getColumnIndex("pricelevel_id")));
-
-            ord.setProd_price(c.getString(c.getColumnIndex("prod_price")));
-            ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
-
             ord.setProd_type(c.getString(c.getColumnIndex("prod_type")));
 
             //Add UOM attributes to the order
             ord.setUom_name(c.getString(c.getColumnIndex("uom_name")));
             ord.setUom_id(c.getString(c.getColumnIndex("uom_id")));
-
             discountInfo = prodHandler.getDiscount(ord.getDiscount_id(), ord.getFinalPrice());
 
             if (discountInfo != null) {

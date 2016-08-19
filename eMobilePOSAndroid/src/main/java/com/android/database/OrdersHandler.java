@@ -21,64 +21,64 @@ import java.util.List;
 
 public class OrdersHandler {
 
-    private final String ord_id = "ord_id";
-    private final String qbord_id = "qbord_id";
-    // private final String qbtxid = "qbtxid";
-    private final String emp_id = "emp_id";
-    private final String cust_id = "cust_id";
-    private final String custidkey = "custidkey";
-    private final String ord_po = "ord_po";
-    private final String total_lines = "total_lines";
-    private final String total_lines_pay = "total_lines_pay";
-    private final String ord_total = "ord_total";
-    private final String ord_signature = "ord_signature";
-    private final String ord_comment = "ord_comment";
-    private final String ord_delivery = "ord_delivery";
-    private final String ord_timecreated = "ord_timecreated";
-    private final String ord_timesync = "ord_timesync";
-    private final String qb_synctime = "qb_synctime";
-    private final String emailed = "emailed";
-    private final String processed = "processed";
-    private final String ord_type = "ord_type";
-    private final String ord_claimnumber = "ord_claimnumber";
-    private final String ord_rganumber = "ord_rganumber";
-    private final String ord_returns_pu = "ord_returns_pu";
-    private final String ord_inventory = "ord_inventory";
-    private final String ord_issync = "ord_issync";
-    private final String tax_id = "tax_id";
-    private final String ord_shipvia = "ord_shipvia";
-    private final String ord_shipto = "ord_shipto";
-    private final String ord_terms = "ord_terms";
-    private final String ord_custmsg = "ord_custmsg";
-    private final String ord_class = "ord_class";
-    private final String ord_subtotal = "ord_subtotal";
-    private final String ord_taxamount = "ord_taxamount";
-    private final String ord_discount = "ord_discount";
-    private final String c_email = "c_email";
-    private final String isOnHold = "isOnHold";
-    private final String ord_HoldName = "ord_HoldName";
+    public static final String ord_id = "ord_id";
+    public static final String qbord_id = "qbord_id";
+    public static final String emp_id = "emp_id";
+    public static final String cust_id = "cust_id";
+    public static final String custidkey = "custidkey";
+    public static final String ord_po = "ord_po";
+    public static final String total_lines = "total_lines";
+    public static final String total_lines_pay = "total_lines_pay";
+    public static final String ord_total = "ord_total";
+    public static final String ord_signature = "ord_signature";
+    public static final String ord_comment = "ord_comment";
+    public static final String ord_delivery = "ord_delivery";
+    public static final String ord_timecreated = "ord_timecreated";
+    public static final String ord_timesync = "ord_timesync";
+    public static final String qb_synctime = "qb_synctime";
+    public static final String emailed = "emailed";
+    public static final String processed = "processed";
+    public static final String ord_type = "ord_type";
+    public static final String ord_claimnumber = "ord_claimnumber";
+    public static final String ord_rganumber = "ord_rganumber";
+    public static final String ord_returns_pu = "ord_returns_pu";
+    public static final String ord_inventory = "ord_inventory";
+    public static final String ord_issync = "ord_issync";
+    public static final String tax_id = "tax_id";
+    public static final String ord_shipvia = "ord_shipvia";
+    public static final String ord_shipto = "ord_shipto";
+    public static final String ord_terms = "ord_terms";
+    public static final String ord_custmsg = "ord_custmsg";
+    public static final String ord_class = "ord_class";
+    public static final String ord_subtotal = "ord_subtotal";
+    public static final String ord_taxamount = "ord_taxamount";
+    public static final String ord_discount = "ord_discount";
+    public static final String c_email = "c_email";
+    public static final String isOnHold = "isOnHold";
+    public static final String ord_HoldName = "ord_HoldName";
 
     // added
-    private final String clerk_id = "clerk_id";
-    private final String ord_discount_id = "ord_discount_id";
-    private final String ord_latitude = "ord_latitude";
-    private final String ord_longitude = "ord_longitude";
-    private final String tipAmount = "tipAmount";
-    private final String isVoid = "isVoid";
-    private final String assignedTable = "assignedTable";
-    private final String numberOfSeats = "numberOfSeats";
-    private final String associateID = "associateID";
+    public static final String clerk_id = "clerk_id";
+    public static final String ord_discount_id = "ord_discount_id";
+    public static final String ord_latitude = "ord_latitude";
+    public static final String ord_longitude = "ord_longitude";
+    public static final String tipAmount = "tipAmount";
+    public static final String isVoid = "isVoid";
+    public static final String assignedTable = "assignedTable";
+    public static final String numberOfSeats = "numberOfSeats";
+    public static final String associateID = "associateID";
+    public static final String ord_timeStarted = "ord_timeStarted";
 
-    private final String is_stored_fwd = "is_stored_fwd";
+    public static final String is_stored_fwd = "is_stored_fwd";
 
-    private final String VAT = "VAT";
+    public static final String VAT = "VAT";
 
-    private final List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
+    public static final List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
-            isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID);
+            isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID, ord_timeStarted);
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
@@ -86,7 +86,7 @@ public class OrdersHandler {
     private List<HashMap<String, Integer>> dictionaryListMap;
     private MyPreferences myPref;
 
-    private static final String table_name = "Orders";
+    public static final String table_name = "Orders";
     private Activity activity;
 
     public static OrdersHandler getInstance(Activity activity) {
@@ -184,7 +184,7 @@ public class OrdersHandler {
             insert.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable);
             insert.bindString(index(associateID), order.associateID == null ? "" : order.associateID);
             insert.bindLong(index(numberOfSeats), order.numberOfSeats);
-
+            insert.bindString(index(ord_timeStarted), o == null || o.ord_timeStarted == null ? Global.getCurrentDate() : o.ord_timeStarted);
             insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
             insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
 
@@ -370,7 +370,7 @@ public class OrdersHandler {
         order.ord_longitude = cursor.getString(cursor.getColumnIndex("ord_longitude"));
         order.tipAmount = cursor.getString(cursor.getColumnIndex("tipAmount"));
         order.VAT = Boolean.toString(cursor.getString(cursor.getColumnIndex("VAT")).equals("1") ? true : false);
-
+        order.ord_timeStarted = cursor.getString(cursor.getColumnIndex(ord_timeStarted));
         CustomersHandler custHandler = new CustomersHandler(activity);
         order.customer = custHandler.getCustomer(order.cust_id);
         return order;

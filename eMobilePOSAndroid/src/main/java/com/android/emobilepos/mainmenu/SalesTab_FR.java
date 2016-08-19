@@ -532,7 +532,7 @@ public class SalesTab_FR extends Fragment {
         popDlog.setCanceledOnTouchOutside(false);
         popDlog.setContentView(R.layout.dlog_field_single_layout);
         final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_NUMBER);
         TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_waiter_signin);
