@@ -272,7 +272,7 @@ public class OrderProductsHandler {
 
             this.data = data;
             dictionaryListMap = dictionary;
-            SQLiteStatement insert = null;
+            SQLiteStatement insert;
             insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = this.data.size();

@@ -106,6 +106,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_price_points(String.valueOf(product.getProdPricePoints()));
         this.setProd_value_points(String.valueOf(product.getProdValuePoints()));
         this.setPricesXGroupid(product.getPricesXGroupid());
+        this.setOrdprod_name(product.getProdName());
+        this.setProd_extradesc(product.getProdExtraDesc());
     }
 
     public OrderProduct() {
