@@ -380,50 +380,50 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         payHandler = new PaymentsHandler(activity);
         payment = new Payment(activity);
         String cardType = extras.getString("paymentmethod_type");
-        payment.pay_id = extras.getString("pay_id");
+        payment.setPay_id(extras.getString("pay_id"));
 
-        payment.emp_id = myPref.getEmpID();
+        payment.setEmp_id(myPref.getEmpID());
 
         if (!extras.getBoolean("histinvoices")) {
-            payment.job_id = inv_id;
+            payment.setJob_id(inv_id);
         } else {
-            payment.inv_id = "";
+            payment.setInv_id("");
         }
 
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            payment.setClerk_id(myPref.getShiftClerkID());
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            payment.setClerk_id(myPref.getClerkID());
 
-        payment.cust_id = extras.getString("cust_id");
-        payment.custidkey = custidkey;
+        payment.setCust_id(extras.getString("cust_id"));
+        payment.setCustidkey(custidkey);
 
 
         Global.amountPaid = Double.toString(amountTendered);
-        payment.pay_dueamount = Double.toString(totalAmount - amountTendered);
-        payment.amountTender = amountTendered;
-        payment.pay_amount = Double.toString(amountTendered);
-        payment.originalTotalAmount = Double.toString(totalAmount);
+        payment.setPay_dueamount(Double.toString(totalAmount - amountTendered));
+        payment.setAmountTender(amountTendered);
+        payment.setPay_amount(Double.toString(amountTendered));
+        payment.setOriginalTotalAmount(Double.toString(totalAmount));
 
-        payment.paymethod_id = extras.getString("paymethod_id");
+        payment.setPaymethod_id(extras.getString("paymethod_id"));
 
-        payment.pay_name = cardInfoManager.getCardOwnerName();
+        payment.setPay_name(cardInfoManager.getCardOwnerName());
 
-        payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+        payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-        payment.ccnum_last4 = cardInfoManager.getCardLast4();
-        payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        payment.pay_expyear = cardInfoManager.getCardExpYear();
-        payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+        payment.setCcnum_last4(cardInfoManager.getCardLast4());
+        payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+        payment.setPay_expyear(cardInfoManager.getCardExpYear());
+        payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-        payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        payment.track_two = cardInfoManager.getEncryptedAESTrack2();
+        payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+        payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
         Location location = Global.getCurrLocation(activity, false);
-        payment.pay_latitude = String.valueOf(location.getLatitude());
-        payment.pay_longitude = String.valueOf(location.getLongitude());
+        payment.setPay_latitude(String.valueOf(location.getLatitude()));
+        payment.setPay_longitude(String.valueOf(location.getLongitude()));
 
-        payment.card_type = cardType;
+        payment.setCard_type(cardType);
 
         if (Global.isIvuLoto) {
             DrawInfoHandler drawDateInfo = new DrawInfoHandler(activity);
@@ -431,24 +431,23 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             String drawDate = drawDateInfo.getDrawDate();
             String ivuLottoNum = mersenneTwister.generateIVULoto();
 
-            payment.IvuLottoNumber = ivuLottoNum;
-            payment.IvuLottoDrawDate = drawDate;
-            payment.IvuLottoQR =
-                    Global.base64QRCode(ivuLottoNum, drawDate);
+            payment.setIvuLottoNumber(ivuLottoNum);
+            payment.setIvuLottoDrawDate(drawDate);
+            payment.setIvuLottoQR(Global.base64QRCode(ivuLottoNum, drawDate));
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
-                payment.Tax1_amount = extras.getString("Tax1_amount");
-                payment.Tax1_name = extras.getString("Tax1_name");
+                payment.setTax1_amount(extras.getString("Tax1_amount"));
+                payment.setTax1_name(extras.getString("Tax1_name"));
 
-                payment.Tax2_amount = extras.getString("Tax2_amount");
-                payment.Tax2_name = extras.getString("Tax2_name");
+                payment.setTax2_amount(extras.getString("Tax2_amount"));
+                payment.setTax2_name(extras.getString("Tax2_name"));
             } else {
-                payment.Tax1_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1)));
+                payment.setTax1_amount(Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax1))));
                 if (groupTaxRate.size() > 0)
-                    payment.Tax1_name = groupTaxRate.get(0).getTaxName();
-                payment.Tax2_amount = Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2)));
+                    payment.setTax1_name(groupTaxRate.get(0).getTaxName());
+                payment.setTax2_amount(Double.toString(Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(tax2))));
                 if (groupTaxRate.size() > 1)
-                    payment.Tax2_name = groupTaxRate.get(1).getTaxName();
+                    payment.setTax2_name(groupTaxRate.get(1).getTaxName());
             }
         }
 
@@ -463,7 +462,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         String generatedURL = null;
 
         if (!isRefund) {
-            payment.pay_type = "0";
+            payment.setPay_type("0");
             if (cardType.equalsIgnoreCase("GIFTCARD")) {
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGiftCardAction, cardInfoManager.getWasSwiped(), cardType,
                         cardInfoManager);
@@ -473,8 +472,8 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             }
 
         } else {
-            payment.is_refund = "1";
-            payment.pay_type = "2";
+            payment.setIs_refund("1");
+            payment.setPay_type("2");
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGiftCardAction, cardInfoManager.getWasSwiped(), cardType,
                     cardInfoManager);
         }
@@ -525,11 +524,11 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     xr.setContentHandler(handler);
                     xr.parse(inSource);
                     parsedMap = handler.getData();
-                    payment.pay_amount = parsedMap.get("AuthorizedAmount");
-                    double due = Double.parseDouble(payment.originalTotalAmount)
-                            - Double.parseDouble(payment.pay_amount);
-                    payment.pay_dueamount = String.valueOf(due);
-                    Global.amountPaid = payment.pay_amount;
+                    payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
+                    double due = Double.parseDouble(payment.getOriginalTotalAmount())
+                            - Double.parseDouble(payment.getPay_amount());
+                    payment.setPay_dueamount(String.valueOf(due));
+                    Global.amountPaid = payment.getPay_amount();
                     if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                         wasProcessed = true;
                     else if (parsedMap != null && parsedMap.size() > 0) {
@@ -550,11 +549,11 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
             if (wasProcessed) // payment processing succeeded
             {
-                payment.pay_resultcode = parsedMap.get("pay_resultcode");
-                payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
-                payment.pay_transid = parsedMap.get("CreditCardTransID");
-                payment.authcode = parsedMap.get("AuthorizationCode");
-                payment.processed = "9";
+                payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
+                payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
+                payment.setPay_transid(parsedMap.get("CreditCardTransID"));
+                payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+                payment.setProcessed("9");
                 Intent intent = new Intent(activity, DrawReceiptActivity.class);
                 intent.putExtra("isFromPayment", true);
 
@@ -588,12 +587,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
                 Intent data = new Intent();
                 Bundle bundle = new Bundle();
-                bundle.putString("originalTotalAmount", payment.originalTotalAmount);
+                bundle.putString("originalTotalAmount", payment.getOriginalTotalAmount());
                 bundle.putString("total_amount", Double.toString(Global
-                        .formatNumFromLocale(payment.originalTotalAmount)));
-                bundle.putString("pay_dueamount", payment.pay_dueamount);
-                bundle.putString("pay_amount", payment.pay_amount);
-                Global.amountPaid = payment.pay_amount;
+                        .formatNumFromLocale(payment.getOriginalTotalAmount())));
+                bundle.putString("pay_dueamount", payment.getPay_dueamount());
+                bundle.putString("pay_amount", payment.getPay_amount());
+                Global.amountPaid = payment.getPay_amount();
                 data.putExtras(bundle);
                 setResult(-2, data);
                 finish();

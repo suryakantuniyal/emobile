@@ -202,7 +202,7 @@ public class EMSPayGate_Default {
                     serializer.endTag(empstr, "wToken");
                     generateERP();
                     generateAmountBlock();
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
 
 
                     break;
@@ -211,11 +211,11 @@ public class EMSPayGate_Default {
                     generateERP();
                     generateAmountBlock();
 
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
 
                     if (Global.isIvuLoto)
                         generateEvertec();
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
 
                     break;
                 case ActivateGiftCardAction:
@@ -232,7 +232,7 @@ public class EMSPayGate_Default {
                     generateERP();
                     generateAmountBlock();
 
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
 
                     if (isSwipe)
                         generateEncryptedBlock();
@@ -245,14 +245,14 @@ public class EMSPayGate_Default {
                 case CreditCardAdjustTipAmountAction:
                     generateERP();
                     generateAmountBlock();
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
 
                     if (isSwipe)
                         generateEncryptedBlock();
 
                     if (Global.isIvuLoto)
                         generateEvertec();
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
                     generateAdjustAmountBlock();
 
                     break;
@@ -274,14 +274,14 @@ public class EMSPayGate_Default {
                     generateERP();
                     generateAmountBlock();
 
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
 
                     if (isSwipe)
                         generateEncryptedBlock();
 
                     if (Global.isIvuLoto)
                         generateEvertec();
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
 
                     break;
 
@@ -299,7 +299,7 @@ public class EMSPayGate_Default {
                     generateERP();
                     generateAmountBlock();
 
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
 
                     if (isSwipe)
                         generateEncryptedBlock();
@@ -341,14 +341,14 @@ public class EMSPayGate_Default {
                     generateAmountBlock();
 
                     // generateOrderBlock();
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
 
                     if (isSwipe)
                         generateEncryptedBlock();
 
                     generateVoidBlock();
 
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
 
 
                     break;
@@ -363,10 +363,10 @@ public class EMSPayGate_Default {
                     generateERP();
                     generateAmountBlock();
 
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
                     generateVoidBlock();
 
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
 
                     break;
                 }
@@ -376,8 +376,8 @@ public class EMSPayGate_Default {
                     generateERP();
                     generateAmountBlock();
 
-                    generateContactInfoBlock(payment.cust_id);
-                    generateOrderBlock(payment.job_id);
+                    generateContactInfoBlock(payment.getCust_id());
+                    generateOrderBlock(payment.getJob_id());
 
                     break;
                 case GetMarketTelcos:
@@ -397,16 +397,16 @@ public class EMSPayGate_Default {
                     generateAmountBlock();
 
                     generateBoloroBlock();
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
 
                     break;
                 case ProcessBoloroCheckout:
                     generateERP();
                     generateAmountBlock();
 
-                    generateContactInfoBlock(payment.cust_id);
+                    generateContactInfoBlock(payment.getCust_id());
                     generateBoloroBlock();
-                    generateOrderBlock(payment.job_id);
+                    generateOrderBlock(payment.getJob_id());
 
                     break;
                 default:
@@ -532,7 +532,7 @@ public class EMSPayGate_Default {
         String value;
         serializer.startTag(empstr, "CCardBlock");
 
-        value = payment.pay_name;
+        value = payment.getPay_name();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCName");
             serializer.text(value);
@@ -540,10 +540,10 @@ public class EMSPayGate_Default {
         }
 
         serializer.startTag(empstr, "CCNumber");
-        serializer.text(payment.pay_ccnum);
+        serializer.text(payment.getPay_ccnum());
         serializer.endTag(empstr, "CCNumber");
 
-        value = payment.pay_seccode;
+        value = payment.getPay_seccode();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCSecCode");
             serializer.text(value);
@@ -551,21 +551,21 @@ public class EMSPayGate_Default {
         }
 
         serializer.startTag(empstr, "CCExpMonth");
-        serializer.text(payment.pay_expmonth);
+        serializer.text(payment.getPay_expmonth());
         serializer.endTag(empstr, "CCExpMonth");
 
         serializer.startTag(empstr, "CCExpYear");
-        serializer.text(payment.pay_expyear);
+        serializer.text(payment.getPay_expyear());
         serializer.endTag(empstr, "CCExpYear");
 
-        value = payment.pay_addr;
+        value = payment.getPay_addr();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCAddr");
             serializer.text(value);
             serializer.endTag(empstr, "CCAddr");
         }
 
-        value = payment.pay_poscode;
+        value = payment.getPay_poscode();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCPosCode");
             serializer.text(value);
@@ -593,8 +593,8 @@ public class EMSPayGate_Default {
         String tr1;
         String tr2;
         // TrackData
-        tr1 = payment.track_one;
-        tr2 = payment.track_two;
+        tr1 = payment.getTrack_one();
+        tr2 = payment.getTrack_two();
         if ((tr1 != null && !tr1.isEmpty()) || (tr2 != null && !tr2.isEmpty())) {
             serializer.startTag(empstr, "TrackData");
 
@@ -677,74 +677,74 @@ public class EMSPayGate_Default {
         // ChecksBlock
         serializer.startTag(empstr, "ChecksBlock");
 
-        value = payment.check_account_number;
+        value = payment.getCheck_account_number();
         serializer.startTag(empstr, "CCBankAccountNumber");
         serializer.text(value);
         serializer.endTag(empstr, "CCBankAccountNumber");
 
-        value = payment.check_routing_number;
+        value = payment.getCheck_routing_number();
         serializer.startTag(empstr, "CCRouting");
         serializer.text(value);
         serializer.endTag(empstr, "CCRouting");
 
-        value = payment.check_check_number;
+        value = payment.getCheck_check_number();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCCheckNum");
             serializer.text(value);
             serializer.endTag(empstr, "CCCheckNum");
         }
 
-        value = payment.check_check_type;
+        value = payment.getCheck_check_type();
         serializer.startTag(empstr, "CCheckType");
         serializer.text(value);
         serializer.endTag(empstr, "CCheckType");
 
-        value = payment.check_account_type;
+        value = payment.getCheck_account_type();
         serializer.startTag(empstr, "CCAcctType");
         serializer.text(value);
         serializer.endTag(empstr, "CCAcctType");
 
-        value = payment.pay_name;
+        value = payment.getPay_name();
         serializer.startTag(empstr, "CCName");
         serializer.text(value);
         serializer.endTag(empstr, "CCName");
 
-        value = payment.pay_addr;
+        value = payment.getPay_addr();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCAddr");
             serializer.text(value);
             serializer.endTag(empstr, "CCAddr");
         }
 
-        value = payment.check_city;
+        value = payment.getCheck_city();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCCity");
             serializer.text(value);
             serializer.endTag(empstr, "CCCity");
         }
 
-        value = payment.check_state;
+        value = payment.getCheck_state();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCState");
             serializer.text(value);
             serializer.endTag(empstr, "CCState");
         }
 
-        value = payment.pay_poscode;
+        value = payment.getPay_poscode();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCPosCode");
             serializer.text(value);
             serializer.endTag(empstr, "CCPosCode");
         }
 
-        value = payment.frontImage;
+        value = payment.getFrontImage();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "frontImage");
             serializer.text(value);
             serializer.endTag(empstr, "frontImage");
         }
 
-        value = payment.backImage;
+        value = payment.getBackImage();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "backImage");
             serializer.text(value);
@@ -752,24 +752,24 @@ public class EMSPayGate_Default {
         }
 
         serializer.startTag(empstr, "micrData");
-        serializer.text(payment.micrData);
+        serializer.text(payment.getMicrData());
         serializer.endTag(empstr, "micrData");
 
-        value = payment.dl_state;
+        value = payment.getDl_state();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "DLstate");
             serializer.text(value);
             serializer.endTag(empstr, "DLstate");
         }
 
-        value = payment.dl_number;
+        value = payment.getDl_number();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "DLnumber");
             serializer.text(value);
             serializer.endTag(empstr, "DLnumber");
         }
 
-        value = payment.dl_dob;
+        value = payment.getDl_dob();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "DOByear");
             serializer.text(value);
@@ -786,7 +786,7 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "ERP");
 
         serializer.startTag(empstr, "PaymentMethodID");
-        serializer.text(payment.paymethod_id);
+        serializer.text(payment.getPaymethod_id());
         serializer.endTag(empstr, "PaymentMethodID");
 
         if (!isTupyx) {
@@ -797,7 +797,7 @@ public class EMSPayGate_Default {
                 serializer.endTag(empstr, "CCAccount");
             }
 
-            value = payment.cust_id;
+            value = payment.getCust_id();
             if (value != null && !value.isEmpty()) {
                 serializer.startTag(empstr, "CustomerID");
                 serializer.text(value);
@@ -805,7 +805,7 @@ public class EMSPayGate_Default {
             }
 
         }
-        value = payment.job_id;
+        value = payment.getJob_id();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "JobID");
             serializer.text(value);
@@ -827,7 +827,7 @@ public class EMSPayGate_Default {
             serializer.endTag(empstr, "clerkID");
         }
 
-        value = payment.ref_num;
+        value = payment.getRef_num();
         if (value != null && !value.isEmpty()) {
             serializer.startTag(empstr, "CCRef");
             serializer.text(value);
@@ -835,7 +835,7 @@ public class EMSPayGate_Default {
         }
 
         // dateandtime (payment dateandtime) mandatory
-        value = payment.pay_date;
+        value = payment.getPay_date();
         serializer.startTag(empstr, "dateandtime");
         serializer.text(value);
         serializer.endTag(empstr, "dateandtime");
@@ -846,10 +846,10 @@ public class EMSPayGate_Default {
     private void generateAdjustAmountBlock() throws IllegalArgumentException, IllegalStateException, IOException {
         serializer.startTag(empstr, "AdjustAmountBlock");
         serializer.startTag(empstr, "TransID");
-        serializer.text(payment.pay_transid);
+        serializer.text(payment.getPay_transid());
         serializer.endTag(empstr, "TransID");
         serializer.startTag(empstr, "CCCardType");
-        serializer.text(payment.card_type);
+        serializer.text(payment.getCard_type());
         serializer.endTag(empstr, "CCCardType");
         serializer.endTag(empstr, "AdjustAmountBlock");
     }
@@ -860,25 +860,25 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "Amounts");
 
         serializer.startTag(empstr, "CCAmt");
-        String temp = NumberUtils.cleanCurrencyFormatedNumber(payment.pay_amount);
+        String temp = NumberUtils.cleanCurrencyFormatedNumber(payment.getPay_amount());
         try {
             temp = Global.getRoundBigDecimal(new BigDecimal(temp));
         } catch (Exception e) {
-            temp = payment.pay_amount;
+            temp = payment.getPay_amount();
         }
         serializer.text(temp);
         serializer.endTag(empstr, "CCAmt");
 
         serializer.startTag(empstr, "tipAmount");
-        serializer.text(payment.pay_tip);
+        serializer.text(payment.getPay_tip());
         serializer.endTag(empstr, "tipAmount");
         if (isTupyx) {
             serializer.startTag(empstr, "originalTotalAmount");
             serializer.text(NumberUtils.cleanCurrencyFormatedNumber(totalAmount));
             serializer.endTag(empstr, "originalTotalAmount");
-        } else if (!payment.originalTotalAmount.isEmpty()) {
+        } else if (!payment.getOriginalTotalAmount().isEmpty()) {
             serializer.startTag(empstr, "originalTotalAmount");
-            serializer.text(NumberUtils.cleanCurrencyFormatedNumber(payment.originalTotalAmount));
+            serializer.text(NumberUtils.cleanCurrencyFormatedNumber(payment.getOriginalTotalAmount()));
             serializer.endTag(empstr, "originalTotalAmount");
         }
 
@@ -918,10 +918,10 @@ public class EMSPayGate_Default {
             }
 
             serializer.endTag(empstr, "ContactInfo");
-        } else if (!payment.pay_phone.isEmpty()) {
+        } else if (!payment.getPay_phone().isEmpty()) {
             serializer.startTag(empstr, "ContactInfo");
             serializer.startTag(empstr, "phone");
-            serializer.text(payment.pay_phone);
+            serializer.text(payment.getPay_phone());
             serializer.endTag(empstr, "phone");
             serializer.endTag(empstr, "ContactInfo");
         }
@@ -932,11 +932,11 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "EvertecTaxes");
 
         serializer.startTag(empstr, "Tax1"); // Estatal
-        serializer.text(payment.Tax1_amount);
+        serializer.text(payment.getTax1_amount());
         serializer.endTag(empstr, "Tax1");
 
         serializer.startTag(empstr, "Tax2"); // Municipal
-        serializer.text(payment.Tax2_amount);
+        serializer.text(payment.getTax2_amount());
         serializer.endTag(empstr, "Tax2");
 
         serializer.endTag(empstr, "EvertecTaxes");
@@ -948,19 +948,19 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "VoidBlock");
 
         serializer.startTag(empstr, "TransID");
-        serializer.text(payment.pay_transid);
+        serializer.text(payment.getPay_transid());
         serializer.endTag(empstr, "TransID");
 
-        if (!payment.authcode.isEmpty()) {
+        if (!payment.getAuthcode().isEmpty()) {
             serializer.startTag(empstr, "AuthCode");
-            serializer.text(payment.authcode);
+            serializer.text(payment.getAuthcode());
             serializer.endTag(empstr, "AuthCode");
         }
 
         // CCCardType
-        if (!payment.card_type.isEmpty()) {
+        if (!payment.getCard_type().isEmpty()) {
             serializer.startTag(empstr, "CCCardType");
-            serializer.text(payment.card_type);
+            serializer.text(payment.getCard_type());
             serializer.endTag(empstr, "CCCardType");
         }
 
@@ -970,17 +970,17 @@ public class EMSPayGate_Default {
     private void generateBoloroBlock() throws IllegalArgumentException, IllegalStateException, IOException {
         serializer.startTag(empstr, "Boloro");
 
-        if (!payment.tagid.isEmpty()) {
+        if (!payment.getTagid().isEmpty()) {
             serializer.startTag(empstr, "tagid");
-            serializer.text(payment.tagid);
+            serializer.text(payment.getTagid());
             serializer.endTag(empstr, "tagid");
         } else {
             serializer.startTag(empstr, "telcoid");
-            serializer.text(payment.telcoid);
+            serializer.text(payment.getTelcoid());
             serializer.endTag(empstr, "telcoid");
 
             serializer.startTag(empstr, "transmode");
-            serializer.text(payment.transmode);
+            serializer.text(payment.getTransmode());
             serializer.endTag(empstr, "transmode");
         }
 

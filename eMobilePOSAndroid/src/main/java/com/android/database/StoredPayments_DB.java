@@ -106,7 +106,6 @@ public class StoredPayments_DB {
             payment_xml,EMVJson);
 
     private StringBuilder sb1, sb2;
-    private final String empStr = "";
     private HashMap<String, Integer> attrHash;
     private Global global;
     private static final String table_name = "StoredPayments";
@@ -115,7 +114,7 @@ public class StoredPayments_DB {
     public StoredPayments_DB(Activity activity) {
         global = (Global) activity.getApplication();
         this.activity = activity;
-        attrHash = new HashMap<String, Integer>();
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
 
@@ -141,91 +140,86 @@ public class StoredPayments_DB {
     }
 
     public void insert(Payment payment) {
-        // SQLiteDatabase db =
-        // SQLiteDatabase.openDatabase(myPref.getDBpath(),Global.dbPass, null,
-        // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
-        // SQLiteDatabase.OPEN_READWRITE);
-        // SQLiteDatabase db = dbManager.openWritableDB();
+
         DBManager._db.beginTransaction();
         try {
 
-            SQLiteStatement insert = null;
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
-                    .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            SQLiteStatement insert;
+            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+                    "VALUES (" + sb2.toString() + ")";
+            insert = DBManager._db.compileStatement(sb);
 
-            insert.bindString(index(pay_id), payment.pay_id); // pay_id
-            insert.bindString(index(group_pay_id), payment.group_pay_id); // group_pay_id
-            insert.bindString(index(original_pay_id), payment.original_pay_id); // group_pay_id
-            insert.bindString(index(cust_id), payment.cust_id); // cust_id
-            insert.bindString(index(tupyx_user_id), payment.tupyx_user_id);
-            insert.bindString(index(custidkey), payment.custidkey); // custidkey
-            insert.bindString(index(emp_id), payment.emp_id); // emp_id
-            insert.bindString(index(inv_id), payment.inv_id == null ? "" : payment.inv_id); // inv_id
-            insert.bindString(index(paymethod_id), payment.paymethod_id); // paymethod_id
-            insert.bindString(index(pay_check), payment.pay_check); // pay_check
-            insert.bindString(index(pay_receipt), payment.pay_receipt); // pay_receipt
-            insert.bindString(index(pay_amount), payment.pay_amount); // pay_amount
-            insert.bindString(index(pay_dueamount), payment.pay_dueamount); // pay_dueamount;
-            insert.bindString(index(pay_comment), payment.pay_comment); // pay_comment
-            insert.bindString(index(pay_timecreated), payment.pay_timecreated); // pay_timecreated
-            insert.bindString(index(pay_timesync), payment.pay_timesync); // pay_timesync
-            insert.bindString(index(account_id), payment.account_id); // account_id
-            insert.bindString(index(processed), payment.processed); // processed
-            insert.bindString(index(pay_issync), payment.pay_issync); // pay_issync
-            insert.bindString(index(pay_transid), payment.pay_transid == null ? "" : payment.pay_transid); // pay_transid
-            insert.bindString(index(pay_refnum), payment.pay_refnum); // pay_refnum
-            insert.bindString(index(pay_name), payment.pay_name); // pay_name
-            insert.bindString(index(pay_addr), payment.pay_addr); // pay_addr
-            insert.bindString(index(pay_poscode), payment.pay_poscode); // pay_poscode
-            insert.bindString(index(pay_seccode), payment.pay_seccode); // pay_seccode
-            insert.bindString(index(pay_maccount), payment.pay_maccount); // pay_maccount
-            insert.bindString(index(pay_groupcode), payment.pay_groupcode); // pay_groupcode
-            insert.bindString(index(pay_stamp), payment.pay_stamp); // pay_stamp
-            insert.bindString(index(pay_resultcode), payment.pay_resultcode); // pay_resultcode
-            insert.bindString(index(pay_resultmessage), payment.pay_resultmessage); // pay_resultmessage
-            insert.bindString(index(pay_ccnum), payment.pay_ccnum); // pay_ccnum
-            insert.bindString(index(pay_expmonth), payment.pay_expmonth); // pay_expMonth
-            insert.bindString(index(pay_expyear), payment.pay_expyear); // pay_expyear
-            insert.bindString(index(pay_expdate), payment.pay_expdate); // pay_expdate
-            insert.bindString(index(pay_result), payment.pay_result); // pay_result
-            insert.bindString(index(pay_date), payment.pay_date); // pay_date
-            insert.bindString(index(recordnumber), payment.recordnumber); // recordnumber
-            insert.bindString(index(pay_signature), payment.pay_signature); // pay_signaute
-            insert.bindString(index(authcode), payment.authcode == null ? "" : payment.authcode); // authcode
-            insert.bindString(index(status), payment.status); // status
-            insert.bindString(index(job_id), payment.job_id); // job_id
+            insert.bindString(index(pay_id), payment.getPay_id()); // pay_id
+            insert.bindString(index(group_pay_id), payment.getGroup_pay_id()); // group_pay_id
+            insert.bindString(index(original_pay_id), payment.getOriginal_pay_id()); // group_pay_id
+            insert.bindString(index(cust_id), payment.getCust_id()); // cust_id
+            insert.bindString(index(tupyx_user_id), payment.getTupyx_user_id());
+            insert.bindString(index(custidkey), payment.getCustidkey()); // custidkey
+            insert.bindString(index(emp_id), payment.getEmp_id()); // emp_id
+            insert.bindString(index(inv_id), payment.getInv_id() == null ? "" : payment.getInv_id()); // inv_id
+            insert.bindString(index(paymethod_id), payment.getPaymethod_id()); // paymethod_id
+            insert.bindString(index(pay_check), payment.getPay_check()); // pay_check
+            insert.bindString(index(pay_receipt), payment.getPay_receipt()); // pay_receipt
+            insert.bindString(index(pay_amount), payment.getPay_amount()); // pay_amount
+            insert.bindString(index(pay_dueamount), payment.getPay_dueamount()); // pay_dueamount;
+            insert.bindString(index(pay_comment), payment.getPay_comment()); // pay_comment
+            insert.bindString(index(pay_timecreated), payment.getPay_timecreated()); // pay_timecreated
+            insert.bindString(index(pay_timesync), payment.getPay_timesync()); // pay_timesync
+            insert.bindString(index(account_id), payment.getAccount_id()); // account_id
+            insert.bindString(index(processed), payment.getProcessed()); // processed
+            insert.bindString(index(pay_issync), payment.getPay_issync()); // pay_issync
+            insert.bindString(index(pay_transid), payment.getPay_transid() == null ? "" : payment.getPay_transid()); // pay_transid
+            insert.bindString(index(pay_refnum), payment.getPay_refnum()); // pay_refnum
+            insert.bindString(index(pay_name), payment.getPay_name()); // pay_name
+            insert.bindString(index(pay_addr), payment.getPay_addr()); // pay_addr
+            insert.bindString(index(pay_poscode), payment.getPay_poscode()); // pay_poscode
+            insert.bindString(index(pay_seccode), payment.getPay_seccode()); // pay_seccode
+            insert.bindString(index(pay_maccount), payment.getPay_maccount()); // pay_maccount
+            insert.bindString(index(pay_groupcode), payment.getPay_groupcode()); // pay_groupcode
+            insert.bindString(index(pay_stamp), payment.getPay_stamp()); // pay_stamp
+            insert.bindString(index(pay_resultcode), payment.getPay_resultcode()); // pay_resultcode
+            insert.bindString(index(pay_resultmessage), payment.getPay_resultmessage()); // pay_resultmessage
+            insert.bindString(index(pay_ccnum), payment.getPay_ccnum()); // pay_ccnum
+            insert.bindString(index(pay_expmonth), payment.getPay_expmonth()); // pay_expMonth
+            insert.bindString(index(pay_expyear), payment.getPay_expyear()); // pay_expyear
+            insert.bindString(index(pay_expdate), payment.getPay_expdate()); // pay_expdate
+            insert.bindString(index(pay_result), payment.getPay_result()); // pay_result
+            insert.bindString(index(pay_date), payment.getPay_date()); // pay_date
+            insert.bindString(index(recordnumber), payment.getRecordnumber()); // recordnumber
+            insert.bindString(index(pay_signature), payment.getPay_signature()); // pay_signaute
+            insert.bindString(index(authcode), payment.getAuthcode() == null ? "" : payment.getAuthcode()); // authcode
+            insert.bindString(index(status), payment.getStatus()); // status
+            insert.bindString(index(job_id), payment.getJob_id()); // job_id
 
-            insert.bindString(index(user_ID), payment.user_ID); // user_ID
-            insert.bindString(index(pay_type), payment.pay_type); // pay_type
-            insert.bindString(index(pay_tip), payment.pay_tip); // pay_tip
-            insert.bindString(index(ccnum_last4), payment.ccnum_last4); // ccnum_last4
-            insert.bindString(index(pay_phone), payment.pay_phone); // pay_phone
-            insert.bindString(index(pay_email), payment.pay_email); // pay_email
-            insert.bindString(index(isVoid), payment.isVoid); // isVoid
-            insert.bindString(index(pay_latitude), payment.pay_latitude); // pay_latitude
-            insert.bindString(index(pay_longitude), payment.pay_longitude); // pay_longitude
-            insert.bindString(index(tipAmount), payment.tipAmount); // tipAmount
-            insert.bindString(index(clerk_id), payment.clerk_id==null?"":payment.clerk_id); // clerk_id
+            insert.bindString(index(user_ID), payment.getUser_ID()); // user_ID
+            insert.bindString(index(pay_type), payment.getPay_type()); // pay_type
+            insert.bindString(index(pay_tip), payment.getPay_tip()); // pay_tip
+            insert.bindString(index(ccnum_last4), payment.getCcnum_last4()); // ccnum_last4
+            insert.bindString(index(pay_phone), payment.getPay_phone()); // pay_phone
+            insert.bindString(index(pay_email), payment.getPay_email()); // pay_email
+            insert.bindString(index(isVoid), payment.getIsVoid()); // isVoid
+            insert.bindString(index(pay_latitude), payment.getPay_latitude()); // pay_latitude
+            insert.bindString(index(pay_longitude), payment.getPay_longitude()); // pay_longitude
+            insert.bindString(index(tipAmount), payment.getTipAmount()); // tipAmount
+            insert.bindString(index(clerk_id), payment.getClerk_id() ==null?"": payment.getClerk_id()); // clerk_id
 
-            insert.bindString(index(is_refund), payment.is_refund==null?"":payment.is_refund); // is_refund
-            insert.bindString(index(ref_num), payment.ref_num); // ref_num
-            insert.bindString(index(card_type), payment.card_type); // card_type
+            insert.bindString(index(is_refund), payment.getIs_refund() ==null?"": payment.getIs_refund()); // is_refund
+            insert.bindString(index(ref_num), payment.getRef_num()); // ref_num
+            insert.bindString(index(card_type), payment.getCard_type()); // card_type
 
-            insert.bindString(index(IvuLottoDrawDate), payment.IvuLottoDrawDate); // IvuLottoDrawData
-            insert.bindString(index(IvuLottoNumber), payment.IvuLottoNumber); // IvuLottoNumber
-            insert.bindString(index(IvuLottoQR), payment.IvuLottoQR); // IvuLottoQR
+            insert.bindString(index(IvuLottoDrawDate), payment.getIvuLottoDrawDate()); // IvuLottoDrawData
+            insert.bindString(index(IvuLottoNumber), payment.getIvuLottoNumber()); // IvuLottoNumber
+            insert.bindString(index(IvuLottoQR), payment.getIvuLottoQR()); // IvuLottoQR
 
-            insert.bindString(index(Tax1_amount), payment.Tax1_amount);
-            insert.bindString(index(Tax1_name), payment.Tax1_name);
-            insert.bindString(index(Tax2_amount), payment.Tax2_amount);
-            insert.bindString(index(Tax2_name), payment.Tax2_name);
+            insert.bindString(index(Tax1_amount), payment.getTax1_amount());
+            insert.bindString(index(Tax1_name), payment.getTax1_name());
+            insert.bindString(index(Tax2_amount), payment.getTax2_amount());
+            insert.bindString(index(Tax2_name), payment.getTax2_name());
 
-            insert.bindString(index(pay_uuid), payment.pay_uuid);
-            insert.bindString(index(is_retry), payment.is_retry);
-            insert.bindString(index(payment_xml), payment.payment_xml);
-            insert.bindString(index(EMVJson), payment.emvContainer == null ? "" : new Gson().toJson(payment.emvContainer, EMVContainer.class));
+            insert.bindString(index(pay_uuid), payment.getPay_uuid());
+            insert.bindString(index(is_retry), payment.getIs_retry());
+            insert.bindString(index(payment_xml), payment.getPayment_xml());
+            insert.bindString(index(EMVJson), payment.getEmvContainer() == null ? "" : new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
 
             insert.execute();
             insert.clearBindings();
@@ -233,34 +227,18 @@ public class StoredPayments_DB {
             DBManager._db.setTransactionSuccessful();
 
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.StoredPayments (at Class.insert)]");
 
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
             PaymentsHandler.setLastPaymentInserted(payment);
             DBManager._db.endTransaction();
         }
-        // db.close();
     }
 
     public void emptyTable() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
-    // public void emptyTable() {
-    // StringBuilder sb = new StringBuilder();
-    // SQLiteDatabase db = dbManager.openWritableDB();
-    // sb.append("DELETE FROM ").append(table_name);
-    // db.execSQL(sb.toString());
-    // db.close();
-    // }
-
     public String updateSignaturePayment(String _pay_uuid) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
 
         StringBuilder sb = new StringBuilder();
         sb.append(pay_id).append(" = ?");
@@ -281,55 +259,37 @@ public class StoredPayments_DB {
         }
 
         cursor.close();
-        // db.close();
         return returningVal;
     }
 
     public Cursor getStoredPayments() {
-        // if(!db.isOpen())
-        // db = dbManager.openReadableDB();
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("SELECT pay_uuid as '_id', * FROM ").append(table_name);
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
-
+        Cursor c = DBManager._db.rawQuery("SELECT pay_uuid as '_id', * FROM " + table_name, null);
         c.moveToFirst();
-
         return c;
     }
 
     public long getRetryTransCount(String _job_id) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE job_id = '").append(_job_id)
-                .append("' AND is_retry = '1'");
-        // SQLiteDatabase db = dbManager.openReadableDB();
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        String sb = "SELECT Count(*) FROM " + table_name + " WHERE job_id = '" + _job_id +
+                "' AND is_retry = '1'";
+        SQLiteStatement stmt = DBManager._db.compileStatement(sb);
         long count = stmt.simpleQueryForLong();
         stmt.close();
-        // db.close();
         return count;
     }
 
     public long getCountPendingStoredPayments(String _job_id) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE job_id = '").append(_job_id).append("'");
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE job_id = '" + _job_id + "'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
     }
 
     public void deletePaymentFromJob(String _job_id) {
-        // SQLiteDatabase db = dbManager.openWritableDB();
         DBManager._db.delete(table_name, "job_id = ?", new String[]{_job_id});
-        // db.close();
     }
 
 
     public PaymentDetails getPrintingForPaymentDetails(String payID, int type) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
         StringBuilder sb = new StringBuilder();
         switch (type) {
             // May come from History>Payment>Details
@@ -403,46 +363,25 @@ public class StoredPayments_DB {
         }
 
         cursor.close();
-        // db.close();
         return paymentDetails;
     }
 
     public List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
 
-        StringBuilder sb = new StringBuilder();
-        List<PaymentDetails> list = new ArrayList<PaymentDetails>();
+        String sb = "SELECT p.pay_amount AS 'pay_amount',pm.paymethod_name AS 'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p," +
+                "PayMethods pm WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID +
+                "' UNION " +
+                "SELECT p.pay_amount AS 'pay_amount','Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'Wallet' " +
+                "AND p.job_id = '" + jobID + "' UNION " +
+                "SELECT p.pay_amount AS 'pay_amount','LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'LoyaltyCard' " +
+                "AND p.job_id = '" + jobID + "' UNION " +
+                "SELECT p.pay_amount AS 'pay_amount','Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'Reward' " +
+                "AND p.job_id = '" + jobID + "' UNION " +
+                "SELECT p.pay_amount AS 'pay_amount','GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'GiftCard' " +
+                "AND p.job_id = '" + jobID + "'";
+        List<PaymentDetails> list = new ArrayList<>();
 
-        // sb.append("SELECT
-        // p.pay_amount,m.paymethod_name,p.pay_tip,p.pay_signature,p.pay_transid,p.ccnum_last4,p.IvuLottoDrawDate,p.IvuLottoNumber,p.IvuLottoQR
-        // FROM Payments p LEFT OUTER JOIN PayMethods m ON p.paymethod_id =
-        // m.paymethod_id " +
-        // "WHERE job_id = '");
-        //
-        // sb.append(jobID).append("'");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount',pm.paymethod_name AS 'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p,");
-        sb.append("PayMethods pm WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '").append(jobID)
-                .append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'Wallet' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'LoyaltyCard' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'Reward' ");
-        sb.append("AND p.job_id = '").append(jobID).append("' UNION ");
-
-        sb.append(
-                "SELECT p.pay_amount AS 'pay_amount','GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' FROM StoredPayments p WHERE p.paymethod_id = 'GiftCard' ");
-        sb.append("AND p.job_id = '").append(jobID).append("'");
-
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager._db.rawQuery(sb, null);
         PaymentDetails details = new PaymentDetails();
         if (cursor.moveToFirst()) {
 
@@ -463,7 +402,6 @@ public class StoredPayments_DB {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        // db.close();
         return list;
     }
 
@@ -478,10 +416,8 @@ public class StoredPayments_DB {
     }
 
     public boolean unsyncStoredPaymentsLeft() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT Count(*) FROM ").append(table_name);
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;

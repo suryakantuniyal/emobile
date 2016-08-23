@@ -2213,18 +2213,18 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Payments", lineWidth));
             for (Payment payment : listPayments) {
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 2));
 
                 if (printDetails) {
                     //check if tip should be printed
                     if (showTipField) {
-                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.getPay_tip()), lineWidth, 2));
                     }
                     sb.append(textHandler.oneColumnLineWithLeftAlignedText("Details", lineWidth, 3));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.pay_id, lineWidth, 4));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 4));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.job_id, lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.getPay_id(), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.getJob_id(), lineWidth, 4));
                     sb.append(textHandler.newLines(1));
                 }
             }
@@ -2237,18 +2237,18 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Void", lineWidth));
             for (Payment payment : listPayments) {
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 2));
 
                 if (printDetails) {
                     //check if tip should be printed
                     if (showTipField) {
-                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.getPay_tip()), lineWidth, 2));
                     }
                     sb.append(textHandler.oneColumnLineWithLeftAlignedText("Details", lineWidth, 3));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.pay_id, lineWidth, 4));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 4));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.job_id, lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.getPay_id(), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.getJob_id(), lineWidth, 4));
                     sb.append(textHandler.newLines(1));
                 }
             }
@@ -2260,18 +2260,18 @@ public class EMSDeviceDriver {
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.centeredString("Refund", lineWidth));
             for (Payment payment : listPayments) {
-                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.card_type, lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 2));
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(payment.getCard_type(), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 2));
 
                 if (printDetails) {
                     //check if tip should be printed
                     if (showTipField) {
-                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), lineWidth, 2));
+                        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Tip", Global.formatDoubleStrToCurrency(payment.getPay_tip()), lineWidth, 2));
                     }
                     sb.append(textHandler.oneColumnLineWithLeftAlignedText("Details", lineWidth, 3));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.pay_id, lineWidth, 4));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), lineWidth, 4));
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.job_id, lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("ID", payment.getPay_id(), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), lineWidth, 4));
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", payment.getJob_id(), lineWidth, 4));
                     sb.append(textHandler.newLines(1));
                 }
             }

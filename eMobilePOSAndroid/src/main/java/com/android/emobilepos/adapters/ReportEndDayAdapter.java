@@ -367,19 +367,19 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listDeptReturns.get(position - i_dept_sales).overwrite_price));
                 break;
             case TYPE_PAYMENT:
-                mHolder.tvPayType.setText(listPayment.get(position - i_dept_returns).card_type);
-                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listPayment.get(position - i_dept_returns).pay_amount));
-                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listPayment.get(position - i_dept_returns).pay_tip));
+                mHolder.tvPayType.setText(listPayment.get(position - i_dept_returns).getCard_type());
+                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listPayment.get(position - i_dept_returns).getPay_amount()));
+                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listPayment.get(position - i_dept_returns).getPay_tip()));
                 break;
             case TYPE_VOID:
-                mHolder.tvPayType.setText(listVoid.get(position - i_payment).card_type);
-                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listVoid.get(position - i_payment).pay_amount));
-                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listVoid.get(position - i_payment).pay_tip));
+                mHolder.tvPayType.setText(listVoid.get(position - i_payment).getCard_type());
+                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listVoid.get(position - i_payment).getPay_amount()));
+                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listVoid.get(position - i_payment).getPay_tip()));
                 break;
             case TYPE_REFUND:
-                mHolder.tvPayType.setText(listRefund.get(position - i_void).card_type);
-                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listRefund.get(position - i_void).pay_amount));
-                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listRefund.get(position - i_void).pay_tip));
+                mHolder.tvPayType.setText(listRefund.get(position - i_void).getCard_type());
+                mHolder.tvPayAmount.setText(Global.formatDoubleStrToCurrency(listRefund.get(position - i_void).getPay_amount()));
+                mHolder.tvPayTip.setText(Global.formatDoubleStrToCurrency(listRefund.get(position - i_void).getPay_tip()));
                 break;
             case TYPE_AR_TRANS:
                 mHolder.tvPayType.setText(listARTrans.get(position - i_refund).ord_timecreated);

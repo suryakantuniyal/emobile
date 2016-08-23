@@ -176,31 +176,31 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
         payment = new Payment(activity);
 
         if (!this.extras.getBoolean("histinvoices"))
-            payment.job_id = invJobView.getText().toString();
+            payment.setJob_id(invJobView.getText().toString());
         else
-            payment.inv_id = invJobView.getText().toString();
+            payment.setInv_id(invJobView.getText().toString());
 
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            payment.setClerk_id(myPref.getShiftClerkID());
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            payment.setClerk_id(myPref.getClerkID());
 
-        payment.pay_id = extras.getString("pay_id");
-        payment.paymethod_id = paymethod_id;
-        payment.pay_expmonth = "0";// dummy
-        payment.pay_expyear = "2000";// dummy
-        payment.pay_tip = "0.00";
-        payment.pay_dueamount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());
-        payment.pay_amount = NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString());
-        payment.originalTotalAmount = "0";
+        payment.setPay_id(extras.getString("pay_id"));
+        payment.setPaymethod_id(paymethod_id);
+        payment.setPay_expmonth("0");// dummy
+        payment.setPay_expyear("2000");// dummy
+        payment.setPay_tip("0.00");
+        payment.setPay_dueamount(NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString()));
+        payment.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountView.getText().toString()));
+        payment.setOriginalTotalAmount("0");
 
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
         String generatedURL;
 
         if (isRefund) {
-            payment.is_refund = "1";
-            payment.pay_type = "2";
+            payment.setIs_refund("1");
+            payment.setPay_type("2");
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnGeniusAction, false, "", null);
         } else
             generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeGeniusAction, false, "", null);
@@ -291,19 +291,19 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                 Global.showPrompt(activity, R.string.dlog_title_error, response.getErrorMessage());
             } else if (response != null && (response.getStatus().equalsIgnoreCase("APPROVED") ||
                     response.getStatus().equalsIgnoreCase("DECLINED"))) {
-                payment.pay_transid = response.getToken();
+                payment.setPay_transid(response.getToken());
                 BigDecimal tip = new BigDecimal(0.00);
                 BigDecimal cashBack = new BigDecimal(0.00);
                 String signa = "";
                 if (response.getAdditionalParameters() != null) {
                     if (response.getAdditionalParameters().getAmountDetails() != null) {
-                        payment.tipAmount = response.getAdditionalParameters().getAmountDetails().getUserTip();
-                        payment.pay_tip = response.getAdditionalParameters().getAmountDetails().getUserTip();
+                        payment.setTipAmount(response.getAdditionalParameters().getAmountDetails().getUserTip());
+                        payment.setPay_tip(response.getAdditionalParameters().getAmountDetails().getUserTip());
                         tip = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getUserTip());
                         cashBack = new BigDecimal(response.getAdditionalParameters().getAmountDetails().getCashback());
                     } else {
-                        payment.tipAmount = "0.00";
-                        payment.pay_tip = "0.00";
+                        payment.setTipAmount("0.00");
+                        payment.setPay_tip("0.00");
                         tip = new BigDecimal(0.00);
                         cashBack = new BigDecimal(0.00);
                     }
@@ -312,18 +312,18 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
 
                 BigDecimal aprovedAmount = new BigDecimal(response.getAmountApproved());
                 BigDecimal payAmount = aprovedAmount.subtract(tip).subtract(cashBack);
-                payment.pay_amount = Global.getRoundBigDecimal(payAmount);
-                Global.amountPaid = payment.pay_amount;
-                payment.authcode = response.getAuthorizationCode();
-                payment.ccnum_last4 = response.getAccountNumber();
-                payment.pay_name = response.getCardholder();
-                payment.pay_date = DateUtils.getDateStringAsString(response.getTransactionDate(), "MM/dd/yyyy HH:mm:ss a");
+                payment.setPay_amount(Global.getRoundBigDecimal(payAmount));
+                Global.amountPaid = payment.getPay_amount();
+                payment.setAuthcode(response.getAuthorizationCode());
+                payment.setCcnum_last4(response.getAccountNumber());
+                payment.setPay_name(response.getCardholder());
+                payment.setPay_date(DateUtils.getDateStringAsString(response.getTransactionDate(), "MM/dd/yyyy HH:mm:ss a"));
                 if (signa.contains("^"))
                     parseSignature(signa);
-                payment.card_type = payMethodDictionary(response.getPaymentType());
-                payment.processed = "1";
-                payment.paymethod_id = PayMethodsHandler.getPayMethodID(payMethodDictionary(response.getPaymentType()));
-                payment.emvContainer = new EMVContainer(response);
+                payment.setCard_type(payMethodDictionary(response.getPaymentType()));
+                payment.setProcessed("1");
+                payment.setPaymethod_id(PayMethodsHandler.getPayMethodID(payMethodDictionary(response.getPaymentType())));
+                payment.setEmvContainer(new EMVContainer(response));
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
                 if (response.getStatus().equalsIgnoreCase("APPROVED")) {
                     payHandler.insert(payment);
@@ -418,7 +418,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             protected Void doInBackground(Void... params) {
 
                 if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, true, payment.emvContainer);
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.getPay_id(), 1, true, payment.getEmvContainer());
                 }
                 return null;
             }
@@ -524,7 +524,7 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
                     myBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
                     byte[] b = baos.toByteArray();
                     global.encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-                    payment.pay_signature = global.encodedImage;
+                    payment.setPay_signature(global.encodedImage);
 
 
                 } catch (FileNotFoundException ignored) {

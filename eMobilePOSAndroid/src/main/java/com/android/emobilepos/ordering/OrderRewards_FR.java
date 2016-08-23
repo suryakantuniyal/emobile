@@ -143,8 +143,8 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 }
                 btnPayRewards.setClickable(false);
                 btnPayRewards.setEnabled(false);
-                payment.pay_issync = "1";
-                payment.pay_transid = result.getTransactionId();
+                payment.setPay_issync("1");
+                payment.setPay_transid(result.getTransactionId());
                 PaymentsHandler paymentsHandler = new PaymentsHandler(getActivity());
                 paymentsHandler.insert(payment);
                 BigDecimal zero = new BigDecimal(0);
@@ -178,40 +178,40 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         tempPay_id = generator.getNextID(GenerateNewID.IdType.PAYMENT_ID);
 
-        loyaltyRewardPayment.pay_id = tempPay_id;
+        loyaltyRewardPayment.setPay_id(tempPay_id);
 
-        loyaltyRewardPayment.cust_id = Global.getValidString(preferences.getCustID());
-        loyaltyRewardPayment.custidkey = Global.getValidString(preferences.getCustIDKey());
-        loyaltyRewardPayment.emp_id = preferences.getEmpID();
-        loyaltyRewardPayment.job_id = Global.lastOrdID;
+        loyaltyRewardPayment.setCust_id(Global.getValidString(preferences.getCustID()));
+        loyaltyRewardPayment.setCustidkey(Global.getValidString(preferences.getCustIDKey()));
+        loyaltyRewardPayment.setEmp_id(preferences.getEmpID());
+        loyaltyRewardPayment.setJob_id(Global.lastOrdID);
 
-        loyaltyRewardPayment.pay_name = cardInfoManager.getCardOwnerName();
-        loyaltyRewardPayment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+        loyaltyRewardPayment.setPay_name(cardInfoManager.getCardOwnerName());
+        loyaltyRewardPayment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-        loyaltyRewardPayment.ccnum_last4 = cardInfoManager.getCardLast4();
-        loyaltyRewardPayment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        loyaltyRewardPayment.pay_expyear = cardInfoManager.getCardExpYear();
-        loyaltyRewardPayment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+        loyaltyRewardPayment.setCcnum_last4(cardInfoManager.getCardLast4());
+        loyaltyRewardPayment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+        loyaltyRewardPayment.setPay_expyear(cardInfoManager.getCardExpYear());
+        loyaltyRewardPayment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-        loyaltyRewardPayment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        loyaltyRewardPayment.track_two = cardInfoManager.getEncryptedAESTrack2();
+        loyaltyRewardPayment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+        loyaltyRewardPayment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
         cardInfoManager.setRedeemAll("0");
         cardInfoManager.setRedeemType("Only");
         PayMethodsHandler payMethodsHandler = new PayMethodsHandler(getActivity());
         String methodId = payMethodsHandler.getSpecificPayMethodId("Rewards");
-        loyaltyRewardPayment.paymethod_id = methodId;
-        loyaltyRewardPayment.card_type = cardType;
-        loyaltyRewardPayment.pay_type = "0";
+        loyaltyRewardPayment.setPaymethod_id(methodId);
+        loyaltyRewardPayment.setCard_type(cardType);
+        loyaltyRewardPayment.setPay_type("0");
 
         if (isLoyalty) {
-            loyaltyRewardPayment.pay_amount = String.valueOf(chargeAmount);
-            loyaltyRewardPayment.pay_amount = Global.loyaltyAddAmount;
-            loyaltyRewardPayment.pay_amount = Global.loyaltyCharge;
+            loyaltyRewardPayment.setPay_amount(String.valueOf(chargeAmount));
+            loyaltyRewardPayment.setPay_amount(Global.loyaltyAddAmount);
+            loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
 
         } else {
-            loyaltyRewardPayment.originalTotalAmount = chargeAmount.toString();
-            loyaltyRewardPayment.pay_amount = chargeAmount.toString();
+            loyaltyRewardPayment.setOriginalTotalAmount(chargeAmount.toString());
+            loyaltyRewardPayment.setPay_amount(chargeAmount.toString());
         }
         return loyaltyRewardPayment;
     }

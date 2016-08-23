@@ -42,7 +42,6 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -1237,27 +1236,27 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         populateCardInfo();
 
         if (isLoyaltyCard)
-            payment.paymethod_id = PayMethodsHandler.getPayMethodID("LoyaltyCard");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("LoyaltyCard"));
         else
-            payment.paymethod_id = PayMethodsHandler.getPayMethodID("Reward");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("Reward"));
 
-        payment.pay_name = cardInfoManager.getCardOwnerName();
-        payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+        payment.setPay_name(cardInfoManager.getCardOwnerName());
+        payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-        payment.ccnum_last4 = cardInfoManager.getCardLast4();
-        payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        payment.pay_expyear = cardInfoManager.getCardExpYear();
-        payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+        payment.setCcnum_last4(cardInfoManager.getCardLast4());
+        payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+        payment.setPay_expyear(cardInfoManager.getCardExpYear());
+        payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-        payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        payment.track_two = cardInfoManager.getEncryptedAESTrack2();
+        payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+        payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
         String cardType = "LoyaltyCard";
         if (!isLoyaltyCard)
             cardType = "Reward";
 
-        payment.card_type = cardType;
-        payment.pay_type = "0";
+        payment.setCard_type(cardType);
+        payment.setPay_type("0");
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
         String generatedURL;

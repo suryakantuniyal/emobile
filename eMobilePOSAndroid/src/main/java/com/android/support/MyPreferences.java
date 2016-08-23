@@ -1083,17 +1083,17 @@ public class MyPreferences {
         return "";
 
     }
-
-    public boolean storedAndForward(boolean isGet, boolean value) {
+    public void setStoredAndForward(boolean storeAndForward){
         String is_store_forward = "is_store_forward";
-        if (isGet)
-            return prefs.getBoolean(is_store_forward, false);
-        else {
-            prefEditor.putBoolean(is_store_forward, value);
-            prefEditor.commit();
-        }
-        return false;
+        prefEditor.putBoolean(is_store_forward, storeAndForward);
+        prefEditor.commit();
     }
+
+    public boolean isStoredAndForward(){
+        String is_store_forward = "is_store_forward";
+        return prefs.getBoolean(is_store_forward, false);
+    }
+
 
     public void setGeniusIP(String ip) {
         prefEditor.putString("genius_ip", ip);

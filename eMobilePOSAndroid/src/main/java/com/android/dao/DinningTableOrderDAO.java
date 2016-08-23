@@ -27,14 +27,14 @@ public class DinningTableOrderDAO {
     }
 
     public static RealmResults<DinningTableOrder> getAll() {
-        RealmResults<DinningTableOrder> dinningTableOrders = Realm.getDefaultInstance().allObjects(DinningTableOrder.class);
+        RealmResults<DinningTableOrder> dinningTableOrders = Realm.getDefaultInstance().where(DinningTableOrder.class).findAll();
         return dinningTableOrders;
     }
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(DinningTableOrder.class);
+        realm.delete(DinningTableOrder.class);
         realm.commitTransaction();
     }
 

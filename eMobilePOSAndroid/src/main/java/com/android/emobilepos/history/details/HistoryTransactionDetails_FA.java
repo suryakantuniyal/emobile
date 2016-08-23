@@ -329,9 +329,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
         if (read) {
             if (paymentsToVoid.size() > 0) {
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).pay_amount);
+                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).pay_transid);
+                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
             } else {
@@ -710,9 +710,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 paymentsToVoid = new ArrayList<Payment>();
                 paymentsToVoid.addAll(listVoidPayments);
 //                for (Payment p : listVoidPayments) {
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).pay_amount);
+                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).pay_transid);
+                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
 //                }
@@ -760,10 +760,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 xr = sp.getXMLReader();
                 String paymentType;
                 for (int i = 0; i < size; i++) {
-                    paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
+                    paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
                     if (paymentType.equals("GIFTCARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).card_type, null));
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
 
                         xr.setContentHandler(handler);
@@ -780,7 +780,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).card_type, null));
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
 
                         xr.setContentHandler(handler);
