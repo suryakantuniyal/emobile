@@ -362,8 +362,14 @@ public class OrderProductListAdapter extends BaseAdapter {
         }
 
         holder.itemQty.setText(product.ordprod_qty);
-        holder.itemName.setText(product.ordprod_name);
-
+        String attDisplay = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
+        if (attDisplay.equalsIgnoreCase("prod_desc")) {
+            holder.itemName.setText(product.ordprod_desc);
+        } else if (attDisplay.equalsIgnoreCase("prod_name")) {
+            holder.itemName.setText(product.ordprod_name);
+        } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
+            holder.itemName.setText(product.prod_extradesc);
+        }
         String temp = Global.formatNumToLocale(Double.parseDouble(product.overwrite_price));
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 

@@ -523,6 +523,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case R.id.signButton:
                 orientation = getResources().getConfiguration().orientation;
                 intent = new Intent(getActivity(), DrawReceiptActivity.class);
+                getActivity().setRequestedOrientation(orientation);
                 if (orientation == Configuration.ORIENTATION_PORTRAIT)
                     intent.putExtra("inPortrait", true);
                 else
@@ -1662,6 +1663,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void setOrderAsHold(String holdName, OrdersHandler ordersHandler, OrderProductsHandler orderProductsHandler) {
         global.order.ord_HoldName = holdName;
         global.order.processed = "10";
+        global.order.isOnHold = "1";
         global.order.numberOfSeats = mainLVAdapter.getSeatsAmount();
         ordersHandler.insert(global.order);
         global.encodedImage = "";
@@ -2085,7 +2087,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         receiptListView.invalidateViews();
         reCalculate();
         Catalog_FR.instance.refreshListView();
-
+        refreshView();
         if (restLVAdapter != null) {
             restLVAdapter.updateDivisionPos(removePos);
         }
