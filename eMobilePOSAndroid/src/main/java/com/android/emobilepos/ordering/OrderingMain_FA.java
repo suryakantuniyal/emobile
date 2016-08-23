@@ -42,6 +42,7 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -1269,7 +1270,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     cardInfoManager);
         }
 
-        new processAsync().execute(generatedURL);
+        new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL);
     }
 
     public int getSelectedSeatsAmount() {
@@ -1491,7 +1492,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdProd.insert(orderProducts);
                 dbOrdAttr.insert(ordProdAttr);
             }
-            new VoidTransactionTask().execute(activity, order);
+            new VoidTransactionTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, activity, order);
 //            SelectPayMethod_FA.voidTransaction(activity, order.ord_id, order.ord_type);
 
 //            dbOrders.updateIsVoid(order.ord_id);
@@ -1597,7 +1598,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         // Still need to do add the appropriate tax/discount value
-        ord.prod_taxValue = "0.00";
+        ord.prod_taxValue = new BigDecimal("0.00");
         ord.discount_value = "0.00";
 
         ord.taxAmount = "0";

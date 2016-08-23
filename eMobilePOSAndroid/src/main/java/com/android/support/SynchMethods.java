@@ -150,11 +150,11 @@ public class SynchMethods {
     public void synchReceive(int type) {
         this.type = type;
         isReceive = true;
-        new resynchAsync().execute("");
+        new resynchAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
 
     public void getLocationsInventory() {
-        new asyncGetLocationsInventory().execute();
+        new asyncGetLocationsInventory().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class resynchAsync extends AsyncTask<String, String, String> {
@@ -333,7 +333,7 @@ public class SynchMethods {
     public void synchForceSend() {
         Global.isForceUpload = true;
         if (!isSending)
-            new forceSendAsync().execute();
+            new forceSendAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
 
@@ -616,14 +616,14 @@ public class SynchMethods {
     }
 
     public void synchGetOnHoldProducts() {
-        new synchDownloadOnHoldProducts().execute("");
+        new synchDownloadOnHoldProducts().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
 
     }
 
     public void synchGetOnHoldDetails(int type, Intent intent, String ordID) {
         onHoldIntent = intent;
         this.type = type;
-        new synchDownloadOnHoldDetails().execute(ordID);
+        new synchDownloadOnHoldDetails().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, ordID);
     }
 
     public void synchSendOnHold(boolean downloadHoldList, boolean checkoutOnHold) {
@@ -1514,7 +1514,7 @@ public class SynchMethods {
         try {
             ProductAliases_DB productAliasesDB = new ProductAliases_DB(activity);
             task.updateProgress(getString(R.string.sync_dload_product_aliases));
-            Gson gson =JsonUtils.getInstance();
+            Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +

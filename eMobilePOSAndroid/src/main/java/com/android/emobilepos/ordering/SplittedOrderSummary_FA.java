@@ -410,7 +410,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
                         product.itemSubtotal = itemSubtotal.toString();
                         product.overwrite_price = Global.getBigDecimalNum(product.overwrite_price).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
-                        product.prod_taxValue = Global.getBigDecimalNum(product.prod_taxValue).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+                        product.prod_taxValue = product.prod_taxValue.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
                         product.discount_value = Global.getBigDecimalNum(product.discount_value).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
                         product.itemTotal = Global.getBigDecimalNum(product.itemTotal).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
 
@@ -582,7 +582,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
             ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
         }
-        new VoidTransaction().execute(global.order.ord_id);
+        new VoidTransaction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, global.order.ord_id);
     }
 
     private class VoidTransaction extends AsyncTask<String, Void, Void> {

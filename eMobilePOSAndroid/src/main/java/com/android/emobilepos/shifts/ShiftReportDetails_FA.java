@@ -78,7 +78,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 		switch(v.getId())
 		{
 			case R.id.btnPrint:
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 				break;
 		}
 	}
@@ -109,7 +109,7 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				dlog.dismiss();
-				new printAsync().execute();
+				new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			}
 		});
 		btnNo.setOnClickListener(new View.OnClickListener() {

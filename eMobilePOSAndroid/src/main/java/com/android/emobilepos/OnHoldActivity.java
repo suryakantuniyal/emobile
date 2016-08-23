@@ -45,6 +45,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -213,7 +214,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
 
             if (wasProcessed) {
-                new executeOnHoldAsync().execute(false);
+                new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
             } else {
                 claimedTransactionPrompt();
             }
@@ -328,7 +329,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
     public void printOnHoldTransaction() {
-        new printAsync().execute();
+        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class printAsync extends AsyncTask<Void, Void, Void> {
@@ -388,7 +389,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
         });
@@ -479,7 +480,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 {
                     validPassword = true;
                     isUpdateOnHold = true;
-                    new checkHoldStatus().execute();
+                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
                     validPassword = false;
                     askForManagerPassDlg();
@@ -521,7 +522,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new checkHoldStatus().execute();
+                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
             }
@@ -534,9 +535,9 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 myCursor.moveToPosition(selectedPos);
                 if (myCursor.getString(myCursor.getColumnIndex("ord_issync")).equals("0")) {
                     Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
-                    new printAsync().execute();
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 } else {
-                    new executeOnHoldAsync().execute(true);
+                    new executeOnHoldAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
                 }
             }
         });
@@ -572,8 +573,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.isPrinted = c.getString(c.getColumnIndex("isPrinted"));
             ord.uom_conversion = TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion"));
 
-            total = (Double.parseDouble(ord.ordprod_qty)) * Double.parseDouble(ord.overwrite_price) * Double.parseDouble(ord.uom_conversion);
-            ord.prod_taxValue = c.getString(c.getColumnIndex("prod_taxValue"));
+            total = (Double.parseDouble(ord.ordprod_qty)) * Double.parseDouble(ord.overwrite_price);
+            ord.prod_taxValue = new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue")));
             ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
             ord.prod_taxtype = c.getString(c.getColumnIndex("prod_taxtype"));
 

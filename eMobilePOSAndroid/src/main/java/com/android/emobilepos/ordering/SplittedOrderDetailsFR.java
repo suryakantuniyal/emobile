@@ -267,7 +267,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             case R.id.printReceiptbutton2: {
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.currentDevice != null) {
-                    new PrintPreview().execute(receiptPreview);
+                    new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, receiptPreview);
                 }
                 break;
             }

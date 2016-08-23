@@ -79,6 +79,7 @@ import java.util.TimerTask;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -111,17 +112,12 @@ public class Global extends MultiDexApplication {
     public static boolean isEncryptSwipe = true;
 
     public static EMSDeviceManager btSwiper;
-    public static EMSDeviceManager terminalDisplayManager;
     public static EMSDeviceManager btSled;
     public static EMSDeviceManager mainPrinterManager;
     public static EMSDeviceManager embededMSR;
 
-    public static HashMap<String, Integer> multiPrinterMap = new HashMap<String, Integer>();
-    public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<EMSDeviceManager>();
-
-    public static final int BT_TYPE_PRINTER = 0;
-    public static final int BT_TYPE_SWIPER = 1;
-    public static final int BT_TYPE_SLED = 2;
+    public static HashMap<String, Integer> multiPrinterMap = new HashMap<>();
+    public static List<EMSDeviceManager> multiPrinterManager = new ArrayList<>();
 
     public static final int MAGTEK = 0;
     public static final int STAR = 1;
@@ -349,12 +345,6 @@ public class Global extends MultiDexApplication {
     public final static String TIME_OUT = "1";
     public final static String NOT_VALID_URL = "2";
 
-    public static String APP_ID;
-
-//    public final static int IS_CONS_RACK = 0;
-//    public final static int IS_CONS_RETURN = 1;
-//    public final static int IS_CONS_FILLUP = 2;
-//    public final static int IS_CONS_PICKUP = 3;
 
     public static OrderType consignmentType = OrderType.ORDER;
     public static OrderType ord_type = OrderType.ORDER;
@@ -370,7 +360,6 @@ public class Global extends MultiDexApplication {
 
     public static boolean isConsignment = false;
     public static boolean isInventoryTransfer = false;
-    public static List<ConsignmentTransaction> consignmentTransactionList;
     public static List<HashMap<String, String>> productParentAddons;
     public static HashMap<String, Integer> productParentAddonsDictionary;
     public HashMap<String, String[]> addonSelectionType;
@@ -397,7 +386,7 @@ public class Global extends MultiDexApplication {
     public List<DataTaxes> listOrderTaxes = new ArrayList<DataTaxes>();
 
     public List<ProductAttribute> ordProdAttrPending;
-    public List<ProductAttribute> ordProdAttr = new ArrayList<ProductAttribute>();
+    public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
     public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
@@ -851,7 +840,7 @@ public class Global extends MultiDexApplication {
     public static Map<String, String> paymentIconsMap = paymentIconMap();
 
     private static Map<String, String> paymentIconMap() {
-        HashMap<String, String> result = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<>();
 
         result.put("AmericanExpress", "amex");
         result.put("Cash", "cash");
@@ -897,10 +886,6 @@ public class Global extends MultiDexApplication {
             formatedDate = sdf2.format(sdf1.parse(date));
 
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [")
-                    .append("com.android.support.Global (at Class.formatToDisplayDate) ]");
             formatedDate = "";
         }
         return formatedDate;
@@ -918,25 +903,13 @@ public class Global extends MultiDexApplication {
 
         String ending = TimeZone.substring(TimeZone.length() - 2, TimeZone.length());
         String begining = TimeZone.substring(0, TimeZone.length() - 2);
-        StringBuilder sb = new StringBuilder().append(cur_date).append(begining).append(":").append(ending);
 
-        return sb.toString();
+        return cur_date + begining + ":" + ending;
     }
 
     public boolean isApplicationSentToBackground(final Context context) {
-        // ActivityManager am = (ActivityManager)
-        // context.getSystemService(Context.ACTIVITY_SERVICE);
-        // List<RunningTaskInfo> tasks = am.getRunningTasks(1);
-        // if (!tasks.isEmpty()) {
-        // ComponentName topActivity = tasks.get(0).topActivity;
-        // if (!topActivity.getPackageName().equals(context.getPackageName())) {
-        // return true;
-        // }
-        // }
-        //
-        // return false;
+
         return wasInBackground;
-        // return !MyLifecycleHandler.isApplicationInForeground();
     }
 
     public static String formatLocaleToCurrency(String value) {
@@ -948,13 +921,7 @@ public class Global extends MultiDexApplication {
     {
         if (value == null || value.isEmpty())
             return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(0.00);
-        /*
-         * else if(value.contains(".")) return
-		 * NumberFormat.getCurrencyInstance(Locale.US).format(Double.parseDouble
-		 * (value)); return
-		 * NumberFormat.getCurrencyInstance(Locale.US).format((double)Integer.
-		 * parseInt(value));
-		 */
+
         return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(formatNumFromLocale(value));
     }
 
@@ -962,7 +929,6 @@ public class Global extends MultiDexApplication {
     {
         NumberFormat numFormater = NumberFormat.getNumberInstance(Locale.getDefault());
         numFormater.setParseIntegerOnly(false);
-        // Double val = Double.parseDouble(numFormater.format(value));
         return NumberFormat.getCurrencyInstance(Locale.getDefault()).format(value);
     }
 
@@ -1103,7 +1069,7 @@ public class Global extends MultiDexApplication {
 
         DecimalFormat frmt = new DecimalFormat("0.00");
 
-        double total = 0.00;
+        double total;
         if (isAdd)
             total = amount1 + amount2;
         else
@@ -1113,7 +1079,7 @@ public class Global extends MultiDexApplication {
     }
 
     public static String formatNumber(boolean isDecimal, double val) {
-        String returnedVal = new String();
+        String returnedVal;
         if (isDecimal) {
             returnedVal = Double.toString(val);
         } else {
@@ -1144,7 +1110,7 @@ public class Global extends MultiDexApplication {
             double sum = Double.parseDouble(pickedQty) + previousQty;
             sum = OrderingMain_FA.returnItem ? sum * -1 : sum;
 
-            value = new String();
+            value = "";
             if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                 value = Global.formatNumber(true, sum);
                 this.orderProducts.get(orderIndex).ordprod_qty = value;
@@ -1264,7 +1230,7 @@ public class Global extends MultiDexApplication {
                 String[] track2Split = tracks[1].split("=");
                 card_number = track2Split[0].replace("?", "");// contains card
                 // number
-                tracks[1] = new StringBuilder().append(";").append(tracks[1]).toString();
+                tracks[1] = ";" + tracks[1];
                 if (track2Split.length > 1 && track2Split[1].length() > 4) {
                     if (track2Split[1].length() > 0) {
                         exp_year = track2Split[1].trim().substring(0, 2);
@@ -1312,7 +1278,7 @@ public class Global extends MultiDexApplication {
             {
                 String[] track2Split = tracks[0].split("=");
                 card_number = track2Split[0];// contains card number
-                tracks[0] = new StringBuilder().append(";").append(tracks[0]).toString();
+                tracks[0] = ";" + tracks[0];
 
                 if (track2Split.length > 1) {
                     if (track2Split[1].length() > 0) {
@@ -1341,50 +1307,12 @@ public class Global extends MultiDexApplication {
 
         }
 
-        // if (tracks.length >= 2) {
-        // String[] track2Split = tracks[1].split("=");
-        // card_number = track2Split[0];// contains card number
-        // tracks[1] = new
-        // StringBuilder().append(";").append(tracks[1]).toString();
-        // int startIndex = tracks[0].indexOf("^") + 1;
-        // int endIndex = tracks[0].indexOf("^", startIndex);
-        // if (startIndex >= 0 && endIndex >= 0)
-        // name_on_card = tracks[0].substring(startIndex, endIndex);
-        //
-        // if(track2Split.length>1)
-        // {
-        // if (track2Split[1].length() > 0) {
-        // exp_year = track2Split[1].trim().substring(0, 2);
-        // exp_month = track2Split[1].trim().substring(2, 4);
-        // }
-        //
-        // Encrypt encrypt = new Encrypt(activity);
-        // cardManager.setCardType(ProcessCardMenuActivity.cardType(card_number));
-        //
-        // if(isEncryptSwipe)
-        // cardManager.setCardNumAESEncrypted(encrypt.encryptWithAES(card_number));
-        // else
-        // cardManager.setCardNumAESEncrypted(card_number);
-        //
-        // cardManager.setCardExpMonth(exp_month);
-        // cardManager.setCardExpYear(exp_year);
-        // cardManager.setCardOwnerName(name_on_card);
-        // cardManager.setEncryptedAESTrack1(encrypt.encryptWithAES(tracks[0]));
-        // cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(tracks[1]));
-        // if (card_number.length() > 10) {
-        // int temp = card_number.length();
-        // String last4Digits = (String) card_number.subSequence(temp - 4,
-        // temp);
-        // cardManager.setCardLast4(last4Digits);
-        // }
-        // }
-        // }
         return cardManager;
     }
 
 
     public static Object getFormatedNumber(boolean isDecimal, String val) {
-        Object returnedVal = new Object();
+        Object returnedVal;
         if (isDecimal) {
             returnedVal = Double.parseDouble(val);
         } else {
@@ -1394,19 +1322,6 @@ public class Global extends MultiDexApplication {
         return returnedVal;
     }
 
-    // public void recalculateOrderProduct(int position)
-    // {
-    // double prodPrice =
-    // getDouble(orderProducts.get(position).getSetData("overwrite_price", true,
-    // null));
-    // double qty =
-    // getDouble(orderProducts.get(position).getSetData("ordprod_qty", true,
-    // null));
-    //
-    // double granTotal = prodPrice*qty;
-    // orderProducts.get(position).getSetData("itemTotal", false,
-    // Double.toString(granTotal));
-    // }
 
     public double getDouble(String val) {
         double ans = 0.00;
@@ -1451,57 +1366,6 @@ public class Global extends MultiDexApplication {
         });
     }
 
-//	public static TextWatcher amountTextWatcher(final EditText editText) {
-//
-//		return new TextWatcher() {
-//			@Override
-//			public void afterTextChanged(Editable s) {
-//
-//			}
-//
-//			@Override
-//			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//			}
-//
-//			@Override
-//			public void onTextChanged(CharSequence s, int start, int before, int count) {
-//				ProcessCash_FA.parseInputedCurrency(s, editText);
-//			}
-//		};
-//	}
-
-//	public static void parseInputedCurrency(EditText field, CharSequence s) {
-//		DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
-//		DecimalFormatSymbols sym = format.getDecimalFormatSymbols();
-//		StringBuilder sb = new StringBuilder();
-//		// sb.append("^\\").append(sym.getCurrencySymbol()).append("\\s(\\d{1,3}(\\").append(sym.getGroupingSeparator())
-//		// .append("\\d{3})*|(\\d+))(");
-//		// sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
-//
-//		sb.append("^(\\d{1,3}(\\").append(sym.getGroupingSeparator()).append("\\d{3})*|(\\d+))(");
-//		sb.append(sym.getDecimalSeparator()).append("\\d{2})?$");
-//
-//		if (!s.toString().matches(sb.toString())
-//				|| !s.toString().contains(Character.toString(sym.getDecimalSeparator()))) {
-//			String userInput = "" + s.toString().replaceAll("[^\\d]", "");
-//			StringBuilder cashAmountBuilder = new StringBuilder(userInput);
-//
-//			while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
-//				cashAmountBuilder.deleteCharAt(0);
-//			}
-//			while (cashAmountBuilder.length() < 3) {
-//				cashAmountBuilder.insert(0, '0');
-//			}
-//
-//			cashAmountBuilder.insert(cashAmountBuilder.length() - 2, sym.getDecimalSeparator());
-//			// cashAmountBuilder.insert(0, sym.getCurrencySymbol() + " ");
-//
-//			field.setText(cashAmountBuilder.toString());
-//		}
-//
-//		Selection.setSelection(field.getText(), field.getText().length());
-//	}
-
     public static BigDecimal getBigDecimalNum(String val) {
         if (val == null || val.isEmpty())
             val = "0";
@@ -1518,7 +1382,7 @@ public class Global extends MultiDexApplication {
     }
 
     public static String getRoundBigDecimal(BigDecimal val) {
-        return val.setScale(2, RoundingMode.HALF_UP).toString();
+        return val.setScale(4, RoundingMode.HALF_UP).toString();
     }
 
     public static String getCurrencyFrmt(String value) {
@@ -1545,9 +1409,8 @@ public class Global extends MultiDexApplication {
     }
 
     public static String encodeBitmapToBase64(Bitmap image) {
-        Bitmap immagex = image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        immagex.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
         String imageEncoded = Base64.encodeBytes(b);
 
@@ -1601,24 +1464,14 @@ public class Global extends MultiDexApplication {
         MyPreferences myPref = new MyPreferences(activity);
         StringBuilder sb1 = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
-//        uart uart_tool = new uart();
-//        uart_tool.config(3, 9600, 8, 1);
-//        uart_tool.write(3, Global.emptySpaces(40, 0, false));
 
         String msg1 = myPref.cdtLine1(true, "");
         String msg2 = myPref.cdtLine2(true, "");
         sb1.append(Global.emptySpaces(20, msg1.length(), true)).append(msg1);
         sb2.append(Global.emptySpaces(20, msg2.length(), true)).append(msg2);
-//        if (myPref.isSam4s(true, true)) {
-//
-//            uart_tool.config(3, 9600, 8, 1);
-//            uart_tool.write(3, Global.emptySpaces(40, 0, false));
-//            uart_tool.write(3, Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-//        } else if (myPref.isPAT100() || myPref.isESY13P1()) {
+
         TerminalDisplay.setTerminalDisplay(myPref, sb1.toString(), sb2.toString());
-//            EMSPAT100.getTerminalDisp().clearText();
-//            EMSPAT100.getTerminalDisp().displayText(Global.formatSam4sCDT(sb1.toString(), sb2.toString()));
-//        }
+
     }
 
     public static boolean deviceHasMSR(int _printer_type) {

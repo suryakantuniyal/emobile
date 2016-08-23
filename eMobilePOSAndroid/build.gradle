@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 apply from: '../artifacts.gradle'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
-
 android {
     useLibrary 'org.apache.http.legacy'
     signingConfigs {
@@ -50,8 +49,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.42"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -65,8 +64,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.42"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -79,8 +78,8 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.42"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -94,8 +93,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.35"
-            versionCode 102
+            versionName "1.2.0.42"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -109,8 +108,8 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.47"
-            versionCode 102
+            versionName "1.1.1.53"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -124,8 +123,8 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.47"
-            versionCode 102
+            versionName "1.1.1.53"
+            versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -138,7 +137,13 @@ android {
         }
     }
     buildTypes {
+        debug {
+            buildConfigField "boolean", "PRINT_TO_LOG", "false"
+            minifyEnabled false
+        }
+
         release {
+            buildConfigField "boolean", "PRINT_TO_LOG", "false"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             signingConfig signingConfigs.config
@@ -224,4 +229,5 @@ android {
     }
 }
 
-
+dependencies {
+}

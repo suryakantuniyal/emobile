@@ -60,7 +60,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
         thisInstance = this;
         this.edm = edm;
         sdkEventHandler = this;
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
     }
 
 
@@ -456,6 +456,13 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
                         cardManager = new CreditCardInfo();
                         CardParser.parseCreditCard(activity, raw_data.toString(), cardManager);
+                        if (isDukpt()) {
+                            String[] split = track3.split(":");
+                            if (split.length == 4) {
+                                cardManager.setTrackDataKSN(split[0]);
+                                cardManager.setEncryptedBlock(split[3]);
+                            }
+                        }
                         if (mIsDebit) {
                             //handler.post(doUpdateViews);
                             //String retValue = MSG29_GetVariable("00398");
@@ -562,6 +569,23 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
             }
             break;
         }
+    }
+
+    private boolean isDukpt() {
+        RBA_API.SetParam(PARAMETER_ID.P61_REQ_GROUP_NUM, "91");
+        RBA_API.SetParam(PARAMETER_ID.P61_REQ_INDEX_NUM, "1");
+        if (RBA_API.ProcessMessage(MESSAGE_ID.M61_CONFIGURATION_READ) == ERROR_ID.RESULT_SUCCESS) {
+            if (Integer.parseInt(RBA_API.GetParam(PARAMETER_ID.P61_RES_STATUS)) == 2) {
+                String result = RBA_API.GetParam(PARAMETER_ID.P61_RES_DATA_CONFIG_PARAMETER);
+                if (result != null) {
+                    int encType = Integer.parseInt(result);
+                    if (encType == 11) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /*

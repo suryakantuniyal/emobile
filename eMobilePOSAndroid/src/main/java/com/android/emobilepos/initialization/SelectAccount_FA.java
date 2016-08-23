@@ -15,10 +15,10 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.saxhandler.SaxLoginHandler;
-import com.android.database.DBManager;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
@@ -105,15 +105,14 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                         String android_id = Secure.getString(thisContext.getContentResolver(), Secure.ANDROID_ID);
                         myPref.setDeviceID(android_id);
 
-                        new validateLoginAsync().execute("");
+                        new validateLoginAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                     }
                 }
             });
         }
     }
 
-    public class validateLoginAsync extends AsyncTask<String, String, String> {
-        boolean proceed = false;
+    public class validateLoginAsync extends AsyncTask<String, String, Boolean> {
 
         @Override
         protected void onPreExecute() {
@@ -126,12 +125,11 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         }
 
         @Override
-        protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
+        protected Boolean doInBackground(String... params) {
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
+            boolean proceed = false;
 
             try {
                 String xml = post.postData(0, activity, "");
@@ -143,15 +141,12 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 xr.parse(inSource);
                 proceed = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
-            return null;
+            return proceed;
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(Boolean proceed) {
             myProgressDialog.dismiss();
             MyPreferences myPref = new MyPreferences(activity);
             if (proceed) {
@@ -168,7 +163,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub
                         dialog.cancel();
                     }
                 });

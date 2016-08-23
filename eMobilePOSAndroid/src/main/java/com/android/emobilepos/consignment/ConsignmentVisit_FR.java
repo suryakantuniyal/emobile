@@ -90,7 +90,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.saveConsignButton:
-                new processAsync().execute();
+                new processAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 break;
         }
     }
@@ -363,7 +363,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             public void onClick(View v) {
                 dlog.dismiss();
                 if (isPrintPrompt) {
-                    new printAsync().execute("");
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                 } else {
                     Intent intent = new Intent(getActivity(), SelectPayMethod_FA.class);
                     intent.putExtra("typeOfProcedure", Global.OrderType.INVOICE);
@@ -480,7 +480,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             if (!myPref.getPreferences(MyPreferences.pref_automatic_printing))
                 showYesNoPrompt(true, R.string.dlog_title_confirm, R.string.dlog_msg_want_to_print);
             else
-                new printAsync().execute();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             finishConsignment();
         }

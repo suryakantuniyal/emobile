@@ -3,7 +3,6 @@ package com.android.support;
 import android.app.Activity;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Xml;
 
 import com.android.database.AddressHandler;
@@ -24,7 +23,6 @@ import com.android.database.TransferInventory_DB;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
@@ -33,6 +31,7 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
@@ -1046,9 +1045,16 @@ public class GenerateXML {
                     serializer.endTag(empstr, "prod_id");
 
                     serializer.startTag(empstr, "ordprod_qty");
+//                    int uom_conversion = TextUtils.isEmpty(cursor.getString(cursor.getColumnIndex("uom_conversion"))) ? 0
+//                            : Integer.parseInt(cursor.getString(cursor.getColumnIndex("uom_conversion")));
+//                    if (uom_conversion == 0) {
                     serializer.text(cursor.getString(cursor.getColumnIndex("ordprod_qty")));
+//                    } else {
+//                        serializer.text(cursor.getString(cursor.getColumnIndex("uom_conversion")));
+//                    }
                     serializer.endTag(empstr, "ordprod_qty");
-
+                    BigDecimal price = new BigDecimal(cursor.getString(cursor.getColumnIndex("overwrite_price")))
+                            .multiply(new BigDecimal(cursor.getString(cursor.getColumnIndex("ordprod_qty"))));
                     serializer.startTag(empstr, "overwrite_price");
                     serializer.text(cursor.getString(cursor.getColumnIndex("overwrite_price")));
                     serializer.endTag(empstr, "overwrite_price");
@@ -1093,9 +1099,10 @@ public class GenerateXML {
                     serializer.startTag(empstr, "totalLineValue");
                     serializer.text(cursor.getString(cursor.getColumnIndex("totalLineValue")));
                     serializer.endTag(empstr, "totalLineValue");
+                    String prod_taxValue = Global.getRoundBigDecimal(new BigDecimal(cursor.getDouble(cursor.getColumnIndex("prod_taxValue"))));
 
                     serializer.startTag(empstr, "prod_taxValue");
-                    serializer.text(cursor.getString(cursor.getColumnIndex("prod_taxValue")));
+                    serializer.text(prod_taxValue);
                     serializer.endTag(empstr, "prod_taxValue");
 
                     serializer.startTag(empstr, "prod_discountId");
@@ -2676,9 +2683,10 @@ public class GenerateXML {
                 serializer.startTag(empstr, "prod_taxId");
                 serializer.text(c.getString(c.getColumnIndex("prod_taxId")));
                 serializer.endTag(empstr, "prod_taxId");
+                String prod_taxValue = Global.getRoundBigDecimal(new BigDecimal(c.getDouble(c.getColumnIndex("prod_taxValue"))));
 
                 serializer.startTag(empstr, "prod_taxValue");
-                serializer.text(c.getString(c.getColumnIndex("prod_taxValue")));
+                serializer.text(prod_taxValue);
                 serializer.endTag(empstr, "prod_taxValue");
 
                 serializer.startTag(empstr, "prod_discountId");

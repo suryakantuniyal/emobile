@@ -23,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 41;
+    public static final int VERSION = 42;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -396,7 +396,7 @@ public class DBManager {
             + "[reason_id] [int] NULL, [ordprod_desc] [varchar](4095) NULL, [pricelevel_id] [varchar](50) NULL, [prod_seq] [int] NULL, "
             + "[uom_name] [varchar](50) NULL, [uom_conversion] [real] NULL, [discount_id] [varchar](50) NULL, [discount_value] [money] NULL, "
             + "[item_void] [tinyint] NULL, [isPrinted] [bit] NULL, [cat_id] [varchar](50) NULL, [cat_name] [varchar](50) NULL, [addon] [bit] NULL, "
-            + "[isAdded] [bit] NULL, [ordprod_name][varchar](50) NULL, [prod_taxId][varchar](50) NULL, [prod_taxValue][varchar](50) NULL , "
+            + "[isAdded] [bit] NULL, [ordprod_name][varchar](50) NULL, [prod_taxId][varchar](50) NULL, [prod_taxValue][money] NULL, "
             + "[uom_id] [varchar],[prod_istaxable][tinyint] NULL,[discount_is_taxable][tinyint],[discount_is_fixed][tinyint],[onHand][double],"
             + "[imgURL][varchar],[prod_price][money],[prod_type][varchar],[cardIsActivated][tinyint] DEFAULT 0,[itemTotal][money],[itemSubtotal][money],[addon_section_name][varchar],"
             + "[addon_position][varchar],[hasAddons][tinyint] DEFAULT 0,[ordprod_comment][varchar](50),[prod_sku] [varchar](255) NULL, " +

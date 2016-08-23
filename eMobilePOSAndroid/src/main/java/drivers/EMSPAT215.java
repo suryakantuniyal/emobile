@@ -78,7 +78,7 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         this.edm = edm;
         thisInstance = this;
 //        Looper.prepare();
-        new processConnectionAsync().execute(0);
+        new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, 0);
 //        Looper.loop();
     }
 
