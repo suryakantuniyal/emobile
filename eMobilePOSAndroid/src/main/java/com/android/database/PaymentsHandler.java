@@ -103,7 +103,7 @@ public class PaymentsHandler {
         return lastPaymentInserted;
     }
 
-    protected static void setLastPaymentInserted(Payment payment) {
+    public static void setLastPaymentInserted(Payment payment) {
         lastPaymentInserted = payment;
     }
 

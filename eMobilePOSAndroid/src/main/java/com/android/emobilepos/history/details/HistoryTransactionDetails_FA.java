@@ -41,7 +41,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsImagesHandler;
 import com.android.database.ShiftPeriodsDBHandler;
-import com.android.database.StoredPayments_DB;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
@@ -646,7 +646,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         btnVoid.setClickable(false);
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-            StoredPayments_DB dbStoredPayments = new StoredPayments_DB(activity);
+            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(activity);
             if (dbStoredPayments.getRetryTransCount(order_id) > 0) {
                 //There are pending stored&forward cannot void
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_pending_stored_forward));
@@ -698,7 +698,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
-            StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
             dbStoredPayments.deletePaymentFromJob(order_id);
         }
 

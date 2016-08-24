@@ -29,7 +29,7 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.ShiftExpensesDBHandler;
 import com.android.database.ShiftPeriodsDBHandler;
-import com.android.database.StoredPayments_DB;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
@@ -672,7 +672,7 @@ public class EMSDeviceDriver {
             PaymentsHandler payHandler = new PaymentsHandler(activity);
             List<PaymentDetails> detailsList = payHandler.getPaymentForPrintingTransactions(ordID);
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
+                StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
                 detailsList.addAll(dbStoredPay.getPaymentForPrintingTransactions(ordID));
             }
             String receiptSignature;
@@ -1336,7 +1336,7 @@ public class EMSDeviceDriver {
             long pay_count = payHandler.paymentExist(payID, true);
             if (pay_count == 0) {
                 isStoredFwd = true;
-                StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
+                StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
                 if (emvContainer != null && emvContainer.getGeniusResponse() != null && emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")) {
                     type = 2;
                 }

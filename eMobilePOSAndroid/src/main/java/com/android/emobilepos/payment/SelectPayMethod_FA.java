@@ -29,11 +29,11 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
@@ -725,7 +725,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         MyPreferences myPref = new MyPreferences(activity);
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(job_id, "0");
-            StoredPayments_DB dbStoredPayments = new StoredPayments_DB(activity);
+            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(activity);
             dbStoredPayments.deletePaymentFromJob(job_id);
         }
         HashMap<String, String> parsedMap;

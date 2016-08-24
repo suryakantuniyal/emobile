@@ -2,14 +2,9 @@ package com.android.emobilepos.settings;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,12 +16,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.storedAndForward.StoreAndForward;
@@ -54,9 +48,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
-import io.realm.RealmBaseAdapter;
 import io.realm.RealmResults;
 
 public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar implements OnItemClickListener, OnClickListener {
@@ -65,7 +57,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     private boolean hasBeenCreated = false;
     //    private Cursor myCursor;
     //private SQLiteDatabase db;
-    private StoredPayments_DB dbStoredPay;
+    private StoredPaymentsDAO dbStoredPay;
     private CustomCursorAdapter adapter;
     private RecyclerView listView;
 
@@ -81,7 +73,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
         //DBManager dbManager = new DBManager(this);
         //db = dbManager.openWritableDB();
-        dbStoredPay = new StoredPayments_DB(this);
+        dbStoredPay = new StoredPaymentsDAO(this);
 //        myCursor = dbStoredPay.getStoredPayments();
         listView = (RecyclerView) findViewById(R.id.listView);
         adapter = new CustomCursorAdapter(Realm.getDefaultInstance().where(StoreAndForward.class).findAll());

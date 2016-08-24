@@ -34,12 +34,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
-import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
@@ -1310,7 +1310,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         }
 
-        StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+        StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
         dbStoredPayments.insert(payment, StoreAndForward.PaymentType.CREDIT_CARD);
         // payHandler.insert(payment);
 
@@ -1602,7 +1602,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         } else {
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+                StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
                 Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.getPay_uuid());
 
                 OrdersHandler dbOrders = new OrdersHandler(this);
@@ -1690,7 +1690,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (resultCode == -1) {
             if (myPref.getSwiperType() != Global.WALKER) {
                 if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                    StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+                    StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
                     Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid());
 
                     OrdersHandler dbOrders = new OrdersHandler(this);
