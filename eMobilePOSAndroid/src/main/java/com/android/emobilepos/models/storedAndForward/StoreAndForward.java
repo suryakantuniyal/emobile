@@ -15,6 +15,10 @@ public class StoreAndForward extends RealmObject {
     private Date creationDate;
     @Ignore
     private StoreAndForwatdStatus storeAndForwatdStatus;
+    @Ignore
+    private
+    PaymentType paymentType;
+    private int paymentTypeValue;
     private int status;
     private String paymentXml;
     private boolean retry;
@@ -34,6 +38,16 @@ public class StoreAndForward extends RealmObject {
 
     public void setRetry(boolean retry) {
         this.retry = retry;
+    }
+
+    public PaymentType getPaymentType() {
+        paymentType = PaymentType.getInstance(paymentTypeValue);
+        return paymentType;
+    }
+
+    public void setPaymentType(PaymentType paymentType) {
+        paymentTypeValue = paymentType.getCode();
+        this.paymentType = paymentType;
     }
 
     public enum StoreAndForwatdStatus {
@@ -62,6 +76,29 @@ public class StoreAndForward extends RealmObject {
         }
     }
 
+    public enum PaymentType {
+        BOLORO(0), CREDIT_CARD(1);
+        int code;
+
+        PaymentType(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static PaymentType getInstance(int code) {
+            switch (code) {
+                case 0:
+                    return BOLORO;
+                case 1:
+                    return CREDIT_CARD;
+                default:
+                    return CREDIT_CARD;
+            }
+        }
+    }
 
     public long getId() {
         return id;

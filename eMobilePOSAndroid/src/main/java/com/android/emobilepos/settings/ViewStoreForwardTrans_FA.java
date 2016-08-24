@@ -10,6 +10,10 @@ import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,6 +30,7 @@ import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.storedAndForward.StoreAndForward;
+import com.android.emobilepos.storedforward.BoloroPayment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.GenerateNewID;
@@ -43,6 +48,7 @@ import org.xml.sax.XMLReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -61,7 +67,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     //private SQLiteDatabase db;
     private StoredPayments_DB dbStoredPay;
     private CustomCursorAdapter adapter;
-    private ListView listView;
+    private RecyclerView listView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,10 +83,13 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         //db = dbManager.openWritableDB();
         dbStoredPay = new StoredPayments_DB(this);
 //        myCursor = dbStoredPay.getStoredPayments();
-        listView = (ListView) findViewById(R.id.listView);
-        adapter = new CustomCursorAdapter(this, Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
+        listView = (RecyclerView) findViewById(R.id.listView);
+        adapter = new CustomCursorAdapter(Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        listView.setLayoutManager(mLayoutManager);
+        listView.setItemAnimator(new DefaultItemAnimator());
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+//        listView.setOnItemClickListener(this);
 
         hasBeenCreated = true;
     }
@@ -270,17 +279,18 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
 
                             realm.beginTransaction();
+                            StoreAndForward norealmStrFwd = realm.copyFromRealm(storeAndForward);
                             storeAndForward.deleteFromRealm();
                             realm.commitTransaction();
 //                            dbStoredPay.deleteStoredPaymentRow(_pay_uuid);
-                            if (dbOrdHandler.getColumnValue("ord_type", storeAndForward.getPayment().getJob_id())
+                            if (dbOrdHandler.getColumnValue("ord_type", norealmStrFwd.getPayment().getJob_id())
                                     .equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
-                                dbOrdHandler.updateOrderTypeToInvoice(storeAndForward.getPayment().getJob_id());
-                            dbOrdHandler.updateOrderComment(storeAndForward.getPayment().getJob_id(), sb.toString());
+                                dbOrdHandler.updateOrderTypeToInvoice(norealmStrFwd.getPayment().getJob_id());
+                            dbOrdHandler.updateOrderComment(norealmStrFwd.getPayment().getJob_id(), sb.toString());
 
                             //Remove as pending stored & forward if no more payments are pending to be processed.
-                            if (dbStoredPay.getCountPendingStoredPayments(storeAndForward.getPayment().getJob_id()) <= 0)
-                                dbOrdHandler.updateOrderStoredFwd(storeAndForward.getPayment().getJob_id(), "0");
+                            if (dbStoredPay.getCountPendingStoredPayments(norealmStrFwd.getPayment().getJob_id()) <= 0)
+                                dbOrdHandler.updateOrderStoredFwd(norealmStrFwd.getPayment().getJob_id(), "0");
 
                             _count_decline++;
                         }
@@ -315,43 +325,50 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         @Override
         protected Void doInBackground(Void... params) {
             RealmResults<StoreAndForward> storeAndForwards = Realm.getDefaultInstance().where(StoreAndForward.class).findAll();
+            for (StoreAndForward storeAndForward : storeAndForwards) {
+                if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
+                    livePaymentRunning = true;
+                    _charge_xml = storeAndForward.getPaymentXml();//myCursor.getString(i_payment_xml);
+                    _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>" + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
 
-            if (storeAndForwards != null && !storeAndForwards.isEmpty()) {
-//                int size = myCursor.getCount();
+                    try {
 
-                //OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-                for (StoreAndForward storeAndForward : storeAndForwards) {
-                    if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
-                        livePaymentRunning = true;
-                        _charge_xml = storeAndForward.getPaymentXml();//myCursor.getString(i_payment_xml);
-                        _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>" + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
-
-                        try {
-
-                            if (storeAndForward.isRetry())
-                                checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
-                            else
-                                processPayment(storeAndForward, _charge_xml);
-
-                        } catch (ParserConfigurationException e) {
-                            e.printStackTrace();
-                        } catch (SAXException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (Exception e) {
-                            updateStoreForwardPaymentToRetry(storeAndForward);
-//                            dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
+                        if (storeAndForward.isRetry()) {
+                            switch (storeAndForward.getPaymentType()) {
+                                case BOLORO:
+                                    BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                    break;
+                                case CREDIT_CARD:
+                                    break;
+                            }
+                            checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
+                        } else {
+                            switch (storeAndForward.getPaymentType()) {
+                                case BOLORO:
+                                    BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                    break;
+                                case CREDIT_CARD:
+                                    break;
+                            }
+                            processPayment(storeAndForward, _charge_xml);
                         }
 
-                        livePaymentRunning = false;
-                    } else {
-                        _count_conn_error++;
+                    } catch (ParserConfigurationException e) {
+                        e.printStackTrace();
+                    } catch (SAXException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        updateStoreForwardPaymentToRetry(storeAndForward);
+//                            dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
                     }
+
+                    livePaymentRunning = false;
+                } else {
+                    _count_conn_error++;
                 }
             }
-
-
             return null;
         }
 
@@ -362,8 +379,9 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             //refresh the list view;
             //adapter.notifyDataSetChanged();
 //            myCursor = dbStoredPay.getStoredPayments();
-            adapter = new CustomCursorAdapter(activity, Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
-            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+//            adapter = new CustomCursorAdapter(Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
+//            listView.setAdapter(adapter);
             StringBuilder sb = new StringBuilder();
             if (_count_conn_error > 0) {
                 sb.append("\t -").append("Connection Error (").append(Integer.toString(_count_conn_error)).append("): ");
@@ -397,8 +415,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
         GenerateNewID generator = new GenerateNewID(this);
         MyPreferences myPref = new MyPreferences(this);
-
-        storeAndForward.getPayment().setPay_id(generator.getNextID(IdType.PAYMENT_ID));
 
 //        newPayment.emp_id = myCursor.getString(myCursor.getColumnIndex("emp_id"));
 //        newPayment.job_id = myCursor.getString(myCursor.getColumnIndex("job_id"));
@@ -440,24 +456,29 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 //        newPayment.pay_resultmessage = parsedMap.get("pay_resultmessage");
 //        newPayment.pay_transid = parsedMap.get("CreditCardTransID");
 //        newPayment.authcode = parsedMap.get("AuthorizationCode");
+
+        realm.beginTransaction();
+        storeAndForward.getPayment().setPay_id(generator.getNextID(IdType.PAYMENT_ID));
         storeAndForward.getPayment().setProcessed("9");//newPayment.processed = "9";
         PaymentsHandler payHandler = new PaymentsHandler(this);
         payHandler.insert(storeAndForward.getPayment());
-        realm.beginTransaction();
         storeAndForward.deleteFromRealm();
         realm.commitTransaction();
 //        dbStoredPay.deleteStoredPaymentRow(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
     }
 
 
-    private class CustomCursorAdapter extends RealmBaseAdapter {
-        private LayoutInflater inflater;
-        private ViewHolder myHolder;
+    private class CustomCursorAdapter extends RecyclerView.Adapter<CustomCursorAdapter.ViewHolder> {
+        private List<StoreAndForward> storeAndForwards;
 
-        public CustomCursorAdapter(@NonNull Context context, @Nullable OrderedRealmCollection data) {
-            super(context, data);
-            inflater = LayoutInflater.from(context);
+        public CustomCursorAdapter(List<StoreAndForward> storeAndForwards) {
+            this.storeAndForwards = storeAndForwards;
         }
+
+//        public CustomCursorAdapter(@NonNull Context context, @Nullable OrderedRealmCollection data) {
+//            super(context, data);
+//            inflater = LayoutInflater.from(context);
+//        }
 
 //        public CustomCursorAdapter(Context context, RealmResults realmResults, boolean automaticUpdate) {
 //            super(context, realmResults, automaticUpdate);
@@ -488,33 +509,62 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 //            return view;
 //        }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = inflater.inflate(R.layout.view_store_forward_layout, parent, false);
-                holder.title = (TextView) convertView.findViewById(R.id.tvTitle);
-                holder.subtitle = (TextView) convertView.findViewById(R.id.tvSubtitle);
-//                holder.i_card_type = storeAndForward.getPayment().getCard_type();//cursor.getColumnIndex("card_type");
-//                holder.i_pay_amount = cursor.getColumnIndex("pay_amount");
-//                holder.i_pay_name = cursor.getColumnIndex("pay_name");
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            ViewHolder holder;
+//            if (convertView == null) {
+//                holder = new ViewHolder();
+//                convertView = inflater.inflate(R.layout.view_store_forward_layout, parent, false);
+//                holder.title = (TextView) convertView.findViewById(R.id.tvTitle);
+//                holder.subtitle = (TextView) convertView.findViewById(R.id.tvSubtitle);
+////                holder.i_card_type = storeAndForward.getPayment().getCard_type();//cursor.getColumnIndex("card_type");
+////                holder.i_pay_amount = cursor.getColumnIndex("pay_amount");
+////                holder.i_pay_name = cursor.getColumnIndex("pay_name");
+//
+//                convertView.setTag(holder);
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
+//            StoreAndForward storeAndForward = (StoreAndForward) adapterData.get(position);
+//            Payment p = storeAndForward.getPayment();
+//            myHolder.title.setText(p.getCard_type() + "  (" + Global.formatDoubleStrToCurrency(p.getPay_amount()) + ")");
+//            myHolder.subtitle.setText(p.getPay_name());
+//            return null;
+//        }
 
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            StoreAndForward storeAndForward = (StoreAndForward) adapterData.get(position);
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.view_store_forward_layout, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            StoreAndForward storeAndForward = storeAndForwards.get(position);
             Payment p = storeAndForward.getPayment();
-            myHolder.title.setText(p.getCard_type() + "  (" + Global.formatDoubleStrToCurrency(p.getPay_amount()) + ")");
-            myHolder.subtitle.setText(p.getPay_name());
-            return null;
+            String cardName = TextUtils.isEmpty(p.getCard_type()) ? getString(R.string.card_credit_card) : p.getCard_type();
+            holder.title.setText(cardName +
+                    "  (" +
+                    Global.formatDoubleStrToCurrency(p.getPay_amount()) +
+                    ")");
+            holder.subtitle.setText(p.getPay_name());
+        }
+
+        @Override
+        public int getItemCount() {
+            return storeAndForwards.size();
         }
 
 
-        private class ViewHolder {
-            TextView title, subtitle;
-//            String i_pay_amount, i_card_type, i_pay_name;
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView title, subtitle;
+
+            public ViewHolder(View v) {
+                super(v);
+                title = (TextView) v.findViewById(R.id.tvTitle);
+                subtitle = (TextView) v.findViewById(R.id.tvSubtitle);
+            }
         }
     }
 }

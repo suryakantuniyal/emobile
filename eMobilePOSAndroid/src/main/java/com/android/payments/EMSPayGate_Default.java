@@ -862,7 +862,7 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "CCAmt");
         String temp = NumberUtils.cleanCurrencyFormatedNumber(payment.getPay_amount());
         try {
-            temp = Global.getRoundBigDecimal(new BigDecimal(temp));
+            temp = Global.getRoundBigDecimal(new BigDecimal(temp), 2);
         } catch (Exception e) {
             temp = payment.getPay_amount();
         }

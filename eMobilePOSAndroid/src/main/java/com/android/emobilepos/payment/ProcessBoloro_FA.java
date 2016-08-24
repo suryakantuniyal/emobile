@@ -80,7 +80,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     private EditText fieldPhone;
     private boolean isPolling = true;
     private EditText fieldAmountDue, fieldAmountPaid;
-    private final int POLLING_SLEEP_TIME = 5000;
+    public static final int POLLING_SLEEP_TIME = 5000;
     MyPreferences myPreferences;
     private Global global;
     private boolean hasBeenCreated = false;
@@ -492,6 +492,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                     storeAndForward.setPayment(realm.copyToRealm(payment));
                     storeAndForward.setPaymentXml(generatedURL);
                     storeAndForward.setRetry(false);
+                    storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
                     storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
                     realm.commitTransaction();
                     return true;
@@ -532,7 +533,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 } else if (response.containsKey("epayStatusCode")) {
                     Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
                 }
-            }else{
+            } else {
                 showFinishDlog(getString(R.string.payment_saved_successfully));
             }
         }

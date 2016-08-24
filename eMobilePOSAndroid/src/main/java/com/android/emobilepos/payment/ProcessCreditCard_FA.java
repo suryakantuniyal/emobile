@@ -47,6 +47,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -1310,7 +1311,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
 
         StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
-        dbStoredPayments.insert(payment);
+        dbStoredPayments.insert(payment, StoreAndForward.PaymentType.CREDIT_CARD);
         // payHandler.insert(payment);
 
         if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {

@@ -7,6 +7,7 @@ import android.database.Cursor;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.support.Global;
 import com.google.gson.Gson;
 
@@ -14,8 +15,11 @@ import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import io.realm.Realm;
 
 public class StoredPayments_DB {
 
@@ -103,7 +107,7 @@ public class StoredPayments_DB {
             job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
             tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
             Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, pay_uuid, is_retry,
-            payment_xml,EMVJson);
+            payment_xml, EMVJson);
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
@@ -139,153 +143,171 @@ public class StoredPayments_DB {
         return attrHash.get(tag);
     }
 
-    public void insert(Payment payment) {
-
-        DBManager._db.beginTransaction();
-        try {
-
-            SQLiteStatement insert;
-            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
-                    "VALUES (" + sb2.toString() + ")";
-            insert = DBManager._db.compileStatement(sb);
-
-            insert.bindString(index(pay_id), payment.getPay_id()); // pay_id
-            insert.bindString(index(group_pay_id), payment.getGroup_pay_id()); // group_pay_id
-            insert.bindString(index(original_pay_id), payment.getOriginal_pay_id()); // group_pay_id
-            insert.bindString(index(cust_id), payment.getCust_id()); // cust_id
-            insert.bindString(index(tupyx_user_id), payment.getTupyx_user_id());
-            insert.bindString(index(custidkey), payment.getCustidkey()); // custidkey
-            insert.bindString(index(emp_id), payment.getEmp_id()); // emp_id
-            insert.bindString(index(inv_id), payment.getInv_id() == null ? "" : payment.getInv_id()); // inv_id
-            insert.bindString(index(paymethod_id), payment.getPaymethod_id()); // paymethod_id
-            insert.bindString(index(pay_check), payment.getPay_check()); // pay_check
-            insert.bindString(index(pay_receipt), payment.getPay_receipt()); // pay_receipt
-            insert.bindString(index(pay_amount), payment.getPay_amount()); // pay_amount
-            insert.bindString(index(pay_dueamount), payment.getPay_dueamount()); // pay_dueamount;
-            insert.bindString(index(pay_comment), payment.getPay_comment()); // pay_comment
-            insert.bindString(index(pay_timecreated), payment.getPay_timecreated()); // pay_timecreated
-            insert.bindString(index(pay_timesync), payment.getPay_timesync()); // pay_timesync
-            insert.bindString(index(account_id), payment.getAccount_id()); // account_id
-            insert.bindString(index(processed), payment.getProcessed()); // processed
-            insert.bindString(index(pay_issync), payment.getPay_issync()); // pay_issync
-            insert.bindString(index(pay_transid), payment.getPay_transid() == null ? "" : payment.getPay_transid()); // pay_transid
-            insert.bindString(index(pay_refnum), payment.getPay_refnum()); // pay_refnum
-            insert.bindString(index(pay_name), payment.getPay_name()); // pay_name
-            insert.bindString(index(pay_addr), payment.getPay_addr()); // pay_addr
-            insert.bindString(index(pay_poscode), payment.getPay_poscode()); // pay_poscode
-            insert.bindString(index(pay_seccode), payment.getPay_seccode()); // pay_seccode
-            insert.bindString(index(pay_maccount), payment.getPay_maccount()); // pay_maccount
-            insert.bindString(index(pay_groupcode), payment.getPay_groupcode()); // pay_groupcode
-            insert.bindString(index(pay_stamp), payment.getPay_stamp()); // pay_stamp
-            insert.bindString(index(pay_resultcode), payment.getPay_resultcode()); // pay_resultcode
-            insert.bindString(index(pay_resultmessage), payment.getPay_resultmessage()); // pay_resultmessage
-            insert.bindString(index(pay_ccnum), payment.getPay_ccnum()); // pay_ccnum
-            insert.bindString(index(pay_expmonth), payment.getPay_expmonth()); // pay_expMonth
-            insert.bindString(index(pay_expyear), payment.getPay_expyear()); // pay_expyear
-            insert.bindString(index(pay_expdate), payment.getPay_expdate()); // pay_expdate
-            insert.bindString(index(pay_result), payment.getPay_result()); // pay_result
-            insert.bindString(index(pay_date), payment.getPay_date()); // pay_date
-            insert.bindString(index(recordnumber), payment.getRecordnumber()); // recordnumber
-            insert.bindString(index(pay_signature), payment.getPay_signature()); // pay_signaute
-            insert.bindString(index(authcode), payment.getAuthcode() == null ? "" : payment.getAuthcode()); // authcode
-            insert.bindString(index(status), payment.getStatus()); // status
-            insert.bindString(index(job_id), payment.getJob_id()); // job_id
-
-            insert.bindString(index(user_ID), payment.getUser_ID()); // user_ID
-            insert.bindString(index(pay_type), payment.getPay_type()); // pay_type
-            insert.bindString(index(pay_tip), payment.getPay_tip()); // pay_tip
-            insert.bindString(index(ccnum_last4), payment.getCcnum_last4()); // ccnum_last4
-            insert.bindString(index(pay_phone), payment.getPay_phone()); // pay_phone
-            insert.bindString(index(pay_email), payment.getPay_email()); // pay_email
-            insert.bindString(index(isVoid), payment.getIsVoid()); // isVoid
-            insert.bindString(index(pay_latitude), payment.getPay_latitude()); // pay_latitude
-            insert.bindString(index(pay_longitude), payment.getPay_longitude()); // pay_longitude
-            insert.bindString(index(tipAmount), payment.getTipAmount()); // tipAmount
-            insert.bindString(index(clerk_id), payment.getClerk_id() ==null?"": payment.getClerk_id()); // clerk_id
-
-            insert.bindString(index(is_refund), payment.getIs_refund() ==null?"": payment.getIs_refund()); // is_refund
-            insert.bindString(index(ref_num), payment.getRef_num()); // ref_num
-            insert.bindString(index(card_type), payment.getCard_type()); // card_type
-
-            insert.bindString(index(IvuLottoDrawDate), payment.getIvuLottoDrawDate()); // IvuLottoDrawData
-            insert.bindString(index(IvuLottoNumber), payment.getIvuLottoNumber()); // IvuLottoNumber
-            insert.bindString(index(IvuLottoQR), payment.getIvuLottoQR()); // IvuLottoQR
-
-            insert.bindString(index(Tax1_amount), payment.getTax1_amount());
-            insert.bindString(index(Tax1_name), payment.getTax1_name());
-            insert.bindString(index(Tax2_amount), payment.getTax2_amount());
-            insert.bindString(index(Tax2_name), payment.getTax2_name());
-
-            insert.bindString(index(pay_uuid), payment.getPay_uuid());
-            insert.bindString(index(is_retry), payment.getIs_retry());
-            insert.bindString(index(payment_xml), payment.getPayment_xml());
-            insert.bindString(index(EMVJson), payment.getEmvContainer() == null ? "" : new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
-
-            insert.execute();
-            insert.clearBindings();
-            insert.close();
-            DBManager._db.setTransactionSuccessful();
-
-        } catch (Exception e) {
-
-        } finally {
-            PaymentsHandler.setLastPaymentInserted(payment);
-            DBManager._db.endTransaction();
-        }
-    }
+//    public void insert(Payment payment) {
+//
+//        DBManager._db.beginTransaction();
+//        try {
+//
+//            SQLiteStatement insert;
+//            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+//                    "VALUES (" + sb2.toString() + ")";
+//            insert = DBManager._db.compileStatement(sb);
+//
+//            insert.bindString(index(pay_id), payment.getPay_id()); // pay_id
+//            insert.bindString(index(group_pay_id), payment.getGroup_pay_id()); // group_pay_id
+//            insert.bindString(index(original_pay_id), payment.getOriginal_pay_id()); // group_pay_id
+//            insert.bindString(index(cust_id), payment.getCust_id()); // cust_id
+//            insert.bindString(index(tupyx_user_id), payment.getTupyx_user_id());
+//            insert.bindString(index(custidkey), payment.getCustidkey()); // custidkey
+//            insert.bindString(index(emp_id), payment.getEmp_id()); // emp_id
+//            insert.bindString(index(inv_id), payment.getInv_id() == null ? "" : payment.getInv_id()); // inv_id
+//            insert.bindString(index(paymethod_id), payment.getPaymethod_id()); // paymethod_id
+//            insert.bindString(index(pay_check), payment.getPay_check()); // pay_check
+//            insert.bindString(index(pay_receipt), payment.getPay_receipt()); // pay_receipt
+//            insert.bindString(index(pay_amount), payment.getPay_amount()); // pay_amount
+//            insert.bindString(index(pay_dueamount), payment.getPay_dueamount()); // pay_dueamount;
+//            insert.bindString(index(pay_comment), payment.getPay_comment()); // pay_comment
+//            insert.bindString(index(pay_timecreated), payment.getPay_timecreated()); // pay_timecreated
+//            insert.bindString(index(pay_timesync), payment.getPay_timesync()); // pay_timesync
+//            insert.bindString(index(account_id), payment.getAccount_id()); // account_id
+//            insert.bindString(index(processed), payment.getProcessed()); // processed
+//            insert.bindString(index(pay_issync), payment.getPay_issync()); // pay_issync
+//            insert.bindString(index(pay_transid), payment.getPay_transid() == null ? "" : payment.getPay_transid()); // pay_transid
+//            insert.bindString(index(pay_refnum), payment.getPay_refnum()); // pay_refnum
+//            insert.bindString(index(pay_name), payment.getPay_name()); // pay_name
+//            insert.bindString(index(pay_addr), payment.getPay_addr()); // pay_addr
+//            insert.bindString(index(pay_poscode), payment.getPay_poscode()); // pay_poscode
+//            insert.bindString(index(pay_seccode), payment.getPay_seccode()); // pay_seccode
+//            insert.bindString(index(pay_maccount), payment.getPay_maccount()); // pay_maccount
+//            insert.bindString(index(pay_groupcode), payment.getPay_groupcode()); // pay_groupcode
+//            insert.bindString(index(pay_stamp), payment.getPay_stamp()); // pay_stamp
+//            insert.bindString(index(pay_resultcode), payment.getPay_resultcode()); // pay_resultcode
+//            insert.bindString(index(pay_resultmessage), payment.getPay_resultmessage()); // pay_resultmessage
+//            insert.bindString(index(pay_ccnum), payment.getPay_ccnum()); // pay_ccnum
+//            insert.bindString(index(pay_expmonth), payment.getPay_expmonth()); // pay_expMonth
+//            insert.bindString(index(pay_expyear), payment.getPay_expyear()); // pay_expyear
+//            insert.bindString(index(pay_expdate), payment.getPay_expdate()); // pay_expdate
+//            insert.bindString(index(pay_result), payment.getPay_result()); // pay_result
+//            insert.bindString(index(pay_date), payment.getPay_date()); // pay_date
+//            insert.bindString(index(recordnumber), payment.getRecordnumber()); // recordnumber
+//            insert.bindString(index(pay_signature), payment.getPay_signature()); // pay_signaute
+//            insert.bindString(index(authcode), payment.getAuthcode() == null ? "" : payment.getAuthcode()); // authcode
+//            insert.bindString(index(status), payment.getStatus()); // status
+//            insert.bindString(index(job_id), payment.getJob_id()); // job_id
+//
+//            insert.bindString(index(user_ID), payment.getUser_ID()); // user_ID
+//            insert.bindString(index(pay_type), payment.getPay_type()); // pay_type
+//            insert.bindString(index(pay_tip), payment.getPay_tip()); // pay_tip
+//            insert.bindString(index(ccnum_last4), payment.getCcnum_last4()); // ccnum_last4
+//            insert.bindString(index(pay_phone), payment.getPay_phone()); // pay_phone
+//            insert.bindString(index(pay_email), payment.getPay_email()); // pay_email
+//            insert.bindString(index(isVoid), payment.getIsVoid()); // isVoid
+//            insert.bindString(index(pay_latitude), payment.getPay_latitude()); // pay_latitude
+//            insert.bindString(index(pay_longitude), payment.getPay_longitude()); // pay_longitude
+//            insert.bindString(index(tipAmount), payment.getTipAmount()); // tipAmount
+//            insert.bindString(index(clerk_id), payment.getClerk_id() ==null?"": payment.getClerk_id()); // clerk_id
+//
+//            insert.bindString(index(is_refund), payment.getIs_refund() ==null?"": payment.getIs_refund()); // is_refund
+//            insert.bindString(index(ref_num), payment.getRef_num()); // ref_num
+//            insert.bindString(index(card_type), payment.getCard_type()); // card_type
+//
+//            insert.bindString(index(IvuLottoDrawDate), payment.getIvuLottoDrawDate()); // IvuLottoDrawData
+//            insert.bindString(index(IvuLottoNumber), payment.getIvuLottoNumber()); // IvuLottoNumber
+//            insert.bindString(index(IvuLottoQR), payment.getIvuLottoQR()); // IvuLottoQR
+//
+//            insert.bindString(index(Tax1_amount), payment.getTax1_amount());
+//            insert.bindString(index(Tax1_name), payment.getTax1_name());
+//            insert.bindString(index(Tax2_amount), payment.getTax2_amount());
+//            insert.bindString(index(Tax2_name), payment.getTax2_name());
+//
+//            insert.bindString(index(pay_uuid), payment.getPay_uuid());
+//            insert.bindString(index(is_retry), payment.getIs_retry());
+//            insert.bindString(index(payment_xml), payment.getPayment_xml());
+//            insert.bindString(index(EMVJson), payment.getEmvContainer() == null ? "" : new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
+//
+//            insert.execute();
+//            insert.clearBindings();
+//            insert.close();
+//            DBManager._db.setTransactionSuccessful();
+//
+//        } catch (Exception e) {
+//
+//        } finally {
+//            PaymentsHandler.setLastPaymentInserted(payment);
+//            DBManager._db.endTransaction();
+//        }
+//    }
 
     public void emptyTable() {
         DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
-    public String updateSignaturePayment(String _pay_uuid) {
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(pay_id).append(" = ?");
-
-        ContentValues args = new ContentValues();
-
-        args.put(pay_signature, global.encodedImage);
-
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{_pay_uuid});
-        sb.setLength(0);
-        sb.append("SELECT pay_amount FROM ").append(table_name).append(" WHERE pay_uuid = '").append(_pay_uuid)
-                .append("'");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-        String returningVal = "";
-
-        if (cursor.moveToFirst()) {
-            returningVal = cursor.getString(cursor.getColumnIndex(pay_amount));
-        }
-
-        cursor.close();
-        return returningVal;
+    public String updateSignaturePayment(String pay_uuid) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        StoreAndForward storeAndForward = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
+        storeAndForward.getPayment().setPay_signature(global.encodedImage);
+        realm.commitTransaction();
+        return storeAndForward.getPayment().getPay_amount();
     }
 
-    public Cursor getStoredPayments() {
-        Cursor c = DBManager._db.rawQuery("SELECT pay_uuid as '_id', * FROM " + table_name, null);
-        c.moveToFirst();
-        return c;
-    }
+//    public String updateSignaturePayment(String _pay_uuid) {
+//
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(pay_id).append(" = ?");
+//
+//        ContentValues args = new ContentValues();
+//
+//        args.put(pay_signature, global.encodedImage);
+//
+//        DBManager._db.update(table_name, args, sb.toString(), new String[]{_pay_uuid});
+//        sb.setLength(0);
+//        sb.append("SELECT pay_amount FROM ").append(table_name).append(" WHERE pay_uuid = '").append(_pay_uuid)
+//                .append("'");
+//        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+//        String returningVal = "";
+//
+//        if (cursor.moveToFirst()) {
+//            returningVal = cursor.getString(cursor.getColumnIndex(pay_amount));
+//        }
+//
+//        cursor.close();
+//        return returningVal;
+//    }
+
+//    public Cursor getStoredPayments() {
+//        Cursor c = DBManager._db.rawQuery("SELECT pay_uuid as '_id', * FROM " + table_name, null);
+//        c.moveToFirst();
+//        return c;
+//    }
 
     public long getRetryTransCount(String _job_id) {
-        String sb = "SELECT Count(*) FROM " + table_name + " WHERE job_id = '" + _job_id +
-                "' AND is_retry = '1'";
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb);
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
+//        String sb = "SELECT Count(*) FROM " + table_name + " WHERE job_id = '" + _job_id +
+//                "' AND is_retry = '1'";
+//        SQLiteStatement stmt = DBManager._db.compileStatement(sb);
+        long count;// = stmt.simpleQueryForLong();
+//        stmt.close();
+        count = Realm.getDefaultInstance().where(StoreAndForward.class).equalTo("payment.job_id", job_id)
+                .equalTo("payment.is_retry", "1").findAll().size();
         return count;
     }
 
     public long getCountPendingStoredPayments(String _job_id) {
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE job_id = '" + _job_id + "'");
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
+//        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE job_id = '" + _job_id + "'");
+        long count = Realm.getDefaultInstance().where(StoreAndForward.class)
+                .equalTo("payment.job_id", _job_id).findAll().size(); //stmt.simpleQueryForLong();
+//        stmt.close();
         return count;
     }
 
     public void deletePaymentFromJob(String _job_id) {
-        DBManager._db.delete(table_name, "job_id = ?", new String[]{_job_id});
+//        DBManager._db.delete(table_name, "job_id = ?", new String[]{_job_id});
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        StoreAndForward first = realm.where(StoreAndForward.class)
+                .equalTo("payment.job_id", _job_id).findFirst();
+        first.deleteFromRealm();
+        realm.commitTransaction();
     }
 
 
@@ -406,20 +428,45 @@ public class StoredPayments_DB {
     }
 
     public void deleteStoredPaymentRow(String _pay_uuid) {
-        DBManager._db.delete(table_name, "pay_uuid = ?", new String[]{_pay_uuid});
+//        DBManager._db.delete(table_name, "pay_uuid = ?", new String[]{_pay_uuid});
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", _pay_uuid).findFirst();
+        first.deleteFromRealm();
+        realm.commitTransaction();
     }
 
     public void updateStoredPaymentForRetry(String _pay_uuid) {
-        ContentValues args = new ContentValues();
-        args.put(is_retry, "1");
-        DBManager._db.update(table_name, args, "pay_uuid = ?", new String[]{_pay_uuid});
+//        ContentValues args = new ContentValues();
+//        args.put(is_retry, "1");
+//        DBManager._db.update(table_name, args, "pay_uuid = ?", new String[]{_pay_uuid});
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", _pay_uuid).findFirst();
+        first.setRetry(true);
+        realm.commitTransaction();
     }
 
-    public boolean unsyncStoredPaymentsLeft() {
+//    public boolean unsyncStoredPaymentsLeft() {
+//
+//        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
+//        long count = stmt.simpleQueryForLong();
+//        stmt.close();
+//        return count != 0;
+//    }
 
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count != 0;
+    public void insert(Payment payment, StoreAndForward.PaymentType paymentType) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
+        storeAndForward.setPaymentType(paymentType);
+        storeAndForward.setPaymentXml(payment.getPayment_xml());
+        storeAndForward.setPayment(realm.copyToRealm(payment));
+        storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
+        storeAndForward.setRetry(false);
+        storeAndForward.setCreationDate(new Date());
+        storeAndForward.setId(System.currentTimeMillis());
+        realm.commitTransaction();
+        PaymentsHandler.setLastPaymentInserted(payment);
     }
 }
