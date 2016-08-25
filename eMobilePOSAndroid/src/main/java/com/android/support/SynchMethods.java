@@ -26,6 +26,7 @@ import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
+import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
 import com.android.database.PriceLevelHandler;
@@ -43,6 +44,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
@@ -1328,13 +1330,44 @@ public class SynchMethods {
     }
 
     private void synchPaymentMethods(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_pay_methods));
-        post.postData(7, activity, "PayMethods");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PAY_METHODS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_pay_methods));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+//        task.updateProgress(getString(R.string.sync_dload_pay_methods));
+//        post.postData(7, activity, "PayMethods");
+//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PAY_METHODS);
+//        File tempFile = new File(tempFilePath);
+//        task.updateProgress(getString(R.string.sync_saving_pay_methods));
+//        sp.parse(tempFile, synchHandler);
+//        tempFile.delete();
+
+        try {
+            task.updateProgress(getString(R.string.sync_dload_pay_methods));
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("PayMethods"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<PaymentMethod> methods = new ArrayList<>();
+            PayMethodsHandler payMethodsHandler = new PayMethodsHandler(activity);
+            payMethodsHandler.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                PaymentMethod method = gson.fromJson(reader, PaymentMethod.class);
+                methods.add(method);
+                i++;
+                if (i == 1000) {
+                    payMethodsHandler.insert(methods);
+                    methods.clear();
+                    i = 0;
+                }
+            }
+            payMethodsHandler.insert(methods);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {

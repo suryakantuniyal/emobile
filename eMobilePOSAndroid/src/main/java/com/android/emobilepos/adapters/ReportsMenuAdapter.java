@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.support.Global;
 
 import java.text.DecimalFormat;
@@ -31,7 +32,7 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
 	private String reportDate;
 	private String granTotal = "0.00";
 	private Map<String,String[]> hashedReport;
-	private List<String[]> paymentList;
+	private List<PaymentMethod> paymentList;
 	private Activity activity;
 	private Resources resource;
 	
@@ -81,7 +82,7 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
 			{
 				case 0:					//payments
 				{
-					tempVal = paymentHandler.getTotalPayAmount(paymentList.get(count)[0], date);
+					tempVal = paymentHandler.getTotalPayAmount(paymentList.get(count).getPaymethod_id(), date);
 					if(tempVal.contains("."))
 					{
 						tempVal = frmt.format(Double.parseDouble(tempVal));
@@ -96,7 +97,7 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
 				}
 				case 1:					//refunds
 				{
-					tempVal = paymentHandler.getTotalRefundAmount(paymentList.get(count)[0], date);
+					tempVal = paymentHandler.getTotalRefundAmount(paymentList.get(count).getPaymethod_id(), date);
 					if(tempVal.contains("."))
 						tempVal = frmt.format(Double.parseDouble(tempVal));
 					else
@@ -114,7 +115,7 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
 			
 			if((i+1)%3==0)
 			{
-				result.put(paymentList.get(count)[0], amounts[count]);
+				result.put(paymentList.get(count).getPaymethod_id(), amounts[count]);
 				count++;
 				count2=0;
 			}
@@ -248,8 +249,8 @@ public class ReportsMenuAdapter extends BaseAdapter implements Filterable {
 			}
 			else
 			{
-				holder.textLine.setText(paymentList.get(position-3)[1]);
-				rightVal = hashedReport.get(paymentList.get(position-3)[0]);
+				holder.textLine.setText(paymentList.get(position-3).getPaymethod_name());
+				rightVal = hashedReport.get(paymentList.get(position-3).getPaymethod_id());
 				
 				holder.rightOne.setText(Global.getCurrencyFormat(rightVal[0]));
 				holder.rightTwo.setText(Global.getCurrencyFormat(rightVal[1]));

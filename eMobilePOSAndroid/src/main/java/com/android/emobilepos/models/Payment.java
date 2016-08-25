@@ -11,12 +11,14 @@ import com.android.support.MyPreferences;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
 public class Payment extends RealmObject {
 
 
     private static final long serialVersionUID = 1L;
-
+    @PrimaryKey
     private String pay_id = "";
     private String group_pay_id = "";
     private String original_pay_id = "";
@@ -60,6 +62,7 @@ public class Payment extends RealmObject {
     private String pay_signature = "";
     private String authcode = "";
     private String status = "";
+    @Index
     private String job_id = "";
     private String user_ID = "";
     private String pay_type = "";
@@ -67,6 +70,7 @@ public class Payment extends RealmObject {
     private String ccnum_last4 = "";
     private String pay_phone = "";
     private String pay_email = "";
+    @Index
     private String isVoid = "";
 
     private String tipAmount = "";
@@ -111,6 +115,7 @@ public class Payment extends RealmObject {
     private String tagid = "";
 
     // Store & Forward
+    @Index
     private String pay_uuid = "";
     private String is_retry = "0";
     private String payment_xml = "";

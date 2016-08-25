@@ -3,6 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -11,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.Sort;
+import util.StringUtil;
 
 public class PayMethodsHandler {
 
@@ -70,35 +75,33 @@ public class PayMethodsHandler {
     }
 
 
-    public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
+    public void insert(List<PaymentMethod> paymentMethods) {
 
         DBManager._db.beginTransaction();
         try {
-
-            addrData = data;
-            dictionaryListMap = dictionary;
             SQLiteStatement insert;
             insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
-            int size = addrData.size();
-
-            for (int j = 0; j < size; j++) {
-                insert.bindString(index(paymethod_id), getData(paymethod_id, j));
-                insert.bindString(index(paymethod_name), getData(paymethod_name, j));
-                insert.bindString(index(paymentmethod_type), getData(paymentmethod_type, j));
-                insert.bindString(index(paymethod_update), getData(paymethod_update, j));
-                insert.bindString(index(isactive), getData(isactive, j));
-                insert.bindString(index(paymethod_showOnline), getData(paymethod_showOnline, j));
-                insert.bindString(index(image_url), getData(image_url, j));
-                insert.bindString(index(OriginalTransid), Boolean.parseBoolean(getData(OriginalTransid, j)) ? "1" : "0");
-
+            for (PaymentMethod method : paymentMethods) {
+                insert.bindString(index(paymethod_id), StringUtil.nullStringToEmpty(method.getPaymethod_id()));
+                insert.bindString(index(paymethod_name), StringUtil.nullStringToEmpty(method.getPaymethod_name()));
+                insert.bindString(index(paymentmethod_type), StringUtil.nullStringToEmpty(method.getPaymentmethod_type()));
+                insert.bindString(index(paymethod_update), StringUtil.nullStringToEmpty(method.getPaymethod_update()));
+                insert.bindString(index(isactive), StringUtil.nullStringToEmpty(method.getIsactive()));
+                insert.bindString(index(paymethod_showOnline), StringUtil.nullStringToEmpty(method.getPaymethod_showOnline()));
+                insert.bindString(index(image_url), StringUtil.nullStringToEmpty(method.getImage_url()));
+                insert.bindString(index(OriginalTransid), Boolean.parseBoolean(method.getOriginalTransid()) ? "1" : "0");
                 insert.execute();
                 insert.clearBindings();
             }
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            realm.insert(paymentMethods);
+            realm.commitTransaction();
             insert.close();
             DBManager._db.setTransactionSuccessful();
-        } catch (Exception ignored) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             DBManager._db.endTransaction();
         }
@@ -107,47 +110,54 @@ public class PayMethodsHandler {
 
     public void emptyTable() {
         DBManager._db.execSQL("DELETE FROM " + table_name);
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.delete(PaymentMethod.class);
+        realm.commitTransaction();
     }
 
-    public List<String[]> getPayMethod() {
-        //SQLiteDatabase db = dbManager.openReadableDB();
-
-        List<String[]> list = new ArrayList<String[]>();
-
-        String[] fields = new String[]{paymethod_id, paymethod_name, paymentmethod_type, image_url, OriginalTransid};
-
-        Cursor cursor = DBManager._db.query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
-        String[] data = new String[5];
-
-
-        //--------------- add additional payment methods ----------------
-        if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
-            String[] extraMethods = new String[]{"Genius", "Genius", "Genius", "", "0"};
-            list.add(extraMethods);
-        }
-        if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
-            String[] extraMethods = new String[]{"Wallet", "Tupyx", "Wallet", "", "0"};
-            list.add(extraMethods);
-        }
-
-
-        if (cursor.moveToFirst()) {
-            do {
-
-                data[0] = cursor.getString(cursor.getColumnIndex(paymethod_id));
-                data[1] = cursor.getString(cursor.getColumnIndex(paymethod_name));
-                data[2] = cursor.getString(cursor.getColumnIndex(paymentmethod_type));
-                data[3] = cursor.getString(cursor.getColumnIndex(image_url));
-                data[4] = cursor.getString(cursor.getColumnIndex(OriginalTransid));
-                list.add(data);
-
-                data = new String[5];
-
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        //db.close();
-        return list;
+    public List<PaymentMethod> getPayMethod() {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.where(PaymentMethod.class).findAll().sort("priority", Sort.DESCENDING, "paymethod_name", Sort.ASCENDING);
+//
+//        //SQLiteDatabase db = dbManager.openReadableDB();
+//
+//        List<String[]> list = new ArrayList<String[]>();
+//
+//        String[] fields = new String[]{paymethod_id, paymethod_name, paymentmethod_type, image_url, OriginalTransid};
+//
+//        Cursor cursor = DBManager._db.query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
+//        String[] data = new String[5];
+//
+//
+//        //--------------- add additional payment methods ----------------
+//        if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
+//            String[] extraMethods = new String[]{"Genius", "Genius", "Genius", "", "0"};
+//            list.add(extraMethods);
+//        }
+//        if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
+//            String[] extraMethods = new String[]{"Wallet", "Tupyx", "Wallet", "", "0"};
+//            list.add(extraMethods);
+//        }
+//
+//
+//        if (cursor.moveToFirst()) {
+//            do {
+//
+//                data[0] = cursor.getString(cursor.getColumnIndex(paymethod_id));
+//                data[1] = cursor.getString(cursor.getColumnIndex(paymethod_name));
+//                data[2] = cursor.getString(cursor.getColumnIndex(paymentmethod_type));
+//                data[3] = cursor.getString(cursor.getColumnIndex(image_url));
+//                data[4] = cursor.getString(cursor.getColumnIndex(OriginalTransid));
+//                list.add(data);
+//
+//                data = new String[5];
+//
+//            } while (cursor.moveToNext());
+//        }
+//        cursor.close();
+//        //db.close();
+//        return list;
     }
 
 

@@ -41,6 +41,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -75,6 +76,8 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import io.realm.Realm;
+
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
     private CardsListAdapter myAdapter;
@@ -84,7 +87,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private Activity activity;
     private String pay_id;
     private String job_id = ""; // invoice #
-    private List<String[]> payType;
+    private List<PaymentMethod> payTypeList;
     private Bundle extras;
 
     private Global global;
@@ -185,8 +188,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 && !myPref.getPreferencesValue(MyPreferences.pref_default_payment_method).equals("0")) {
             String default_paymethod_id = myPref.getPreferencesValue(MyPreferences.pref_default_payment_method);
             int i = 0;
-            for (String[] arr : payType) {
-                if (arr[0].equals(default_paymethod_id)) {
+            for (PaymentMethod pm : payTypeList) {
+                if (pm.getPaymethod_id().equals(default_paymethod_id)) {
                     selectPayment(i);
                     break;
                 }
@@ -455,7 +458,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             myInflater = LayoutInflater.from(context);
 
             PayMethodsHandler handler = new PayMethodsHandler(activity);
-            payType = handler.getPayMethod();
+            payTypeList = handler.getPayMethod();
         }
 
         @Override
@@ -472,12 +475,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
                 holder.textLine2 = (TextView) convertView.findViewById(R.id.cardsListname);
                 holder.ivPayIcon = (ImageView) convertView.findViewById(R.id.ivCardIcon);
-                String key = payType.get(position)[2];
-                String name = payType.get(position)[1];
-                String img_url = payType.get(position)[3];
+                String key = payTypeList.get(position).getPaymentmethod_type();
+                String name = payTypeList.get(position).getPaymethod_name();
+                String img_url = payTypeList.get(position).getImage_url();
 
 
-                if (img_url.isEmpty()) {
+                if (TextUtils.isEmpty(img_url)) {
                     if (key == null) {
                         iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
                     } else {
@@ -498,11 +501,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             } else {
                 holder = (ViewHolder) convertView.getTag();
-                String key = payType.get(position)[2];
-                String name = payType.get(position)[1];
-                String img_url = payType.get(position)[3];
+                String key = payTypeList.get(position).getPaymentmethod_type();
+                String name = payTypeList.get(position).getPaymethod_name();
+                String img_url = payTypeList.get(position).getImage_url();
 
-                if (img_url.isEmpty()) {
+                if (TextUtils.isEmpty(img_url)) {
                     if (key == null) {
                         iconId = R.drawable.debitcard;//context.getResources().getIdentifier("debitcard", "drawable",
                     }
@@ -546,7 +549,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         public int getCount() {
-            return payType.size();
+            return payTypeList.size();
         }
 
         @Override
@@ -1258,7 +1261,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(activity, ProcessBoloro_FA.class);
-        intent.putExtra("paymethod_id", payType.get(selectedPosition)[0]);
+        intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
         switch (v.getId()) {
             case R.id.btnDlogTop:
                 dlog.dismiss();
@@ -1280,46 +1283,50 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     private void selectPayment(int position) {
         selectedPosition = position;
-        if (payType.get(position)[2].equals("Cash")) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        payTypeList.get(position).incrementPriority();
+        realm.commitTransaction();
+        if (payTypeList.get(position).getPaymentmethod_type().equals("Cash")) {
             Intent intent = new Intent(this, ProcessCash_FA.class);
-            intent.putExtra("paymethod_id", payType.get(position)[0]);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
 
             initIntents(extras, intent);
-        } else if (payType.get(position)[2].equals("Check")) {
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Check")) {
             Intent intent = new Intent(this, ProcessCheck_FA.class);
-            intent.putExtra("paymethod_id", payType.get(position)[0]);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             initIntents(extras, intent);
-        } else if (payType.get(position)[2].equals("Genius")) {
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Genius")) {
             Intent intent = new Intent(this, ProcessGenius_FA.class);
-            intent.putExtra("paymethod_id", payType.get(position)[0]);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             initIntents(extras, intent);
-        } else if (payType.get(position)[2].equals("Wallet")) {
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Wallet")) {
             Intent intent = new Intent(activity, ProcessTupyx_FA.class);
-            intent.putExtra("paymethod_id", payType.get(position)[0]);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
             initIntents(extras, intent);
-        } else if (payType.get(position)[2].equals("Boloro")) {
+        } else if (payTypeList.get(position).getPaymentmethod_type().equals("Boloro")) {
             //If store & forward is selected then boloro only accept NFC payments
             if (myPref.isStoredAndForward()) {
                 Intent intent = new Intent(activity, ProcessBoloro_FA.class);
-                intent.putExtra("paymethod_id", payType.get(selectedPosition)[0]);
+                intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
                 intent.putExtra("isNFC", true);
                 initIntents(extras, intent);
             } else {
                 showBoloroDlog();
             }
-        } else if (payType.get(position)[2].toUpperCase(Locale.getDefault()).contains("GIFT") ||
-                payType.get(position)[2].toUpperCase(Locale.getDefault()).contains("REWARD") ||
-                payType.get(position)[2].toUpperCase(Locale.getDefault()).contains("STADIS")) {
+        } else if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("GIFT") ||
+                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("REWARD") ||
+                payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("STADIS")) {
             Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
-            intent.putExtra("paymethod_id", payType.get(position)[0]);
-            intent.putExtra("paymentmethod_type", payType.get(position)[2]);
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymethod_id());
             initIntents(extras, intent);
         } else {
             Intent intent = new Intent(this, ProcessCreditCard_FA.class);
-            intent.putExtra("paymethod_id", payType.get(position)[0]);
-            intent.putExtra("paymentmethod_type", payType.get(position)[2]);
-            intent.putExtra("requireTransID", payType.get(position)[4].equalsIgnoreCase("1"));
-            if (payType.get(position)[2].toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))
+            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+            intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
+            intent.putExtra("requireTransID", payTypeList.get(position).getOriginalTransid().equalsIgnoreCase("1"));
+            if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))
                 intent.putExtra("isDebit", true);
             else
                 intent.putExtra("isDebit", false);

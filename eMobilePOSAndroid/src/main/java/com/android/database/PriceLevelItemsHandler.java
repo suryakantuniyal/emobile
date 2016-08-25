@@ -64,41 +64,6 @@ public class PriceLevelItemsHandler {
         return attrHash.get(tag);
     }
 
-//
-//    public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-//        DBManager._db.beginTransaction();
-//
-//        try {
-//
-//            addrData = data;
-//            dictionaryListMap = dictionary;
-//            SQLiteStatement insert = null;
-//            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
-//
-//            int size = addrData.size();
-//
-//            for (int j = 0; j < size; j++) {
-//
-//                insert.bindString(index(pricelevel_prod_id), getData(pricelevel_prod_id, j)); // pricelevel_prod_id
-//                insert.bindString(index(pricelevel_id), getData(pricelevel_id, j)); // pricelevel_id
-//                insert.bindString(index(pricelevel), getData(pricelevel, j)); // pricelevel
-//                insert.bindString(index(pricelevel_price), getData(pricelevel_price, j)); // pricelevel_price
-//                insert.bindString(index(pricelevel_update), getData(pricelevel_update, j)); // pricelevel_update
-//                insert.bindString(index(isactive), getData(isactive, j)); // isactive
-//
-//                insert.execute();
-//                insert.clearBindings();
-//
-//            }
-//            insert.close();
-//            DBManager._db.setTransactionSuccessful();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            DBManager._db.endTransaction();
-//        }
-//    }
-
     public void insert(List<ItemPriceLevel> itemPriceLevels) {
         DBManager._db.beginTransaction();
         try {
@@ -131,38 +96,4 @@ public class PriceLevelItemsHandler {
         DBManager._db.execSQL(sb.toString());
     }
 
-	
-
-	/*public List<String[]> getPriceLevel(String prod_id) {
-        //SQLiteDatabase db = dbManager.openReadableDB();
-
-		List<String[]> list = new ArrayList<String[]>();
-		String[] data = new String[3];
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT l.pricelevel_id,l.pricelevel_price ,pl.pricelevel_name FROM PriceLevel pl ,Products p ");
-		sb.append("LEFT OUTER JOIN PriceLevelItems l  ON l.pricelevel_id = pl.pricelevel_id AND l.pricelevel_prod_id = p.prod_id ");
-		sb.append("WHERE l.pricelevel_prod_id = ? ");
-//		;'");
-//		sb.append(prod_id);
-//		sb.append("' AND l.pricelevel_id == '");
-//		sb.append(myPref.getCustPriceLevel()).append("'");
-
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{prod_id});
-
-		if (cursor.moveToFirst()) {
-			do {
-
-				data[0] = cursor.getString(cursor.getColumnIndex("pricelevel_name"));
-				data[1] = cursor.getString(cursor.getColumnIndex(pricelevel_id));
-				data[2] = cursor.getString(cursor.getColumnIndex(pricelevel_price));
-				list.add(data);
-				data = new String[3];
-			} while (cursor.moveToNext());
-		}
-
-		cursor.close();
-		//db.close();
-		return list;
-	}*/
 }

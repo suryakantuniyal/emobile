@@ -6,18 +6,19 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by guarionex on 8/23/16.
  */
 public class StoreAndForward extends RealmObject {
+    @PrimaryKey
     private long id;
     private Date creationDate;
     @Ignore
     private StoreAndForwatdStatus storeAndForwatdStatus;
     @Ignore
-    private
-    PaymentType paymentType;
+    private PaymentType paymentType;
     private int paymentTypeValue;
     private int status;
     private String paymentXml;
