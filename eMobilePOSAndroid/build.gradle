@@ -138,7 +138,7 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField "boolean", "PRINT_TO_LOG", "false"
+            buildConfigField "boolean", "PRINT_TO_LOG", "true"
             minifyEnabled false
         }
 
