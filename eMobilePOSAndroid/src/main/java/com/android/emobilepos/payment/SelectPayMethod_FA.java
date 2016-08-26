@@ -1306,7 +1306,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             initIntents(extras, intent);
         } else if (payTypeList.get(position).getPaymentmethod_type().equals("Boloro")) {
             //If store & forward is selected then boloro only accept NFC payments
-            if (myPref.isStoredAndForward()) {
+            if (myPref.isPrefUseStoreForward()) {
                 Intent intent = new Intent(activity, ProcessBoloro_FA.class);
                 intent.putExtra("paymethod_id", payTypeList.get(selectedPosition).getPaymethod_id());
                 intent.putExtra("isNFC", true);

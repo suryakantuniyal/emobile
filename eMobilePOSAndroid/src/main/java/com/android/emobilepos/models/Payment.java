@@ -18,7 +18,7 @@ public class Payment extends RealmObject {
 
 
     private static final long serialVersionUID = 1L;
-    @PrimaryKey
+    @Index
     private String pay_id = "";
     private String group_pay_id = "";
     private String original_pay_id = "";

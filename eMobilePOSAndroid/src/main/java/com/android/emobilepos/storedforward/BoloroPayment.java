@@ -9,6 +9,7 @@ import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.payment.ProcessBoloro_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
+import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.Post;
 
@@ -26,6 +27,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import io.realm.Realm;
+
 /**
  * Created by guarionex on 8/24/16.
  */
@@ -36,8 +39,7 @@ public class BoloroPayment {
         isPolling = false;
     }
 
-    public static boolean executeNFCCheckout(Activity activity, String xml, Payment payment) throws ParserConfigurationException, SAXException, IOException {
-        boolean result = true;
+    public static HashMap<String, String> executeNFCCheckout(Activity activity, String xml, Payment payment) throws ParserConfigurationException, SAXException, IOException {
         isPolling = true;
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
@@ -53,17 +55,18 @@ public class BoloroPayment {
         HashMap<String, String> response = myParser.getData();
 
         if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
+            Realm.getDefaultInstance().beginTransaction();
             payment.setPay_transid(response.get("transaction_id"));
-            executeBoloroPolling(activity, payment, isPolling);
-        } else {
-            result = false;
+            Realm.getDefaultInstance().commitTransaction();
+            return executeBoloroPolling(activity, payment, isPolling);
         }
-        return result;
+        return null;
     }
 
-    private static void executeBoloroPolling(Activity activity, Payment payment, boolean isPolling) {
+    private static HashMap<String, String> executeBoloroPolling(Activity activity, Payment payment, boolean isPolling) {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+        HashMap<String, String> response = null;
         try {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
@@ -87,7 +90,7 @@ public class BoloroPayment {
                 inSource = new InputSource(new StringReader(xml));
                 xr.setContentHandler(myParser);
                 xr.parse(inSource);
-                HashMap<String, String> response = myParser.getData();
+                response = myParser.getData();
 
                 if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
                     if (isPolling && response.containsKey("next_action") && response.get("next_action").equals("POLL")) {
@@ -97,14 +100,18 @@ public class BoloroPayment {
                         } catch (InterruptedException e) {
                         }
                     } else if (response.containsKey("next_action") && response.get("next_action").equals("SUCCESS")) {
-
+                        Realm.getDefaultInstance().beginTransaction();
                         PaymentsHandler payHandler = new PaymentsHandler(activity);
                         payment.setProcessed("1");
-                        BigDecimal bg = new BigDecimal(Global.amountPaid);
-                        Global.amountPaid = bg.setScale(2, RoundingMode.HALF_UP).toString();
-                        payment.setPay_dueamount(Global.amountPaid);
-                        payment.setPay_amount(Global.amountPaid);
+                        GenerateNewID newID = new GenerateNewID(activity);
+                        String nextID = newID.getNextID(GenerateNewID.IdType.PAYMENT_ID);
+                        payment.setPay_id(nextID);
+//                        BigDecimal bg = new BigDecimal(Global.amountPaid);
+//                        Global.amountPaid = bg.setScale(2, RoundingMode.HALF_UP).toString();
+//                        payment.setPay_dueamount(Global.amountPaid);
+//                        payment.setPay_amount(Global.amountPaid);
                         payHandler.insert(payment);
+                        Realm.getDefaultInstance().commitTransaction();
                         isPolling = false;
                         transCompleted = true;
                     } else if (response.containsKey("next_action") && response.get("next_action").equals("FAILED"))
@@ -114,6 +121,11 @@ public class BoloroPayment {
                 }
             } while (!failed && isPolling && !transCompleted);
         } catch (Exception e) {
+            e.printStackTrace();
+            if (Realm.getDefaultInstance().isInTransaction()) {
+                Realm.getDefaultInstance().cancelTransaction();
+            }
         }
+        return response;
     }
 }

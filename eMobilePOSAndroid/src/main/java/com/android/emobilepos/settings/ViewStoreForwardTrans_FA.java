@@ -144,6 +144,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     private ProgressDialog myProgressDialog;
 
     private class processLivePaymentAsync extends AsyncTask<Void, Void, Void> {
+        private HashMap<String, String> boloroHashMap = new HashMap<String, String>();
 
         private HashMap<String, String> parsedMap = new HashMap<String, String>();
         private int _count_decline = 0, _count_conn_error = 0, _count_merch_account = 0;
@@ -328,21 +329,43 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                         if (storeAndForward.isRetry()) {
                             switch (storeAndForward.getPaymentType()) {
                                 case BOLORO:
-                                    BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                    boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                    if (boloroHashMap.containsKey("next_action") && boloroHashMap.get("next_action").equals("SUCCESS")) {
+                                        //Create Payment and delete from StoredPayment
+                                        String job_id = storeAndForward.getPayment().getJob_id();
+                                        OrdersHandler dbOrdHandler = new OrdersHandler(activity);
+                                        Realm.getDefaultInstance().beginTransaction();
+                                        storeAndForward.deleteFromRealm();
+                                        Realm.getDefaultInstance().commitTransaction();
+                                        //Remove as pending stored & forward if no more payments are pending to be processed.
+                                        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+                                            dbOrdHandler.updateOrderStoredFwd(job_id, "0");
+                                    }
                                     break;
                                 case CREDIT_CARD:
+                                    checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
                                     break;
                             }
-                            checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
                         } else {
                             switch (storeAndForward.getPaymentType()) {
                                 case BOLORO:
-                                    BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                    boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                    if (boloroHashMap.containsKey("next_action") && boloroHashMap.get("next_action").equals("SUCCESS")) {
+                                        //Create Payment and delete from StoredPayment
+                                        String job_id = storeAndForward.getPayment().getJob_id();
+                                        Realm.getDefaultInstance().beginTransaction();
+                                        storeAndForward.deleteFromRealm();
+                                        Realm.getDefaultInstance().commitTransaction();
+                                        OrdersHandler dbOrdHandler = new OrdersHandler(activity);
+                                        //Remove as pending stored & forward if no more payments are pending to be processed.
+                                        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+                                            dbOrdHandler.updateOrderStoredFwd(job_id, "0");
+                                    }
                                     break;
                                 case CREDIT_CARD:
+                                    processPayment(storeAndForward, _charge_xml);
                                     break;
                             }
-                            processPayment(storeAndForward, _charge_xml);
                         }
 
                     } catch (ParserConfigurationException e) {
@@ -367,7 +390,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         @Override
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
-
+//            if(boloroHashMap!=null){
+//                if (boloroHashMap.containsKey("next_action") && boloroHashMap.get("next_action").equals("SUCCESS")) {
+//                    Global.showPrompt(activity, R.string.dlog_title_transaction_failed_to_process, sb.toString());
+//                }
+//            }else {
             //refresh the list view;
             //adapter.notifyDataSetChanged();
 //            myCursor = dbStoredPay.getStoredPayments();
@@ -390,6 +417,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
             if (!sb.toString().isEmpty())
                 Global.showPrompt(activity, R.string.dlog_title_transaction_failed_to_process, sb.toString());
+//            }
         }
     }
 

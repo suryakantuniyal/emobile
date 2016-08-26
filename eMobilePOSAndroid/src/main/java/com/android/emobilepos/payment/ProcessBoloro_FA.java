@@ -217,10 +217,11 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
         payment.setPaymethod_id(extras.getString("paymethod_id"));
 
-        Global.amountPaid = NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid);
-        if (!Global.amountPaid.isEmpty()) {
-            payment.setPay_amount(Global.amountPaid);
-            payment.setPay_dueamount(Global.amountPaid);
+        String formatedNumber = NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid);
+        Global.amountPaid = formatedNumber;
+        if (!formatedNumber.isEmpty()) {
+            payment.setPay_amount(formatedNumber);
+            payment.setPay_dueamount(formatedNumber);
         }
 
         if (isManual) {
@@ -247,7 +248,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 payment.setTax2_name(extras.getString("Tax2_name"));
             } else {
                 BigDecimal tempRate;
-                double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
+                double tempPayAmount = Global.formatNumFromLocale(formatedNumber);
                 tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
                 payment.setTax1_amount(tempRate.toPlainString());
                 payment.setTax1_name("Estatal");
@@ -483,7 +484,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
                 String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetTelcoInfoByTag, false, null, null);
-                if (myPreferences.isStoredAndForward()) {
+                if (myPreferences.isPrefUseStoreForward()) {
                     Realm realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
                     StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
@@ -516,6 +517,9 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                if(Realm.getDefaultInstance().isInTransaction()){
+                    Realm.getDefaultInstance().cancelTransaction();
+                }
             }
 
             return false;
@@ -524,7 +528,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         @Override
         protected void onPostExecute(Boolean failed) {
             progressDlog.dismiss();
-            if (!myPreferences.isStoredAndForward()) {
+            if (!myPreferences.isPrefUseStoreForward()) {
                 if (!failed) {
                     new BoloroPollingAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     //Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("addnote"));
@@ -616,10 +620,10 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
                             PaymentsHandler payHandler = new PaymentsHandler(activity);
                             payment.setProcessed("1");
-                            BigDecimal bg = new BigDecimal(Global.amountPaid);
-                            Global.amountPaid = bg.setScale(2, RoundingMode.HALF_UP).toString();
-                            payment.setPay_dueamount(Global.amountPaid);
-                            payment.setPay_amount(Global.amountPaid);
+//                            BigDecimal bg = new BigDecimal(Global.amountPaid);
+//                            Global.amountPaid = bg.setScale(2, RoundingMode.HALF_UP).toString();
+//                            payment.setPay_dueamount(Global.amountPaid);
+//                            payment.setPay_amount(Global.amountPaid);
                             payHandler.insert(payment);
                             isPolling = false;
                             transCompleted = true;

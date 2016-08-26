@@ -118,7 +118,7 @@ public class PayMethodsHandler {
 
     public List<PaymentMethod> getPayMethod() {
         Realm realm = Realm.getDefaultInstance();
-        return realm.where(PaymentMethod.class).findAll().sort("priority", Sort.DESCENDING, "paymethod_name", Sort.ASCENDING);
+        return realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
 //
 //        //SQLiteDatabase db = dbManager.openReadableDB();
 //

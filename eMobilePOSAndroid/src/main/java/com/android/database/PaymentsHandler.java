@@ -128,7 +128,7 @@ public class PaymentsHandler {
         global = (Global) activity.getApplication();
         myPref = new MyPreferences(activity);
         this.activity = activity;
-        attrHash = new HashMap<String, Integer>();
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
 
@@ -239,11 +239,7 @@ public class PaymentsHandler {
             DBManager._db.setTransactionSuccessful();
 
         } catch (Exception e) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(e.getMessage()).append(" [com.android.emobilepos.PaymentsHandler (at Class.insert)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
+            e.printStackTrace();
         } finally {
             myPref.setLastPayID(payment.getPay_id());
             DBManager._db.endTransaction();
@@ -256,20 +252,12 @@ public class PaymentsHandler {
     }
 
 
-    public long getDBSize() {
-        DBManager dbManager = new DBManager(activity);
-        SQLiteStatement stmt = dbManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
-    }
-
     public Cursor getUnsyncPayments() // Will return Cursor to all
     // unsynchronized payments (used in
     // generation of XML for post)
     {
-        DBManager dbManager = new DBManager(activity);
-        return dbManager._db.rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
+//        DBManager dbManager = new DBManager(activity);
+        return DBManager._db.rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
     }
 
     public String getTotalPayAmount(String paymethod_id, String pay_date) {
@@ -298,8 +286,8 @@ public class PaymentsHandler {
     }
 
     public String getTotalRefundAmount(String paymethod_id, String pay_date) {
-        DBManager dbManager = new DBManager(activity);
-        Cursor cursor = dbManager._db.rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
+//        DBManager dbManager = new DBManager(activity);
+        Cursor cursor = DBManager._db.rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
         String total = "0.00";
         if (cursor.moveToFirst()) {
             total = cursor.getString(cursor.getColumnIndex("total"));
@@ -311,8 +299,8 @@ public class PaymentsHandler {
     }
 
     public long getNumUnsyncPayments() {
-        DBManager dbManager = new DBManager(activity);
-        SQLiteStatement stmt = dbManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
+//        DBManager dbManager = new DBManager(activity);
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -483,7 +471,7 @@ public class PaymentsHandler {
 
         Cursor c = DBManager._db.rawQuery("SELECT * FROM Payments WHERE job_id = '" + _ordID + "'", null);
 
-        List<Payment> listPayment = new ArrayList<Payment>();
+        List<Payment> listPayment = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
                 listPayment.add(getPayment(c));
@@ -558,8 +546,8 @@ public class PaymentsHandler {
 
     public List<HashMap<String, String>> getPaymentDetailsForTransactions(String jobID) {
 
-        List<HashMap<String, String>> mapList = new ArrayList<HashMap<String, String>>();
-        HashMap<String, String> map = new HashMap<String, String>();
+        List<HashMap<String, String>> mapList = new ArrayList<>();
+        HashMap<String, String> map = new HashMap<>();
 
         Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
                 "pm.paymentmethod_type AS 'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p," + "PayMethods pm " +
@@ -597,7 +585,7 @@ public class PaymentsHandler {
                 map.put(pay_id, data);
 
                 mapList.add(map);
-                map = new HashMap<String, String>();
+                map = new HashMap<>();
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -659,9 +647,7 @@ public class PaymentsHandler {
 //        else
 //            sb.append("0' ORDER BY p.pay_id DESC");
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
-        return cursor;
+        return DBManager._db.rawQuery(sb.toString(), null);
     }
 
     public Cursor searchCards(String search) {
@@ -958,7 +944,7 @@ public class PaymentsHandler {
         }
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{date});
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         BigDecimal bg;
         if (cursor.moveToFirst()) {
             do {
@@ -980,7 +966,7 @@ public class PaymentsHandler {
 
     public List<Payment> getPaymentsDayReport(int type, String clerk_id, String date) {
         StringBuilder query = new StringBuilder();
-        List<Payment> listPayment = new ArrayList<Payment>();
+        List<Payment> listPayment = new ArrayList<>();
 
         query.append(
                 "SELECT card_type, pay_amount, pay_tip, pay_id, CASE WHEN inv_id ='' THEN job_ID ELSE inv_id END AS 'job_id',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE ");
@@ -1041,7 +1027,7 @@ public class PaymentsHandler {
 
     public List<Payment> getPaymentsGroupDayReport(int type, String clerk_id, String date) {
         StringBuilder query = new StringBuilder();
-        List<Payment> listPayment = new ArrayList<Payment>();
+        List<Payment> listPayment = new ArrayList<>();
 
         query.append(
                 "SELECT card_type, SUM(pay_amount) AS 'pay_amount', SUM(pay_tip) AS 'pay_tip', pay_id, paymethod_id,");
