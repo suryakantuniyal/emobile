@@ -479,10 +479,10 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             discountable_sub_total = discountableAmount.subtract(Global.rewardChargeAmount);
             sub_total = amount.subtract(Global.rewardChargeAmount);
             subTotal.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(sub_total)));
-            tax_amount = tempTaxableAmount;
+            tax_amount = new BigDecimal(Global.getRoundBigDecimal(tempTaxableAmount, 2));
             setDiscountValue(discountSelected);
             globalDiscount.setText(Global.getCurrencyFrmt(discount_amount.toString()));
-            globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount)));
+            globalTax.setText(Global.getCurrencyFrmt(Global.getRoundBigDecimal(tax_amount, 2)));
             gran_total = sub_total.subtract(discount_amount).add(tax_amount)
                     .subtract(itemsDiscountTotal);
 //            if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {

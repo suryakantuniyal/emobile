@@ -1385,6 +1385,10 @@ public class Global extends MultiDexApplication {
         return val.setScale(4, RoundingMode.HALF_UP).toString();
     }
 
+    public static String getRoundBigDecimal(BigDecimal val, int scale) {
+        return val.setScale(scale, RoundingMode.HALF_UP).toString();
+    }
+
     public static String getCurrencyFrmt(String value) {
         NumberFormat frmt = NumberFormat.getCurrencyInstance(Locale.getDefault());
         if (value == null || value.isEmpty())
