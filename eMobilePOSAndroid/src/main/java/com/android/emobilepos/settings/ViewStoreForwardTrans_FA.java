@@ -330,7 +330,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             switch (storeAndForward.getPaymentType()) {
                                 case BOLORO:
                                     boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
-                                    if (boloroHashMap.containsKey("next_action") && boloroHashMap.get("next_action").equals("SUCCESS")) {
+                                    if (boloroHashMap != null && boloroHashMap.containsKey("next_action")
+                                            && boloroHashMap.get("next_action").equals("SUCCESS")) {
                                         //Create Payment and delete from StoredPayment
                                         String job_id = storeAndForward.getPayment().getJob_id();
                                         OrdersHandler dbOrdHandler = new OrdersHandler(activity);
@@ -340,6 +341,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                         //Remove as pending stored & forward if no more payments are pending to be processed.
                                         if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
                                             dbOrdHandler.updateOrderStoredFwd(job_id, "0");
+                                    } else {
+                                        BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
                                     }
                                     break;
                                 case CREDIT_CARD:
@@ -350,7 +353,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             switch (storeAndForward.getPaymentType()) {
                                 case BOLORO:
                                     boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
-                                    if (boloroHashMap.containsKey("next_action") && boloroHashMap.get("next_action").equals("SUCCESS")) {
+                                    if (boloroHashMap != null && boloroHashMap.containsKey("next_action")
+                                            && boloroHashMap.get("next_action").equals("SUCCESS")) {
                                         //Create Payment and delete from StoredPayment
                                         String job_id = storeAndForward.getPayment().getJob_id();
                                         Realm.getDefaultInstance().beginTransaction();
@@ -360,6 +364,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                         //Remove as pending stored & forward if no more payments are pending to be processed.
                                         if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
                                             dbOrdHandler.updateOrderStoredFwd(job_id, "0");
+                                    } else {
+                                        BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
                                     }
                                     break;
                                 case CREDIT_CARD:
@@ -430,60 +436,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
 
     private void saveApprovedPayment(StoreAndForward storeAndForward, HashMap<String, String> parsedMap) {
-        Realm realm = Realm.getDefaultInstance();
-//        Payment newPayment = realm.copyFromRealm(storeAndForward.getPayment());
-
         GenerateNewID generator = new GenerateNewID(this);
-        MyPreferences myPref = new MyPreferences(this);
-
-//        newPayment.emp_id = myCursor.getString(myCursor.getColumnIndex("emp_id"));
-//        newPayment.job_id = myCursor.getString(myCursor.getColumnIndex("job_id"));
-//        newPayment.inv_id = myCursor.getString(myCursor.getColumnIndex("inv_id"));
-//        newPayment.clerk_id = myCursor.getString(myCursor.getColumnIndex("clerk_id"));
-//        newPayment.cust_id = myCursor.getString(myCursor.getColumnIndex("cust_id"));
-//        newPayment.custidkey = myCursor.getString(myCursor.getColumnIndex("custidkey"));
-//        newPayment.ref_num = myCursor.getString(myCursor.getColumnIndex("ref_num"));
-//        newPayment.paymethod_id = myCursor.getString(myCursor.getColumnIndex("paymethod_id"));
-//        newPayment.pay_dueamount = myCursor.getString(myCursor.getColumnIndex("pay_dueamount"));
-//        newPayment.pay_amount = myCursor.getString(myCursor.getColumnIndex("pay_amount"));
-//        newPayment.pay_name = myCursor.getString(myCursor.getColumnIndex("pay_name"));
-//        newPayment.pay_phone = myCursor.getString(myCursor.getColumnIndex("pay_phone"));
-//        newPayment.pay_email = myCursor.getString(myCursor.getColumnIndex("pay_email"));
-//        newPayment.pay_ccnum = myCursor.getString(myCursor.getColumnIndex("pay_ccnum"));
-//        newPayment.ccnum_last4 = myCursor.getString(myCursor.getColumnIndex("ccnum_last4"));
-//        newPayment.pay_expmonth = myCursor.getString(myCursor.getColumnIndex("pay_expmonth"));
-//        newPayment.pay_expyear = myCursor.getString(myCursor.getColumnIndex("pay_expyear"));
-//        newPayment.pay_poscode = myCursor.getString(myCursor.getColumnIndex("pay_poscode"));
-//        newPayment.pay_seccode = myCursor.getString(myCursor.getColumnIndex("pay_seccode"));
-//        newPayment.pay_tip = myCursor.getString(myCursor.getColumnIndex("pay_tip"));
-//        newPayment.pay_latitude = myCursor.getString(myCursor.getColumnIndex("pay_latitude"));
-//        newPayment.pay_longitude = myCursor.getString(myCursor.getColumnIndex("pay_longitude"));
-//        newPayment.card_type = myCursor.getString(myCursor.getColumnIndex("card_type"));
-//        if (Global.isIvuLoto) {
-//            newPayment.IvuLottoNumber = myCursor.getString(myCursor.getColumnIndex("IvuLottoNumber"));
-//            newPayment.IvuLottoDrawDate = myCursor.getString(myCursor.getColumnIndex("IvuLottoDrawDate"));
-//            newPayment.IvuLottoQR = myCursor.getString(myCursor.getColumnIndex("IvuLottoQR"));
-//            newPayment.Tax1_amount = myCursor.getString(myCursor.getColumnIndex("Tax1_amount"));
-//            newPayment.Tax1_name = myCursor.getString(myCursor.getColumnIndex("Tax1_name"));
-//            newPayment.Tax2_amount = myCursor.getString(myCursor.getColumnIndex("Tax2_amount"));
-//            newPayment.Tax2_name = myCursor.getString(myCursor.getColumnIndex("Tax2_name"));
-//        }
-//        newPayment.is_refund = myCursor.getString(myCursor.getColumnIndex("is_refund"));
-//        newPayment.pay_type = myCursor.getString(myCursor.getColumnIndex("pay_type"));
-//        newPayment.pay_transid = myCursor.getString(myCursor.getColumnIndex("pay_transid"));
-//        newPayment.authcode = myCursor.getString(myCursor.getColumnIndex("authcode"));
-//        newPayment.pay_resultcode = parsedMap.get("pay_resultcode");
-//        newPayment.pay_resultmessage = parsedMap.get("pay_resultmessage");
-//        newPayment.pay_transid = parsedMap.get("CreditCardTransID");
-//        newPayment.authcode = parsedMap.get("AuthorizationCode");
-
-        realm.beginTransaction();
         storeAndForward.getPayment().setPay_id(generator.getNextID(IdType.PAYMENT_ID));
         storeAndForward.getPayment().setProcessed("9");//newPayment.processed = "9";
         PaymentsHandler payHandler = new PaymentsHandler(this);
         payHandler.insert(storeAndForward.getPayment());
-        storeAndForward.deleteFromRealm();
-        realm.commitTransaction();
 //        dbStoredPay.deleteStoredPaymentRow(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
     }
 

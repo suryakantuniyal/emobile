@@ -3,9 +3,12 @@ package com.android.emobilepos.storedforward;
 import android.app.Activity;
 import android.os.AsyncTask;
 
+import com.android.dao.StoredPaymentsDAO;
+import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.emobilepos.payment.ProcessBoloro_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -60,7 +63,7 @@ public class BoloroPayment {
             Realm.getDefaultInstance().commitTransaction();
             return executeBoloroPolling(activity, payment, isPolling);
         }
-        return null;
+        return response;
     }
 
     private static HashMap<String, String> executeBoloroPolling(Activity activity, Payment payment, boolean isPolling) {
@@ -127,5 +130,37 @@ public class BoloroPayment {
             }
         }
         return response;
+    }
+
+    public static void seveBoloroAsInvoice(Activity activity, StoreAndForward storeAndForward, HashMap<String, String> parsedMap) {
+        OrdersHandler dbOrdHandler = new OrdersHandler(activity);
+        StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
+        //remove from StoredPayment and change order to Invoice
+        StringBuilder sb = new StringBuilder();
+        String job_id = storeAndForward.getPayment().getJob_id();
+        sb.append(dbOrdHandler.getColumnValue("ord_comment", job_id)).append("  ");
+        sb.append("(Card Holder: ").append(storeAndForward.getPayment().getPay_name());//myCursor.getString(myCursor.getColumnIndex("pay_name")));
+        sb.append("; Last 4: ").append(storeAndForward.getPayment().getCcnum_last4());//myCursor.getString(myCursor.getColumnIndex("ccnum_last4")));
+        sb.append("; Exp date: ").append(storeAndForward.getPayment().getPay_expmonth());//myCursor.getString(myCursor.getColumnIndex("pay_expmonth")));
+        sb.append("/").append(storeAndForward.getPayment().getPay_expyear());//myCursor.getString(myCursor.getColumnIndex("pay_expyear")));
+        if (parsedMap.containsKey("statusMessage")) {
+            sb.append("; Status Msg: ").append(parsedMap.get("statusMessage"));
+            sb.append("; Status Code: ").append(parsedMap.get("statusCode"));
+            sb.append("; TransID: ").append(parsedMap.get("CreditCardTransID"));
+            sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
+        } else if (parsedMap.containsKey("error_message")) {
+            sb.append("; Status Msg: ").append(parsedMap.get("error_message"));
+            sb.append("; Status Code: ").append(parsedMap.get("error_code"));
+        }
+        String pay_uuid = storeAndForward.getPayment().getPay_uuid();
+        dbStoredPay.deleteStoredPaymentRow(pay_uuid);
+        if (dbOrdHandler.getColumnValue("ord_type", job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
+            dbOrdHandler.updateOrderTypeToInvoice(job_id);
+        dbOrdHandler.updateOrderComment(job_id, sb.toString());
+
+        //Remove as pending stored & forward if no more payments are pending to be processed.
+        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+            dbOrdHandler.updateOrderStoredFwd(job_id, "0");
+
     }
 }
