@@ -1,12 +1,10 @@
 package com.android.emobilepos.storedforward;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
-import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.emobilepos.payment.ProcessBoloro_FA;
@@ -22,8 +20,6 @@ import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -153,7 +149,7 @@ public class BoloroPayment {
             sb.append("; Status Code: ").append(parsedMap.get("error_code"));
         }
         String pay_uuid = storeAndForward.getPayment().getPay_uuid();
-        dbStoredPay.deleteStoredPaymentRow(pay_uuid);
+        dbStoredPay.deleteStoredPaymentRow(storeAndForward);
         if (dbOrdHandler.getColumnValue("ord_type", job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
             dbOrdHandler.updateOrderTypeToInvoice(job_id);
         dbOrdHandler.updateOrderComment(job_id, sb.toString());

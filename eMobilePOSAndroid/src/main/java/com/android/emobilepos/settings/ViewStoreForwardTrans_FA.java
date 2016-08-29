@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +36,7 @@ import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
+import org.bouncycastle.util.Store;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -49,6 +51,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar implements OnItemClickListener, OnClickListener {
@@ -60,6 +63,9 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     private StoredPaymentsDAO dbStoredPay;
     private CustomCursorAdapter adapter;
     private RecyclerView listView;
+    private RealmResults<StoreAndForward> storeAndForwards;
+    private Button btnProcessAll;
+    private static Realm realm = Realm.getDefaultInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,15 +74,25 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         activity = this;
         global = (Global) getApplication();
 
-        Button btnProcessAll = (Button) findViewById(R.id.btnProcessAll);
+        btnProcessAll = (Button) findViewById(R.id.btnProcessAll);
         btnProcessAll.setOnClickListener(this);
-
+        btnProcessAll.setEnabled(false);
         //DBManager dbManager = new DBManager(this);
         //db = dbManager.openWritableDB();
         dbStoredPay = new StoredPaymentsDAO(this);
 //        myCursor = dbStoredPay.getStoredPayments();
         listView = (RecyclerView) findViewById(R.id.listView);
-        adapter = new CustomCursorAdapter(Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
+        storeAndForwards = realm.where(StoreAndForward.class).findAllAsync();
+        RealmChangeListener<RealmResults<StoreAndForward>> changeListener = new RealmChangeListener<RealmResults<StoreAndForward>>() {
+
+            @Override
+            public void onChange(RealmResults<StoreAndForward> element) {
+                adapter.notifyDataSetChanged();
+                btnProcessAll.setEnabled(true);
+            }
+        };
+        storeAndForwards.addChangeListener(changeListener);
+        adapter = new CustomCursorAdapter(storeAndForwards);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         listView.setLayoutManager(mLayoutManager);
         listView.setItemAnimator(new DefaultItemAnimator());
@@ -132,6 +148,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btnProcessAll:
+                btnProcessAll.setEnabled(false);
                 new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 break;
         }
@@ -172,7 +189,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
                 if (parsedMap != null && parsedMap.size() > 0) {
                     String _job_id = storeAndForward.getPayment().getJob_id();
-                    String _pay_uuid = storeAndForward.getPayment().getPay_uuid();//myCursor.getString(myCursor.getColumnIndex("pay_uuid"));
+//                    String _pay_uuid = storeAndForward.getPayment().getPay_uuid();//myCursor.getString(myCursor.getColumnIndex("pay_uuid"));
 
                     if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
                         //Create Payment and delete from StoredPayment
@@ -183,7 +200,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                     } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
                         if (parsedMap.get("statusCode").equals("102")) {
                             _count_merch_account++;
-                            dbStoredPay.updateStoredPaymentForRetry(_pay_uuid);
+                            dbStoredPay.updateStoredPaymentForRetry(storeAndForward);
                         } else {
                             //remove from StoredPayment and change order to Invoice
                             StringBuilder sb = new StringBuilder();
@@ -197,7 +214,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             sb.append("; TransID: ").append(parsedMap.get("CreditCardTransID"));
                             sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
 
-                            dbStoredPay.deleteStoredPaymentRow(_pay_uuid);
+                            dbStoredPay.deleteStoredPaymentRow(storeAndForward);
                             if (dbOrdHandler.getColumnValue("ord_type", _job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
                                 dbOrdHandler.updateOrderTypeToInvoice(_job_id);
                             dbOrdHandler.updateOrderComment(_job_id, sb.toString());
@@ -220,6 +237,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         }
 
         private void processPayment(StoreAndForward storeAndForward, String charge_xml) throws ParserConfigurationException, SAXException, IOException {
+            Realm realm = Realm.getDefaultInstance();
             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -227,7 +245,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             String xml = httpClient.postData(13, activity, charge_xml);
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                 //mark StoredPayment for retry
-                updateStoreForwardPaymentToRetry(storeAndForward);
+                StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
 //                dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
                 _count_conn_error++;
             } else {
@@ -238,7 +256,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                 xr.setContentHandler(handler);
                 xr.parse(inSource);
                 parsedMap = handler.getData();
-                Realm realm = Realm.getDefaultInstance();
                 if (parsedMap != null && parsedMap.size() > 0) {
 //                    String _job_id = //myCursor.getString(myCursor.getColumnIndex("job_id"));
 //                    String _pay_uuid = myCursor.getString(myCursor.getColumnIndex("pay_uuid"));
@@ -246,17 +263,13 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                     if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
                         //Create Payment and delete from StoredPayment
                         saveApprovedPayment(storeAndForward, parsedMap);
-                        //Remove as pending stored & forward if no more payments are pending to be processed.
-                        realm.beginTransaction();
-                        storeAndForward.deleteFromRealm();
-                        realm.commitTransaction();
 
 //                        if (dbStoredPay.getCountPendingStoredPayments(_job_id) <= 0)
 //                            dbOrdHandler.updateOrderStoredFwd(_job_id, "0");
                     } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
                         if (parsedMap.get("statusCode").equals("102")) {
                             _count_merch_account++;
-                            updateStoreForwardPaymentToRetry(storeAndForward);
+                            StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
 //                            dbStoredPay.updateStoredPaymentForRetry(_pay_uuid);
                         } else {
                             //remove from StoredPayment and change order to Invoice
@@ -271,10 +284,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             sb.append("; TransID: ").append(parsedMap.get("CreditCardTransID"));
                             sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
 
-                            realm.beginTransaction();
                             StoreAndForward norealmStrFwd = realm.copyFromRealm(storeAndForward);
-                            storeAndForward.deleteFromRealm();
-                            realm.commitTransaction();
+                            StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
 //                            dbStoredPay.deleteStoredPaymentRow(_pay_uuid);
                             if (dbOrdHandler.getColumnValue("ord_type", norealmStrFwd.getPayment().getJob_id())
                                     .equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
@@ -289,12 +300,12 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                         }
                     } else {
                         //mark StoredPayment for retry
-                        updateStoreForwardPaymentToRetry(storeAndForward);
+                        StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
 //                        dbStoredPay.updateStoredPaymentForRetry(_pay_uuid);
                     }
                 } else {
                     //mark StoredPayment for retry
-                    updateStoreForwardPaymentToRetry(storeAndForward);
+                    StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
 //                    dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
                     _count_conn_error++;
                 }
@@ -317,77 +328,76 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
         @Override
         protected Void doInBackground(Void... params) {
-            RealmResults<StoreAndForward> storeAndForwards = Realm.getDefaultInstance().where(StoreAndForward.class).findAll();
-            for (StoreAndForward storeAndForward : storeAndForwards) {
-                if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
-                    livePaymentRunning = true;
-                    _charge_xml = storeAndForward.getPaymentXml();//myCursor.getString(i_payment_xml);
-                    _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>" + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
+            Realm realm = Realm.getDefaultInstance();
+            if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
+                storeAndForwards = realm.where(StoreAndForward.class).findAll();
+                for (StoreAndForward storeAndForward : storeAndForwards) {
+                    if (!livePaymentRunning) {
+                        livePaymentRunning = true;
+                        _charge_xml = storeAndForward.getPaymentXml();//myCursor.getString(i_payment_xml);
+                        _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>" + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
 
-                    try {
+                        try {
 
-                        if (storeAndForward.isRetry()) {
-                            switch (storeAndForward.getPaymentType()) {
-                                case BOLORO:
-                                    boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
-                                    if (boloroHashMap != null && boloroHashMap.containsKey("next_action")
-                                            && boloroHashMap.get("next_action").equals("SUCCESS")) {
-                                        //Create Payment and delete from StoredPayment
-                                        String job_id = storeAndForward.getPayment().getJob_id();
-                                        OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-                                        Realm.getDefaultInstance().beginTransaction();
-                                        storeAndForward.deleteFromRealm();
-                                        Realm.getDefaultInstance().commitTransaction();
-                                        //Remove as pending stored & forward if no more payments are pending to be processed.
-                                        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
-                                            dbOrdHandler.updateOrderStoredFwd(job_id, "0");
-                                    } else {
-                                        BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
-                                    }
-                                    break;
-                                case CREDIT_CARD:
-                                    checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
-                                    break;
+                            if (storeAndForward.isRetry()) {
+                                switch (storeAndForward.getPaymentType()) {
+                                    case BOLORO:
+                                        boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                        if (boloroHashMap != null && boloroHashMap.containsKey("next_action")
+                                                && boloroHashMap.get("next_action").equals("SUCCESS")) {
+                                            //Create Payment and delete from StoredPayment
+                                            String job_id = storeAndForward.getPayment().getJob_id();
+                                            OrdersHandler dbOrdHandler = new OrdersHandler(activity);
+                                            StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
+                                            //Remove as pending stored & forward if no more payments are pending to be processed.
+                                            if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+                                                dbOrdHandler.updateOrderStoredFwd(job_id, "0");
+                                        } else {
+                                            BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
+                                        }
+                                        break;
+                                    case CREDIT_CARD:
+                                        checkPaymentStatus(storeAndForward, _verify_payment_xml, _charge_xml);
+                                        break;
+                                }
+                            } else {
+                                switch (storeAndForward.getPaymentType()) {
+                                    case BOLORO:
+                                        boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
+                                        if (boloroHashMap != null && boloroHashMap.containsKey("next_action")
+                                                && boloroHashMap.get("next_action").equals("SUCCESS")) {
+                                            //Create Payment and delete from StoredPayment
+                                            String job_id = storeAndForward.getPayment().getJob_id();
+                                            StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
+                                            OrdersHandler dbOrdHandler = new OrdersHandler(activity);
+                                            //Remove as pending stored & forward if no more payments are pending to be processed.
+                                            if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+                                                dbOrdHandler.updateOrderStoredFwd(job_id, "0");
+                                        } else {
+                                            BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
+                                        }
+                                        break;
+                                    case CREDIT_CARD:
+                                        processPayment(storeAndForward, _charge_xml);
+                                        break;
+                                }
                             }
-                        } else {
-                            switch (storeAndForward.getPaymentType()) {
-                                case BOLORO:
-                                    boloroHashMap = BoloroPayment.executeNFCCheckout(activity, storeAndForward.getPaymentXml(), storeAndForward.getPayment());
-                                    if (boloroHashMap != null && boloroHashMap.containsKey("next_action")
-                                            && boloroHashMap.get("next_action").equals("SUCCESS")) {
-                                        //Create Payment and delete from StoredPayment
-                                        String job_id = storeAndForward.getPayment().getJob_id();
-                                        Realm.getDefaultInstance().beginTransaction();
-                                        storeAndForward.deleteFromRealm();
-                                        Realm.getDefaultInstance().commitTransaction();
-                                        OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-                                        //Remove as pending stored & forward if no more payments are pending to be processed.
-                                        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
-                                            dbOrdHandler.updateOrderStoredFwd(job_id, "0");
-                                    } else {
-                                        BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
-                                    }
-                                    break;
-                                case CREDIT_CARD:
-                                    processPayment(storeAndForward, _charge_xml);
-                                    break;
-                            }
+
+                        } catch (ParserConfigurationException e) {
+                            e.printStackTrace();
+                        } catch (SAXException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                            StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
+//                            dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
                         }
 
-                    } catch (ParserConfigurationException e) {
-                        e.printStackTrace();
-                    } catch (SAXException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (Exception e) {
-                        updateStoreForwardPaymentToRetry(storeAndForward);
-//                            dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
+                        livePaymentRunning = false;
+                    } else {
+                        _count_conn_error++;
                     }
-
-                    livePaymentRunning = false;
-                } else {
-                    _count_conn_error++;
                 }
             }
             return null;
@@ -404,7 +414,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             //refresh the list view;
             //adapter.notifyDataSetChanged();
 //            myCursor = dbStoredPay.getStoredPayments();
-            adapter.notifyDataSetChanged();
+//            adapter.notifyDataSetChanged();
 //            adapter = new CustomCursorAdapter(Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
 //            listView.setAdapter(adapter);
             StringBuilder sb = new StringBuilder();
@@ -427,24 +437,16 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         }
     }
 
-    private void updateStoreForwardPaymentToRetry(StoreAndForward storeAndForward) {
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        storeAndForward.setRetry(true);
-        realm.commitTransaction();
-    }
-
 
     private void saveApprovedPayment(StoreAndForward storeAndForward, HashMap<String, String> parsedMap) {
+        Realm realm = Realm.getDefaultInstance();
         GenerateNewID generator = new GenerateNewID(this);
-        Payment payment = Realm.getDefaultInstance().copyFromRealm(storeAndForward.getPayment());
+        Payment payment = realm.copyFromRealm(storeAndForward.getPayment());
         payment.setPay_id(generator.getNextID(IdType.PAYMENT_ID));
         payment.setProcessed("9");//newPayment.processed = "9";
         PaymentsHandler payHandler = new PaymentsHandler(this);
         payHandler.insert(payment);
-        Realm.getDefaultInstance().beginTransaction();
-        storeAndForward.deleteFromRealm();
-        Realm.getDefaultInstance().commitTransaction();
+        StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
 
 //        dbStoredPay.deleteStoredPaymentRow(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
     }

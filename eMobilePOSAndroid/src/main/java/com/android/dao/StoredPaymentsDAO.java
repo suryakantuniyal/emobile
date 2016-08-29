@@ -25,65 +25,65 @@ import io.realm.Realm;
 
 public class StoredPaymentsDAO {
 
-    private final String pay_id = "pay_id";
-    private final String group_pay_id = "group_pay_id";
-    private final String custidkey = "custidkey";
-    private final String tupyx_user_id = "tupyx_user_id";
-    private final String cust_id = "cust_id";
-    private final String emp_id = "emp_id";
+//    private final String pay_id = "pay_id";
+//    private final String group_pay_id = "group_pay_id";
+//    private final String custidkey = "custidkey";
+//    private final String tupyx_user_id = "tupyx_user_id";
+//    private final String cust_id = "cust_id";
+//    private final String emp_id = "emp_id";
     private final String inv_id = "inv_id";
-    private final String paymethod_id = "paymethod_id";
+//    private final String paymethod_id = "paymethod_id";
     private final String pay_check = "pay_check";
-    private final String pay_receipt = "pay_receipt";
+//    private final String pay_receipt = "pay_receipt";
     private final String pay_amount = "pay_amount";
     private final String pay_dueamount = "pay_dueamount";
-    private final String pay_comment = "pay_comment";
+//    private final String pay_comment = "pay_comment";
     private final String pay_timecreated = "pay_timecreated";
-    private final String pay_timesync = "pay_timesync";
-    private final String account_id = "account_id";
-    private final String processed = "processed";
-    private final String pay_issync = "pay_issync";
+//    private final String pay_timesync = "pay_timesync";
+//    private final String account_id = "account_id";
+//    private final String processed = "processed";
+//    private final String pay_issync = "pay_issync";
     private final String pay_transid = "pay_transid";
-    private final String pay_refnum = "pay_refnum";
-    private final String pay_name = "pay_name";
-    private final String pay_addr = "pay_addr";
-    private final String pay_poscode = "pay_poscode";
-    private final String pay_seccode = "pay_seccode";
-    private final String pay_maccount = "pay_maccount";
-    private final String pay_groupcode = "pay_groupcode";
-    private final String pay_stamp = "pay_stamp";
-    private final String pay_resultcode = "pay_resultcode";
-    private final String pay_resultmessage = "pay_resultmessage";
-    private final String pay_ccnum = "pay_ccnum";
-    private final String pay_expmonth = "pay_expmonth";
-    private final String pay_expyear = "pay_expyear";
-    private final String pay_expdate = "pay_expdate";
-    private final String pay_result = "pay_result";
+//    private final String pay_refnum = "pay_refnum";
+//    private final String pay_name = "pay_name";
+//    private final String pay_addr = "pay_addr";
+//    private final String pay_poscode = "pay_poscode";
+//    private final String pay_seccode = "pay_seccode";
+//    private final String pay_maccount = "pay_maccount";
+//    private final String pay_groupcode = "pay_groupcode";
+//    private final String pay_stamp = "pay_stamp";
+//    private final String pay_resultcode = "pay_resultcode";
+//    private final String pay_resultmessage = "pay_resultmessage";
+//    private final String pay_ccnum = "pay_ccnum";
+//    private final String pay_expmonth = "pay_expmonth";
+//    private final String pay_expyear = "pay_expyear";
+//    private final String pay_expdate = "pay_expdate";
+//    private final String pay_result = "pay_result";
     private final String pay_date = "pay_date";
-    private final String recordnumber = "recordnumber";
+//    private final String recordnumber = "recordnumber";
     private final String pay_signature = "pay_signature";
-    private final String authcode = "authcode";
-    private final String status = "status";
+//    private final String authcode = "authcode";
+//    private final String status = "status";
 
     // added
     private final String job_id = "job_id";
-    private final String user_ID = "user_ID";
-    private final String pay_type = "pay_type";
+//    private final String user_ID = "user_ID";
+//    private final String pay_type = "pay_type";
     private final String pay_tip = "pay_tip";
     private final String ccnum_last4 = "ccnum_last4";
-    private final String pay_phone = "pay_phone";
-    private final String pay_email = "pay_email";
-    private final String card_type = "card_type";
-
-
-    private final String isVoid = "isVoid";
-    private final String pay_latitude = "pay_latitude";
-    private final String pay_longitude = "pay_longitude";
-    private final String tipAmount = "tipAmount";
-    private final String clerk_id = "clerk_id";
+//    private final String pay_phone = "pay_phone";
+//    private final String pay_email = "pay_email";
+//    private final String card_type = "card_type";
+//
+//
+//    private final String isVoid = "isVoid";
+//    private final String pay_latitude = "pay_latitude";
+//    private final String pay_longitude = "pay_longitude";
+//    private final String tipAmount = "tipAmount";
+//    private final String clerk_id = "clerk_id";
     private final String is_refund = "is_refund";
-    private final String ref_num = "ref_num";
-    private final String original_pay_id = "original_pay_id";
+//    private final String ref_num = "ref_num";
+//    private final String original_pay_id = "original_pay_id";
 
     private final String IvuLottoDrawDate = "IvuLottoDrawDate";
     private final String IvuLottoNumber = "IvuLottoNumber";
@@ -95,60 +95,60 @@ public class StoredPaymentsDAO {
     private final String Tax2_name = "Tax2_name";
 
     // Store and Forward Data
-    private final String payment_xml = "payment_xml";
-    private final String is_retry = "is_retry";
-    private final String pay_uuid = "pay_uuid";
+//    private final String payment_xml = "payment_xml";
+//    private final String is_retry = "is_retry";
+//    private final String pay_uuid = "pay_uuid";
     private final String EMVJson = "EMV_JSON";
 
 
-    public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
-            inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
-            pay_timesync, account_id, processed, pay_issync, pay_transid, pay_refnum, pay_name, pay_addr, pay_poscode,
-            pay_seccode, pay_maccount, pay_groupcode, pay_stamp, pay_resultcode, pay_resultmessage, pay_ccnum,
-            pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
-            job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
-            tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
-            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, pay_uuid, is_retry,
-            payment_xml, EMVJson);
+//    public final List<String> attr = Arrays.asList(pay_id, group_pay_id, cust_id, tupyx_user_id, emp_id,
+//            inv_id, paymethod_id, pay_check, pay_receipt, pay_amount, pay_dueamount, pay_comment, pay_timecreated,
+//            pay_timesync, account_id, processed, pay_issync, pay_transid, pay_refnum, pay_name, pay_addr, pay_poscode,
+//            pay_seccode, pay_maccount, pay_groupcode, pay_stamp, pay_resultcode, pay_resultmessage, pay_ccnum,
+//            pay_expmonth, pay_expyear, pay_expdate, pay_result, pay_date, recordnumber, pay_signature, authcode, status,
+//            job_id, user_ID, pay_type, pay_tip, ccnum_last4, pay_phone, pay_email, isVoid, pay_latitude, pay_longitude,
+//            tipAmount, clerk_id, is_refund, ref_num, IvuLottoDrawDate, IvuLottoNumber, IvuLottoQR, card_type,
+//            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, pay_uuid, is_retry,
+//            payment_xml, EMVJson);
 
-    private StringBuilder sb1, sb2;
-    private HashMap<String, Integer> attrHash;
+//    private StringBuilder sb1, sb2;
+//    private HashMap<String, Integer> attrHash;
     private Global global;
-    private static final String table_name = "StoredPayments";
+//    private static final String table_name = "StoredPayments";
     private Activity activity;
 
     public StoredPaymentsDAO(Activity activity) {
         global = (Global) activity.getApplication();
         this.activity = activity;
-        attrHash = new HashMap<>();
-        sb1 = new StringBuilder();
-        sb2 = new StringBuilder();
-
-        initDictionary();
+//        attrHash = new HashMap<>();
+//        sb1 = new StringBuilder();
+//        sb2 = new StringBuilder();
+//
+//        initDictionary();
     }
 
-    public void initDictionary() {
-        int size = attr.size();
-        for (int i = 0; i < size; i++) {
-            attrHash.put(attr.get(i), i + 1);
-            if ((i + 1) < size) {
-                sb1.append(attr.get(i)).append(",");
-                sb2.append("?").append(",");
-            } else {
-                sb1.append(attr.get(i));
-                sb2.append("?");
-            }
-        }
-    }
+//    public void initDictionary() {
+//        int size = attr.size();
+//        for (int i = 0; i < size; i++) {
+//            attrHash.put(attr.get(i), i + 1);
+//            if ((i + 1) < size) {
+//                sb1.append(attr.get(i)).append(",");
+//                sb2.append("?").append(",");
+//            } else {
+//                sb1.append(attr.get(i));
+//                sb2.append("?");
+//            }
+//        }
+//    }
 
-    public int index(String tag) {
-        return attrHash.get(tag);
-    }
+//    public int index(String tag) {
+//        return attrHash.get(tag);
+//    }
 
 
-    public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
-    }
+//    public void emptyTable() {
+//        DBManager._db.execSQL("DELETE FROM " + table_name);
+//    }
 
     public String updateSignaturePayment(String pay_uuid) {
         Realm realm = Realm.getDefaultInstance();
@@ -315,23 +315,21 @@ public class StoredPaymentsDAO {
         return list;
     }
 
-    public void deleteStoredPaymentRow(String _pay_uuid) {
+    public static void deleteStoredPaymentRow(StoreAndForward storeAndForward) {
 //        DBManager._db.delete(table_name, "pay_uuid = ?", new String[]{_pay_uuid});
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", _pay_uuid).findFirst();
-        first.deleteFromRealm();
+        storeAndForward.deleteFromRealm();
         realm.commitTransaction();
     }
 
-    public void updateStoredPaymentForRetry(String _pay_uuid) {
+    public void updateStoredPaymentForRetry(StoreAndForward storeAndForward) {
 //        ContentValues args = new ContentValues();
 //        args.put(is_retry, "1");
 //        DBManager._db.update(table_name, args, "pay_uuid = ?", new String[]{_pay_uuid});
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        StoreAndForward first = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", _pay_uuid).findFirst();
-        first.setRetry(true);
+        storeAndForward.setRetry(true);
         realm.commitTransaction();
     }
 
@@ -349,5 +347,12 @@ public class StoredPaymentsDAO {
         storeAndForward.setId(System.currentTimeMillis());
         realm.commitTransaction();
         PaymentsHandler.setLastPaymentInserted(payment);
+    }
+
+    public static void updateStoreForwardPaymentToRetry(StoreAndForward storeAndForward) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        storeAndForward.setRetry(true);
+        realm.commitTransaction();
     }
 }
