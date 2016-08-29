@@ -85,6 +85,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     private Global global;
     private boolean hasBeenCreated = false;
     private long storeForwardPaymentId;
+    private Button processButton;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -101,15 +102,18 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         }
 
         myPreferences = new MyPreferences(activity);
-        Button processButton = (Button) findViewById(R.id.processButton);
+        processButton = (Button) findViewById(R.id.processButton);
+        if (!isManual) {
+            processButton.setEnabled(false);
+        }
         Button btnExact = (Button) findViewById(R.id.btnExact);
         processButton.setOnClickListener(this);
         btnExact.setOnClickListener(this);
         fieldPhone = (EditText) findViewById(R.id.fieldPhone);
         fieldAmountDue = (EditText) findViewById(R.id.fieldAmountDue);
         fieldAmountPaid = (EditText) findViewById(R.id.fieldAmountPaid);
-        fieldAmountDue.setText(extras.getString("amount")); //set to 0.00
-        fieldAmountPaid.setText(extras.getString("amount")); //set to 0.00
+        fieldAmountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount"))))); //set to 0.00
+        fieldAmountPaid.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount"))))); //set to 0.00
 
         buildPayment();
 
@@ -332,6 +336,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         protected void onPostExecute(String result) {
             if (result != null) {
                 boloroTagID = result;
+                processButton.setEnabled(true);
                 Global.showPrompt(activity, R.string.dlog_title_confirm, activity.getString(R.string.dlog_msg_nfc_scanned));
             }
         }
@@ -517,7 +522,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                if(Realm.getDefaultInstance().isInTransaction()){
+                if (Realm.getDefaultInstance().isInTransaction()) {
                     Realm.getDefaultInstance().cancelTransaction();
                 }
             }

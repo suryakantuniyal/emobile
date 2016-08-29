@@ -148,8 +148,7 @@ public class BoloroPayment {
             sb.append("; Status Msg: ").append(parsedMap.get("error_message"));
             sb.append("; Status Code: ").append(parsedMap.get("error_code"));
         }
-        String pay_uuid = storeAndForward.getPayment().getPay_uuid();
-        dbStoredPay.deleteStoredPaymentRow(storeAndForward);
+        StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
         if (dbOrdHandler.getColumnValue("ord_type", job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
             dbOrdHandler.updateOrderTypeToInvoice(job_id);
         dbOrdHandler.updateOrderComment(job_id, sb.toString());

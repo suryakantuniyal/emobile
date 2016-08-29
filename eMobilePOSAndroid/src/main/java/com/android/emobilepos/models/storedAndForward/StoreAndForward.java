@@ -52,7 +52,7 @@ public class StoreAndForward extends RealmObject {
     }
 
     public enum StoreAndForwatdStatus {
-        PENDING(0), COMPLETED(1), PARTIAL(2);
+        PENDING(0), COMPLETED(1), PARTIAL(2), DELETED(3);
         int code;
 
         StoreAndForwatdStatus(int code) {
@@ -71,6 +71,8 @@ public class StoreAndForward extends RealmObject {
                     return COMPLETED;
                 case 2:
                     return PARTIAL;
+                case 3:
+                    return DELETED;
                 default:
                     return PENDING;
             }

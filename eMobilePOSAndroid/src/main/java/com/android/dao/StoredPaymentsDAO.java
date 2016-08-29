@@ -22,29 +22,30 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class StoredPaymentsDAO {
 
-//    private final String pay_id = "pay_id";
+    //    private final String pay_id = "pay_id";
 //    private final String group_pay_id = "group_pay_id";
 //    private final String custidkey = "custidkey";
 //    private final String tupyx_user_id = "tupyx_user_id";
 //    private final String cust_id = "cust_id";
 //    private final String emp_id = "emp_id";
     private final String inv_id = "inv_id";
-//    private final String paymethod_id = "paymethod_id";
+    //    private final String paymethod_id = "paymethod_id";
     private final String pay_check = "pay_check";
-//    private final String pay_receipt = "pay_receipt";
+    //    private final String pay_receipt = "pay_receipt";
     private final String pay_amount = "pay_amount";
     private final String pay_dueamount = "pay_dueamount";
-//    private final String pay_comment = "pay_comment";
+    //    private final String pay_comment = "pay_comment";
     private final String pay_timecreated = "pay_timecreated";
-//    private final String pay_timesync = "pay_timesync";
+    //    private final String pay_timesync = "pay_timesync";
 //    private final String account_id = "account_id";
 //    private final String processed = "processed";
 //    private final String pay_issync = "pay_issync";
     private final String pay_transid = "pay_transid";
-//    private final String pay_refnum = "pay_refnum";
+    //    private final String pay_refnum = "pay_refnum";
 //    private final String pay_name = "pay_name";
 //    private final String pay_addr = "pay_addr";
 //    private final String pay_poscode = "pay_poscode";
@@ -60,18 +61,18 @@ public class StoredPaymentsDAO {
 //    private final String pay_expdate = "pay_expdate";
 //    private final String pay_result = "pay_result";
     private final String pay_date = "pay_date";
-//    private final String recordnumber = "recordnumber";
+    //    private final String recordnumber = "recordnumber";
     private final String pay_signature = "pay_signature";
 //    private final String authcode = "authcode";
 //    private final String status = "status";
 
     // added
     private final String job_id = "job_id";
-//    private final String user_ID = "user_ID";
+    //    private final String user_ID = "user_ID";
 //    private final String pay_type = "pay_type";
     private final String pay_tip = "pay_tip";
     private final String ccnum_last4 = "ccnum_last4";
-//    private final String pay_phone = "pay_phone";
+    //    private final String pay_phone = "pay_phone";
 //    private final String pay_email = "pay_email";
 //    private final String card_type = "card_type";
 //
@@ -111,10 +112,10 @@ public class StoredPaymentsDAO {
 //            Tax1_amount, Tax1_name, Tax2_amount, Tax2_name, custidkey, original_pay_id, pay_uuid, is_retry,
 //            payment_xml, EMVJson);
 
-//    private StringBuilder sb1, sb2;
+    //    private StringBuilder sb1, sb2;
 //    private HashMap<String, Integer> attrHash;
     private Global global;
-//    private static final String table_name = "StoredPayments";
+    //    private static final String table_name = "StoredPayments";
     private Activity activity;
 
     public StoredPaymentsDAO(Activity activity) {
@@ -315,11 +316,24 @@ public class StoredPaymentsDAO {
         return list;
     }
 
-    public static void deleteStoredPaymentRow(StoreAndForward storeAndForward) {
+    public static void updateStatusDeleted(StoreAndForward storeAndForward) {
+        Realm realm = Realm.getDefaultInstance();
+        long id = storeAndForward.getId();
+        realm.beginTransaction();
+        RealmResults<StoreAndForward> all = realm.where(StoreAndForward.class).equalTo("id", id).findAll();
+        if (all.isValid()) {
+            all.deleteAllFromRealm();
+        }
+        realm.commitTransaction();
+    }
+
+    public static void purdeDeletedStoredPayment() {
 //        DBManager._db.delete(table_name, "pay_uuid = ?", new String[]{_pay_uuid});
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        storeAndForward.deleteFromRealm();
+        realm.where(StoreAndForward.class).equalTo("status"
+                , StoreAndForward.StoreAndForwatdStatus.DELETED.getCode())
+                .findAll().deleteAllFromRealm();
         realm.commitTransaction();
     }
 

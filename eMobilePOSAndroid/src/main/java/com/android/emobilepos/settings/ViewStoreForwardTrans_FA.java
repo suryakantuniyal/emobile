@@ -76,13 +76,13 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
         btnProcessAll = (Button) findViewById(R.id.btnProcessAll);
         btnProcessAll.setOnClickListener(this);
-        btnProcessAll.setEnabled(false);
+        btnProcessAll.setEnabled(true);
         //DBManager dbManager = new DBManager(this);
         //db = dbManager.openWritableDB();
         dbStoredPay = new StoredPaymentsDAO(this);
 //        myCursor = dbStoredPay.getStoredPayments();
         listView = (RecyclerView) findViewById(R.id.listView);
-        storeAndForwards = realm.where(StoreAndForward.class).findAllAsync();
+        storeAndForwards = realm.where(StoreAndForward.class).findAll();
         RealmChangeListener<RealmResults<StoreAndForward>> changeListener = new RealmChangeListener<RealmResults<StoreAndForward>>() {
 
             @Override
@@ -214,7 +214,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             sb.append("; TransID: ").append(parsedMap.get("CreditCardTransID"));
                             sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
 
-                            dbStoredPay.deleteStoredPaymentRow(storeAndForward);
+                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
                             if (dbOrdHandler.getColumnValue("ord_type", _job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
                                 dbOrdHandler.updateOrderTypeToInvoice(_job_id);
                             dbOrdHandler.updateOrderComment(_job_id, sb.toString());
@@ -283,9 +283,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             sb.append("; Status Code: ").append(parsedMap.get("statusCode"));
                             sb.append("; TransID: ").append(parsedMap.get("CreditCardTransID"));
                             sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
-
+                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
                             StoreAndForward norealmStrFwd = realm.copyFromRealm(storeAndForward);
-                            StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
 //                            dbStoredPay.deleteStoredPaymentRow(_pay_uuid);
                             if (dbOrdHandler.getColumnValue("ord_type", norealmStrFwd.getPayment().getJob_id())
                                     .equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
@@ -330,7 +329,9 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         protected Void doInBackground(Void... params) {
             Realm realm = Realm.getDefaultInstance();
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
+                realm.beginTransaction();
                 storeAndForwards = realm.where(StoreAndForward.class).findAll();
+                realm.commitTransaction();
                 for (StoreAndForward storeAndForward : storeAndForwards) {
                     if (!livePaymentRunning) {
                         livePaymentRunning = true;
@@ -348,7 +349,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                             //Create Payment and delete from StoredPayment
                                             String job_id = storeAndForward.getPayment().getJob_id();
                                             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
-                                            StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
+                                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
                                             //Remove as pending stored & forward if no more payments are pending to be processed.
                                             if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
                                                 dbOrdHandler.updateOrderStoredFwd(job_id, "0");
@@ -368,7 +369,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                                 && boloroHashMap.get("next_action").equals("SUCCESS")) {
                                             //Create Payment and delete from StoredPayment
                                             String job_id = storeAndForward.getPayment().getJob_id();
-                                            StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
+                                            StoredPaymentsDAO.updateStatusDeleted( storeAndForward);
                                             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
                                             //Remove as pending stored & forward if no more payments are pending to be processed.
                                             if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
@@ -406,13 +407,15 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         @Override
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
+            btnProcessAll.setEnabled(true);
 //            if(boloroHashMap!=null){
 //                if (boloroHashMap.containsKey("next_action") && boloroHashMap.get("next_action").equals("SUCCESS")) {
 //                    Global.showPrompt(activity, R.string.dlog_title_transaction_failed_to_process, sb.toString());
 //                }
 //            }else {
             //refresh the list view;
-            //adapter.notifyDataSetChanged();
+            StoredPaymentsDAO.purdeDeletedStoredPayment();
+            adapter.notifyDataSetChanged();
 //            myCursor = dbStoredPay.getStoredPayments();
 //            adapter.notifyDataSetChanged();
 //            adapter = new CustomCursorAdapter(Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
@@ -446,7 +449,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         payment.setProcessed("9");//newPayment.processed = "9";
         PaymentsHandler payHandler = new PaymentsHandler(this);
         payHandler.insert(payment);
-        StoredPaymentsDAO.deleteStoredPaymentRow(storeAndForward);
+        StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
 
 //        dbStoredPay.deleteStoredPaymentRow(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
     }
