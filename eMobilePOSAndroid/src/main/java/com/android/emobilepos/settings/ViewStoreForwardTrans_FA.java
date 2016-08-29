@@ -437,10 +437,15 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
     private void saveApprovedPayment(StoreAndForward storeAndForward, HashMap<String, String> parsedMap) {
         GenerateNewID generator = new GenerateNewID(this);
-        storeAndForward.getPayment().setPay_id(generator.getNextID(IdType.PAYMENT_ID));
-        storeAndForward.getPayment().setProcessed("9");//newPayment.processed = "9";
+        Payment payment = Realm.getDefaultInstance().copyFromRealm(storeAndForward.getPayment());
+        payment.setPay_id(generator.getNextID(IdType.PAYMENT_ID));
+        payment.setProcessed("9");//newPayment.processed = "9";
         PaymentsHandler payHandler = new PaymentsHandler(this);
-        payHandler.insert(storeAndForward.getPayment());
+        payHandler.insert(payment);
+        Realm.getDefaultInstance().beginTransaction();
+        storeAndForward.deleteFromRealm();
+        Realm.getDefaultInstance().commitTransaction();
+
 //        dbStoredPay.deleteStoredPaymentRow(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
     }
 
