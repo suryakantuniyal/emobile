@@ -655,14 +655,6 @@ public class OrdersHandler {
         return value;
     }
 
-    public long getDBSize() {
-
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name);
-        long count = stmt.simpleQueryForLong();
-        stmt.close();
-        return count;
-    }
-
     public boolean isOrderOffline(String ordID) {
         Cursor c = DBManager._db.rawQuery("SELECT ord_issync FROM Orders WHERE ord_id = ?", new String[]{ordID});
 

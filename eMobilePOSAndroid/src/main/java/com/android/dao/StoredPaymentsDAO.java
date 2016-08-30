@@ -170,9 +170,9 @@ public class StoredPaymentsDAO {
                 .equalTo("payment.is_retry", "1").findAll().size();
     }
 
-    public long getCountPendingStoredPayments(String _job_id) {
+    public long getCountPendingStoredPayments(String job_id) {
         return (long) Realm.getDefaultInstance().where(StoreAndForward.class)
-                .equalTo("payment.job_id", _job_id).findAll().size();
+                .equalTo("payment.job_id", job_id).findAll().size();
     }
 
     public void deletePaymentFromJob(String _job_id) {

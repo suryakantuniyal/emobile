@@ -262,10 +262,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 
                     if (parsedMap.get("epayStatusCode").equals("APPROVED")) {
                         //Create Payment and delete from StoredPayment
+                        String job_id = storeAndForward.getPayment().getJob_id();
                         saveApprovedPayment(storeAndForward, parsedMap);
 
-//                        if (dbStoredPay.getCountPendingStoredPayments(_job_id) <= 0)
-//                            dbOrdHandler.updateOrderStoredFwd(_job_id, "0");
+                        if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
+                            dbOrdHandler.updateOrderStoredFwd(job_id, "0");
                     } else if (parsedMap.get("epayStatusCode").equals("DECLINE")) {
                         if (parsedMap.get("statusCode").equals("102")) {
                             _count_merch_account++;
@@ -369,7 +370,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                                 && boloroHashMap.get("next_action").equals("SUCCESS")) {
                                             //Create Payment and delete from StoredPayment
                                             String job_id = storeAndForward.getPayment().getJob_id();
-                                            StoredPaymentsDAO.updateStatusDeleted( storeAndForward);
+                                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
                                             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
                                             //Remove as pending stored & forward if no more payments are pending to be processed.
                                             if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
