@@ -9,7 +9,9 @@ import com.android.ivu.MersenneTwisterFast;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -28,6 +30,7 @@ public class Payment extends RealmObject {
     private String emp_id = "";
     private String inv_id = "";
     private String paymethod_id = "";
+    private PaymentMethod paymentMethod;
     private String pay_check = "";
     private String pay_receipt = "";
     private String pay_amount = "0.00";
@@ -290,6 +293,9 @@ public class Payment extends RealmObject {
     }
 
     public void setPaymethod_id(String paymethod_id) {
+        this.paymentMethod = Realm.getDefaultInstance()
+                .where(PaymentMethod.class)
+                .equalTo("paymethod_id", paymethod_id).findFirst();
         this.paymethod_id = paymethod_id;
     }
 
@@ -915,5 +921,13 @@ public class Payment extends RealmObject {
 
     public void setEmvContainer(EMVContainer emvContainer) {
         this.emvContainer = emvContainer;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

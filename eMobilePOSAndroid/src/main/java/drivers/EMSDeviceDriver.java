@@ -81,6 +81,7 @@ import jpos.POSPrinter;
 import jpos.POSPrinterConst;
 import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
+import util.StringUtil;
 
 
 public class EMSDeviceDriver {
@@ -710,7 +711,7 @@ public class EMSDeviceDriver {
                             .oneColumnLineWithLeftAlignedText(Global.formatDoubleStrToCurrency(detailsList.get(i).getPay_amount())
                                     + "[" + detailsList.get(i).getPaymethod_name() + "]", lineWidth, 1));
                     if (!_pay_type.equals("CASH") && !_pay_type.equals("CHECK")) {
-                        tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + detailsList.get(i).getPay_transid(),
+                        tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("TransID: " + StringUtil.nullStringToEmpty(detailsList.get(i).getPay_transid()),
                                 lineWidth, 1));
                         tempSB.append(textHandler.oneColumnLineWithLeftAlignedText("CC#: *" + detailsList.get(i).getCcnum_last4(),
                                 lineWidth, 1));
