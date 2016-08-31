@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.settings.SettingsActivity;
-import com.android.emobilepos.settings.SettingsManager_FA;
 import com.android.support.MyPreferences;
 
 public class SettingsTab_FR extends Fragment implements OnClickListener{
