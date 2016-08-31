@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_account_settings">
+        <Preference
+            android:key="pref_change_password"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_change_password" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_cash_drawer">
+        <Preference
+            android:key="pref_open_cash_drawer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_open_cash_drawer" />
+        <Preference
+            android:key="pref_configure_cash_drawer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_cash_drawer" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_kiosk_configuration">
+        <Preference
+            android:key="pref_customer_display"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_customer_display" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_other_settings">
+        <MultiSelectListPreference
+            android:defaultValue="@array/mainMenuDefaultKey"
+            android:entries="@array/mainMenuArray"
+            android:entryValues="@array/mainMenuKey"
+            android:key="pref_configure_home_menu"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_home_menu" />
+
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/defaultTransEntries"
+            android:entryValues="@array/defaultTransKey"
+            android:key="pref_default_transaction"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_transaction" />
+
+        <CheckBoxPreference
+            android:key="pref_block_price_level_change"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_block_price_level_change" />
+        <CheckBoxPreference
+            android:key="pref_require_address"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_address" />
+        <CheckBoxPreference
+            android:key="pref_require_po"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_po" />
+
+        <Preference
+            android:key="pref_clear_images_cache"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clear_images_cache" />
+
+        <CheckBoxPreference
+            android:key="pref_skip_manager_price_override"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_skip_manager_price_override" />
+        <CheckBoxPreference
+            android:key="pref_require_password_to_clockout"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_password_to_clockout" />
+        <CheckBoxPreference
+            android:key="pref_maps_inside_app"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_maps_inside_app" />
+        <CheckBoxPreference
+            android:key="pref_enable_location_inventory"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_location_inventory" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_shifts">
+        <Preference
+            android:key="pref_open_shift"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_open_shift" />
+        <Preference
+            android:key="pref_expenses"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_expenses" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_shipping_calculation">
+        <CheckBoxPreference
+            android:key="pref_use_nexternal"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_nexternal" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_transaction_settings">
+        <CheckBoxPreference
+            android:key="pref_require_manager_pass_to_void_trans"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_manager_pass_to_void_trans" />
+
+        <Preference
+            android:key="pref_default_country"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_country" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_handpoint_utils">
+        <Preference
+            android:key="pref_handpoint_update"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_handpoint_update" />
+        <Preference
+            android:key="pref_send_handpoint_log"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_send_handpoint_log" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_support_troubleshooting">
+        <Preference
+            android:key="pref_force_upload"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_force_upload" />
+        <Preference
+            android:key="pref_backup_data"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_backup_data" />
+        <Preference
+            android:key="pref_check_updates"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_check_updates" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

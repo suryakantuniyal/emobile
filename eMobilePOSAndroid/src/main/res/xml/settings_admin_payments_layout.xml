@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="payment_section"
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_hard_code_payments">
+        <CheckBoxPreference
+            android:key="pref_pay_with_tupyx"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_pay_with_tupyx" />
+
+        <CheckBoxPreference
+            android:key="pref_mw_with_genius"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_mw_with_genius" />
+        <Preference
+            android:key="pref_config_genius_peripheral"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_genius_peripheral" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="payment_section"
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_payment_processing">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_allow_manual_credit_card"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_allow_manual_credit_card" />
+        <CheckBoxPreference
+            android:key="pref_process_check_online"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_process_check_online" />
+        <CheckBoxPreference
+            android:key="pref_show_tips_for_cash"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_show_tips_for_cash" />
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/audioCardReaderEntries"
+            android:entryValues="@array/audioCardReaderValues"
+            android:key="pref_audio_card_reader"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_audio_card_reader" />
+
+        <ListPreference
+            android:defaultValue="0"
+            android:key="pref_default_payment_method"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_payment_method" />
+
+        <CheckBoxPreference
+            android:key="pref_return_require_refund"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_return_require_refund" />
+        <CheckBoxPreference
+            android:key="pref_convert_to_reward"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_convert_to_reward" />
+        <CheckBoxPreference
+            android:key="pref_invoice_require_payment"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_invoice_require_payment" />
+        <CheckBoxPreference
+            android:key="pref_invoice_require_full_payment"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_invoice_require_full_payment" />
+        <CheckBoxPreference
+            android:key="pref_prefill_total_amount"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_prefill_total_amount" />
+        <CheckBoxPreference
+            android:key="pref_use_store_and_forward"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_store_and_forward" />
+        <Preference
+            android:key="pref_store_and_forward_transactions"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_store_and_forward_transactions" />
+    </PreferenceCategory>
+</PreferenceScreen>

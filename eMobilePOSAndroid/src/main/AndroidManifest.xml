@@ -55,11 +55,9 @@
         <meta-data
             android:name="android.nfc.disable_beam_default"
             android:value="true" />
-
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="6fd88ec526ef9dd434f31ce165d5e68db177897c"
-            />
+            android:value="6fd88ec526ef9dd434f31ce165d5e68db177897c" />
 
         <activity
             android:name=".initialization.SelectAccount_FA"
@@ -422,8 +420,8 @@
             android:exported="false" />
         <activity
             android:name=".cardmanager.CardManager_FA"
-            android:launchMode="singleTop"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
@@ -480,7 +478,9 @@
         </receiver>
 
         <activity android:name=".payment.TipAdjustmentFA" />
-
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

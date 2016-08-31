@@ -1201,6 +1201,10 @@
     <string name="eod_report_consignment_invoice">Consignment Invoice</string>
     <string name="eod_report_consignment_return">Consignment Return</string>
     <string name="receipt_itemsQtyTotal">Total Items:</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="config_payments_settings">Payment Settings</string>
 
 
 </resources>

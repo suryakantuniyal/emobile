@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_general_settings">
+
+        <CheckBoxPreference
+            android:key="pref_automatic_sync"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_automatic_sync" />
+
+        <Preference
+            android:key="pref_transaction_num_prefix"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_transaction_num_prefix" />
+
+        <CheckBoxPreference
+            android:key="pref_fast_scanning_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_fast_scanning_mode" />
+        <CheckBoxPreference
+            android:key="pref_signature_required_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_signature_required_mode" />
+        <CheckBoxPreference
+            android:key="pref_qr_code_reading"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_qr_code_reading" />
+        <CheckBoxPreference
+            android:key="pref_enable_multi_category"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_multi_category" />
+        <CheckBoxPreference
+            android:key="pref_show_only_group_taxes"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_show_only_group_taxes" />
+        <CheckBoxPreference
+            android:key="pref_retail_taxes"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_retail_taxes" />
+        <CheckBoxPreference
+            android:key="pref_require_customer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_customer" />
+        <CheckBoxPreference
+            android:key="pref_show_confirmation_screen"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_show_confirmation_screen" />
+        <CheckBoxPreference
+            android:key="pref_direct_customer_selection"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_direct_customer_selection" />
+        <CheckBoxPreference
+            android:key="pref_display_customer_account_number"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_display_customer_account_number" />
+        <CheckBoxPreference
+            android:key="pref_ask_order_comments"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_ask_order_comments" />
+        <CheckBoxPreference
+            android:key="pref_skip_email_phone"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_skip_email_phone" />
+        <CheckBoxPreference
+            android:key="pref_skip_want_add_more_products"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_skip_want_add_more_products" />
+        <CheckBoxPreference
+            android:key="pref_require_shift_transactions"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_shift_transactions" />
+        <CheckBoxPreference
+            android:key="pref_allow_customer_creation"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_allow_customer_creation" />
+        <CheckBoxPreference
+            android:key="pref_scope_bar_in_restaurant_mode"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_scope_bar_in_restaurant_mode" />
+        <CheckBoxPreference
+            android:key="pref_use_clerks"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_clerks" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -37,8 +37,7 @@ public class DeviceTableDAO {
     }
 
     public static RealmResults<Device> getAll() {
-        RealmResults<Device> devices = Realm.getDefaultInstance().allObjects(Device.class);
-        return devices;
+        return Realm.getDefaultInstance().allObjects(Device.class);
     }
 
     public static void truncate() {
@@ -51,7 +50,6 @@ public class DeviceTableDAO {
     public static Device getByEmpId(int id) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<Device> where = realm.where(Device.class);
-        Device device = where.equalTo("id", id).findFirst();
-        return device;
+        return where.equalTo("id", id).findFirst();
     }
 }
