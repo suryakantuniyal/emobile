@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,12 +30,10 @@ import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-import org.bouncycastle.util.Store;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -284,7 +281,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             sb.append("; Status Code: ").append(parsedMap.get("statusCode"));
                             sb.append("; TransID: ").append(parsedMap.get("CreditCardTransID"));
                             sb.append("; Auth Code: ").append(parsedMap.get("AuthorizationCode")).append(")");
-                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
                             StoreAndForward norealmStrFwd = realm.copyFromRealm(storeAndForward);
 //                            dbStoredPay.deleteStoredPaymentRow(_pay_uuid);
                             if (dbOrdHandler.getColumnValue("ord_type", norealmStrFwd.getPayment().getJob_id())
@@ -295,7 +291,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             //Remove as pending stored & forward if no more payments are pending to be processed.
                             if (dbStoredPay.getCountPendingStoredPayments(norealmStrFwd.getPayment().getJob_id()) <= 0)
                                 dbOrdHandler.updateOrderStoredFwd(norealmStrFwd.getPayment().getJob_id(), "0");
-
+                            insertDeclinedPayment(norealmStrFwd.getPayment());
+                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
                             _count_decline++;
                         }
                     } else {
@@ -355,7 +352,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                             if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
                                                 dbOrdHandler.updateOrderStoredFwd(job_id, "0");
                                         } else {
-                                            BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
+                                            if (TextUtils.isEmpty(storeAndForward.getPayment().getJob_id())) {
+                                                insertDeclinedPayment(storeAndForward.getPayment());
+                                            } else {
+                                                BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
+                                            }
                                         }
                                         break;
                                     case CREDIT_CARD:
@@ -376,7 +377,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                             if (dbStoredPay.getCountPendingStoredPayments(job_id) <= 0)
                                                 dbOrdHandler.updateOrderStoredFwd(job_id, "0");
                                         } else {
-                                            BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
+                                            if (TextUtils.isEmpty(storeAndForward.getPayment().getJob_id())) {
+                                                insertDeclinedPayment(storeAndForward.getPayment());
+                                            } else {
+                                                BoloroPayment.seveBoloroAsInvoice(activity, storeAndForward, boloroHashMap);
+                                            }
                                         }
                                         break;
                                     case CREDIT_CARD:
@@ -415,7 +420,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
 //                }
 //            }else {
             //refresh the list view;
-            StoredPaymentsDAO.purdeDeletedStoredPayment();
+            StoredPaymentsDAO.purgeDeletedStoredPayment();
             adapter.notifyDataSetChanged();
 //            myCursor = dbStoredPay.getStoredPayments();
 //            adapter.notifyDataSetChanged();
@@ -438,6 +443,13 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             if (!sb.toString().isEmpty())
                 Global.showPrompt(activity, R.string.dlog_title_transaction_failed_to_process, sb.toString());
 //            }
+        }
+    }
+
+    private void insertDeclinedPayment(Payment payment) {
+        if (TextUtils.isEmpty(payment.getJob_id())) {
+            PaymentsHandler paymentsHandler = new PaymentsHandler(activity);
+            paymentsHandler.insertDeclined(payment);
         }
     }
 

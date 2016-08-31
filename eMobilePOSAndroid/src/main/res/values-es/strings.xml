@@ -1269,6 +1269,7 @@
     <string name="eod_report_consignment_invoice">Consignment Invoice</string>
     <string name="eod_report_consignment_return">Consignment Return</string>
     <string name="receipt_itemsQtyTotal">Total Items:</string>
+    <string name="void_label">VOID</string>
     <string name="config_payments_settings">Payment Settings</string>
 
 

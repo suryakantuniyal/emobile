@@ -62,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="VOID"
+        android:text="@string/void_label"
         android:textAppearance="@style/red_text_appearance_bold"
         android:textSize="@dimen/large_button_text_size" />
 

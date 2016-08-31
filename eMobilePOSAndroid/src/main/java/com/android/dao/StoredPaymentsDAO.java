@@ -352,7 +352,7 @@ public class StoredPaymentsDAO {
         realm.commitTransaction();
     }
 
-    public static void purdeDeletedStoredPayment() {
+    public static void purgeDeletedStoredPayment() {
 //        DBManager._db.delete(table_name, "pay_uuid = ?", new String[]{_pay_uuid});
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();

@@ -256,7 +256,6 @@ public class PaymentsHandler {
     // unsynchronized payments (used in
     // generation of XML for post)
     {
-//        DBManager dbManager = new DBManager(activity);
         return DBManager._db.rawQuery("SELECT " + sb1.toString() + " FROM " + table_name + " WHERE pay_issync = '0'", null);
     }
 
@@ -286,7 +285,6 @@ public class PaymentsHandler {
     }
 
     public String getTotalRefundAmount(String paymethod_id, String pay_date) {
-//        DBManager dbManager = new DBManager(activity);
         Cursor cursor = DBManager._db.rawQuery("SELECT ROUND(SUM(pay_amount),2) AS 'total',date(pay_timecreated,'localtime') as 'date' FROM Payments WHERE  paymethod_id = '" + paymethod_id + "' AND date = '" + pay_date + "' AND is_refund = '1' AND isVoid != '1'", null);
         String total = "0.00";
         if (cursor.moveToFirst()) {
@@ -299,7 +297,6 @@ public class PaymentsHandler {
     }
 
     public long getNumUnsyncPayments() {
-//        DBManager dbManager = new DBManager(activity);
         SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
@@ -307,8 +304,7 @@ public class PaymentsHandler {
     }
 
     public boolean unsyncPaymentsLeft() {
-        DBManager dbManager = new DBManager(activity);
-        SQLiteStatement stmt = dbManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
+        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + table_name + " WHERE pay_issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;
@@ -412,10 +408,6 @@ public class PaymentsHandler {
             OrdersHandler tempHandler = new OrdersHandler(activity);
             tempHandler.updateIsVoid(_ord_id);
         }
-    }
-
-    public PaymentDetails getPaymentDetails(String payID) {
-        return getPaymentDetails(payID, false);
     }
 
 
@@ -634,18 +626,13 @@ public class PaymentsHandler {
                 "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
                 "AND pay_type !='1'  AND is_refund='" + is_refund + "' " +
                 " UNION " +
-                "SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
+                "SELECT 'TRUE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
                 "p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync,p.pay_tip as pay_tip " + "FROM " + table_name_declined +
                 " p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id " +
                 "WHERE p.paymethod_id = m.paymethod_id AND " +
                 "(m.paymentmethod_type = 'AmericanExpress' OR m.paymentmethod_type = 'Discover' OR " +
                 "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
                 "AND pay_type !='1'  AND is_refund='" + is_refund + "' ");
-//
-//        if (isRefund)
-//            sb.append("1' ORDER BY p.pay_id DESC");
-//        else
-//            sb.append("0' ORDER BY p.pay_id DESC");
 
         return DBManager._db.rawQuery(sb.toString(), null);
     }
@@ -731,7 +718,7 @@ public class PaymentsHandler {
 
     public List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
 
-        List<PaymentDetails> list = new ArrayList<PaymentDetails>();
+        List<PaymentDetails> list = new ArrayList<>();
 
         Cursor cursor = DBManager._db.rawQuery("SELECT p.pay_id, p.pay_amount AS 'pay_amount', amount_tender,pm.paymethod_name AS 'paymethod_name'," +
                 "p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid'," +
