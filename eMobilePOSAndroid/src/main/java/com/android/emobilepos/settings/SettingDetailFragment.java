@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.emobilepos.app.R;
 import com.android.emobilepos.settings.dummy.DummyContent;
 
 /**
@@ -17,7 +16,7 @@ import com.android.emobilepos.settings.dummy.DummyContent;
  * in two-pane mode (on tablets) or a {@link SettingDetailActivity}
  * on handsets.
  */
-public class SettingDetailFragment extends Fragment {
+public class SettingDetailFragment extends android.support.v4.app.Fragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.

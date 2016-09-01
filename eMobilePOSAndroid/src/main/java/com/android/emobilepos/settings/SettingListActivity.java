@@ -12,9 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.emobilepos.app.R;
 
+import com.android.emobilepos.R;
 import com.android.emobilepos.settings.dummy.DummyContent;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class SettingListActivity extends Activity {
+public class SettingListActivity extends BaseFragmentActivityActionBar {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
