@@ -1207,6 +1207,8 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_setting_list">Settings</string>
+    <string name="title_setting_detail">Setting Detail</string>
 
 
 </resources>
