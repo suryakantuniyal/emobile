@@ -50,6 +50,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DeviceUtils;
@@ -273,7 +274,7 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
-        private List<String> macAddressList = new ArrayList<String>();
+        private List<String> macAddressList = new ArrayList<>();
         private CheckBoxPreference storeForwardFlag;
         private Preference openShiftPref, defaultCountry, storeForwardTransactions;
 
@@ -301,10 +302,14 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
         private void setPrefManager(SettingSection section, PreferenceManager prefManager) {
             switch (section) {
                 case GENERAL:
+                    prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
+
+//                    addPreferencesFromResource(R.xml.settings_admin_layout);
+//                    prefManager = getPreferenceManager();
 //                    prefManager.findPreference("pref_change_password").setOnPreferenceClickListener(this);
 //                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
 //                    prefManager.findPreference("pref_configure_cash_drawer").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
 //                    prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
 //                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
 //                    prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
@@ -349,7 +354,7 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
 //                            .findPreference("pref_store_and_forward_transactions");
 //                    storeForwardFlag = (CheckBoxPreference) prefManager.findPreference("pref_use_store_and_forward");
 //                    storeForwardTransactions.setOnPreferenceClickListener(this);
-//                    if (!myPref.storedAndForward(true, false)) {
+//                    if (!myPref.isPrefUseStoreForward()) {
 //                        ((PreferenceGroup) prefManager.findPreference("payment_section"))
 //                                .removePreference(storeForwardTransactions);
 //                        ((PreferenceGroup) prefManager.findPreference("payment_section"))
@@ -363,7 +368,7 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
 //                            if (newValue instanceof Boolean) {
 //                                if ((Boolean) newValue) {
 //                                    // sync Position Inventory
-//                                    DBManager dbManager = new DBManager(getActivity());
+//                                    DBManager dbManager = new DBManager(activity);
 //                                    SynchMethods sm = new SynchMethods(dbManager);
 //                                    sm.getLocationsInventory();
 //                                }
@@ -386,7 +391,7 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
                             .findPreference("pref_store_and_forward_transactions");
                     storeForwardFlag = (CheckBoxPreference) prefManager.findPreference("pref_use_store_and_forward");
                     storeForwardTransactions.setOnPreferenceClickListener(this);
-                    if (!myPref.storedAndForward(true, false)) {
+                    if (!myPref.isPrefUseStoreForward()) {
                         ((PreferenceGroup) prefManager.findPreference("payment_section"))
                                 .removePreference(storeForwardTransactions);
                         ((PreferenceGroup) prefManager.findPreference("payment_section"))
@@ -738,7 +743,7 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
             ListPreference lp = (ListPreference) getPreferenceManager()
                     .findPreference(MyPreferences.pref_default_payment_method);
             PayMethodsHandler handler = new PayMethodsHandler(getActivity());
-            List<String[]> list = handler.getPayMethod();
+            List<PaymentMethod> list = handler.getPayMethod();
             int size = list.size();
             CharSequence[] entries = new String[size + 1];
             CharSequence[] entriesValues = new String[size + 1];
@@ -746,8 +751,8 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
                 entries[0] = "None";
                 entriesValues[0] = "0";
                 for (int i = 0; i < size; i++) {
-                    entries[i + 1] = list.get(i)[1];
-                    entriesValues[i + 1] = list.get(i)[0];
+                    entries[i + 1] = list.get(i).getPaymethod_name();
+                    entriesValues[i + 1] = list.get(i).getPaymethod_id();
                 }
             }
             if (entries[0] == null || entriesValues[0] == null) {
@@ -1087,7 +1092,7 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
 
             List<String> pairedDevicesList = getListPairedDevices();
             final String[] val = pairedDevicesList.toArray(new String[pairedDevicesList.size()]);
-            bondedAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, val);
+            bondedAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, val);
             listViewPairedDevices.setAdapter(bondedAdapter);
 
             listViewPairedDevices.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -1260,7 +1265,7 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
         }
 
         private List<String> getListPairedDevices() {
-            List<String> nameList = new ArrayList<String>();
+            List<String> nameList = new ArrayList<>();
             try {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 Set<BluetoothDevice> bondedSet = bluetoothAdapter.getBondedDevices();
@@ -1300,8 +1305,6 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
         }
 
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
-
-            //            StringBuilder sb = new StringBuilder();
             private ProgressDialog progressDlog;
 
             @Override
@@ -1322,8 +1325,8 @@ public class SettingsActivity extends BaseFragmentActivityActionBar {
             @Override
             protected void onPostExecute(String result) {
                 progressDlog.dismiss();
-                if (result.toString().length() > 0)
-                    Global.showPrompt(getActivity(), R.string.dlog_title_confirm, result.toString());
+                if (result.length() > 0)
+                    Global.showPrompt(getActivity(), R.string.dlog_title_confirm, result);
             }
         }
 
