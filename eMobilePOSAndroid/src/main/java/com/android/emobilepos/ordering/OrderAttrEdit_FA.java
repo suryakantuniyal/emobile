@@ -581,7 +581,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
                             temp.setProductId(ordprod_id);
                             temp.setId(ordprodattr_id);
                             global.ordProdAttr.add(temp);
-                            product.requiredProductAttributes.add(temp);
+                            product.getRequiredProductAttributes().add(temp);
                         } else
                             global.ordProdAttr.get(modifyPosition).setValue(attr_value);
                     }

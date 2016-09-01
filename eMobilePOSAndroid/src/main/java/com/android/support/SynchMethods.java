@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
+import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.SalesAssociateTableDAO;
 import com.android.dao.UomDAO;
@@ -45,6 +46,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
@@ -118,6 +120,20 @@ public class SynchMethods {
     private Intent onHoldIntent;
     private Realm realm;
     private HttpClient client;
+    private Gson gson = JsonUtils.getInstance();
+//    new GsonBuilder()
+//            .setExclusionStrategies(new ExclusionStrategy() {
+//                @Override
+//                public boolean shouldSkipField(FieldAttributes f) {
+//                    return f.getDeclaringClass().equals(RealmObject.class);
+//                }
+//
+//                @Override
+//                public boolean shouldSkipClass(Class<?> clazz) {
+//                    return false;
+//                }
+//            }).setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+//            .create();
 
 
     public SynchMethods(DBManager managerInst) {
@@ -271,6 +287,7 @@ public class SynchMethods {
                 synchDownloadClerks(this);
                 synchDownloadSalesAssociate(this);
                 synchDownloadDinnerTable(this);
+                synchDownloadMixMatch(this);
                 synchDownloadTermsAndConditions(this);
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
@@ -536,8 +553,6 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             try {
                 sendReverse(this);
             } catch (Exception e) {
@@ -667,8 +682,6 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
@@ -894,17 +907,10 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             try {
-
-
                 synchLocations(this);
                 synchLocationsInventory(this);
-
-
             } catch (Exception e) {
-                // TODO Auto-generated catch block
             }
             return null;
         }
@@ -915,7 +921,6 @@ public class SynchMethods {
         }
 
     }
-
 
     /************************************
      * Send Methods
@@ -1402,6 +1407,7 @@ public class SynchMethods {
 
     }
 
+
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
             task.updateProgress(getString(R.string.sync_dload_item_price_levels));
@@ -1504,11 +1510,9 @@ public class SynchMethods {
             task.updateProgress(getString(R.string.sync_dload_products));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Products"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            Log.d("GSon Start Reading", new Date().toString());
             List<Product> products = new ArrayList<Product>();
             productsHandler.emptyTable();
             reader.beginArray();
@@ -1521,13 +1525,11 @@ public class SynchMethods {
                     productsHandler.insert(products);
                     products.clear();
                     i = 0;
-                    Log.d("GSon Insert 1000", new Date().toString());
                 }
             }
             productsHandler.insert(products);
             reader.endArray();
             reader.close();
-            Log.d("GSon Finish", new Date().toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1783,6 +1785,41 @@ public class SynchMethods {
         try {
             DinningTableDAO.truncate();
             DinningTableDAO.insert(jsonRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void synchDownloadMixMatch(resynchAsync task) throws SAXException, IOException {
+        try {
+            task.updateProgress(getString(R.string.sync_dload_mixmatch));
+            client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+
+
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getMixMatch());
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<MixMatch> mixMatches = new ArrayList<MixMatch>();
+            MixMatchDAO.truncate();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                MixMatch mixMatch = gson.fromJson(reader, MixMatch.class);
+                //TODO remove setDiscountOddsItems false
+//                mixMatch.setDiscountOddsItems(false);
+                mixMatches.add(mixMatch);
+                i++;
+                if (i == 1000) {
+                    MixMatchDAO.insert(mixMatches);
+                    mixMatches.clear();
+                    i = 0;
+                }
+            }
+            MixMatchDAO.insert(mixMatches);
+            reader.endArray();
+            reader.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

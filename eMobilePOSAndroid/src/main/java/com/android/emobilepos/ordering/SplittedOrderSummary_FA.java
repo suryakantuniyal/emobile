@@ -250,7 +250,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     private List<OrderProduct> getProductsBySeats(String seatNumber) {
         List<OrderProduct> seatProducts = new ArrayList<OrderProduct>();
         for (OrderSeatProduct product : orderSeatProducts) {
-            if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && product.orderProduct.assignedSeat.equalsIgnoreCase(seatNumber)) {
+            if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && product.orderProduct.getAssignedSeat().equalsIgnoreCase(seatNumber)) {
                 try {
                     seatProducts.add((OrderProduct) product.orderProduct.clone());
                 } catch (CloneNotSupportedException e) {
@@ -314,7 +314,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         List<OrderProduct> orderProducts = getProductsSingleReceipt();
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
-                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.itemSubtotal)).setScale(4, RoundingMode.HALF_UP);
+                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal())).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.ord_total = orderSubTotal.subtract(globalDiscountAmount).toString();
@@ -365,7 +365,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         List<OrderProduct> orderProducts = getProductsBySeatsGroup(seatProduct.getSeatGroupId());
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
-                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.itemSubtotal)).setScale(4, RoundingMode.HALF_UP);
+                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal())).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();
@@ -405,14 +405,14 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     List<OrderProduct> orderProducts = getProductsSingleReceipt();
                     BigDecimal orderSubTotal = new BigDecimal(0);
                     for (OrderProduct product : orderProducts) {
-                        BigDecimal itemSubtotal = new BigDecimal(product.itemSubtotal);
+                        BigDecimal itemSubtotal = new BigDecimal(product.getItemSubtotal());
                         itemSubtotal = itemSubtotal.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
 
-                        product.itemSubtotal = itemSubtotal.toString();
-                        product.overwrite_price = Global.getBigDecimalNum(product.overwrite_price).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
-                        product.prod_taxValue = product.prod_taxValue.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
-                        product.discount_value = Global.getBigDecimalNum(product.discount_value).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
-                        product.itemTotal = Global.getBigDecimalNum(product.itemTotal).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString();
+                        product.setItemSubtotal(itemSubtotal.toString());
+                        product.setOverwrite_price(product.getOverwrite_price().divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP));
+                        product.setProd_taxValue( product.getProd_taxValue().divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP));
+                        product.setDiscount_value(Global.getBigDecimalNum(product.getDiscount_value()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
+                        product.setItemTotal(Global.getBigDecimalNum(product.getItemTotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
 
                         orderSubTotal = orderSubTotal.add(itemSubtotal).setScale(4, RoundingMode.HALF_UP);
                     }

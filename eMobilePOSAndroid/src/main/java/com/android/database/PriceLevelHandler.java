@@ -130,24 +130,23 @@ public class PriceLevelHandler {
         DBManager._db.execSQL("DELETE FROM " + table_name);
     }
 
-    public List<String[]> getFixedPriceLevel(String prod_id) {
+    public List<PriceLevel> getFixedPriceLevel(String prod_id) {
 
-        List<String[]> list = new ArrayList<String[]>();
-        String[] data = new String[3];
+        List<PriceLevel> list = new ArrayList<PriceLevel>();
 
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT pl.pricelevel_name,pl.pricelevel_id,ROUND(((p.prod_price)+(p.prod_price*pl.pricelevel_fixedpct/100)),2) as result FROM Products p,PriceLevel pl WHERE  pl.pricelevel_type = 'FixedPercentage' AND p.prod_id = '");
         sb.append(prod_id).append("'");
 
         Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
-
+        PriceLevel data;
         if (cursor.moveToFirst()) {
             do {
-                data[0] = cursor.getString(cursor.getColumnIndex(pricelevel_name));
-                data[1] = cursor.getString(cursor.getColumnIndex(pricelevel_id));
-                data[2] = cursor.getString(cursor.getColumnIndex("result"));
+                data = new PriceLevel();
+                data.setPricelevelName(cursor.getString(cursor.getColumnIndex(pricelevel_name)));
+                data.setPricelevelId(cursor.getString(cursor.getColumnIndex(pricelevel_id)));
+                data.setCalcResult(cursor.getString(cursor.getColumnIndex("result")));
                 list.add(data);
-                data = new String[3];
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -162,11 +161,11 @@ public class PriceLevelHandler {
         cursor = DBManager._db.rawQuery(sb.toString(), null);
         if (cursor.moveToFirst()) {
             do {
-                data[0] = cursor.getString(cursor.getColumnIndex(pricelevel_name));
-                data[1] = cursor.getString(cursor.getColumnIndex(pricelevel_id));
-                data[2] = cursor.getString(cursor.getColumnIndexOrThrow("result"));
+                data=new PriceLevel();
+                data.setPricelevelName(cursor.getString(cursor.getColumnIndex(pricelevel_name)));
+                data.setPricelevelId( cursor.getString(cursor.getColumnIndex(pricelevel_id)));
+                data.setCalcResult(cursor.getString(cursor.getColumnIndex("result")));
                 list.add(data);
-                data = new String[3];
             } while (cursor.moveToNext());
         }
         cursor.close();

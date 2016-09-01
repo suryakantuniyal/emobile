@@ -77,6 +77,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.NumberUtils;
+import com.android.support.OrderProductUtils;
 import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
@@ -329,22 +330,24 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 }
             }
         } else {
-            switch ((Global.TransactionType) extras.get("option_number")) {
-                case SALE_RECEIPT: {
-                    caseSelected = Global.TransactionType.SALE_RECEIPT;
-                    Global.ord_type = Global.OrderType.SALES_RECEIPT;
-                    break;
-                }
-                case RETURN: {
-                    caseSelected = Global.TransactionType.RETURN;
-                    Global.ord_type = Global.OrderType.RETURN;
-                    break;
-                }
-                case INVOICE: {
-                    caseSelected = Global.TransactionType.SALE_RECEIPT;
-                    getActivity().setResult(2);
-                    Global.ord_type = Global.OrderType.SALES_RECEIPT;
-                    break;
+            if ((Global.TransactionType) extras.get("option_number") != null) {
+                switch ((Global.TransactionType) extras.get("option_number")) {
+                    case SALE_RECEIPT: {
+                        caseSelected = Global.TransactionType.SALE_RECEIPT;
+                        Global.ord_type = Global.OrderType.SALES_RECEIPT;
+                        break;
+                    }
+                    case RETURN: {
+                        caseSelected = Global.TransactionType.RETURN;
+                        Global.ord_type = Global.OrderType.RETURN;
+                        break;
+                    }
+                    case INVOICE: {
+                        caseSelected = Global.TransactionType.SALE_RECEIPT;
+                        getActivity().setResult(2);
+                        Global.ord_type = Global.OrderType.SALES_RECEIPT;
+                        break;
+                    }
                 }
             }
         }
@@ -424,7 +427,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private void overridePrice(final int position) {
         final EditText input = new EditText(activity);
         final HashMap<String, String> map = prodHandler
-                .getDiscountDetail(global.orderProducts.get(position).discount_id);
+                .getDiscountDetail(global.orderProducts.get(position).getDiscount_id());
 
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
@@ -572,7 +575,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(orderSeatProduct.seatNumber);
             mainLVAdapter.notifyDataSetChanged();
         } else {
-            String isVoidedItem = orderSeatProduct.orderProduct.item_void;
+            String isVoidedItem = orderSeatProduct.orderProduct.getItem_void();
             final HashMap<Integer, String> subMenus = new HashMap<>();
             if (!isVoidedItem.equals("1")) {
                 PopupMenu popup = new PopupMenu(getActivity(), view);
@@ -584,6 +587,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             case R.id.modifyProduct:
                                 Intent intent = new Intent(getActivity(),
                                         PickerProduct_FA.class);
+                                Gson gson = JsonUtils.getInstance();
+                                intent.putExtra("orderProduct", gson.toJson(orderSeatProduct.orderProduct));
                                 intent.putExtra("isModify", true);
                                 intent.putExtra("modify_position", orderProductIdx);
                                 startActivityForResult(intent, 0);
@@ -602,7 +607,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 int i = 0;
                                 for (OrderSeatProduct seatProduct : mainLVAdapter.orderSeatProductList) {
                                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
-                                        if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.orderProduct.assignedSeat)) {
+                                        if (!seatProduct.seatNumber.equalsIgnoreCase(orderSeatProduct.orderProduct.getAssignedSeat())) {
                                             item.getSubMenu().add(0, i, SubMenu.NONE, "Move items to seat " + seatProduct.seatNumber);
                                             subMenus.put(i, seatProduct.seatNumber);
                                             i++;
@@ -613,13 +618,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             case R.id.viewVariations:
                                 break;
                             case R.id.payWithLoyalty:
-                                if (!Boolean.parseBoolean(global.orderProducts.get(orderProductIdx).payWithPoints)) {
-                                    String price = orderSeatProduct.orderProduct.prod_price_points;
+                                if (!Boolean.parseBoolean(global.orderProducts.get(orderProductIdx).getPayWithPoints())) {
+                                    String price = orderSeatProduct.orderProduct.getProd_price_points();
                                     if (OrderLoyalty_FR.isValidPointClaim(price)) {
-                                        orderSeatProduct.orderProduct.overwrite_price = "0.00";
-                                        orderSeatProduct.orderProduct.itemTotal = "0.00";
-                                        orderSeatProduct.orderProduct.itemSubtotal = "0.00";
-                                        orderSeatProduct.orderProduct.payWithPoints = "true";
+                                        orderSeatProduct.orderProduct.setOverwrite_price(null);
+                                        orderSeatProduct.orderProduct.setItemTotal("0.00");
+                                        orderSeatProduct.orderProduct.setItemSubtotal("0.00");
+                                        orderSeatProduct.orderProduct.setPayWithPoints("true");
                                         refreshView();
                                     } else
                                         Global.showPrompt(activity,
@@ -644,7 +649,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 if (subMenus.containsKey(item.getItemId())) {
                                     String targetSeat = subMenus.get(item.getItemId());
                                     ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(targetSeat);
-                                    orderSeatProduct.orderProduct.assignedSeat = targetSeat;
+                                    orderSeatProduct.orderProduct.setAssignedSeat(targetSeat);
                                     orderSeatProduct.setSeatGroupId(mainLVAdapter.getSeat(targetSeat).getSeatGroupId());
                                     mainLVAdapter.notifyDataSetChanged();
                                 }
@@ -653,7 +658,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         return true;
                     }
                 });
-                popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Integer.parseInt(orderSeatProduct.orderProduct.prod_price_points) > 0);
+                popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Integer.parseInt(orderSeatProduct.orderProduct.getProd_price_points()) > 0);
                 popup.show();
 
             }
@@ -1061,7 +1066,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     if (consignmentType == Global.OrderType.CONSIGNMENT_PICKUP || consignmentType == Global.OrderType.CONSIGNMENT_FILLUP) {
                         processConsignment();
                         global.orderProducts = new ArrayList<>();
-                        global.qtyCounter = new HashMap<>();
+//                        global.qtyCounter = new HashMap<String, String>();
                         Intent intent = new Intent(activity,
                                 ConsignmentCheckout_FA.class);
                         intent.putExtra("consignmentType", consignmentType);
@@ -1115,7 +1120,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
         int totalLines = global.orderProducts.size();
         for (OrderProduct orderProduct : global.orderProducts) {
-            order.ord_lineItemDiscount += orderProduct.discount_value;
+            order.ord_lineItemDiscount += orderProduct.getDiscount_value();
         }
         if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
                 && Global.orderProductAddonsMap != null
@@ -1171,9 +1176,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         for (int i = 0; i < size; i++) {
             TransferInventory_Holder inventory = new TransferInventory_Holder();
             inventory.set(TransferInventory_DB.prod_id,
-                    global.orderProducts.get(i).prod_id);
+                    global.orderProducts.get(i).getProd_id());
             inventory.set(TransferInventory_DB.prod_qty,
-                    global.orderProducts.get(i).ordprod_qty);
+                    global.orderProducts.get(i).getOrdprod_qty());
             inventory.set(TransferInventory_DB.trans_id,
                     Global.transferLocation.get(TransferLocations_DB.trans_id));
             Global.transferInventory.add(inventory);
@@ -1197,8 +1202,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case ORDER:// Rack
                 Global.consignment_order = global.order;
                 Global.consignment_products = global.orderProducts;
-                Global.consignment_qtyCounter = new HashMap<>(
-                        global.qtyCounter);
+                Global.consignment_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.orderProducts);//new HashMap<String, String>(global.qtyCounter);
 
                 size2 = Global.custInventoryKey.size();
                 size = Global.consignment_products.size();
@@ -1206,13 +1210,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 double sold = 0;
                 for (int i = 0; i < size; i++) {
                     Global.consignMapKey
-                            .add(Global.consignment_products.get(i).prod_id);
+                            .add(Global.consignment_products.get(i).getProd_id());
                     tempMap.put("rack",
-                            Global.consignment_products.get(i).ordprod_qty);
+                            Global.consignment_products.get(i).getOrdprod_qty());
                     tempMap.put("rack_index", Integer.toString(i));
 
                     temp = Global.custInventoryMap.get(Global.consignment_products
-                            .get(i).prod_id);
+                            .get(i).getProd_id());
                     if (temp != null) {
                         sold = Double.parseDouble(temp[2])
                                 - Double.parseDouble(tempMap.get("rack"));
@@ -1222,19 +1226,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     }
 
                     tempMap.put("prod_id",
-                            Global.consignment_products.get(i).prod_id);
+                            Global.consignment_products.get(i).getProd_id());
                     tempMap.put("ordprod_name",
-                            Global.consignment_products.get(i).ordprod_name);
+                            Global.consignment_products.get(i).getOrdprod_name());
 
                     tempMap.put(
                             "invoice_total",
                             Double.toString(sold
                                     * Double.parseDouble(Global.consignment_products
-                                    .get(i).overwrite_price)));
+                                    .get(i).getFinalPrice())));
 
                     tempMap.put("prod_price",
-                            Global.consignment_products.get(i).overwrite_price);
-                    summaryMap.put(Global.consignment_products.get(i).prod_id,
+                            Global.consignment_products.get(i).getFinalPrice());
+                    summaryMap.put(Global.consignment_products.get(i).getProd_id(),
                             tempMap);
                     tempMap = new HashMap<>();
                 }
@@ -1247,7 +1251,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         if (temp[3] == null || temp[3].isEmpty())
                             temp[3] = prodHandler
                                     .getProductPrice(Global.consignment_products
-                                            .get(i).prod_id);
+                                            .get(i).getProd_id());
                         tempMap.put("invoice", temp[2]);
                         tempMap.put(
                                 "invoice_total",
@@ -1272,7 +1276,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case CONSIGNMENT_RETURN:// Returns
                 Global.cons_return_order = global.order;
                 Global.cons_return_products = global.orderProducts;
-                Global.cons_return_qtyCounter = global.qtyCounter;
+                Global.cons_return_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.orderProducts);//global.qtyCounter;
 
                 size = Global.cons_return_products.size();
                 double invoiceTotal,
@@ -1280,17 +1284,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 for (int i = 0; i < size; i++) {
                     tempMap = Global.consignSummaryMap
-                            .get(Global.cons_return_products.get(i).prod_id);
+                            .get(Global.cons_return_products.get(i).getProd_id());
                     if (tempMap == null) {
                         tempMap = new HashMap<>();
                         Global.consignMapKey
-                                .add(Global.cons_return_products.get(i).prod_id);
+                                .add(Global.cons_return_products.get(i).getProd_id());
                         tempMap.put("prod_id",
-                                Global.cons_return_products.get(i).prod_id);
+                                Global.cons_return_products.get(i).getProd_id());
                         tempMap.put("ordprod_name",
-                                Global.cons_return_products.get(i).ordprod_name);
+                                Global.cons_return_products.get(i).getOrdprod_name());
                         tempMap.put("prod_price",
-                                Global.cons_return_products.get(i).overwrite_price);
+                                Global.cons_return_products.get(i).getFinalPrice());
                     } else {
                         invoiceTotal = Double.parseDouble(tempMap
                                 .get("invoice_total"));
@@ -1298,19 +1302,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         invoiceTotal -= Double.parseDouble(tempMap
                                 .get("prod_price"))
                                 * Double.parseDouble(Global.cons_return_products
-                                .get(i).ordprod_qty);
+                                .get(i).getOrdprod_qty());
                         invoiceQty -= Double
                                 .parseDouble(Global.cons_return_qtyCounter
-                                        .get(Global.cons_return_products.get(i).prod_id));
+                                        .get(Global.cons_return_products.get(i).getProd_id()));
                         tempMap.put("invoice", Double.toString(invoiceQty));
                         tempMap.put("invoice_total", Double.toString(invoiceTotal));
                     }
                     tempMap.put("return",
-                            Global.cons_return_products.get(i).ordprod_qty);
+                            Global.cons_return_products.get(i).getOrdprod_qty());
                     tempMap.put("return_index", Integer.toString(i));
 
                     Global.consignSummaryMap.put(
-                            Global.cons_return_products.get(i).prod_id, tempMap);
+                            Global.cons_return_products.get(i).getProd_id(), tempMap);
                 }
                 Global.lastOrdID = "";
 
@@ -1319,7 +1323,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case CONSIGNMENT_FILLUP:// Fill-up
                 Global.cons_fillup_order = global.order;
                 Global.cons_fillup_products = global.orderProducts;
-                Global.cons_fillup_qtyCounter = global.qtyCounter;
+                Global.cons_fillup_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.orderProducts);//global.qtyCounter;
 
                 Global.custInventoryList = new ArrayList<>();
                 custInventory = new CustomerInventory();
@@ -1334,24 +1338,24 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 for (int i = 0; i < size; i++) {
                     tempMap = Global.consignSummaryMap
-                            .get(Global.cons_fillup_products.get(i).prod_id);
+                            .get(Global.cons_fillup_products.get(i).getProd_id());
                     if (tempMap == null) {
                         tempMap = new HashMap<>();
                         Global.consignMapKey
-                                .add(Global.cons_fillup_products.get(i).prod_id);
+                                .add(Global.cons_fillup_products.get(i).getProd_id());
                         tempMap.put("prod_id",
-                                Global.cons_fillup_products.get(i).prod_id);
+                                Global.cons_fillup_products.get(i).getProd_id());
                         tempMap.put("ordprod_name",
-                                Global.cons_fillup_products.get(i).ordprod_name);
+                                Global.cons_fillup_products.get(i).getOrdprod_name());
                         // tempMap.put("prod_price",
                         // Global.cons_fillup_products.get(i).getSetData("overwrite_price",
                         // true, null));
                     }
 
                     tempMap.put("fillup",
-                            Global.cons_fillup_products.get(i).ordprod_qty);
+                            Global.cons_fillup_products.get(i).getOrdprod_qty());
                     tempMap.put("prod_price",
-                            Global.cons_fillup_products.get(i).overwrite_price);
+                            Global.cons_fillup_products.get(i).getFinalPrice());
                     if (tempMap.get("invoice") != null)
                         invoiceTotalTemp = Double.parseDouble(tempMap
                                 .get("invoice"))
@@ -1362,9 +1366,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     tempMap.put("invoice_total", Double.toString(invoiceTotalTemp));
                     tempMap.put("fillup_index", Integer.toString(i));
 
-                    Global.cons_fillup_products.get(i).ord_id = Global.lastOrdID;
+                    Global.cons_fillup_products.get(i).setOrd_id(Global.lastOrdID);
                     Global.consignSummaryMap.put(
-                            Global.cons_fillup_products.get(i).prod_id, tempMap);
+                            Global.cons_fillup_products.get(i).getProd_id(), tempMap);
                 }
 
                 String tempProdID;
@@ -1407,7 +1411,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             case CONSIGNMENT_PICKUP:// pickup
                 Global.consignment_order = global.order;
                 Global.consignment_products = global.orderProducts;
-                Global.consignment_qtyCounter = global.qtyCounter;
+                Global.consignment_qtyCounter = OrderProductUtils.getProductQtyHashMap(global.orderProducts);//global.qtyCounter;
 
                 size = Global.consignment_products.size();
 
@@ -1416,18 +1420,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 for (int i = 0; i < size; i++) {
                     Global.consignMapKey
-                            .add(Global.consignment_products.get(i).prod_id);
+                            .add(Global.consignment_products.get(i).getProd_id());
                     tempMap.put("pickup",
-                            Global.consignment_products.get(i).ordprod_qty);
+                            Global.consignment_products.get(i).getOrdprod_qty());
                     tempMap.put("prod_id",
-                            Global.consignment_products.get(i).prod_id);
+                            Global.consignment_products.get(i).getProd_id());
                     tempMap.put("ordprod_name",
-                            Global.consignment_products.get(i).ordprod_name);
+                            Global.consignment_products.get(i).getOrdprod_name());
                     tempMap.put("prod_price",
-                            Global.consignment_products.get(i).overwrite_price);
+                            Global.consignment_products.get(i).getFinalPrice());
 
                     temp = Global.custInventoryMap.get(Global.consignment_products
-                            .get(i).prod_id);
+                            .get(i).getProd_id());
                     if (temp != null) {
                         tempMap.put("original_qty", temp[2]);
                         custInventory.prod_id = tempMap.get("prod_id");
@@ -1442,7 +1446,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         custInventory = new CustomerInventory();
                     }
 
-                    summaryMap.put(Global.consignment_products.get(i).prod_id,
+                    summaryMap.put(Global.consignment_products.get(i).getProd_id(),
                             tempMap);
 
                     tempMap = new HashMap<>();
@@ -1500,7 +1504,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         }
 
         global.orderProducts = new ArrayList<>();
-        global.qtyCounter = new HashMap<>();
+//        global.qtyCounter = new HashMap<>();
         if (mainLVAdapter != null)
             mainLVAdapter.notifyDataSetChanged();
         else
@@ -1554,7 +1558,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         EmpInvHandler eiHandler = new EmpInvHandler(activity);
         int size = orderProducts.size();
         for (int i = 0; i < size; i++) {
-            eiHandler.updateOnHand(orderProducts.get(i).prod_id, orderProducts.get(i).ordprod_qty, isIncrement);
+            eiHandler.updateOnHand(orderProducts.get(i).getProd_id(), orderProducts.get(i).getOrdprod_qty(), isIncrement);
         }
     }
 
@@ -1681,7 +1685,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.CHECKOUT
                 || ((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.BACK_PRESSED) {
             global.orderProducts = new ArrayList<>();
-            global.qtyCounter.clear();
+//            global.qtyCounter.clear();
             global.resetOrderDetailsValues();
         }
         DBManager dbManager = new DBManager(activity);
@@ -2043,43 +2047,29 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private void proceedToRemove(int pos, int removePos) {
         OrderProduct product = global.orderProducts.get(removePos);
-        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
-            double totalQty = (Double) Global.getFormatedNumber(true,
-                    global.qtyCounter.get(product.prod_id));
-            double qty = Double.parseDouble(product.ordprod_qty);
-            double sum = totalQty - qty;
-            global.qtyCounter.put(product.prod_id, Double.toString(sum));
-        } else {
-            int totalQty = (Integer) Global.getFormatedNumber(false,
-                    global.qtyCounter.get(product.prod_id));
-            int qty = Integer.parseInt(product.ordprod_qty);
-            int sum = totalQty - qty;
-
-            global.qtyCounter.put(product.prod_id, Integer.toString(sum));
-        }
 
         if (myPref
                 .getPreferences(MyPreferences.pref_show_removed_void_items_in_printout)) {
-            product.item_void = "1";
-            String val = product.ordprod_name;
+            product.setItem_void("1");
+            String val = product.getOrdprod_name();
 
-            product.ordprod_name = val + " [VOIDED]";
-            product.overwrite_price = "0";
+            product.setOrdprod_name(val + " [VOIDED]");
+            product.setOverwrite_price(null);
         } else {
             OrderProductsHandler ordProdDB = new OrderProductsHandler(activity);
-            ordProdDB.deleteOrderProduct(product.ordprod_id);
+            ordProdDB.deleteOrderProduct(product.getOrdprod_id());
 
             if (Global.addonSelectionMap != null)
-                Global.addonSelectionMap.remove(product.ordprod_id);
+                Global.addonSelectionMap.remove(product.getOrdprod_id());
             if (Global.orderProductAddonsMap != null
                     && !Global.orderProductAddonsMap.isEmpty()) {
-                if (Global.orderProductAddonsMap.get(product.ordprod_id) != null)
+                if (Global.orderProductAddonsMap.get(product.getOrdprod_id()) != null)
                     for (OrderProduct op : Global.orderProductAddonsMap
-                            .get(product.ordprod_id)) {
-                        ordProdDB.deleteOrderProduct(op.ordprod_id);
+                            .get(product.getOrdprod_id())) {
+                        ordProdDB.deleteOrderProduct(op.getOrdprod_id());
                     }
 
-                Global.orderProductAddonsMap.remove(product.ordprod_id);
+                Global.orderProductAddonsMap.remove(product.getOrdprod_id());
             }
             global.orderProducts.remove(product);
         }
@@ -2150,32 +2140,32 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     OrderProduct ordProd = new OrderProduct();
                     Orders anOrder = new Orders();
                     for (int i = 0; i < size; i++) {
-                        ordProd.ordprod_id = mapList.get(i).get("ordprod_id");
-                        ordProd.prod_id = mapList.get(i).get("prod_id");
-                        ordProd.ordprod_name = mapList.get(i).get("prod_name");
-                        ordProd.overwrite_price = mapList.get(i).get(
-                                "overwrite_price");
-                        ordProd.ordprod_qty = mapList.get(i).get("ordprod_qty");
-                        ordProd.itemTotal = mapList.get(i).get("itemTotal");
-                        ordProd.itemSubtotal = mapList.get(i).get(
-                                "itemSubtotal");
-                        ordProd.ord_id = mapList.get(i).get("ord_id");
-                        ordProd.ordprod_desc = mapList.get(i).get(
-                                "ordprod_desc");
-                        ordProd.prod_istaxable = mapList.get(i).get(
-                                "prod_istaxable");
+                        ordProd.setOrdprod_id(mapList.get(i).get("ordprod_id"));
+                        ordProd.setProd_id(mapList.get(i).get("prod_id"));
+                        ordProd.setOrdprod_name(mapList.get(i).get("prod_name"));
+                        ordProd.setOverwrite_price(new BigDecimal(mapList.get(i).get(
+                                "overwrite_price")));
+                        ordProd.setOrdprod_qty(mapList.get(i).get("ordprod_qty"));
+                        ordProd.setItemTotal(mapList.get(i).get("itemTotal"));
+                        ordProd.setItemSubtotal(mapList.get(i).get(
+                                "itemSubtotal"));
+                        ordProd.setOrd_id(mapList.get(i).get("ord_id"));
+                        ordProd.setOrdprod_desc(mapList.get(i).get(
+                                "ordprod_desc"));
+                        ordProd.setProd_istaxable(mapList.get(i).get(
+                                "prod_istaxable"));
 
                         anOrder.setValue(mapList.get(i).get("prod_price"));
                         anOrder.setQty(mapList.get(i).get("ordprod_qty"));
 
-                        ordProd.tax_position = "0";
-                        ordProd.discount_position = "0";
-                        ordProd.pricelevel_position = "0";
-                        ordProd.uom_position = "0";
+                        ordProd.setTax_position("0");
+                        ordProd.setDiscount_position("0");
+                        ordProd.setPricelevel_position("0");
+                        ordProd.setUom_position("0");
 
                         global.orderProducts.add(ordProd);
-                        global.qtyCounter.put(mapList.get(i).get("prod_id"),
-                                mapList.get(i).get("ordprod_qty"));
+//                        global.qtyCounter.put(mapList.get(i).get("prod_id"),
+//                                mapList.get(i).get("ordprod_qty"));
 
                         ordProd = new OrderProduct();
                         anOrder = new Orders();
@@ -2219,6 +2209,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     }
 
     public void refreshView() {
+        reCalculate();
         if (((OrderingMain_FA) activity).isToGo && !mainLVAdapter.isEmpty()) {
             mainLVAdapter.selectedPosition = mainLVAdapter.getCount();
         }
@@ -2227,7 +2218,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
         } else
             restLVAdapter.notifyDataSetChanged();
-        reCalculate();
     }
 
     private void reloadDefaultTransaction() {
@@ -2286,7 +2276,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public BigDecimal applyRewardDiscount(BigDecimal rewardAmount, List<OrderProduct> orderProducts) {
         BigDecimal discountedAmount = new BigDecimal(0);
         for (OrderProduct product : orderProducts) {
-            BigDecimal price = Global.getBigDecimalNum(product.prod_price);
+            BigDecimal price = Global.getBigDecimalNum(product.getProd_price());
             BigDecimal newPrice;
             if (rewardAmount.compareTo(price) < 0) {
                 newPrice = price.subtract(rewardAmount);

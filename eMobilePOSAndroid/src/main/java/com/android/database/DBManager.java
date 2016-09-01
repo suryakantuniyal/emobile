@@ -11,7 +11,6 @@ import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 
 import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDatabaseHook;
 import net.sqlcipher.database.SQLiteDiskIOException;
 
 import org.apache.commons.io.FileUtils;
@@ -392,7 +391,7 @@ public class DBManager {
             + "[inv_update] [datetime] NULL)";
 
     private final String CREATE_ORDERPRODUCTS = "CREATE TABLE [OrderProduct]( [ordprod_id] [uniqueidentifier] PRIMARY KEY NOT NULL, "
-            + "[addon_ordprod_id] [varchar](50), [prod_id] [varchar](50) NOT NULL, [ord_id] [varchar](50) NOT NULL, [ordprod_qty] [real] NOT NULL, [overwrite_price] [money] NOT NULL, "
+            + "[addon_ordprod_id] [varchar](50), [prod_id] [varchar](50) NOT NULL, [ord_id] [varchar](50) NOT NULL, [ordprod_qty] [real] NOT NULL, [overwrite_price] [money] NULL, "
             + "[reason_id] [int] NULL, [ordprod_desc] [varchar](4095) NULL, [pricelevel_id] [varchar](50) NULL, [prod_seq] [int] NULL, "
             + "[uom_name] [varchar](50) NULL, [uom_conversion] [real] NULL, [discount_id] [varchar](50) NULL, [discount_value] [money] NULL, "
             + "[item_void] [tinyint] NULL, [isPrinted] [bit] NULL, [cat_id] [varchar](50) NULL, [cat_name] [varchar](50) NULL, [addon] [bit] NULL, "
@@ -490,7 +489,7 @@ public class DBManager {
             + "[prod_taxcode] [varchar](50) NULL, [prod_taxtype] [varchar](50) NULL, [prod_glaccount] [varchar](50) NULL, [prod_mininv] [int] NULL, "
             + "[prod_update] [datetime] NULL, [isactive] [int] NULL, [prod_showOnline] [tinyint] NULL, [prod_ispromo] [tinyint] NULL, "
             + "[prod_shipping] [tinyint] NULL, [prod_weight] [real] NULL, [prod_expense] [bit] NULL, [prod_disc_type_points] [varchar](255) NULL, "
-            + "[prod_price_points] [int] NULL, [prod_value_points] [int] NULL)";
+            + "[prod_price_points] [int] NULL, [prod_value_points] [int] NULL, [prod_prices_group_id] [varchar](50) NULL)";
 
     private final String CREATE_PRODUCTALIASES = "CREATE TABLE [ProductAliases] ([alias_id_pk] INTEGER PRIMARY KEY AUTOINCREMENT,"
             + "[prod_id] [varchar](50), [prod_alias] [varchar](50))";
