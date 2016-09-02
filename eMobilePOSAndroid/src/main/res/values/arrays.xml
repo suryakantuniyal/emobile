@@ -1,15 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="settingsSectionsArray">
+    <string-array name="settingsSectionsAdminArray">
         <item name="generalSettings">General Settings</item>
         <item name="restaurantSettings">Restaurant Settings</item>
         <item name="giftcardSettings">Gift Card Settings</item>
-        <item name="paymentsSettings">Payments Settings</item>
+        <item name="paymentsMethodsSettings">Payments Methods</item>
+        <item name="paymentProcessingSettings">Payment Processing</item>
         <item name="printingSettings">Printing Settings</item>
         <item name="productsSettings">Products Settings</item>
-        <item name="othersSettings">Others Settings</item>
-
+        <item name="accountSettings">Account Settings</item>
+        <item name="cashDrawerSettings">Cash Drawer</item>
+        <item name="kioskSettings">Kiosk Configuration</item>
+        <item name="shiftsSettings">Shifts</item>
+        <item name="shippingCalculationSettings">Shipping Calculation</item>
+        <item name="transactionSettings">Transaction Settings</item>
+        <item name="handpointSettings">Handpoint Tools</item>
+        <item name="supportSettings">Support Troubleshooting</item>
+        <item name="othersSettings">Other Settings</item>
     </string-array>
+
+    <string-array name="settingsSectionsManagerArray">
+        <item name="printingSettings">Printing Settings</item>
+        <item name="cashDrawerSettings">Cash Drawer</item>
+        <item name="shiftsSettings">Shifts</item>
+        <item name="othersSettings">Other Settings</item>
+    </string-array>
+
+    <string-array name="settingsSectionsGeneralArray">
+        <item name="paymentProcessingSettings">Payment Processing</item>
+        <item name="othersSettings">Other Settings</item>
+        <item name="printingSettings">Printing Settings</item>
+    </string-array>
+
     <string-array name="mainMenuArray">
         <item name="menu_sales_receipt">Sales Receipt</item>
         <item name="menu_order">Order</item>

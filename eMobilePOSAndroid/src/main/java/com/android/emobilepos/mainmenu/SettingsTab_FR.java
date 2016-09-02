@@ -45,7 +45,7 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 			promptPassword(CASE_MANAGER);
 			break;
 		case R.id.btnGeneralSetting:
-			Intent intent = new Intent(getActivity(), SettingsActivity.class);
+			Intent intent = new Intent(getActivity(), SettingListActivity.class);
 			intent.putExtra("settings_type", CASE_GENERAL);
 			startActivity(intent);
 			break;

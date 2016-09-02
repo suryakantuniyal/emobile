@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_cash_drawer">
+        <Preference
+            android:key="pref_open_cash_drawer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_open_cash_drawer" />
+        <Preference
+            android:key="pref_configure_cash_drawer"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_cash_drawer" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

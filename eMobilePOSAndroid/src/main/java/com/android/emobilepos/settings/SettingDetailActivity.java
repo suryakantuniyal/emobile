@@ -38,7 +38,7 @@ public class SettingDetailActivity extends BaseFragmentActivityActionBar {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            SettingsActivity.PrefsFragment fragment = new SettingsActivity.PrefsFragment();
+            SettingListActivity.PrefsFragment fragment = new SettingListActivity.PrefsFragment();
             Bundle extras = getIntent().getExtras();
             int section = extras.getInt("section");
             arguments.putInt("section", section);
