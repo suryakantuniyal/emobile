@@ -263,7 +263,7 @@ public class StoredPaymentsDAO {
         StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
         storeAndForward.setPaymentType(paymentType);
         storeAndForward.setPaymentXml(payment.getPayment_xml());
-        storeAndForward.setPayment(realm.copyToRealm(payment));
+        storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
         storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
         storeAndForward.setRetry(false);
         storeAndForward.setCreationDate(new Date());
@@ -278,4 +278,5 @@ public class StoredPaymentsDAO {
         storeAndForward.setRetry(true);
         realm.commitTransaction();
     }
+
 }

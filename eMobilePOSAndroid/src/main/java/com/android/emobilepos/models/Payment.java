@@ -20,7 +20,7 @@ public class Payment extends RealmObject {
 
 
     private static final long serialVersionUID = 1L;
-    @Index
+    @PrimaryKey
     private String pay_id = "";
     private String group_pay_id = "";
     private String original_pay_id = "";
@@ -296,6 +296,9 @@ public class Payment extends RealmObject {
         this.paymentMethod = Realm.getDefaultInstance()
                 .where(PaymentMethod.class)
                 .equalTo("paymethod_id", paymethod_id).findFirst();
+        if(!this.isValid()){
+            this.paymentMethod = Realm.getDefaultInstance().copyFromRealm(this.getPaymentMethod());
+        }
         this.paymethod_id = paymethod_id;
     }
 
