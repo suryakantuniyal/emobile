@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="settingsSectionsArray">
+        <item name="generalSettings">General Settings</item>
+        <item name="restaurantSettings">Restaurant Settings</item>
+        <item name="giftcardSettings">Gift Card Settings</item>
+        <item name="paymentsSettings">Payments Settings</item>
+        <item name="printingSettings">Printing Settings</item>
+        <item name="productsSettings">Products Settings</item>
+        <item name="othersSettings">Others Settings</item>
 
+    </string-array>
     <string-array name="mainMenuArray">
         <item name="menu_sales_receipt">Sales Receipt</item>
         <item name="menu_order">Order</item>

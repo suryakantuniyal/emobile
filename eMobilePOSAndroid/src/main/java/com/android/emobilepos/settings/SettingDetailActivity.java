@@ -38,11 +38,17 @@ public class SettingDetailActivity extends BaseFragmentActivityActionBar {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(SettingDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(SettingDetailFragment.ARG_ITEM_ID));
-            SettingDetailFragment fragment = new SettingDetailFragment();
+            SettingsActivity.PrefsFragment fragment = new SettingsActivity.PrefsFragment();
+            Bundle extras = getIntent().getExtras();
+            int section = extras.getInt("section");
+            arguments.putInt("section", section);
             fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
+
+//            arguments.putString(SettingDetailFragment.ARG_ITEM_ID,
+//                    getIntent().getStringExtra(SettingDetailFragment.ARG_ITEM_ID));
+//            SettingDetailFragment fragment = new SettingDetailFragment();
+//            fragment.setArguments(arguments);
+            getFragmentManager().beginTransaction()
                     .add(R.id.setting_detail_container, fragment)
                     .commit();
         }

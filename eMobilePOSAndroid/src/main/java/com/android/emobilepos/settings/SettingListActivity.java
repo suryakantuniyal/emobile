@@ -17,6 +17,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.settings.dummy.DummyContent;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,6 +37,39 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
      */
     private boolean mTwoPane;
 
+    private enum SettingSection {
+        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENTS(3), PRINTING(4), PRODUCTS(5), OTHERS(6);
+        int code;
+
+        SettingSection(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static SettingSection getInstance(int code) {
+            switch (code) {
+                case 0:
+                    return GENERAL;
+                case 1:
+                    return RESTAURANT;
+                case 2:
+                    return GIFTCARD;
+                case 3:
+                    return PAYMENTS;
+                case 4:
+                    return PRINTING;
+                case 5:
+                    return PRODUCTS;
+                case 6:
+                    return OTHERS;
+                default:
+                    return GENERAL;
+            }
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,15 +89,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsArray))));
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<String> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<String> items) {
             mValues = items;
         }
 
@@ -74,26 +109,35 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mIdView.setText(mValues.get(position));
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putString(SettingDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-                        SettingDetailFragment fragment = new SettingDetailFragment();
-                        fragment.setArguments(arguments);
-                        getSupportFragmentManager().beginTransaction()
+                        SettingsActivity.PrefsFragment fragment = new SettingsActivity.PrefsFragment();
+                        Bundle args = new Bundle();
+                        args.putInt("section", SettingSection.getInstance(position).getCode());
+                        fragment.setArguments(args);
+
+//                        Bundle arguments = new Bundle();
+//                        arguments.putString(SettingDetailFragment.ARG_ITEM_ID, holder.mItem);
+//                        SettingDetailFragment fragment = new SettingDetailFragment();
+//                        fragment.setArguments(arguments);
+                        getFragmentManager().beginTransaction()
                                 .replace(R.id.setting_detail_container, fragment)
                                 .commit();
                     } else {
+//                        SettingsActivity.PrefsFragment fragment = new SettingsActivity.PrefsFragment();
+//                        Bundle args = new Bundle();
+//                        args.putInt("section", SettingSection.getInstance(position).getCode());
+//                        fragment.setArguments(args);
+
                         Context context = v.getContext();
                         Intent intent = new Intent(context, SettingDetailActivity.class);
-                        intent.putExtra(SettingDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        intent.putExtra("section", SettingSection.getInstance(position).getCode());
 
                         context.startActivity(intent);
                     }
@@ -109,19 +153,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
             public final TextView mIdView;
-            public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public String mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
                 mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
             }
 
             @Override
             public String toString() {
-                return super.toString() + " '" + mContentView.getText() + "'";
+                return super.toString();
             }
         }
     }

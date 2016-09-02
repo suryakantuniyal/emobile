@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.settings.SettingListActivity;
 import com.android.emobilepos.settings.SettingsActivity;
 import com.android.support.MyPreferences;
 
@@ -87,7 +88,7 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 				globalDlog.dismiss();
 				String pass = viewField.getText().toString();
 				if (!pass.isEmpty()) {
-					Intent intent = new Intent(getActivity(), SettingsActivity.class);
+					Intent intent = new Intent(getActivity(), SettingListActivity.class);
 					if (type == CASE_ADMIN && myPref.getPOSAdminPass().equals(pass.trim())) {
 						intent.putExtra("settings_type", CASE_ADMIN);
 						startActivity(intent);
