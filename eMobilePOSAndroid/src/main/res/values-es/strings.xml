@@ -1277,6 +1277,7 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="error_processing_payment">Error processing payment</string>
 
 
 </resources>
