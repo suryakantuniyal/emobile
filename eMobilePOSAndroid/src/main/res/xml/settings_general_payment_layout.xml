@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="payment_section"
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_payment_processing">
+        <CheckBoxPreference
+            android:key="pref_prefill_total_amount"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_prefill_total_amount" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
