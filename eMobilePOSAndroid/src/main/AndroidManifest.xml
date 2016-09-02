@@ -477,9 +477,7 @@
         </receiver>
 
         <activity android:name=".payment.TipAdjustmentFA" />
-        <activity
-            android:name=".settings.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+
         <activity
             android:name=".settings.SettingListActivity"
             android:label="@string/title_setting_list"></activity>
