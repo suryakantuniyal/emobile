@@ -1110,7 +1110,6 @@ public class Global extends MultiDexApplication {
             double sum = Double.parseDouble(pickedQty) + previousQty;
             sum = OrderingMain_FA.returnItem ? sum * -1 : sum;
 
-            value = "";
             if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                 value = Global.formatNumber(true, sum);
                 this.orderProducts.get(orderIndex).ordprod_qty = value;
@@ -1161,7 +1160,7 @@ public class Global extends MultiDexApplication {
             itemTotal = 0.00;
 
         orderedProducts.itemSubtotal = Double.toString(itemTotal);
-        double discountRate = 0;
+        double discountRate;
         if (orderedProducts.discount_is_fixed.equals("1")) {
             discountRate = Double.parseDouble(orderedProducts.discount_value);
         } else {
@@ -1323,13 +1322,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-    public double getDouble(String val) {
-        double ans = 0.00;
-        if (!val.isEmpty()) {
-            ans = Double.parseDouble(val);
-        }
-        return ans;
-    }
 
     public List<HashMap<String, Integer>> dictionary;
 
@@ -1416,9 +1408,8 @@ public class Global extends MultiDexApplication {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
-        String imageEncoded = Base64.encodeBytes(b);
 
-        return imageEncoded;
+        return Base64.encodeBytes(b);
     }
 
     public static Bitmap decodeBase64Bitmap(String input) {
@@ -1427,7 +1418,6 @@ public class Global extends MultiDexApplication {
         try {
             decodedByte = Base64.decode(input);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
