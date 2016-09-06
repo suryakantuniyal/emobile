@@ -86,6 +86,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private BigDecimal mixMatchOriginalPrice;
     private List<MixAndMatchDiscount> mixAndMatchDiscounts;
     private String productPriceLevelTotal;
+    private String parentAddonOrderProductId;
 
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
@@ -108,6 +109,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public String consignment_qty;
     public String prod_extradesc;
+
     public OrderProduct() {
 
     }
@@ -750,5 +752,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public boolean isAdded() {
         return !TextUtils.isEmpty(isAdded) && isAdded.equalsIgnoreCase("1");
+    }
+
+    public String getParentAddonOrderProductId() {
+        return parentAddonOrderProductId;
+    }
+
+    public void setParentAddonOrderProductId(String parentAddonOrderProductId) {
+        this.parentAddonOrderProductId = parentAddonOrderProductId;
     }
 }
