@@ -757,8 +757,19 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 if (!emailInput.getText().toString().isEmpty()) {
                     if (checkEmail(emailInput.getText().toString())) {
-                        Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
-                        processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                        if (isToGo) {
+                            Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                            processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
+                        } else {
+                            if (global.orderProducts != null && global.orderProducts.size() > 0) {
+                                Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
+                                processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
+
+                            } else
+                                Toast.makeText(activity,
+                                        getString(R.string.warning_empty_products),
+                                        Toast.LENGTH_SHORT).show();
+                        }
                     } else
                         Toast.makeText(activity,
                                 getString(R.string.warning_email_invalid),
@@ -768,7 +779,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         Order order = buildOrder(getActivity(), global, emailInput.getText().toString(), ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
                         processOrder(order, emailInput.getText().toString(), OrderingMain_FA.OrderingAction.CHECKOUT, Global.isFromOnHold, false);
                     } else {
-//                        global.order = buildOrder(getActivity(), global, myPref, emailInput.getText().toString());
                         if (global.orderProducts != null && global.orderProducts.size() > 0) {
                             Order order = buildOrder(getActivity(), global, "", ord_HoldName, ((OrderingMain_FA) activity).getSelectedDinningTableNumber(), ((OrderingMain_FA) activity).getAssociateId());
                             processOrder(order, "", OrderingMain_FA.OrderingAction.HOLD, Global.isFromOnHold, false);
@@ -777,7 +787,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             Toast.makeText(activity,
                                     getString(R.string.warning_empty_products),
                                     Toast.LENGTH_SHORT).show();
-
                     }
                 }
             }
