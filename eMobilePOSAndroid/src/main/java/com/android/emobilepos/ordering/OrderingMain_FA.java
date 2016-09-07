@@ -42,7 +42,6 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -64,6 +63,7 @@ import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.OrderProductUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -1022,7 +1022,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     public boolean validAutomaticAddQty(Product product) {
-        String addedQty = global.qtyCounter.get(product.getId()) == null ? "0" : global.qtyCounter.get(product.getId());
+        List<OrderProduct> list = OrderProductUtils.getOrderProducts(global.orderProducts, product.getId());
+        String addedQty = list.isEmpty() ? "0" : list.get(0).getOrdprod_qty();
         double newQty = Double.parseDouble(addedQty) + 1;
         double onHandQty = Double.parseDouble(product.getProdOnHand());
         return !((myPref.getPreferences(MyPreferences.pref_limit_products_on_hand) && !product.getProdType().equals("Service")
@@ -1237,27 +1238,27 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         populateCardInfo();
 
         if (isLoyaltyCard)
-            payment.paymethod_id = PayMethodsHandler.getPayMethodID("LoyaltyCard");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("LoyaltyCard"));
         else
-            payment.paymethod_id = PayMethodsHandler.getPayMethodID("Reward");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("Reward"));
 
-        payment.pay_name = cardInfoManager.getCardOwnerName();
-        payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+        payment.setPay_name(cardInfoManager.getCardOwnerName());
+        payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-        payment.ccnum_last4 = cardInfoManager.getCardLast4();
-        payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        payment.pay_expyear = cardInfoManager.getCardExpYear();
-        payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+        payment.setCcnum_last4(cardInfoManager.getCardLast4());
+        payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+        payment.setPay_expyear(cardInfoManager.getCardExpYear());
+        payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-        payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        payment.track_two = cardInfoManager.getEncryptedAESTrack2();
+        payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+        payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
         String cardType = "LoyaltyCard";
         if (!isLoyaltyCard)
             cardType = "Reward";
 
-        payment.card_type = cardType;
-        payment.pay_type = "0";
+        payment.setCard_type(cardType);
+        payment.setPay_type("0");
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
         String generatedURL;
@@ -1541,16 +1542,17 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
 
-        int sum = 0;
-        if (global.qtyCounter.containsKey(product.getId()))
-            sum = Integer.parseInt(global.qtyCounter.get(product.getId()));
+//        int sum;
 
-        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
-            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
-        else
-            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
+//        if (indexOf>=0)//global.qtyCounter.containsKey(product.getId()))
+        int sum = new Double(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
+
+//        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
+//            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
+//        else
+//            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
         if (OrderingMain_FA.returnItem)
-            ord.isReturned = true;
+            ord.setReturned(true);
         order.setName(product.getProdName());
         order.setValue(product.getProdPrice());
         order.setProdID(product.getId());
@@ -1568,52 +1570,52 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
         ord.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
-        ord.overwrite_price = total.toString();
-        ord.prod_price = total.toString();
-        ord.assignedSeat = selectedSeatNumber;
+        ord.setPricesXGroupid(product.getPricesXGroupid());
+        ord.setProd_price(total.toString());
+        ord.setAssignedSeat(selectedSeatNumber);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
 
         DecimalFormat frmt = new DecimalFormat("0.00");
         order.setTotal(frmt.format(total));
 
-        ord.prod_istaxable = product.getProdIstaxable();
-        ord.prod_taxtype = product.getProdTaxType();
-        ord.prod_taxcode = product.getProdTaxCode();
+        ord.setProd_istaxable(product.getProdIstaxable());
+        ord.setProd_taxtype(product.getProdTaxType());
+        ord.setProd_taxcode(product.getProdTaxCode());
 
         // add order to db
-        ord.ordprod_qty = OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? "-1" : "1";
-        ord.ordprod_name = product.getProdName();
-        ord.ordprod_desc = product.getProdDesc();
-        ord.prod_id = product.getId();
+        ord.setOrdprod_qty(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? "-1" : "1");
+        ord.setOrdprod_name(product.getProdName());
+        ord.setOrdprod_desc(product.getProdDesc());
+        ord.setProd_id(product.getId());
 
-        ord.onHand = product.getProdOnHand();
-        ord.imgURL = product.getProdImgName();
-        ord.cat_id = product.getCatId();
+        ord.setOnHand(product.getProdOnHand());
+        ord.setImgURL(product.getProdImgName());
+        ord.setCat_id(product.getCatId());
 
         try {
-            ord.prod_price_points = String.valueOf(product.getProdPricePoints());
-            ord.prod_value_points = String.valueOf(product.getProdValuePoints());
+            ord.setProd_price_points(String.valueOf(product.getProdPricePoints()));
+            ord.setProd_value_points(String.valueOf(product.getProdValuePoints()));
         } catch (Exception ignored) {
 
         }
 
         // Still need to do add the appropriate tax/discount value
-        ord.prod_taxValue = new BigDecimal("0.00");
-        ord.discount_value = "0.00";
+        ord.setProd_taxValue(new BigDecimal("0.00"));
+        ord.setDiscount_value("0.00");
 
-        ord.taxAmount = "0";
-        ord.taxTotal = "0.00";
-        ord.disAmount = "0";
-        ord.disTotal = "0.00";
-        ord.itemTotal = total.toString();
-        ord.itemSubtotal = total.toString();
+        ord.setTaxAmount("0");
+        ord.setTaxTotal("0.00");
+        ord.setDisAmount("0");
+        ord.setDisTotal("0.00");
+        ord.setItemTotal(total.toString());
+        ord.setItemSubtotal(total.toString());
 
-        ord.tax_position = "0";
-        ord.discount_position = "0";
-        ord.pricelevel_position = "0";
-        ord.uom_position = "0";
+        ord.setTax_position("0");
+        ord.setDiscount_position("0");
+        ord.setPricelevel_position("0");
+        ord.setUom_position("0");
 
-        ord.prod_price_updated = "0";
+        ord.setProd_price_updated("0");
         GenerateNewID generator = new GenerateNewID(activity);
 
         MyPreferences myPref = new MyPreferences(activity);
@@ -1622,7 +1624,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
         }
 
-        ord.ord_id = Global.lastOrdID;
+        ord.setOrd_id(Global.lastOrdID);
 
         if (global.orderProducts == null) {
             global.orderProducts = new ArrayList<OrderProduct>();
@@ -1631,7 +1633,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
 
-        ord.ordprod_id = randomUUIDString;
+        ord.setOrdprod_id(randomUUIDString);
 
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
@@ -1646,26 +1648,26 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
                 Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
 
-                sb.append(ord.ordprod_desc);
+                sb.append(ord.getOrdprod_desc());
                 int tempSize = global.orderProductAddons.size();
                 for (int i = 0; i < tempSize; i++) {
 
                     sb.append("<br/>");
-                    if (global.orderProductAddons.get(i).isAdded.equals("0")) // Not
+                    if (global.orderProductAddons.get(i).getIsAdded().equals("0")) // Not
                         // added
-                        sb.append("[NO ").append(global.orderProductAddons.get(i).ordprod_name).append("]");
+                        sb.append("[NO ").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
                     else
-                        sb.append("[").append(global.orderProductAddons.get(i).ordprod_name).append("]");
+                        sb.append("[").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
 
                 }
-                ord.ordprod_desc = sb.toString();
-                ord.hasAddons = "1";
+                ord.setOrdprod_desc(sb.toString());
+                ord.setHasAddons("1");
 
                 global.orderProductAddons = new ArrayList<OrderProduct>();
 
             }
         }
-        String row1 = ord.ordprod_name;
+        String row1 = ord.getOrdprod_name();
         String row2 = Global.formatDoubleStrToCurrency(product.getProdPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
         global.orderProducts.add(ord);
@@ -1681,9 +1683,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     public static boolean isRequiredAttributeConmpleted(Global global, List<OrderProduct> products) {
         for (OrderProduct product : products) {
-            RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.prod_id);
+            RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {
-                if (!product.requiredProductAttributes.contains(attribute)) {
+                if (!product.getRequiredProductAttributes().contains(attribute)) {
                     return false;
                 }
             }

@@ -15,6 +15,7 @@ import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -34,6 +35,8 @@ import android.widget.TextView;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXBoloroManual;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -52,6 +55,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -60,6 +64,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import IDTech.MSR.uniMag.Common;
 import interfaces.EMSCallBack;
+import io.realm.Realm;
 
 public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemSelectedListener, EMSCallBack {
 
@@ -76,16 +81,18 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     private EditText fieldPhone;
     private boolean isPolling = true;
     private EditText fieldAmountDue, fieldAmountPaid;
-    private final int POLLING_SLEEP_TIME = 5000;
+    public static final int POLLING_SLEEP_TIME = 5000;
     MyPreferences myPreferences;
     private Global global;
     private boolean hasBeenCreated = false;
-    private NumberUtils numberUtils = new NumberUtils();
+    private long storeForwardPaymentId;
+    private Button processButton;
 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
+        storeForwardPaymentId = System.currentTimeMillis();
         Bundle extras = this.getIntent().getExtras();
         global = (Global) getApplication();
         if (extras.getBoolean("isNFC"))
@@ -96,15 +103,18 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         }
 
         myPreferences = new MyPreferences(activity);
-        Button processButton = (Button) findViewById(R.id.processButton);
+        processButton = (Button) findViewById(R.id.processButton);
+        if (!isManual) {
+            processButton.setEnabled(false);
+        }
         Button btnExact = (Button) findViewById(R.id.btnExact);
         processButton.setOnClickListener(this);
         btnExact.setOnClickListener(this);
         fieldPhone = (EditText) findViewById(R.id.fieldPhone);
         fieldAmountDue = (EditText) findViewById(R.id.fieldAmountDue);
         fieldAmountPaid = (EditText) findViewById(R.id.fieldAmountPaid);
-        fieldAmountDue.setText(extras.getString("amount")); //set to 0.00
-        fieldAmountPaid.setText(extras.getString("amount")); //set to 0.00
+        fieldAmountDue.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount"))))); //set to 0.00
+        fieldAmountPaid.setText(Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(extras.getString("amount"))))); //set to 0.00
 
         buildPayment();
 
@@ -191,65 +201,66 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         Bundle extras = activity.getIntent().getExtras();
         payment = new Payment(activity);
         MyPreferences myPref = new MyPreferences(activity);
-        payment.pay_id = extras.getString("pay_id");
-        payment.emp_id = myPref.getEmpID();
+        payment.setPay_id(extras.getString("pay_id"));
+        payment.setEmp_id(myPref.getEmpID());
 
         if (!extras.getBoolean("histinvoices")) {
-            payment.job_id = extras.getString("job_id");
+            payment.setJob_id(extras.getString("job_id"));
         } else {
-            payment.inv_id = "";
+            payment.setInv_id("");
         }
 
 
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            payment.setClerk_id(myPref.getShiftClerkID());
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            payment.setClerk_id(myPref.getClerkID());
 
-        payment.cust_id = extras.getString("cust_id");
-        payment.custidkey = extras.getString("custidkey", "");
+        payment.setCust_id(extras.getString("cust_id"));
+        payment.setCustidkey(extras.getString("custidkey", ""));
 
 
-        payment.paymethod_id = extras.getString("paymethod_id");
+        payment.setPaymethod_id(extras.getString("paymethod_id"));
 
-        Global.amountPaid = NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid);
-        if (!Global.amountPaid.isEmpty()) {
-            payment.pay_amount = Global.amountPaid;
-            payment.pay_dueamount = Global.amountPaid;
+        String formatedNumber = NumberUtils.cleanCurrencyFormatedNumber(fieldAmountPaid);
+        Global.amountPaid = formatedNumber;
+        if (!formatedNumber.isEmpty()) {
+            payment.setPay_amount(formatedNumber);
+            payment.setPay_dueamount(formatedNumber);
         }
 
         if (isManual) {
-            payment.pay_phone = fieldPhone.getText().toString().trim();
+            payment.setPay_phone(fieldPhone.getText().toString().trim());
         }
 
 
         Location location = Global.getCurrLocation(activity, false);
-        payment.pay_latitude = String.valueOf(location.getLatitude());
-        payment.pay_longitude = String.valueOf(location.getLongitude());
+        payment.setPay_latitude(String.valueOf(location.getLatitude()));
+        payment.setPay_longitude(String.valueOf(location.getLongitude()));
 
 
         if (Global.isIvuLoto) {
-            payment.IvuLottoNumber = extras.getString("IvuLottoNumber");
-            payment.IvuLottoDrawDate = extras.getString("IvuLottoDrawDate");
-            payment.IvuLottoQR = Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate"));
+            payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
+            payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
+            payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
 
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
-                payment.Tax1_amount = extras.getString("Tax1_amount");
-                payment.Tax1_name = extras.getString("Tax1_name");
+                payment.setTax1_amount(extras.getString("Tax1_amount"));
+                payment.setTax1_name(extras.getString("Tax1_name"));
 
-                payment.Tax2_amount = extras.getString("Tax2_amount");
-                payment.Tax2_name = extras.getString("Tax2_name");
+                payment.setTax2_amount(extras.getString("Tax2_amount"));
+                payment.setTax2_name(extras.getString("Tax2_name"));
             } else {
                 BigDecimal tempRate;
-                double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
+                double tempPayAmount = Global.formatNumFromLocale(formatedNumber);
                 tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax1_amount = tempRate.toPlainString();
-                payment.Tax1_name = "Estatal";
+                payment.setTax1_amount(tempRate.toPlainString());
+                payment.setTax1_name("Estatal");
 
                 tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax2_amount = tempRate.toPlainString();
-                payment.Tax2_name = "Municipal";
+                payment.setTax2_amount(tempRate.toPlainString());
+                payment.setTax2_name("Municipal");
             }
         }
     }
@@ -259,11 +270,11 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         if (isManual) {
             int telcoPos = carrierSpinner.getSelectedItemPosition();
             int transmodePos = accountSpinner.getSelectedItemPosition();
-            payment.telcoid = manualBoloroData.get(telcoPos).getTelcoID();
-            payment.transmode = manualBoloroData.get(telcoPos).getCarrierAccounts().get(transmodePos).get("payment_mode_id");
+            payment.setTelcoid(manualBoloroData.get(telcoPos).getTelcoID());
+            payment.setTransmode(manualBoloroData.get(telcoPos).getCarrierAccounts().get(transmodePos).get("payment_mode_id"));
             new ManualCheckoutAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
-            payment.tagid = boloroTagID;
+            payment.setTagid(boloroTagID);
             new NFCCheckoutAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
@@ -326,6 +337,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         protected void onPostExecute(String result) {
             if (result != null) {
                 boloroTagID = result;
+                processButton.setEnabled(true);
                 Global.showPrompt(activity, R.string.dlog_title_confirm, activity.getString(R.string.dlog_msg_nfc_scanned));
             }
         }
@@ -334,7 +346,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
     private class LoadBoloroDataAsync extends AsyncTask<Void, Void, Void> {
         private List<String> listAccounts;
-        private List<String> listCarriers = new ArrayList<String>();
+        private List<String> listCarriers = new ArrayList<>();
         private boolean failed = false;
 
         @Override
@@ -378,9 +390,6 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
 
             return null;
@@ -417,39 +426,29 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
         @Override
         protected Void doInBackground(Void... params) {
-
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
-
             try {
-
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
                 String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ProcessBoloroCheckout, false, null, null);
 
                 Post httpClient = new Post();
                 String xml = httpClient.postData(13, activity, generatedURL);
-
                 InputSource inSource = new InputSource(new StringReader(xml));
-
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
                 xr.setContentHandler(myParser);
                 xr.parse(inSource);
                 response = myParser.getData();
-
                 if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
-                    payment.pay_transid = response.get("transaction_id");
+                    payment.setPay_transid(response.get("transaction_id"));
                 } else {
                     failed = true;
                 }
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
             }
-
             return null;
         }
 
@@ -467,9 +466,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     }
 
 
-    private class NFCCheckoutAsync extends AsyncTask<Void, Void, Void> {
+    private class NFCCheckoutAsync extends AsyncTask<Void, Void, Boolean> {
         HashMap<String, String> response;
-        private boolean failed = false;
 
         @Override
         protected void onPreExecute() {
@@ -482,7 +480,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
@@ -492,43 +490,64 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
                 String generatedURL;
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.GetTelcoInfoByTag, false, null, null);
-
-                Post httpClient = new Post();
-                String xml = httpClient.postData(13, activity, generatedURL);
-
-                InputSource inSource = new InputSource(new StringReader(xml));
-
-                SAXParser sp = spf.newSAXParser();
-                XMLReader xr = sp.getXMLReader();
-                xr.setContentHandler(myParser);
-                xr.parse(inSource);
-                response = myParser.getData();
-
-                if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
-                    payment.pay_transid = response.get("transaction_id");
+                if (myPreferences.isPrefUseStoreForward()) {
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
+                    StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
+                    storeAndForward.setCreationDate(new Date());
+                    storeAndForward.setId(storeForwardPaymentId);
+                    payment.setPay_id(String.valueOf(System.currentTimeMillis()));
+                    storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
+                    storeAndForward.setPaymentXml(generatedURL);
+                    storeAndForward.setRetry(false);
+                    storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
+                    storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
+                    realm.commitTransaction();
+                    return true;
                 } else {
-                    failed = true;
-                }
+                    Post httpClient = new Post();
+                    String xml = httpClient.postData(13, activity, generatedURL);
 
+                    InputSource inSource = new InputSource(new StringReader(xml));
+
+                    SAXParser sp = spf.newSAXParser();
+                    XMLReader xr = sp.getXMLReader();
+                    xr.setContentHandler(myParser);
+                    xr.parse(inSource);
+                    response = myParser.getData();
+
+                    if (response != null && !response.isEmpty() && Boolean.parseBoolean(response.get("success"))) {
+                        payment.setPay_transid(response.get("transaction_id"));
+                    } else {
+                        return true;
+                    }
+                }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-//				Tracker tracker = EasyTracker.getInstance(activity);
-//				tracker.send(MapBuilder.createException(e.getStackTrace().toString(), false).build());
+                e.printStackTrace();
+                if (Realm.getDefaultInstance().isInTransaction()) {
+                    Realm.getDefaultInstance().cancelTransaction();
+                }
             }
 
-            return null;
+            return false;
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(Boolean failed) {
             progressDlog.dismiss();
-            if (!failed) {
-                new BoloroPollingAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                //Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("addnote"));
-            } else if (response.containsKey("error_message")) {
-                Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
-            } else if (response.containsKey("epayStatusCode")) {
-                Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
+            if (!myPreferences.isPrefUseStoreForward()) {
+                if (!failed) {
+                    new BoloroPollingAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    //Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("addnote"));
+                } else if (response.containsKey("error_message")) {
+                    Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
+                } else if (response.containsKey("epayStatusCode")) {
+                    Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
+                }else{
+                    Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.error_processing_payment));
+                }
+            } else {
+                showFinishDlog(getString(R.string.payment_saved_successfully));
             }
         }
     }
@@ -591,7 +610,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
                 Post httpClient = new Post();
-                String xml = "";
+                String xml;
                 do {
                     xml = httpClient.postData(13, activity, generatedURL);
                     inSource = new InputSource(new StringReader(xml));
@@ -609,11 +628,11 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                         } else if (response.containsKey("next_action") && response.get("next_action").equals("SUCCESS")) {
 
                             PaymentsHandler payHandler = new PaymentsHandler(activity);
-                            payment.processed = "1";
-                            BigDecimal bg = new BigDecimal(Global.amountPaid);
-                            Global.amountPaid = bg.setScale(2, RoundingMode.HALF_UP).toString();
-                            payment.pay_dueamount = Global.amountPaid;
-                            payment.pay_amount = Global.amountPaid;
+                            payment.setProcessed("1");
+//                            BigDecimal bg = new BigDecimal(Global.amountPaid);
+//                            Global.amountPaid = bg.setScale(2, RoundingMode.HALF_UP).toString();
+//                            payment.setPay_dueamount(Global.amountPaid);
+//                            payment.setPay_amount(Global.amountPaid);
                             payHandler.insert(payment);
                             isPolling = false;
                             transCompleted = true;
@@ -634,7 +653,6 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
             progressDlog.dismiss();
             if (!failed) {
                 if (transCompleted) {
-
                     showFinishDlog(response.get("short_message"));
                 } else {
                     Global.showPrompt(activity, R.string.dlog_title_confirm, response.get("short_message"));
@@ -751,7 +769,6 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
 
                 MyPreferences myPref = new MyPreferences(activity);

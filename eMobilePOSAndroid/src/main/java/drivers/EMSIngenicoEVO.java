@@ -289,7 +289,7 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         transactionData.setOrderNumber("");
         transactionData.setWasSignatureCaptured(true);
         transactionData.setTipAmount(new BigDecimal(0.00));
-        transactionData.setAmount(new BigDecimal(payment.pay_amount));
+        transactionData.setAmount(new BigDecimal(payment.getPay_amount()));
 
         ApplicationConfigurationData configurationData = new ApplicationConfigurationData();
         configurationData.setApplicationAttended(true);
@@ -317,8 +317,8 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
         @Override
         protected BankCardTransactionResponse doInBackground(Payment... params) {
             BankCardCapture bankCardCapture = new BankCardCapture();
-            bankCardCapture.setTransactionId(params[0].pay_transid);
-            bankCardCapture.setAmount(Global.getBigDecimalNum(params[0].pay_amount));
+            bankCardCapture.setTransactionId(params[0].getPay_transid());
+            bankCardCapture.setAmount(Global.getBigDecimalNum(params[0].getPay_amount()));
             bankCardCapture.setType("Undo");
             CancelTransactionRequest cancelRequest = new CancelTransactionRequest();
             cancelRequest.setDifferenceData(bankCardCapture);
@@ -338,10 +338,10 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
     public void refund(Payment payment) {
         TransactionData transactionData = new TransactionData();
         transactionData.setCustomerPresence(CustomerPresence.PRESENT);
-        transactionData.setOrderNumber(payment.pay_id);
+        transactionData.setOrderNumber(payment.getPay_id());
         transactionData.setWasSignatureCaptured(true);
         transactionData.setTipAmount(new BigDecimal(0.00));
-        transactionData.setAmount(new BigDecimal(payment.pay_amount));
+        transactionData.setAmount(new BigDecimal(payment.getPay_amount()));
         ApplicationConfigurationData configurationData = new ApplicationConfigurationData();
         configurationData.setApplicationAttended(true);
         configurationData.setApplicationLocation(ApplicationLocation.ON_PREMISES);

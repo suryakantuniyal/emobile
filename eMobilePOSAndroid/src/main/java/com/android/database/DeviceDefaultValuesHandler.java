@@ -89,7 +89,7 @@ public class DeviceDefaultValuesHandler {
 				insert.bindString(index(df_id), getData(df_id, i));	//df_id
 				insert.bindString(index(posAdminPassword), getData(posAdminPassword, i));	//posAdminPassword
 				myPref.setPOSAdminPass(getData(posAdminPassword, i));
-				myPref.storedAndForward(false, getData(SaFOption,i).equals("true")?true:false);
+				myPref.setStoredAndForward(getData(SaFOption,i).equals("true")?true:false);
 				insert.bindString(index(loyaltyPointFeature), getData(loyaltyPointFeature, i));	//loyaltyPointFeature
 				insert.bindString(index(pointsType), getData(pointsType, i));	//pointsType
 				insert.bindString(index(defaultPointsPricePercentage), getData(defaultPointsPricePercentage, i));	//defaultPointsPricePercentage

@@ -36,20 +36,20 @@ public class DinningTableDAO {
     public static void insert(List<DinningTable> dinningTables) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(DinningTable.class);
+        realm.delete(DinningTable.class);
         realm.copyToRealm(dinningTables);
         realm.commitTransaction();
     }
 
     public static RealmResults<DinningTable> getAll() {
-        RealmResults<DinningTable> tables = Realm.getDefaultInstance().allObjects(DinningTable.class);
+        RealmResults<DinningTable> tables = Realm.getDefaultInstance().where(DinningTable.class).findAll();
         return tables;
     }
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(DinningTable.class);
+        realm.delete(DinningTable.class);
         realm.commitTransaction();
     }
 

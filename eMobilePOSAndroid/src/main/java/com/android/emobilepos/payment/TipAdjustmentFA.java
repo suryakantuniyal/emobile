@@ -176,9 +176,9 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
             String amount = params[2];
 
             payment = new Payment(TipAdjustmentFA.this);
-            payment.pay_transid = transactionId;
-            payment.pay_tip = amount;
-            payment.card_type = cardType;
+            payment.setPay_transid(transactionId);
+            payment.setPay_tip(amount);
+            payment.setCard_type(cardType);
             EMSPayGate_Default payGate = new EMSPayGate_Default(TipAdjustmentFA.this, payment);
             paymentWithAction = payGate.paymentWithAction(EMSPayGate_Default.EAction.CreditCardAdjustTipAmountAction, false, null,
                     null);
@@ -247,11 +247,11 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
 
     private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
         PaymentsHandler paymentsHandler = new PaymentsHandler(TipAdjustmentFA.this);
-        payment.pay_resultcode = parsedMap.get("pay_resultcode");
-        payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
-        payment.pay_transid = parsedMap.get("CreditCardTransID");
-        payment.authcode = parsedMap.get("AuthorizationCode");
-        payment.processed = "9";
+        payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
+        payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
+        payment.setPay_transid(parsedMap.get("CreditCardTransID"));
+        payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+        payment.setProcessed("9");
         paymentsHandler.insert(payment);
 
     }

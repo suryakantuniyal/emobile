@@ -41,7 +41,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsImagesHandler;
 import com.android.database.ShiftPeriodsDBHandler;
-import com.android.database.StoredPayments_DB;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
@@ -165,7 +165,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         order_id = extras.getString("ord_id");
         order = ordersHandler.getOrder(order_id);
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
-        orderedProd = orderProductsHandler.getOrderedProducts(order_id);
+        orderedProd = orderProductsHandler.getOrderProducts(order_id);
 
         CustomersHandler customersHandler = new CustomersHandler(activity);
 
@@ -329,9 +329,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     public void cardWasReadSuccessfully(boolean read, CreditCardInfo cardManager) {
         if (read) {
             if (paymentsToVoid.size() > 0) {
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).pay_amount);
+                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).pay_transid);
+                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
             } else {
@@ -646,7 +646,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         btnVoid.setClickable(false);
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-            StoredPayments_DB dbStoredPayments = new StoredPayments_DB(activity);
+            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(activity);
             if (dbStoredPayments.getRetryTransCount(order_id) > 0) {
                 //There are pending stored&forward cannot void
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_pending_stored_forward));
@@ -698,7 +698,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
-            StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
+            StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
             dbStoredPayments.deletePaymentFromJob(order_id);
         }
 
@@ -710,9 +710,9 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 paymentsToVoid = new ArrayList<Payment>();
                 paymentsToVoid.addAll(listVoidPayments);
 //                for (Payment p : listVoidPayments) {
-                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).pay_amount);
+                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).pay_transid);
+                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
 //                }
@@ -760,10 +760,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 xr = sp.getXMLReader();
                 String paymentType;
                 for (int i = 0; i < size; i++) {
-                    paymentType = listVoidPayments.get(i).card_type.toUpperCase(Locale.getDefault()).trim();
+                    paymentType = listVoidPayments.get(i).getCard_type().toUpperCase(Locale.getDefault()).trim();
                     if (paymentType.equals("GIFTCARD")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).card_type, null));
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
 
                         xr.setContentHandler(handler);
@@ -780,7 +780,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
-                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).card_type, null));
+                        xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
 
                         xr.setContentHandler(handler);
@@ -891,11 +891,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         int ind = position - allInfoLeft.size() - 2;
 
 
-                        holder.textLine1.setText(orderedProd.get(ind).ordprod_name);
-                        holder.textLine2.setText(orderedProd.get(ind).ordprod_desc);
+                        holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
+                        holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
 
-                        holder.ordProdQty.setText(orderedProd.get(ind).ordprod_qty + " x");
-                        holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).overwrite_price));
+                        holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
+                        holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
 
 
                         break;
@@ -947,14 +947,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             } else if (type == 2) {
                 int ind = position - allInfoLeft.size() - 2;
 
-                holder.textLine1.setText(orderedProd.get(ind).ordprod_name);
-                holder.textLine2.setText(orderedProd.get(ind).ordprod_desc);
+                holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
+                holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
 
-                holder.ordProdQty.setText(orderedProd.get(ind).ordprod_qty + " x");
-                holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).overwrite_price));
+                holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
+                holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
 
 
-                imageLoader.displayImage(imgHandler.getSpecificLink("I", orderedProd.get(ind).prod_id), holder.iconImage, options);
+                imageLoader.displayImage(imgHandler.getSpecificLink("I", orderedProd.get(ind).getProd_id()), holder.iconImage, options);
             }
 
             return convertView;

@@ -244,6 +244,7 @@
     <string name="sync_dload_clerks">Downloading Clerks\u002E\u002E\u002E</string>
     <string name="sync_dload_dinnertables">Downloading Dinner Tables\u002E\u002E\u002E</string>
     <string name="sync_dload_salesassociate">Downloading Sales Associate\u002E\u002E\u002E</string>
+    <string name="sync_dload_mixmatch">Downloading Mix &amp; Match\u002E\u002E\u002E</string>
 
     <string name="sync_dload_termsandconditions">Downloading TermsAndConditions\u002E\u002E\u002E</string>
     <string name="sync_dload_ordersonhold">Downloading OrdersOnHold\u002E\u002E\u002E</string>
@@ -291,8 +292,7 @@
     <string name="sync_saving_ordersonhold">Saving Orders On Hold\u002E\u002E\u002E</string>
     <string name="sync_saving_dinnertables">Saving Dinner Tables\u002E\u002E\u002E</string>
     <string name="sync_saving_salesassociate">Saving Sales Associate\u002E\u002E\u002E</string>
-
-
+    <string name="sync_saving_mixmatch">Saving Mix &amp; Match</string>
     <!-- History Main tab -->
     <string name="hist_title">History</string>
     <string name="hist_transac">Transactions</string>
@@ -1165,6 +1165,7 @@
     <string name="payment_void_title">Payment Void</string>
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
+    <string name="config_mix_match"><![CDATA[Use Mix & Match]]></string>
     <string name="connecting_device">Connecting Device...</string>
     <string name="wrong_password">Password not acceptable, try again...</string>
     <string name="reward_payment_succeed">Reward payment succeed</string>
@@ -1180,7 +1181,6 @@
     <string name="points">Points</string>
     <string name="connecting_devices">Connecting devices...</string>
     <string name="config_split_stationprint_by_categories">Split station print receipt by categories</string>
-    <string name="receipt_itemsQtyTotal">Total Items:</string>
     <string name="eod_report_return">Return</string>
     <string name="eod_report_estimate">Estimate</string>
     <string name="eod_report_order">Order</string>
@@ -1201,6 +1201,16 @@
     <string name="eod_report_consignment_pickup">Consignment Pickup</string>
     <string name="eod_report_consignment_invoice">Consignment Invoice</string>
     <string name="eod_report_consignment_return">Consignment Return</string>
+    <string name="receipt_itemsQtyTotal">Total Items:</string>
+    <string name="void_label">VOID</string>
+    <string name="config_payments_settings">Payment Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_setting_list">Settings</string>
+    <string name="title_setting_detail">Setting Detail</string>
+    <string name="error_processing_payment">Error processing payment</string>
+    <string name="header_title_settings">Settings</string>
 
 
 </resources>

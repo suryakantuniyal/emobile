@@ -351,7 +351,7 @@ public class EMSReceiptHelper {
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
 
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getOrdprod_name(), prod.getProd_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 0));
             }
             listProd.clear();
         }
@@ -363,7 +363,7 @@ public class EMSReceiptHelper {
             sb.append(centerText("Items Returned"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.ordprod_name, prod.prod_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getOrdprod_name(), prod.getProd_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 0));
             }
             listProd.clear();
         }
@@ -375,7 +375,7 @@ public class EMSReceiptHelper {
             sb.append(centerText("Department Sales"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getCat_name(), prod.getCat_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 0));
             }
             listProd.clear();
         }
@@ -387,7 +387,7 @@ public class EMSReceiptHelper {
             sb.append(centerText("Department Returns"));
             sb.append(fourColumn("Name", "ID", "Qty", "Total", 0));
             for (OrderProduct prod : listProd) {
-                sb.append(fourColumn(prod.cat_name, prod.cat_id, prod.ordprod_qty, Global.formatDoubleStrToCurrency(prod.overwrite_price), 0));
+                sb.append(fourColumn(prod.getCat_name(), prod.getCat_id(), prod.getOrdprod_qty(), Global.formatDoubleStrToCurrency(prod.getFinalPrice()), 0));
             }
             listProd.clear();
         }
@@ -397,14 +397,14 @@ public class EMSReceiptHelper {
         if (listPayments.size() > 0) {
             sb.append(centerText("Payment"));
             for (Payment payment : listPayments) {
-                sb.append(oneColumn(payment.card_type, 0));
-                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 2));
-                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), 2));
+                sb.append(oneColumn(payment.getCard_type(), 0));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), 2));
+                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.getPay_tip()), 2));
 
                 sb.append(oneColumn("Details", 3));
-                sb.append(twoColumn("ID", payment.pay_id, 4));
-                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 4));
-                sb.append(twoColumn("Invoice", payment.job_id, 4));
+                sb.append(twoColumn("ID", payment.getPay_id(), 4));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), 4));
+                sb.append(twoColumn("Invoice", payment.getJob_id(), 4));
                 sb.append(newLines(1));
             }
             listPayments.clear();
@@ -416,14 +416,14 @@ public class EMSReceiptHelper {
         if (listPayments.size() > 0) {
             sb.append(centerText("Void"));
             for (Payment payment : listPayments) {
-                sb.append(oneColumn(payment.card_type, 0));
-                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 2));
-                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), 2));
+                sb.append(oneColumn(payment.getCard_type(), 0));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), 2));
+                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.getPay_tip()), 2));
 
                 sb.append(oneColumn("Details", 3));
-                sb.append(twoColumn("ID", payment.pay_id, 4));
-                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 4));
-                sb.append(twoColumn("Invoice", payment.job_id, 4));
+                sb.append(twoColumn("ID", payment.getPay_id(), 4));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), 4));
+                sb.append(twoColumn("Invoice", payment.getJob_id(), 4));
                 sb.append(newLines(1));
             }
             listPayments.clear();
@@ -436,14 +436,14 @@ public class EMSReceiptHelper {
         if (listPayments.size() > 0) {
             sb.append(centerText("Refund"));
             for (Payment payment : listPayments) {
-                sb.append(oneColumn(payment.card_type, 0));
-                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 2));
-                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.pay_tip), 2));
+                sb.append(oneColumn(payment.getCard_type(), 0));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), 2));
+                sb.append(twoColumn("Tip", Global.formatDoubleStrToCurrency(payment.getPay_tip()), 2));
 
                 sb.append(oneColumn("Details", 3));
-                sb.append(twoColumn("ID", payment.pay_id, 4));
-                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.pay_amount), 4));
-                sb.append(twoColumn("Invoice", payment.job_id, 4));
+                sb.append(twoColumn("ID", payment.getPay_id(), 4));
+                sb.append(twoColumn("Amount", Global.formatDoubleStrToCurrency(payment.getPay_amount()), 4));
+                sb.append(twoColumn("Invoice", payment.getJob_id(), 4));
                 sb.append(newLines(1));
             }
             listPayments.clear();

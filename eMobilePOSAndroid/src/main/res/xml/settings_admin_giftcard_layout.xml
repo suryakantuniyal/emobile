@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_gift_card_settings">
+        <CheckBoxPreference
+            android:key="pref_display_also_redeem"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_display_also_redeem" />
+        <CheckBoxPreference
+            android:key="pref_display_redeem_all"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_display_redeem_all" />
+        <Preference
+            android:key="pref_units_name"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_units_name" />
+        <CheckBoxPreference
+            android:key="pref_use_loyal_patron"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_use_loyal_patron" />
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -32,20 +32,20 @@ public class UomDAO {
     public static void insert(List<UOM> uoms) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(UOM.class);
+        realm.delete(UOM.class);
         realm.copyToRealm(uoms);
         realm.commitTransaction();
     }
 
     public static RealmResults<UOM> getAll() {
-        RealmResults<UOM> uoms = Realm.getDefaultInstance().allObjects(UOM.class);
+        RealmResults<UOM> uoms = Realm.getDefaultInstance().where(UOM.class).findAll();
         return uoms;
     }
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(UOM.class);
+        realm.delete(UOM.class);
         realm.commitTransaction();
     }
 

@@ -50,12 +50,13 @@ public class ProductsHandler {
     private static final String prod_disc_type_points = "prod_disc_type_points";
     private static final String prod_price_points = "prod_price_points";
     private static final String prod_value_points = "prod_value_points";
+    public static final String prod_prices_group_id = "prod_prices_group_id";
 
     private static final List<String> attr = Arrays.asList(prod_id, prod_type, prod_disc_type, cat_id,
             prod_sku, prod_upc, prod_name, prod_desc, prod_extradesc, prod_onhand, prod_onorder, prod_uom, prod_price,
             prod_cost, prod_taxcode, prod_taxtype, prod_glaccount, prod_mininv, prod_update, isactive, prod_showOnline,
             prod_ispromo, prod_shipping, prod_weight, prod_expense, prod_disc_type_points, prod_price_points,
-            prod_value_points);
+            prod_value_points, prod_prices_group_id);
 
     private static final String table_name = "Products";
     private StringBuilder sb1, sb2;
@@ -133,6 +134,7 @@ public class ProductsHandler {
             insert.bindString(index(prod_disc_type_points), StringUtil.nullStringToEmpty(product.getProd_disc_type_points())); // prod_disc_type_points
             insert.bindLong(index(prod_price_points), product.getProdPricePoints()); // prod_price_points
             insert.bindLong(index(prod_value_points), product.getProdValuePoints()); // prod_value_points
+            insert.bindString(index(prod_prices_group_id), StringUtil.nullStringToEmpty(product.getPricesXGroupid())); // prod_value_points
 
             insert.execute();
             insert.clearBindings();
@@ -233,7 +235,7 @@ public class ProductsHandler {
         if (Global.cat_id.equals("0")) {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price'," +
+                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',p.prod_prices_group_id as 'prod_prices_group_id'," +
                             "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' " +
@@ -339,7 +341,7 @@ public class ProductsHandler {
         } else {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id', p.prod_sku, p.prod_upc, p.prod_price as 'master_price',vp.price as 'volume_price',ch.over_price_net as 'chain_price',");
+                    "SELECT  p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_sku, p.prod_upc, p.prod_price as 'master_price',vp.price as 'volume_price',ch.over_price_net as 'chain_price',");
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
             sb.append(
@@ -1042,7 +1044,7 @@ public class ProductsHandler {
             priceLevelID = myPref.getEmployeePriceLevel();
 
         sb.append(
-                "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ");
+                "SELECT  p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ");
         sb.append(
                 "CASE WHEN pl.pricelevel_type = 'FixedPercentage' THEN (p.prod_price+(p.prod_price*(pl.pricelevel_fixedpct/100))) ");
         sb.append(

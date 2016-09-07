@@ -412,7 +412,7 @@
             
         </activity>
         <activity
-            android:name="com.android.emobilepos.settings.ViewStoreForwardTrans_FA"
+            android:name="com.android.emobilepos.storedforward.ViewStoreForwardTrans_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false" >
         </activity>

@@ -34,12 +34,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
-import com.android.database.StoredPayments_DB;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
@@ -47,6 +47,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -229,7 +230,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         List<OrderProduct> orderProducts = global.orderProducts;
         double subtotalDbl = 0;
         for (OrderProduct products : orderProducts) {
-            subtotalDbl += Double.parseDouble(products.itemSubtotal);
+            subtotalDbl += Double.parseDouble(products.getItemSubtotal());
         }
         subtotal.setText(Global.formatDoubleToCurrency(subtotalDbl));
         this.amountDueField = (EditText) findViewById(R.id.processCardAmount);
@@ -617,17 +618,17 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 zipCode.getText().toString(), cardInfoManager.getCardEncryptedSecCode(), cardInfoManager.getEncryptedAESTrack1(),
                 cardInfoManager.getEncryptedAESTrack2(), transactionId, authcode);
         if (cardInfoManager.getEmvContainer() != null && cardInfoManager.getEmvContainer().getHandpointResponse() != null) {
-            payment.card_type = getCreditName(cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName());
+            payment.setCard_type(getCreditName(cardInfoManager.getEmvContainer().getHandpointResponse().getCardSchemeName()));
         }
 
-        payment.emvContainer = cardInfoManager.getEmvContainer();
+        payment.setEmvContainer(cardInfoManager.getEmvContainer());
         if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
 
             if (!isRefund) {
                 paymentType = "0";
-                payment.pay_type = paymentType;
+                payment.setPay_type(paymentType);
                 if (isDebit)
                     generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeDebitAction, wasReadFromReader, creditCardType,
                             cardInfoManager);
@@ -641,10 +642,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 paymentType = "2";
                 transactionId = transIDField.getText().toString();
                 authcode = authIDField.getText().toString();
-                payment.is_refund = isRef;
-                payment.pay_type = paymentType;
-                payment.pay_transid = transactionId;
-                payment.authcode = authcode;
+                payment.setIs_refund(isRef);
+                payment.setPay_type(paymentType);
+                payment.setPay_transid(transactionId);
+                payment.setAuthcode(authcode);
                 if (isDebit)
                     generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnDebitAction, wasReadFromReader, creditCardType,
                             cardInfoManager);
@@ -665,15 +666,15 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL, payment);
         } else {
             if (!isRefund) {
-                payment.pay_type = "0";
+                payment.setPay_type("0");
             } else {
                 isRef = "1";
                 transactionId = transIDField.getText().toString();
                 authcode = authIDField.getText().toString();
-                payment.is_refund = isRef;
-                payment.pay_type = "2";
-                payment.pay_transid = transactionId;
-                payment.authcode = authcode;
+                payment.setIs_refund(isRef);
+                payment.setPay_type("2");
+                payment.setPay_transid(transactionId);
+                payment.setAuthcode(authcode);
             }
             saveApprovedPayment(null, payment);
         }
@@ -790,7 +791,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         String generatedURL;
 
         if (!isRefund) {
-            payment.pay_type = "0";
+            payment.setPay_type("0");
             if (isDebit)
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeDebitAction, wasReadFromReader, creditCardType,
                         cardInfoManager);
@@ -798,10 +799,10 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeCreditCardAction, wasReadFromReader, creditCardType,
                         cardInfoManager);
         } else {
-            payment.is_refund = "1";
-            payment.pay_type = "2";
-            payment.pay_transid = authIDField.getText().toString();
-            payment.authcode = transIDField.getText().toString();
+            payment.setIs_refund("1");
+            payment.setPay_type("2");
+            payment.setPay_transid(authIDField.getText().toString());
+            payment.setAuthcode(transIDField.getText().toString());
             if (isDebit)
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ReturnDebitAction, wasReadFromReader, creditCardType,
                         cardInfoManager);
@@ -1286,8 +1287,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
         }
-        payment.payment_xml = payment_xml;
-        payment.pay_uuid = getXmlValue(payment_xml, "app_id");
+        payment.setPayment_xml(payment_xml);
+        payment.setPay_uuid(getXmlValue(payment_xml, "app_id"));
 
         // payment.getSetData("pay_resultcode", false,
         // parsedMap.get("pay_resultcode"));
@@ -1304,26 +1305,26 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         if (isOpenInvoice && isMultiInvoice) {
             if (invPaymentList.size() > 0) {
-                payment.inv_id = "";
+                payment.setInv_id("");
                 invPayHandler.insert(invPaymentList);
             }
         }
 
-        StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
-        dbStoredPayments.insert(payment);
+        StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
+        dbStoredPayments.insert(payment, StoreAndForward.PaymentType.CREDIT_CARD);
         // payHandler.insert(payment);
 
         if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
                 OrdersHandler dbOrders = new OrdersHandler(this);
-                dbOrders.updateOrderStoredFwd(payment.job_id, "1");
+                dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
             }
             new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, payment);
         } else if (!isDebit) {
             Intent intent = new Intent(activity, DrawReceiptActivity.class);
             intent.putExtra("isFromPayment", true);
-            intent.putExtra("card_type", payment.card_type);
-            intent.putExtra("pay_amount", payment.pay_amount);
+            intent.putExtra("card_type", payment.getCard_type());
+            intent.putExtra("pay_amount", payment.getPay_amount());
 
             startActivityForResult(intent, requestCode);
         } else {
@@ -1562,26 +1563,26 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
         if (walkerReader == null && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
-            payment.pay_resultcode = parsedMap.get("pay_resultcode");
-            payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
-            payment.pay_transid = parsedMap.get("CreditCardTransID");
-            payment.authcode = parsedMap.get("AuthorizationCode");
-            payment.processed = "9";
+            payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
+            payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
+            payment.setPay_transid(parsedMap.get("CreditCardTransID"));
+            payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+            payment.setProcessed("9");
         } else {
             if (isRefund) {
-                payment.is_refund = "1";
-                payment.pay_type = "2";
+                payment.setIs_refund("1");
+                payment.setPay_type("2");
             }
-            payment.processed = "1";
-            payment.pay_transid = cardInfoManager.transid;
-            payment.authcode = cardInfoManager.authcode;
+            payment.setProcessed("1");
+            payment.setPay_transid(cardInfoManager.transid);
+            payment.setAuthcode(cardInfoManager.authcode);
         }
         orientation = getResources().getConfiguration().orientation;
         global.orientation = orientation;
 
         if (isOpenInvoice && isMultiInvoice) {
             if (invPaymentList.size() > 0) {
-                payment.inv_id = "";
+                payment.setInv_id("");
                 invPayHandler.insert(invPaymentList);
             }
         }
@@ -1593,19 +1594,19 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
                 Intent intent = new Intent(activity, DrawReceiptActivity.class);
                 intent.putExtra("isFromPayment", true);
-                intent.putExtra("card_type", payment.card_type);
-                intent.putExtra("pay_amount", payment.pay_amount);
+                intent.putExtra("card_type", payment.getCard_type());
+                intent.putExtra("pay_amount", payment.getPay_amount());
                 startActivityForResult(intent, requestCode);
             } else {
                 finishPaymentTransaction(payment);
             }
         } else {
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
-                Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.pay_uuid);
+                StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
+                Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.getPay_uuid());
 
                 OrdersHandler dbOrders = new OrdersHandler(this);
-                dbOrders.updateOrderStoredFwd(payment.job_id, "1");
+                dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
             } else {
                 PaymentsHandler payHandler = new PaymentsHandler(this);
                 Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
@@ -1689,11 +1690,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         if (resultCode == -1) {
             if (myPref.getSwiperType() != Global.WALKER) {
                 if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                    StoredPayments_DB dbStoredPayments = new StoredPayments_DB(this);
-                    Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().pay_uuid);
+                    StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
+                    Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid());
 
                     OrdersHandler dbOrders = new OrdersHandler(this);
-                    dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().job_id, "1");
+                    dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().getJob_id(), "1");
                 } else {
                     PaymentsHandler payHandler = new PaymentsHandler(this);
                     Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
@@ -1724,7 +1725,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             setResult(-2);
         else {
             Intent result = new Intent();
-            result.putExtra("emvcontainer", new Gson().toJson(payment.emvContainer, EMVContainer.class));
+            result.putExtra("emvcontainer", new Gson().toJson(payment.getEmvContainer(), EMVContainer.class));
             result.putExtra("total_amount", Double.toString(Global
                     .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(this.amountDueField))));
             setResult(-2, result);
@@ -1753,8 +1754,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             Payment payment = (Payment) params[1];
             wasReprint = (Boolean) params[0];
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printingSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1,
-                        wasReprint, payment.emvContainer);
+                printingSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.getPay_id(), 1,
+                        wasReprint, payment.getEmvContainer());
             }
             return payment;
         }
@@ -1958,11 +1959,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         myProgressDialog.show();
                         if (isRefund) {
                             Payment p = new Payment(activity);
-                            p.pay_amount = NumberUtils.cleanCurrencyFormatedNumber(amountPaidField);
+                            p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                             Global.btSwiper.currentDevice.refund(p);
                         } else {
                             Payment p = new Payment(activity);
-                            p.pay_amount = NumberUtils.cleanCurrencyFormatedNumber(amountPaidField);
+                            p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                             if (Global.btSwiper != null && Global.btSwiper.currentDevice != null) {
                                 Global.btSwiper.currentDevice.salePayment(p);
                             }
@@ -2089,7 +2090,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         protected Void doInBackground(Void... params) {
             if (Global.mainPrinterManager.currentDevice != null) {
                 Payment p = new Payment(activity);
-                p.pay_amount = NumberUtils.cleanCurrencyFormatedNumber(amountPaidField);
+                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
                 Global.mainPrinterManager.currentDevice.salePayment(p);
             }
             return null;

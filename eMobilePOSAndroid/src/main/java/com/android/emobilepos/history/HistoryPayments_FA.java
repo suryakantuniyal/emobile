@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -187,7 +188,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
 
     private TabSpec newTab(String tag, String label, int tabView) {
-        // TODO Auto-generated method stub
 
         View indicator = LayoutInflater.from(activity).inflate(R.layout.tabs_layout, (ViewGroup) findViewById(android.R.id.tabs), false);
 
@@ -260,7 +260,6 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
     @Override
     public void onTabChanged(String tabID) {
-        // TODO Auto-generated method stub
 
         Limiters value = Limiters.toLimit(tabID);
 
@@ -322,7 +321,7 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (myCursor != null || !myCursor.isClosed()) {
+        if (myCursor != null && !myCursor.isClosed()) {
             myCursor.close();
         }
     }
@@ -346,10 +345,10 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
                 temp = "";
             if (!temp.isEmpty())
                 temp = " (" + temp + ")";
-            myHolder.title.setText(cursor.getString(myHolder.i_id) + temp);
+            myHolder.title.setText(String.format("%s%s", cursor.getString(myHolder.i_id), temp));
 
             temp = cursor.getString(myHolder.i_pay_amount);
-            if (temp == null && !temp.isEmpty())
+            if (TextUtils.isEmpty(temp))
                 temp = "";
             else
                 temp = Global.formatDoubleStrToCurrency(temp);
@@ -363,15 +362,17 @@ public class HistoryPayments_FA extends BaseFragmentActivityActionBar implements
 
             if (cursor.getString(myHolder.i_isVoid).equals("0"))//is not VOID
                 myHolder.voidText.setVisibility(View.INVISIBLE);
-            else
+            else {
                 myHolder.voidText.setVisibility(View.VISIBLE);
+                myHolder.voidText.setText(getString(R.string.void_label));
+            }
 
-            if (myHolder.isDeclined != null && myHolder.isDeclined.equalsIgnoreCase("TRUE"))//is DECLINED EMV
+            if (cursor.getColumnIndex("DECLINED") > -1 && cursor.getString(cursor.getColumnIndex("DECLINED")).equalsIgnoreCase("TRUE"))//is DECLINED EMV
             {
                 myHolder.voidText.setVisibility(View.VISIBLE);
                 myHolder.voidText.setText(getString(R.string.declined));
             }
-            myHolder.tip.setText("(Tip: " + Global.formatDoubleStrToCurrency(cursor.getString(myHolder.i_pay_tip)) + ")");
+            myHolder.tip.setText(String.format("(Tip: %s)", Global.formatDoubleStrToCurrency(cursor.getString(myHolder.i_pay_tip))));
 
 
         }

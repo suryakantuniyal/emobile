@@ -20,6 +20,7 @@ public class PriceLevel {
     private int isactive;
     @SerializedName("_rowversion")
     private String rowversion;
+    private String calcResult;
 
     public String getPricelevelId() {
         return pricelevelId;
@@ -75,5 +76,14 @@ public class PriceLevel {
 
     public void setRowversion(String rowversion) {
         this.rowversion = rowversion;
+    }
+
+
+    public String getCalcResult() {
+        return calcResult;
+    }
+
+    public void setCalcResult(String calcResult) {
+        this.calcResult = calcResult;
     }
 }

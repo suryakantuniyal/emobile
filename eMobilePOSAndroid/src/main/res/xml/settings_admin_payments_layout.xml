@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="payment_section"
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_hard_code_payments">
+        <CheckBoxPreference
+            android:key="pref_pay_with_tupyx"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_pay_with_tupyx" />
+
+        <CheckBoxPreference
+            android:key="pref_mw_with_genius"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_mw_with_genius" />
+        <Preference
+            android:key="pref_config_genius_peripheral"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_genius_peripheral" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

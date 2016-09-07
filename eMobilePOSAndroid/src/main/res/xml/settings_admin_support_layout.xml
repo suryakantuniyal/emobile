@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_support_troubleshooting">
+        <Preference
+            android:key="pref_force_upload"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_force_upload" />
+        <Preference
+            android:key="pref_backup_data"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_backup_data" />
+        <Preference
+            android:key="pref_check_updates"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_check_updates" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

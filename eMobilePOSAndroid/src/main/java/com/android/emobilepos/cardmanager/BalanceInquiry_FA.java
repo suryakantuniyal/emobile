@@ -230,21 +230,21 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
         String cardType = "GiftCard";
         Bundle extras = getIntent().getExtras();
 
-        payment.paymethod_id = extras.getString("paymethod_id");
+        payment.setPaymethod_id(extras.getString("paymethod_id"));
 
-        payment.pay_name = cardInfoManager.getCardOwnerName();
-        payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+        payment.setPay_name(cardInfoManager.getCardOwnerName());
+        payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-        payment.ccnum_last4 = cardInfoManager.getCardLast4();
-        payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        payment.pay_expyear = cardInfoManager.getCardExpYear();
-        payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+        payment.setCcnum_last4(cardInfoManager.getCardLast4());
+        payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+        payment.setPay_expyear(cardInfoManager.getCardExpYear());
+        payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-        payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        payment.track_two = cardInfoManager.getEncryptedAESTrack2();
+        payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+        payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
-        payment.card_type = cardType;
-        payment.pay_type = "0";
+        payment.setCard_type(cardType);
+        payment.setPay_type("0");
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
         String generatedURL = "";

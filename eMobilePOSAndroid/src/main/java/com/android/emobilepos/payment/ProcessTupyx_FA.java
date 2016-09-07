@@ -223,24 +223,24 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
         payment = new Payment(activity);
 
-        payment.pay_id = extras.getString("pay_id");
+        payment.setPay_id(extras.getString("pay_id"));
 
-        payment.emp_id = myPref.getEmpID();
+        payment.setEmp_id(myPref.getEmpID());
 
         if (!extras.getBoolean("histinvoices")) {
-            payment.job_id = extras.getString("job_id");
+            payment.setJob_id(extras.getString("job_id"));
         } else {
-            payment.inv_id = "";
+            payment.setInv_id("");
         }
 
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            payment.setClerk_id(myPref.getShiftClerkID());
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            payment.setClerk_id(myPref.getClerkID());
 
-        payment.cust_id = extras.getString("cust_id") != null ? extras.getString("cust_id") : "";
-        payment.custidkey = extras.getString("custidkey") != null ? extras.getString("custidkey") : "";
-        payment.paymethod_id = extras.getString("paymethod_id");
+        payment.setCust_id(extras.getString("cust_id") != null ? extras.getString("cust_id") : "");
+        payment.setCustidkey(extras.getString("custidkey") != null ? extras.getString("custidkey") : "");
+        payment.setPaymethod_id(extras.getString("paymethod_id"));
 
 //		String amountToBePaid = Double.toString(Global.formatNumFromLocale(fieldAmountToPay.getText().toString()
 //				.replaceAll("[^\\d\\,\\.]", "").trim()));
@@ -256,12 +256,12 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
         double _actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(fieldTotalAmount));
 
 
-        payment.pay_dueamount = Double.toString(_amountToBePaid);
+        payment.setPay_dueamount(Double.toString(_amountToBePaid));
 
         if (_amountToBePaid > _actualAmount)
-            payment.pay_amount = Double.toString(_actualAmount);
+            payment.setPay_amount(Double.toString(_actualAmount));
         else
-            payment.pay_amount = Double.toString(_amountToBePaid);
+            payment.setPay_amount(Double.toString(_amountToBePaid));
 
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
@@ -269,8 +269,8 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
         if (!isRefund) {
 
-            payment.pay_type = "0";
-            generatedURL = payGate.paymentWithTupyx(qrCodeData, payment.pay_amount);
+            payment.setPay_type("0");
+            generatedURL = payGate.paymentWithTupyx(qrCodeData, payment.getPay_amount());
             /*
 			 * if(wasReadFromReader) generatedURL =
 			 * payGate.defaultPaymentWithAction("ChargeCreditCardAction","1");
@@ -372,17 +372,17 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
             if (wasProcessed)        //payment processing succeeded
             {
                 PaymentsHandler payHandler = new PaymentsHandler(activity);
-                payment.pay_resultcode = parsedMap.get("statusCode");
-                payment.pay_transid = parsedMap.get("CreditCardTransID");
-                payment.authcode = parsedMap.get("AuthorizationCode");
-                payment.card_type = parsedMap.get("CCCardType");
-                payment.ccnum_last4 = parsedMap.get("last4digits");
-                payment.pay_tip = parsedMap.get("tip");
-                payment.pay_expmonth = parsedMap.get("pay_expmonth");
-                payment.pay_expyear = parsedMap.get("payYear");
-                payment.tupyx_user_id = parsedMap.get("tupyxUser");
+                payment.setPay_resultcode(parsedMap.get("statusCode"));
+                payment.setPay_transid(parsedMap.get("CreditCardTransID"));
+                payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+                payment.setCard_type(parsedMap.get("CCCardType"));
+                payment.setCcnum_last4(parsedMap.get("last4digits"));
+                payment.setPay_tip(parsedMap.get("tip"));
+                payment.setPay_expmonth(parsedMap.get("pay_expmonth"));
+                payment.setPay_expyear(parsedMap.get("payYear"));
+                payment.setTupyx_user_id(parsedMap.get("tupyxUser"));
 
-                Global.amountPaid = payment.pay_amount;
+                Global.amountPaid = payment.getPay_amount();
                 payHandler.insert(payment);
                 //Global.amountPaid = payHandler.updateAfterCardPayment(extras.getString("pay_id"));
 

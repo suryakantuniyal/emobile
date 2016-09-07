@@ -455,7 +455,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void salePayment(Payment payment) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
-        boolean succeed = hapi.sale(new BigInteger(payment.pay_amount.replace(".", "")), currency);
+        boolean succeed = hapi.sale(new BigInteger(payment.getPay_amount().replace(".", "")), currency);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -464,7 +464,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
         hapi.getPendingTransaction();
-        boolean succeed = hapi.saleReversal(new BigInteger(payment.pay_amount.replace(".", "")), currency, originalTransactionId);
+        boolean succeed = hapi.saleReversal(new BigInteger(payment.getPay_amount().replace(".", "")), currency, originalTransactionId);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }
@@ -475,7 +475,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void refund(Payment payment) {
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
-        boolean succeed = hapi.refund(new BigInteger(payment.pay_amount.replace(".", "")), currency);
+        boolean succeed = hapi.refund(new BigInteger(payment.getPay_amount().replace(".", "")), currency);
         if (!succeed) {
             dismissDialog();
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
@@ -487,7 +487,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         hapi.addPendingResultsEventHandler(this);
         hapi.getPendingTransaction();
         boolean succeed = hapi.saleReversal(new
-                BigInteger(payment.pay_amount.replace(".", "")), currency, originalTransactionId);
+                BigInteger(payment.getPay_amount().replace(".", "")), currency, originalTransactionId);
         if (!succeed) {
             Global.showPrompt(activity, R.string.payment, activity.getString(R.string.handpoint_payment_error));
         }

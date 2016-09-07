@@ -23,7 +23,7 @@ public class MyPreferences {
     private Global global;
 
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
-    
+
 
     private final String db_path = "db_path";
     private final String emp_id = "emp_id";
@@ -98,6 +98,7 @@ public class MyPreferences {
     public static final String pref_skip_email_phone = "pref_skip_email_phone";
     public static final String pref_show_only_group_taxes = "pref_show_only_group_taxes";
     public static final String pref_retail_taxes = "pref_retail_taxes";
+    public static final String pref_mix_match = "pref_mix_match";
     public static final String pref_require_customer = "pref_require_customer";
     public static final String pref_show_confirmation_screen = "pref_show_confirmation_screen";
     public static final String pref_direct_customer_selection = "pref_direct_customer_selection";
@@ -554,6 +555,10 @@ public class MyPreferences {
     public void setCustPriceLevel(String id) {
         prefEditor.putString(cust_pricelevel_id, id);
         prefEditor.commit();
+    }
+
+    public boolean isMixAnMatch() {
+        return getPreferences(pref_mix_match);
     }
 
     public String getCustPriceLevel() {
@@ -1084,16 +1089,21 @@ public class MyPreferences {
 
     }
 
-    public boolean storedAndForward(boolean isGet, boolean value) {
+    public void setStoredAndForward(boolean storeAndForward) {
         String is_store_forward = "is_store_forward";
-        if (isGet)
-            return prefs.getBoolean(is_store_forward, false);
-        else {
-            prefEditor.putBoolean(is_store_forward, value);
-            prefEditor.commit();
-        }
-        return false;
+        prefEditor.putBoolean(is_store_forward, storeAndForward);
+        prefEditor.commit();
     }
+
+    public boolean isPrefUseStoreForward() {
+        return getPreferences(MyPreferences.pref_use_store_and_forward);
+    }
+
+    public boolean isStoredAndForward() {
+        String is_store_forward = "is_store_forward";
+        return prefs.getBoolean(is_store_forward, false);
+    }
+
 
     public void setGeniusIP(String ip) {
         prefEditor.putString("genius_ip", ip);
@@ -1232,7 +1242,6 @@ public class MyPreferences {
         } catch (AccessControlException e) {
 
         } catch (SecurityException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

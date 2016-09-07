@@ -8,9 +8,9 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
-import com.android.database.StoredPayments_DB;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -182,7 +182,7 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
         long pay_count = payHandler.paymentExist(payID);
         if (pay_count == 0) {
             isStoredFwd = true;
-            StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
+            StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
             paymentDetails = dbStoredPay.getPrintingForPaymentDetails(payID, type);
         } else {
             paymentDetails = payHandler.getPrintingForPaymentDetails(payID, type);

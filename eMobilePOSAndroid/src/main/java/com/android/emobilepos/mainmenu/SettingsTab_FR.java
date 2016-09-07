@@ -15,7 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.settings.SettingsManager_FA;
+import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.MyPreferences;
 
 public class SettingsTab_FR extends Fragment implements OnClickListener{
@@ -36,7 +36,6 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.btnAdminSetting:
 			promptPassword(CASE_ADMIN);
@@ -45,7 +44,7 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 			promptPassword(CASE_MANAGER);
 			break;
 		case R.id.btnGeneralSetting:
-			Intent intent = new Intent(getActivity(), SettingsManager_FA.class);
+			Intent intent = new Intent(getActivity(), SettingListActivity.class);
 			intent.putExtra("settings_type", CASE_GENERAL);
 			startActivity(intent);
 			break;
@@ -85,11 +84,10 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				globalDlog.dismiss();
 				String pass = viewField.getText().toString();
 				if (!pass.isEmpty()) {
-					Intent intent = new Intent(getActivity(), SettingsManager_FA.class);
+					Intent intent = new Intent(getActivity(), SettingListActivity.class);
 					if (type == CASE_ADMIN && myPref.getPOSAdminPass().equals(pass.trim())) {
 						intent.putExtra("settings_type", CASE_ADMIN);
 						startActivity(intent);
@@ -104,48 +102,6 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 			}
 		});
 		globalDlog.show();
-		
-		
-		
-		
-//		final EditText input = new EditText(getActivity());
-//		final MyPreferences myPref = new MyPreferences(getActivity());
-//
-//		input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-//		dialogBuilder = new AlertDialog.Builder(getActivity());
-//		dialogBuilder.setView(input);
-//
-//		if (type == CASE_ADMIN)
-//			dialogBuilder.setTitle(R.string.dlog_title_enter_admin_password);
-//		else
-//			dialogBuilder.setTitle(R.string.dlog_title_enter_manager_password);
-//
-//		dialogBuilder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-//			@Override
-//			public void onClick(DialogInterface thisDialog, int which) {
-//				// TODO Auto-generated method stub
-//				String pass = input.getText().toString();
-//				if (!pass.isEmpty()) {
-//					Intent intent = new Intent(getActivity(), SettingsManager_FA.class);
-//					if (type == CASE_ADMIN && myPref.getPOSAdminPass().equals(pass.trim())) {
-//						intent.putExtra("settings_type", CASE_ADMIN);
-//						thisDialog.dismiss();
-//						startActivity(intent);
-//
-//					} else if (type == CASE_MANAGER && myPref.posManagerPass(true, null).equals(pass.trim())) {
-//						intent.putExtra("settings_type", CASE_MANAGER);
-//						thisDialog.dismiss();
-//						startActivity(intent);
-//					} else {
-//						thisDialog.dismiss();
-//						Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.invalid_password));
-//					}
-//				}
-//			}
-//		});
-//		promptDialog = dialogBuilder.create();
-//		promptDialog.setCancelable(true);
-//		promptDialog.show();
 	}
 
 }

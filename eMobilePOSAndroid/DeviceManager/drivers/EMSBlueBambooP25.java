@@ -520,7 +520,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		// payHandler.getPaymentForPrintingTransactions(ordID);
 		// if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
 		// {
-		// StoredPayments_DB dbStoredPay = new StoredPayments_DB(activity);
+		// StoredPaymentsDAO dbStoredPay = new StoredPaymentsDAO(activity);
 		// payArrayList.addAll(dbStoredPay.getPaymentForPrintingTransactions(ordID));
 		// }
 		// String receiptSignature = new String();
