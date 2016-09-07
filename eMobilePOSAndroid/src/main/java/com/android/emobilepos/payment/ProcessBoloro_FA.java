@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXBoloroManual;
@@ -495,7 +496,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                     StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
                     storeAndForward.setCreationDate(new Date());
                     storeAndForward.setId(storeForwardPaymentId);
-                    storeAndForward.setPayment(realm.copyToRealm(payment));
+                    payment.setPay_id(String.valueOf(System.currentTimeMillis()));
+                    storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
                     storeAndForward.setPaymentXml(generatedURL);
                     storeAndForward.setRetry(false);
                     storeAndForward.setPaymentType(StoreAndForward.PaymentType.BOLORO);
@@ -541,6 +543,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
                     Global.showPrompt(activity, R.string.dlog_title_error, response.get("error_message"));
                 } else if (response.containsKey("epayStatusCode")) {
                     Global.showPrompt(activity, R.string.dlog_title_error, "Code:" + response.get("statusCode") + "\n" + "Msg:" + response.get("statusMessage"));
+                }else{
+                    Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.error_processing_payment));
                 }
             } else {
                 showFinishDlog(getString(R.string.payment_saved_successfully));

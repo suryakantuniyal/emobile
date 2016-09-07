@@ -39,6 +39,10 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_retail_taxes" />
         <CheckBoxPreference
+            android:key="pref_mix_match"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_mix_match" />
+        <CheckBoxPreference
             android:key="pref_require_customer"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_require_customer" />

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_transaction_settings">
+        <CheckBoxPreference
+            android:key="pref_require_manager_pass_to_void_trans"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_manager_pass_to_void_trans" />
+
+        <Preference
+            android:key="pref_default_country"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_country" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

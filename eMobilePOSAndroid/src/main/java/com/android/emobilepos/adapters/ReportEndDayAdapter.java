@@ -343,28 +343,28 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 mHolder.tvOrdNetTotal.setText(Global.formatDoubleStrToCurrency(listOrdTypes.get(position - i_shifts).ord_total));
                 break;
             case TYPE_ITEMS_SOLD:
-                mHolder.tvProdName.setText(listSold.get(position - i_ord_types).ordprod_name);
-                mHolder.tvProdID.setText(listSold.get(position - i_ord_types).prod_id);
-                mHolder.tvProdQty.setText(listSold.get(position - i_ord_types).ordprod_qty);
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listSold.get(position - i_ord_types).overwrite_price));
+                mHolder.tvProdName.setText(listSold.get(position - i_ord_types).getOrdprod_name());
+                mHolder.tvProdID.setText(listSold.get(position - i_ord_types).getProd_id());
+                mHolder.tvProdQty.setText(listSold.get(position - i_ord_types).getOrdprod_qty());
+                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listSold.get(position - i_ord_types).getFinalPrice()));
                 break;
             case TYPE_ITEMS_RETURNED:
-                mHolder.tvProdName.setText(listReturned.get(position - i_item_sold).ordprod_name);
-                mHolder.tvProdID.setText(listReturned.get(position - i_item_sold).prod_id);
-                mHolder.tvProdQty.setText(listReturned.get(position - i_item_sold).ordprod_qty);
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listReturned.get(position - i_item_sold).overwrite_price));
+                mHolder.tvProdName.setText(listReturned.get(position - i_item_sold).getOrdprod_name());
+                mHolder.tvProdID.setText(listReturned.get(position - i_item_sold).getProd_id());
+                mHolder.tvProdQty.setText(listReturned.get(position - i_item_sold).getOrdprod_qty());
+                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listReturned.get(position - i_item_sold).getFinalPrice()));
                 break;
             case TYPE_DEPT_SALES:
-                mHolder.tvProdName.setText(listDeptSales.get(position - i_item_returned).cat_name);
-                mHolder.tvProdID.setText(listDeptSales.get(position - i_item_returned).cat_id);
-                mHolder.tvProdQty.setText(listDeptSales.get(position - i_item_returned).ordprod_qty);
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listDeptSales.get(position - i_item_returned).overwrite_price));
+                mHolder.tvProdName.setText(listDeptSales.get(position - i_item_returned).getCat_name());
+                mHolder.tvProdID.setText(listDeptSales.get(position - i_item_returned).getCat_id());
+                mHolder.tvProdQty.setText(listDeptSales.get(position - i_item_returned).getOrdprod_qty());
+                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listDeptSales.get(position - i_item_returned).getFinalPrice()));
                 break;
             case TYPE_DEPT_RETURNS:
-                mHolder.tvProdName.setText(listDeptReturns.get(position - i_dept_sales).cat_name);
-                mHolder.tvProdID.setText(listDeptReturns.get(position - i_dept_sales).cat_id);
-                mHolder.tvProdQty.setText(listDeptReturns.get(position - i_dept_sales).ordprod_qty);
-                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listDeptReturns.get(position - i_dept_sales).overwrite_price));
+                mHolder.tvProdName.setText(listDeptReturns.get(position - i_dept_sales).getCat_name());
+                mHolder.tvProdID.setText(listDeptReturns.get(position - i_dept_sales).getCat_id());
+                mHolder.tvProdQty.setText(listDeptReturns.get(position - i_dept_sales).getOrdprod_qty());
+                mHolder.tvProdTotal.setText(Global.formatDoubleStrToCurrency(listDeptReturns.get(position - i_dept_sales).getFinalPrice()));
                 break;
             case TYPE_PAYMENT:
                 mHolder.tvPayType.setText(listPayment.get(position - i_dept_returns).getCard_type());

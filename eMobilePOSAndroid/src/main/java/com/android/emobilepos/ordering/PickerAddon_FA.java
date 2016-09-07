@@ -29,6 +29,7 @@ import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -43,6 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import util.JsonUtils;
 
 public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private boolean hasBeenCreated = false;
@@ -252,12 +255,12 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, _cat_id);
         if (c != null && c.moveToPosition(pos)) {
             OrderProduct ord = new OrderProduct();
-            ord.assignedSeat = selectedSeatNumber;
-            ord.prod_istaxable = c.getString(c.getColumnIndex("prod_istaxable"));
-            ord.ordprod_qty = "1";
-            ord.ordprod_name = c.getString(c.getColumnIndex("prod_name"));
-            ord.ordprod_desc = c.getString(c.getColumnIndex("prod_desc"));
-            ord.prod_id = c.getString(c.getColumnIndex("_id"));
+            ord.setAssignedSeat(selectedSeatNumber);
+            ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
+            ord.setOrdprod_qty("1");
+            ord.setOrdprod_name(c.getString(c.getColumnIndex("prod_name")));
+            ord.setOrdprod_desc(c.getString(c.getColumnIndex("prod_desc")));
+            ord.setProd_id(c.getString(c.getColumnIndex("_id")));
 
             String tempPrice = c.getString(c.getColumnIndex("volume_price"));
             if (tempPrice == null || tempPrice.isEmpty()) {
@@ -279,34 +282,34 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                 removedAddon = removedAddon.add(Global.getBigDecimalNum(tempPrice));
             }
 
-            ord.overwrite_price = tempPrice;
-            ord.onHand = c.getString(c.getColumnIndex("master_prod_onhand"));
-            ord.imgURL = c.getString(c.getColumnIndex("prod_img_name"));
+            ord.setOverwrite_price(new BigDecimal(tempPrice));
+            ord.setOnHand(c.getString(c.getColumnIndex("master_prod_onhand")));
+            ord.setImgURL(c.getString(c.getColumnIndex("prod_img_name")));
 
-            if (ord.prod_istaxable.equals("1")) {
+            if (ord.getProd_istaxable().equals("1")) {
                 BigDecimal temp1 = Global.taxAmount.divide(new BigDecimal("100"));
                 BigDecimal temp2 = temp1.multiply(Global.getBigDecimalNum(tempPrice)).setScale(2, RoundingMode.HALF_UP);
-                ord.prod_taxValue = temp2;
-                ord.prod_taxId = Global.taxID;
+                ord.setProd_taxValue(temp2);
+                ord.setProd_taxId(Global.taxID);
             }
-            ord.taxAmount = "";
-            ord.taxTotal = "";
-            ord.prod_price = tempPrice;
-            ord.prod_type = c.getString(c.getColumnIndex("prod_type"));
+            ord.setTaxAmount("");
+            ord.setTaxTotal("");
+            ord.setProd_price(tempPrice);
+            ord.setProd_type(c.getString(c.getColumnIndex("prod_type")));
 
-            ord.addon = "1";
+            ord.setAddon("1");
             if (isAdded)
-                ord.isAdded = "1";
+                ord.setIsAdded("1");
             else
-                ord.isAdded = "0";
+                ord.setIsAdded("0");
 
             if (!isAdded)// Not added
                 _ord_desc.append("\n[NO ").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
             else
                 _ord_desc.append("\n[").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
 
-            ord.itemTotal = tempPrice;
-            ord.itemSubtotal = tempPrice;
+            ord.setItemTotal(tempPrice);
+            ord.setItemSubtotal(tempPrice);
 
             //OrdersHandler handler = new OrdersHandler(activity);
 
@@ -316,7 +319,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                 Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
             }
 
-            ord.ord_id = Global.lastOrdID;
+            ord.setOrd_id(Global.lastOrdID);
 
             if (global.orderProductAddons == null) {
                 global.orderProductAddons = new ArrayList<OrderProduct>();
@@ -324,7 +327,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
             UUID uuid = UUID.randomUUID();
 
-            ord.ordprod_id = uuid.toString();
+            ord.setOrdprod_id(uuid.toString());
             global.orderProductAddons.add(ord);
 
         }
@@ -342,12 +345,12 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
         temp = temp.add(addedAddon);
         if (temp.compareTo(new BigDecimal("0")) == -1)
             temp = new BigDecimal("0");
-        ordProd.overwrite_price = Global.getRoundBigDecimal(temp);
-        ordProd.itemSubtotal = Global.getRoundBigDecimal(temp);
-        ordProd.itemTotal = Global.getRoundBigDecimal(temp);
-        ordProd.ordprod_desc = itemData[3] + _ord_desc.toString();
-        ordProd.prod_sku = itemData[13];
-        ordProd.prod_upc = itemData[14];
+        ordProd.setOverwrite_price(temp);
+        ordProd.setItemSubtotal(Global.getRoundBigDecimal(temp));
+        ordProd.setItemTotal(Global.getRoundBigDecimal(temp));
+        ordProd.setOrdprod_desc(itemData[3] + _ord_desc.toString());
+        ordProd.setProd_sku(itemData[13]);
+        ordProd.setProd_upc(itemData[14]);
         ordProd.addonsProducts.clear();
         ordProd.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
         global.orderProducts.set(position, ordProd);
@@ -373,19 +376,24 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
             if (!myPref.getPreferences(MyPreferences.pref_fast_scanning_mode)) {
                 Intent intent = new Intent(activity, PickerProduct_FA.class);
-                intent.putExtra("prod_id", product.getId());
-                intent.putExtra("prod_name", product.getProdName());
-                intent.putExtra("selectedSeatNumber", product.getAssignedSeat());
-                intent.putExtra("prod_price", product.getProdPrice());
-                intent.putExtra("prod_desc", product.getProdDesc());
-                intent.putExtra("prod_on_hand", product.getProdOnHand());
-                intent.putExtra("url", product.getProdImgName());
-                intent.putExtra("prod_istaxable", product.getProdIstaxable());
-                intent.putExtra("prod_type", product.getProdType());
-                intent.putExtra("prod_taxcode", product.getProdTaxCode());
-                intent.putExtra("prod_taxtype", product.getProdTaxType());
-                intent.putExtra("prod_price_points", product.getProdPricePoints());
-                intent.putExtra("prod_value_points", product.getProdValuePoints());
+
+                Gson gson = JsonUtils.getInstance();
+                product.setAssignedSeat(product.getAssignedSeat());
+                intent.putExtra("orderProduct", gson.toJson(new OrderProduct(product)));
+
+//                intent.putExtra("prod_id", product.getId());
+//                intent.putExtra("prod_name", product.getProdName());
+//                intent.putExtra("selectedSeatNumber", product.getAssignedSeat());
+//                intent.putExtra("prod_price", product.getProdPrice());
+//                intent.putExtra("prod_desc", product.getProdDesc());
+//                intent.putExtra("prod_on_hand", product.getProdOnHand());
+//                intent.putExtra("url", product.getProdImgName());
+//                intent.putExtra("prod_istaxable", product.getProdIstaxable());
+//                intent.putExtra("prod_type", product.getProdType());
+//                intent.putExtra("prod_taxcode", product.getProdTaxCode());
+//                intent.putExtra("prod_taxtype", product.getProdTaxType());
+//                intent.putExtra("prod_price_points", product.getProdPricePoints());
+//                intent.putExtra("prod_value_points", product.getProdValuePoints());
 
                 intent.putExtra("isFromAddon", true);
                 intent.putExtra("cat_id", extras.getString("cat_id"));

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -286,7 +287,7 @@ public class HistoryConsignment_FA extends BaseFragmentActivityActionBar impleme
 
 		public String format(String text) {
 
-			if (text.isEmpty())
+			if (TextUtils.isEmpty(text))
 				return Global.formatDoubleToCurrency(0.00);
 			return Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(text)));
 		}

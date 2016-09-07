@@ -149,7 +149,7 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
                 consTransaction.ConsNew_Qty = Global.custInventoryList.get(i).qty;
 
 
-                newOnHandQty = Double.parseDouble(Global.consignment_products.get(i).onHand) + Double.parseDouble(consTransaction.ConsPickup_Qty);
+                newOnHandQty = Double.parseDouble(Global.consignment_products.get(i).getOnHand()) + Double.parseDouble(consTransaction.ConsPickup_Qty);
 
                 prodHandler.updateProductOnHandQty(Global.consignMapKey.get(i), newOnHandQty);
                 consTransactionList.add(consTransaction);

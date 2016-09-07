@@ -44,12 +44,16 @@ import android.widget.TextView;
 
 import com.android.database.CategoriesHandler;
 import com.android.database.ProductAddonsHandler;
+import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
 import com.android.support.Global;
 import com.android.support.MyEditText;
 import com.android.support.MyPreferences;
+import com.android.support.OrderProductUtils;
+import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -59,6 +63,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import util.JsonUtils;
 
 public class Catalog_FR extends Fragment implements OnItemClickListener, OnClickListener, LoaderCallbacks<Cursor>,
         MenuCatGV_Adapter.ItemClickedCallback, MenuProdGV_Adapter.ProductClickedCallback {
@@ -646,6 +652,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 //        else
         product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
 
+        product.setPricesXGroupid(c.getString(c.getColumnIndex(ProductsHandler.prod_prices_group_id)));
 
         String tempPrice = c.getString(c.getColumnIndex("volume_price"));
         if (tempPrice == null || tempPrice.isEmpty()) {
@@ -656,8 +663,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 if (tempPrice == null || tempPrice.isEmpty())
                     tempPrice = c.getString(c.getColumnIndex("master_price"));
             }
-        } else if (global.qtyCounter.containsKey(product.getId())) {
-            BigDecimal origQty = new BigDecimal(global.qtyCounter.get(product.getId()));
+        } else if (global.orderProducts.contains(product.getId())) {
+            BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));
             BigDecimal newQty = origQty.add(Global.getBigDecimalNum("1"));
             //String [] temp = volPriceHandler.getVolumePrice(global.qtyCounter.get(data[0]),data[0]);
             String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), product.getId());
@@ -703,27 +710,17 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     private void performClickEvent() {
         Product product = populateDataForIntent(myCursor);
-
+        if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
+            List<OrderProduct> orderProductsGroupBySKU = OrderProductUtils.getOrderProductsGroupBySKU(global.orderProducts);
+            global.orderProducts.clear();
+            global.orderProducts.addAll(orderProductsGroupBySKU);
+        }
         if (!isFastScanning) {
             Intent intent = new Intent(getActivity(), PickerProduct_FA.class);
-            intent.putExtra("prod_id", product.getId());
-            intent.putExtra("prod_name", product.getProdName());
-            intent.putExtra("prod_on_hand", product.getProdOnHand());
-            intent.putExtra("prod_price", product.getProdPrice());
-            intent.putExtra("prod_desc", product.getProdDesc());
-            intent.putExtra("prod_extradesc", product.getProdExtraDesc());
-            intent.putExtra("url", product.getProdImgName());
-            intent.putExtra("prod_istaxable", product.getProdIstaxable());
-            intent.putExtra("prod_type", product.getProdType());
-            intent.putExtra("prod_taxcode", product.getProdTaxCode());
-            intent.putExtra("prod_taxtype", product.getProdTaxType());
-            intent.putExtra("cat_id", product.getCatId());
-            intent.putExtra("prod_price_points", product.getProdPricePoints());
-            intent.putExtra("prod_value_points", product.getProdValuePoints());
-            intent.putExtra("prod_sku", product.getProd_sku());
-            intent.putExtra("prod_upc", product.getProd_upc());
-            intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
-
+            Gson gson = JsonUtils.getInstance();
+            product.setAssignedSeat(((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+            String json = gson.toJson(new OrderProduct(product));
+            intent.putExtra("orderProduct", json);
 
             if (Global.isConsignment)
                 intent.putExtra("consignment_qty", myCursor.getString(myCursor.getColumnIndex("consignment_qty")));

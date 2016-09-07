@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
+import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderProductAttributeDAO;
 import com.android.dao.SalesAssociateTableDAO;
 import com.android.dao.UomDAO;
@@ -45,6 +46,7 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
@@ -98,7 +100,6 @@ import util.JsonUtils;
 
 public class SynchMethods {
     private Post post;
-    //private SQLiteDatabase myDB;
     private Activity activity;
     private String xml;
     private InputSource inSource;
@@ -116,8 +117,8 @@ public class SynchMethods {
     private boolean isFromMainMenu = false;
 
     private Intent onHoldIntent;
-    private Realm realm;
     private HttpClient client;
+    private Gson gson = JsonUtils.getInstance();
 
 
     public SynchMethods(DBManager managerInst) {
@@ -125,11 +126,10 @@ public class SynchMethods {
         client = new HttpClient();
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        //myDB = db;
         activity = managerInst.getActivity();
         dbManager = managerInst;
 
-        data = new ArrayList<String[]>();
+        data = new ArrayList<>();
         tempFilePath = activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml";
 
         try {
@@ -166,11 +166,8 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-//            } else {
-//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//            }
+
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -271,6 +268,7 @@ public class SynchMethods {
                 synchDownloadClerks(this);
                 synchDownloadSalesAssociate(this);
                 synchDownloadDinnerTable(this);
+                synchDownloadMixMatch(this);
                 synchDownloadTermsAndConditions(this);
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
@@ -454,12 +452,7 @@ public class SynchMethods {
                         proceed = true;
 
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(synchStage).append(e.getMessage()).append(" [com.android.menuadapters.SynchMenuAdapter (at Class.sendAsync)]");
 
-//					Tracker tracker = EasyTracker.getInstance(activity);
-//					tracker.send(MapBuilder.createException(sb.toString(), false).build());
                 }
             } else
                 xml = activity.getString(R.string.dlog_msg_no_internet_access);
@@ -478,12 +471,6 @@ public class SynchMethods {
             if (type == Global.FROM_SYNCH_ACTIVITY) {
                 if (!isFromMainMenu) {
                     SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-//                    MainMenu_FA synchActivity = (MainMenu_FA) activity;
-//                    ListView listView = (ListView) synchActivity.getViewPager().findViewById(R.id.synchListView);
-//                    if (listView != null) {
-//                        SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
-//                        adapter.notifyDataSetChanged();
-//                    }
                 } else {
                     synchTextView.setVisibility(View.GONE);
                 }
@@ -517,7 +504,6 @@ public class SynchMethods {
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.setMax(100);
-            // myProgressDialog.show();
         }
 
         public void updateProgress(String msg) {
@@ -536,8 +522,6 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             try {
                 sendReverse(this);
             } catch (Exception e) {
@@ -604,14 +588,13 @@ public class SynchMethods {
         @Override
         protected void onPostExecute(Void unused) {
             Global.isForceUpload = false;
-            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
-            String date = sdf.format(new Date());
+//            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
+            String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a);
             MyPreferences myPref = new MyPreferences(activity);
             myPref.setLastSendSync(date);
 
             isSending = false;
             myProgressDialog.dismiss();
-            //myDB.close();
 
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
@@ -643,11 +626,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-//            } else {
-//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//            }
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -667,16 +646,9 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
-
-
                     synchOrdersOnHoldList(this);
-
-                    //myDB.close();
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -685,27 +657,13 @@ public class SynchMethods {
         }
 
         protected void onPostExecute(String unused) {
-
-            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
-            String date = sdf.format(new Date());
-
+//            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy h:mm a", Locale.getDefault());
+            String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_MMM_dd_yyyy_h_mm_a);
             myPref.setLastReceiveSync(date);
-
-
             myProgressDialog.dismiss();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-            /*if(type == Global.FROM_ADDING_ORDERS)
-            {
-				activity.finish();
-			}
-			else
-			{
-				Intent intent =  new Intent(activity, OnHoldActivity.class);
-				activity.startActivity(intent);
-			}*/
             Intent intent = new Intent(activity, OnHoldActivity.class);
             activity.startActivity(intent);
-
         }
 
     }
@@ -718,12 +676,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-            //            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-//            } else {
-//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//            }
-
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -736,11 +689,9 @@ public class SynchMethods {
             myProgressDialog.setMessage(params[0]);
         }
 
-
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
-
 
         @Override
         protected String doInBackground(String... params) {
@@ -754,7 +705,9 @@ public class SynchMethods {
                         ((OnHoldActivity) activity).addOrder(c);
                 } else
                     proceedToView = false;
-                c.close();
+                if (c != null) {
+                    c.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -785,13 +738,8 @@ public class SynchMethods {
 
         @Override
         protected void onPreExecute() {
-
             int orientation = activity.getResources().getConfiguration().orientation;
-//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-//            } else {
-//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//            }
             if (myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             myProgressDialog = new ProgressDialog(activity);
@@ -818,10 +766,8 @@ public class SynchMethods {
 
         @Override
         protected String doInBackground(Boolean[]... params) {
-            //downloadHoldList = params[0][0];
             try {
                 if (NetworkUtils.isConnectedToInternet(activity)) {
-                    //onCheckOutOnHold = params[0][1];
                     err_msg = sendOrdersOnHold(this);
                     if (err_msg.isEmpty()) {
                         if (checkoutOnHold)
@@ -868,12 +814,7 @@ public class SynchMethods {
         protected void onPreExecute() {
 
             int orientation = activity.getResources().getConfiguration().orientation;
-//            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-//            } else {
-//                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//            }
-
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
@@ -894,17 +835,10 @@ public class SynchMethods {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
-
             try {
-
-
                 synchLocations(this);
                 synchLocationsInventory(this);
-
-
             } catch (Exception e) {
-                // TODO Auto-generated catch block
             }
             return null;
         }
@@ -915,7 +849,6 @@ public class SynchMethods {
         }
 
     }
-
 
     /************************************
      * Send Methods
@@ -967,9 +900,6 @@ public class SynchMethods {
             c.close();
         } catch (Exception e) {
             e.printStackTrace();
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(
-//					e.getStackTrace().toString(), false).build());
         }
     }
 
@@ -1104,7 +1034,6 @@ public class SynchMethods {
 
     private void sendCustomerInventory(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXSendCustomerInventory handler = new SAXSendCustomerInventory();
-        //OrdersHandler ordersHandler = new OrdersHandler(activity);
         CustomerInventoryHandler custInventoryHandler = new CustomerInventoryHandler(activity);
         if (custInventoryHandler.getNumUnsyncItems() > 0) {
             if (Global.isForceUpload)
@@ -1125,7 +1054,6 @@ public class SynchMethods {
 
     private void sendConsignmentTransaction(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXSendConsignmentTransaction handler = new SAXSendConsignmentTransaction();
-        //OrdersHandler ordersHandler = new OrdersHandler(activity);
         ConsignmentTransactionHandler consTransDBHandler = new ConsignmentTransactionHandler(activity);
         if (consTransDBHandler.getNumUnsyncItems() > 0) {
             if (Global.isForceUpload)
@@ -1167,7 +1095,6 @@ public class SynchMethods {
 
     private void sendWalletOrders(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXParserPost handler = new SAXParserPost();
-        //ShiftPeriodsDBHandler dbHandler = new ShiftPeriodsDBHandler(activity);
         OrdersHandler dbHandler = new OrdersHandler(activity);
 
         if (dbHandler.getNumUnsyncTupyxOrders() > 0) {
@@ -1181,7 +1108,6 @@ public class SynchMethods {
             xr.setContentHandler(handler);
             xr.parse(inSource);
             data = handler.getData();
-            //dbHandler.updateIsSync(data);
             if (data.isEmpty())
                 didSendData = false;
             data.clear();
@@ -1330,14 +1256,6 @@ public class SynchMethods {
     }
 
     private void synchPaymentMethods(resynchAsync task) throws IOException, SAXException {
-//        task.updateProgress(getString(R.string.sync_dload_pay_methods));
-//        post.postData(7, activity, "PayMethods");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PAY_METHODS);
-//        File tempFile = new File(tempFilePath);
-//        task.updateProgress(getString(R.string.sync_saving_pay_methods));
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
-
         try {
             task.updateProgress(getString(R.string.sync_dload_pay_methods));
             Gson gson = JsonUtils.getInstance();
@@ -1401,6 +1319,7 @@ public class SynchMethods {
         }
 
     }
+
 
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
@@ -1504,11 +1423,9 @@ public class SynchMethods {
             task.updateProgress(getString(R.string.sync_dload_products));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            Log.d("GSon Start", new Date().toString());
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Products"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            Log.d("GSon Start Reading", new Date().toString());
             List<Product> products = new ArrayList<Product>();
             productsHandler.emptyTable();
             reader.beginArray();
@@ -1521,13 +1438,11 @@ public class SynchMethods {
                     productsHandler.insert(products);
                     products.clear();
                     i = 0;
-                    Log.d("GSon Insert 1000", new Date().toString());
                 }
             }
             productsHandler.insert(products);
             reader.endArray();
             reader.close();
-            Log.d("GSon Finish", new Date().toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1536,14 +1451,6 @@ public class SynchMethods {
     }
 
     private void synchProductAliases(resynchAsync task) throws IOException, SAXException {
-//        task.updateProgress(getString(R.string.sync_dload_product_aliases));
-//        post.postData(7, activity, "ProductAliases");
-//        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCT_ALIASES);
-//        File tempFile = new File(tempFilePath);
-//        task.updateProgress(getString(R.string.sync_saving_product_aliases));
-//        sp.parse(tempFile, synchHandler);
-//        tempFile.delete();
-
         try {
             ProductAliases_DB productAliasesDB = new ProductAliases_DB(activity);
             task.updateProgress(getString(R.string.sync_dload_product_aliases));
@@ -1710,19 +1617,12 @@ public class SynchMethods {
                 width = (int) (width * scale);
                 height = (int) (height * scale);
             }
-
-
             Bitmap newBitmap = Bitmap.createScaledBitmap(bmp, width, height, false);
-            //bmp.recycle();
-
             String externalPath = activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/";
             myPref.setAccountLogoPath(externalPath + "logo.png");
             File file = new File(externalPath, "logo.png");
-
             OutputStream os = new FileOutputStream(file);
             newBitmap.compress(CompressFormat.PNG, 0, os);
-
-
             is.close();
             os.close();
             bmp.recycle();
@@ -1783,6 +1683,39 @@ public class SynchMethods {
         try {
             DinningTableDAO.truncate();
             DinningTableDAO.insert(jsonRequest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void synchDownloadMixMatch(resynchAsync task) throws SAXException, IOException {
+        try {
+            task.updateProgress(getString(R.string.sync_dload_mixmatch));
+            client = new HttpClient();
+            GenerateXML xml = new GenerateXML(activity);
+
+
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getMixMatch());
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<MixMatch> mixMatches = new ArrayList<MixMatch>();
+            MixMatchDAO.truncate();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                MixMatch mixMatch = gson.fromJson(reader, MixMatch.class);
+                mixMatches.add(mixMatch);
+                i++;
+                if (i == 1000) {
+                    MixMatchDAO.insert(mixMatches);
+                    mixMatches.clear();
+                    i = 0;
+                }
+            }
+            MixMatchDAO.insert(mixMatches);
+            reader.endArray();
+            reader.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1976,7 +1909,6 @@ public class SynchMethods {
             ((asyncGetLocationsInventory) task).updateProgress(getString(R.string.sync_dload_locations_inventory));
         post.postData(7, activity, "GetLocationsInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_LOCATIONS_INVENTORY);
-        //tempGenerateFile(true);
         File tempFile = new File(tempFilePath);
 
 
@@ -1990,7 +1922,5 @@ public class SynchMethods {
 
 
     private void handleGoogleAnalytic(String stack) {
-//		Tracker tracker = EasyTracker.getInstance(activity);
-//		tracker.send(MapBuilder.createException(stack, false).build());
     }
 }
