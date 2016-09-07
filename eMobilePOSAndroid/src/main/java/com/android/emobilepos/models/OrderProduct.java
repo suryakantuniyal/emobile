@@ -762,4 +762,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public void setParentAddonOrderProductId(String parentAddonOrderProductId) {
         this.parentAddonOrderProductId = parentAddonOrderProductId;
     }
+
+    public boolean isAddon() {
+        return !TextUtils.isEmpty(getAddon()) && getAddon().equals("1");
+    }
 }

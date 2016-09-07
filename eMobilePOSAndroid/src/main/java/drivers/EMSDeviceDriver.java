@@ -571,35 +571,38 @@ public class EMSDeviceDriver {
                         uomDescription = orderProducts.get(i).getUom_name() + "(" + orderProducts.get(i).getUom_conversion() + ")";
                     }
                     if (isRestMode) {
-                        sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name()
-                                        + " "
-                                        + uomDescription, lineWidth, 1));
-                        if (orderProducts.get(i).hasAddons.equals("1")) {
-                            List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
-                            for (OrderProduct addon : addons) {
-                                if (addon.getIsAdded().equals("1")) {
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            " >" + addon.getOrdprod_name(),
-                                            Global.getCurrencyFormat(addon.getFinalPrice()), lineWidth, 2));
-                                } else {
-                                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            " >NO " + addon.getOrdprod_name(),
-                                            Global.getCurrencyFormat(addon.getFinalPrice()), lineWidth, 2));
+                        if (!orderProducts.get(i).isAddon()) {
+                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                    orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name()
+                                            + " "
+                                            + uomDescription, lineWidth, 1));
+                            if (orderProducts.get(i).hasAddons.equals("1")) {
+                                List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
+                                for (OrderProduct addon : addons) {
+                                    if (addon.getIsAdded().equals("1")) {
+                                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                                " >" + addon.getOrdprod_name(),
+                                                Global.getCurrencyFormat(addon.getFinalPrice()), lineWidth, 2));
+                                    } else {
+                                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                                " >NO " + addon.getOrdprod_name(),
+                                                Global.getCurrencyFormat(addon.getFinalPrice()), lineWidth, 2));
+                                    }
                                 }
                             }
-                        }
-                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                Global.getCurrencyFormat(orderProducts.get(i).getItemSubtotal()), lineWidth, 3))
-                                .append("\n");
-                        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                                Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3)).append("\n");
 
-                        if (printPref.contains(MyPreferences.print_descriptions)) {
-                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                    getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
-                            sb.append(textHandler.oneColumnLineWithLeftAlignedText(
-                                    orderProducts.get(i).getOrdprod_desc().replace("<br/>", "\n"), lineWidth, 5)).append("\n");
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+                                    Global.getCurrencyFormat(orderProducts.get(i).getItemSubtotal()), lineWidth, 3))
+                                    .append("\n");
+                            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                                    Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3)).append("\n");
+
+                            if (printPref.contains(MyPreferences.print_descriptions)) {
+                                sb.append(textHandler.twoColumnLineWithLeftAlignedText(
+                                        getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
+                                sb.append(textHandler.oneColumnLineWithLeftAlignedText(
+                                        orderProducts.get(i).getOrdprod_desc().replace("<br/>", "\n"), lineWidth, 5)).append("\n");
+                            }
                         }
                     } else {
                         sb.append(textHandler.oneColumnLineWithLeftAlignedText(

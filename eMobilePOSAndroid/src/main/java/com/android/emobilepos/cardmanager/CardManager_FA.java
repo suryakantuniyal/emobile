@@ -27,6 +27,7 @@ import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -58,6 +59,7 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
+import io.realm.Realm;
 
 public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -530,8 +532,9 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
                 cardType = "LoyaltyCard";
             else if (cardTypeCase == CASE_REWARD)
                 cardType = "Reward";
-
-            payment.setPaymethod_id(cardType);
+            PaymentMethod paymentMethod = Realm.getDefaultInstance().where(PaymentMethod.class)
+                    .equalTo("paymentmethod_type", cardType).findFirst();
+            payment.setPaymethod_id(paymentMethod.getPaymethod_id());
             payment.setCard_type(cardType);
 
             payment.setPay_type("0");
