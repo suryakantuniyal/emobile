@@ -1541,16 +1541,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
-
-//        int sum;
-
-//        if (indexOf>=0)//global.qtyCounter.containsKey(product.getId()))
         int sum = new Double(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
-
-//        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
-//            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
-//        else
-//            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
         if (OrderingMain_FA.returnItem)
             ord.setReturned(true);
         order.setName(product.getProdName());
@@ -1691,16 +1682,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         return true;
-//        if (global.ordProdAttrPending.size() == 0) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//        for (ProductAttribute attribute : global.ordProdAttrPending) {
-//            if (!global.ordProdAttr.contains(attribute)) {
-//                return false;
-//            }
-//        }
-//        return true;
+
     }
 }
