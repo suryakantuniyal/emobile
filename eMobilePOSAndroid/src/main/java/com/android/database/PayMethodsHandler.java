@@ -33,15 +33,12 @@ public class PayMethodsHandler {
             isactive, paymethod_showOnline, image_url, OriginalTransid);
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-    private List<String[]> addrData;
     private MyPreferences myPref;
-    private List<HashMap<String, Integer>> dictionaryListMap;
 
     private static final String table_name = "PayMethods";
 
     public PayMethodsHandler(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
-        addrData = new ArrayList<String[]>();
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
@@ -62,13 +59,6 @@ public class PayMethodsHandler {
         }
     }
 
-    private String getData(String tag, int record) {
-        Integer i = dictionaryListMap.get(record).get(tag);
-        if (i != null) {
-            return addrData.get(record)[i];
-        }
-        return "";
-    }
 
     private int index(String tag) {
         return attrHash.get(tag);
@@ -119,57 +109,15 @@ public class PayMethodsHandler {
     public List<PaymentMethod> getPayMethod() {
         Realm realm = Realm.getDefaultInstance();
         return realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
-//
-//        //SQLiteDatabase db = dbManager.openReadableDB();
-//
-//        List<String[]> list = new ArrayList<String[]>();
-//
-//        String[] fields = new String[]{paymethod_id, paymethod_name, paymentmethod_type, image_url, OriginalTransid};
-//
-//        Cursor cursor = DBManager._db.query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
-//        String[] data = new String[5];
-//
-//
-//        //--------------- add additional payment methods ----------------
-//        if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
-//            String[] extraMethods = new String[]{"Genius", "Genius", "Genius", "", "0"};
-//            list.add(extraMethods);
-//        }
-//        if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
-//            String[] extraMethods = new String[]{"Wallet", "Tupyx", "Wallet", "", "0"};
-//            list.add(extraMethods);
-//        }
-//
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//
-//                data[0] = cursor.getString(cursor.getColumnIndex(paymethod_id));
-//                data[1] = cursor.getString(cursor.getColumnIndex(paymethod_name));
-//                data[2] = cursor.getString(cursor.getColumnIndex(paymentmethod_type));
-//                data[3] = cursor.getString(cursor.getColumnIndex(image_url));
-//                data[4] = cursor.getString(cursor.getColumnIndex(OriginalTransid));
-//                list.add(data);
-//
-//                data = new String[5];
-//
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//        //db.close();
-//        return list;
     }
 
 
     public List<String[]> getPayMethodsName() {
-        //SQLiteDatabase db =dbManager.openReadableDB();
-
-        List<String[]> list = new ArrayList<String[]>();
+        List<String[]> list = new ArrayList<>();
 
         String[] fields = new String[]{paymethod_id, paymethod_name};
 
         Cursor cursor = DBManager._db.query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
-        //String[] data = new String[2];
 
         //--------------- add additional payment methods ----------------
         if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
@@ -217,20 +165,7 @@ public class PayMethodsHandler {
 
         return data;
     }
-
-
-    public String getSpecificPayMethod(String methodID) {
-        String[] fields = new String[]{paymethod_name};
-        Cursor cursor = DBManager._db.query(true, table_name, fields, "paymethod_id = '" + methodID + "'", null, null, null, null, null);
-        String data = "";
-        if (cursor.moveToFirst()) {
-            do {
-                data = cursor.getString(cursor.getColumnIndex(paymethod_name));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return data;
-    }
+    
 
     public String getSpecificPayMethodId(String methodName) {
         String[] fields = new String[]{paymethod_id};
