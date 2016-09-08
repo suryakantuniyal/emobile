@@ -53,19 +53,19 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/setting_list"
             android:name="com.android.emobilepos.settings.SettingListFragment"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:background="@color/gray_flat_bg"
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"
-            android:paddingRight="10dp"
             tools:context="com.android.emobilepos.settings.SettingListActivity"
-            tools:listitem="@layout/setting_list_content" />
+            tools:listitem="@layout/setting_list_content"
+            android:layout_weight="0.35" />
 
         <FrameLayout
             android:id="@+id/setting_detail_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="3" />
+            android:layout_weight="1" />
 
     </LinearLayout>
 </LinearLayout>
