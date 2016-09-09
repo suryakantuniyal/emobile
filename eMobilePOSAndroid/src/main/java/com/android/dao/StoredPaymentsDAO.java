@@ -1,28 +1,20 @@
 package com.android.dao;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.android.database.DBManager;
 import com.android.database.PaymentsHandler;
-import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.storedAndForward.StoreAndForward;
 import com.android.support.Global;
-import com.google.android.gms.vision.text.Text;
-import com.google.gson.Gson;
-
-import net.sqlcipher.database.SQLiteStatement;
+import com.android.support.MyPreferences;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
@@ -165,48 +157,9 @@ public class StoredPaymentsDAO {
         realm.beginTransaction();
         RealmResults<StoreAndForward> storeAndForwards = realm.where(StoreAndForward.class).equalTo("payment.job_id", jobID).findAll();
         realm.commitTransaction();
-//        RealmResults<PaymentMethod> paymentMethods = realm.where(PaymentMethod.class).findAll();
-
-//        String sb = "SELECT p.pay_amount AS 'pay_amount',pm.paymethod_name AS 'paymethod_name'," +
-//                "p.pay_tip AS 'pay_tip'," +
-//                "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid'," +
-//                "p.ccnum_last4 AS 'ccnum_last4'," +
-//                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber'," +
-//                "p.IvuLottoQR AS 'IvuLottoQR'," +
-//                "p.pay_dueamount AS 'pay_dueamount' " +
-//                "FROM StoredPayments p," +
-//                "PayMethods pm " +
-//                "WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID +
-//                "' UNION " +
-//                "SELECT p.pay_amount AS 'pay_amount','Wallet' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature'," +
-//                "p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
-//                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' " +
-//                "FROM StoredPayments p " +
-//                "WHERE p.paymethod_id = 'Wallet' AND p.job_id = '" + jobID + "' UNION " +
-//                "SELECT p.pay_amount AS 'pay_amount','LoyaltyCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip',p.pay_signature AS 'pay_signature'," +
-//                "p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4',p.IvuLottoDrawDate AS 'IvuLottoDrawDate'," +
-//                "p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR',p.pay_dueamount AS 'pay_dueamount' " +
-//                "FROM StoredPayments p " +
-//                "WHERE p.paymethod_id = 'LoyaltyCard' AND p.job_id = '" + jobID + "' UNION " +
-//                "SELECT p.pay_amount AS 'pay_amount','Reward' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
-//                "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
-//                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR'," +
-//                "p.pay_dueamount AS 'pay_dueamount' " +
-//                "FROM StoredPayments p " +
-//                "WHERE p.paymethod_id = 'Reward' AND p.job_id = '" + jobID + "' UNION " +
-//                "SELECT p.pay_amount AS 'pay_amount','GiftCard' AS  'paymethod_name',p.pay_tip AS 'pay_tip'," +
-//                "p.pay_signature AS 'pay_signature',p.pay_transid AS 'pay_transid',p.ccnum_last4 AS 'ccnum_last4'," +
-//                "p.IvuLottoDrawDate AS 'IvuLottoDrawDate',p.IvuLottoNumber AS 'IvuLottoNumber',p.IvuLottoQR AS 'IvuLottoQR'," +
-//                "p.pay_dueamount AS 'pay_dueamount' " +
-//                "FROM StoredPayments p " +
-//                "WHERE p.paymethod_id = 'GiftCard' AND p.job_id = '" + jobID + "'";
         List<PaymentDetails> list = new ArrayList<>();
 
-//        Cursor cursor = DBManager._db.rawQuery(sb, null);
         PaymentDetails details = new PaymentDetails();
-//        if (cursor.moveToFirst()) {
-//
-//            do {
         for (StoreAndForward sf : storeAndForwards) {
             details.setPay_amount(sf.getPayment().getPay_amount());
             details.setPaymethod_name(sf.getPayment().getPaymentMethod().getPaymethod_name());
@@ -221,7 +174,6 @@ public class StoredPaymentsDAO {
             list.add(details);
             details = new PaymentDetails();
         }
-//    cursor.close();
         return list;
     }
 
@@ -237,7 +189,6 @@ public class StoredPaymentsDAO {
     }
 
     public static void purgeDeletedStoredPayment() {
-//        DBManager._db.delete(table_name, "pay_uuid = ?", new String[]{_pay_uuid});
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.where(StoreAndForward.class).equalTo("status"
@@ -247,9 +198,6 @@ public class StoredPaymentsDAO {
     }
 
     public void updateStoredPaymentForRetry(StoreAndForward storeAndForward) {
-//        ContentValues args = new ContentValues();
-//        args.put(is_retry, "1");
-//        DBManager._db.update(table_name, args, "pay_uuid = ?", new String[]{_pay_uuid});
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         storeAndForward.setRetry(true);
@@ -257,19 +205,21 @@ public class StoredPaymentsDAO {
     }
 
 
-    public void insert(Payment payment, StoreAndForward.PaymentType paymentType) {
+    public void insert(Activity activity, Payment payment, StoreAndForward.PaymentType paymentType) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
         storeAndForward.setPaymentType(paymentType);
         storeAndForward.setPaymentXml(payment.getPayment_xml());
-        storeAndForward.setPayment(realm.copyToRealmOrUpdate(payment));
+        storeAndForward.setPayment(realm.copyToRealm(payment));
         storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
         storeAndForward.setRetry(false);
         storeAndForward.setCreationDate(new Date());
         storeAndForward.setId(System.currentTimeMillis());
+        realm.insert(storeAndForward);
         realm.commitTransaction();
         PaymentsHandler.setLastPaymentInserted(payment);
+        new MyPreferences(activity).setLastPayID(payment.getPay_id());
     }
 
     public static void updateStoreForwardPaymentToRetry(StoreAndForward storeAndForward) {
@@ -279,4 +229,30 @@ public class StoredPaymentsDAO {
         realm.commitTransaction();
     }
 
+    public static String getLastPaymentId(Activity activity, int deviceId, int year) {
+        MyPreferences myPref = new MyPreferences(activity);
+        String lastPayID = myPref.getLastPayID();
+        boolean getIdFromRealm = false;
+        if (TextUtils.isEmpty(lastPayID) || lastPayID.length() <= 4) {
+            getIdFromRealm = true;
+        } else {
+            String[] tokens = myPref.getLastPayID().split("-");
+            if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
+                getIdFromRealm = true;
+            }
+        }
+
+        if (getIdFromRealm) {
+            Realm realm = Realm.getDefaultInstance();
+            StoreAndForward storeAndForward = realm.where(StoreAndForward.class)
+                    .beginsWith("pay_id", deviceId + "-")
+                    .endsWith("pay_id", "-" + year).findFirst();
+            lastPayID = storeAndForward.getPayment().getPay_id();
+            if (TextUtils.isEmpty(lastPayID)) {
+                lastPayID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+            }
+            myPref.setLastPayID(lastPayID);
+        }
+        return lastPayID;
+    }
 }

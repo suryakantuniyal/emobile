@@ -78,7 +78,7 @@ public class SalesTab_FR extends Fragment {
         activity = getActivity();
         myPref = new MyPreferences(activity);
         myPref.setLogIn(true);
-        PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_layout, false);
+        PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_general_layout, false);
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
 
         thisContext = getActivity();

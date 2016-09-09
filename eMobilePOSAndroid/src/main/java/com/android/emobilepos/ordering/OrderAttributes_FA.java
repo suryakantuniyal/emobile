@@ -33,7 +33,7 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 	private boolean isModify = false;
 	private String ordprod_id;
 	public static int REQUEST_REQ_ATTR = 100;
-	private HashMap<String,String> savedAttr = new HashMap<String,String>();
+	private HashMap<String,String> savedAttr = new HashMap<>();
 	private OrdProdAttrListAdapter mAdapter;
 	
 	@Override
@@ -51,7 +51,6 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 		String prodID = extras.getString("prod_id");
 		isModify = extras.getBoolean("isModify",false);
 		ordprod_id = extras.getString("ordprod_id","");
-		OrdProdAttrList_DB ordProdAttrList = new OrdProdAttrList_DB(this);
 		listAttr = OrderProductAttributeDAO.getByProdId(prodID);
 		mAdapter = new OrdProdAttrListAdapter(this,listAttr);
 		
@@ -171,9 +170,7 @@ public class OrderAttributes_FA extends BaseFragmentActivityActionBar implements
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		// TODO Auto-generated method stub
 		Intent intent = new Intent(this,OrderAttrEdit_FA.class);
-		
 		intent.putExtra("ordprodattr_id", listAttr.get(pos).getId());
 		intent.putExtra("attr_id", listAttr.get(pos).getAttributeId());
 		intent.putExtra("attr_name", listAttr.get(pos).getAttributeName());

@@ -655,12 +655,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
 
             }
-            if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) // Perform
-                // store
-                // and
-                // forward
-                // procedure
-
+            if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
                 processStoreForward(generatedURL, payment);
             else
                 new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL, payment);
@@ -1290,16 +1285,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         payment.setPayment_xml(payment_xml);
         payment.setPay_uuid(getXmlValue(payment_xml, "app_id"));
 
-        // payment.getSetData("pay_resultcode", false,
-        // parsedMap.get("pay_resultcode"));
-        // payment.getSetData("pay_resultmessage",
-        // false,parsedMap.get("pay_resultmessage"));
-        // payment.getSetData("pay_transid", false,
-        // parsedMap.get("CreditCardTransID"));
-        // payment.getSetData("authcode", false,
-        // parsedMap.get("AuthorizationCode"));
-        // payment.getSetData("processed", false, "9");
-
         orientation = getResources().getConfiguration().orientation;
         global.orientation = orientation;
 
@@ -1311,7 +1296,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
 
         StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-        dbStoredPayments.insert(payment, StoreAndForward.PaymentType.CREDIT_CARD);
+        dbStoredPayments.insert(activity, payment, StoreAndForward.PaymentType.CREDIT_CARD);
         // payHandler.insert(payment);
 
         if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
@@ -2050,7 +2035,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
         if (!isFromMainMenu) {
             double enteredAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-            double actualAmount =  Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
 
             if (enteredAmount > actualAmount) {
                 errorMsg = getString(R.string.card_overpaid_error);
