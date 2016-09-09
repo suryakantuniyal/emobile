@@ -91,7 +91,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     public enum SettingSection {
         GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
         ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIFTS(10), SHIPPING_CALCULATION(11),
-        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(99);
+        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
         int code;
 
         SettingSection(int code) {
@@ -134,7 +134,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     return HANPOINT;
                 case 14:
                     return SUPPORT;
-                case 99:
+                case 15:
                     return OTHERS;
                 default:
                     return GENERAL;
@@ -246,11 +246,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 .replace(R.id.setting_detail_container, fragment)
                                 .commit();
                     } else {
-//                        SettingsActivity.PrefsFragment fragment = new SettingsActivity.PrefsFragment();
-//                        Bundle args = new Bundle();
-//                        args.putInt("section", SettingSection.getInstance(position).getCode());
-//                        fragment.setArguments(args);
-
                         Context context = v.getContext();
                         Intent intent = new Intent(context, SettingDetailActivity.class);
                         intent.putExtra("section", SettingSection.getInstance(position).getCode());
@@ -383,7 +378,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 .findPreference("pref_store_and_forward_transactions");
                         storeForwardFlag = (CheckBoxPreference) prefManager.findPreference("pref_use_store_and_forward");
                         storeForwardTransactions.setOnPreferenceClickListener(this);
-                        if (!myPref.isPrefUseStoreForward()) {
+                        if (!myPref.isStoredAndForward()) {
                             ((PreferenceGroup) prefManager.findPreference("payment_section"))
                                     .removePreference(storeForwardTransactions);
                             ((PreferenceGroup) prefManager.findPreference("payment_section"))

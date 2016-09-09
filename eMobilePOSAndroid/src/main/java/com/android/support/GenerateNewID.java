@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.app.Activity;
 
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
@@ -45,7 +46,11 @@ public class GenerateNewID {
                 lastID = OrdersHandler.getInstance(activity).getLastOrderId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
                 break;
             case PAYMENT_ID:
-                lastID = PaymentsHandler.getInstance(activity).getLastPaymentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+                    lastID = StoredPaymentsDAO.getLastPaymentId(activity, Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                } else {
+                    lastID = PaymentsHandler.getInstance(activity).getLastPaymentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                }
                 break;
             case CONSIGNMENT_ID:
                 lastID = ConsignmentTransactionHandler.getInstance(activity).getLastConsignmentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));

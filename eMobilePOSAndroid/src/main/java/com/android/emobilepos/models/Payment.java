@@ -296,7 +296,7 @@ public class Payment extends RealmObject {
         this.paymentMethod = Realm.getDefaultInstance()
                 .where(PaymentMethod.class)
                 .equalTo("paymethod_id", paymethod_id).findFirst();
-        if(!this.isValid()){
+        if (!this.isValid() && getPaymentMethod() != null) {
             this.paymentMethod = Realm.getDefaultInstance().copyFromRealm(this.getPaymentMethod());
         }
         this.paymethod_id = paymethod_id;
