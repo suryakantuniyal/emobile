@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import util.StringUtil;
+
 public class GenerateXML {
 
     private static final String UTF_8 = "utf-8";
@@ -554,12 +556,12 @@ public class GenerateXML {
 
                 String assignedTable = order.assignedTable;//cursor.getString(cursor.getColumnIndex("assignedTable"));
                 serializer.startTag(empstr, "assignedTable");
-                serializer.text(assignedTable == null ? "" : assignedTable);
+                serializer.text(StringUtil.nullStringToEmpty(assignedTable));
                 serializer.endTag(empstr, "assignedTable");
 
                 String associateID = order.associateID;//cursor.getString(cursor.getColumnIndex("associateID"));
                 serializer.startTag(empstr, "associateID");
-                serializer.text(associateID == null ? "" : associateID);
+                serializer.text(StringUtil.nullStringToEmpty(associateID));
                 serializer.endTag(empstr, "associateID");
 
                 String numberOfSeats = String.valueOf(order.numberOfSeats);//cursor.getString(cursor.getColumnIndex("numberOfSeats"));
@@ -821,10 +823,10 @@ public class GenerateXML {
 
 
         serializer.startTag(empstr, "associateID");
-        serializer.text(order.associateID == null || order.associateID.isEmpty() ? "" : order.associateID);
+        serializer.text(StringUtil.nullStringToEmpty(order.associateID));
         serializer.endTag(empstr, "associateID");
         serializer.startTag(empstr, "assignedTable");
-        serializer.text(order.assignedTable == null || order.assignedTable.isEmpty() ? "" : order.assignedTable);
+        serializer.text(StringUtil.nullStringToEmpty(order.assignedTable));
         serializer.endTag(empstr, "assignedTable");
 
 
@@ -1010,12 +1012,17 @@ public class GenerateXML {
 
                     String assignedSeat = product.getAssignedSeat();//cursor.getString(cursor.getColumnIndex("assignedSeat"));
                     serializer.startTag(empstr, "assignedSeat");
-                    serializer.text(assignedSeat == null ? "" : assignedSeat);
+                    serializer.text(StringUtil.nullStringToEmpty(assignedSeat));
                     serializer.endTag(empstr, "assignedSeat");
+
+                    String parentAddonOrderProductId = product.getParentAddonOrderProductId();
+                    serializer.startTag(empstr, "parentAddonOrderProductId");
+                    serializer.text(StringUtil.nullStringToEmpty(parentAddonOrderProductId));
+                    serializer.endTag(empstr, "parentAddonOrderProductId");
 
                     String seatGroupId = String.valueOf(product.getSeatGroupId());// cursor.getString(cursor.getColumnIndex("seatGroupId"));
                     serializer.startTag(empstr, "seatGroupId");
-                    serializer.text(seatGroupId == null ? "" : seatGroupId);
+                    serializer.text(StringUtil.nullStringToEmpty(seatGroupId));
                     serializer.endTag(empstr, "seatGroupId");
 
 
@@ -2102,35 +2109,35 @@ public class GenerateXML {
                 serializer.startTag(empstr, "OrderInfo");
 
                 serializer.startTag(empstr, "MERCHANT_NAME");
-                serializer.text(orderInfo.get("MERCHANT_NAME") != null ? orderInfo.get("MERCHANT_NAME") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("MERCHANT_NAME")));
                 serializer.endTag(empstr, "MERCHANT_NAME");
 
                 serializer.startTag(empstr, "MERCHANT_EMAIL");
-                serializer.text(orderInfo.get("MERCHANT_EMAIL") != null ? orderInfo.get("MERCHANT_EMAIL") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("MERCHANT_EMAIL")));
                 serializer.endTag(empstr, "MERCHANT_EMAIL");
 
                 serializer.startTag(empstr, "header1");
-                serializer.text(orderInfo.get("header1") != null ? orderInfo.get("header1") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header1")));
                 serializer.endTag(empstr, "header1");
 
                 serializer.startTag(empstr, "header2");
-                serializer.text(orderInfo.get("header2") != null ? orderInfo.get("header2") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header2")));
                 serializer.endTag(empstr, "header2");
 
                 serializer.startTag(empstr, "header3");
-                serializer.text(orderInfo.get("header3") != null ? orderInfo.get("header3") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("header3")));
                 serializer.endTag(empstr, "header3");
 
                 serializer.startTag(empstr, "footer1");
-                serializer.text(orderInfo.get("footer1") != null ? orderInfo.get("footer1") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer1")));
                 serializer.endTag(empstr, "footer1");
 
                 serializer.startTag(empstr, "footer2");
-                serializer.text(orderInfo.get("footer2") != null ? orderInfo.get("footer2") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer2")));
                 serializer.endTag(empstr, "footer2");
 
                 serializer.startTag(empstr, "footer3");
-                serializer.text(orderInfo.get("footer3") != null ? orderInfo.get("footer3") : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(orderInfo.get("footer3")));
                 serializer.endTag(empstr, "footer3");
 
                 serializer.startTag(empstr, "EMPLOYEE_NAME");
@@ -2160,8 +2167,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "emp_id");
 
                 serializer.startTag(empstr, "cust_id");
-                serializer.text(c.getString(c.getColumnIndex("cust_id")) != null
-                        ? c.getString(c.getColumnIndex("cust_id")) : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id"))));
                 serializer.endTag(empstr, "cust_id");
 
                 serializer.startTag(empstr, "clerk_id");
@@ -2169,8 +2175,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "clerk_id");
 
                 serializer.startTag(empstr, "cust_name");
-                serializer.text(c.getString(c.getColumnIndex("cust_name")) != null
-                        ? c.getString(c.getColumnIndex("cust_name")) : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_name"))));
                 serializer.endTag(empstr, "cust_name");
 
                 serializer.startTag(empstr, "cust_email");
@@ -2422,13 +2427,11 @@ public class GenerateXML {
                 serializer.endTag(empstr, "trans_type");
 
                 serializer.startTag(empstr, "cust_id");
-                serializer.text(c.getString(c.getColumnIndex("cust_id")) != null
-                        ? c.getString(c.getColumnIndex("cust_id")) : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id"))));
                 serializer.endTag(empstr, "cust_id");
 
                 serializer.startTag(empstr, "cust_id_key");
-                serializer.text(c.getString(c.getColumnIndex("cust_id_ref")) != null
-                        ? c.getString(c.getColumnIndex("cust_id_ref")) : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("cust_id_ref"))));
                 serializer.endTag(empstr, "cust_id_key");
 
                 serializer.startTag(empstr, "pay_latitude");
@@ -2701,8 +2704,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "prod_discountValue");
 
                 serializer.startTag(empstr, "ProductImageURL");
-                serializer.text(c.getString(c.getColumnIndex("prod_img_name")) != null
-                        ? c.getString(c.getColumnIndex("prod_img_name")) : empstr);
+                serializer.text(StringUtil.nullStringToEmpty(c.getString(c.getColumnIndex("prod_img_name"))));
                 serializer.endTag(empstr, "ProductImageURL");
 
                 serializer.startTag(empstr, "product_total");
