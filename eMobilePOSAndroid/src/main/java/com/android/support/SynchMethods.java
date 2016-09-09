@@ -124,14 +124,11 @@ public class SynchMethods {
     public SynchMethods(DBManager managerInst) {
         post = new Post();
         client = new HttpClient();
-
         SAXParserFactory spf = SAXParserFactory.newInstance();
         activity = managerInst.getActivity();
         dbManager = managerInst;
-
         data = new ArrayList<>();
         tempFilePath = activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml";
-
         try {
             sp = spf.newSAXParser();
             xr = sp.getXMLReader();
@@ -164,32 +161,25 @@ public class SynchMethods {
 
         @Override
         protected void onPreExecute() {
-
             int orientation = activity.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-
-
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
         }
 
-
         @Override
         protected void onProgressUpdate(String... params) {
             myProgressDialog.setMessage(params[0]);
         }
 
-
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
 
-
         @Override
         protected String doInBackground(String... params) {
-
             try {
 
                 synchGetServerTime(this);
@@ -259,24 +249,17 @@ public class SynchMethods {
                 if (Global.isIvuLoto) {
                     synchIvuLottoDrawDates(this);
                 }
-
-
                 synchDownloadCustomerInventory(this);
                 synchDownloadConsignmentTransaction(this);
-
-
                 synchDownloadClerks(this);
                 synchDownloadSalesAssociate(this);
                 synchDownloadDinnerTable(this);
                 synchDownloadMixMatch(this);
                 synchDownloadTermsAndConditions(this);
-
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
                     synchLocations(this);
                     synchLocationsInventory(this);
                 }
-
-
                 synchUpdateSyncTime(this);
 
             } catch (Exception ignored) {
@@ -307,12 +290,6 @@ public class SynchMethods {
                 activity.finish();
             } else if (type == Global.FROM_SYNCH_ACTIVITY) {
                 SyncTab_FR.syncTabHandler.sendEmptyMessage(0);
-//                synchActivity.getViewPager().getAdapter().
-//                ListView listView = (ListView) synchActivity.getViewPager().findViewById(R.id.synchListView);
-//                if (listView != null) {
-//                    SynchMenuAdapter adapter = (SynchMenuAdapter) listView.getAdapter();
-//                    adapter.notifyDataSetChanged();
-//                }
             }
         }
 
@@ -869,34 +846,35 @@ public class SynchMethods {
                     ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_reverse));
                 else
                     ((sendAsync) task).updateProgress(getString(R.string.sync_sending_reverse));
-            }
-            do {
 
-                String xml = post.postData(13, activity,
-                        c.getString(c.getColumnIndex("payment_xml")));
+                do {
 
-                if (!xml.equals(Global.TIME_OUT)
-                        && !xml.equals(Global.NOT_VALID_URL)) {
-                    InputSource inSource = new InputSource(
-                            new StringReader(xml));
+                    String xml = post.postData(13, activity,
+                            c.getString(c.getColumnIndex("payment_xml")));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    parsedMap = handler.getData();
+                    if (!xml.equals(Global.TIME_OUT)
+                            && !xml.equals(Global.NOT_VALID_URL)) {
+                        InputSource inSource = new InputSource(
+                                new StringReader(xml));
 
-                    if (parsedMap != null
-                            && parsedMap.size() > 0
-                            && (parsedMap.get("epayStatusCode").equals(
-                            "APPROVED") || parsedMap.get(
-                            "epayStatusCode").equals("DECLINE"))) {
-                        _paymentsXML_DB.deleteRow(c.getString(c
-                                .getColumnIndex("app_id")));
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+
+                        if (parsedMap != null
+                                && parsedMap.size() > 0
+                                && (parsedMap.get("epayStatusCode").equals(
+                                "APPROVED") || parsedMap.get(
+                                "epayStatusCode").equals("DECLINE"))) {
+                            _paymentsXML_DB.deleteRow(c.getString(c
+                                    .getColumnIndex("app_id")));
+                        }
                     }
-                }
 
-            } while (c.moveToNext());
+                } while (c.moveToNext());
+            }
             c.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1797,7 +1775,6 @@ public class SynchMethods {
     private void synchGetServerTime(resynchAsync task) throws IOException, SAXException {
         task.updateProgress("Getting Server Time");
         xml = post.postData(Global.S_GET_SERVER_TIME, activity, null);
-
         SAXPostHandler handler = new SAXPostHandler(activity);
         inSource = new InputSource(new StringReader(xml));
         xr.setContentHandler(handler);
@@ -1819,13 +1796,11 @@ public class SynchMethods {
             task.updateProgress(getString(R.string.sync_dload_employee_data));
             String xml = post.postData(4, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
-
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
             task.updateProgress(getString(R.string.sync_saving_employee_data));
             xr.parse(inSource);
-
             MyPreferences myPref = new MyPreferences(activity);
             data = handler.getEmpData();
             myPref.setAllEmpData(data);
@@ -1845,13 +1820,11 @@ public class SynchMethods {
             task.updateProgress(getString(R.string.sync_dload_last_pay_id));
             String xml = post.postData(6, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
-
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
             task.updateProgress(getString(R.string.sync_saving_last_pay_id));
             xr.parse(inSource);
-
             if (!handler.getData().isEmpty()) {
                 MyPreferences myPref = new MyPreferences(activity);
                 myPref.setLastPayID(handler.getData());
@@ -1884,7 +1857,6 @@ public class SynchMethods {
     }
 
     private void synchLocations(Object task) throws IOException, SAXException {
-
         if (isReceive)
             ((resynchAsync) task).updateProgress(getString(R.string.sync_dload_locations));
         else
@@ -1893,7 +1865,6 @@ public class SynchMethods {
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_LOCATIONS);
         //tempGenerateFile(false);
         File tempFile = new File(tempFilePath);
-
         if (isReceive)
             ((resynchAsync) task).updateProgress(getString(R.string.sync_saving_locations));
         else
@@ -1910,8 +1881,6 @@ public class SynchMethods {
         post.postData(7, activity, "GetLocationsInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_LOCATIONS_INVENTORY);
         File tempFile = new File(tempFilePath);
-
-
         if (isReceive)
             ((resynchAsync) task).updateProgress(getString(R.string.sync_saving_locations_inventory));
         else
