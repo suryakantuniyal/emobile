@@ -42,7 +42,6 @@ import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.ProductsHandler;
-import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.OrderProductListAdapter;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -1239,27 +1238,27 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         populateCardInfo();
 
         if (isLoyaltyCard)
-            payment.paymethod_id = PayMethodsHandler.getPayMethodID("LoyaltyCard");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("LoyaltyCard"));
         else
-            payment.paymethod_id = PayMethodsHandler.getPayMethodID("Reward");
+            payment.setPaymethod_id(PayMethodsHandler.getPayMethodID("Reward"));
 
-        payment.pay_name = cardInfoManager.getCardOwnerName();
-        payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+        payment.setPay_name(cardInfoManager.getCardOwnerName());
+        payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-        payment.ccnum_last4 = cardInfoManager.getCardLast4();
-        payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-        payment.pay_expyear = cardInfoManager.getCardExpYear();
-        payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+        payment.setCcnum_last4(cardInfoManager.getCardLast4());
+        payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+        payment.setPay_expyear(cardInfoManager.getCardExpYear());
+        payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-        payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-        payment.track_two = cardInfoManager.getEncryptedAESTrack2();
+        payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+        payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
         String cardType = "LoyaltyCard";
         if (!isLoyaltyCard)
             cardType = "Reward";
 
-        payment.card_type = cardType;
-        payment.pay_type = "0";
+        payment.setCard_type(cardType);
+        payment.setPay_type("0");
 
         EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
         String generatedURL;
@@ -1542,16 +1541,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
-
-//        int sum;
-
-//        if (indexOf>=0)//global.qtyCounter.containsKey(product.getId()))
         int sum = new Double(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
-
-//        if (!OrderingMain_FA.returnItem || OrderingMain_FA.mTransType == Global.TransactionType.RETURN)
-//            global.qtyCounter.put(product.getId(), Integer.toString(sum + 1));
-//        else
-//            global.qtyCounter.put(product.getId(), Integer.toString(sum - 1));
         if (OrderingMain_FA.returnItem)
             ord.setReturned(true);
         order.setName(product.getProdName());
@@ -1692,16 +1682,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         return true;
-//        if (global.ordProdAttrPending.size() == 0) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//        for (ProductAttribute attribute : global.ordProdAttrPending) {
-//            if (!global.ordProdAttr.contains(attribute)) {
-//                return false;
-//            }
-//        }
-//        return true;
+
     }
 }

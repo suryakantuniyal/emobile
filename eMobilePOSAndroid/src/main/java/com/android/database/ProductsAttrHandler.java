@@ -37,7 +37,7 @@ public class ProductsAttrHandler
 	public ProductsAttrHandler(Activity activity)
 	{
 		myPref = new MyPreferences(activity);
-		attrHash = new HashMap<String,Integer>();
+		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		initDictionary();
@@ -83,10 +83,8 @@ public class ProductsAttrHandler
 
 			this.data = data;
 			dictionaryListMap = dictionary;
-			SQLiteStatement insert = null;
-			StringBuilder sb = new StringBuilder();
-			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			SQLiteStatement insert;
+            insert = DBManager._db.compileStatement("INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
 			int size = this.data.size();
 
@@ -104,11 +102,6 @@ public class ProductsAttrHandler
 			insert.close();
 			DBManager._db.setTransactionSuccessful();
 		} catch (Exception e) {
-			StringBuilder sb = new StringBuilder();
-			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductsAttrHandler (at Class.insert)]");
-
-//			Tracker tracker = EasyTracker.getInstance(activity);
-//			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 
 			DBManager._db.endTransaction();
@@ -116,57 +109,40 @@ public class ProductsAttrHandler
 	}
 	
 	
-	public LinkedHashMap<String,List<String>> getAttributesMap(String prodName)
+	public LinkedHashMap<String,List<String>> getAttributesMap(String prodId)
 	{
-		//SQLiteDatabase db = dbManager.openReadableDB();
 		StringBuilder sb = new StringBuilder();
-		
-		
-		
-		LinkedHashMap<String,List<String>> linkedMap = new LinkedHashMap<String,List<String>>();
-		List<String>tempList = new ArrayList<String>();
+		LinkedHashMap<String,List<String>> linkedMap = new LinkedHashMap<>();
+		List<String>tempList = new ArrayList<>();
 		sb.setLength(0);
-		sb.append("SELECT pa.attr_id as '_id',pa.attr_name,pa.attr_desc FROM ProductsAttr pa LEFT OUTER JOIN Products p ON pa.prod_id = p.prod_id ");
-		sb.append("WHERE p.prod_name = ? GROUP BY attr_desc ORDER BY pa.attr_name, attr_desc");
-		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{prodName});
+		sb.append("SELECT pa.attr_id as '_id',pa.attr_name,pa.attr_desc " +
+				"FROM ProductsAttr pa LEFT OUTER JOIN Products p ON pa.prod_id = p.prod_id ");
+		sb.append("WHERE p.prod_id = ? GROUP BY attr_desc ORDER BY pa.attr_name, attr_desc");
+		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{prodId});
 		if(cursor.moveToFirst())
 		{
 			int i_attr_desc = cursor.getColumnIndex(attr_desc);
 			int i_attr_name = cursor.getColumnIndex(attr_name);
 			do
-			{
-				if(linkedMap.containsKey(cursor.getString(i_attr_name)))
-				{
+				if (linkedMap.containsKey(cursor.getString(i_attr_name))) {
 					tempList = linkedMap.get(cursor.getString(i_attr_name));
 					tempList.add(cursor.getString(i_attr_desc));
 					linkedMap.put(cursor.getString(i_attr_name), tempList);
-					tempList = new ArrayList<String>();
-				}
-				else
-				{
+					tempList = new ArrayList<>();
+				} else {
 					tempList.add(cursor.getString(i_attr_desc));
 					linkedMap.put(cursor.getString(i_attr_name), tempList);
-					tempList = new ArrayList<String>();
-				}
-			}while(cursor.moveToNext());
+					tempList = new ArrayList<>();
+				} while(cursor.moveToNext());
 		}
-		
 		cursor.close();
-		//db.close();
-		
 		return linkedMap;
 	}
 	
 	public LinkedHashMap<String,String>getDefaultAttributes(String prod_id)
 	{
-		//SQLiteDatabase db = dbManager.openReadableDB();
 		StringBuilder sb = new StringBuilder();
-		
-		
-		
-		LinkedHashMap<String,String> linkedMap = new LinkedHashMap<String,String>();
-		//List<String>tempList = new ArrayList<String>();
+		LinkedHashMap<String,String> linkedMap = new LinkedHashMap<>();
 		sb.setLength(0);
 		sb.append("SELECT pa.prod_id as '_id', pa.prodAttrKey,pa.attr_id,pa.attr_name,pa.attr_desc FROM ProductsAttr pa ");
 		sb.append("LEFT OUTER JOIN Products p ON pa.prod_id = p.prod_id WHERE p.prod_id = '").append(prod_id).append("' ORDER BY pa.attr_name, attr_desc");
@@ -192,12 +168,8 @@ public class ProductsAttrHandler
 	
 	public Cursor getNewAttributeProduct(String prod_name,String[] attributesKey, LinkedHashMap<String,String>attributesMap)
 	{
-		//SQLiteDatabase db = dbManager.openReadableDB();
 		Cursor cursor;
-		
 		StringBuilder sb_1 = new StringBuilder();
-		//StringBuilder sb_2 = new StringBuilder();
-		
 		sb_1.append("SELECT pa.prod_id, pa.prodAttrKey,pa.attr_id,pa.attr_name,pa.attr_desc,Count(*) as 'count' ");
 		sb_1.append("FROM ProductsAttr pa LEFT OUTER JOIN Products p ON pa.prod_id = p.prod_id WHERE p.prod_name = ? AND pa.attr_desc IN (");
 		
@@ -223,7 +195,7 @@ public class ProductsAttrHandler
 			String prodID = cursor.getString(cursor.getColumnIndex("prod_id"));
 			sb_1.setLength(0);
 			
-			String priceLevelID = new String();
+			String priceLevelID;
 			if(myPref.isCustSelected())
 				priceLevelID = myPref.getCustPriceLevel();
 			else

@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import util.StringUtil;
+
 public class AddressHandler {
 
 	private final String addr_id = "addr_id";
@@ -324,15 +326,12 @@ public class AddressHandler {
 		
 //		String subquery1 = "SELECT addr_id,addr_s_str1,addr_s_str2,addr_s_str3,addr_s_country,addr_s_city,addr_s_state,addr_s_zipcode FROM Address WHERE cust_id='";
 //		String subquery2 = "' AND cust_id!='' ORDER BY addr_id";
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT addr_id,addr_s_str1,addr_s_str2,addr_s_str3,addr_s_country,addr_s_city,addr_s_state,addr_s_zipcode FROM Address WHERE cust_id = ? ");
-		sb.append(" AND cust_id != '' ORDER BY addr_id");
-		//StringBuilder sb = new StringBuilder();
-		//sb.append(subquery1).append(myPref.getCustID()).append(subquery2);
-		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{myPref.getCustID()});
-		List<String[]> arrayList = new ArrayList<String[]>();
+
+		String sb = "SELECT addr_id,addr_s_str1,addr_s_str2,addr_s_str3,addr_s_country,addr_s_city,addr_s_state,addr_s_zipcode FROM Address WHERE cust_id = ? " +
+				" AND cust_id != '' ORDER BY addr_id";
+
+		Cursor cursor = DBManager._db.rawQuery(sb, new String[]{StringUtil.nullStringToEmpty(myPref.getCustID())});
+		List<String[]> arrayList = new ArrayList<>();
 		String[] arrayValues = new String[8];
 		
 		if(cursor.moveToFirst())

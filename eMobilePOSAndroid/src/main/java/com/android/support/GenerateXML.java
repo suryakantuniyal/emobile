@@ -1825,7 +1825,7 @@ public class GenerateXML {
         int size = c.getCount();
         for (int i = 0; i < size; i++) {
             try {
-                serializer.startTag(empstr, "Position");
+                serializer.startTag(empstr, "Location");
 
                 serializer.startTag(empstr, TransferLocations_DB.trans_id);
                 serializer.text(c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
@@ -1851,14 +1851,13 @@ public class GenerateXML {
                 buildInventoryTransactions(serializer, c.getString(c.getColumnIndex(TransferLocations_DB.trans_id)));
                 serializer.endTag(empstr, "InventoryTransactions");
 
-                serializer.endTag(empstr, "Position");
+                serializer.endTag(empstr, "Location");
 
                 c.moveToNext();
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
         }
         c.close();
     }

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -45,8 +46,6 @@
         android:required="true" />
     <uses-feature android:name="android.hardware.usb.host" />
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <application
         android:name="com.android.support.Global"
         android:icon="@drawable/icon"
@@ -55,11 +54,9 @@
         <meta-data
             android:name="android.nfc.disable_beam_default"
             android:value="true" />
-
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="6fd88ec526ef9dd434f31ce165d5e68db177897c"
-            />
+            android:value="6fd88ec526ef9dd434f31ce165d5e68db177897c" />
 
         <activity
             android:name=".initialization.SelectAccount_FA"
@@ -422,8 +419,8 @@
             android:exported="false" />
         <activity
             android:name=".cardmanager.CardManager_FA"
-            android:launchMode="singleTop"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
@@ -480,6 +477,18 @@
         </receiver>
 
         <activity android:name=".payment.TipAdjustmentFA" />
+
+        <activity
+            android:name=".settings.SettingListActivity"
+            android:label="@string/title_setting_list"></activity>
+        <activity
+            android:name=".settings.SettingDetailActivity"
+            android:label="@string/title_setting_detail"
+            android:parentActivityName=".settings.SettingListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.android.emobilepos.settings.SettingListActivity" />
+        </activity>
         <!--<activity-->
             <!--android:name=".settings.SalesAssociateDinningTables"-->
             <!--android:label="@string/title_activity_sales_associate_dinning_tables" />-->

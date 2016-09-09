@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_printing_settings">
+        <CheckBoxPreference
+            android:key="pref_enable_printing"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_printing" />
+        <CheckBoxPreference
+            android:key="pref_automatic_printing"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_automatic_printing" />
+        <CheckBoxPreference
+            android:key="pref_split_stationprint_by_categories"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_split_stationprint_by_categories" />
+        <CheckBoxPreference
+            android:key="pref_wholesale_printout"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_wholesale_printout" />
+        <CheckBoxPreference
+            android:key="pref_handwritten_signature"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_handwritten_signature" />
+        <CheckBoxPreference
+            android:key="pref_prompt_customer_copy"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_prompt_customer_copy" />
+        <CheckBoxPreference
+            android:key="pref_print_receipt_transaction_payment"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_print_receipt_transaction_payments" />
+        <Preference
+            android:key="pref_printek_info"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_printek_info" />
+        <Preference
+            android:key="pref_star_info"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_star_info" />
+
+        <Preference
+            android:key="pref_snbc_setup"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_snbc_setup" />
+
+        <MultiSelectListPreference
+            android:defaultValue="@array/printPrefValues"
+            android:entries="@array/printPrefArray"
+            android:entryValues="@array/printPrefValues"
+            android:key="pref_set_printing_preferences"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_set_printing_preferences" />
+
+        <Preference
+            android:key="pref_configure_ingenico_settings"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_ingenico_settings" />
+
+        <Preference
+            android:key="pref_connect_to_bluetooth_peripheral"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_connect_to_bluetooth_peripheral" />
+
+        <Preference
+            android:key="pref_connect_to_usb_peripheral"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_connect_to_usb_peripheral" />
+
+        <Preference
+            android:key="pref_redetect_peripherals"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_redetect_peripherals" />
+        <Preference
+            android:key="pref_delete_saved_peripherals"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_delete_saved_peripherals" />
+    </PreferenceCategory>
+</PreferenceScreen>

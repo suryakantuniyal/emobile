@@ -407,84 +407,84 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         amountTender = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(field[CHECK_AMOUNT_PAID]));
         payHandler = new PaymentsHandler(activity);
         payment = new Payment(activity);
-        payment.amountTender = amountTender;
-        payment.pay_id = extras.getString("pay_id");
+        payment.setAmountTender(amountTender);
+        payment.setPay_id(extras.getString("pay_id"));
 
-        payment.emp_id = myPref.getEmpID();
+        payment.setEmp_id(myPref.getEmpID());
 
         if (!extras.getBoolean("histinvoices")) {
-            payment.job_id = inv_id;
+            payment.setJob_id(inv_id);
         } else {
-            payment.inv_id = inv_id;
+            payment.setInv_id(inv_id);
         }
 
-        payment.cust_id = extras.getString("cust_id");
-        payment.custidkey = custidkey;
+        payment.setCust_id(extras.getString("cust_id"));
+        payment.setCustidkey(custidkey);
 
 
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            payment.setClerk_id(myPref.getShiftClerkID());
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            payment.setClerk_id(myPref.getClerkID());
 
-        payment.ref_num = field[CHECK_REFERENCE].getText().toString();
-        payment.paymethod_id = extras.getString("paymethod_id");
+        payment.setRef_num(field[CHECK_REFERENCE].getText().toString());
+        payment.setPaymethod_id(extras.getString("paymethod_id"));
 
         Global.amountPaid = Double.toString(amountTender);
 
-        payment.pay_dueamount = Double.toString(amountTender);
+        payment.setPay_dueamount(Double.toString(amountTender));
 
         if (amountTender > actualAmount)
-            payment.pay_amount = Double.toString(actualAmount);
+            payment.setPay_amount(Double.toString(actualAmount));
         else
-            payment.pay_amount = Double.toString(amountTender);
+            payment.setPay_amount(Double.toString(amountTender));
 
 
-        payment.pay_name = field[CHECK_NAME].getText().toString();
-        payment.pay_phone = field[CHECK_PHONE].getText().toString();
-        payment.pay_email = field[CHECK_EMAIL].getText().toString();
-        payment.pay_check = this.field[CHECK_NUMBER].getText().toString();
+        payment.setPay_name(field[CHECK_NAME].getText().toString());
+        payment.setPay_phone(field[CHECK_PHONE].getText().toString());
+        payment.setPay_email(field[CHECK_EMAIL].getText().toString());
+        payment.setPay_check(this.field[CHECK_NUMBER].getText().toString());
 
         Location location = Global.getCurrLocation(activity, false);
-        payment.pay_latitude = String.valueOf(location.getLatitude());
-        payment.pay_longitude = String.valueOf(location.getLongitude());
+        payment.setPay_latitude(String.valueOf(location.getLatitude()));
+        payment.setPay_longitude(String.valueOf(location.getLongitude()));
 
 
         if (Global.isIvuLoto) {
-            payment.IvuLottoNumber = extras.getString("IvuLottoNumber");
-            payment.IvuLottoDrawDate = extras.getString("IvuLottoDrawDate");
-            payment.IvuLottoQR = Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate"));
+            payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
+            payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
+            payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
 
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
-                payment.Tax1_amount = extras.getString("Tax1_amount");
-                payment.Tax1_name = extras.getString("Tax1_name");
+                payment.setTax1_amount(extras.getString("Tax1_amount"));
+                payment.setTax1_name(extras.getString("Tax1_name"));
 
-                payment.Tax2_amount = extras.getString("Tax2_amount");
-                payment.Tax2_name = extras.getString("Tax2_name");
+                payment.setTax2_amount(extras.getString("Tax2_amount"));
+                payment.setTax2_name(extras.getString("Tax2_name"));
             } else {
                 BigDecimal tempRate;
                 double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
                 tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax1_amount = tempRate.toPlainString();
-                payment.Tax1_name = "Estatal";
+                payment.setTax1_amount(tempRate.toPlainString());
+                payment.setTax1_name("Estatal");
 
                 tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax2_amount = tempRate.toPlainString();
-                payment.Tax2_name = "Municipal";
+                payment.setTax2_amount(tempRate.toPlainString());
+                payment.setTax2_name("Municipal");
             }
         }
 
-        payment.card_type = "Check";
+        payment.setCard_type("Check");
 
         if (extras.getBoolean("salesrefund", false)) {
-            payment.is_refund = "1";
-            payment.pay_type = "2";
+            payment.setIs_refund("1");
+            payment.setPay_type("2");
         } else
-            payment.pay_type = "0";
+            payment.setPay_type("0");
 
         if (!isLivePayment) {
-            payment.processed = "1";
+            payment.setProcessed("1");
             payHandler.insert(payment);
 
             if (!myPref.getLastPayID().isEmpty())
@@ -513,8 +513,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         } else {
 
             if (checkWasCapture) {
-                payment.frontImage = Global.imgFrontCheck;
-                payment.backImage = Global.imgBackCheck;
+                payment.setFrontImage(Global.imgFrontCheck);
+                payment.setBackImage(Global.imgBackCheck);
 
                 StringBuilder sb = new StringBuilder();
                 sb.append("O").append(field[CHECK_NUMBER].getText().toString()).append("OT");
@@ -525,25 +525,25 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
                 String str2 = value.substring(3, value.length());
 
                 sb.append(str1).append("-").append(str2).append("O");
-                payment.micrData = sb.toString();
+                payment.setMicrData(sb.toString());
             }
 
-            payment.processed = "9";
+            payment.setProcessed("9");
             Encrypt encrypt = new Encrypt(activity);
 
 
-            payment.check_account_number = encrypt.encryptWithAES(field[CHECK_ACCOUNT].getText().toString());
-            payment.check_routing_number = encrypt.encryptWithAES(field[CHECK_ROUTING].getText().toString());
-            payment.check_check_number = field[CHECK_NUMBER].getText().toString();
-            payment.check_check_type = checkType;
-            payment.check_account_type = accountType;
-            payment.pay_addr = field[CHECK_ADDRESS].getText().toString();
-            payment.check_city = field[CHECK_CITY].getText().toString().trim();
-            payment.check_state = field[CHECK_STATE].getText().toString().trim();
-            payment.pay_poscode = field[CHECK_ZIPCODE].getText().toString();
-            payment.dl_number = field[CHECK_DL_NUMBER].getText().toString();
-            payment.dl_state = field[CHECK_DL_STATE].getText().toString();
-            payment.dl_dob = field[CHECK_DL_DOB].getText().toString();
+            payment.setCheck_account_number(encrypt.encryptWithAES(field[CHECK_ACCOUNT].getText().toString()));
+            payment.setCheck_routing_number(encrypt.encryptWithAES(field[CHECK_ROUTING].getText().toString()));
+            payment.setCheck_check_number(field[CHECK_NUMBER].getText().toString());
+            payment.setCheck_check_type(checkType);
+            payment.setCheck_account_type(accountType);
+            payment.setPay_addr(field[CHECK_ADDRESS].getText().toString());
+            payment.setCheck_city(field[CHECK_CITY].getText().toString().trim());
+            payment.setCheck_state(field[CHECK_STATE].getText().toString().trim());
+            payment.setPay_poscode(field[CHECK_ZIPCODE].getText().toString());
+            payment.setDl_number(field[CHECK_DL_NUMBER].getText().toString());
+            payment.setDl_state(field[CHECK_DL_STATE].getText().toString());
+            payment.setDl_dob(field[CHECK_DL_DOB].getText().toString());
 
 
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
@@ -613,66 +613,66 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
 
         payment = new Payment(activity);
 
-        payment.pay_id = extras.getString("pay_id");
-        payment.emp_id = myPref.getEmpID();
-        payment.cust_id = extras.getString("cust_id");
-        payment.custidkey = custidkey;
+        payment.setPay_id(extras.getString("pay_id"));
+        payment.setEmp_id(myPref.getEmpID());
+        payment.setCust_id(extras.getString("cust_id"));
+        payment.setCustidkey(custidkey);
 
         if (!myPref.getShiftIsOpen())
-            payment.clerk_id = myPref.getShiftClerkID();
+            payment.setClerk_id(myPref.getShiftClerkID());
         else if (myPref.getPreferences(MyPreferences.pref_use_clerks))
-            payment.clerk_id = myPref.getClerkID();
+            payment.setClerk_id(myPref.getClerkID());
 
-        payment.ref_num = field[CHECK_REFERENCE].getText().toString();
-        payment.paymethod_id = extras.getString("paymethod_id");
+        payment.setRef_num(field[CHECK_REFERENCE].getText().toString());
+        payment.setPaymethod_id(extras.getString("paymethod_id"));
 
         if ((amountTender - actualAmount) > 0)
-            payment.pay_dueamount = Double.toString(actualAmount);
+            payment.setPay_dueamount(Double.toString(actualAmount));
         else
-            payment.pay_dueamount = Double.toString(amountTender);
+            payment.setPay_dueamount(Double.toString(amountTender));
 
-        payment.pay_amount = Global.amountPaid;
-        payment.pay_name = field[CHECK_NAME].getText().toString();
-        payment.pay_phone = field[CHECK_PHONE].getText().toString();
-        payment.pay_email = field[CHECK_EMAIL].getText().toString();
-        payment.processed = "1";
-        payment.pay_check = this.field[CHECK_NUMBER].getText().toString();
+        payment.setPay_amount(Global.amountPaid);
+        payment.setPay_name(field[CHECK_NAME].getText().toString());
+        payment.setPay_phone(field[CHECK_PHONE].getText().toString());
+        payment.setPay_email(field[CHECK_EMAIL].getText().toString());
+        payment.setProcessed("1");
+        payment.setPay_check(this.field[CHECK_NUMBER].getText().toString());
 
         Location location = Global.getCurrLocation(activity, false);
-        payment.pay_latitude = String.valueOf(location.getLatitude());
-        payment.pay_longitude = String.valueOf(location.getLongitude());
+        payment.setPay_latitude(String.valueOf(location.getLatitude()));
+        payment.setPay_longitude(String.valueOf(location.getLongitude()));
 
         if (Global.isIvuLoto) {
-            payment.IvuLottoNumber = extras.getString("IvuLottoNumber");
-            payment.IvuLottoDrawDate = extras.getString("IvuLottoDrawDate");
-            payment.IvuLottoQR = Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate"));
+            payment.setIvuLottoNumber(extras.getString("IvuLottoNumber"));
+            payment.setIvuLottoDrawDate(extras.getString("IvuLottoDrawDate"));
+            payment.setIvuLottoQR(Global.base64QRCode(extras.getString("IvuLottoNumber"), extras.getString("IvuLottoDrawDate")));
 
 
             if (!extras.getString("Tax1_amount").isEmpty()) {
-                payment.Tax1_amount = extras.getString("Tax1_amount");
-                payment.Tax1_name = extras.getString("Tax1_name");
+                payment.setTax1_amount(extras.getString("Tax1_amount"));
+                payment.setTax1_name(extras.getString("Tax1_name"));
 
-                payment.Tax2_amount = extras.getString("Tax2_amount");
-                payment.Tax2_name = extras.getString("Tax2_name");
+                payment.setTax2_amount(extras.getString("Tax2_amount"));
+                payment.setTax2_name(extras.getString("Tax2_name"));
             } else {
                 BigDecimal tempRate;
                 double tempPayAmount = Global.formatNumFromLocale(Global.amountPaid);
                 tempRate = new BigDecimal(tempPayAmount * 0.06).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax1_amount = tempRate.toPlainString();
-                payment.Tax1_name = "Estatal";
+                payment.setTax1_amount(tempRate.toPlainString());
+                payment.setTax1_name("Estatal");
 
                 tempRate = new BigDecimal(tempPayAmount * 0.01).setScale(2, BigDecimal.ROUND_UP);
-                payment.Tax2_amount = tempRate.toPlainString();
-                payment.Tax2_name = "Municipal";
+                payment.setTax2_amount(tempRate.toPlainString());
+                payment.setTax2_name("Municipal");
             }
         }
 
 
-        payment.pay_type = "0";
-        payment.card_type = "Check";
+        payment.setPay_type("0");
+        payment.setCard_type("Check");
 
         if (!isLivePayment) {
-            payment.processed = "1";
+            payment.setProcessed("1");
             if (invPaymentList.size() > 0)
                 invPayHandler.insert(invPaymentList);
 
@@ -694,8 +694,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         } else {
 
             if (checkWasCapture) {
-                payment.frontImage = Global.imgFrontCheck;
-                payment.backImage = Global.imgBackCheck;
+                payment.setFrontImage(Global.imgFrontCheck);
+                payment.setBackImage(Global.imgBackCheck);
 
                 StringBuilder sb = new StringBuilder();
                 sb.append("O").append(field[CHECK_NUMBER].getText().toString()).append("OT");
@@ -706,20 +706,20 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
                 String str2 = tempVal.substring(3, tempVal.length());
 
                 sb.append(str1).append("-").append(str2).append("O");
-                payment.micrData = sb.toString();
+                payment.setMicrData(sb.toString());
             }
 
-            payment.processed = "9";
+            payment.setProcessed("9");
 
-            payment.check_account_number = encrypt.encryptWithAES(field[CHECK_ACCOUNT].getText().toString());
-            payment.check_routing_number = encrypt.encryptWithAES(field[CHECK_ROUTING].getText().toString());
-            payment.check_check_number = this.field[CHECK_NUMBER].getText().toString();
-            payment.check_check_type = checkType;
-            payment.check_account_type = accountType;
-            payment.pay_addr = field[CHECK_ADDRESS].getText().toString();
-            payment.check_city = field[CHECK_CITY].getText().toString().trim();
-            payment.check_state = field[CHECK_STATE].getText().toString().trim();
-            payment.pay_poscode = field[CHECK_ZIPCODE].getText().toString();
+            payment.setCheck_account_number(encrypt.encryptWithAES(field[CHECK_ACCOUNT].getText().toString()));
+            payment.setCheck_routing_number(encrypt.encryptWithAES(field[CHECK_ROUTING].getText().toString()));
+            payment.setCheck_check_number(this.field[CHECK_NUMBER].getText().toString());
+            payment.setCheck_check_type(checkType);
+            payment.setCheck_account_type(accountType);
+            payment.setPay_addr(field[CHECK_ADDRESS].getText().toString());
+            payment.setCheck_city(field[CHECK_CITY].getText().toString().trim());
+            payment.setCheck_state(field[CHECK_STATE].getText().toString().trim());
+            payment.setPay_poscode(field[CHECK_ZIPCODE].getText().toString());
 
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
@@ -798,18 +798,18 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
             myProgressDialog.dismiss();
 
             if (responseMap != null && statusCode != null && statusCode.equals("APPROVED")) {
-                payment.pay_resultcode = responseMap.get("pay_resultcode");
-                payment.pay_resultmessage = responseMap.get("pay_resultmessage");
-                payment.pay_transid = responseMap.get("CreditCardTransID");
-                payment.authcode = responseMap.get("AuthorizationCode");
-                payment.pay_receipt = responseMap.get("pay_receipt");
-                payment.pay_refnum = responseMap.get("pay_refnum");
-                payment.pay_maccount = responseMap.get("pay_maccount");
-                payment.pay_groupcode = responseMap.get("pay_groupcode");
-                payment.pay_stamp = responseMap.get("pay_stamp");
-                payment.pay_expdate = responseMap.get("pay_expdate");
-                payment.pay_result = responseMap.get("pay_result");
-                payment.recordnumber = responseMap.get("recordnumber");
+                payment.setPay_resultcode(responseMap.get("pay_resultcode"));
+                payment.setPay_resultmessage(responseMap.get("pay_resultmessage"));
+                payment.setPay_transid(responseMap.get("CreditCardTransID"));
+                payment.setAuthcode(responseMap.get("AuthorizationCode"));
+                payment.setPay_receipt(responseMap.get("pay_receipt"));
+                payment.setPay_refnum(responseMap.get("pay_refnum"));
+                payment.setPay_maccount(responseMap.get("pay_maccount"));
+                payment.setPay_groupcode(responseMap.get("pay_groupcode"));
+                payment.setPay_stamp(responseMap.get("pay_stamp"));
+                payment.setPay_expdate(responseMap.get("pay_expdate"));
+                payment.setPay_result(responseMap.get("pay_result"));
+                payment.setRecordnumber(responseMap.get("recordnumber"));
 
 
                 Global.imgBackCheck = "";
@@ -965,7 +965,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         protected Void doInBackground(Void... params) {
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.pay_id, 1, false, null);
+                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.getPay_id(), 1, false, null);
             }
             return null;
         }

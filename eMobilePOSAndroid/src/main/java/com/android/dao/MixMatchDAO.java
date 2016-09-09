@@ -33,20 +33,19 @@ public class MixMatchDAO {
     public static void insert(List<MixMatch> mixMatches) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(MixMatch.class);
+        realm.delete(MixMatch.class);
         realm.copyToRealm(mixMatches);
         realm.commitTransaction();
     }
 
     public static RealmResults<MixMatch> getAll() {
-        RealmResults<MixMatch> mixMatches = Realm.getDefaultInstance().allObjects(MixMatch.class);
-        return mixMatches;
+        return Realm.getDefaultInstance().where(MixMatch.class).findAll();
     }
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(MixMatch.class);
+        realm.delete(MixMatch.class);
         realm.commitTransaction();
     }
 

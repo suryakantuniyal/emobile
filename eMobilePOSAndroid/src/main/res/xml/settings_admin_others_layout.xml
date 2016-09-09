@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:layout="@layout/settings_custom_header_layout"
+        android:title="@string/config_other_settings">
+        <MultiSelectListPreference
+            android:defaultValue="@array/mainMenuDefaultKey"
+            android:entries="@array/mainMenuArray"
+            android:entryValues="@array/mainMenuKey"
+            android:key="pref_configure_home_menu"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_configure_home_menu" />
+
+        <ListPreference
+            android:defaultValue="-1"
+            android:entries="@array/defaultTransEntries"
+            android:entryValues="@array/defaultTransKey"
+            android:key="pref_default_transaction"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_default_transaction" />
+
+        <CheckBoxPreference
+            android:key="pref_block_price_level_change"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_block_price_level_change" />
+        <CheckBoxPreference
+            android:key="pref_require_address"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_address" />
+        <CheckBoxPreference
+            android:key="pref_require_po"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_po" />
+
+        <Preference
+            android:key="pref_clear_images_cache"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_clear_images_cache" />
+
+        <CheckBoxPreference
+            android:key="pref_skip_manager_price_override"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_skip_manager_price_override" />
+        <CheckBoxPreference
+            android:key="pref_require_password_to_clockout"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_require_password_to_clockout" />
+        <CheckBoxPreference
+            android:key="pref_maps_inside_app"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_maps_inside_app" />
+        <CheckBoxPreference
+            android:key="pref_enable_location_inventory"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_enable_location_inventory" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -100,23 +100,21 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 	
 	private TextWatcher getSearchTextWatcher()
 	{
-		TextWatcher textWatcher = new TextWatcher() {
+
+		return new TextWatcher() {
 
 			@Override
 			public void afterTextChanged(Editable arg0) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
-				// TODO Auto-generated method stub
 				String test = s.toString().trim();
 				if (test.isEmpty()) {
 					if (myCursor != null)
@@ -128,17 +126,15 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 				}
 			}
 		};
-		
-		return textWatcher;
 	}
 	
 	private OnEditorActionListener getSearchActionListener()
 	{
-		OnEditorActionListener actionListener = new TextView.OnEditorActionListener() {
+
+		return new OnEditorActionListener() {
 
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				// TODO Auto-generated method stub
 				if (actionId == EditorInfo.IME_ACTION_SEARCH) {
 					String text = v.getText().toString().trim();
 					if (!text.isEmpty())
@@ -148,8 +144,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 				return false;
 			}
 		};
-		
-		return actionListener;
 	}
 	
 	private void selectCustomer(int itemIndex)
@@ -223,15 +217,12 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
 		public CustomCursorAdapter(Context context, Cursor c, int flags) {
 			super(context, c, flags);
-			// TODO Auto-generated constructor stub
 			inflater = LayoutInflater.from(context);
 			displayCustAccountNum = myPref.getPreferences(MyPreferences.pref_display_customer_account_number);
 		}
 
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
-			// TODO Auto-generated method stub
-			
 			final ViewHolder holder = (ViewHolder)view.getTag();
 			String temp = cursor.getString(holder.i_cust_name);
 			if(temp!=null)
@@ -261,7 +252,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 				
 				@Override
 				public void onClick(View v) {
-					// TODO Auto-generated method stub
 					String _cust_id = (String)v.getTag();
 					Intent intent = new Intent(thisContext, ViewCustomerDetails_FA.class);
 					intent.putExtra("cust_id", _cust_id);
@@ -275,11 +265,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
-			// TODO Auto-generated method stub
-
 			final View retView = inflater.inflate(R.layout.custselec_lvadapter, parent, false);
-			
-			
 			ViewHolder holder = new ViewHolder();
 			holder.cust_name = (TextView) retView.findViewById(R.id.custSelecName);
 			holder.CompanyName = (TextView) retView.findViewById(R.id.custSelecCompanyName);
@@ -287,8 +273,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 			holder.cust_phone = (TextView) retView.findViewById(R.id.custSelecPhone);
 			holder.pricelevel_name = (TextView) retView.findViewById(R.id.custSelecPriceLevel);
 			holder.moreInfoIcon = (ImageView) retView.findViewById(R.id.custSelecIcon);
-			
-			
 			holder.i_cust_id = cursor.getColumnIndex("_id");
 			holder.i_account_number = cursor.getColumnIndex("AccountNumnber");
 			holder.i_cust_name = cursor.getColumnIndex("cust_name");
@@ -324,7 +308,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch(v.getId())
 		{
 		case R.id.addCustButton:
@@ -352,7 +335,6 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		// TODO Auto-generated method stub
 		if(myPref.getPreferences(MyPreferences.pref_direct_customer_selection))
 		{
 			selectCustomer(position);

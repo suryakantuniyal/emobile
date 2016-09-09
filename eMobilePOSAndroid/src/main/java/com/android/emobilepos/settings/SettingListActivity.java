@@ -1,11 +1,11 @@
 package com.android.emobilepos.settings;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,18 +16,21 @@ import android.os.PowerManager;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -46,6 +49,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
 import com.android.emobilepos.mainmenu.SettingsTab_FR;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
 import com.android.support.DeviceUtils;
@@ -57,35 +61,91 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import main.EMSDeviceManager;
 
-public class SettingsManager_FA extends BaseFragmentActivityActionBar {
+/**
+ * An activity representing a list of Settings. This activity
+ * has different presentations for handset and tablet-size devices. On
+ * handsets, the activity presents a list of items, which when touched,
+ * lead to a {@link SettingDetailActivity} representing
+ * item details. On tablets, the activity presents the list of items and
+ * item details side-by-side using two vertical panes.
+ */
+public class SettingListActivity extends BaseFragmentActivityActionBar {
+
+    /**
+     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
+     * device.
+     */
+    private boolean mTwoPane;
+    private boolean hasBeenCreated;
     private static int settingsType = 0;
-    private static Activity activity;
-    private static FragmentManager fragManager;
-    private Global global;
-    private boolean hasBeenCreated = false;
+    public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
+    private static FragmentManager supportFragmentManager;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        activity = this;
-        global = (Global) getApplication();
-        Bundle extras = this.getIntent().getExtras();
-        settingsType = extras.getInt("settings_type");
-        fragManager = getSupportFragmentManager();
+    public enum SettingSection {
+        GENERAL(0), RESTAURANT(1), GIFTCARD(2), PAYMENT_METHODS(3), PAYMENT_PROCESSING(4), PRINTING(5), PRODUCTS(6),
+        ACCOUNT(7), CASH_DRAWER(8), KIOSK(9), SHIFTS(10), SHIPPING_CALCULATION(11),
+        TRANSACTION(12), HANPOINT(13), SUPPORT(14), OTHERS(15);
+        int code;
 
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
-        hasBeenCreated = true;
+        SettingSection(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static SettingSection getInstance(int code) {
+            switch (code) {
+                case 0:
+                    return GENERAL;
+                case 1:
+                    return RESTAURANT;
+                case 2:
+                    return GIFTCARD;
+                case 3:
+                    return PAYMENT_METHODS;
+                case 4:
+                    return PAYMENT_PROCESSING;
+                case 5:
+                    return PRINTING;
+                case 6:
+                    return PRODUCTS;
+                case 7:
+                    return ACCOUNT;
+                case 8:
+                    return CASH_DRAWER;
+                case 9:
+                    return KIOSK;
+                case 10:
+                    return SHIFTS;
+                case 11:
+                    return SHIPPING_CALCULATION;
+                case 12:
+                    return TRANSACTION;
+                case 13:
+                    return HANPOINT;
+                case 14:
+                    return SUPPORT;
+                case 15:
+                    return OTHERS;
+                default:
+                    return GENERAL;
+            }
+        }
     }
+
 
     @Override
     public void onResume() {
-
+        Global global = (Global) getApplication();
         if (global.isApplicationSentToBackground(this))
             global.loggedIn = false;
         global.stopActivityTransitionTimer();
@@ -101,6 +161,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
     @Override
     public void onPause() {
         super.onPause();
+        Global global = (Global) getApplication();
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         boolean isScreenOn = powerManager.isScreenOn();
         if (!isScreenOn)
@@ -108,129 +169,383 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         global.startActivityTransitionTimer();
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setting_list);
+        Bundle extras = this.getIntent().getExtras();
+        settingsType = extras.getInt("settings_type");
+        View recyclerView = findViewById(R.id.setting_list);
+        assert recyclerView != null;
+        setupRecyclerView((RecyclerView) recyclerView);
+        supportFragmentManager = getSupportFragmentManager();
+        if (findViewById(R.id.setting_detail_container) != null) {
+            // The detail container view will be present only in the
+            // large-screen layouts (res/values-w900dp).
+            // If this view is present, then the
+            // activity should be in two-pane mode.
+            mTwoPane = true;
+            PrefsFragment fragment = new PrefsFragment();
+            Bundle args = new Bundle();
+            args.putInt("section", SettingSection.getInstance(0).getCode());
+            fragment.setArguments(args);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.setting_detail_container, fragment)
+                    .commit();
+        }
+        hasBeenCreated = true;
+    }
 
-    public static class PrefsFragment extends PreferenceFragment implements OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        switch (settingsType) {
+            case CASE_ADMIN:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsAdminArray))));
+                break;
+            case CASE_MANAGER:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsManagerArray))));
+                break;
+            case CASE_GENERAL:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsGeneralArray))));
+                break;
+            default:
+                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(Arrays.asList(getResources().getStringArray(R.array.settingsSectionsAdminArray))));
+        }
+
+    }
+
+    public class SimpleItemRecyclerViewAdapter
+            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
+
+        private final List<String> mValues;
+
+        public SimpleItemRecyclerViewAdapter(List<String> items) {
+            mValues = items;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.setting_list_content, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+            holder.mItem = mValues.get(position);
+            holder.mIdView.setText(mValues.get(position));
+
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTwoPane) {
+                        PrefsFragment fragment = new PrefsFragment();
+                        Bundle args = new Bundle();
+                        args.putInt("section", SettingSection.getInstance(position).getCode());
+                        fragment.setArguments(args);
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.setting_detail_container, fragment)
+                                .commit();
+                    } else {
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, SettingDetailActivity.class);
+                        intent.putExtra("section", SettingSection.getInstance(position).getCode());
+
+                        context.startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mValues.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public final View mView;
+            public final TextView mIdView;
+            public String mItem;
+
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mIdView = (TextView) view.findViewById(R.id.id);
+            }
+
+            @Override
+            public String toString() {
+                return super.toString();
+            }
+        }
+    }
+
+
+    public static class PrefsFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener, HttpClient.DownloadFileCallBack {
         private Dialog promptDialog;
         private AlertDialog.Builder dialogBuilder;
         private MyPreferences myPref;
-        private List<String> macAddressList = new ArrayList<String>();
+        private List<String> macAddressList = new ArrayList<>();
         private CheckBoxPreference storeForwardFlag;
         private Preference openShiftPref, defaultCountry, storeForwardTransactions;
 
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            myPref = new MyPreferences(activity);
-            PreferenceManager prefManager;
-            // Load the preferences from an XML resource
+        private int getLayoutId(SettingListActivity.SettingSection settingSection) {
+            switch (settingSection) {
+                case GENERAL:
+                    return R.xml.settings_admin_general_layout;
+                case RESTAURANT:
+                    return R.xml.settings_admin_restaurant_layout;
+                case GIFTCARD:
+                    return R.xml.settings_admin_giftcard_layout;
+                case PAYMENT_METHODS:
+                    return R.xml.settings_admin_payments_layout;
+                case PAYMENT_PROCESSING:
+                    switch (settingsType) {
+                        case CASE_GENERAL:
+                            return R.xml.settings_general_payment_layout;
+                        default:
+                            return R.xml.settings_admin_payments_processing_layout;
+                    }
+                case ACCOUNT:
+                    return R.xml.settings_admin_account_layout;
+                case CASH_DRAWER:
+                    switch (settingsType) {
+                        case CASE_MANAGER:
+                            return R.xml.settings_manager_cashdrawer_layout;
+                        default:
+                            return R.xml.settings_admin_cashdrawer_layout;
+                    }
+                case KIOSK:
+                    return R.xml.settings_admin_kiosk_layout;
+                case SHIFTS:
+                    switch (settingsType) {
+                        case CASE_MANAGER:
+                            return R.xml.settings_manager_shifts_layout;
+                        default:
+                            return R.xml.settings_admin_shifts_layout;
+                    }
+                case SHIPPING_CALCULATION:
+                    return R.xml.settings_admin_shipping_layout;
+                case TRANSACTION:
+                    return R.xml.settings_admin_transaction_layout;
+                case HANPOINT:
+                    return R.xml.settings_admin_handpoint_layout;
+                case SUPPORT:
+                    return R.xml.settings_admin_support_layout;
+                case PRINTING:
+                    switch (settingsType) {
+                        case CASE_MANAGER:
+                            return R.xml.settings_manager_printing_layout;
+                        case CASE_GENERAL:
+                            return R.xml.settings_general_printing_layout;
+                        default:
+                            return R.xml.settings_admin_printing_layout;
+                    }
+                case PRODUCTS:
+                    return R.xml.settings_admin_products_layout;
+                case OTHERS:
+                    switch (settingsType) {
+                        case CASE_MANAGER:
+                            return R.xml.settings_manager_other_layout;
+                        case CASE_GENERAL:
+                            return R.xml.settings_general_other_layout;
+                        default:
+                            return R.xml.settings_admin_others_layout;
+                    }
+                default:
+                    return R.xml.settings_admin_general_layout;
+            }
+        }
 
-            switch (settingsType) {
-                case SettingsTab_FR.CASE_ADMIN:
-                    addPreferencesFromResource(R.xml.settings_admin_layout);
-                    prefManager = getPreferenceManager();
-                    prefManager.findPreference("pref_change_password").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_salesassociate_config").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_configure_cash_drawer").setOnPreferenceClickListener(this);
+        private void setPrefManager(SettingListActivity.SettingSection section, PreferenceManager prefManager) {
+            switch (section) {
+                case GENERAL:
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_configure_ingenico_settings").setOnPreferenceClickListener(this);
+                    break;
+                case RESTAURANT:
+                    break;
+                case GIFTCARD:
+                    prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
+                    break;
+                case PAYMENT_METHODS:
+                    prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
+                            .setOnPreferenceClickListener(this);
+
+                    break;
+                case PAYMENT_PROCESSING:
+                    if (settingsType == CASE_ADMIN) {
+                        configureDefaultPaymentMethod();
+                        storeForwardTransactions = prefManager
+                                .findPreference("pref_store_and_forward_transactions");
+                        storeForwardFlag = (CheckBoxPreference) prefManager.findPreference("pref_use_store_and_forward");
+                        storeForwardTransactions.setOnPreferenceClickListener(this);
+                        if (!myPref.isStoredAndForward()) {
+                            ((PreferenceGroup) prefManager.findPreference("payment_section"))
+                                    .removePreference(storeForwardTransactions);
+                            ((PreferenceGroup) prefManager.findPreference("payment_section"))
+                                    .removePreference(storeForwardFlag);
+                        }
+                    }
+                    break;
+                case PRINTING:
+                    if (settingsType == CASE_ADMIN) {
+                        prefManager.findPreference("pref_printek_info").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_star_info").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_snbc_setup").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_configure_ingenico_settings").setOnPreferenceClickListener(this);
+                    }
                     prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
                     prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_force_upload").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_backup_data").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
-                    prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
-                            .setOnPreferenceClickListener(this);
+                    break;
+                case PRODUCTS:
                     configureDefaultCategory();
-                    configureDefaultPaymentMethod();
-
                     prefManager.findPreference("pref_attribute_to_display").setOnPreferenceClickListener(this);
-
+                    break;
+                case ACCOUNT:
+                    prefManager.findPreference("pref_change_password").setOnPreferenceClickListener(this);
+                    break;
+                case CASH_DRAWER:
+                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
+                    if (settingsType == CASE_ADMIN) {
+                        prefManager.findPreference("pref_configure_cash_drawer").setOnPreferenceClickListener(this);
+                    }
+                    break;
+                case KIOSK:
+                    prefManager.findPreference("pref_customer_display").setOnPreferenceClickListener(this);
+                    break;
+                case SHIFTS:
                     openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
                     if (!myPref.getShiftIsOpen()) {
                         CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
                         openShiftPref.setSummary(c);
                     }
                     openShiftPref.setOnPreferenceClickListener(this);
-
                     prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
-
+                    break;
+                case SHIPPING_CALCULATION:
+                    break;
+                case TRANSACTION:
                     defaultCountry = prefManager.findPreference("pref_default_country");
                     CharSequence temp = "\t\t" + myPref.defaultCountryName(true, null);
                     defaultCountry.setSummary(temp);
                     defaultCountry.setOnPreferenceClickListener(this);
-
-                    CheckBoxPreference _cbp_use_location_inv = (CheckBoxPreference) prefManager
-                            .findPreference("pref_enable_location_inventory");
-
-                    storeForwardTransactions = prefManager
-                            .findPreference("pref_store_and_forward_transactions");
-                    storeForwardFlag = (CheckBoxPreference) prefManager.findPreference("pref_use_store_and_forward");
-                    storeForwardTransactions.setOnPreferenceClickListener(this);
-                    if (!myPref.storedAndForward(true, false)) {
-                        ((PreferenceGroup) prefManager.findPreference("payment_section"))
-                                .removePreference(storeForwardTransactions);
-                        ((PreferenceGroup) prefManager.findPreference("payment_section"))
-                                .removePreference(storeForwardFlag);
+                    break;
+                case HANPOINT:
+                    prefManager.findPreference("pref_send_handpoint_log").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_handpoint_update").setOnPreferenceClickListener(this);
+                    break;
+                case SUPPORT:
+                    prefManager.findPreference("pref_force_upload").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_backup_data").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
+                    break;
+                case OTHERS:
+                    if(settingsType==CASE_GENERAL) {
+                        prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
+                        prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
                     }
-                    // ((PreferenceGroup)prefManager.findPreference("payment_section")).removePreference(storeForwardTransactions);
-                    _cbp_use_location_inv.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
+                    if (settingsType == CASE_ADMIN) {
+                        CheckBoxPreference _cbp_use_location_inv = (CheckBoxPreference) prefManager
+                                .findPreference("pref_enable_location_inventory");
+                        _cbp_use_location_inv.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
-                        @Override
-                        public boolean onPreferenceChange(Preference preference, Object newValue) {
-                            if (newValue instanceof Boolean) {
-                                if ((Boolean) newValue) {
-                                    // sync Position Inventory
-                                    DBManager dbManager = new DBManager(activity);
-                                    SynchMethods sm = new SynchMethods(dbManager);
-                                    sm.getLocationsInventory();
+                            @Override
+                            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                                if (newValue instanceof Boolean) {
+                                    if ((Boolean) newValue) {
+                                        // sync Position Inventory
+                                        DBManager dbManager = new DBManager(getActivity());
+                                        SynchMethods sm = new SynchMethods(dbManager);
+                                        sm.getLocationsInventory();
+                                    }
                                 }
+                                return true;
                             }
-                            return true;
-                        }
-                    });
-                    break;
-                case SettingsTab_FR.CASE_MANAGER:
-                    addPreferencesFromResource(R.xml.settings_manager_layout);
-                    prefManager = getPreferenceManager();
-                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
-                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
-                    if (!myPref.getShiftIsOpen()) {
-                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
-                        openShiftPref.setSummary(c);
+                        });
                     }
-                    openShiftPref.setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
-
                     break;
-                case SettingsTab_FR.CASE_GENERAL:
-                    addPreferencesFromResource(R.xml.settings_general_layout);
-                    prefManager = getPreferenceManager();
-                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
-                    prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
-                    break;
-
             }
+
+        }
+
+        private SettingSection getSettingSectionBy(SettingSection section, int settingType) {
+            switch (settingType) {
+                case CASE_ADMIN:
+                    return section;
+                case CASE_MANAGER:
+                    switch (section.getCode()) {
+                        case 0:
+                            return SettingSection.PRINTING;
+                        case 1:
+                            return SettingSection.CASH_DRAWER;
+                        case 2:
+                            return SettingSection.SHIFTS;
+                        case 3:
+                            return SettingSection.OTHERS;
+                    }
+                    break;
+                case CASE_GENERAL:
+                    switch (section.getCode()) {
+                        case 0:
+                            return SettingSection.PAYMENT_PROCESSING;
+                        case 1:
+                            return SettingSection.OTHERS;
+                        case 2:
+                            return SettingSection.PRINTING;
+                    }
+            }
+            return section;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            myPref = new MyPreferences(getActivity());
+
+            SettingListActivity.SettingSection section = SettingListActivity.SettingSection.getInstance(getArguments().getInt("section"));
+            section = getSettingSectionBy(section, settingsType);
+            int layoutId = getLayoutId(section);
+            PreferenceManager prefManager;
+            // Load the preferences from an XML resource
+//            switch (settingsType) {
+//                case SettingsTab_FR.CASE_ADMIN:
+            addPreferencesFromResource(layoutId);
+            prefManager = getPreferenceManager();
+            setPrefManager(section, prefManager);
+//                    break;
+//                case SettingsTab_FR.CASE_MANAGER:
+//                    addPreferencesFromResource(R.xml.settings_manager_layout);
+//                    prefManager = getPreferenceManager();
+//                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
+//                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
+//                    if (!myPref.getShiftIsOpen()) {
+//                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
+//                        openShiftPref.setSummary(c);
+//                    }
+//                    openShiftPref.setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
+//
+//                    break;
+//                case SettingsTab_FR.CASE_GENERAL:
+//                    addPreferencesFromResource(R.xml.settings_general_layout);
+//                    prefManager = getPreferenceManager();
+//                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
+//                    prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
+//                    break;
+
+//        }
         }
 
         @Override
@@ -288,18 +603,18 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:
-                    intent = new Intent(activity, ViewStoreForwardTrans_FA.class);
+                    intent = new Intent(getActivity(), ViewStoreForwardTrans_FA.class);
                     startActivity(intent);
                     break;
                 case R.string.config_delete_saved_peripherals:
                     myPref.forgetPeripherals();
-                    Toast.makeText(activity, "Peripherals have been erased", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Peripherals have been erased", Toast.LENGTH_LONG).show();
                     break;
                 case R.string.config_attribute_to_display:
                     break;
                 case R.string.config_open_shift:
                     if (myPref.getShiftIsOpen()) {
-                        intent = new Intent(activity, OpenShift_FA.class);
+                        intent = new Intent(getActivity(), OpenShift_FA.class);
                         startActivityForResult(intent, 0);
                     } else
                         promptCloseShift(true, 0);
@@ -308,9 +623,9 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     String spID = myPref.getShiftID();
                     //if shift is open then show the expenses option
                     if (spID.isEmpty()) {
-                        Toast.makeText(activity, "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "A shift must be opened before an expense can be added!", Toast.LENGTH_LONG).show();
                     } else {
-                        intent = new Intent(activity, ShiftExpensesList_FA.class);
+                        intent = new Intent(getActivity(), ShiftExpensesList_FA.class);
                         startActivity(intent);
                     }
                     break;
@@ -330,7 +645,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                             newFrag.dismiss();
                         }
                     });
-                    newFrag.show(fragManager, "dialog");
+
+                    newFrag.show(supportFragmentManager, "dialog");
                     break;
                 case R.string.config_force_upload:
                     confirmTroubleshoot(R.string.config_force_upload);
@@ -351,17 +667,13 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         Global.btSwiper.currentDevice.updateFirmware();
                     }
                     break;
-                case R.string.config_salesassociate_config:
-                    intent = new Intent(activity, SalesAssociateConfiguration.class);
-                    startActivity(intent);
-                    break;
             }
             return false;
         }
 
 
         private void changePassword(final boolean isReenter, final String origPwd) {
-            final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             globalDlog.setCancelable(true);
             globalDlog.setCanceledOnTouchOutside(true);
@@ -406,7 +718,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
         private void setDefaultUnitsName() {
-            final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             globalDlog.setCancelable(true);
             globalDlog.setCanceledOnTouchOutside(true);
@@ -447,7 +759,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         private void configureDefaultCategory() {
             ListPreference lp = (ListPreference) getPreferenceManager()
                     .findPreference(MyPreferences.pref_default_category);
-            CategoriesHandler handler = new CategoriesHandler(activity);
+            CategoriesHandler handler = new CategoriesHandler(getActivity());
             List<String[]> categories = handler.getCategories();
             int size = categories.size();
             CharSequence[] catEntries = new String[size + 1];
@@ -474,8 +786,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         private void configureDefaultPaymentMethod() {
             ListPreference lp = (ListPreference) getPreferenceManager()
                     .findPreference(MyPreferences.pref_default_payment_method);
-            PayMethodsHandler handler = new PayMethodsHandler(activity);
-            List<String[]> list = handler.getPayMethod();
+            PayMethodsHandler handler = new PayMethodsHandler(getActivity());
+            List<PaymentMethod> list = handler.getPayMethod();
             int size = list.size();
             CharSequence[] entries = new String[size + 1];
             CharSequence[] entriesValues = new String[size + 1];
@@ -483,8 +795,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 entries[0] = "None";
                 entriesValues[0] = "0";
                 for (int i = 0; i < size; i++) {
-                    entries[i + 1] = list.get(i)[1];
-                    entriesValues[i + 1] = list.get(i)[0];
+                    entries[i + 1] = list.get(i).getPaymethod_name();
+                    entriesValues[i + 1] = list.get(i).getPaymethod_id();
                 }
             }
             if (entries[0] == null || entriesValues[0] == null) {
@@ -496,7 +808,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
         private void configureCustomerDisplayTerminal() {
-            final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final Dialog globalDlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             globalDlog.setCancelable(true);
             globalDlog.setCanceledOnTouchOutside(true);
@@ -529,13 +841,13 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         if (size2 > 20)
                             row2.setText("");
 
-                        Toast.makeText(activity, "Only 20 characters are allowed per line", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Only 20 characters are allowed per line", Toast.LENGTH_LONG).show();
                     } else {
                         myPref.cdtLine1(false, value1);
                         myPref.cdtLine2(false, value2);
 
 //                        if (myPref.isSam4s(true, true)) {
-                        Global.showCDTDefault(activity);
+                        Global.showCDTDefault(getActivity());
 //                        }
 
                         globalDlog.dismiss();
@@ -552,11 +864,11 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 for (File file : files)
                     file.delete();
             }
-            Toast.makeText(activity, "Cache cleared", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Cache cleared", Toast.LENGTH_LONG).show();
         }
 
         private void confirmTroubleshoot(final int type) {
-            promptDialog = new Dialog(activity, R.style.Theme_TransparentTest);
+            promptDialog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             promptDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             promptDialog.setCancelable(false);
             promptDialog.setContentView(R.layout.dlog_btn_left_right_layout);
@@ -582,12 +894,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                     promptDialog.dismiss();
                     switch (type) {
                         case R.string.config_force_upload:
-                            DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
+                            DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                             // SQLiteDatabase db = dbManager.openWritableDB();
                             dbManager.forceSend();
                             break;
                         case R.string.config_backup_data:
-                            DBManager manag = new DBManager(activity);
+                            DBManager manag = new DBManager(getActivity());
                             manag.exportDBFile();
                             break;
                     }
@@ -604,11 +916,11 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
         private void configureGeniusPeripheral() {
-            final MyPreferences myPref = new MyPreferences(activity);
-            final EditText input = new EditText(activity);
+            final MyPreferences myPref = new MyPreferences(getActivity());
+            final EditText input = new EditText(getActivity());
             input.setText(myPref.getGeniusIP());
             input.setInputType(InputType.TYPE_CLASS_TEXT);
-            dialogBuilder = new AlertDialog.Builder(activity);
+            dialogBuilder = new AlertDialog.Builder(getActivity());
             input.setSelection(input.getText().length());
             dialogBuilder.setView(input);
 
@@ -638,8 +950,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
         private void promptStarPrinter() {
-            final EditText ipAddress = new EditText(activity);
-            final EditText portNumber = new EditText(activity);
+            final EditText ipAddress = new EditText(getActivity());
+            final EditText portNumber = new EditText(getActivity());
 
             ipAddressFilter(ipAddress);
 
@@ -649,12 +961,12 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
             ipAddress.setText(myPref.getStarIPAddress());
             portNumber.setText(myPref.getStarPort());
-            LinearLayout ll = new LinearLayout(activity);
+            LinearLayout ll = new LinearLayout(getActivity());
             ll.setOrientation(LinearLayout.VERTICAL);
             ll.addView(ipAddress);
             ll.addView(portNumber);
 
-            dialogBuilder = new AlertDialog.Builder(activity);
+            dialogBuilder = new AlertDialog.Builder(getActivity());
             dialogBuilder.setView(ll);
             dialogBuilder.setTitle(R.string.dlog_star_congifure);
 
@@ -670,7 +982,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
-                    Global.mainPrinterManager.loadDrivers(activity, Global.STAR, true);
+                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, true);
 
                 }
             }).create();
@@ -680,7 +992,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
         private void promptSNBCSetup() {
-            final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final Dialog dlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dlog.setCancelable(true);
             dlog.setCanceledOnTouchOutside(false);
@@ -697,7 +1009,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                     EMSDeviceManager edm = new EMSDeviceManager();
                     Global.mainPrinterManager = edm.getManager();
-                    Global.mainPrinterManager.loadDrivers(activity, Global.SNBC, false);
+                    Global.mainPrinterManager.loadDrivers(getActivity(), Global.SNBC, false);
                     dlog.dismiss();
                 }
             });
@@ -760,8 +1072,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
         private void promptCloseShift(final boolean askAmount, final double amount) {
-            final MyPreferences myPref = new MyPreferences(activity);
-            final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+            final MyPreferences myPref = new MyPreferences(getActivity());
+            final Dialog dlog = new Dialog(getActivity(), R.style.Theme_TransparentTest);
             dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dlog.setCancelable(false);
             dlog.setCanceledOnTouchOutside(false);
@@ -779,7 +1091,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 viewField.setVisibility(View.GONE);
                 viewTitle.setText(R.string.dlog_title_confirm);
                 viewMsg.setText(
-                        activity.getString(R.string.close_amount_is) + " " + Global.formatDoubleToCurrency(amount));
+                        getActivity().getString(R.string.close_amount_is) + " " + Global.formatDoubleToCurrency(amount));
 
             }
             Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
@@ -796,7 +1108,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                         promptCloseShift(false, Global.formatNumFromLocale(viewField.getText().toString()));
                     } else {
 
-                        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(activity);
+                        ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(getActivity());
                         handler.updateShift(myPref.getShiftID(), "entered_close_amount", Double.toString(amount));
                         handler.updateShift(myPref.getShiftID(), "endTime", Global.getCurrentDate());
                         handler.updateShift(myPref.getShiftID(), "endTimeLocal", Global.getCurrentDate());
@@ -818,13 +1130,13 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
         private void connectBTDevice() {
-            ListView listViewPairedDevices = new ListView(activity);
+            ListView listViewPairedDevices = new ListView(getActivity());
             ArrayAdapter<String> bondedAdapter;
-            dialogBuilder = new AlertDialog.Builder(activity);
+            dialogBuilder = new AlertDialog.Builder(getActivity());
 
             List<String> pairedDevicesList = getListPairedDevices();
             final String[] val = pairedDevicesList.toArray(new String[pairedDevicesList.size()]);
-            bondedAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, val);
+            bondedAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, val);
             listViewPairedDevices.setAdapter(bondedAdapter);
 
             listViewPairedDevices.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -833,7 +1145,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                 public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int pos, long arg3) {
                     promptDialog.dismiss();
 
-                    dialogBuilder = new AlertDialog.Builder(activity);
+                    dialogBuilder = new AlertDialog.Builder(getActivity());
                     dialogBuilder.setTitle(R.string.dlog_title_connect_to_device);
                     dialogBuilder.setMessage(val[pos]);
                     dialogBuilder.setNegativeButton(R.string.button_no, null);
@@ -841,7 +1153,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            MyPreferences myPref = new MyPreferences(activity);
+                            MyPreferences myPref = new MyPreferences(getActivity());
                             String strDeviceName = val[pos];
 
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
@@ -852,7 +1164,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(activity, Global.MAGTEK, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.MAGTEK, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) // star
                             // micronics
@@ -863,7 +1175,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.STAR, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) { // Bixolon
                                 myPref.setPrinterType(Global.BIXOLON);
@@ -871,7 +1183,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 myPref.setPrinterName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.BIXOLON, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) // bamboo
                             {
                                 myPref.setPrinterType(Global.BAMBOO);
@@ -880,17 +1192,17 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.BAMBOO, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.BAMBOO, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ISMP")
                                     || (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
-                                    !activity.getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME))) {
+                                    !getActivity().getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME))) {
                                 myPref.setSwiperType(Global.ISMP);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(activity, Global.ISMP, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.ISMP, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
                             {
                                 myPref.setPrinterType(Global.ZEBRA);
@@ -899,7 +1211,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.ZEBRA, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ZEBRA, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MP")) // Oneil
                             {
                                 myPref.setPrinterType(Global.ONEIL);
@@ -908,7 +1220,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.ONEIL, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ONEIL, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) // KDC500
                             {
                                 myPref.setPrinterType(Global.KDC500);
@@ -916,7 +1228,7 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
                                 myPref.setSwiperType(Global.KDC500);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
-                                Global.mainPrinterManager.loadDrivers(activity, Global.KDC500, false);
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.KDC500, false);
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
                                 myPref.setSwiperType(Global.HANDPOINT);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
@@ -924,20 +1236,20 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(activity, Global.HANDPOINT, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, false);
 
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
-                                   activity.getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
+                                    getActivity().getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
                                 myPref.setSwiperType(Global.ICMPEVO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
-                                Global.btSwiper.loadDrivers(activity, Global.ICMPEVO, false);
+                                Global.btSwiper.loadDrivers(getActivity(), Global.ICMPEVO, false);
                                 Global.btSwiper = edm.getManager();
 
                             } else {
-                                Toast.makeText(activity, R.string.err_invalid_device, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), R.string.err_invalid_device, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -958,46 +1270,46 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
         private void connectUSBDevice() {
 
-            MyPreferences myPref = new MyPreferences(activity);
+            MyPreferences myPref = new MyPreferences(getActivity());
             EMSDeviceManager edm = new EMSDeviceManager();
 
             if (myPref.isAsura(true, false)) {
                 myPref.setPrinterType(Global.ASURA);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(activity, Global.ASURA, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ASURA, false);
 
             } else if (myPref.isPAT100()) {
                 myPref.setPrinterType(Global.PAT100);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(activity, Global.PAT100, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.PAT100, false);
             } else if (myPref.isPAT215()) {
                 edm = new EMSDeviceManager();
                 myPref.setPrinterType(Global.PAT215);
                 Global.embededMSR = edm.getManager();
-                Global.embededMSR.loadDrivers(activity, Global.PAT215, false);
+                Global.embededMSR.loadDrivers(getActivity(), Global.PAT215, false);
             } else if (myPref.isEM100()) {
 
             } else if (myPref.isEM70()) {
                 myPref.setPrinterType(Global.EM70);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(activity, Global.EM70, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.EM70, false);
             } else if (myPref.isESY13P1()) {
                 myPref.setPrinterType(Global.ESY13P1);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(activity, Global.ESY13P1, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ESY13P1, false);
             } else if (myPref.isOT310()) {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(activity, Global.OT310, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.OT310, false);
             } else {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(activity, Global.POWA, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.POWA, false);
             }
         }
 
         private List<String> getListPairedDevices() {
-            List<String> nameList = new ArrayList<String>();
+            List<String> nameList = new ArrayList<>();
             try {
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 Set<BluetoothDevice> bondedSet = bluetoothAdapter.getBondedDevices();
@@ -1033,17 +1345,15 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
 
         @Override
         public void downloadFail() {
-            Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.check_update_fail));
+            Global.showPrompt(getActivity(), R.string.dlog_title_error, getString(R.string.check_update_fail));
         }
 
         private class autoConnectPrinter extends AsyncTask<Void, Void, String> {
-
-            //            StringBuilder sb = new StringBuilder();
             private ProgressDialog progressDlog;
 
             @Override
             protected void onPreExecute() {
-                progressDlog = new ProgressDialog(activity);
+                progressDlog = new ProgressDialog(getActivity());
                 progressDlog.setMessage("Connecting...");
                 progressDlog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDlog.setCancelable(false);
@@ -1059,8 +1369,8 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
             @Override
             protected void onPostExecute(String result) {
                 progressDlog.dismiss();
-                if (result.toString().length() > 0)
-                    Global.showPrompt(activity, R.string.dlog_title_confirm, result.toString());
+                if (result.length() > 0)
+                    Global.showPrompt(getActivity(), R.string.dlog_title_confirm, result);
             }
         }
 
@@ -1076,5 +1386,4 @@ public class SettingsManager_FA extends BaseFragmentActivityActionBar {
         }
 
     }
-
 }

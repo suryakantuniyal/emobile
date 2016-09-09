@@ -27,6 +27,7 @@ import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -58,6 +59,7 @@ import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
+import io.realm.Realm;
 
 public class CardManager_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
@@ -508,45 +510,46 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
 
             tempPay_id = generator.getNextID(GenerateNewID.IdType.PAYMENT_ID);
-            payment.pay_id = tempPay_id;
+            payment.setPay_id(tempPay_id);
 
-            payment.cust_id = myPref.getCustID();
-            payment.custidkey = myPref.getCustIDKey();
-            payment.emp_id = myPref.getEmpID();
+            payment.setCust_id(myPref.getCustID());
+            payment.setCustidkey(myPref.getCustIDKey());
+            payment.setEmp_id(myPref.getEmpID());
 
-            payment.pay_name = cardInfoManager.getCardOwnerName();
-            payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+            payment.setPay_name(cardInfoManager.getCardOwnerName());
+            payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-            payment.ccnum_last4 = cardInfoManager.getCardLast4();
-            payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-            payment.pay_expyear = cardInfoManager.getCardExpYear();
-            payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+            payment.setCcnum_last4(cardInfoManager.getCardLast4());
+            payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+            payment.setPay_expyear(cardInfoManager.getCardExpYear());
+            payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-            payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-            payment.track_two = cardInfoManager.getEncryptedAESTrack2();
+            payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+            payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
             String cardType = "GiftCard";
             if (cardTypeCase == CASE_LOYALTY)
                 cardType = "LoyaltyCard";
             else if (cardTypeCase == CASE_REWARD)
                 cardType = "Reward";
+            PaymentMethod paymentMethod = Realm.getDefaultInstance().where(PaymentMethod.class)
+                    .equalTo("paymentmethod_type", cardType).findFirst();
+            payment.setPaymethod_id(paymentMethod.getPaymethod_id());
+            payment.setCard_type(cardType);
 
-            payment.paymethod_id = cardType;
-            payment.card_type = cardType;
-
-            payment.pay_type = "0";
+            payment.setPay_type("0");
 
             switch (giftCardActions) {
                 case CASE_ACTIVATE:
                 case CASE_ADD_BALANCE:
-                    payment.pay_amount = giftCardMap.get("overwrite_price");
-                    payment.paymethod_id = cardType + "Balance";
+                    payment.setPay_amount(giftCardMap.get("overwrite_price"));
+                    payment.setPaymethod_id(cardType + "Balance");
                     break;
                 case CASE_MANUAL_ADD:
                     BigDecimal bd = Global.getBigDecimalNum(fieldAmountToAdd.getText().toString());
                     amountAdded = fieldAmountToAdd.getText().toString();
-                    payment.paymethod_id = cardType + "Balance";
-                    payment.pay_amount = bd.toString();
+                    payment.setPaymethod_id(cardType + "Balance");
+                    payment.setPay_amount(bd.toString());
                     break;
             }
 
@@ -634,11 +637,11 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
                 if (giftCardActions == GiftCardActions.CASE_ADD_BALANCE
                         || giftCardActions == GiftCardActions.CASE_MANUAL_ADD || giftCardActions == GiftCardActions.CASE_ACTIVATE) {
-                    payment.pay_resultcode = parsedMap.get("pay_resultcode");
-                    payment.pay_resultmessage = parsedMap.get("pay_resultmessage");
-                    payment.pay_transid = parsedMap.get("CreditCardTransID");
-                    payment.authcode = parsedMap.get("AuthorizationCode");
-                    payment.pay_issync = "1";
+                    payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
+                    payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
+                    payment.setPay_transid(parsedMap.get("CreditCardTransID"));
+                    payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+                    payment.setPay_issync("1");
                     paymentHandlerDB.insert(payment);
                 }
 

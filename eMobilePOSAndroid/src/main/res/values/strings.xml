@@ -1209,6 +1209,14 @@
     <string name="eod_report_consignment_return">Consignment Return</string>
     <string name="dinningtablenotassigned">The selected dinning table needs to be assigned.</string>
     <string name="receipt_itemsQtyTotal">Total Items:</string>
+    <string name="void_label">VOID</string>
+    <string name="config_payments_settings">Payment Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_setting_list">Settings</string>
+    <string name="title_setting_detail">Setting Detail</string>
+    <string name="error_processing_payment">Error processing payment</string>
+    <string name="header_title_settings">Settings</string>
 
 
 </resources>

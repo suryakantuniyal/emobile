@@ -108,7 +108,6 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
     @Override
     public boolean getUserGrant(int type, String arg1) {
-        // TODO Auto-generated method stub
         boolean getUserGranted = false;
         switch (type) {
             case uniMagReaderMsg.typeToPowerupUniMag:
@@ -162,26 +161,22 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
     @Override
     public void onReceiveMsgAutoConfigCompleted(StructConfigParameters arg0) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     public void onReceiveMsgAutoConfigProgress(int arg0) {
-        // TODO Auto-generated method stub
 
     }
 
 
     @Override
     public void onReceiveMsgAutoConfigProgress(int arg0, double arg1, String arg2) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     public void onReceiveMsgCardData(byte flagOfCardData, byte[] cardData) {
-        // TODO Auto-generated method stub
 
         byte flag = (byte) (flagOfCardData & 0x04);
 
@@ -245,62 +240,13 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
         }
     }
 
-    public static CreditCardInfo parseCardData(Activity activity, String cardData) {
-        CreditCardInfo cardManager = new CreditCardInfo();
-        StringBuilder hexCard = new StringBuilder();
-
-        String sub1 = cardData.substring(0, cardData.indexOf("%"));
-        String sub2 = cardData.substring(cardData.indexOf("%"), cardData.lastIndexOf("*") + 1);
-        String sub3 = cardData.substring(cardData.lastIndexOf("*") + 1, cardData.length());
-        sub2 = CardData.asciiToHex(sub2);
-        hexCard.append(sub1).append(sub2).append(sub3);
-
-
-        CardData cd = new CardData(hexCard.toString());
-        StringBuilder tracks = new StringBuilder();
-
-        if (cd.isDataEncrypted() && cd.getT2Encrypted() != null) {
-            Encrypt encrypt = new Encrypt(activity);
-            cardManager.setTrackDataKSN(cd.getKSN());
-            cardManager.setEncryptedAESTrack1(encrypt.encryptWithAES(cd.getT1DataAscii()));
-            cardManager.setEncryptedAESTrack2(encrypt.encryptWithAES(cd.getT2DataAscii()));
-            StringBuilder sb = new StringBuilder();
-            cardManager.setEncryptedBlock(sb.append(cd.getT1Encrypted()).append(cd.getT2Encrypted()).toString());
-            cardManager.setEncryptedTrack1(cd.getT1Encrypted());
-            cardManager.setEncryptedTrack2(cd.getT2Encrypted());
-            cardManager.setDeviceSerialNumber(cd.getSerialNumber());
-
-            CreditCardInfo temp = Global.parseSimpleMSR(activity, cd.getT1DataAscii().replace("%*", "%").replace("?*", "?") + cd.getT2DataAscii().replace("?*", "?"));
-            cardManager.setCardExpMonth(temp.getCardExpMonth());
-            cardManager.setCardExpYear(temp.getCardExpYear());
-            cardManager.setCardLast4(temp.getCardLast4());
-            cardManager.setCardOwnerName(temp.getCardOwnerName());
-            cardManager.setCardType(temp.getCardType());
-            cardManager.setCardNumAESEncrypted(temp.getCardNumAESEncrypted());
-
-        } else {
-            if (cd.getT1Data().length() > 0 && cd.getT2Data().length() == 0 && cd.getT1DataAscii().contains(";"))
-                tracks.append("").append(cd.getT1DataAscii());
-            else if (cd.getT1Data().length() > 0 && cd.getT2Data().length() == 0 && cd.getT1DataAscii().contains("%"))
-                tracks.append(cd.getT1DataAscii()).append("");
-            else
-                tracks.append(cd.getT1DataAscii()).append(cd.getT2DataAscii());
-
-            cardManager = Global.parseSimpleMSR(activity, tracks.toString());
-        }
-
-        return cardManager;
-    }
-
     @Override
     public void onReceiveMsgCommandResult(int arg0, byte[] arg1) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     public void onReceiveMsgConnected() {
-        // TODO Auto-generated method stub
         isConnected = true;
         handler.post(doUpdateDidConnect);
     }
@@ -308,34 +254,29 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
     @Override
     public void onReceiveMsgDisconnected() {
-        // TODO Auto-generated method stub
         isConnected = false;
     }
 
 
     @Override
     public void onReceiveMsgFailureInfo(int arg0, String arg1) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     @Deprecated
     public void onReceiveMsgSDCardDFailed(String arg0) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     public void onReceiveMsgTimeout(String arg0) {
-        // TODO Auto-generated method stub
         isConnected = false;
     }
 
 
     @Override
     public void onReceiveMsgToConnect() {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -345,26 +286,22 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
     @Override
     public void onReceiveMsgToSwipeCard() {
-        // TODO Auto-generated method stub
         isSwipping = true;
     }
 
 
     @Override
     public void onReceiveMsgChallengeResult(int arg0, byte[] arg1) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     public void onReceiveMsgUpdateFirmwareProgress(int arg0) {
-        // TODO Auto-generated method stub
     }
 
 
     @Override
     public void onReceiveMsgUpdateFirmwareResult(int arg0) {
-        // TODO Auto-generated method stub
     }
 
 }

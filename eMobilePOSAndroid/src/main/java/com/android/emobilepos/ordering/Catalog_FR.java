@@ -97,9 +97,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private Dialog dialog;
     private boolean isSubcategory = false;
     private String[] searchFilters;
-    private List<String> spinnerCatName = new ArrayList<String>(), catName = new ArrayList<String>();
-    private List<String> spinnerCatID = new ArrayList<String>(), catIDs = new ArrayList<String>();
-    private List<String[]> spinnerCategories = new ArrayList<String[]>(), categories = new ArrayList<String[]>();
+    private List<String> spinnerCatName = new ArrayList<>(), catName = new ArrayList<>();
+    private List<String> spinnerCatID = new ArrayList<>(), catIDs = new ArrayList<>();
+    private List<String[]> spinnerCategories = new ArrayList<>(), categories = new ArrayList<>();
     private CategoriesHandler catHandler;
     private boolean catalogIsPortrait = false;
     private boolean isFastScanning = false;
@@ -190,13 +190,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         protected Catalog_Loader doInBackground(Integer... params) {
-            Catalog_Loader catalog_loader = new Catalog_Loader(getActivity(), (int) params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
-            return catalog_loader;
+            return new Catalog_Loader(getActivity(), (int) params[0] + Integer.parseInt(getString(R.string.sqlLimit)), 1);
         }
 
         @Override
         protected void onPostExecute(Catalog_Loader catalog_loader) {
-//            myCursor.close();
             myCursor = catalog_loader.loadInBackground();
             prodListAdapter.swapCursor(myCursor);
             prodListAdapter.notifyDataSetChanged();
@@ -208,9 +206,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.categoryButton:
-                categories = new ArrayList<String[]>(spinnerCategories);
-                catName = new ArrayList<String>(spinnerCatName);
-                catIDs = new ArrayList<String>(spinnerCatID);
+                categories = new ArrayList<>(spinnerCategories);
+                catName = new ArrayList<>(spinnerCatName);
+                catIDs = new ArrayList<>(spinnerCatID);
                 isSubcategory = false;
                 setupCategoryView();
                 dialog.show();
@@ -429,8 +427,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        Catalog_Loader loader = new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
-        return loader;
+        return new Catalog_Loader(getActivity(), Integer.parseInt(getString(R.string.sqlLimit)), 0);
     }
 
 
@@ -456,22 +453,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     }
 
-
-    public int measureCellWidth(Context context, View cell) {
-        // We need a fake parent
-        FrameLayout buffer = new FrameLayout(context);
-        android.widget.AbsListView.LayoutParams layoutParams = new android.widget.AbsListView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        buffer.addView(cell, layoutParams);
-
-        cell.forceLayout();
-        cell.measure(1000, 1000);
-
-        int width = cell.getMeasuredWidth();
-
-        buffer.removeAllViews();
-
-        return width;
-    }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
@@ -550,19 +531,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         boolean found_category_name = myCursor.getColumnIndex("cat_name") != -1;
         if (found_category_name) {
             String catName = myCursor.getString(myCursor.getColumnIndex("cat_name"));
-            //Global.cat_id = new String(_catID);
             Global.cat_id = catID;
-
-//            if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
-//                restModeViewingProducts = true;
-//                btnListID.add(catID);
-//                btnListName.add(catName);
-//                addCategoryButton(catName, catID);
-//
-//                _typeCase = CASE_PRODUCTS;
-//                loadCursor();
-//            } else {
-
 
             int num_subcategories = Integer.parseInt(myCursor.getString(myCursor.getColumnIndex("num_subcategories")));
             if (num_subcategories > 0 && !showAllProducts) {
@@ -581,7 +550,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 _typeCase = CASE_PRODUCTS;
                 loadCursor();
             }
-//            }
         }
     }
 
@@ -589,14 +557,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         Button btn = new Button(getActivity());
         btn.setTag(cat_id);
         btn.setText(categoryName);
-        //btn.setPadding(18, 0, 18, 0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         catButLayout.addView(btn, params);
         btn.setTextAppearance(getActivity(), R.style.black_text_appearance);
         btn.setPadding(5, 0, 5, 0);
         btn.setTextSize(TypedValue.COMPLEX_UNIT_PX, getActivity().getResources().getDimension(R.dimen.ordering_checkout_btn_txt_size));
-        //btn.setEms(6);
         btn.setBackgroundResource(R.drawable.blue_btn_selector);
         btn.setOnClickListener(new View.OnClickListener() {
 
@@ -666,7 +632,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         } else if (global.orderProducts.contains(product.getId())) {
             BigDecimal origQty = Global.getBigDecimalNum(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId()));
             BigDecimal newQty = origQty.add(Global.getBigDecimalNum("1"));
-            //String [] temp = volPriceHandler.getVolumePrice(global.qtyCounter.get(data[0]),data[0]);
             String[] temp = volPriceHandler.getVolumePrice(newQty.toString(), product.getId());
             if (temp[1] != null && !temp[1].isEmpty())
                 tempPrice = temp[1];
@@ -693,17 +658,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         product.setProdType(c.getString(c.getColumnIndex("prod_type")));
         product.setCatId(c.getString(c.getColumnIndex("cat_id")));
         product.setProdPricePoints(c.getInt(c.getColumnIndex("prod_price_points")));
-//        if (product.getProdPricePoints() == null || product.getProdPricePoints().isEmpty())
-//            product.setProdPricePoints("0");
         product.setProdValuePoints(c.getInt(c.getColumnIndex("prod_value_points")));
-//        if (product.getProdValuePoints() == null || product.getProdValuePoints().isEmpty())
-//            product.setProdValuePoints("0");
-
         product.setProdTaxType(c.getString(c.getColumnIndex("prod_taxtype")));
         product.setProdTaxCode(c.getString(c.getColumnIndex("prod_taxcode")));
         product.setProd_sku(c.getString(c.getColumnIndex("prod_sku")));
         product.setProd_upc(c.getString(c.getColumnIndex("prod_upc")));
-
         return product;
 
     }
@@ -745,11 +704,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             }
 
             if (OrderingMain_FA.returnItem) {
-                if (OrderingMain_FA.mTransType == Global.TransactionType.RETURN) {
-                    OrderingMain_FA.returnItem = true;
-                } else {
-                    OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-                }
+                OrderingMain_FA.returnItem = OrderingMain_FA.mTransType == Global.TransactionType.RETURN || !OrderingMain_FA.returnItem;
                 OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
             }
         }
@@ -767,7 +722,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     private void itemClicked(boolean showAllProducts) {
         if (!onRestaurantMode)
             performClickEvent();
-        else if (onRestaurantMode && !restModeViewingProducts) {
+        else if (!restModeViewingProducts) {
             int i_id = myCursor.getColumnIndex("_id");
             int i_cat_name = myCursor.getColumnIndex("cat_name");
             int i_num_subcategories = myCursor.getColumnIndex("num_subcategories");
@@ -799,7 +754,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                 Global.productParentAddons = tempListMap;
 
-                global.addonSelectionType = new HashMap<String, String[]>();
+                global.addonSelectionType = new HashMap<>();
                 startActivityForResult(intent, 0);
             } else
                 performClickEvent();
@@ -817,7 +772,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         if (catalogIsPortrait && myCursor.moveToPosition(pos)) {
             if (!onRestaurantMode)
                 performClickEvent();
-            else if (onRestaurantMode && !restModeViewingProducts) {
+            else if (!restModeViewingProducts) {
                 int i_id = myCursor.getColumnIndex("_id");
                 int i_cat_name = myCursor.getColumnIndex("cat_name");
                 int i_num_subcategories = myCursor.getColumnIndex("num_subcategories");
@@ -850,7 +805,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                     Global.productParentAddons = tempListMap;
 
-                    global.addonSelectionType = new HashMap<String, String[]>();
+                    global.addonSelectionType = new HashMap<>();
                     startActivityForResult(intent, 0);
                 } else
                     performClickEvent();
@@ -943,20 +898,16 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
         @Override
         public Object getItem(int arg0) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
-
             ViewHolder holder;
             int type = getItemViewType(position);
             if (convertView == null) {
@@ -964,16 +915,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 convertView = myInflater.inflate(R.layout.categories_layout_adapter, null);
                 holder.categoryName = (TextView) convertView.findViewById(R.id.categoryName);
                 holder.icon = (ImageView) convertView.findViewById(R.id.subcategoryIcon);
-
                 holder.categoryName.setText(catName.get(position));
                 setHolderValues(holder, position, type);
-
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
-
                 holder.categoryName.setText(catName.get(position));
-
                 setHolderValues(holder, position, type);
             }
             return convertView;
@@ -985,8 +932,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 int index = position - 1;
                 if (position >= 0 && isSubcategory)
                     index = position;
-
-
                 if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) // check for available sub-categories
                 {
                     if (!categories.get(index)[2].equals("0")) // there are sub-categories available
@@ -1014,7 +959,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
                         @Override
                         public void onClick(View v) {
-                            // TODO Auto-generated method stub
                             int index = position - 1;
                             if (isSubcategory)
                                 index = position;

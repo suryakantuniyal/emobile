@@ -32,19 +32,19 @@ public class SalesAssociateDAO {
     public static void insert(List<SalesAssociate> salesAssociates) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(SalesAssociate.class);
+        realm.delete(SalesAssociate.class);
         realm.copyToRealm(salesAssociates);
         realm.commitTransaction();
     }
 
     public static RealmResults<SalesAssociate> getAll() {
-        return Realm.getDefaultInstance().allObjects(SalesAssociate.class);
+        return Realm.getDefaultInstance().where(SalesAssociate.class).findAll();
     }
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(SalesAssociate.class);
+        realm.delete(SalesAssociate.class);
         realm.commitTransaction();
     }
 

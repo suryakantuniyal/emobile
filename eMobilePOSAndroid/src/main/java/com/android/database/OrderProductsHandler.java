@@ -86,7 +86,7 @@ public class OrderProductsHandler {
 
     public OrderProductsHandler(Activity activity) {
         global = (Global) activity.getApplication();
-        attrHash = new HashMap<String, Integer>();
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         sb3 = new StringBuilder();
@@ -129,7 +129,7 @@ public class OrderProductsHandler {
         try {
 
             boolean isRestaurantMode = myPref.getPreferences(MyPreferences.pref_restaurant_mode);
-            SQLiteStatement insert = null;
+            SQLiteStatement insert;
             insert = DBManager._db.compileStatement("INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = orderProducts.size();
@@ -390,7 +390,7 @@ public class OrderProductsHandler {
     }
 
     public static List<OrderProduct> getOrderProductAddons(String ordprod_id) {
-        List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
+        List<OrderProduct> orderProducts = new ArrayList<>();
         String[] cols = new String[attr.size()];
         attr.toArray(cols);
         Cursor cursor = DBManager._db.query(table_name, cols, addon_ordprod_id + " = ?", new String[]{ordprod_id},
@@ -452,7 +452,7 @@ public class OrderProductsHandler {
     }
 
     public List<OrderProduct> getOrderProducts(String orderId) {
-        List<OrderProduct> products = new ArrayList<OrderProduct>();
+        List<OrderProduct> products = new ArrayList<>();
         Cursor cursor = getCursorData(orderId);
         if (cursor.moveToFirst()) {
             do {
@@ -515,7 +515,7 @@ public class OrderProductsHandler {
 
     public HashMap<String, List<Orders>> getStationPrinterProducts(String ordID) {
         // SQLiteDatabase db = dbManager.openReadableDB();
-        List<Orders> list = new ArrayList<Orders>();
+        List<Orders> list;
 
 		/*
          * sb.append(
@@ -682,7 +682,7 @@ public class OrderProductsHandler {
 
     public List<OrderProduct> getProductsDayReport(boolean isSales, String clerk_id, String date) {
         StringBuilder query = new StringBuilder();
-        List<OrderProduct> listOrdProd = new ArrayList<OrderProduct>();
+        List<OrderProduct> listOrdProd = new ArrayList<>();
 
         query.append(
                 "SELECT ordprod_name, prod_id,prod_sku, prod_upc, sum(ordprod_qty) as 'ordprod_qty', " +

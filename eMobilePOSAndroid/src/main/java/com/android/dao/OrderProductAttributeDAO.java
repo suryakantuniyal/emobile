@@ -32,7 +32,7 @@ public class OrderProductAttributeDAO {
         setPKId(attributes);
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(ProductAttribute.class);
+        realm.delete(ProductAttribute.class);
         realm.copyToRealm(attributes);
         realm.commitTransaction();
     }
@@ -45,14 +45,14 @@ public class OrderProductAttributeDAO {
     }
 
     public static RealmResults<ProductAttribute> getAll() {
-        RealmResults<ProductAttribute> attributes = Realm.getDefaultInstance().allObjects(ProductAttribute.class);
+        RealmResults<ProductAttribute> attributes = Realm.getDefaultInstance().where(ProductAttribute.class).findAll();
         return attributes;
     }
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.clear(ProductAttribute.class);
+        realm.delete(ProductAttribute.class);
         realm.commitTransaction();
     }
 

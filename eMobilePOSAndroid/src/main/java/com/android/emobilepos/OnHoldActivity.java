@@ -577,10 +577,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setIsPrinted(c.getString(c.getColumnIndex("isPrinted")));
             ord.setUom_conversion(TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion")));
 
-            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice()) * Double.parseDouble(ord.getUom_conversion());
+            total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice());
             ord.setProd_taxValue(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("prod_taxValue"))));
             ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
             ord.setProd_taxtype(c.getString(c.getColumnIndex("prod_taxtype")));
+
 
             // for calculating taxes and discount at receipt
             ord.setProd_taxId(c.getString(c.getColumnIndex("prod_taxId")));

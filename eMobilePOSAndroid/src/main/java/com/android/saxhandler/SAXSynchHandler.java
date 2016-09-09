@@ -278,15 +278,15 @@ public class SAXSynchHandler extends DefaultHandler {
 				invHandler.emptyTable();
 			}
 			break;
-		case Global.S_PAY_METHODS:
-			if(isInsert)
-				payMethodsHandler.insert(dataList,dictionaryListMap);
-			else
-			{
-				payMethodsHandler = new PayMethodsHandler(activity);
-				payMethodsHandler.emptyTable();
-			}
-			break;
+//		case Global.S_PAY_METHODS:
+//			if(isInsert)
+//				payMethodsHandler.insert(dataList,dictionaryListMap);
+//			else
+//			{
+//				payMethodsHandler = new PayMethodsHandler(activity);
+//				payMethodsHandler.emptyTable();
+//			}
+//			break;
 //		case Global.S_PRICE_LEVEL:
 //			if(isInsert)
 //				priceLevelHandler.insert(dataList,dictionaryListMap);

@@ -23,7 +23,7 @@ public class MyPreferences {
     private Global global;
 
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
-    
+
 
     private final String db_path = "db_path";
     private final String emp_id = "emp_id";
@@ -1089,16 +1089,21 @@ public class MyPreferences {
 
     }
 
-    public boolean storedAndForward(boolean isGet, boolean value) {
+    public void setStoredAndForward(boolean storeAndForward) {
         String is_store_forward = "is_store_forward";
-        if (isGet)
-            return prefs.getBoolean(is_store_forward, false);
-        else {
-            prefEditor.putBoolean(is_store_forward, value);
-            prefEditor.commit();
-        }
-        return false;
+        prefEditor.putBoolean(is_store_forward, storeAndForward);
+        prefEditor.commit();
     }
+
+    public boolean isPrefUseStoreForward() {
+        return getPreferences(MyPreferences.pref_use_store_and_forward);
+    }
+
+    public boolean isStoredAndForward() {
+        String is_store_forward = "is_store_forward";
+        return prefs.getBoolean(is_store_forward, false);
+    }
+
 
     public void setGeniusIP(String ip) {
         prefEditor.putString("genius_ip", ip);

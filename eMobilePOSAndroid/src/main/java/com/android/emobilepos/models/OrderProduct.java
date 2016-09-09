@@ -85,9 +85,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private int mixMatchQtyApplied;
     private BigDecimal mixMatchOriginalPrice;
     private List<MixAndMatchDiscount> mixAndMatchDiscounts;
-    private String consignment_qty;
     private String productPriceLevelTotal;
+    private String parentAddonOrderProductId;
     private String prod_extradesc;
+    private String consignment_qty;
 
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
@@ -102,6 +103,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_istaxable(product.getProdIstaxable());
         this.setOrdprod_desc(product.getProdDesc());
         this.setProd_taxcode(product.getProdTaxCode());
+        this.setOrdprod_name(product.getProdName());
         this.setTax_type(product.getProdTaxType());
         this.setProd_price_points(String.valueOf(product.getProdPricePoints()));
         this.setProd_value_points(String.valueOf(product.getProdValuePoints()));
@@ -760,5 +762,17 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setProd_extradesc(String prod_extradesc) {
         this.prod_extradesc = prod_extradesc;
+    }
+
+    public String getParentAddonOrderProductId() {
+        return parentAddonOrderProductId;
+    }
+
+    public void setParentAddonOrderProductId(String parentAddonOrderProductId) {
+        this.parentAddonOrderProductId = parentAddonOrderProductId;
+    }
+
+    public boolean isAddon() {
+        return !TextUtils.isEmpty(getAddon()) && getAddon().equals("1");
     }
 }

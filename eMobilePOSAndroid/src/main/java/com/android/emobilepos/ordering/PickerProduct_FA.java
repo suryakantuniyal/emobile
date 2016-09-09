@@ -301,33 +301,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void setOrderProductValues() {
-//        orderProduct.prod_id = extras.getString("prod_id");
-//        orderProduct.prod_sku = extras.getString("prod_sku");
-//        orderProduct.prod_upc = extras.getString("prod_upc");
-//        orderProduct.ordprod_name = extras.getString("prod_name");
-//        orderProduct.prod_price = extras.getString("prod_price");
-//        orderProduct.imgURL = extras.getString("url");
-//        orderProduct.prod_type = extras.getString("prod_type");
-//        orderProduct.onHand = extras.getString("prod_on_hand");
-//        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
-//        orderProduct.prod_istaxable = extras.getString("prod_istaxable");
-//        orderProduct.ordprod_desc = extras.getString("prod_desc");
-//        orderProduct.prod_taxcode = extras.getString("prod_taxcode");
-//        orderProduct.tax_type = extras.getString("prod_taxtype");
-//        orderProduct.cat_id = extras.getString("cat_id");
-//        orderProduct.assignedSeat = extras.getString("selectedSeatNumber");
-//        orderProduct.prod_price_points = String.valueOf(extras.getInt("prod_price_points"));
-//        orderProduct.prod_value_points = String.valueOf(extras.getInt("prod_value_points"));
         Gson gson = JsonUtils.getInstance();
-//        if (extras.containsKey("product")) {
-//            Product product = gson.fromJson(extras.getString("product"), Product.class);
-//            orderProduct = new OrderProduct(product);
-//        } else if (extras.containsKey("orderProduct")) {
         orderProduct = gson.fromJson(extras.getString("orderProduct"), OrderProduct.class);
-//        }
+
         if (Global.isConsignment) {
             orderProduct.setConsignment_qty(extras.getString("consignment_qty"));
-
         }
     }
 
@@ -356,7 +334,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
 
             prodAttrHandler = new ProductsAttrHandler(activity);
-            attributesMap = prodAttrHandler.getAttributesMap(orderProduct.getOrdprod_name());
+            attributesMap = prodAttrHandler.getAttributesMap(orderProduct.getProd_id());
             attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
             attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
             int attributesSize = attributesMap.size();
@@ -1012,7 +990,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         ord.setProd_price_points(pricePoints.toString());
         ord.setProd_value_points(valuePoints.toString());
-
+        ord.setProd_price(productPriceLevelTotal.toString());
+        ord.setMixMatchOriginalPrice(productPriceLevelTotal);
+        ord.setOverwrite_price(productPriceLevelTotal.multiply(uomMultiplier));
         // Still need to do add the appropriate tax/discount value
         ord.setProd_taxValue(new BigDecimal(taxTotal));
         double ordFinalPrice = TextUtils.isEmpty(ord.getFinalPrice()) ? 0
@@ -1022,7 +1002,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.setDiscount_value(disTotal);
         ord.setProd_taxtype(orderProduct.getTax_type());
 
-
         // for calculating taxes and discount at receipt
         ord.setProd_taxId(prod_taxId);
         ord.setDiscount_id(discount_id);
@@ -1030,26 +1009,19 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.setTaxTotal(taxTotal);
         ord.setDisAmount(disAmount);
         ord.setDisTotal(disTotal);
-
         ord.setPricelevel_id(priceLevelID);
         ord.setPriceLevelName(priceLevelName);
-
-        ord.setProd_price(productPriceLevelTotal.toString());
-        ord.setMixMatchOriginalPrice(productPriceLevelTotal);
-
         ord.setTax_position(Integer.toString(tax_position));
         ord.setDiscount_position(Integer.toString(discount_position));
         ord.setPricelevel_position(Integer.toString(pricelevel_position));
         ord.setUom_position(Integer.toString(uom_position));
         ord.setOrdprod_comment(_ordprod_comment);
-
         ord.setProd_type(prod_type);
 
         //Add UOM attributes to the order
         ord.setUom_name(uomName);
         ord.setUom_id(uomID);
         ord.setUom_conversion(uomMultiplier.toString());
-
         if (discountIsTaxable) {
             ord.setDiscount_is_taxable("1");
         }
@@ -1057,7 +1029,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             ord.setDiscount_is_fixed("1");
         else
             ord.setDiscount_is_fixed("0");
-
         BigDecimal itemTotal = total.abs().subtract(Global.getBigDecimalNum(disTotal).abs());
         if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
             itemTotal = itemTotal.negate();
@@ -1066,26 +1037,18 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         ord.setItemTotal(itemTotal.toString());
         ord.setItemSubtotal(total.toString());
-
         GenerateNewID generator = new GenerateNewID(activity);
-
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
 
         }
         ord.setOrd_id(Global.lastOrdID);
-
-
         if (global.orderProducts == null) {
             global.orderProducts = new ArrayList<OrderProduct>();
         }
-
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
-
-
         ord.setOrdprod_id(randomUUIDString);
-
         ord.requiredProductAttributes = new ArrayList<>();
         int size = global.ordProdAttr.size();
         for (int i = 0; i < size; i++) {
@@ -1124,12 +1087,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 ord.setOrdprod_desc(sb.toString());
                 ord.setHasAddons("1");
 
-                global.orderProductAddons = new ArrayList<OrderProduct>();
+                global.orderProductAddons = new ArrayList<>();
 
             }
         }
         global.orderProducts.add(ord);
-
 
 //        if (myPref.isSam4s(true, true)) {
         String row1 = ord.getOrdprod_name();

@@ -6,7 +6,6 @@ import com.android.emobilepos.models.OrderProduct;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,7 @@ import java.util.Map;
  */
 public class OrderProductUtils {
     public static String getOrderProductQty(List<OrderProduct> orderProducts, String productId) {
-        Double retVal = Double.valueOf(0);
+        Double retVal = 0d;
         for (OrderProduct orderProduct : orderProducts) {
             if (orderProduct.getProd_id().equalsIgnoreCase(productId)) {
                 if (!TextUtils.isEmpty(orderProduct.getOrdprod_qty())) {
@@ -30,7 +29,7 @@ public class OrderProductUtils {
     }
 
     public static HashMap<String, String> getProductQtyHashMap(List<OrderProduct> orderProducts) {
-        HashMap<String, String> hashMap = new HashMap<String, String>(orderProducts.size());
+        HashMap<String, String> hashMap = new HashMap<>(orderProducts.size());
         for (OrderProduct orderProduct : orderProducts) {
             if (hashMap.containsKey(orderProduct.getProd_id())) {
                 String qty = hashMap.get(orderProduct.getProd_id());
@@ -45,7 +44,7 @@ public class OrderProductUtils {
     }
 
     public static List<OrderProduct> getOrderProducts(List<OrderProduct> orderProducts, String productId) {
-        List<OrderProduct> list = new ArrayList<OrderProduct>();
+        List<OrderProduct> list = new ArrayList<>();
         for (OrderProduct orderProduct : orderProducts) {
             if (orderProduct.getProd_id().equalsIgnoreCase(productId)) {
                 list.add(orderProduct);
@@ -55,8 +54,8 @@ public class OrderProductUtils {
     }
 
     public static List<OrderProduct> getOrderProductsGroupBySKU(List<OrderProduct> orderProducts) {
-        HashMap<String, OrderProduct> hashMap = new HashMap<String, OrderProduct>();
-        List<OrderProduct> list = new ArrayList<OrderProduct>();
+        HashMap<String, OrderProduct> hashMap = new HashMap<>();
+        List<OrderProduct> list = new ArrayList<>();
         for (OrderProduct orderProduct : orderProducts) {
             if (hashMap.containsKey(orderProduct.getProd_id())) {
                 double ordprod_qty = Double.parseDouble(hashMap.get(orderProduct.getProd_id()).getOrdprod_qty());
@@ -66,8 +65,8 @@ public class OrderProductUtils {
                 hashMap.put(orderProduct.getProd_id(), orderProduct);
             }
         }
-        for (Iterator<Map.Entry<String, OrderProduct>> iter = hashMap.entrySet().iterator(); iter.hasNext(); ) {
-            OrderProduct orderProduct = iter.next().getValue();
+        for (Map.Entry<String, OrderProduct> stringOrderProductEntry : hashMap.entrySet()) {
+            OrderProduct orderProduct = stringOrderProductEntry.getValue();
             list.add(orderProduct);
         }
         return list;

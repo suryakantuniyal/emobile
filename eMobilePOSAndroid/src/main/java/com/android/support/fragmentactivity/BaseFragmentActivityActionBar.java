@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.support.MyPreferences;
@@ -60,14 +61,18 @@ public class BaseFragmentActivityActionBar extends FragmentActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        if (BuildConfig.REPORT_CRASHLITYCS) {
+            Fabric.with(this, new Crashlytics());
+        }
         if (navigationbarByModels == null || navigationbarByModels.length == 0) {
             navigationbarByModels = getResources().getStringArray(R.array.navigationbarByModels);
         }
         if (myPref == null) {
             myPref = new MyPreferences(this);
         }
-        setCrashliticAditionalInfo();
+        if (BuildConfig.REPORT_CRASHLITYCS) {
+            setCrashliticAditionalInfo();
+        }
         setActionBar();
     }
 

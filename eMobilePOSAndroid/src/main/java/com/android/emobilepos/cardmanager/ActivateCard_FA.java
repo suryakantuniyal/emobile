@@ -263,26 +263,26 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
             String cardType = "GiftCard";
             Bundle extras = getIntent().getExtras();
 
-            payment.paymethod_id = extras.getString("paymethod_id");
+            payment.setPaymethod_id(extras.getString("paymethod_id"));
 
-            payment.pay_name = cardInfoManager.getCardOwnerName();
-            payment.pay_ccnum = cardInfoManager.getCardNumAESEncrypted();
+            payment.setPay_name(cardInfoManager.getCardOwnerName());
+            payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
 
-            payment.ccnum_last4 = cardInfoManager.getCardLast4();
-            payment.pay_expmonth = cardInfoManager.getCardExpMonth();
-            payment.pay_expyear = cardInfoManager.getCardExpYear();
-            payment.pay_seccode = cardInfoManager.getCardEncryptedSecCode();
+            payment.setCcnum_last4(cardInfoManager.getCardLast4());
+            payment.setPay_expmonth(cardInfoManager.getCardExpMonth());
+            payment.setPay_expyear(cardInfoManager.getCardExpYear());
+            payment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
 
-            payment.track_one = cardInfoManager.getEncryptedAESTrack1();
-            payment.track_two = cardInfoManager.getEncryptedAESTrack2();
+            payment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
+            payment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
 
-            payment.pay_amount = giftCardMap.get("overwrite_price");
-            payment.card_type = cardType;
+            payment.setPay_amount(giftCardMap.get("overwrite_price"));
+            payment.setCard_type(cardType);
 
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, payment);
             String generatedURL = new String();
 
-            payment.pay_type = "0";
+            payment.setPay_type("0");
             if (typeCase == CASE_GIFT)
                 generatedURL = payGate.paymentWithAction(EMSPayGate_Default.EAction.ActivateGiftCardAction, wasReadFromReader, cardType,
                         cardInfoManager);
