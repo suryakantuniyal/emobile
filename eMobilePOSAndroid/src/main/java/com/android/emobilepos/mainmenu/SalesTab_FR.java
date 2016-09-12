@@ -51,6 +51,7 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
+import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -78,7 +79,7 @@ public class SalesTab_FR extends Fragment {
         activity = getActivity();
         myPref = new MyPreferences(activity);
         myPref.setLogIn(true);
-        PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_general_layout, false);
+        SettingListActivity.loadDefaultValues(activity);
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
 
         thisContext = getActivity();
