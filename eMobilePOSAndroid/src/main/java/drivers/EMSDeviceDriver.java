@@ -565,7 +565,7 @@ public class EMSDeviceDriver {
                     if (!TextUtils.isEmpty(orderProducts.get(i).getProd_price_points()) && Integer.parseInt(orderProducts.get(i).getProd_price_points()) > 0) {
                         payWithLoyalty = true;
                     }
-                    totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).getOrdprod_qty()) ? 0 : Integer.parseInt(orderProducts.get(i).getOrdprod_qty());
+                    totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).getOrdprod_qty()) ? 0 : Double.parseDouble(orderProducts.get(i).getOrdprod_qty());
                     String uomDescription = "";
                     if (!TextUtils.isEmpty(orderProducts.get(i).getUom_name())) {
                         uomDescription = orderProducts.get(i).getUom_name() + "(" + orderProducts.get(i).getUom_conversion() + ")";

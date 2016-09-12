@@ -1007,7 +1007,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         ord.setProd_value_points(valuePoints.toString());
         ord.setProd_price(productPriceLevelTotal.toString());
         ord.setMixMatchOriginalPrice(productPriceLevelTotal);
-        ord.setOverwrite_price(productPriceLevelTotal.multiply(uomMultiplier));
+        if (uomMultiplier.compareTo(new BigDecimal(1)) > 0)
+            ord.setOverwrite_price(productPriceLevelTotal.multiply(uomMultiplier));
         // Still need to do add the appropriate tax/discount value
         ord.setProd_taxValue(new BigDecimal(taxTotal));
         if (Double.parseDouble(ord.getFinalPrice()) <= Double.parseDouble(disTotal)) {

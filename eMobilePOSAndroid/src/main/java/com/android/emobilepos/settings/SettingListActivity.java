@@ -89,22 +89,23 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
     public final static int CASE_ADMIN = 0, CASE_MANAGER = 1, CASE_GENERAL = 2;
     private static FragmentManager supportFragmentManager;
 
-    public static void loadDefaultValues(Context context) {
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_general_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_payments_processing_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_account_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_cashdrawer_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_giftcard_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_handpoint_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_kiosk_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_others_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_payments_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_printing_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_products_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_restaurant_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_shifts_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_shipping_layout, false);
-        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_support_layout, false);
+    public static void loadDefaultValues(Activity context) {
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_general_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_payments_processing_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_account_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_cashdrawer_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_giftcard_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_handpoint_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_kiosk_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_others_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_payments_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_printing_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_products_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_restaurant_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_shifts_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_shipping_layout, false);
+//        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_support_layout, false);
+        PreferenceManager.setDefaultValues(context, R.xml.settings_admin_layout, false);
     }
 
     public enum SettingSection {
