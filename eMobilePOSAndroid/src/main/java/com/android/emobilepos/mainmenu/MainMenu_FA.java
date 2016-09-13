@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -183,6 +184,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPreExecute() {
+            activity.setRequestedOrientation(Global.getScreenOrientation(activity));
             loadMultiPrinter = (Global.multiPrinterManager == null
                     || Global.multiPrinterManager.size() == 0)
                     && (Global.mainPrinterManager == null
@@ -225,6 +227,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             }
             if (myProgressDialog != null && myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
 

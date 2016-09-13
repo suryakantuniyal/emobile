@@ -1970,8 +1970,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                                 processMultiInvoicePayment();
                         }
                     }
-
-
                 } else {
                     new ProcessWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }

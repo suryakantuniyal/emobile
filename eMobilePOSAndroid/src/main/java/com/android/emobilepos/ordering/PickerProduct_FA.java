@@ -348,16 +348,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 basePrice = "0.0";
             prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
 
-            prodAttrHandler = new ProductsAttrHandler(activity);
-            attributesMap = prodAttrHandler.getAttributesMap(orderProduct.getProd_id());
-            attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
-            attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
-            int attributesSize = attributesMap.size();
-            for (int i = 0; i < attributesSize; i++) {
-                addAttributeButton(header, attributesKey[i]);
-            }
-
-
             if (myPref.isCustSelected()) {
                 PriceLevelHandler plHandler = new PriceLevelHandler();
                 List<PriceLevel> _listPriceLevel = plHandler.getFixedPriceLevel(prodID);
@@ -372,6 +362,14 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     i++;
                 }
             }
+        }
+        prodAttrHandler = new ProductsAttrHandler(activity);
+        attributesMap = prodAttrHandler.getAttributesMap(orderProduct.getProd_id());
+        attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
+        attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
+        int attributesSize = attributesMap.size();
+        for (int i = 0; i < attributesSize; i++) {
+            addAttributeButton(header, attributesKey[i]);
         }
     }
 

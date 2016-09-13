@@ -873,11 +873,14 @@ public class SalesTab_FR extends Fragment {
                     map = custHandler.getCustomerInfo(val.replace("\n", "").trim());
 
                     if (map.size() > 0) {
-                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-                        if (taxHandler.checkIfCustTaxable(map.get("cust_taxable")))
-                            myPref.setCustTaxCode(map.get("cust_salestaxcode"));
-                        else
-                            myPref.setCustTaxCode("");
+                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler();
+                        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
+                        myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
+
+//                        if (taxHandler.checkIfCustTaxable(map.get("cust_taxable")))
+//                            myPref.setCustTaxCode(map.get("cust_salestaxcode"));
+//                        else
+//                            myPref.setCustTaxCode("");
 
                         myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id
                         myPref.setCustName(map.get("cust_name"));
