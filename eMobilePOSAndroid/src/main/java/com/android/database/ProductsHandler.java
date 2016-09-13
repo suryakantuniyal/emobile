@@ -251,7 +251,7 @@ public class ProductsHandler {
             }
             if (Global.isInventoryTransfer)
                 parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(),
-                        Global.locationFrom.get(Locations_DB.loc_id)};
+                        Global.locationFrom.getLoc_id()};
             else
                 parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID()};
             query = sb.toString();
@@ -356,7 +356,7 @@ public class ProductsHandler {
 
             if (Global.isInventoryTransfer)
                 parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(),
-                        Global.locationFrom.get(Locations_DB.loc_id)};
+                        Global.locationFrom.getLoc_id()};
             else
                 parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID()};
             query = sb.toString();

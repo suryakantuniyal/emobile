@@ -534,7 +534,7 @@ public class GenerateXML {
     public void buildOrder(XmlSerializer serializer, boolean isOnHold) {
         OrdersHandler ordersHandler = new OrdersHandler(thisActivity);
         CustomersHandler custHandler = new CustomersHandler(thisActivity);
-        HashMap<String, String> custInfo = new HashMap<String, String>();
+        HashMap<String, String> custInfo;
         Cursor cursor;
         if (!isOnHold)
             cursor = ordersHandler.getUnsyncOrders();
@@ -1018,7 +1018,7 @@ public class GenerateXML {
 
                     String seatGroupId = String.valueOf(product.getSeatGroupId());// cursor.getString(cursor.getColumnIndex("seatGroupId"));
                     serializer.startTag(empstr, "seatGroupId");
-                    serializer.text(seatGroupId == null ? "" : seatGroupId);
+                    serializer.text(seatGroupId);
                     serializer.endTag(empstr, "seatGroupId");
 
 
@@ -1866,7 +1866,7 @@ public class GenerateXML {
     }
 
     private void buildInventoryTransactions(XmlSerializer serializer, String _trans_id) {
-        TransferInventory_DB handler = new TransferInventory_DB(thisActivity);
+        TransferInventory_DB handler = new TransferInventory_DB();
         Cursor c = handler.getInventoryTransactions(_trans_id);
         c.moveToFirst();
         int size = c.getCount();
@@ -2048,18 +2048,12 @@ public class GenerateXML {
 
                     expensesByShift.moveToNext();
                 }
-
-
                 serializer.endTag(empstr, "Expenses");
-
                 serializer.endTag(empstr, "shift");
-
                 c.moveToNext();
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
         }
         c.close();
     }
@@ -2067,29 +2061,22 @@ public class GenerateXML {
     public String synchWalletReceipts() {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
-
         try {
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
-
             serializer.startTag(empstr, "ASXML");
-
             buildAccountInformation(serializer);
-
             serializer.startTag(empstr, "Orders");
             builderWalletOrder(serializer);
             serializer.endTag(empstr, "Orders");
             serializer.endDocument();
-
             return writer.toString();
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private void builderWalletOrder(XmlSerializer serializer) {
-
         OrdersHandler handler = new OrdersHandler(thisActivity);
         MemoTextHandler memoHandler = new MemoTextHandler(thisActivity);
         CustomersHandler custHandler = new CustomersHandler(thisActivity);

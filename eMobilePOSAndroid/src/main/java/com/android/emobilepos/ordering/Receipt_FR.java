@@ -426,8 +426,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private void overridePrice(final int position) {
         final EditText input = new EditText(activity);
-        final HashMap<String, String> map = prodHandler
-                .getDiscountDetail(global.orderProducts.get(position).getDiscount_id());
 
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
@@ -922,8 +920,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     dbManager.synchSendOrdersOnHold(false, true);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
-                    // global.order.getSetData("ord_timecreated", false,
-                    // handler.updateFinishOnHold(Global.lastOrdID));
+
                     global.order.isVoid = "1";
                     global.order.processed = "9";
                     ordersHandler.insert(global.order);
@@ -1161,26 +1158,21 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     private void processInventoryTransfer() {
         TransferLocations_DB dbLocations = new TransferLocations_DB(activity);
-        TransferInventory_DB dbInventory = new TransferInventory_DB(activity);
+        TransferInventory_DB dbInventory = new TransferInventory_DB();
         Global.transferLocation = new TransferLocations_Holder(activity);
         GenerateNewID generateID = new GenerateNewID(activity);
-        String _temp_id = generateID.getNextID(IdType.ORDER_ID);
+        String _temp_id = generateID.getNextID(IdType.INVENTORY_TRANSFER_ID);
 
-        Global.transferLocation.set(TransferLocations_DB.trans_id, _temp_id);
-        Global.transferLocation.set(TransferLocations_DB.loc_key_from,
-                Global.locationFrom.get(Locations_DB.loc_key));
-        Global.transferLocation.set(TransferLocations_DB.loc_key_to,
-                Global.locationTo.get(Locations_DB.loc_key));
+        Global.transferLocation.setTrans_id(_temp_id);
+        Global.transferLocation.setLoc_key_from(Global.locationFrom.getLoc_key());
+        Global.transferLocation.setLoc_key_to(Global.locationTo.getLoc_key());
 
         int size = global.orderProducts.size();
         for (int i = 0; i < size; i++) {
             TransferInventory_Holder inventory = new TransferInventory_Holder();
-            inventory.set(TransferInventory_DB.prod_id,
-                    global.orderProducts.get(i).getProd_id());
-            inventory.set(TransferInventory_DB.prod_qty,
-                    global.orderProducts.get(i).getOrdprod_qty());
-            inventory.set(TransferInventory_DB.trans_id,
-                    Global.transferLocation.get(TransferLocations_DB.trans_id));
+            inventory.setProd_id(global.orderProducts.get(i).getProd_id());
+            inventory.setProd_qty(global.orderProducts.get(i).getOrdprod_qty());
+            inventory.setTrans_id(Global.transferLocation.getTrans_id());
             Global.transferInventory.add(inventory);
         }
 

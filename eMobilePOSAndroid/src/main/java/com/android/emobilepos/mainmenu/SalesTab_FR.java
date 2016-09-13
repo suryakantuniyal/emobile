@@ -666,8 +666,8 @@ public class SalesTab_FR extends Fragment {
         viewTitle.setText(R.string.dlog_title_confirm);
 
         String sb = "Locations selected for transfer:\n" +
-                "From: " + Global.locationFrom.get(Locations_DB.loc_name) + "\n" +
-                "To: " + Global.locationTo.get(Locations_DB.loc_name);
+                "From: " + Global.locationFrom.getLoc_name() + "\n" +
+                "To: " + Global.locationTo.getLoc_name();
         viewMsg.setText(sb);
         globalDlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
