@@ -927,9 +927,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 dlog.dismiss();
                 if (withPrintRequest) {
                     if (Global.loyaltyCardInfo != null && !Global.loyaltyCardInfo.getCardNumUnencrypted().isEmpty()) {
-                        processInquiry(true);
+//                        processInquiry(true);
+                        showPrintDlg(false, false, emvContainer);
                     } else if (Global.rewardCardInfo != null && !Global.rewardCardInfo.getCardNumUnencrypted().isEmpty()) {
-                        processInquiry(false);
+//                        processInquiry(false);
+                        showPrintDlg(false, false, emvContainer);
                     } else {
                         if (myPref.getPreferences(MyPreferences.pref_enable_printing)
                                 && !myPref.getPreferences(MyPreferences.pref_automatic_printing)) {
@@ -998,67 +1000,49 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         GenerateNewID generator = new GenerateNewID(this);
         String tempPay_id;
-        // if (paymentHandlerDB.getDBSize() == 0)
-        // tempPay_id = generator.generate("",1);
-        // else
-        // tempPay_id = generator.generate(paymentHandlerDB.getLastPayID(),1);
         tempPay_id = generator.getNextID(IdType.PAYMENT_ID);
-
         loyaltyRewardPayment.setPay_id(tempPay_id);
-
         loyaltyRewardPayment.setCust_id(Global.getValidString(extras.getString("cust_id")));
         loyaltyRewardPayment.setCustidkey(Global.getValidString(extras.getString("custidkey")));
         loyaltyRewardPayment.setEmp_id(myPref.getEmpID());
         loyaltyRewardPayment.setJob_id(job_id);
-
         loyaltyRewardPayment.setPay_name(cardInfoManager.getCardOwnerName());
         loyaltyRewardPayment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());
-
         loyaltyRewardPayment.setCcnum_last4(cardInfoManager.getCardLast4());
         loyaltyRewardPayment.setPay_expmonth(cardInfoManager.getCardExpMonth());
         loyaltyRewardPayment.setPay_expyear(cardInfoManager.getCardExpYear());
         loyaltyRewardPayment.setPay_seccode(cardInfoManager.getCardEncryptedSecCode());
-
         loyaltyRewardPayment.setTrack_one(cardInfoManager.getEncryptedAESTrack1());
         loyaltyRewardPayment.setTrack_two(cardInfoManager.getEncryptedAESTrack2());
-
         cardInfoManager.setRedeemAll("0");
         cardInfoManager.setRedeemType("Only");
-
         loyaltyRewardPayment.setPaymethod_id(cardType);
         loyaltyRewardPayment.setCard_type(cardType);
         loyaltyRewardPayment.setPay_type("0");
-
         if (isLoyalty) {
             loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
             boolean wasSwiped = cardInfoManager.getWasSwiped();
-
             reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeLoyaltyCardAction, wasSwiped, cardType,
                     cardInfoManager);
-
             loyaltyRewardPayment.setPay_amount(Global.loyaltyAddAmount);
             payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
             reqAddLoyalty = payGate.paymentWithAction(EMSPayGate_Default.EAction.AddValueLoyaltyCardAction, wasSwiped, cardType,
                     cardInfoManager);
             loyaltyRewardPayment.setPay_amount(Global.loyaltyCharge);
-
             new processLoyaltyAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             BigDecimal bdOrigAmount = new BigDecimal(cardInfoManager.getOriginalTotalAmount());
-
             if (Global.rewardChargeAmount.compareTo(new BigDecimal("0")) == 1)
                 loyaltyRewardPayment.setOriginalTotalAmount(Global.rewardAccumulableSubtotal.add(bdOrigAmount)
                         .toString());
             else
                 loyaltyRewardPayment.setOriginalTotalAmount(Global.rewardAccumulableSubtotal.toString());
-
             loyaltyRewardPayment.setPay_amount(Global.rewardChargeAmount.toString());
             EMSPayGate_Default payGate = new EMSPayGate_Default(this, loyaltyRewardPayment);
             boolean wasSwiped = cardInfoManager.getWasSwiped();
             reqChargeLoyaltyReward = payGate.paymentWithAction(EMSPayGate_Default.EAction.ChargeRewardAction, wasSwiped, cardType,
                     cardInfoManager);
-
             new processRewardAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
@@ -1319,7 +1303,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                 payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).contains("STADIS")) {
             Intent intent = new Intent(activity, ProcessGiftCard_FA.class);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-            intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymethod_id());
+            intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
             initIntents(extras, intent);
         } else {
             Intent intent = new Intent(this, ProcessCreditCard_FA.class);
