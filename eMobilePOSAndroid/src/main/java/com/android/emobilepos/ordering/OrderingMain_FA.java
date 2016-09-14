@@ -151,9 +151,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         HOLD, CHECKOUT, NONE, BACK_PRESSED
     }
 
-//    CustomKeyboard mCustomKeyboard;
-
-
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -345,8 +342,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                     if (!Global.isConsignment) {
                         CustomerInventoryHandler custInventoryHandler = new CustomerInventoryHandler(this);
                         custInventoryHandler.getCustomerInventory();
-                        Global.consignSummaryMap = new HashMap<String, HashMap<String, String>>();
-                        Global.consignMapKey = new ArrayList<String>();
+                        Global.consignSummaryMap = new HashMap<>();
+                        Global.consignMapKey = new ArrayList<>();
                         Global.isConsignment = true;
 
                         // consignmentType 0 = Rack, 1 = Returns, 2 = Fill-up, 3 =
@@ -431,11 +428,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             rightFragment = (Catalog_FR) fm.findFragmentById(R.id.order_catalog_frag_container);
         if (orientation != _orientation) // screen orientation occurred
         {
-            if (_orientation == Configuration.ORIENTATION_PORTRAIT) // changing
-            // from Land
-            // to
-            // Portrait
-            {
+            if (_orientation == Configuration.ORIENTATION_PORTRAIT) {
                 catalogContainer.setVisibility(View.GONE);
             } else // changing from Portrait to Landscape
             {
@@ -470,11 +463,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             else
                 showDlog(false);
         }
-
-        // NOTE Trap the back key: when the CustomKeyboard is still visible hide it, only when it is invisible, finish activity
-//        if (mCustomKeyboard.isCustomKeyboardVisible()) {
-//            mCustomKeyboard.hideCustomKeyboard();
-//        }
     }
 
     @Override
@@ -510,8 +498,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) v.getTag();
         PopupMenu popup = new PopupMenu(this, v);
         popup.getMenuInflater().inflate(R.menu.receiptlist_header_menu, popup.getMenu());
-        final HashMap<Integer, String> subMenus = new HashMap<Integer, String>();
-        final HashMap<Integer, String> subMenusJoinSeat = new HashMap<Integer, String>();
+        final HashMap<Integer, String> subMenus = new HashMap<>();
+        final HashMap<Integer, String> subMenusJoinSeat = new HashMap<>();
         Receipt_FR.receiptListView.smoothScrollToPosition(leftFragment.mainLVAdapter.orderSeatProductList.indexOf(orderSeatProduct));
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
@@ -547,12 +535,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         }
                         break;
                     default:
-                        if (subMenus.containsKey(Integer.valueOf(item.getItemId()))) {
-                            String targetSeat = subMenus.get(Integer.valueOf(item.getItemId()));
+                        if (subMenus.containsKey(item.getItemId())) {
+                            String targetSeat = subMenus.get(item.getItemId());
                             setSelectedSeatNumber(targetSeat);
                             leftFragment.mainLVAdapter.moveSeatItems(leftFragment.mainLVAdapter.getOrderProducts(orderSeatProduct.seatNumber), targetSeat);
-                        } else if (subMenusJoinSeat.containsKey(Integer.valueOf(item.getItemId()))) {
-                            String targetSeatNumber = subMenusJoinSeat.get(Integer.valueOf(item.getItemId()));
+                        } else if (subMenusJoinSeat.containsKey(item.getItemId())) {
+                            String targetSeatNumber = subMenusJoinSeat.get(item.getItemId());
                             OrderSeatProduct targetSeat = leftFragment.mainLVAdapter.getSeat(targetSeatNumber);
                             leftFragment.mainLVAdapter.joinSeatsGroupId(orderSeatProduct.getSeatGroupId(), targetSeat.getSeatGroupId());
                             leftFragment.mainLVAdapter.notifyDataSetChanged();
@@ -590,7 +578,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         } else if (resultCode == 1) {
 
             Bundle extras = data.getExtras();
@@ -608,11 +595,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             OrderTotalDetails_FR.resetView();
             global.resetOrderDetailsValues();
             global.clearListViewData();
-
-//            if (myPref.isSam4s(true, true) || myPref.isPAT100()) {
             Global.showCDTDefault(this);
-//            }
-
             reloadDefaultTransaction();
         } else if (resultCode == 9) {
 
@@ -1083,19 +1066,23 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (audioManager.isWiredHeadsetOn()) {
             String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
             if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
-                if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
-                    uniMagReader = new EMSUniMagDriver();
-                    uniMagReader.initializeReader(this);
-                } else if (_audio_reader_type.equals(Global.AUDIO_MSR_MAGTEK)) {
-                    magtekReader = new EMSMagtekAudioCardReader(this);
-                    new Thread(new Runnable() {
-                        public void run() {
-                            magtekReader.connectMagtek(true, callBackMSR);
-                        }
-                    }).start();
-                } else if (_audio_reader_type.equals(Global.AUDIO_MSR_ROVER)) {
-                    EMSRover roverReader = new EMSRover();
-                    roverReader.initializeReader(this, false);
+                switch (_audio_reader_type) {
+                    case Global.AUDIO_MSR_UNIMAG:
+                        uniMagReader = new EMSUniMagDriver();
+                        uniMagReader.initializeReader(this);
+                        break;
+                    case Global.AUDIO_MSR_MAGTEK:
+                        magtekReader = new EMSMagtekAudioCardReader(this);
+                        new Thread(new Runnable() {
+                            public void run() {
+                                magtekReader.connectMagtek(true, callBackMSR);
+                            }
+                        }).start();
+                        break;
+                    case Global.AUDIO_MSR_ROVER:
+                        EMSRover roverReader = new EMSRover();
+                        roverReader.initializeReader(this, false);
+                        break;
                 }
             }
 
@@ -1334,7 +1321,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
     private class processAsync extends AsyncTask<String, String, String> {
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private HashMap<String, String> parsedMap = new HashMap<>();
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = "Request could not be processed.";
@@ -1363,25 +1350,29 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             try {
                 String xml = httpClient.postData(13, OrderingMain_FA.this, urlToPost);
-                if (xml.equals(Global.TIME_OUT)) {
-                    errorMsg = "TIME OUT, would you like to try again?";
-                } else if (xml.equals(Global.NOT_VALID_URL)) {
-                    errorMsg = "Can not proceed...";
-                } else {
-                    InputSource inSource = new InputSource(new StringReader(xml));
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = getString(R.string.timeout_try_again);
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = getString(R.string.can_not_proceed);
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    parsedMap = handler.getData();
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
 
-                    if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                        wasProcessed = true;
-                    else if (parsedMap != null && parsedMap.size() > 0) {
-                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                    } else
-                        errorMsg = xml;
+                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            wasProcessed = true;
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
                 }
 
             } catch (Exception ignored) {
@@ -1459,29 +1450,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-//    private void voidTransaction() {
-//        if (!Global.lastOrdID.isEmpty()) {
-//            OrdersHandler dbOrders = new OrdersHandler(this);
-//            if (global.order.ord_id.isEmpty()) {
-//                global.order = Receipt_FR.buildOrder(this, global, myPref, "","");
-//                OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-//                OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
-//                dbOrders.insert(global.order);
-//                dbOrdProd.insert(global.orderProducts);
-//                dbOrdAttr.insert(global.ordProdAttr);
-//            }
-//            dbOrders.updateIsVoid(Global.lastOrdID);
-//            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(this);
-//            Order order = new Order(this);
-//            order.ord_id = Global.lastOrdID;
-//            order.ord_type = global.order.ord_type;
-//            voidHandler.insert(order);
-//
-//        }
-//    }
 
     public static void voidTransaction(Activity activity, Order order, List<OrderProduct> orderProducts, List<ProductAttribute> ordProdAttr) {
-        if (!order.ord_id.isEmpty()) {
+        if (!Global.lastOrdID.isEmpty()) {
 
             OrdersHandler dbOrders = new OrdersHandler(activity);
             if (order.ord_id.isEmpty()) {
@@ -1494,14 +1465,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 dbOrdAttr.insert(ordProdAttr);
             }
             new VoidTransactionTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, activity, order);
-//            SelectPayMethod_FA.voidTransaction(activity, order.ord_id, order.ord_type);
-
-//            dbOrders.updateIsVoid(order.ord_id);
-//            VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
-//            Order order2 = new Order(activity);
-//            order2.ord_id = order.ord_id;
-//            order2.ord_type = order.ord_type;
-//            voidHandler.insert(order2);
 
         }
     }
@@ -1541,7 +1504,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
-        int sum = new Double(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
+        int sum = Double.valueOf(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
         if (OrderingMain_FA.returnItem)
             ord.setReturned(true);
         order.setName(product.getProdName());
@@ -1560,7 +1523,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (isFromAddon) {
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
-        ord.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
+        ord.addonsProducts = new ArrayList<>(global.orderProductAddons);
         ord.setPricesXGroupid(product.getPricesXGroupid());
         ord.setProd_price(total.toString());
         ord.setAssignedSeat(selectedSeatNumber);
@@ -1618,7 +1581,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ord.setOrd_id(Global.lastOrdID);
 
         if (global.orderProducts == null) {
-            global.orderProducts = new ArrayList<OrderProduct>();
+            global.orderProducts = new ArrayList<>();
         }
 
         UUID uuid = UUID.randomUUID();
@@ -1630,9 +1593,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             Global.addonTotalAmount = 0;
 
             if (Global.addonSelectionMap == null)
-                Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
+                Global.addonSelectionMap = new HashMap<>();
             if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
+                Global.orderProductAddonsMap = new HashMap<>();
 
             if (global.addonSelectionType.size() > 0) {
                 StringBuilder sb = new StringBuilder();
@@ -1654,7 +1617,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 ord.setOrdprod_desc(sb.toString());
                 ord.setHasAddons("1");
 
-                global.orderProductAddons = new ArrayList<OrderProduct>();
+                global.orderProductAddons = new ArrayList<>();
 
             }
         }
@@ -1672,7 +1635,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         this.associateId = associateId;
     }
 
-    public static boolean isRequiredAttributeConmpleted(Global global, List<OrderProduct> products) {
+    public static boolean isRequiredAttributeConmpleted(List<OrderProduct> products) {
         for (OrderProduct product : products) {
             RealmResults<ProductAttribute> attributes = OrderProductAttributeDAO.getByProdId(product.getProd_id());
             for (ProductAttribute attribute : attributes) {
