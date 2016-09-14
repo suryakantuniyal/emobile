@@ -667,7 +667,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
 
     public void checkoutOrder() {
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global, global.orderProducts)) {
+        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global.orderProducts)) {
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes));
         } else if (receiptListView.getCount() == 0 && caseSelected != Global.TransactionType.CONSIGNMENT) {
             Toast.makeText(activity,

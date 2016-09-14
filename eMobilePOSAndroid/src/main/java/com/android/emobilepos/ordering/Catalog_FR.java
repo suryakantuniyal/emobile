@@ -299,14 +299,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 global.searchType = position;
                 //hide the keyboard
-
-//                InputMethodManager imm;
-//                imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(selectedItemView.getWindowToken(), InputMethodManager.SHOW_FORCED);
-//                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-//                searchField.clearFocus();
-                //catButLayout.requestFocus();
-
                 switch (position) {
                     case 0: //Name
                     {
@@ -335,9 +327,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         break;
                     }
                 }
-
-                //                searchField.clearFocus();
-
             }
 
             @Override
@@ -375,7 +364,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                         index -= 1;
                     Global.cat_id = categories.get(index)[1];
                     // it has sub-category
-//_typeCase = CASE_CATEGORY;
                     global.hasSubcategory = myPref.getPreferences(MyPreferences.pref_enable_multi_category) && !categories.get(index)[2].equals("0");
                     global.isSubcategory = false;
                 }
@@ -568,8 +556,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-
                 int size1 = btnListID.size();
                 int temp = btnListID.indexOf(v.getTag());
                 List<String> tempList = new ArrayList<String>(btnListID);
@@ -577,15 +563,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     removeCategoryButton(tempList.get(i));
                     btnListName.remove(btnListID.indexOf(tempList.get(i)));
                     btnListID.remove(btnListID.indexOf(tempList.get(i)));
-
                 }
-
                 int size2 = btnListID.size();
                 if (size2 < size1) {
                     Global.cat_id = btnListID.get(size2 - 1);
                     _typeCase = CASE_SUBCATEGORY;
                     loadCursor();
-
                 }
             }
         });
