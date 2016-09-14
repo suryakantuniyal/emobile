@@ -279,7 +279,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         try {
                             mDecodeManager.setSymbologyConfigs(symconfig);
                         } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -1141,7 +1140,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlogMSR.dismiss();
 
                 String temp = swiperField.getText().toString().trim();
@@ -1154,7 +1152,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlogMSR.dismiss();
                 if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && _msrUsbSams.isDeviceReading())
                     _msrUsbSams.StopReadingThread();

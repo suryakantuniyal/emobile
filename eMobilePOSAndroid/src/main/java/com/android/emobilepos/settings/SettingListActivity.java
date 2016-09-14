@@ -382,7 +382,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     break;
                 case RESTAURANT:
-                    prefManager.findPreference("pref_salesassociate_config").setOnPreferenceClickListener(this);
+                    if (prefManager.findPreference("pref_salesassociate_config") != null) {
+                        prefManager.findPreference("pref_salesassociate_config").setOnPreferenceClickListener(this);
+                    }
                     break;
                 case GIFTCARD:
                     prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
