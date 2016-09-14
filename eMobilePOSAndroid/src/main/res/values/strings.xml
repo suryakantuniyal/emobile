@@ -1211,6 +1211,8 @@
     <string name="title_setting_detail">Setting Detail</string>
     <string name="error_processing_payment">Error processing payment</string>
     <string name="header_title_settings">Settings</string>
+    <string name="timeout_try_again">TIME OUT, would you like to try again?</string>
+    <string name="can_not_proceed">Can not proceed...</string>
 
 
 </resources>

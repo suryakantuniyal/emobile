@@ -51,10 +51,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.OrderProductUtils;
 import com.android.support.TerminalDisplay;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -67,7 +64,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 import util.JsonUtils;
 
@@ -205,10 +201,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         headerProductID.setText(prodID);
         imageLoader.displayImage(imgURL, headerImage, options);
-
-//        OrdProdAttrList_DB ordProdAttrDB = new OrdProdAttrList_DB(activity);
         ordProdAttr = "";
-        global.ordProdAttrPending = new ArrayList<ProductAttribute>(OrderProductAttributeDAO.getByProdId(prodID, true));
+        global.ordProdAttrPending = new ArrayList<>(OrderProductAttributeDAO.getByProdId(prodID, true));
 
         for (ProductAttribute attribute : global.ordProdAttrPending) {
             ordProdAttr += attribute.getAttributeName() + "\n";
@@ -290,19 +284,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 activity.finish();
                 break;
             case SEC_ADDITIONAL_INFO:
-                Gson gson = new GsonBuilder()
-                        .setExclusionStrategies(new ExclusionStrategy() {
-                            @Override
-                            public boolean shouldSkipField(FieldAttributes f) {
-                                return f.getDeclaringClass().equals(RealmObject.class);
-                            }
-
-                            @Override
-                            public boolean shouldSkipClass(Class<?> clazz) {
-                                return false;
-                            }
-                        })
-                        .create();
                 Intent intent = new Intent(activity, OrderAttributes_FA.class);
                 intent.putExtra("isModify", isModify);
                 intent.putExtra("prod_id", prodID);
@@ -403,7 +384,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         ProductsHandler handler = new ProductsHandler(activity);
         List<Discount> discounts = handler.getDiscounts();
-        ArrayList<String[]> _listDiscounts = new ArrayList<String[]>();
+        ArrayList<String[]> _listDiscounts = new ArrayList<>();
         for (Discount discount : discounts) {
             String[] arr = new String[5];
             arr[0] = discount.getProductName();
@@ -415,7 +396,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
 
         List<UOM> uoms = UomDAO.getByProdId(prodID);
-        ArrayList<String[]> _listUOM = new ArrayList<String[]>();
+        ArrayList<String[]> _listUOM = new ArrayList<>();
         for (UOM uom : uoms) {
             String[] arr = new String[3];
             arr[0] = uom.getUomName();
@@ -446,7 +427,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 _uomIndex = i + 1;
             }
         }
-        List<String[]> _listPriceLevel = new ArrayList<String[]>();
+        List<String[]> _listPriceLevel = new ArrayList<>();
         for (PriceLevel priceLevel : priceLevels) {
             String[] arr = new String[3];
             arr[0] = priceLevel.getPricelevelName();
@@ -582,7 +563,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
 
-
         headerProductID.setText(prodID);
         imageLoader.displayImage(imgURL, headerImage, options);
         lv_adapter = new ListViewAdapter(activity);
@@ -602,11 +582,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         } else {
             product = orderProduct;
         }
-        List<OrderProduct> products = new ArrayList<OrderProduct>();
+        List<OrderProduct> products = new ArrayList<>();
         if (product != null) {
             products.add(product);
         }
-        if (!OrderingMain_FA.isRequiredAttributeConmpleted(global, products)) {
+        if (!OrderingMain_FA.isRequiredAttributeConmpleted(products)) {
             Global.showPrompt(activity, R.string.dlog_title_error, activity.getString(R.string.dlog_msg_required_attributes) + "\n\n" + ordProdAttr);
         } else {
             double onHandQty = 0;
@@ -625,10 +605,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             if (!list.isEmpty()) {
                 addedQty = list.get(0).getOrdprod_qty();
             }
-//            String addedQty = indexOf == -1 ? "0" : global.orderProducts.get(indexOf).getOrdprod_qty();
-//            OrderProductUtils.getOrderProductQty(global.orderProducts, prodID);
-            //global.qtyCounter.get(prodID);
-
 
             if (addedQty != null && !addedQty.isEmpty())
                 newQty = Double.parseDouble(addedQty) + selectedQty;
@@ -660,15 +636,10 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         String val = qty_picked;
         BigDecimal sum = new BigDecimal(val);
 
-//        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-//            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
-//        else
-//            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
         orderProduct.setProd_istaxable(orderedProducts.getProd_istaxable());
         BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal).multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);
 
-        BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         orderedProducts.setOrdprod_qty(val);
         orderedProducts.setOverwrite_price(null); //Global.getRoundBigDecimal(productPriceLevelTotal.multiply(uomMultiplier));
 
@@ -774,12 +745,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         View view = inflater.inflate(R.layout.dialog_listview_layout, null, false);
         dlg.setContentView(view);
         ListView dlgListView = (ListView) dlg.findViewById(R.id.dlgListView);
-        List<String[]> listData_LV = new ArrayList<String[]>();
+        List<String[]> listData_LV = new ArrayList<>();
         RealmResults<UOM> uoms;
         switch (type) {
             case SEC_UOM://UoM
             {
-                listData_LV = new ArrayList<String[]>();
+                listData_LV = new ArrayList<>();
                 uoms = UomDAO.getByProdId(prodID);
                 for (UOM uom : uoms) {
                     String[] arr = new String[3];
@@ -796,7 +767,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     PriceLevelHandler handler1 = new PriceLevelHandler();
                     List<PriceLevel> priceLevels = handler1.getFixedPriceLevel(prodID);
 
-                    listData_LV = new ArrayList<String[]>();
+                    listData_LV = new ArrayList<>();
                     for (PriceLevel priceLevel : priceLevels) {
                         String[] arr = new String[3];
                         arr[0] = priceLevel.getPricelevelName();
@@ -815,7 +786,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             {
                 ProductsHandler handler = new ProductsHandler(activity);
                 List<Discount> discounts = handler.getDiscounts();
-                listData_LV = new ArrayList<String[]>();
+                listData_LV = new ArrayList<>();
                 for (Discount discount : discounts) {
                     String[] arr = new String[5];
                     arr[0] = discount.getProductName();
@@ -903,9 +874,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                     }
                 } else if (Global.consignmentType == Global.OrderType.CONSIGNMENT_PICKUP && selectedQty > Double.parseDouble(Global.custInventoryMap.get(prodID)[2]))
                     return false;
-
             }
-
         }
         return true;
     }
@@ -914,18 +883,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         MyPreferences myPref = new MyPreferences(activity);
 
         if (myPref.getPreferences(MyPreferences.pref_group_receipt_by_sku)) {
-//            int size = global.orderProducts.size();
-//            int index = 0;
-//            boolean found = false;
             List<OrderProduct> orderProducts = OrderProductUtils.getOrderProducts(global.orderProducts, prodID);
-//            for (int i = 0; i < size; i++) {
-//                if (global.orderProducts.get(i).getProd_id().equals(prodID)) {
-//                    index = i;
-//                    found = true;
-//                    break;
-//                }
-//            }
-
             if (!orderProducts.isEmpty()) {
                 String value = orderProducts.get(0).getOrdprod_qty();//OrderProductUtils.getOrderProductQty(global.orderProducts, prodID);// global.qtyCounter.get(prodID);
                 double previousQty = 0.0;
@@ -935,11 +893,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
                     value = Global.formatNumber(true, sum);
                     orderProducts.get(0).setOrdprod_qty(value);
-//                    global.qtyCounter.put(prodID, Double.toString(sum));
                 } else {
                     value = Global.formatNumber(false, sum);
                     orderProducts.get(0).setOrdprod_qty(value);
-//                    global.qtyCounter.put(prodID, Integer.toString((int) sum));
                 }
                 updateSKUProduct(orderProduct);
             } else {
@@ -952,12 +908,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void generateNewProduct() {
         OrderProduct ord = new OrderProduct();
-
         String val = qty_picked;
         BigDecimal num = new BigDecimal(val);
-//        BigDecimal sum = num.add(new BigDecimal(OrderProductUtils.getOrderProductQty(global.orderProducts,prodID))).setScale(4, RoundingMode.HALF_EVEN);
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
-
         if (OrderingMain_FA.returnItem)
             ord.setReturned(true);
 
@@ -975,9 +928,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         if (!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             val = Integer.toString((int) Double.parseDouble(val));
-//            global.qtyCounter.put(prodID, sum.setScale(0, RoundingMode.HALF_UP).toString());
-        } else {
-//            global.qtyCounter.put(prodID, sum.setScale(2, RoundingMode.HALF_UP).toString());
         }
 
 
@@ -1046,8 +996,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
             itemTotal = itemTotal.negate();
         }
-        //double itemTotal = total - toDouble(disTotal);
-
         ord.setItemTotal(itemTotal.toString());
         ord.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
@@ -1057,7 +1005,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
         ord.setOrd_id(Global.lastOrdID);
         if (global.orderProducts == null) {
-            global.orderProducts = new ArrayList<OrderProduct>();
+            global.orderProducts = new ArrayList<>();
         }
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
@@ -1075,19 +1023,17 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             Global.addonTotalAmount = 0;
 
             if (Global.addonSelectionMap == null)
-                Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
+                Global.addonSelectionMap = new HashMap<>();
             if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
+                Global.orderProductAddonsMap = new HashMap<>();
 
             if (global.addonSelectionType.size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
                 Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
-
-
                 sb.append(ord.getOrdprod_desc());
                 int tempSize = global.orderProductAddons.size();
-                ord.addonsProducts = new ArrayList<OrderProduct>(global.orderProductAddons);
+                ord.addonsProducts = new ArrayList<>(global.orderProductAddons);
 
                 for (int i = 0; i < tempSize; i++) {
 
@@ -1101,26 +1047,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 ord.setHasAddons("1");
 
                 global.orderProductAddons = new ArrayList<>();
-
             }
         }
         global.orderProducts.add(ord);
-
-//        if (myPref.isSam4s(true, true)) {
         String row1 = ord.getOrdprod_name();
         String row2 = Global.formatDoubleStrToCurrency(ord.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-
-//        } else if (myPref.isPAT100()) {
-//            String row1 = ord.ordprod_name;
-//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-//        } else if (myPref.isESY13P1()) {
-//            String row1 = ord.ordprod_name;
-//            String row2 = Global.formatDoubleStrToCurrency(ord.overwrite_price);
-//            TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-//        }
-
         if (OrderingMain_FA.returnItem) {
             OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
             OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
@@ -1136,7 +1068,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             disTotal = Double.toString(Global.formatNumFromLocale(disAmount));
         }
 
-        BigDecimal tempSubTotal = total, tempTaxTotal = new BigDecimal("0");
+        BigDecimal tempTaxTotal = new BigDecimal("0");
 
         if (orderProduct.getProd_istaxable().equals("1")) {
             if (discountWasSelected) // discount has been selected verify if it
@@ -1144,20 +1076,20 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             {
                 if (discountIsTaxable) {
                     BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
-                    BigDecimal tax1 = tempSubTotal.subtract(new BigDecimal(disTotal)).multiply(temp).setScale(2, RoundingMode.HALF_UP);
+                    BigDecimal tax1 = total.subtract(new BigDecimal(disTotal)).multiply(temp).setScale(2, RoundingMode.HALF_UP);
                     tempTaxTotal = tax1;
                     taxTotal = tax1.toString();
 
                 } else {
                     BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
-                    BigDecimal tax1 = tempSubTotal.multiply(temp).setScale(2, RoundingMode.HALF_UP);
+                    BigDecimal tax1 = total.multiply(temp).setScale(2, RoundingMode.HALF_UP);
                     tempTaxTotal = tax1;
                     taxTotal = tax1.toString();
 
                 }
             } else {
                 BigDecimal temp = new BigDecimal(taxAmount).divide(new BigDecimal("100")).setScale(4, RoundingMode.HALF_UP);
-                BigDecimal tax1 = tempSubTotal.multiply(temp).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal tax1 = total.multiply(temp).setScale(2, RoundingMode.HALF_UP);
                 taxTotal = tax1.toString();
             }
         }
@@ -1245,8 +1177,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void updateSKUProduct(OrderProduct orderProduct) {
-//        OrderProduct orderedProducts = global.orderProducts.get(position);
-
         String newPickedOrders = orderProduct.getOrdprod_qty();
         BigDecimal sum;
         if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
@@ -1295,13 +1225,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
         }
     }
-
-//    public BigDecimal getQty(String id) {
-//        Global global = (Global) activity.getApplication();
-//        String value = global.qtyCounter.get(id);
-//        return Global.getBigDecimalNum(value);
-//    }
-
 
     //------------------------Custom adapter for Dialog and ListView------------------------
     private class DialogLVAdapter extends BaseAdapter {
@@ -1676,9 +1599,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
         public void updateVolumePrice(BigDecimal qty) {
             String[] temp;
-//            if (global.qtyCounter != null && global.qtyCounter.containsKey(prodID)) {
-//                temp = volPriceHandler.getVolumePrice(qty.toString(), prodID);
-//            } else
+
             temp = volPriceHandler.getVolumePrice(String.valueOf(qty), prodID);
 
             if (temp[1] != null && !temp[1].isEmpty()) {
