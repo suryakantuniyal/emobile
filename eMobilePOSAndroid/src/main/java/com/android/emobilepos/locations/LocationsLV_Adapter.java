@@ -63,7 +63,7 @@ public class LocationsLV_Adapter extends BaseAdapter {
 			cell = (Cell) cellView.getTag();
 		}
 
-		cell.textView.setText(location.get(Locations_DB.loc_name));
+		cell.textView.setText(location.getLoc_name());
 		return cellView;
 	}
 

@@ -15,18 +15,11 @@ import com.android.database.InvoicesHandler;
 import com.android.database.LocationsInventory_DB;
 import com.android.database.Locations_DB;
 import com.android.database.MemoTextHandler;
-import com.android.database.OrdProdAttrList_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
-import com.android.database.PayMethodsHandler;
-import com.android.database.PriceLevelHandler;
-import com.android.database.PriceLevelItemsHandler;
 import com.android.database.ProdCatXrefHandler;
-import com.android.database.ProductAddonsHandler;
-import com.android.database.ProductAliases_DB;
 import com.android.database.ProductChainXrefHandler;
 import com.android.database.ProductsAttrHandler;
-import com.android.database.ProductsHandler;
 import com.android.database.ProductsImagesHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.database.ShipMethodHandler;
@@ -35,7 +28,6 @@ import com.android.database.TaxesHandler;
 import com.android.database.TemplateHandler;
 import com.android.database.TermsAndConditionsHandler;
 import com.android.database.TermsHandler;
-import com.android.database.UOMHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -63,7 +55,6 @@ public class SAXSynchHandler extends DefaultHandler {
 	private StringBuilder data;
 
 	private int counter = 0;
-	//private SQLiteDatabase db;
 	private int synchType;
 	
 	
@@ -74,13 +65,8 @@ public class SAXSynchHandler extends DefaultHandler {
 	private EmpInvHandler empInvHandler;
 	private InvProdHandler prodInvHandler;
 	private InvoicesHandler invHandler;
-	private PayMethodsHandler payMethodsHandler;
-	private PriceLevelHandler priceLevelHandler;
-	private PriceLevelItemsHandler priceLevItemsHandler;
 	private ProdCatXrefHandler prodCatHandler;
 	private ProductChainXrefHandler prodChainHandler;
-	private ProductAddonsHandler prodAddonsHandler;
-	private ProductsHandler prodHandler;
 	private ProductsImagesHandler prodImgHandler;
 	private SalesTaxCodesHandler salesTaxCodesHandler;
 	private ShipMethodHandler shipMethodHandler;
@@ -90,7 +76,6 @@ public class SAXSynchHandler extends DefaultHandler {
 	private MemoTextHandler memoTxtHandler;
 	private DeviceDefaultValuesHandler deviceHandler;
 	private VolumePricesHandler vpHandler;
-	private UOMHandler uomHandler;
 	private TemplateHandler templatesHandler;
 	private DrawInfoHandler drawInfoHandler;
 	private CustomerInventoryHandler custInventoryHandler;
@@ -99,8 +84,6 @@ public class SAXSynchHandler extends DefaultHandler {
 	private TermsAndConditionsHandler termsAndConditionsHandler;
 	private OrdersHandler ordersHandler;
 	private OrderProductsHandler orderProdHandler;
-	private OrdProdAttrList_DB ordProdAttrList;
-	private ProductAliases_DB prodAliasesDB;
 	private Locations_DB locationsDB;
 	private LocationsInventory_DB locationsInventoryDB;
 	
@@ -118,14 +101,13 @@ public class SAXSynchHandler extends DefaultHandler {
 
 	public SAXSynchHandler(Activity activity,int syncType) {
 		this.activity = activity;
-		//this.db = db;
 		this.synchType = syncType;
-		temp_data = new HashMap<String, Integer>();
-		list_data = new ArrayList<String>();
+		temp_data = new HashMap<>();
+		list_data = new ArrayList<>();
 		data = new StringBuilder();
 		
-		dictionaryListMap = new ArrayList<HashMap<String,Integer>>();
-		dataList = new ArrayList<String[]>();
+		dictionaryListMap = new ArrayList<>();
+		dataList = new ArrayList<>();
 		
 		
 		switchCase(false);
@@ -133,7 +115,7 @@ public class SAXSynchHandler extends DefaultHandler {
 
 	@Override
 	public void startDocument() throws SAXException {
-		list_data = new ArrayList<String>();
+		list_data = new ArrayList<>();
 
 	}
 	
@@ -152,7 +134,7 @@ public class SAXSynchHandler extends DefaultHandler {
 			switch (test) {
 			case Table: {
 				isTable = true;
-				temp_data = new HashMap<String, Integer>();
+				temp_data = new HashMap<>();
 				break;
 			}
 			}
@@ -188,7 +170,7 @@ public class SAXSynchHandler extends DefaultHandler {
 					outterCounter = 0;
 				}
 				
-				list_data = new ArrayList<String>();
+				list_data = new ArrayList<>();
 				
 				
 				break;
@@ -214,7 +196,6 @@ public class SAXSynchHandler extends DefaultHandler {
 	@Override
 	public void characters(char[] ch, int start, int length) {
 		String tag = new String(ch, start, length);
-		//tag = tag.trim();
 		if (isTable && isAttribute) {
 			data.append(tag);
 		}
@@ -278,42 +259,6 @@ public class SAXSynchHandler extends DefaultHandler {
 				invHandler.emptyTable();
 			}
 			break;
-//		case Global.S_PAY_METHODS:
-//			if(isInsert)
-//				payMethodsHandler.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				payMethodsHandler = new PayMethodsHandler(activity);
-//				payMethodsHandler.emptyTable();
-//			}
-//			break;
-//		case Global.S_PRICE_LEVEL:
-//			if(isInsert)
-//				priceLevelHandler.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				priceLevelHandler = new PriceLevelHandler();
-//				priceLevelHandler.emptyTable();
-//			}
-//			break;
-//		case Global.S_ITEM_PRICE_LEVEL:
-//			if(isInsert)
-//				priceLevItemsHandler.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				priceLevItemsHandler = new PriceLevelItemsHandler(activity);
-//				priceLevItemsHandler.emptyTable();
-//			}
-//			break;
-//		case Global.S_PRINTERS:
-//			if(isInsert)
-//				printerHandler.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				printerHandler = new PrintersHandler(activity);
-//				printerHandler.emptyTable();
-//			}
-//			break;
 		case Global.S_PRODCATXREF:
 			if(isInsert)
 				prodCatHandler.insert(dataList,dictionaryListMap);
@@ -332,33 +277,6 @@ public class SAXSynchHandler extends DefaultHandler {
 				prodChainHandler.emptyTable();
 			}
 			break;
-//		case Global.S_PROD_ADDONS:
-//			if(isInsert)
-//				prodAddonsHandler.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				prodAddonsHandler = new ProductAddonsHandler(activity);
-//				prodAddonsHandler.emptyTable();
-//			}
-//			break;
-//		case Global.S_PRODUCTS:
-//			if(isInsert)
-//				prodHandler.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				prodHandler = new ProductsHandler(activity);
-//				prodHandler.emptyTable();
-//			}
-//			break;
-//		case Global.S_PRODUCT_ALIASES:
-//			if(isInsert)
-//				prodAliasesDB.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				prodAliasesDB = new ProductAliases_DB(activity);
-//				prodAliasesDB.emptyTable();
-//			}
-//			break;
 		case Global.S_PROD_IMG:
 			if(isInsert)
 				prodImgHandler.insert(dataList,dictionaryListMap);
@@ -373,7 +291,7 @@ public class SAXSynchHandler extends DefaultHandler {
 				salesTaxCodesHandler.insert(dataList,dictionaryListMap);
 			else
 			{
-				salesTaxCodesHandler = new SalesTaxCodesHandler(activity);
+				salesTaxCodesHandler = new SalesTaxCodesHandler();
 				salesTaxCodesHandler.emptyTable();
 			}
 			break;
@@ -433,15 +351,7 @@ public class SAXSynchHandler extends DefaultHandler {
 				vpHandler.emptyTable();
 			}
 			break;
-//		case Global.S_UOM:
-//			if(isInsert)
-//				uomHandler.insert(dataList,dictionaryListMap);
-//			else
-//			{
-//				uomHandler = new UOMHandler(activity);
-//				uomHandler.emptyTable();
-//			}
-//			break;
+
 		case Global.S_TEMPLATES:
 			if(isInsert)
 				templatesHandler.insert(dataList,dictionaryListMap);
@@ -532,21 +442,13 @@ public class SAXSynchHandler extends DefaultHandler {
 			else
 				orderProdHandler = new OrderProductsHandler(activity);
 			break;
-//		case Global.S_GET_ORDER_PRODUCTS_ATTR:
-//			if(isInsert)
-//				ordProdAttrList.insert(dataList, dictionaryListMap);
-//			else
-//			{
-//				ordProdAttrList = new OrdProdAttrList_DB(activity);
-//				ordProdAttrList.emptyTable();
-//			}
-//			break;
+
 		case Global.S_LOCATIONS:
 			if(isInsert)
 				locationsDB.insert(dataList, dictionaryListMap);
 			else
 			{
-				locationsDB = new Locations_DB(activity);
+				locationsDB = new Locations_DB();
 				locationsDB.emptyTable();
 			}
 			break;
@@ -559,30 +461,6 @@ public class SAXSynchHandler extends DefaultHandler {
 				locationsInventoryDB.emptyTable();
 			}
 			break;
-		/*case Global.S_EMPLOYEE_DATA:
-			if(isInsert)
-			else
-			{
-				
-			}
-			break;
-			
-		case Global.S_ACCT_LOGO:
-			if(isInsert)
-			else
-			{
-				
-			}
-			break;
-
-		case Global.S_LAST_PAY_ID:
-			if(isInsert)
-			else
-			{
-				
-			}
-			break;
-			*/
 		}
 	}
 }

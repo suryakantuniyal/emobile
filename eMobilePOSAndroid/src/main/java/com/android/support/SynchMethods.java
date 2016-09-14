@@ -1307,7 +1307,7 @@ public class SynchMethods {
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevelItems"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<ItemPriceLevel> itemPriceLevels = new ArrayList<ItemPriceLevel>();
+            List<ItemPriceLevel> itemPriceLevels = new ArrayList<>();
             PriceLevelItemsHandler levelItemsHandler = new PriceLevelItemsHandler(activity);
             levelItemsHandler.emptyTable();
             reader.beginArray();
@@ -1372,7 +1372,7 @@ public class SynchMethods {
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Product_addons"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<ProductAddons> addonses = new ArrayList<ProductAddons>();
+            List<ProductAddons> addonses = new ArrayList<>();
             ProductAddonsHandler addonsHandler = new ProductAddonsHandler(activity);
             addonsHandler.emptyTable();
             reader.beginArray();
@@ -1404,7 +1404,7 @@ public class SynchMethods {
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Products"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<Product> products = new ArrayList<Product>();
+            List<Product> products = new ArrayList<>();
             productsHandler.emptyTable();
             reader.beginArray();
             int i = 0;
@@ -1439,7 +1439,7 @@ public class SynchMethods {
                     xml.downloadAll("ProductAliases"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             Log.d("GSon Start Reading", new Date().toString());
-            List<ProductAlias> productAliases = new ArrayList<ProductAlias>();
+            List<ProductAlias> productAliases = new ArrayList<>();
             productAliasesDB.emptyTable();
             reader.beginArray();
             int i = 0;
