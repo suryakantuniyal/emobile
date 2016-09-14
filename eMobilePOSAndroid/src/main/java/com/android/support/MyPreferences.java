@@ -8,6 +8,8 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
+import com.android.database.SalesTaxCodesHandler;
+
 import java.security.AccessControlException;
 import java.security.Guard;
 import java.security.GuardedObject;
@@ -570,8 +572,25 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
+    public void setCustTaxCode(SalesTaxCodesHandler.TaxableCode taxableCode, String custTaxCode) {
+        switch (taxableCode) {
+            case TAXABLE:
+                prefEditor.putString("cust_salestaxcode", custTaxCode);
+                prefEditor.commit();
+                break;
+            case NON_TAXABLE:
+                prefEditor.putString("cust_salestaxcode", "");
+                prefEditor.commit();
+                break;
+            case NONE:
+                prefEditor.putString("cust_salestaxcode", null);
+                prefEditor.commit();
+                break;
+        }
+    }
+
     public String getCustTaxCode() {
-        return prefs.getString("cust_salestaxcode", "");
+        return prefs.getString("cust_salestaxcode", null);
     }
 
     public void setCustEmail(String value) {

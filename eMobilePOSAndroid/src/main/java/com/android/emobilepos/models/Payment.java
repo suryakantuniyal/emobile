@@ -30,6 +30,7 @@ public class Payment extends RealmObject {
     private String emp_id = "";
     private String inv_id = "";
     private String paymethod_id = "";
+    @Ignore
     private PaymentMethod paymentMethod;
     private String pay_check = "";
     private String pay_receipt = "";

@@ -51,6 +51,7 @@ import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.emobilepos.payment.TipAdjustmentFA;
+import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -78,7 +79,7 @@ public class SalesTab_FR extends Fragment {
         activity = getActivity();
         myPref = new MyPreferences(activity);
         myPref.setLogIn(true);
-        PreferenceManager.setDefaultValues(activity, R.xml.settings_admin_general_layout, false);
+        SettingListActivity.loadDefaultValues(activity);
         myListview = (GridView) view.findViewById(R.id.salesGridLayout);
 
         thisContext = getActivity();
@@ -665,8 +666,8 @@ public class SalesTab_FR extends Fragment {
         viewTitle.setText(R.string.dlog_title_confirm);
 
         String sb = "Locations selected for transfer:\n" +
-                "From: " + Global.locationFrom.get(Locations_DB.loc_name) + "\n" +
-                "To: " + Global.locationTo.get(Locations_DB.loc_name);
+                "From: " + Global.locationFrom.getLoc_name() + "\n" +
+                "To: " + Global.locationTo.getLoc_name();
         viewMsg.setText(sb);
         globalDlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
 
@@ -872,11 +873,14 @@ public class SalesTab_FR extends Fragment {
                     map = custHandler.getCustomerInfo(val.replace("\n", "").trim());
 
                     if (map.size() > 0) {
-                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
-                        if (taxHandler.checkIfCustTaxable(map.get("cust_taxable")))
-                            myPref.setCustTaxCode(map.get("cust_salestaxcode"));
-                        else
-                            myPref.setCustTaxCode("");
+                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler();
+                        SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
+                        myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
+
+//                        if (taxHandler.checkIfCustTaxable(map.get("cust_taxable")))
+//                            myPref.setCustTaxCode(map.get("cust_salestaxcode"));
+//                        else
+//                            myPref.setCustTaxCode("");
 
                         myPref.setCustID(map.get("cust_id"));    //getting cust_id as _id
                         myPref.setCustName(map.get("cust_name"));

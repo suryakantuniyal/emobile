@@ -6,6 +6,7 @@ import com.android.dao.StoredPaymentsDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
+import com.android.database.TransferLocations_DB;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,10 +17,9 @@ public class GenerateNewID {
     private Activity activity;
 
     public enum IdType {
-        ORDER_ID, PAYMENT_ID, CONSIGNMENT_ID
+        ORDER_ID, PAYMENT_ID, CONSIGNMENT_ID, INVENTORY_TRANSFER_ID
     }
 
-    // public static final int ORDER_ID = 0, PAYMENT_ID = 1;
     private static String delims = "[\\-]";
 
     public GenerateNewID(Activity activity) {
@@ -54,6 +54,9 @@ public class GenerateNewID {
                 break;
             case CONSIGNMENT_ID:
                 lastID = ConsignmentTransactionHandler.getInstance(activity).getLastConsignmentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                break;
+            case INVENTORY_TRANSFER_ID:
+                lastID = TransferLocations_DB.getLastTransferID(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
                 break;
         }
 
