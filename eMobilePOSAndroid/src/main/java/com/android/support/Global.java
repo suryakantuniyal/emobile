@@ -824,7 +824,7 @@ public class Global extends MultiDexApplication {
         TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(title);
-        viewMsg.setText(Html.fromHtml(msg));
+        viewMsg.setText(Html.fromHtml(msg == null ? "" : msg));
         Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {

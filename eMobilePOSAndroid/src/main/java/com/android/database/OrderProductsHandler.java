@@ -490,21 +490,21 @@ public class OrderProductsHandler {
         if (cursor.moveToFirst()) {
             do {
                 order = new OrderProduct();
-                order.setOrdprod_id( cursor.getString(cursor.getColumnIndex(ordprod_id)));
-                order.setOrdprod_name( cursor.getString(cursor.getColumnIndex(ordprod_name)));
-                order.setOrdprod_desc( cursor.getString(cursor.getColumnIndex(ordprod_desc)));
+                order.setOrdprod_id(cursor.getString(cursor.getColumnIndex(ordprod_id)));
+                order.setOrdprod_name(cursor.getString(cursor.getColumnIndex(ordprod_name)));
+                order.setOrdprod_desc(cursor.getString(cursor.getColumnIndex(ordprod_desc)));
                 if (!TextUtils.isEmpty(cursor.getString(cursor.getColumnIndex(overwrite_price)))) {
                     order.setOverwrite_price(new BigDecimal(format(cursor.getString(cursor.getColumnIndex(overwrite_price)))));
                 }
-                order.setItemTotal( (format(cursor.getString(cursor.getColumnIndex("total")))));
-                order.setOrdprod_qty( (cursor.getString(cursor.getColumnIndex(ordprod_qty))));
-                order.setAddon( (cursor.getString(cursor.getColumnIndex(addon))));
-                order.setIsAdded( (cursor.getString(cursor.getColumnIndex(isAdded))));
+                order.setItemTotal((format(cursor.getString(cursor.getColumnIndex("total")))));
+                order.setOrdprod_qty((cursor.getString(cursor.getColumnIndex(ordprod_qty))));
+                order.setAddon((cursor.getString(cursor.getColumnIndex(addon))));
+                order.setIsAdded((cursor.getString(cursor.getColumnIndex(isAdded))));
                 order.hasAddons = (cursor.getString(cursor.getColumnIndex(hasAddons)));
-                order.setDiscount_id( (cursor.getString(cursor.getColumnIndex(discount_id))));
-                order.setDiscount_value( (cursor.getString(cursor.getColumnIndex(discount_value))));
-                order.setProd_price_points( (cursor.getString(cursor.getColumnIndex(prodPricePoints))));
-                order.setUom_conversion( (cursor.getString(cursor.getColumnIndex(uom_conversion))));
+                order.setDiscount_id((cursor.getString(cursor.getColumnIndex(discount_id))));
+                order.setDiscount_value((cursor.getString(cursor.getColumnIndex(discount_value))));
+                order.setProd_price_points((cursor.getString(cursor.getColumnIndex(prodPricePoints))));
+                order.setUom_conversion((cursor.getString(cursor.getColumnIndex(uom_conversion))));
                 list.add(order);
             } while (cursor.moveToNext());
         }

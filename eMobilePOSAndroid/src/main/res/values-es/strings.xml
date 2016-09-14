@@ -1233,6 +1233,7 @@
     <string name="payment_void_title">Payment Void</string>
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
+    <string name="sales_associates">Sales Associates</string>
     <string name="config_handpoint_utils">Handopint Tools</string>
     <string name="connecting_device">Connecting Device...</string>
     <string name="wrong_password">Password not acceptable, try again...</string>
@@ -1271,6 +1272,7 @@
     <string name="eod_report_consignment_pickup">Consignment Pickup</string>
     <string name="eod_report_consignment_invoice">Consignment Invoice</string>
     <string name="eod_report_consignment_return">Consignment Return</string>
+    <string name="dinningtablenotassigned">The selected dinning table needs to be assigned.</string>
     <string name="receipt_itemsQtyTotal">Total Items:</string>
     <string name="void_label">VOID</string>
     <string name="config_payments_settings">Payment Settings</string>

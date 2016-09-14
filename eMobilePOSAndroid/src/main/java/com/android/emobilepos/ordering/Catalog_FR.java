@@ -595,11 +595,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         String val = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
 
 //        if (val.equals("prod_desc"))
-        product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
+            product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
 //        else if (val.equals("prod_name"))
-        product.setProdName(c.getString(c.getColumnIndex("prod_name")));
+            product.setProdName(c.getString(c.getColumnIndex("prod_name")));
 //        else
-        product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
+            product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
 
         product.setPricesXGroupid(c.getString(c.getColumnIndex(ProductsHandler.prod_prices_group_id)));
 

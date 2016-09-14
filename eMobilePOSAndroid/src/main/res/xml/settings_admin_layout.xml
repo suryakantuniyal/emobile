@@ -46,6 +46,10 @@
             android:key="pref_ask_seats"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_ask_numbers_seats" />
+        <Preference
+            android:key="pref_salesassociate_config"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_salesassociate_config" />
 
     </PreferenceCategory>
 

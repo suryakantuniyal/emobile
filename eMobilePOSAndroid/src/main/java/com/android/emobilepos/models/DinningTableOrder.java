@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -27,6 +28,7 @@ public class DinningTableOrder extends RealmObject {
     @PrimaryKey
     private String currentOrderId;
     private int numberOfGuest;
+    private RealmList<SalesAssociate> salesAssociates;
 
     public DinningTable getDinningTable() {
         return dinningTable;
@@ -72,4 +74,11 @@ public class DinningTableOrder extends RealmObject {
         return ordersHandler.getOrder(getCurrentOrderId());
     }
 
+    public RealmList<SalesAssociate> getSalesAssociates() {
+        return salesAssociates;
+    }
+
+    public void setSalesAssociates(RealmList<SalesAssociate> salesAssociates) {
+        this.salesAssociates = salesAssociates;
+    }
 }

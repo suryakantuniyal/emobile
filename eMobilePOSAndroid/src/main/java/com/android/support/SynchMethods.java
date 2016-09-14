@@ -19,7 +19,7 @@ import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.dao.OrderProductAttributeDAO;
-import com.android.dao.SalesAssociateTableDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.dao.UomDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -45,6 +45,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
@@ -1146,13 +1147,36 @@ public class SynchMethods {
     }
 
     private void synchOrdersOnHoldList(synchDownloadOnHoldProducts task) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_ordersonhold));
-        post.postData(7, activity, "GetOrdersOnHoldList");
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ORDERS_ON_HOLD_LIST);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_ordersonhold));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        try {
+            task.updateProgress(getString(R.string.sync_dload_ordersonhold));
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.downloadAll("GetOrdersOnHoldList"));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<Order> orders = new ArrayList<>();
+            OrdersHandler ordersHandler = new OrdersHandler(activity);
+            ordersHandler.emptyTable();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                Order order = gson.fromJson(reader, Order.class);
+                order.ord_issync = "1";
+                order.isOnHold = "1";
+                orders.add(order);
+                i++;
+                if (i == 1000) {
+                    ordersHandler.insert(orders);
+                    orders.clear();
+                    i = 0;
+                }
+            }
+            ordersHandler.insert(orders);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchOrdersOnHoldDetails(synchDownloadOnHoldDetails task, String ordID) throws SAXException, IOException {
@@ -1709,8 +1733,8 @@ public class SynchMethods {
                     xml.getSalesAssociate());
             task.updateProgress(getString(R.string.sync_saving_salesassociate));
             try {
-                SalesAssociateTableDAO.truncate();
-                SalesAssociateTableDAO.insert(jsonRequest);
+                SalesAssociateDAO.truncate();
+                SalesAssociateDAO.insert(jsonRequest);
             } catch (Exception e) {
                 e.printStackTrace();
             }

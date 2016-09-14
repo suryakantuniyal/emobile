@@ -382,6 +382,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     break;
                 case RESTAURANT:
+                    prefManager.findPreference("pref_salesassociate_config").setOnPreferenceClickListener(this);
                     break;
                 case GIFTCARD:
                     prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
@@ -461,7 +462,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
                     break;
                 case OTHERS:
-                    if(settingsType==CASE_GENERAL) {
+                    if (settingsType == CASE_GENERAL) {
                         prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
                     }
@@ -686,6 +687,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
                         Global.btSwiper.currentDevice.updateFirmware();
                     }
+                    break;
+                case R.string.config_salesassociate_config:
+                    intent = new Intent(getActivity(), SalesAssociateConfiguration.class);
+                    startActivity(intent);
                     break;
             }
             return false;

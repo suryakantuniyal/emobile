@@ -152,7 +152,8 @@ public class ProductsHandler {
         if (Global.cat_id.equals("0")) {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',p.prod_prices_group_id as 'prod_prices_group_id'," +
+                    "SELECT  p.prod_id as '_id',  p.prod_prices_group_id as 'prod_prices_group_id'," +
+                            " p.prod_price as 'master_price'," +
                             "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' " +

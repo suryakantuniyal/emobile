@@ -26,7 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
-import com.android.dao.SalesAssociateTableDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
@@ -533,7 +533,7 @@ public class SalesTab_FR extends Fragment {
         popDlog.setCanceledOnTouchOutside(false);
         popDlog.setContentView(R.layout.dlog_field_single_layout);
         final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_NUMBER);
         TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_waiter_signin);
@@ -552,7 +552,7 @@ public class SalesTab_FR extends Fragment {
                 popDlog.dismiss();
                 MyPreferences myPref = new MyPreferences(activity);
                 String enteredPass = viewField.getText().toString().trim();
-                SalesAssociate salesAssociates = SalesAssociateTableDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                SalesAssociate salesAssociates = SalesAssociateDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
                 if (salesAssociates != null) {
                     validPassword = true;
                     associateId = enteredPass;
@@ -607,6 +607,7 @@ public class SalesTab_FR extends Fragment {
 
     public void selectDinnerTable() {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
+        intent.putExtra("associateId",associateId);
         startActivityForResult(intent, 0);
 
     }

@@ -26,12 +26,15 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
      */
     private ViewPager mViewPager;
     private PageIndicator titlePageIndicator;
+    public String associateId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        associateId = extras.getString("associateId");
         setContentView(R.layout.activity_dinning_tables);
-        refresh();
+        refresh(0);
 //        setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
 //        mViewPager = (ViewPager) findViewById(R.id.container);
 //        titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
@@ -40,12 +43,13 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     }
 
-    public void refresh(){
+    public void refresh(int page){
         setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
         mViewPager = (ViewPager) findViewById(R.id.container);
         titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mViewPager.setAdapter(getmSectionsPagerAdapter());
         titlePageIndicator.setViewPager(mViewPager);
+        mViewPager.setCurrentItem(page);
     }
 
     @Override

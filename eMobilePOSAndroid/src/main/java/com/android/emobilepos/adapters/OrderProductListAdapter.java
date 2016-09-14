@@ -368,7 +368,7 @@ public class OrderProductListAdapter extends BaseAdapter {
         } else if (attDisplay.equalsIgnoreCase("prod_name")) {
             holder.itemName.setText(product.getOrdprod_name());
         } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
-            holder.itemName.setText(product.prod_extradesc);
+            holder.itemName.setText(product.getProd_extradesc());
         }
         String temp = Global.formatNumToLocale(Double.parseDouble(product.getFinalPrice()));
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));

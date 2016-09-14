@@ -16,6 +16,24 @@
         android:textAppearance="@style/white_text_appearance"
         android:textSize="@dimen/header_bar_text_size" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jon Doe"
+            android:id="@+id/salesAssociateNametextView16"
+            android:textSize="@dimen/text_default"
+            android:textAppearance="@style/black_text_appearance" />
+
+    </LinearLayout>
+
     <GridView
         android:id="@+id/tablesGridLayout"
         android:layout_width="match_parent"

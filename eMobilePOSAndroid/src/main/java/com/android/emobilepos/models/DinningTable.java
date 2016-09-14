@@ -3,6 +3,8 @@ package com.android.emobilepos.models;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import util.JsonUtils;
@@ -11,7 +13,6 @@ import util.JsonUtils;
  * Created by Guarionex on 1/19/2016.
  */
 public class DinningTable extends RealmObject {
-    private static final Gson GSON = JsonUtils.getInstance();
 
     @SerializedName("mesa_id")
     @PrimaryKey
@@ -30,7 +31,7 @@ public class DinningTable extends RealmObject {
     private boolean isReaonly;
     @SerializedName("_update")
     private String lastUpdateDate;
-
+    private Date reservationDate;
 
     @SerializedName("type")
     private String style;
@@ -151,5 +152,21 @@ public class DinningTable extends RealmObject {
 
     public void setPosition(Position position) {
         this.position = position;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DinningTable) {
+            return ((DinningTable) o).getNumber().equalsIgnoreCase(getNumber());
+        }
+        return super.equals(o);
+    }
+
+    public Date getReservationDate() {
+        return reservationDate;
+    }
+
+    public void setReservationDate(Date reservationDate) {
+        this.reservationDate = reservationDate;
     }
 }

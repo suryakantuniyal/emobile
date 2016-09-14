@@ -492,6 +492,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.android.emobilepos.settings.SettingListActivity" />
         </activity>
+        <!--<activity-->
+            <!--android:name=".settings.SalesAssociateDinningTables"-->
+            <!--android:label="@string/title_activity_sales_associate_dinning_tables" />-->
+        <activity
+            android:name=".settings.SalesAssociateConfiguration"
+            android:label="@string/title_activity_sales_associate_configuration"></activity>
     </application>
 
 </manifest>

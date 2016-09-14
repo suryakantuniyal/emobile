@@ -66,6 +66,7 @@ public class Order implements Cloneable {
     public String assignedTable;
     public String associateID;
     public int numberOfSeats;
+    public String ord_timeStarted;
 
     public Order() {
         ord_issync = "0";
