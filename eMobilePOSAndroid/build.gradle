@@ -17,7 +17,7 @@ android {
     dexOptions {
         preDexLibraries = false
         incremental true
-        javaMaxHeapSize "2g"
+        javaMaxHeapSize "4g"
     }
     packagingOptions {
         exclude "lib/arm64-v8a/librealm-jni.so"
@@ -28,6 +28,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 15
         multiDexEnabled = true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
 //    splits {
@@ -49,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.47"
+            versionName "1.2.0.49"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -59,12 +60,11 @@ android {
                     dirs 'libs'
                 }
             }
-
         }
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.47"
+            versionName "1.2.0.49"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -78,7 +78,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.47"
+            versionName "1.2.0.49"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -88,12 +88,11 @@ android {
                     dirs 'libs'
                 }
             }
-
         }
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.47"
+            versionName "1.2.0.49"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -103,12 +102,11 @@ android {
                     dirs 'libs'
                 }
             }
-
         }
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.58"
+            versionName "1.1.1.59"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -118,12 +116,11 @@ android {
                     dirs 'libs'
                 }
             }
-
         }
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.58"
+            versionName "1.1.1.59"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -133,7 +130,6 @@ android {
                     dirs 'libs'
                 }
             }
-
         }
     }
     buildTypes {
@@ -141,14 +137,15 @@ android {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "false"
             buildConfigField "boolean", "PRINT_TO_LOG", "true"
             minifyEnabled false
+            multiDexEnabled true
         }
 
         release {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            signingConfig signingConfigs.config
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+//            signingConfig signingConfigs.config
         }
     }
 
@@ -229,6 +226,8 @@ android {
         compile files('libs/pat215msr1.0.0.jar')
         compile 'com.google.firebase:firebase-core:9.2.1'
         compile 'com.google.android.gms:play-services:9.2.1'
+        compile 'com.android.support.test:testing-support-lib:0.1'
+        compile 'com.android.support.test.uiautomator:uiautomator-v18:2.0.0'
     }
 }
 
