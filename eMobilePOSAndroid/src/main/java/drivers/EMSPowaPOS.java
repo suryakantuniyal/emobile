@@ -158,8 +158,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         @Override
         public void onScanFinishedDecoding(byte[] data) {
             try {
-                scannedData = new String(data, "UTF-8");
-                handler.post(runnableScannedData);
+                if (handler != null) {
+                    scannedData = new String(data, "UTF-8");
+                    handler.post(runnableScannedData);
+                }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -423,7 +425,6 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             List<PowaDeviceObject> availScanners = powaPOS.getAvailableScanners();
             if (availScanners.size() > 0) {
                 powaPOS.getScanner().selectScanner(availScanners.get(0));
-                // powaPOS.selectScanner(availScanners.get(0));
             }
         }
     }
