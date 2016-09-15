@@ -46,6 +46,8 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
@@ -1180,13 +1182,33 @@ public class SynchMethods {
     }
 
     private void synchOrdersOnHoldDetails(synchDownloadOnHoldDetails task, String ordID) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_ordersonhold));
-        post.postData(Global.S_ORDERS_ON_HOLD_DETAILS, activity, ordID);
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ORDERS_ON_HOLD_DETAILS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_ordersonhold));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+        try {
+            task.updateProgress(getString(R.string.sync_dload_ordersonhold));
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<OrderProduct> orderProducts = new ArrayList<>();
+            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                OrderProduct product = gson.fromJson(reader, OrderProduct.class);
+                orderProducts.add(product);
+                i++;
+                if (i == 1000) {
+                    orderProductsHandler.insert(orderProducts);
+                    orderProducts.clear();
+                    i = 0;
+                }
+            }
+            orderProductsHandler.insert(orderProducts);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

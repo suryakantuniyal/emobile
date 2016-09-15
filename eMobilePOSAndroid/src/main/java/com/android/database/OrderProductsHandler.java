@@ -607,12 +607,16 @@ public class OrderProductsHandler {
     }
 
     public Cursor getOrderProductsOnHold(String ordID) {
-        // SQLiteDatabase db = dbManager.openReadableDB();
-
-        Cursor c = DBManager._db.rawQuery("SELECT " + sb3.toString() + ",CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable',p.prod_taxtype FROM " + table_name + " op LEFT OUTER JOIN Products p ON op.prod_id = p.prod_id LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE op.ord_id = '" + ordID + "' " + "ORDER BY prod_seq ASC", null);
-
+        Cursor c = DBManager._db.rawQuery("SELECT " + sb3.toString() + "," +
+                "CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  " +
+                "END AS 'prod_istaxable'," +
+                "p.prod_taxtype " +
+                "FROM " + table_name + " op " +
+                "LEFT OUTER JOIN Products p ON op.prod_id = p.prod_id " +
+                "LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                "WHERE op.ord_id = '" + ordID + "' " +
+                "ORDER BY prod_seq ASC", null);
         c.moveToFirst();
-        // db.close();
         return c;
 
     }

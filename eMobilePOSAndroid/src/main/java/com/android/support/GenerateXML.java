@@ -1006,8 +1006,8 @@ public class GenerateXML {
         for (int i = 0; i < size; i++) {
             try {
                 OrderProduct product = OrderProductsHandler.getOrderProduct(cursor);
-                if (!isRestMode || (isRestMode && ((cursor.getString(cursor.getColumnIndex("addon")).equals("0"))
-                        || (cursor.getString(cursor.getColumnIndex("addon")).equals("1") && isOnHold)))) {
+                if (!isRestMode || (isRestMode && ((!product.isAddon())
+                        || (product.isAddon() && isOnHold)))) {
                     serializer.startTag(empstr, "OrderProduct");
 
                     String assignedSeat = product.getAssignedSeat();//cursor.getString(cursor.getColumnIndex("assignedSeat"));
