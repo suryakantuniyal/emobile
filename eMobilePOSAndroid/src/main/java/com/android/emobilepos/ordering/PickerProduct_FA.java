@@ -986,9 +986,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             orderProduct.setDiscount_is_fixed("1");
         else
             orderProduct.setDiscount_is_fixed("0");
-        BigDecimal itemTotal = total.abs().subtract(Global.getBigDecimalNum(disTotal).abs());
+        BigDecimal itemTotal;
         if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
+            itemTotal = total.abs().subtract(Global.getBigDecimalNum(disTotal).abs());
             itemTotal = itemTotal.negate();
+        }else{
+            itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
         }
         orderProduct.setItemTotal(itemTotal.toString());
         orderProduct.setItemSubtotal(total.toString());
