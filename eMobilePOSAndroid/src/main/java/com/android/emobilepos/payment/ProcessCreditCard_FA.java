@@ -1124,8 +1124,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             Long.parseLong(number);
         } catch (NumberFormatException e) {
             try {
-                Long.parseLong(number.substring(0, 4));
-                isMasked = true;
+                if (TextUtils.isEmpty(number)) {
+                    return "";
+                } else {
+                    Long.parseLong(number.substring(0, 4));
+                    isMasked = true;
+                }
             } catch (NumberFormatException ex) {
                 return "";
             }
