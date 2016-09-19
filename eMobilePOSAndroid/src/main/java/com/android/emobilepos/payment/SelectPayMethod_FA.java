@@ -1306,15 +1306,20 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
             initIntents(extras, intent);
         } else {
-            Intent intent = new Intent(this, ProcessCreditCard_FA.class);
-            intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
-            intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
-            intent.putExtra("requireTransID", payTypeList.get(position).getOriginalTransid().equalsIgnoreCase("1"));
-            if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))
-                intent.putExtra("isDebit", true);
-            else
-                intent.putExtra("isDebit", false);
-            initIntents(extras, intent);
+            boolean isDebit = payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT");
+            if (myPref.isPrefUseStoreForward() && isDebit){
+                Global.showPrompt(activity, R.string.invalid_payment_type, getString(R.string.invalid_storeforward_payment_type));
+            }else {
+                Intent intent = new Intent(this, ProcessCreditCard_FA.class);
+                intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
+                intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());
+                intent.putExtra("requireTransID", payTypeList.get(position).getOriginalTransid().equalsIgnoreCase("1"));
+                if (payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT"))
+                    intent.putExtra("isDebit", true);
+                else
+                    intent.putExtra("isDebit", false);
+                initIntents(extras, intent);
+            }
         }
     }
 }

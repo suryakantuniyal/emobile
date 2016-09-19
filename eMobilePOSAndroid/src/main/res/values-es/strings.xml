@@ -1283,6 +1283,8 @@
     <string name="title_setting_detail">Setting Detail</string>
     <string name="timeout_try_again">TIME OUT, would you like to try again?</string>
     <string name="can_not_proceed">Can not proceed...</string>
+    <string name="invalid_payment_type">Invalid Payment Type</string>
+    <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string>
 
 
 </resources>

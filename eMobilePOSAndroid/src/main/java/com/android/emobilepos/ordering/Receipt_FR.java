@@ -656,7 +656,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         return true;
                     }
                 });
-                popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Integer.parseInt(orderSeatProduct.orderProduct.getProd_price_points()) > 0);
+                popup.getMenu().findItem(R.id.payWithLoyalty).setEnabled(Double.parseDouble(orderSeatProduct.orderProduct.getProd_price_points()) > 0);
                 popup.show();
 
             }
