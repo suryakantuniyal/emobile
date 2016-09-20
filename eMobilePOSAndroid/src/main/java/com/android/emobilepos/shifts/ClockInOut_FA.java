@@ -23,6 +23,7 @@ import com.android.database.TimeClockHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.TimeClock;
 import com.android.saxhandler.SAXPostHandler;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
@@ -84,7 +85,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         timeClockHandler = new TimeClockHandler(activity);
 
         TextView clockTodayDate = (TextView) findViewById(R.id.topDate);
-        clockTodayDate.setText(Global.formatToDisplayDate(Global.getCurrentDate(), activity, 0));
+        clockTodayDate.setText(Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 0));
         clerkName = (TextView) findViewById(R.id.clockClerkNameID);
         clockType = (TextView) findViewById(R.id.clockType);
         clockDateTime = (TextView) findViewById(R.id.clockDateTime);
@@ -148,7 +149,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     // myPref.setClerkID(mClerkID);
                     // myPref.setClerkName(mClerkName);
                     switchButton(false);
-                    listTimeClock.add(createTimeClock(false, Global.getCurrentDate()));
+                    listTimeClock.add(createTimeClock(false, DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss)));
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
                     new sendUnsyncTimeClock().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
@@ -160,7 +161,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     // myPref.setClerkID("");
                     // myPref.setClerkName("");
                     switchButton(true);
-                    listTimeClock.add(createTimeClock(true, Global.getCurrentDate()));
+                    listTimeClock.add(createTimeClock(true,DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss)));
                     timeClockHandler.insert(listTimeClock, false);
                     listTimeClock.clear();
                     new sendUnsyncTimeClock().execute(false);

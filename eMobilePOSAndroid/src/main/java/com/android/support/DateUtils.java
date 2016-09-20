@@ -11,15 +11,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class DateUtils {
     public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String DATE_yyyy_MM_ddTHH_mm_ss = "yyyy-MM-dd'T'HH:mm:ss";
+
     public static final String DATE_MMM_dd_yyyy_h_mm_a = "MMM dd,yyyy h:mm a";
     public static String getDateAsString(Date date, String pattern) {
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         return format.format(date);
     }
+
 
     public static String getDateStringAsString(String date, String inPattern) {
         SimpleDateFormat sdf = new SimpleDateFormat(inPattern);

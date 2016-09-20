@@ -6,8 +6,11 @@ import android.text.TextUtils;
 
 import com.android.database.DrawInfoHandler;
 import com.android.ivu.MersenneTwisterFast;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
@@ -137,7 +140,7 @@ public class Payment extends RealmObject {
         setIsVoid("0");
         setStatus("1");
 
-        String date = Global.getCurrentDate();
+        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
         setPay_timecreated(date);
         setPay_date(date);
 
@@ -173,7 +176,7 @@ public class Payment extends RealmObject {
         this.setTrack_one(trackOne);
         this.setTrack_two(trackTwo);
 
-        String date = Global.getCurrentDate();
+        String date = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
         setPay_timecreated(date);
         setPay_date(date);
 

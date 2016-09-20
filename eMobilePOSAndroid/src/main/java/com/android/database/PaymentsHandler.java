@@ -9,6 +9,7 @@ import android.util.Log;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -392,8 +394,8 @@ public class PaymentsHandler {
         payment.setPay_issync("0");
 
         payment.setOriginal_pay_id(_orig_pay_id);
-        payment.setPay_timecreated(Global.getCurrentDate());
-        payment.setPay_date(Global.getCurrentDate());
+        payment.setPay_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
+        payment.setPay_date(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
 
         if (onlineVoid) {
             payment.setPay_resultcode(response.get(pay_resultcode));

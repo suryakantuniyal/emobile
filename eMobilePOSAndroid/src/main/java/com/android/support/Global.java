@@ -891,21 +891,7 @@ public class Global extends MultiDexApplication {
         return formatedDate;
     }
 
-    public static String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        SimpleDateFormat sdfTZ = new SimpleDateFormat("Z", Locale.getDefault());
-        Calendar cal = Calendar.getInstance();
-        TimeZone tz = cal.getTimeZone();
-        sdfTZ.setTimeZone(tz);
-        Date date = new Date();
-        String cur_date = sdf.format(date);
-        String TimeZone = sdfTZ.format(date);
 
-        String ending = TimeZone.substring(TimeZone.length() - 2, TimeZone.length());
-        String begining = TimeZone.substring(0, TimeZone.length() - 2);
-
-        return cur_date + begining + ":" + ending;
-    }
 
     public boolean isApplicationSentToBackground(final Context context) {
 

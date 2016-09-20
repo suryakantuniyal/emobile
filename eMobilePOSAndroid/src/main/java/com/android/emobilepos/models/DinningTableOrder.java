@@ -64,9 +64,7 @@ public class DinningTableOrder extends RealmObject {
 
     public String getElapsedTime() {
         Map<TimeUnit, Long> map = DateUtils.computeDiff(getOrderStartDate(), new Date());
-        long now = System.currentTimeMillis();
-        String time = String.format("%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
-        return time;
+        return String.format("%02d:%02d", map.get(TimeUnit.HOURS), map.get(TimeUnit.MINUTES));
     }
 
     public Order getOrder(Activity activity) {

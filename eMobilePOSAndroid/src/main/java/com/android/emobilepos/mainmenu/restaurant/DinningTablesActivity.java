@@ -21,11 +21,6 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
-    private PageIndicator titlePageIndicator;
     public String associateId;
 
     @Override
@@ -35,18 +30,15 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         associateId = extras.getString("associateId");
         setContentView(R.layout.activity_dinning_tables);
         refresh(0);
-//        setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
-//        mViewPager = (ViewPager) findViewById(R.id.container);
-//        titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
-//        mViewPager.setAdapter(getmSectionsPagerAdapter());
-//        titlePageIndicator.setViewPager(mViewPager);
-
     }
 
-    public void refresh(int page){
+    public void refresh(int page) {
         setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
+        /*
+      The {@link ViewPager} that will host the section contents.
+     */
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
+        PageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mViewPager.setAdapter(getmSectionsPagerAdapter());
         titlePageIndicator.setViewPager(mViewPager);
         mViewPager.setCurrentItem(page);
@@ -64,7 +56,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+//        int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {
@@ -91,7 +83,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     }
 
 
-    public class SectionsPagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter{
+    public class SectionsPagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -103,11 +95,9 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    TablesMapFragment mapFragment = new TablesMapFragment();
-                    return mapFragment;
+                    return new TablesMapFragment();
                 default:
-                    TablesGridFragment fragment = new TablesGridFragment();
-                    return fragment;
+                    return new TablesGridFragment();
             }
         }
 

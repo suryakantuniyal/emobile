@@ -1673,16 +1673,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         ordersHandler.insert(global.order);
         global.encodedImage = "";
         orderProductsHandler.insert(global.orderProducts);
-        DinningTable table = DinningTableDAO.getByNumber(global.order.assignedTable);
-        DinningTableOrder dinningTableOrder = DinningTableOrderDAO.getByNumber(global.order.assignedTable);
-        if (dinningTableOrder == null) {
-            dinningTableOrder = new DinningTableOrder();
-            dinningTableOrder.setDinningTable(table);
-            dinningTableOrder.setCurrentOrderId(global.order.ord_id);
-            dinningTableOrder.setNumberOfGuest(mainLVAdapter.getSeatsAmount());
-            dinningTableOrder.setOrderStartDate(new Date());
-            DinningTableOrderDAO.insert(dinningTableOrder);
-        }
 
         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
