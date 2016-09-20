@@ -109,7 +109,7 @@ public class ProductsAttrHandler
 	}
 	
 	
-	public LinkedHashMap<String,List<String>> getAttributesMap(String prodId)
+	public LinkedHashMap<String,List<String>> getAttributesMap(String prodName)
 	{
 		StringBuilder sb = new StringBuilder();
 		LinkedHashMap<String,List<String>> linkedMap = new LinkedHashMap<>();
@@ -117,8 +117,8 @@ public class ProductsAttrHandler
 		sb.setLength(0);
 		sb.append("SELECT pa.attr_id as '_id',pa.attr_name,pa.attr_desc " +
 				"FROM ProductsAttr pa LEFT OUTER JOIN Products p ON pa.prod_id = p.prod_id ");
-		sb.append("WHERE p.prod_id = ? GROUP BY attr_desc ORDER BY pa.attr_name, attr_desc");
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{prodId});
+		sb.append("WHERE p.prod_name = ? GROUP BY attr_desc ORDER BY pa.attr_name, attr_desc");
+		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{prodName});
 		if(cursor.moveToFirst())
 		{
 			int i_attr_desc = cursor.getColumnIndex(attr_desc);

@@ -455,7 +455,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 }
             }
         }
-        boolean resetOrderProductList = true;
+        orderProducts.clear();
         for (Map.Entry<String, MixMatchProductGroup> mixMatchProductGroupEntry : mixMatchProductGroupHashMap.entrySet()) {
             MixMatchProductGroup group = mixMatchProductGroupEntry.getValue();
             RealmResults<MixMatch> mixMatches = MixMatchDAO.getDiscountsBygroupId(group);
@@ -467,10 +467,6 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     applyMixMatch(group, mixMatches);
                 } else {
                     if (mixMatches.size() == 2) {
-                        if (resetOrderProductList) {
-                            orderProducts.clear();
-                        }
-                        resetOrderProductList = false;
                         orderProducts.addAll(applyXYZMixMatchToGroup(group, mixMatches, isGroupBySKU));
                     }
                 }

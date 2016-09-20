@@ -345,7 +345,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             }
         }
         prodAttrHandler = new ProductsAttrHandler(activity);
-        attributesMap = prodAttrHandler.getAttributesMap(orderProduct.getProd_id());
+        attributesMap = prodAttrHandler.getAttributesMap(orderProduct.getOrdprod_name());
         attributesKey = attributesMap.keySet().toArray(new String[attributesMap.size()]);
         attributesSelected = prodAttrHandler.getDefaultAttributes(prodID);
         int attributesSize = attributesMap.size();
