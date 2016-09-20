@@ -43,9 +43,8 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         super.onViewCreated(view, savedInstanceState);
         RealmResults<DinningTable> realmResults = DinningTableDAO.getAll();
         realmResults.sort("number");
-        final List<DinningTable> dinningTables = realmResults;
         gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
-        adapter = new DinningTablesAdapter(getActivity(), dinningTables);
+        adapter = new DinningTablesAdapter(getActivity(), realmResults);
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(this);
         refreshGrid();

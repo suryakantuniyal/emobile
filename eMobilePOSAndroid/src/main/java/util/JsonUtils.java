@@ -1,5 +1,6 @@
 package util;
 
+import com.android.support.DateUtils;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -23,7 +24,7 @@ public class JsonUtils {
                     public boolean shouldSkipClass(Class<?> clazz) {
                         return false;
                     }
-                }).setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                }).setDateFormat(DateUtils.DATE_yyyy_MM_ddTHH_mm_ss)
                 .create();
         return gson;
     }

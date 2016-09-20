@@ -44,7 +44,6 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
         if (associates != null && !associates.isEmpty()) {
             SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
             activity.setSelectedSalesAssociate(associates.get(0));
-//            activity.getDinningTablesGridFragment().setSalesAssociateInfo(associates.get(0));
         }
     }
 
