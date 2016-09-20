@@ -924,25 +924,25 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
         BigDecimal total = num.multiply(productPriceLevelTotal.multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);                    // calculate taxes and discount
-        orderProduct.setProd_istaxable(orderProduct.getProd_istaxable());
+        orderProduct.setProd_istaxable(this.orderProduct.getProd_istaxable());
         if (!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             val = Integer.toString((int) Double.parseDouble(val));
         }
         // add order to db
         orderProduct.setOrdprod_qty(val);
-        orderProduct.setOrdprod_name(orderProduct.getOrdprod_name());
-        orderProduct.setOrdprod_desc(orderProduct.getOrdprod_desc());
+        orderProduct.setOrdprod_name(this.orderProduct.getOrdprod_name());
+        orderProduct.setOrdprod_desc(this.orderProduct.getOrdprod_desc());
         orderProduct.setProd_id(prodID);
         orderProduct.setProductPriceLevelTotal(Global.getRoundBigDecimal(productPriceLevelTotal));
-        orderProduct.setOnHand(orderProduct.getOnHand());
-        orderProduct.setImgURL(orderProduct.getImgURL());
-        orderProduct.setCat_id(orderProduct.getCat_id());
-        orderProduct.setAssignedSeat(orderProduct.getAssignedSeat());
-        orderProduct.setProd_sku(orderProduct.getProd_sku());
-        orderProduct.setProd_upc(orderProduct.getProd_upc());
-        orderProduct.setPricesXGroupid(orderProduct.getPricesXGroupid());
-        BigDecimal pricePoints = new BigDecimal(orderProduct.getProd_price_points());
-        BigDecimal valuePoints = new BigDecimal(orderProduct.getProd_value_points());
+        orderProduct.setOnHand(this.orderProduct.getOnHand());
+        orderProduct.setImgURL(this.orderProduct.getImgURL());
+        orderProduct.setCat_id(this.orderProduct.getCat_id());
+        orderProduct.setAssignedSeat(this.orderProduct.getAssignedSeat());
+        orderProduct.setProd_sku(this.orderProduct.getProd_sku());
+        orderProduct.setProd_upc(this.orderProduct.getProd_upc());
+        orderProduct.setPricesXGroupid(this.orderProduct.getPricesXGroupid());
+        BigDecimal pricePoints = new BigDecimal(this.orderProduct.getProd_price_points());
+        BigDecimal valuePoints = new BigDecimal(this.orderProduct.getProd_value_points());
         pricePoints = pricePoints.multiply(num);
         valuePoints = valuePoints.multiply(num);
         orderProduct.setProd_price_points(pricePoints.toString());
@@ -953,12 +953,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             orderProduct.setOverwrite_price(productPriceLevelTotal.multiply(uomMultiplier));
         // Still need to do add the appropriate tax/discount value
         orderProduct.setProd_taxValue(new BigDecimal(taxTotal));
-        if (Double.parseDouble(orderProduct.getFinalPrice()) >= 0
-                && Double.parseDouble(orderProduct.getFinalPrice()) <= Double.parseDouble(disTotal)) {
+        if (Double.parseDouble(this.orderProduct.getFinalPrice()) >= 0
+                && Double.parseDouble(this.orderProduct.getFinalPrice()) <= Double.parseDouble(disTotal)) {
             disTotal = orderProduct.getFinalPrice();
         }
         orderProduct.setDiscount_value(disTotal);
-        orderProduct.setProd_taxtype(orderProduct.getTax_type());
+        orderProduct.setProd_taxtype(this.orderProduct.getTax_type());
         // for calculating taxes and discount at receipt
         orderProduct.setProd_taxId(prod_taxId);
         orderProduct.setDiscount_id(discount_id);
