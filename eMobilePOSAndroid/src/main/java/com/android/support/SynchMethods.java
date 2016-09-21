@@ -594,8 +594,7 @@ public class SynchMethods {
     public void synchSendOnHold(boolean downloadHoldList, boolean checkoutOnHold) {
         this.downloadHoldList = downloadHoldList;
         this.checkoutOnHold = checkoutOnHold;
-        Boolean[] temp = new Boolean[]{downloadHoldList, checkoutOnHold};
-        new synchSendOrdersOnHold().execute(temp);
+        new synchSendOrdersOnHold().execute();
     }
 
 
@@ -628,7 +627,8 @@ public class SynchMethods {
         protected String doInBackground(String... params) {
             if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
-                    synchOrdersOnHoldList(this);
+                    updateProgress(activity.getString(R.string.sync_dload_ordersonhold));
+                    synchOrdersOnHoldList(activity);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -711,7 +711,7 @@ public class SynchMethods {
     }
 
 
-    private class synchSendOrdersOnHold extends AsyncTask<Boolean[], String, String> {
+    private class synchSendOrdersOnHold extends AsyncTask<Void, String, String> {
         boolean isError = false;
         String err_msg = "";
 
@@ -745,7 +745,7 @@ public class SynchMethods {
 
 
         @Override
-        protected String doInBackground(Boolean[]... params) {
+        protected String doInBackground(Void... params) {
             try {
                 if (NetworkUtils.isConnectedToInternet(activity)) {
                     err_msg = sendOrdersOnHold(this);
@@ -1148,12 +1148,11 @@ public class SynchMethods {
         return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
     }
 
-    private void synchOrdersOnHoldList(synchDownloadOnHoldProducts task) throws SAXException, IOException {
+    public static void synchOrdersOnHoldList(Activity activity) throws SAXException, IOException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_ordersonhold));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("GetOrdersOnHoldList"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<Order> orders = new ArrayList<>();

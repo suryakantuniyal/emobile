@@ -3,6 +3,7 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
@@ -10,12 +11,18 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.support.Global;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
+
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
@@ -29,6 +36,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         Bundle extras = getIntent().getExtras();
         associateId = extras.getString("associateId");
         setContentView(R.layout.activity_dinning_tables);
+        new SynchOnHoldOrders().execute();
         refresh(0);
     }
 
@@ -147,5 +155,30 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         if (!isScreenOn)
             global.loggedIn = false;
         global.startActivityTransitionTimer();
+    }
+
+    private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                updateProgress(getString(R.string.sync_dload_ordersonhold));
+                SynchMethods.synchOrdersOnHoldList(DinningTablesActivity.this);
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        public void updateProgress(String msg) {
+            publishProgress(msg);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            refresh(0);
+        }
     }
 }

@@ -180,7 +180,10 @@ public class OrdersHandler {
                 insert.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable);
                 insert.bindString(index(associateID), order.associateID == null ? "" : order.associateID);
                 insert.bindLong(index(numberOfSeats), order.numberOfSeats);
-                insert.bindString(index(ord_timeStarted), order.ord_timeStarted == null ? DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss) : order.ord_timeStarted);
+                if (TextUtils.isEmpty(order.ord_timeStarted)) {
+                    order.ord_timeStarted = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+                }
+                insert.bindString(index(ord_timeStarted), order.ord_timeStarted);
                 insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
                 insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
 

@@ -305,10 +305,10 @@ public class DBManager {
         sm.synchGetOnHoldDetails(type, intent, ordID);
     }
 
-    public void synchSendOrdersOnHold(boolean downloadHoldList, boolean checkOutOnHold) {
-        SynchMethods sm = new SynchMethods(managerInstance);
-        sm.synchSendOnHold(downloadHoldList, checkOutOnHold);
-    }
+//    public void synchSendOrdersOnHold(boolean downloadHoldList, boolean checkOutOnHold) {
+//        SynchMethods sm = new SynchMethods(managerInstance);
+//        sm.synchSendOnHold(downloadHoldList, checkOutOnHold);
+//    }
 
     public boolean isSendAndReceive() {
         return this.sendAndReceive;

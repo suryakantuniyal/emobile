@@ -82,6 +82,7 @@ import com.android.support.Post;
 import com.android.support.SemiClosedSlidingDrawer;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerCloseListener;
 import com.android.support.SemiClosedSlidingDrawer.OnDrawerOpenListener;
+import com.android.support.SynchMethods;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.viewpagerindicator.CirclePageIndicator;
@@ -895,7 +896,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                     }
 
                     DBManager dbManager = new DBManager(activity);
-                    dbManager.synchSendOrdersOnHold(false, false);
+                    SynchMethods sm = new SynchMethods(dbManager);
+                    sm.synchSendOnHold(false, false);
+//                    dbManager.synchSendOrdersOnHold(false, false);
                 } else {
                     if (global.order.ord_HoldName == null || global.order.ord_HoldName.isEmpty()) {
                         showOnHoldPromptName(ordersHandler, orderProductsHandler);
@@ -925,8 +928,12 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             .getPreferences(MyPreferences.pref_restaurant_mode))
                         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
 
+//                    DBManager dbManager = new DBManager(activity);
+//                    dbManager.synchSendOrdersOnHold(false, true);
+
                     DBManager dbManager = new DBManager(activity);
-                    dbManager.synchSendOrdersOnHold(false, true);
+                    SynchMethods sm = new SynchMethods(dbManager);
+                    sm.synchSendOnHold(false, true);
                 } else {
                     ordersHandler.updateFinishOnHold(Global.lastOrdID);
 
@@ -1683,8 +1690,13 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //            global.qtyCounter.clear();
             global.resetOrderDetailsValues();
         }
+//        DBManager dbManager = new DBManager(activity);
+//        dbManager.synchSendOrdersOnHold(false, false);
+
         DBManager dbManager = new DBManager(activity);
-        dbManager.synchSendOrdersOnHold(false, false);
+        SynchMethods sm = new SynchMethods(dbManager);
+        sm.synchSendOnHold(false, false);
+
         if (!isToGo && ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.HOLD
                 && (((OrderingMain_FA) getActivity()).orderingAction == OrderingMain_FA.OrderingAction.CHECKOUT ||
                 ((OrderingMain_FA) getActivity()).orderingAction != OrderingMain_FA.OrderingAction.BACK_PRESSED)) {
