@@ -3,7 +3,9 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +28,7 @@ import com.android.support.MyPreferences;
 
 import java.util.List;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
@@ -39,7 +42,9 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
 
     public TablesGridFragment() {
     }
-
+    private DinningTablesActivity getDinningTablesActivity() {
+        return (DinningTablesActivity) getActivity();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,7 +61,9 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
         gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
         adapter = new DinningTablesAdapter(getActivity(), dinningTables);
         MyPreferences preferences = new MyPreferences(getActivity());
-        associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(preferences.getEmpID()));
+        if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
+            associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
+        }
         if (associate != null) {
             adapter.setSelectedDinningTables(associate.getAssignedDinningTables());
         }
@@ -68,12 +75,24 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
                 DinningTable table = (DinningTable) parent.getItemAtPosition(position);
                 if (associate != null && associate.getAssignedDinningTables().contains(table)) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
-                    if (tableOrder == null) {
+                    if (tableOrder != null) {
+                        Realm realm = Realm.getDefaultInstance();
+                        getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
+                                , realm.copyFromRealm(tableOrder), realm.copyFromRealm(table));
+                    } else {
                         Intent result = new Intent();
                         result.putExtra("tableId", table.getId());
                         getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
                         getActivity().finish();
                     }
+
+//                    DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
+//                    if (tableOrder == null) {
+//                        Intent result = new Intent();
+//                        result.putExtra("tableId", table.getId());
+//                        getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+//                        getActivity().finish();
+//                    }
                 } else {
                     Global.showPrompt(getActivity(), R.string.title_activity_dinning_tables, getActivity().getString(R.string.dinningtablenotassigned));
 

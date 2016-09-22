@@ -65,14 +65,16 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
     public TablesMapFragment() {
     }
 
+    private DinningTablesActivity getDinningTablesActivity() {
+        return (DinningTablesActivity) getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
-        DinningTablesActivity activity = (DinningTablesActivity) getActivity();
-        if (!TextUtils.isEmpty(activity.associateId)) {
-            associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(activity.associateId));
+        if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
+            associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
         dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getActivity());
 
@@ -199,7 +201,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder != null) {
                         Realm realm = Realm.getDefaultInstance();
-                        new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
+                        getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
                                 , realm.copyFromRealm(tableOrder), realm.copyFromRealm(table));
                     } else {
                         Intent result = new Intent();
@@ -240,65 +242,5 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         return false;
     }
 
-    public class OpenOnHoldOrderTask extends AsyncTask<Object, Void, Boolean> {
 
-        private DinningTable table;
-        DinningTableOrder tableOrder;
-
-        @Override
-        protected Boolean doInBackground(Object... params) {
-            tableOrder = (DinningTableOrder) params[0];
-            table = (DinningTable) params[1];
-            boolean claimRequired = OnHoldsManager.isOnHoldAdminClaimRequired(tableOrder.getCurrentOrderId(), getActivity());
-            if (claimRequired) {
-                return false;
-            } else {
-                try {
-                    OnHoldsManager.synchOrdersOnHoldDetails(getActivity(), tableOrder.getCurrentOrderId());
-                    OrderProductsHandler orderProdHandler = new OrderProductsHandler(getActivity());
-                    Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
-                    Global global = (Global) getActivity().getApplication();
-                    global.orderProducts = new ArrayList<>();
-                    OnHoldActivity.addOrderProducts(getActivity(), c);
-                    Global.isFromOnHold = true;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (SAXException e) {
-                    e.printStackTrace();
-                }
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean willOpen) {
-            if (willOpen) {
-                if (Global.isFromOnHold) {
-                    openOrderingMain();
-                } else {
-                    Intent result = new Intent();
-                    result.putExtra("tableId", table.getId());
-                    getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
-                    getActivity().finish();
-                }
-            } else {
-                Global.showPrompt(getActivity(), R.string.dlog_title_claimed_hold, getString(R.string.dlog_msg_cant_open_claimed_hold));
-            }
-        }
-
-        private void openOrderingMain() {
-            Global.lastOrdID=tableOrder.getCurrentOrderId();
-            Order order = tableOrder.getOrder(getActivity());
-            Intent intent = new Intent(getActivity(), OrderingMain_FA.class);
-            intent.putExtra("selectedDinningTableNumber", table.getNumber());
-            intent.putExtra("onHoldOrderJson", order.toJson());
-            intent.putExtra("openFromHold", true);
-            intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
-            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
-            intent.putExtra("ord_HoldName", order.ord_HoldName);
-            intent.putExtra("associateId", order.associateID);
-            startActivityForResult(intent, 0);
-            getActivity().finish();
-        }
-    }
 }

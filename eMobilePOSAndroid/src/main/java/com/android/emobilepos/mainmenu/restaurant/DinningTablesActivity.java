@@ -3,6 +3,9 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -12,8 +15,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.android.database.DBManager;
+import com.android.database.OrderProductsHandler;
+import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.Order;
+import com.android.emobilepos.ordering.OrderingMain_FA;
+import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
+import com.android.support.OnHoldsManager;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.viewpagerindicator.IconPagerAdapter;
@@ -23,6 +34,7 @@ import com.viewpagerindicator.TitlePageIndicator;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
@@ -158,7 +170,15 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     }
 
     private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
-
+        ProgressDialog progressDialog;
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(DinningTablesActivity.this);
+            progressDialog.setMessage(getString(R.string.loading_orders));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
         @Override
         protected Void doInBackground(Void... params) {
             try {
@@ -178,7 +198,71 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
             refresh(0);
+        }
+    }
+
+    public class OpenOnHoldOrderTask extends AsyncTask<Object, Void, Boolean> {
+
+        private DinningTable table;
+        DinningTableOrder tableOrder;
+
+
+        @Override
+        protected Boolean doInBackground(Object... params) {
+            tableOrder = (DinningTableOrder) params[0];
+            table = (DinningTable) params[1];
+            boolean claimRequired = OnHoldsManager.isOnHoldAdminClaimRequired(tableOrder.getCurrentOrderId(), DinningTablesActivity.this);
+            if (claimRequired) {
+                return false;
+            } else {
+                try {
+                    OnHoldsManager.synchOrdersOnHoldDetails(DinningTablesActivity.this, tableOrder.getCurrentOrderId());
+                    OrderProductsHandler orderProdHandler = new OrderProductsHandler(DinningTablesActivity.this);
+                    Cursor c = orderProdHandler.getOrderProductsOnHold(tableOrder.getCurrentOrderId());
+                    Global global = (Global) DinningTablesActivity.this.getApplication();
+                    global.orderProducts = new ArrayList<>();
+                    OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
+                    Global.isFromOnHold = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                }
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean willOpen) {
+            if (willOpen) {
+                if (Global.isFromOnHold) {
+                    openOrderingMain();
+                } else {
+                    Intent result = new Intent();
+                    result.putExtra("tableId", table.getId());
+                    DinningTablesActivity.this.setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+                    DinningTablesActivity.this.finish();
+                }
+            } else {
+                Global.showPrompt(DinningTablesActivity.this, R.string.dlog_title_claimed_hold, getString(R.string.dlog_msg_cant_open_claimed_hold));
+            }
+        }
+
+        private void openOrderingMain() {
+            Global.lastOrdID=tableOrder.getCurrentOrderId();
+            Order order = tableOrder.getOrder(DinningTablesActivity.this);
+            Intent intent = new Intent(DinningTablesActivity.this, OrderingMain_FA.class);
+            intent.putExtra("selectedDinningTableNumber", table.getNumber());
+            intent.putExtra("onHoldOrderJson", order.toJson());
+            intent.putExtra("openFromHold", true);
+            intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.EAT_IN);
+            intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
+            intent.putExtra("ord_HoldName", order.ord_HoldName);
+            intent.putExtra("associateId", order.associateID);
+            startActivityForResult(intent, 0);
+            DinningTablesActivity.this.finish();
         }
     }
 }
