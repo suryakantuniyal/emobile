@@ -8,3 +8,5 @@ build/
 .gradle/
 eMobilePOSAndroid/gradle/
 
+oauthclient/
+projectFilesBackup/

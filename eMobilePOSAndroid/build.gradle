@@ -16,7 +16,7 @@ android {
     buildToolsVersion "23.0.2"
     dexOptions {
         preDexLibraries = false
-        incremental true
+//        incremental true
         javaMaxHeapSize "1g"
     }
     packagingOptions {
@@ -136,6 +136,7 @@ android {
         debug {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "false"
             buildConfigField "boolean", "PRINT_TO_LOG", "true"
+            buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
             multiDexEnabled true
         }
@@ -143,6 +144,7 @@ android {
         release {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "true"
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
+            buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
 //            signingConfig signingConfigs.config

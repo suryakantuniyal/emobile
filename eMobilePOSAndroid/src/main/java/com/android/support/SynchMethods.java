@@ -40,6 +40,7 @@ import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
@@ -676,13 +677,14 @@ public class SynchMethods {
         @Override
         protected String doInBackground(String... params) {
             try {
-                synchOrdersOnHoldDetails(this, params[0]);
+                updateProgress(getString(R.string.sync_dload_ordersonhold));
+                synchOrdersOnHoldDetails(activity, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(activity);
                 Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
-                if (c != null && c.getCount() > 0) {
+                if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
                     if (type == 0)
-                        ((OnHoldActivity) activity).addOrder(c);
+                        ((OnHoldActivity) activity).addOrderProducts(activity, c);
                 } else
                     proceedToView = false;
                 if (c != null) {
@@ -1180,12 +1182,12 @@ public class SynchMethods {
         }
     }
 
-    private void synchOrdersOnHoldDetails(synchDownloadOnHoldDetails task, String ordID) throws SAXException, IOException {
+    public static void synchOrdersOnHoldDetails(Activity activity, String ordID) throws SAXException, IOException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_ordersonhold));
+            HttpClient client = new HttpClient();
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<OrderProduct> orderProducts = new ArrayList<>();
