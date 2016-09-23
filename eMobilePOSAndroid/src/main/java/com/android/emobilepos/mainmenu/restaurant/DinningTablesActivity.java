@@ -225,6 +225,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
                     global.orderProducts = new ArrayList<>();
                     OnHoldActivity.addOrderProducts(DinningTablesActivity.this, c);
                     Global.isFromOnHold = true;
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (SAXException e) {
