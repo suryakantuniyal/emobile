@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.53"
+            versionName "1.2.0.54"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -64,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.53"
+            versionName "1.2.0.54"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -78,7 +78,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.53"
+            versionName "1.2.0.54"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.53"
+            versionName "1.2.0.54"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -106,7 +106,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.63"
+            versionName "1.1.1.64"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -120,7 +120,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.63"
+            versionName "1.1.1.64"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -146,8 +146,10 @@ android {
             buildConfigField "boolean", "PRINT_TO_LOG", "false"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-//            signingConfig signingConfigs.config
+            multiDexEnabled true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {
@@ -188,7 +190,7 @@ dependencies {
     compile files('libs/commons-lang3-3.4.jar')
     compile files('libs/core-sdk.jar')
     compile files('libs/do_androidsdk.jar')
-    compile files('libs/IDTuniMagSDKAndroid.jar')
+//    compile files('libs/IDTuniMagSDKAndroid.jar')
     compile files('libs/JAsura_Android.jar')
     compile files('libs/ksoap2-android-assembly-2.6.5-jar-with-dependencies.jar')
     compile files('libs/libuart.jar')
@@ -239,3 +241,8 @@ dependencies {
     compile project(':oauthclient')
 }
 
+dependencies {
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile files('libs/UniMag_SDK_v5.0.jar')
+}
