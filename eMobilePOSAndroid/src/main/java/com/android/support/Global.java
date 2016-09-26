@@ -30,12 +30,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.dao.DeviceTableDAO;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.models.DataTaxes;
+import com.android.emobilepos.models.Device;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
@@ -80,6 +82,7 @@ import java.util.TimerTask;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -101,8 +104,10 @@ public class Global extends MultiDexApplication {
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder(this)
                 .deleteRealmIfMigrationNeeded()
+                .modules(Realm.getDefaultModule())
                 .build();
         Realm.setDefaultConfiguration(config);
+        RealmResults<Device> all = DeviceTableDAO.getAll();
     }
 
 
@@ -892,7 +897,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-
     public boolean isApplicationSentToBackground(final Context context) {
 
         return wasInBackground;
@@ -1306,7 +1310,6 @@ public class Global extends MultiDexApplication {
 
         return returnedVal;
     }
-
 
 
     public List<HashMap<String, Integer>> dictionary;

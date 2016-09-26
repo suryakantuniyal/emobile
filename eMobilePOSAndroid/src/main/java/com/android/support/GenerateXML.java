@@ -42,7 +42,7 @@ import util.StringUtil;
 
 public class GenerateXML {
 
-    private static final String UTF_8 = "utf-8";
+    public static final String UTF_8 = "utf-8";
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
     private Activity thisActivity;

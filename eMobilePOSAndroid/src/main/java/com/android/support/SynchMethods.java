@@ -45,6 +45,7 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
@@ -55,6 +56,8 @@ import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
+import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.salesassociates.SalesAssociatesConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -70,6 +73,8 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.enablercorp.oauthclient.OAuthClient;
+import com.enablercorp.oauthclient.OAuthManager;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -86,23 +91,30 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import util.JsonUtils;
 
 public class SynchMethods {
+    private final OAuthManager oAuthManager;
+    private String requestToken;
     private Post post;
     private Activity activity;
     private String xml;
@@ -124,6 +136,11 @@ public class SynchMethods {
     private HttpClient client;
     private Gson gson = JsonUtils.getInstance();
 
+    public OAuthManager getOAuthManager(Activity activity) {
+        MyPreferences preferences = new MyPreferences(activity);
+        return OAuthManager.getInstance(activity, preferences.getAcctNumber(), preferences.getAcctPassword());
+
+    }
 
     public SynchMethods(DBManager managerInst) {
         post = new Post();
@@ -132,6 +149,13 @@ public class SynchMethods {
         activity = managerInst.getActivity();
         dbManager = managerInst;
         data = new ArrayList<>();
+        oAuthManager = getOAuthManager(activity);
+        try {
+            requestToken = getOAuthManager(activity).requestToken();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         tempFilePath = activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml";
         try {
             sp = spf.newSAXParser();
@@ -159,6 +183,7 @@ public class SynchMethods {
     public void getLocationsInventory() {
         new asyncGetLocationsInventory().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+
 
     private class resynchAsync extends AsyncTask<String, String, String> {
         MyPreferences myPref = new MyPreferences(activity);
@@ -216,6 +241,7 @@ public class SynchMethods {
 
                 synchProducts(this);
 
+
                 synchProductAliases(this);
 
                 synchProductImages(this);
@@ -258,6 +284,7 @@ public class SynchMethods {
                 synchDownloadClerks(this);
                 synchDownloadSalesAssociate(this);
                 synchDownloadDinnerTable(this);
+                synchSalesAssociatesDinnindTables();
                 synchDownloadMixMatch(this);
                 synchDownloadTermsAndConditions(this);
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
@@ -1472,7 +1499,84 @@ public class SynchMethods {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
+        List<SalesAssociatesConfiguration> configurations = new ArrayList<>();
+        HashMap<String, RealmList<DinningTable>> tablesByLocation = new HashMap<>();
+        for (SalesAssociate associate : salesAssociates) {
+            for (DinningTable dinningTable : associate.getAssignedDinningTables()) {
+                if (tablesByLocation.containsKey(dinningTable.getLocationId())) {
+                    tablesByLocation.get(dinningTable.getLocationId()).add(dinningTable);
+                } else {
+                    RealmList<DinningTable> tables = new RealmList<>();
+                    tables.add(dinningTable);
+                    tablesByLocation.put(dinningTable.getLocationId(), tables);
+                }
+            }
+            for (Map.Entry<String, RealmList<DinningTable>> next : tablesByLocation.entrySet()) {
+                RealmList<DinningTable> tableList = next.getValue();
+                String locationId = next.getKey();
+                SalesAssociatesConfiguration configuration = new SalesAssociatesConfiguration();
+                configuration.setSalesAssociates(new ArrayList<SalesAssociate>());
+                configuration.setLocationId(locationId);
+                associate.setAssignedDinningTables(tableList);
+                configuration.getSalesAssociates().add(associate);
+                configuration.setEmp_id(associate.getEmp_id());
+                configurations.add(configuration.minify());
+            }
+        }
+        MyPreferences preferences = new MyPreferences(activity);
+        StringBuilder url = new StringBuilder(activity.getString(R.string.sync_enablermobile_mesasconfig));
+        url.append("/").append(URLEncoder.encode(preferences.getEmpID(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getDeviceID(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
+
+        OAuthClient authClient = OAuthManager.getOAuthClient(activity);
+        Gson gson = JsonUtils.getInstance();
+        String json = gson.toJson(configurations);
+        com.enablercorp.oauthclient.HttpClient httpClient = new com.enablercorp.oauthclient.HttpClient();
+        httpClient.post(url.toString(), json, authClient);
+    }
+
+    public void synchSalesAssociatesDinnindTables() throws IOException, SAXException {
+        try {
+            com.enablercorp.oauthclient.HttpClient client = new com.enablercorp.oauthclient.HttpClient();
+            Gson gson = JsonUtils.getInstance();
+            Type listType = new com.google.gson.reflect.TypeToken<List<SalesAssociatesConfiguration>>() {
+            }.getType();
+            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), OAuthManager.getOAuthClient(activity));
+            List<SalesAssociatesConfiguration> conf = gson.fromJson(s, listType);
+            InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), OAuthManager.getOAuthClient(activity));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<SalesAssociatesConfiguration> configurations = new ArrayList<>();
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                SalesAssociatesConfiguration configuration = gson.fromJson(reader, SalesAssociatesConfiguration.class);
+                configurations.add(configuration);
+                i++;
+//                if (i == 1000) {
+//                    configurations.clear();
+//                    i = 0;
+//                }
+            }
+
+            reader.endArray();
+            reader.close();
+            for (SalesAssociatesConfiguration configuration : configurations) {
+                for (SalesAssociate associate : configuration.getSalesAssociates()) {
+                    SalesAssociateDAO.clearAllAssignedTable(associate);
+                    for (DinningTable table : associate.getAssignedDinningTables()) {
+                        DinningTable dinningTable = DinningTableDAO.getById(table.getId());
+                        SalesAssociateDAO.addAssignedTable(associate, dinningTable);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchProductAliases(resynchAsync task) throws IOException, SAXException {

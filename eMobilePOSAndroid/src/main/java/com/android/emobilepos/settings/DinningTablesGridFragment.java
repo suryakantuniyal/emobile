@@ -10,6 +10,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.DinningTable;
@@ -49,7 +50,8 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         gridView.setOnItemClickListener(this);
         refreshGrid();
     }
-    public void refreshGrid(){
+
+    public void refreshGrid() {
         SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
         setSalesAssociateInfo(activity.getSelectedSalesAssociate());
     }
@@ -58,14 +60,16 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         final DinningTable table = (DinningTable) adapterView.getItemAtPosition(i);
         SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
-        Realm.getDefaultInstance().beginTransaction();
+//        Realm.getDefaultInstance().beginTransaction();
         boolean contains = activity.getSelectedSalesAssociate().getAssignedDinningTables().contains(table);
         if (contains) {
-            activity.getSelectedSalesAssociate().getAssignedDinningTables().remove(table);
+            SalesAssociateDAO.removeAssignedTable(activity.getSelectedSalesAssociate(), table);
+//            activity.getSelectedSalesAssociate().getAssignedDinningTables().remove(table);
         } else {
-            activity.getSelectedSalesAssociate().getAssignedDinningTables().add(table);
+            SalesAssociateDAO.addAssignedTable(activity.getSelectedSalesAssociate(), table);
+//            activity.getSelectedSalesAssociate().getAssignedDinningTables().add(table);
         }
-        Realm.getDefaultInstance().commitTransaction();
+//        Realm.getDefaultInstance().commitTransaction();
         adapter.setSelectedDinningTables(activity.getSelectedSalesAssociate().getAssignedDinningTables());
         adapter.notifyDataSetChanged();
     }

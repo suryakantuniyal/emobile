@@ -1,5 +1,6 @@
 package com.android.dao;
 
+import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.SalesAssociate;
 import com.google.gson.Gson;
 
@@ -52,5 +53,34 @@ public class SalesAssociateDAO {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<SalesAssociate> where = realm.where(SalesAssociate.class);
         return where.equalTo("emp_id", empId).findFirst();
+    }
+
+    public static void removeAssignedTable(SalesAssociate selectedSalesAssociate, DinningTable table) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        selectedSalesAssociate.getAssignedDinningTables().remove(table);
+        realm.commitTransaction();
+    }
+
+    public static void addAssignedTable(SalesAssociate selectedSalesAssociate, DinningTable table) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        if (selectedSalesAssociate.isValid()) {
+            selectedSalesAssociate.getAssignedDinningTables().add(table);
+        } else {
+            getByEmpId(selectedSalesAssociate.getEmp_id()).getAssignedDinningTables().add(table);
+        }
+        realm.commitTransaction();
+    }
+
+    public static void clearAllAssignedTable(SalesAssociate associate) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        if (associate.isValid()) {
+            associate.getAssignedDinningTables().deleteAllFromRealm();
+        } else {
+            getByEmpId(associate.getEmp_id()).getAssignedDinningTables().deleteAllFromRealm();
+        }
+        realm.commitTransaction();
     }
 }

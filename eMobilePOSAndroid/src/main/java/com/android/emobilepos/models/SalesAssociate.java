@@ -1,5 +1,7 @@
 package com.android.emobilepos.models;
 
+import java.util.List;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 

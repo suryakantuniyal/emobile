@@ -37,8 +37,7 @@ public class DeviceTableDAO {
     }
 
     public static RealmResults<Device> getAll() {
-        RealmResults<Device> devices = Realm.getDefaultInstance().where(Device.class).findAll();
-        return devices;
+        return Realm.getDefaultInstance().where(Device.class).findAll();
     }
 
     public static void truncate() {

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -32,27 +33,24 @@ public class HttpClient {
 //        return null;
 //    }
 
+    public String getString(String urlAddress, OAuthClient authClient) throws IOException {
+        InputStream inputStream = get(urlAddress, authClient);
+        return convertStreamToString(inputStream);
+    }
 
-//    /**
-//     * @param url
-//     * @return
-//     * @throws org.apache.http.client.ClientProtocolException
-//     * @throws IOException
-//     */
-//    public String httpJsonRequest(String url) throws ClientProtocolException,
-//            IOException {
-//        HttpGet httpGet = new HttpGet(url);
-//        httpGet.setHeader("Content-Type", "application/json");
-//        response = client.execute(httpGet);
-//        entity = response.getEntity();
-//        if (entity != null) {
-//            String convertStreamToString = convertStreamToString(entity.getContent());
-//            return convertStreamToString;
-//        }
-//        return null;
-//    }
+    public InputStream get(String urlAddress, OAuthClient authClient) throws IOException {
+        URL url = new URL(urlAddress);
+        HttpsURLConnection httpURLConnection = (HttpsURLConnection) url.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+        httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        if (authClient != null) {
+            httpURLConnection.setRequestProperty("Authorization", "Bearer " + authClient.getAccessToken());
+        }
+        return httpURLConnection.getInputStream();
+    }
 
-//    /**
+
+    //    /**
 //     * @param url
 //     * @param jsonObject
 //     * @return
@@ -90,11 +88,19 @@ public class HttpClient {
 //        }
 //        return null;
 //    }
-    public String httpJsonRequest(String urlAddress, String rawData)
+
+    public String post(String urlAddress, String rawData) throws Exception {
+        return post(urlAddress, rawData, null);
+    }
+
+    public String post(String urlAddress, String rawData, OAuthClient authClient)
             throws Exception {
         URL url = new URL(urlAddress);
         HttpsURLConnection httpURLConnection = (HttpsURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod("POST");
+        if (authClient != null) {
+            httpURLConnection.setRequestProperty("Authorization", "Bearer " + authClient.getAccessToken());
+        }
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(true);
         httpURLConnection.setUseCaches(false);
@@ -105,19 +111,6 @@ public class HttpClient {
         out.close();
         return convertStreamToString(httpURLConnection.getInputStream());
 
-
-//        post = new HttpPost(url);
-//        stringEntity = new StringEntity(rawData, "UTF-8");
-//        post.setHeader("Content-Type", "application/json");
-//        post.setEntity(stringEntity);
-//        response = client.execute(post);
-//        entity = response.getEntity();
-//        if (entity != null) {
-//            String convertStreamToString = convertStreamToString(entity
-//                    .getContent());
-//            return convertStreamToString;
-//        }
-//        return null;
     }
 
     private static String convertStreamToString(InputStream is) {

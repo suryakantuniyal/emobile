@@ -1,12 +1,19 @@
 package com.android.emobilepos.settings;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.SalesAssociate;
 import com.android.support.Global;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+
+import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmQuery;
 
 public class SalesAssociateConfiguration extends BaseFragmentActivityActionBar {
 
@@ -62,5 +69,27 @@ public class SalesAssociateConfiguration extends BaseFragmentActivityActionBar {
         if (!isScreenOn)
             global.loggedIn = false;
         global.startActivityTransitionTimer();
+    }
+
+    @Override
+    protected void onStop() {
+        new SaveConfigurationTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        super.onStop();
+
+    }
+
+    private class SaveConfigurationTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Realm realm = Realm.getDefaultInstance();
+            List<SalesAssociate> assosiates = realm.where(SalesAssociate.class).findAll();
+            try {
+                SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfiguration.this, realm.copyFromRealm(assosiates));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 }

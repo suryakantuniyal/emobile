@@ -16,27 +16,23 @@ import io.realm.annotations.RealmModule;
  * Created by guarionex on 8/10/16.
  */
 public class OAuthManager {
-    private final RealmConfiguration realmConfig;
-    HttpClient httpClient = new HttpClient();
+    private HttpClient httpClient = new HttpClient();
     private String urlOAuthParams = "grant_type=client_credentials&client_id=%s&client_secret=%s";
-    String requestTokenUrl = "https://emslogin.enablermobile.com/oauth/token";
+    private String requestTokenUrl = "https://emslogin.enablermobile.com/oauth/token";
     private Realm realm;
-    private static OAuthManager singletonInstance;
 
     public static OAuthManager getInstance(Context context, String clientId, String clientSecret) {
-        if (singletonInstance == null)
-            singletonInstance = new OAuthManager(context, clientId, clientSecret);
-        return singletonInstance;
+        return new OAuthManager(context, clientId, clientSecret);
     }
 
     public OAuthManager(Context context, String clientId, String clientSecret) {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
 
-        realmConfig = new RealmConfiguration.Builder(context)
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
                 .name("oauthclient")
                 .deleteRealmIfMigrationNeeded()
-                .modules(new OAuthRealmModule())
+                .modules(Realm.getDefaultModule(), new OAuthRealmModule())
 //                .encryptionKey(key)
                 .build();
         realm = Realm.getInstance(realmConfig);
@@ -52,6 +48,18 @@ public class OAuthManager {
         }
     }
 
+    public static OAuthClient getOAuthClient(Context context) {
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
+                .name("oauthclient")
+                .deleteRealmIfMigrationNeeded()
+                .modules(Realm.getDefaultModule(), new OAuthRealmModule())
+//                .encryptionKey(key)
+                .build();
+        Realm realm =Realm.getInstance(realmConfig);
+        OAuthClient authClient = realm.where(OAuthClient.class).findFirst();
+        return realm.copyFromRealm(authClient);
+
+    }
 
     public String requestToken() throws Exception {
         final String[] requestToken = new String[1];
@@ -61,7 +69,7 @@ public class OAuthManager {
             @Override
             public void run() {
                 try {
-                    requestToken[0] = httpClient.httpJsonRequest(requestTokenUrl, oauthUrl);
+                    requestToken[0] = httpClient.post(requestTokenUrl, oauthUrl);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
