@@ -1,11 +1,18 @@
 package drivers;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 
+import com.android.emobilepos.R;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.Global;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import IDTech.MSR.XMLManager.StructConfigParameters;
 import IDTech.MSR.uniMag.UniMagTools.uniMagReaderToolsMsg;
@@ -20,17 +27,13 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
 
     private uniMagReader myUniMagReader = null;
-    private uniMagSDKTools firmwareUpdateTool = null;
 
     private Activity activity;
-    private boolean isWaitingForCommandResult = false;
-    private String strMsrData;
     private boolean isSwipping = false;
 
     private Handler handler = new Handler();
     private boolean isConnected = false;
     private CreditCardInfo cardManager;
-    private String fileNameWithPath = "/data/data/com.android.emobilepos/files/idt_unimagcfg_default.xml";
     private EMSUniMagDriver callBack;
 
 
@@ -69,29 +72,34 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 		 * if(!isFileExist(fileNameWithPath)) { fileNameWithPath = null; }
 		 */
 
-        new Thread(new Runnable() {
-            public void run() {
-                myUniMagReader.setXMLFileNameWithPath(fileNameWithPath);
-                myUniMagReader.loadingConfigurationXMLFile(true);
+//        new Thread(new Runnable() {
+//            public void run() {
+        String fileNameWithPath = getConfigurationFileFromRaw();
+        myUniMagReader.setXMLFileNameWithPath(fileNameWithPath);
+        myUniMagReader.loadingConfigurationXMLFile(true);
 
-            }
-        }).start();
+//            }
+//        }).start();
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
         }
-        firmwareUpdateTool = new uniMagSDKTools(callBack, activity);
+        uniMagSDKTools firmwareUpdateTool = new uniMagSDKTools(callBack, activity);
         firmwareUpdateTool.setUniMagReader(myUniMagReader);
         myUniMagReader.setSDKToolProxy(firmwareUpdateTool.getSDKToolProxy());
 
     }
 
+    private String getConfigurationFileFromRaw() {
+        return getXMLFileFromRaw("idt_unimagcfg_default.xml");
+    }
 
     public void startReading() {
         if (myUniMagReader != null) {
-            if (!isWaitingForCommandResult) {
+//            boolean isWaitingForCommandResult = false;
+//            if (!isWaitingForCommandResult) {
                 myUniMagReader.startSwipeCard();
-            }
+//            }
         }
     }
 
@@ -108,7 +116,7 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
     @Override
     public boolean getUserGrant(int type, String arg1) {
-        boolean getUserGranted = false;
+        boolean getUserGranted;
         switch (type) {
             case uniMagReaderMsg.typeToPowerupUniMag:
                 //pop up dialog to get the user grant
@@ -181,6 +189,7 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
         byte flag = (byte) (flagOfCardData & 0x04);
 
 
+        String strMsrData;
         if (flag == 0x00) {
             strMsrData = new String(cardData);
         }
@@ -283,6 +292,11 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
     public void onReceiveMsgProcessingCardData() {
     }
 
+    @Override
+    public void onReceiveMsgToCalibrateReader() {
+
+    }
+
 
     @Override
     public void onReceiveMsgToSwipeCard() {
@@ -302,6 +316,35 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 
     @Override
     public void onReceiveMsgUpdateFirmwareResult(int arg0) {
+    }
+
+    // If 'idt_unimagcfg_default.xml' file is found in the 'raw' folder, it returns the file path.
+    private String getXMLFileFromRaw(String fileName) {
+        //the target filename in the application path
+        String fileNameWithPath = null;
+        fileNameWithPath = fileName;
+
+        try {
+            InputStream in = activity.getResources().openRawResource(R.raw.idt_unimagcfg_default);
+            int length = in.available();
+            byte[] buffer = new byte[length];
+            in.read(buffer);
+            in.close();
+            activity.deleteFile(fileNameWithPath);
+            FileOutputStream fout = activity.openFileOutput(fileNameWithPath, Context.MODE_PRIVATE);
+            fout.write(buffer);
+            fout.close();
+
+            // to refer to the application path
+            File fileDir = activity.getFilesDir();
+            fileNameWithPath = fileDir.getParent() + java.io.File.separator + fileDir.getName();
+            fileNameWithPath += java.io.File.separator + "idt_unimagcfg_default.xml";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fileNameWithPath = null;
+        }
+        return fileNameWithPath;
     }
 
 }
