@@ -124,7 +124,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
@@ -203,16 +202,12 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/stickyListHeaders-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/viewPagerIndicator-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
@@ -267,6 +262,7 @@
     <orderEntry type="library" exported="" name="com.oem.barcode.sdk" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="evoSnapSDK" level="project" />
+    <orderEntry type="library" exported="" name="UniMag_SDK_v5.0" level="project" />
     <orderEntry type="library" exported="" name="zbar" level="project" />
     <orderEntry type="library" exported="" name="elotouchcfd" level="project" />
     <orderEntry type="library" exported="" name="crashlytics-2.5.5" level="project" />
@@ -297,7 +293,6 @@
     <orderEntry type="library" exported="" name="play-services-drive-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-api-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-9.2.1" level="project" />
-    <orderEntry type="library" exported="" name="IDTuniMagSDKAndroid" level="project" />
     <orderEntry type="library" exported="" name="jpos114-controls" level="project" />
     <orderEntry type="library" exported="" name="misccom" level="project" />
     <orderEntry type="library" exported="" name="firebase-messaging-9.2.1" level="project" />
