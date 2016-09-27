@@ -72,22 +72,27 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
 		 * if(!isFileExist(fileNameWithPath)) { fileNameWithPath = null; }
 		 */
 
-//        new Thread(new Runnable() {
-//            public void run() {
-        String fileNameWithPath = getConfigurationFileFromRaw();
-        myUniMagReader.setXMLFileNameWithPath(fileNameWithPath);
-        myUniMagReader.loadingConfigurationXMLFile(true);
+        new Thread(new Runnable() {
+            public void run() {
+                String fileNameWithPath = getConfigurationFileFromRaw();
+                myUniMagReader.setXMLFileNameWithPath(fileNameWithPath);
+                myUniMagReader.loadingConfigurationXMLFile(true);
+                synchronized (myUniMagReader) {
+                    myUniMagReader.notifyAll();
+                }
+            }
+        }).start();
 
-//            }
-//        }).start();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
+        synchronized (myUniMagReader) {
+            try {
+                myUniMagReader.wait(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            uniMagSDKTools firmwareUpdateTool = new uniMagSDKTools(callBack, activity);
+            firmwareUpdateTool.setUniMagReader(myUniMagReader);
+            myUniMagReader.setSDKToolProxy(firmwareUpdateTool.getSDKToolProxy());
         }
-        uniMagSDKTools firmwareUpdateTool = new uniMagSDKTools(callBack, activity);
-        firmwareUpdateTool.setUniMagReader(myUniMagReader);
-        myUniMagReader.setSDKToolProxy(firmwareUpdateTool.getSDKToolProxy());
-
     }
 
     private String getConfigurationFileFromRaw() {
@@ -98,7 +103,7 @@ public class EMSUniMagDriver implements uniMagReaderMsg, uniMagReaderToolsMsg {
         if (myUniMagReader != null) {
 //            boolean isWaitingForCommandResult = false;
 //            if (!isWaitingForCommandResult) {
-                myUniMagReader.startSwipeCard();
+            myUniMagReader.startSwipeCard();
 //            }
         }
     }
