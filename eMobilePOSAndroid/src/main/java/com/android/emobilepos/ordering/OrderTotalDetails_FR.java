@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.dao.MixMatchDAO;
-import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
@@ -30,7 +29,6 @@ import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Tax;
 import com.android.support.Global;
 import com.android.support.MyPreferences;

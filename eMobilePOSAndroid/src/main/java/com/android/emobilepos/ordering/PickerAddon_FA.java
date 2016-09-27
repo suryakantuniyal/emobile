@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private boolean hasBeenCreated = false;

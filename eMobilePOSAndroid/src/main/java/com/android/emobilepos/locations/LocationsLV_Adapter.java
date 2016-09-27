@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 

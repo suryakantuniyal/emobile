@@ -4,9 +4,6 @@ import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
 import com.android.support.DateUtils;
-import com.mpowa.android.sdk.common.utils.TextUtils;
-
-import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmQuery;

@@ -10,7 +10,6 @@ import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

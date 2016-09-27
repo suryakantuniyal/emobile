@@ -3,6 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
+import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentMethod;
 import com.android.support.MyPreferences;
 
@@ -99,11 +100,15 @@ public class PayMethodsHandler {
 
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(PaymentMethod.class);
-        realm.commitTransaction();
+        try {
+            DBManager._db.execSQL("DELETE FROM " + table_name);
+            realm.beginTransaction();
+            realm.where(Payment.class).findAll().deleteAllFromRealm();
+//            realm.delete(PaymentMethod.class);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public List<PaymentMethod> getPayMethod() {

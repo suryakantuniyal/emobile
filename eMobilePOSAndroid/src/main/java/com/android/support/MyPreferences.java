@@ -291,7 +291,7 @@ public class MyPreferences {
         return (prefs.getString(ActivationKey, ""));
     }
 
-    /* Set/Get Device ID */
+    /* Set/Get EMSDevice ID */
     public void setDeviceID(String id) {
         prefEditor.putString(DeviceID, id);
         prefEditor.commit();

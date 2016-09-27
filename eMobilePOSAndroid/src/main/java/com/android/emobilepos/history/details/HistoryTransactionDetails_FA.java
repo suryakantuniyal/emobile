@@ -35,13 +35,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.ProductsImagesHandler;
 import com.android.database.ShiftPeriodsDBHandler;
-import com.android.dao.StoredPaymentsDAO;
 import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;

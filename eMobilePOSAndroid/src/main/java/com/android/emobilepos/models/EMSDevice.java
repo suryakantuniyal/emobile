@@ -7,7 +7,7 @@ import io.realm.RealmObject;
 /**
  * Created by Guarionex on 6/14/2016.
  */
-public class Device extends RealmObject {
+public class EMSDevice extends RealmObject {
     @SerializedName("printer_id")
     private String id;
     @SerializedName("printer_name")

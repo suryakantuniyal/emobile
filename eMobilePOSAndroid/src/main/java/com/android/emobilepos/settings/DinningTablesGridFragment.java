@@ -16,9 +16,6 @@ import com.android.emobilepos.adapters.DinningTablesAdapter;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.SalesAssociate;
 
-import java.util.List;
-
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**

@@ -7,7 +7,7 @@ import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 1/19/2016.

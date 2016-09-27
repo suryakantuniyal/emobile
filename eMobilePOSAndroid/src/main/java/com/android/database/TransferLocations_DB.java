@@ -9,12 +9,9 @@ import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class TransferLocations_DB {
     public static final String trans_id = "trans_id";

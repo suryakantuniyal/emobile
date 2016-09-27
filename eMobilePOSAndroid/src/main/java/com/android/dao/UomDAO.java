@@ -9,7 +9,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 4/12/2016.
@@ -44,9 +44,12 @@ public class UomDAO {
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(UOM.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(UOM.class);
+        }finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<UOM> getByProdId(String prodId) {

@@ -14,8 +14,8 @@ import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.google.gson.Gson;
 import com.android.support.NumberUtils;
+import com.google.gson.Gson;
 
 import net.sqlcipher.database.SQLiteStatement;
 

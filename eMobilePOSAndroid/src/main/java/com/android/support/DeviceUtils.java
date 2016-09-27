@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
-import com.android.emobilepos.models.Device;
+import com.android.emobilepos.models.EMSDevice;
 
 import java.util.HashMap;
 
@@ -19,12 +19,12 @@ public class DeviceUtils {
     public static String autoConnect(Activity activity, boolean forceReload) {
         MyPreferences myPref = new MyPreferences(activity);
         StringBuilder sb = new StringBuilder();
-        RealmResults<Device> devices = DeviceTableDAO.getAll();
+        RealmResults<EMSDevice> devices = DeviceTableDAO.getAll();
         HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
         EMSDeviceManager edm = null;
         if (forceReload) {
             int i = 0;
-            for (Device device : devices) {
+            for (EMSDevice device : devices) {
                 if (tempMap.containsKey(device.getId())) {
                     Global.multiPrinterMap.put(device.getCategoryId(), tempMap.get(device.getId()));
                 } else {

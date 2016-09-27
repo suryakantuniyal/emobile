@@ -503,7 +503,7 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		powaPOS.printText(textHandler.newLines(1));
 		sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 		sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
-		sb.append(textHandler.centeredString("Device: " + myPref.getEmpName() + "(" + myPref.getEmpID() + ")",
+		sb.append(textHandler.centeredString("EMSDevice: " + myPref.getEmpName() + "(" + myPref.getEmpID() + ")",
 				LINE_WIDTH));
 		sb.append(textHandler.newLines(1));
 		sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH, 0));
@@ -1225,13 +1225,13 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 		// @Override
 		// public void onMCUDeviceAttached(PowaMsgHeader.DeviceType type) {
 		//
-		// //Toast.makeText(activity, "MCU Device Attached",
+		// //Toast.makeText(activity, "MCU EMSDevice Attached",
 		// Toast.LENGTH_LONG).show();
 		// }
 		//
 		// @Override
 		// public void onMCUDeviceDetached(PowaMsgHeader.DeviceType type) {
-		// //Toast.makeText(activity, "MCU Device Detached",
+		// //Toast.makeText(activity, "MCU EMSDevice Detached",
 		// Toast.LENGTH_LONG).show();
 		// }
 		//

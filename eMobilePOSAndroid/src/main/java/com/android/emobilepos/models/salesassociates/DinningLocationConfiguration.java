@@ -8,10 +8,9 @@ import java.util.List;
 /**
  * Created by guarionex on 9/20/16.
  */
-public class SalesAssociatesConfiguration {
+public class DinningLocationConfiguration {
     @SerializedName("loc_id")
     private String locationId;
-    private int emp_id;
     private List<SalesAssociate> salesAssociates;
 
     public String getLocationId() {
@@ -30,15 +29,4 @@ public class SalesAssociatesConfiguration {
         this.salesAssociates = salesAssociates;
     }
 
-    public SalesAssociatesConfiguration minify() {
-        return this;
-    }
-
-    public int getEmp_id() {
-        return emp_id;
-    }
-
-    public void setEmp_id(int emp_id) {
-        this.emp_id = emp_id;
-    }
 }

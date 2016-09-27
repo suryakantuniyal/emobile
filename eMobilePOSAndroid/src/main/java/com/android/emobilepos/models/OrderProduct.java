@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
 import com.android.support.Global;
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;

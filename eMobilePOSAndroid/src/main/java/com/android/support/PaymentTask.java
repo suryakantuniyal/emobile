@@ -11,7 +11,6 @@ import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.text.Bidi;
 import java.util.HashMap;
 
 import javax.xml.parsers.SAXParser;

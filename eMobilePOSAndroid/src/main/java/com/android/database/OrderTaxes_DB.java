@@ -1,6 +1,5 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.DataTaxes;

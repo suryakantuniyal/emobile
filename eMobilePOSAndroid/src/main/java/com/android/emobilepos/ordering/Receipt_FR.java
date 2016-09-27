@@ -41,11 +41,9 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
-import com.android.database.Locations_DB;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
@@ -63,8 +61,6 @@ import com.android.emobilepos.customer.ViewCustomers_FA;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -90,13 +86,12 @@ import com.viewpagerindicator.CirclePageIndicator;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import drivers.EMSBluetoothStarPrinter;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class Receipt_FR extends Fragment implements OnClickListener,
         OnItemClickListener, OnDrawerOpenListener, OnDrawerCloseListener {

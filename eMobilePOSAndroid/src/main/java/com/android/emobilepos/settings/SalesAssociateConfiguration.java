@@ -13,7 +13,6 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmQuery;
 
 public class SalesAssociateConfiguration extends BaseFragmentActivityActionBar {
 

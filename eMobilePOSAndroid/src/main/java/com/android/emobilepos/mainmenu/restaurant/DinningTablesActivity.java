@@ -7,14 +7,13 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;

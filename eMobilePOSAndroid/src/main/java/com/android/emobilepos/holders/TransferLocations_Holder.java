@@ -3,7 +3,6 @@ package com.android.emobilepos.holders;
 import android.app.Activity;
 
 import com.android.support.DateUtils;
-import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.util.Date;

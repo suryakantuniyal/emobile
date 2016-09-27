@@ -2,8 +2,6 @@ package com.android.emobilepos.models;
 
 import com.google.gson.annotations.SerializedName;
 
-import io.realm.RealmObject;
-
 /**
  * Created by Guarionex on 12/22/2015.
  */

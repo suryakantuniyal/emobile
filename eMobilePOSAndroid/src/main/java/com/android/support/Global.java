@@ -30,14 +30,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
-import com.android.dao.DeviceTableDAO;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.holders.TransferInventory_Holder;
 import com.android.emobilepos.holders.TransferLocations_Holder;
 import com.android.emobilepos.models.DataTaxes;
-import com.android.emobilepos.models.Device;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
@@ -70,7 +68,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -82,7 +79,6 @@ import java.util.TimerTask;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 import main.EMSDeviceManager;
 
 public class Global extends MultiDexApplication {
@@ -101,13 +97,12 @@ public class Global extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
-        RealmConfiguration config = new RealmConfiguration.Builder(this)
+        RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
-                .modules(Realm.getDefaultModule())
                 .build();
         Realm.setDefaultConfiguration(config);
-        RealmResults<Device> all = DeviceTableDAO.getAll();
     }
 
 

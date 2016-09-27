@@ -273,7 +273,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 			dialog.setNegativeButton(R.string.button_ok, null);
 			AlertDialog alert = dialog.create();
 			alert.setTitle(R.string.dlog_title_confirm);
-			alert.setMessage("Device is Online");
+			alert.setMessage("EMSDevice is Online");
 			alert.show();
 		}
 		

@@ -8,11 +8,6 @@ import android.widget.EditText;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 /**
  * Created by Guarionex on 12/3/2015.
  */

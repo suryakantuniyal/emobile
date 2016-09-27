@@ -5,12 +5,17 @@ import com.android.emobilepos.models.SalesAssociate;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 4/12/2016.
@@ -32,10 +37,13 @@ public class SalesAssociateDAO {
 
     public static void insert(List<SalesAssociate> salesAssociates) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(SalesAssociate.class);
-        realm.copyToRealm(salesAssociates);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(SalesAssociate.class);
+            realm.copyToRealm(salesAssociates);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<SalesAssociate> getAll() {
@@ -44,9 +52,12 @@ public class SalesAssociateDAO {
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(SalesAssociate.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(SalesAssociate.class);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static SalesAssociate getByEmpId(int empId) {
@@ -57,30 +68,58 @@ public class SalesAssociateDAO {
 
     public static void removeAssignedTable(SalesAssociate selectedSalesAssociate, DinningTable table) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        selectedSalesAssociate.getAssignedDinningTables().remove(table);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            selectedSalesAssociate.getAssignedDinningTables().remove(table);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static void addAssignedTable(SalesAssociate selectedSalesAssociate, DinningTable table) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        if (selectedSalesAssociate.isValid()) {
-            selectedSalesAssociate.getAssignedDinningTables().add(table);
-        } else {
+        try {
+            realm.beginTransaction();
             getByEmpId(selectedSalesAssociate.getEmp_id()).getAssignedDinningTables().add(table);
+        } finally {
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
     }
 
     public static void clearAllAssignedTable(SalesAssociate associate) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        if (associate.isValid()) {
-            associate.getAssignedDinningTables().deleteAllFromRealm();
-        } else {
+        try {
+            realm.beginTransaction();
             getByEmpId(associate.getEmp_id()).getAssignedDinningTables().deleteAllFromRealm();
+        } finally {
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
+    }
+
+    public static HashMap<String, List<SalesAssociate>> getSalesAssociatesByLocation() {
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<DinningTable> tables = realm.where(DinningTable.class).findAll();
+        Set<String> locations = new HashSet<>();
+        HashMap<String, List<SalesAssociate>> locationHashMap = new HashMap<>();
+        for (DinningTable table : tables) {
+            if (!locations.contains(table.getLocationId())) {
+                locations.add(table.getLocationId());
+            }
+        }
+        for (String locId : locations) {
+            List<SalesAssociate> associates = new ArrayList<>();
+            for (SalesAssociate associate : SalesAssociateDAO.getAll()) {
+                RealmResults<DinningTable> tbls = associate.getAssignedDinningTables()
+                        .where().equalTo("locationId", locId).findAll();
+                RealmList<DinningTable> list = new RealmList<>();
+                list.addAll(tbls.subList(0, tbls.size()));
+                SalesAssociate associateNoRelm = realm.copyFromRealm(associate);
+                associateNoRelm.setAssignedDinningTables(list);
+                associates.add(associateNoRelm);
+            }
+            locationHashMap.put(locId, associates);
+
+        }
+        return locationHashMap;
     }
 }

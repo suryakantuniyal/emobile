@@ -18,8 +18,8 @@ import android.widget.TextView;
 
 import com.android.database.AddressHandler;
 import com.android.database.CustomersHandler;
-import com.android.emobilepos.R;
 import com.android.database.DBManager;
+import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 

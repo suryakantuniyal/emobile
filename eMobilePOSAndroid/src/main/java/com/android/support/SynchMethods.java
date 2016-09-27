@@ -47,17 +47,16 @@ import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.ItemPriceLevel;
+import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.PaymentMethod;
-import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
 import com.android.emobilepos.models.SalesAssociate;
-import com.android.emobilepos.models.salesassociates.SalesAssociatesConfiguration;
+import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -99,7 +98,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -108,9 +106,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class SynchMethods {
     private final OAuthManager oAuthManager;
@@ -1502,30 +1498,16 @@ public class SynchMethods {
     }
 
     public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
-        List<SalesAssociatesConfiguration> configurations = new ArrayList<>();
-        HashMap<String, RealmList<DinningTable>> tablesByLocation = new HashMap<>();
-        for (SalesAssociate associate : salesAssociates) {
-            for (DinningTable dinningTable : associate.getAssignedDinningTables()) {
-                if (tablesByLocation.containsKey(dinningTable.getLocationId())) {
-                    tablesByLocation.get(dinningTable.getLocationId()).add(dinningTable);
-                } else {
-                    RealmList<DinningTable> tables = new RealmList<>();
-                    tables.add(dinningTable);
-                    tablesByLocation.put(dinningTable.getLocationId(), tables);
-                }
-            }
-            for (Map.Entry<String, RealmList<DinningTable>> next : tablesByLocation.entrySet()) {
-                RealmList<DinningTable> tableList = next.getValue();
-                String locationId = next.getKey();
-                SalesAssociatesConfiguration configuration = new SalesAssociatesConfiguration();
-                configuration.setSalesAssociates(new ArrayList<SalesAssociate>());
-                configuration.setLocationId(locationId);
-                associate.setAssignedDinningTables(tableList);
-                configuration.getSalesAssociates().add(associate);
-                configuration.setEmp_id(associate.getEmp_id());
-                configurations.add(configuration.minify());
-            }
+        List<DinningLocationConfiguration> configurations = new ArrayList<>();
+
+        HashMap<String, List<SalesAssociate>> locations = SalesAssociateDAO.getSalesAssociatesByLocation();
+        for (Map.Entry<String, List<SalesAssociate>> location : locations.entrySet()) {
+            DinningLocationConfiguration configuration = new DinningLocationConfiguration();
+            configuration.setLocationId(location.getKey());
+            configuration.setSalesAssociates(location.getValue());
+            configurations.add(configuration);
         }
+
         MyPreferences preferences = new MyPreferences(activity);
         StringBuilder url = new StringBuilder(activity.getString(R.string.sync_enablermobile_mesasconfig));
         url.append("/").append(URLEncoder.encode(preferences.getEmpID(), GenerateXML.UTF_8));
@@ -1544,17 +1526,17 @@ public class SynchMethods {
         try {
             com.enablercorp.oauthclient.HttpClient client = new com.enablercorp.oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();
-            Type listType = new com.google.gson.reflect.TypeToken<List<SalesAssociatesConfiguration>>() {
+            Type listType = new com.google.gson.reflect.TypeToken<List<DinningLocationConfiguration>>() {
             }.getType();
             String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), OAuthManager.getOAuthClient(activity));
-            List<SalesAssociatesConfiguration> conf = gson.fromJson(s, listType);
+            List<DinningLocationConfiguration> conf = gson.fromJson(s, listType);
             InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), OAuthManager.getOAuthClient(activity));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<SalesAssociatesConfiguration> configurations = new ArrayList<>();
+            List<DinningLocationConfiguration> configurations = new ArrayList<>();
             reader.beginArray();
             int i = 0;
             while (reader.hasNext()) {
-                SalesAssociatesConfiguration configuration = gson.fromJson(reader, SalesAssociatesConfiguration.class);
+                DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
                 configurations.add(configuration);
                 i++;
 //                if (i == 1000) {
@@ -1565,7 +1547,7 @@ public class SynchMethods {
 
             reader.endArray();
             reader.close();
-            for (SalesAssociatesConfiguration configuration : configurations) {
+            for (DinningLocationConfiguration configuration : configurations) {
                 for (SalesAssociate associate : configuration.getSalesAssociates()) {
                     SalesAssociateDAO.clearAllAssignedTable(associate);
                     for (DinningTable table : associate.getAssignedDinningTables()) {

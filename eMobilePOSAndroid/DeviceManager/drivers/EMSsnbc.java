@@ -816,7 +816,7 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 		StringBuilder sb_refunds = new StringBuilder();
 		sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 		sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
-		sb.append(textHandler.centeredString("Device: "+myPref.getEmpName()+"("+myPref.getEmpID()+")", LINE_WIDTH));
+		sb.append(textHandler.centeredString("EMSDevice: "+myPref.getEmpName()+"("+myPref.getEmpID()+")", LINE_WIDTH));
 		sb.append(textHandler.newLines(2));
 		sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH, 0));
 		sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary), LINE_WIDTH, 0));

@@ -28,8 +28,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.ShiftPeriods;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.NumberUtils;
+import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 public class OpenShift_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 

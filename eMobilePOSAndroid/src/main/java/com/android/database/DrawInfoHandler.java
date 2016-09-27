@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.support.DateUtils;
-import com.android.support.Global;
 
 import net.sqlcipher.database.SQLiteStatement;
 

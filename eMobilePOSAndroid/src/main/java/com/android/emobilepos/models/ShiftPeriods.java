@@ -1,7 +1,6 @@
 package com.android.emobilepos.models;
 
 import com.android.support.DateUtils;
-import com.android.support.Global;
 
 import java.util.Date;
 import java.util.UUID;

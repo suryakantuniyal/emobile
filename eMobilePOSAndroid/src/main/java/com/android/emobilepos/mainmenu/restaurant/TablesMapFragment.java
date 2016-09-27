@@ -3,7 +3,6 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,36 +20,15 @@ import android.widget.TextView;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.dao.SalesAssociateDAO;
-import com.android.database.OrderProductsHandler;
-import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DinningTable;
 import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.SalesAssociate;
-import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
-import com.android.saxhandler.SAXdownloadHandler;
 import com.android.support.Global;
-import com.android.support.HttpClient;
-import com.android.support.MyPreferences;
-import com.android.support.OnHoldsManager;
-import com.android.support.Post;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import io.realm.Realm;
 

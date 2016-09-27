@@ -6,10 +6,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.ProductAttribute;
 import com.android.support.DateUtils;

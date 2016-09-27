@@ -4,13 +4,12 @@ import android.app.Activity;
 
 import com.android.support.Customer;
 import com.android.support.DateUtils;
-import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
 import java.util.Date;
 
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class Order implements Cloneable {
     public String ord_id = "";

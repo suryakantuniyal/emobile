@@ -28,8 +28,7 @@ public class OAuthManager {
     public OAuthManager(Context context, String clientId, String clientSecret) {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
-
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder()
                 .name("oauthclient")
                 .deleteRealmIfMigrationNeeded()
                 .modules(Realm.getDefaultModule(), new OAuthRealmModule())
@@ -49,13 +48,13 @@ public class OAuthManager {
     }
 
     public static OAuthClient getOAuthClient(Context context) {
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder(context)
+        RealmConfiguration realmConfig = new RealmConfiguration.Builder()
                 .name("oauthclient")
                 .deleteRealmIfMigrationNeeded()
                 .modules(Realm.getDefaultModule(), new OAuthRealmModule())
 //                .encryptionKey(key)
                 .build();
-        Realm realm =Realm.getInstance(realmConfig);
+        Realm realm = Realm.getInstance(realmConfig);
         OAuthClient authClient = realm.where(OAuthClient.class).findFirst();
         return realm.copyFromRealm(authClient);
 

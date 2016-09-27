@@ -30,7 +30,6 @@ import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentMethod;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -63,8 +62,6 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import drivers.EMSWalker;
 import interfaces.EMSCallBack;
-import io.realm.Realm;
-import io.realm.RealmQuery;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
 
