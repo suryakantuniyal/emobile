@@ -74,13 +74,6 @@
                 android:layout_weight="1"
                 android:padding="10dp" >
 
-                <ImageView
-                    android:id="@+id/btnCaptureBack"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_check_back" />
-
                 <TextView
                     android:id="@+id/tapLabela"
                     android:layout_width="wrap_content"
@@ -89,6 +82,13 @@
                     android:textAppearance="@style/dark_blue_text_appearance"
                     android:text="@string/capture_back"
                     android:textSize="@dimen/add_orders_total_label_txt_size" />
+
+                <ImageView
+                    android:id="@+id/btnCaptureBack"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_check_back" />
             </FrameLayout>
         </LinearLayout>
     </ScrollView>
