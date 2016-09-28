@@ -292,14 +292,19 @@ public class Payment extends RealmObject {
     public String getPaymethod_id() {
         return paymethod_id;
     }
-    private void setPaymentMethod(String paymethod_id){
+
+    private void setPaymentMethod(String paymethod_id) {
         this.paymentMethod = Realm.getDefaultInstance()
                 .where(PaymentMethod.class)
                 .equalTo("paymethod_id", paymethod_id).findFirst();
-        if (!this.isValid() && getPaymentMethod() != null) {
-            this.paymentMethod = Realm.getDefaultInstance().copyFromRealm(this.getPaymentMethod());
+        PaymentMethod pm = getPaymentMethod();
+        if (!this.isValid() && pm != null) {
+            this.paymentMethod = pm.isValid()
+                    ? Realm.getDefaultInstance().copyFromRealm(pm)
+                    : pm;
         }
     }
+
     public void setPaymethod_id(String paymethod_id) {
         setPaymentMethod(paymethod_id);
         this.paymethod_id = paymethod_id;
@@ -930,7 +935,7 @@ public class Payment extends RealmObject {
     }
 
     public PaymentMethod getPaymentMethod() {
-        if(this.paymentMethod==null && !TextUtils.isEmpty(getPaymethod_id())){
+        if (this.paymentMethod == null && !TextUtils.isEmpty(getPaymethod_id())) {
             setPaymentMethod(getPaymethod_id());
         }
         return paymentMethod;
