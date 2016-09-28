@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.55"
+            versionName "1.2.0.57"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -64,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.55"
+            versionName "1.2.0.57"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -78,7 +78,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.55"
+            versionName "1.2.0.57"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.55"
+            versionName "1.2.0.57"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -106,7 +106,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.65"
+            versionName "1.1.1.67"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -120,7 +120,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.65"
+            versionName "1.1.1.67"
             versionCode 103
             targetSdkVersion 23
             multiDexEnabled = true
@@ -161,7 +161,7 @@ android {
         icmpevoCompile files('libs_icmpevo/Android_Platform_Adapter.jar')
         icmpevoCompile files('libs/RBA_SDK.jar')
         compile(name: 'dragSortLibrary-release', ext: 'aar')
-        compile(name: 'mDOpenCV-release', ext: 'aar')
+//        compile(name: 'mDOpenCV-release', ext: 'aar')
         compile(name: 'honeywell-release', ext: 'aar')
         compile(name: 'stickyListHeaders-release', ext: 'aar')
         compile(name: 'gridHeaderLibrary-release', ext: 'aar')
