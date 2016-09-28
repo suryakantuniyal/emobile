@@ -517,7 +517,8 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void refreshAttributeProduct(Cursor myCursor) {
 
-        OrderProduct orderProduct = new OrderProduct();
+//        OrderProduct orderProduct = new OrderProduct();
+        orderProduct=global.orderProducts.get(modifyOrderPosition);
         orderProduct.setProd_id(myCursor.getString(myCursor.getColumnIndex("_id")));
         orderProduct.setOrdprod_name(myCursor.getString(myCursor.getColumnIndex("prod_name")));
 
@@ -579,7 +580,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
         OrderProduct product;
         if (isModify) {
-            product = global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
+            product = orderProduct;//global.orderProducts.size() == 0 ? null : global.orderProducts.get(modifyOrderPosition);
         } else {
             product = orderProduct;
         }
