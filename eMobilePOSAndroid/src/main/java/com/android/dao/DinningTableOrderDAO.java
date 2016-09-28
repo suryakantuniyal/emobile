@@ -1,7 +1,7 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.models.Order;
 import com.android.support.DateUtils;
 
@@ -16,9 +16,12 @@ public class DinningTableOrderDAO {
 
     public static void insert(DinningTableOrder dinningTableOrder) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(dinningTableOrder);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(dinningTableOrder);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<DinningTableOrder> getAll() {
@@ -27,9 +30,12 @@ public class DinningTableOrderDAO {
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(DinningTableOrder.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(DinningTableOrder.class);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static void deleteByNumber(String number) {

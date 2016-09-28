@@ -1,6 +1,6 @@
 package util.json;
 
-import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.realms.DinningTable;
 import com.android.support.DateUtils;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -10,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 

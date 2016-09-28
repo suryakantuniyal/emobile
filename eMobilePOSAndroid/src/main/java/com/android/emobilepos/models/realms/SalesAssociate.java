@@ -1,12 +1,16 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
+
+import com.android.emobilepos.models.realms.DinningTable;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Guarionex on 3/8/2016.
  */
 public class SalesAssociate extends RealmObject {
+    @PrimaryKey
     private int emp_id;
     private String zone_id;
     private String emp_name;

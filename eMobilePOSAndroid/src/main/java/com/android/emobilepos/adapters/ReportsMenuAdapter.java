@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.Global;
 
 import java.text.DecimalFormat;

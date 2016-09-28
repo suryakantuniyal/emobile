@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;

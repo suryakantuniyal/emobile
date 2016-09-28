@@ -1,4 +1,4 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Index;

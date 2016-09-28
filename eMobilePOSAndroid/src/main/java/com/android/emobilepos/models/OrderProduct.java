@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Global;
 import com.google.gson.annotations.SerializedName;
 

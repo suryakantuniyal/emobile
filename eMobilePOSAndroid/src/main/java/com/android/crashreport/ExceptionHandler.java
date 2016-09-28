@@ -99,7 +99,7 @@ public class ExceptionHandler implements
 			// Files dir for storing the stack traces
 			filePath = context.getFilesDir().getAbsolutePath();
 
-			// EMSDevice model
+			// Device model
 			phoneModel = android.os.Build.MODEL;
 
 			// Android version
@@ -150,7 +150,7 @@ public class ExceptionHandler implements
 		returnVal += "\n";
 		returnVal += "Brand : " + brand;
 		returnVal += "\n";
-		returnVal += "EMSDevice : " + device;
+		returnVal += "Device : " + device;
 		returnVal += "\n";
 		returnVal += "Display : " + display;
 		returnVal += "\n";

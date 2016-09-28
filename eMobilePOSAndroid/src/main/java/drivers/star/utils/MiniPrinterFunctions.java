@@ -424,7 +424,7 @@ public class MiniPrinterFunctions
 	/**
 	 * This function is used to print a java bitmap directly to a portable printer.
 	 * @param context - Activity for displaying messages to the user
-	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<EMSDevice pair name>)
+	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<Device pair name>)
 	 * @param portSettings - Should be mini, the port settings mini is used for portable printers
 	 * @param source - The bitmap to convert to Star printer data for portable printers
 	 * @param maxWidth - The maximum width of the image to print.  This is usually the page width of the printer.  If the image exceeds the maximum width then the image is scaled down.  The ratio is maintained. 
@@ -460,7 +460,7 @@ public class MiniPrinterFunctions
 	/**
 	 * This function is used to print a java bitmap directly to a portable printer.
 	 * @param context - Activity for displaying messages to the user
-	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<EMSDevice pair name>)
+	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<Device pair name>)
 	 * @param portSettings - Should be mini, the port settings mini is used for portable printers
 	 * @param res - The resources object containing the image data
 	 * @param source - The resource id of the image data
@@ -497,7 +497,7 @@ public class MiniPrinterFunctions
 	/**
 	 * This function prints raw text to a Star portable printer.  It shows how the text can be modified like changing its size.
 	 * @param context - Activity for displaying messages to the user
-	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<EMSDevice pair name>)
+	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<Device pair name>)
 	 * @param portSettings - Should be mini, the port settings mini is used for portable printers
 	 * @param underline - boolean variable that tells the printer to underline the text
 	 * @param emphasized - boolean variable that tells the printer to emphasize the text.  This is somewhat like bold. It isn't as dark, but darker than regular characters.
@@ -598,7 +598,7 @@ public class MiniPrinterFunctions
 	/**
 	 * This function prints raw JP-Kanji text to a Star portable printer.  It shows how the text can be modified like changing its size.
 	 * @param context - Activity for displaying messages to the user
-	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<EMSDevice pair name>)
+	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<Device pair name>)
 	 * @param portSettings - Should be mini, the port settings mini is used for portable printers
 	 * @param underline - boolean variable that tells the printer to underline the text
 	 * @param emphasized - boolean variable that tells the printer to emphasize the text.  This is somewhat like bold. It isn't as dark, but darker than regular characters.
@@ -717,7 +717,7 @@ public class MiniPrinterFunctions
 	 * The function waits for a response from the user.
 	 * The user can cancel MSR mode or have the printer read the card.
 	 * @param context - Activity for displaying messages to the user
-	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<EMSDevice pair name>)
+	 * @param portName - Port name to use for communication. This should be (TCP:<IPAddress> or BT:<Device pair name>)
 	 * @param portSettings - Should be mini, the port settings mini is used for portable printers
 	 */
 	public static void MCRStart(final Context context, String portName, String portSettings)

@@ -1,6 +1,6 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.EMSDevice;
+import com.android.emobilepos.models.realms.Device;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -18,43 +18,46 @@ public class DeviceTableDAO {
     public static void insert(String json) {
         Gson gson = JsonUtils.getInstance();
 
-        Type listType = new com.google.gson.reflect.TypeToken<List<EMSDevice>>() {
+        Type listType = new com.google.gson.reflect.TypeToken<List<Device>>() {
         }.getType();
         try {
-            List<EMSDevice> devices = gson.fromJson(json, listType);
+            List<Device> devices = gson.fromJson(json, listType);
             DeviceTableDAO.insert(devices);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void insert(List<EMSDevice> devices) {
+    public static void insert(List<Device> devices) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(EMSDevice.class);
-        realm.copyToRealm(devices);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(Device.class);
+            realm.copyToRealm(devices);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
-    public static RealmResults<EMSDevice> getAll() {
-        if(Realm.getDefaultInstance().where(EMSDevice.class).isValid()) {
-            return Realm.getDefaultInstance().where(EMSDevice.class).findAll();
-        }
+    public static RealmResults<Device> getAll() {
+        return Realm.getDefaultInstance().where(Device.class).findAll();
     }
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            realm.where(EMSDevice.class).findAll().deleteAllFromRealm();
-        }finally {
+            if (realm.where(Device.class).isValid()) {
+                realm.delete(Device.class);
+            }
+        } finally {
             realm.commitTransaction();
         }
     }
 
-    public static EMSDevice getByEmpId(int id) {
+    public static Device getByEmpId(int id) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<EMSDevice> where = realm.where(EMSDevice.class);
+        RealmQuery<Device> where = realm.where(Device.class);
         return where.equalTo("id", id).findFirst();
     }
 }

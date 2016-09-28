@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.models.Order;
 import com.android.support.Global;
 

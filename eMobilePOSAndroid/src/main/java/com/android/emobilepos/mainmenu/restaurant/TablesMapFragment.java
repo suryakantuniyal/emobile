@@ -21,10 +21,10 @@ import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
 

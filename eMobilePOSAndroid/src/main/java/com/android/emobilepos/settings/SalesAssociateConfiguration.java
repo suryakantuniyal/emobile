@@ -4,8 +4,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 
+import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.support.Global;
 import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -82,7 +83,7 @@ public class SalesAssociateConfiguration extends BaseFragmentActivityActionBar {
         @Override
         protected Void doInBackground(Void... params) {
             Realm realm = Realm.getDefaultInstance();
-            List<SalesAssociate> assosiates = realm.where(SalesAssociate.class).findAll();
+            List<SalesAssociate> assosiates = SalesAssociateDAO.getAll();// realm.where(SalesAssociate.class).findAll();
             try {
                 SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfiguration.this, realm.copyFromRealm(assosiates));
             } catch (Exception e) {

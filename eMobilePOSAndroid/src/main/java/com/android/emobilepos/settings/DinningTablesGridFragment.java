@@ -13,8 +13,8 @@ import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.SalesAssociate;
 
 import io.realm.RealmResults;
 

@@ -1,16 +1,20 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
 
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Guarionex on 6/14/2016.
  */
-public class EMSDevice extends RealmObject {
+public class Device extends RealmObject {
     @SerializedName("printer_id")
+    @Index
     private String id;
     @SerializedName("printer_name")
+    @Index
     private String name;
     @SerializedName("printer_ip")
     private String ipAddress;

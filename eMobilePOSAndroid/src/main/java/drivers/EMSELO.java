@@ -14,7 +14,7 @@ import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -373,13 +373,13 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
 
             @Override
-            public void OnDeviceDisconnected() { //Fired when the EMSDevice has been Disconnected.
-                Toast.makeText(activity, "Magnetic-Stripe EMSDevice Disconnected !", Toast.LENGTH_SHORT).show();
+            public void OnDeviceDisconnected() { //Fired when the Device has been Disconnected.
+                Toast.makeText(activity, "Magnetic-Stripe Device Disconnected !", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void OnDeviceConnected() { //Fired when the EMSDevice has been Connected.
-                Toast.makeText(activity, "Magnetic-Stripe EMSDevice Connected !", Toast.LENGTH_SHORT).show();
+            public void OnDeviceConnected() { //Fired when the Device has been Connected.
+                Toast.makeText(activity, "Magnetic-Stripe Device Connected !", Toast.LENGTH_SHORT).show();
             }
 
             @Override

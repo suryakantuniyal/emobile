@@ -1,6 +1,4 @@
-package com.android.emobilepos.models.storedAndForward;
-
-import com.android.emobilepos.models.Payment;
+package com.android.emobilepos.models.realms;
 
 import java.util.Date;
 

@@ -3,8 +3,8 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;

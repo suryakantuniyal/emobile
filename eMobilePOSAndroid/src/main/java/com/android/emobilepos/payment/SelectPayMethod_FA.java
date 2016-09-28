@@ -29,6 +29,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.dao.PaymentMethodDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.OrdersHandler;
@@ -40,8 +41,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -75,8 +76,6 @@ import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import io.realm.Realm;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
@@ -1267,10 +1266,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     private void selectPayment(int position) {
         selectedPosition = position;
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        payTypeList.get(position).incrementPriority();
-        realm.commitTransaction();
+//        Realm realm = Realm.getDefaultInstance();
+//        realm.beginTransaction();
+//        payTypeList.get(position).incrementPriority();
+//        realm.commitTransaction();
+        PaymentMethodDAO.incrementPriority(payTypeList.get(position));
         if (payTypeList.get(position).getPaymentmethod_type().equals("Cash")) {
             Intent intent = new Intent(this, ProcessCash_FA.class);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());

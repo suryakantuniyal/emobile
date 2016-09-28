@@ -1,6 +1,6 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.UOM;
+import com.android.emobilepos.models.realms.UOM;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -31,10 +31,13 @@ public class UomDAO {
 
     public static void insert(List<UOM> uoms) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(UOM.class);
-        realm.copyToRealm(uoms);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(UOM.class);
+            realm.copyToRealm(uoms);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<UOM> getAll() {
@@ -47,7 +50,7 @@ public class UomDAO {
         try {
             realm.beginTransaction();
             realm.delete(UOM.class);
-        }finally {
+        } finally {
             realm.commitTransaction();
         }
     }

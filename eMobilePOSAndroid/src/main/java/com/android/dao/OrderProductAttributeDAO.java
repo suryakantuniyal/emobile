@@ -1,6 +1,6 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -31,10 +31,13 @@ public class OrderProductAttributeDAO {
     public static void insert(List<ProductAttribute> attributes) {
         setPKId(attributes);
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(ProductAttribute.class);
-        realm.copyToRealm(attributes);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(ProductAttribute.class);
+            realm.copyToRealm(attributes);
+        }finally {
+            realm.commitTransaction();
+        }
     }
 
     private static void setPKId(List<ProductAttribute> attributes) {

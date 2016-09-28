@@ -7,7 +7,7 @@ import android.util.Xml;
 import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateXML;

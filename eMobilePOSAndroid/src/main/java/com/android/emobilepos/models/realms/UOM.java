@@ -1,20 +1,24 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
 
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 
 /**
  * Created by Guarionex on 5/24/2016.
  */
 public class UOM extends RealmObject {
     @SerializedName("uomitem_id")
+    @Index
     private String uomItemId;
     @SerializedName("uom_id")
+    @Index
     private String uomId;
     @SerializedName("uom_name")
     private String uomName;
     @SerializedName("prod_id")
+    @Index
     private String prodId;
     @SerializedName("uom_conversion")
     private String uomConversion;

@@ -11,7 +11,7 @@ import android.widget.ListView;
 import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.SalesAssociateListAdapter;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.SalesAssociate;
 
 import io.realm.RealmResults;
 

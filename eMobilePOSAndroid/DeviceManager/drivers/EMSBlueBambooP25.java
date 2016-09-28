@@ -912,7 +912,7 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 		print(textHandler.newLines(1));
 		sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
 		sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
-		sb.append(textHandler.centeredString("EMSDevice: " + myPref.getEmpName() + "(" + myPref.getEmpID() + ")",
+		sb.append(textHandler.centeredString("Device: " + myPref.getEmpName() + "(" + myPref.getEmpID() + ")",
 				LINE_WIDTH));
 		sb.append(textHandler.newLines(1));
 		sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH, 0));

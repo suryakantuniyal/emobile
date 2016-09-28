@@ -3,7 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 
 import net.sqlcipher.database.SQLiteStatement;
 

@@ -2,7 +2,7 @@ package com.android.support;
 
 import android.app.Activity;
 
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 

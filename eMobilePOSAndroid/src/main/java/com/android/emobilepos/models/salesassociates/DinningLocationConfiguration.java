@@ -1,6 +1,6 @@
 package com.android.emobilepos.models.salesassociates;
 
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

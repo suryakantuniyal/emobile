@@ -85,7 +85,7 @@ public class MagStripDriver
 
 	}
 	
-	public void startDevice(){ //Start the EMSDevice.
+	public void startDevice(){ //Start the Device.
 		if(!mMagStripe.isDeviceConnected()){
 			mMagStripe.openDevice();	
 		}
@@ -103,7 +103,7 @@ public class MagStripDriver
 	}
 	public void stopDevice()
 	{ 
-		//Disable the EMSDevice
+		//Disable the Device
 		mMagStripe.clearCardData();
 		if(mMagStripe.isDeviceConnected())
 		{

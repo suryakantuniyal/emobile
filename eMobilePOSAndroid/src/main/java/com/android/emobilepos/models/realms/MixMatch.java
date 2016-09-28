@@ -1,10 +1,12 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Guarionex on 5/17/2016.
@@ -12,12 +14,15 @@ import io.realm.RealmObject;
 public class MixMatch extends RealmObject {
 
     @SerializedName("id_key")
+    @PrimaryKey
     private int idKey;
     @SerializedName("group_id")
+    @Index
     private String groupId;
     @SerializedName("description")
     private String description;
     @SerializedName("pricelevel_id")
+    @Index
     private String priceLevelId;
     @SerializedName("Qty")
     private int qty;
@@ -28,12 +33,15 @@ public class MixMatch extends RealmObject {
     @SerializedName("isactive")
     private boolean isActive;
     @SerializedName("start_date")
+    @Index
     private Date startDate;
     @SerializedName("end_date")
+    @Index
     private Date endDate;
     @SerializedName("_rowversion")
     private String rowVersion;
     @SerializedName("MixmatchType")
+    @Index
     private int mixMatchType;
     @SerializedName("DiscountOddItems")
     private boolean discountOddsItems;

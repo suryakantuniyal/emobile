@@ -1,4 +1,4 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import util.json.JsonUtils;
 
@@ -20,6 +21,7 @@ public class DinningTable extends RealmObject {
     @SerializedName("loc_id")
     private String locationId;
     @SerializedName("mesa_desc")
+    @Index
     private String number;
     @SerializedName("mesa_seats")
     private int seats;

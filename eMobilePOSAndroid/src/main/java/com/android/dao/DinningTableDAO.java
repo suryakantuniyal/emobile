@@ -1,6 +1,6 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.DinningTable;
+import com.android.emobilepos.models.realms.DinningTable;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -35,15 +35,17 @@ public class DinningTableDAO {
 
     public static void insert(List<DinningTable> dinningTables) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(DinningTable.class);
-        realm.copyToRealm(dinningTables);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(DinningTable.class);
+            realm.copyToRealm(dinningTables);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<DinningTable> getAll() {
-        RealmResults<DinningTable> tables = Realm.getDefaultInstance().where(DinningTable.class).findAll();
-        return tables;
+        return Realm.getDefaultInstance().where(DinningTable.class).findAll();
     }
 
     public static void truncate() {
@@ -51,7 +53,7 @@ public class DinningTableDAO {
         try {
             realm.beginTransaction();
             realm.delete(DinningTable.class);
-        }finally {
+        } finally {
             realm.commitTransaction();
         }
     }

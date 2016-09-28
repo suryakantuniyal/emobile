@@ -1,7 +1,7 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;

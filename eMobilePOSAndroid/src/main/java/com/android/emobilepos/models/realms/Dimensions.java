@@ -1,4 +1,4 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
 
 import com.google.gson.annotations.SerializedName;
 

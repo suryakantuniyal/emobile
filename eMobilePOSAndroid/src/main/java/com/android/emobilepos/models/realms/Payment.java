@@ -1,10 +1,12 @@
-package com.android.emobilepos.models;
+package com.android.emobilepos.models.realms;
 
 import android.app.Activity;
 import android.location.Location;
 import android.text.TextUtils;
 
+import com.android.dao.PaymentMethodDAO;
 import com.android.database.DrawInfoHandler;
+import com.android.emobilepos.models.EMVContainer;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -295,9 +297,10 @@ public class Payment extends RealmObject {
         return paymethod_id;
     }
     private void setPaymentMethod(String paymethod_id){
-        this.paymentMethod = Realm.getDefaultInstance()
-                .where(PaymentMethod.class)
-                .equalTo("paymethod_id", paymethod_id).findFirst();
+        this.paymentMethod = PaymentMethodDAO.getPaymentMethodById(paymethod_id);
+//                Realm.getDefaultInstance()
+//                .where(PaymentMethod.class)
+//                .equalTo("paymethod_id", paymethod_id).findFirst();
         if (!this.isValid() && getPaymentMethod() != null) {
             this.paymentMethod = Realm.getDefaultInstance().copyFromRealm(this.getPaymentMethod());
         }
