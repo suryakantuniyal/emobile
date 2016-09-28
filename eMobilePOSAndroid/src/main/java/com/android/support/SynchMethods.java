@@ -3,6 +3,7 @@ package com.android.support;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -90,7 +91,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -132,7 +132,7 @@ public class SynchMethods {
     private HttpClient client;
     private Gson gson = JsonUtils.getInstance();
 
-    public OAuthManager getOAuthManager(Activity activity) {
+    public static OAuthManager getOAuthManager(Activity activity) {
         MyPreferences preferences = new MyPreferences(activity);
         return OAuthManager.getInstance(activity, preferences.getAcctNumber(), preferences.getAcctPassword());
 
@@ -280,7 +280,7 @@ public class SynchMethods {
                 synchDownloadClerks(this);
                 synchDownloadSalesAssociate(this);
                 synchDownloadDinnerTable(this);
-                synchSalesAssociatesDinnindTables();
+                synchSalesAssociateDinnindTablesConfiguration(activity);
                 synchDownloadMixMatch(this);
                 synchDownloadTermsAndConditions(this);
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
@@ -1522,27 +1522,18 @@ public class SynchMethods {
         httpClient.post(url.toString(), json, authClient);
     }
 
-    public void synchSalesAssociatesDinnindTables() throws IOException, SAXException {
+    public static void synchSalesAssociateDinnindTablesConfiguration(Activity activity) throws IOException, SAXException {
         try {
+            getOAuthManager(activity);
             com.enablercorp.oauthclient.HttpClient client = new com.enablercorp.oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();
-            Type listType = new com.google.gson.reflect.TypeToken<List<DinningLocationConfiguration>>() {
-            }.getType();
-            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), OAuthManager.getOAuthClient(activity));
-            List<DinningLocationConfiguration> conf = gson.fromJson(s, listType);
             InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), OAuthManager.getOAuthClient(activity));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<DinningLocationConfiguration> configurations = new ArrayList<>();
             reader.beginArray();
-            int i = 0;
             while (reader.hasNext()) {
                 DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
                 configurations.add(configuration);
-                i++;
-//                if (i == 1000) {
-//                    configurations.clear();
-//                    i = 0;
-//                }
             }
 
             reader.endArray();

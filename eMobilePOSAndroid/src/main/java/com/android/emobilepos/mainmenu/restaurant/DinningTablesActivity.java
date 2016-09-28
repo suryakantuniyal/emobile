@@ -48,14 +48,11 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         associateId = extras.getString("associateId");
         setContentView(R.layout.activity_dinning_tables);
         new SynchOnHoldOrders().execute();
-        refresh(0);
+//        refresh(0);
     }
 
     public void refresh(int page) {
         setmSectionsPagerAdapter(new SectionsPagerAdapter(getFragmentManager()));
-        /*
-      The {@link ViewPager} that will host the section contents.
-     */
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         PageIndicator titlePageIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
         mViewPager.setAdapter(getmSectionsPagerAdapter());
@@ -63,27 +60,8 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         mViewPager.setCurrentItem(page);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_dinning_tables, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -170,6 +148,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
     private class SynchOnHoldOrders extends AsyncTask<Void, String, Void> {
         ProgressDialog progressDialog;
+
         @Override
         protected void onPreExecute() {
             progressDialog = new ProgressDialog(DinningTablesActivity.this);
@@ -178,9 +157,11 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
             progressDialog.setCancelable(false);
             progressDialog.show();
         }
+
         @Override
         protected Void doInBackground(Void... params) {
             try {
+                SynchMethods.synchSalesAssociateDinnindTablesConfiguration(DinningTablesActivity.this);
                 updateProgress(getString(R.string.sync_dload_ordersonhold));
                 SynchMethods.synchOrdersOnHoldList(DinningTablesActivity.this);
             } catch (SAXException e) {
@@ -251,7 +232,7 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         }
 
         private void openOrderingMain() {
-            Global.lastOrdID=tableOrder.getCurrentOrderId();
+            Global.lastOrdID = tableOrder.getCurrentOrderId();
             Order order = tableOrder.getOrder(DinningTablesActivity.this);
             Intent intent = new Intent(DinningTablesActivity.this, OrderingMain_FA.class);
             intent.putExtra("selectedDinningTableNumber", table.getNumber());

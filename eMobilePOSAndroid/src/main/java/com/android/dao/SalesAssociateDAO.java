@@ -90,7 +90,7 @@ public class SalesAssociateDAO {
         Realm realm = Realm.getDefaultInstance();
         try {
             realm.beginTransaction();
-            getByEmpId(associate.getEmp_id()).getAssignedDinningTables().deleteAllFromRealm();
+            getByEmpId(associate.getEmp_id()).getAssignedDinningTables().clear();
         } finally {
             realm.commitTransaction();
         }

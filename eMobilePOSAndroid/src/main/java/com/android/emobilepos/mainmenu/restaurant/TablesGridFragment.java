@@ -24,9 +24,6 @@ import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
-
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -36,7 +33,6 @@ import io.realm.RealmResults;
  */
 public class TablesGridFragment extends Fragment implements AdapterView.OnItemLongClickListener {
 
-    private GridView gridView;
     private DinningTablesAdapter adapter;
     private SalesAssociate associate;
 
@@ -48,8 +44,7 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.dlog_ask_table_grid_layout, container, false);
-        return rootView;
+        return inflater.inflate(R.layout.dlog_ask_table_grid_layout, container, false);
     }
 
     @Override
@@ -57,10 +52,8 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
         super.onViewCreated(view, savedInstanceState);
         RealmResults<DinningTable> realmResults = DinningTableDAO.getAll();
         realmResults.sort("number");
-        final List<DinningTable> dinningTables = realmResults;
-        gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
-        adapter = new DinningTablesAdapter(getActivity(), dinningTables);
-        MyPreferences preferences = new MyPreferences(getActivity());
+        GridView gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
+        adapter = new DinningTablesAdapter(getActivity(), realmResults);
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
             associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }

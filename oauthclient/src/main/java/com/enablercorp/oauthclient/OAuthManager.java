@@ -28,6 +28,7 @@ public class OAuthManager {
     public OAuthManager(Context context, String clientId, String clientSecret) {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
+        Realm.init(context);
         RealmConfiguration realmConfig = new RealmConfiguration.Builder()
                 .name("oauthclient")
                 .deleteRealmIfMigrationNeeded()
@@ -48,6 +49,7 @@ public class OAuthManager {
     }
 
     public static OAuthClient getOAuthClient(Context context) {
+        Realm.init(context);
         RealmConfiguration realmConfig = new RealmConfiguration.Builder()
                 .name("oauthclient")
                 .deleteRealmIfMigrationNeeded()
