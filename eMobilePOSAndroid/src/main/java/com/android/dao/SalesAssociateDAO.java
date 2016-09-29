@@ -47,7 +47,10 @@ public class SalesAssociateDAO {
     }
 
     public static RealmResults<SalesAssociate> getAll() {
-        return Realm.getDefaultInstance().where(SalesAssociate.class).findAll();
+        Realm.getDefaultInstance().beginTransaction();
+        RealmResults<SalesAssociate> all = Realm.getDefaultInstance().where(SalesAssociate.class).findAll();
+        Realm.getDefaultInstance().commitTransaction();
+        return all;
     }
 
     public static void truncate() {

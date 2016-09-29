@@ -3,7 +3,6 @@ package com.android.support;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -46,16 +45,16 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
-import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.ItemPriceLevel;
-import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.MixMatch;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -1344,7 +1343,7 @@ public class SynchMethods {
             InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevel"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<PriceLevel> priceLevels = new ArrayList<PriceLevel>();
+            List<PriceLevel> priceLevels = new ArrayList<>();
             PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
             priceLevelHandler.emptyTable();
             reader.beginArray();
@@ -1524,10 +1523,16 @@ public class SynchMethods {
 
     public static void synchSalesAssociateDinnindTablesConfiguration(Activity activity) throws IOException, SAXException {
         try {
-            getOAuthManager(activity);
             com.enablercorp.oauthclient.HttpClient client = new com.enablercorp.oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();
-            InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), OAuthManager.getOAuthClient(activity));
+            OAuthClient oauthClient;// = OAuthManager.getOAuthClient(activity);
+//            if (oauthClient == null) {
+            getOAuthManager(activity);
+            oauthClient = OAuthManager.getOAuthClient(activity);
+//            }
+            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+            Log.d("JSON:", s);
+            InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<DinningLocationConfiguration> configurations = new ArrayList<>();
             reader.beginArray();

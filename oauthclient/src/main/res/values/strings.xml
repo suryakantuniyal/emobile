@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OAuthClient</string>
+    <string name="oauth_token_url">https://emslogin.enablermobile.com/oauth/token</string>
 </resources>

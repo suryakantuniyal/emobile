@@ -2,12 +2,11 @@ package com.enablercorp.oauthclient;
 
 import android.content.Context;
 
-import com.enablercorp.oauthclient.HttpClient;
-import com.enablercorp.oauthclient.OAuthClient;
 import com.google.gson.Gson;
 
 import java.security.SecureRandom;
 
+import enablercorp.com.oauthclient.R;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.annotations.RealmModule;
@@ -17,17 +16,17 @@ import io.realm.annotations.RealmModule;
  */
 public class OAuthManager {
     private HttpClient httpClient = new HttpClient();
-    private String urlOAuthParams = "grant_type=client_credentials&client_id=%s&client_secret=%s";
-    private String requestTokenUrl = "https://emslogin.enablermobile.com/oauth/token";
+    private String requestTokenUrl;
     private Realm realm;
 
     public static OAuthManager getInstance(Context context, String clientId, String clientSecret) {
         return new OAuthManager(context, clientId, clientSecret);
     }
 
-    public OAuthManager(Context context, String clientId, String clientSecret) {
+    private OAuthManager(Context context, String clientId, String clientSecret) {
         byte[] key = new byte[64];
         new SecureRandom().nextBytes(key);
+        requestTokenUrl = context.getString(R.string.oauth_token_url);//"https://emslogin.enablermobile.com/oauth/token";
         Realm.init(context);
         RealmConfiguration realmConfig = new RealmConfiguration.Builder()
                 .name("oauthclient")
@@ -58,13 +57,14 @@ public class OAuthManager {
                 .build();
         Realm realm = Realm.getInstance(realmConfig);
         OAuthClient authClient = realm.where(OAuthClient.class).findFirst();
-        return realm.copyFromRealm(authClient);
+        return authClient == null ? null : realm.copyFromRealm(authClient);
 
     }
 
     public String requestToken() throws Exception {
         final String[] requestToken = new String[1];
         OAuthClient authClient = realm.where(OAuthClient.class).findFirst();
+        String urlOAuthParams = "grant_type=client_credentials&client_id=%s&client_secret=%s";
         final String oauthUrl = String.format(urlOAuthParams, authClient.getClient_id(), authClient.getClient_secret());
         new Thread(new Runnable() {
             @Override

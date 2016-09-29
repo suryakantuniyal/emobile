@@ -49,14 +49,14 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
     }
 
     public void refreshGrid() {
-        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+        SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
         setSalesAssociateInfo(activity.getSelectedSalesAssociate());
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         final DinningTable table = (DinningTable) adapterView.getItemAtPosition(i);
-        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+        SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
 //        Realm.getDefaultInstance().beginTransaction();
         boolean contains = activity.getSelectedSalesAssociate().getAssignedDinningTables().contains(table);
         if (contains) {

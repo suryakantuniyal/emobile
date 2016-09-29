@@ -1289,6 +1289,8 @@
     <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string>
     <string name="dlog_msg_cant_open_claimed_hold">Claimed orders can not be opened.</string>
     <string name="loading_orders">Loading orders. Please wait.</string>
+    <string name="sync_dload_settings">Downloading settings...</string>
+    <string name="sync_saving_settings">Saving settings...</string>
 
 
 </resources>

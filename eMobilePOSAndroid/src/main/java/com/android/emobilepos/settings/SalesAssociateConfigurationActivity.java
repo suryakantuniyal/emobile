@@ -1,5 +1,6 @@
 package com.android.emobilepos.settings;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -15,7 +16,7 @@ import java.util.List;
 
 import io.realm.Realm;
 
-public class SalesAssociateConfiguration extends BaseFragmentActivityActionBar {
+public class SalesAssociateConfigurationActivity extends BaseFragmentActivityActionBar {
 
     private SalesAssociate selectedSalesAssociate;
     private boolean hasBeenCreated;
@@ -73,23 +74,43 @@ public class SalesAssociateConfiguration extends BaseFragmentActivityActionBar {
 
     @Override
     protected void onStop() {
-        new SaveConfigurationTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         super.onStop();
+    }
 
+    @Override
+    public void onBackPressed() {
+        new SaveConfigurationTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private class SaveConfigurationTask extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(SalesAssociateConfigurationActivity.this);
+            progressDialog.setMessage(getString(R.string.sync_saving_settings));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
 
         @Override
         protected Void doInBackground(Void... params) {
             Realm realm = Realm.getDefaultInstance();
             List<SalesAssociate> assosiates = SalesAssociateDAO.getAll();// realm.where(SalesAssociate.class).findAll();
             try {
-                SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfiguration.this, realm.copyFromRealm(assosiates));
+                SynchMethods.postSalesAssociatesConfiguration(SalesAssociateConfigurationActivity.this, realm.copyFromRealm(assosiates));
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
+            finish();
+        }
     }
+
 }

@@ -2,6 +2,8 @@ package com.android.dao;
 
 import com.android.emobilepos.models.realms.PaymentMethod;
 
+import java.util.List;
+
 import io.realm.Realm;
 
 /**
@@ -24,6 +26,26 @@ public class PaymentMethodDAO {
         try {
             realm.beginTransaction();
             paymentMethod.incrementPriority();
+        } finally {
+            realm.commitTransaction();
+        }
+    }
+
+    public static void insert(List<PaymentMethod> paymentMethods) {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            realm.insert(paymentMethods);
+        } finally {
+            realm.commitTransaction();
+        }
+    }
+
+    public static void truncate() {
+        Realm realm = Realm.getDefaultInstance();
+        try {
+            realm.beginTransaction();
+            realm.delete(PaymentMethod.class);
         } finally {
             realm.commitTransaction();
         }

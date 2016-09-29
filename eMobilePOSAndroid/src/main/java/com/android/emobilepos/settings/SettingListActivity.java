@@ -692,7 +692,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     break;
                 case R.string.config_salesassociate_config:
-                    intent = new Intent(getActivity(), SalesAssociateConfiguration.class);
+                    intent = new Intent(getActivity(), SalesAssociateConfigurationActivity.class);
                     startActivity(intent);
                     break;
             }
