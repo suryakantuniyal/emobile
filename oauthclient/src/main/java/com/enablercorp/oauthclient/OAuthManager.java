@@ -5,6 +5,9 @@ import android.content.Context;
 import com.google.gson.Gson;
 
 import java.security.SecureRandom;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import enablercorp.com.oauthclient.R;
 import io.realm.Realm;
@@ -18,6 +21,19 @@ public class OAuthManager {
     private HttpClient httpClient = new HttpClient();
     private String requestTokenUrl;
     private Realm realm;
+
+    public static boolean isExpired(Context context) {
+        OAuthClient authClient = getOAuthClient(context);
+        if (authClient == null && authClient.getExpirationDate() == null) {
+            return true;
+        }
+        Calendar now = GregorianCalendar.getInstance();
+        now.setTime(new Date());
+        Calendar oauthCal = GregorianCalendar.getInstance();
+        oauthCal.setTime(authClient.getExpirationDate());
+        return now.compareTo(oauthCal) >= 0;
+
+    }
 
     public static OAuthManager getInstance(Context context, String clientId, String clientSecret) {
         return new OAuthManager(context, clientId, clientSecret);
@@ -86,6 +102,10 @@ public class OAuthManager {
         Gson gson = new Gson();
         OAuthClient fromJson = gson.fromJson(requestToken[0], OAuthClient.class);
         authClient.setAccessToken(fromJson.getAccessToken());
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.SECOND, fromJson.getExpiresIn());
+        authClient.setExpirationDate(cal.getTime());
         authClient.setExpiresIn(fromJson.getExpiresIn());
         authClient.setRefreshToken(fromJson.getRefreshToken());
         realm.commitTransaction();
