@@ -24,7 +24,7 @@ public class OAuthManager {
 
     public static boolean isExpired(Context context) {
         OAuthClient authClient = getOAuthClient(context);
-        if (authClient == null && authClient.getExpirationDate() == null) {
+        if (authClient == null || authClient.getExpirationDate() == null) {
             return true;
         }
         Calendar now = GregorianCalendar.getInstance();
