@@ -1290,7 +1290,10 @@
     <string name="dlog_msg_cant_open_claimed_hold">Claimed orders can not be opened.</string>
     <string name="loading_orders">Loading orders. Please wait.</string>
     <string name="sync_dload_settings">Downloading settings...</string>
-    <string name="sync_saving_settings">Saving settings...</string>
+    <string name="sync_saving_settings">Saving settings...</string><string name="title_activity_sales_associate_dinning_tables">SalesAssociateDinningTables
+    </string>
+    <string name="title_activity_sales_associate_configuration">SalesAssociateConfiguration</string>
+    <string name="config_salesassociate_config">Sales Associate Configuration</string>
 
 
 </resources>
