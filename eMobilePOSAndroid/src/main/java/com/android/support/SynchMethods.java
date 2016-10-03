@@ -72,8 +72,6 @@ import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
-import com.enablercorp.oauthclient.OAuthClient;
-import com.enablercorp.oauthclient.OAuthManager;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -105,6 +103,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import oauthclient.OAuthClient;
+import oauthclient.OAuthManager;
 import util.json.JsonUtils;
 
 public class SynchMethods {
@@ -1513,13 +1513,13 @@ public class SynchMethods {
         OAuthClient authClient = OAuthManager.getOAuthClient(activity);
         Gson gson = JsonUtils.getInstance();
         String json = gson.toJson(configurations);
-        com.enablercorp.oauthclient.HttpClient httpClient = new com.enablercorp.oauthclient.HttpClient();
+        oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
         httpClient.post(url.toString(), json, authClient);
     }
 
     public static void synchSalesAssociateDinnindTablesConfiguration(Activity activity) throws IOException, SAXException {
         try {
-            com.enablercorp.oauthclient.HttpClient client = new com.enablercorp.oauthclient.HttpClient();
+            oauthclient.HttpClient client = new oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();
             if(OAuthManager.isExpired(activity)) {
                 getOAuthManager(activity);

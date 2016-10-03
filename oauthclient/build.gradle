@@ -16,10 +16,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude "io/realm/DefaultRealmModule.class"
+    }
 }
 configurations {
-    all*.exclude group: 'io.reaml', module: 'realm'
+    all*.exclude group: 'io.realm', module: 'realm'
 }
+
 dependencies {
 //    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:24.2.1'
