@@ -141,7 +141,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private EMSMagtekAudioCardReader magtekReader;
     private EMSRover roverReader;
     private String custidkey = "";
-    public static TextView tvStatusMSR;
+    private TextView tvStatusMSR;
 
     private double amountToTip = 0;
     private double grandTotalAmount = 0;
@@ -478,13 +478,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     roverReader = new EMSRover();
                     roverReader.initializeReader(activity, isDebit);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-                    walkerReader = new EMSWalker(activity, true);
+                    walkerReader = new EMSWalker();
                     myPref.setSwiperType(Global.WALKER);
                 }
             }
 
         } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-            walkerReader = new EMSWalker(activity, false);
+            walkerReader = new EMSWalker();
             myPref.setSwiperType(Global.WALKER);
 
         } else {

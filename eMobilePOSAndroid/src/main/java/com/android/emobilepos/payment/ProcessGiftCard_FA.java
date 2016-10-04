@@ -280,13 +280,13 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     EMSRover roverReader = new EMSRover();
                     roverReader.initializeReader(activity, false);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-                    walkerReader = new EMSWalker(activity, true);
+                    walkerReader = new EMSWalker();
                     myPref.setSwiperType(Global.WALKER);
                 }
             }
 
         } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-            walkerReader = new EMSWalker(activity, false);
+            walkerReader = new EMSWalker();
             myPref.setSwiperType(Global.WALKER);
 
         } else {

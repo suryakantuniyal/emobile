@@ -30,6 +30,7 @@ import drivers.EMSOneil4te;
 import drivers.EMSPAT100;
 import drivers.EMSPAT215;
 import drivers.EMSPowaPOS;
+import drivers.EMSWalker;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSsnbc;
 import drivers.EMSEM70;
@@ -67,7 +68,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 		return instance;
 	}
 	*/
-	
+
 	/* Generic */
 
 
@@ -142,6 +143,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.HANDPOINT:
                 aDevice = new EMSHandpoint();
+                aDevice.connect(activity, -1, false, instance);
+                break;
+            case Global.WALKER:
+                aDevice = new EMSWalker();
                 aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.ESY13P1:

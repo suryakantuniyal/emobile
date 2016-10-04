@@ -1265,6 +1265,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, false);
 
+                            }else if (val[pos].toUpperCase(Locale.getDefault()).contains("WPFFFF")) {
+                                myPref.setSwiperType(Global.WALKER);
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(getActivity(), Global.WALKER, false);
+
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     getActivity().getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
                                 myPref.setSwiperType(Global.ICMPEVO);
