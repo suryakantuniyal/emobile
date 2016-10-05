@@ -349,6 +349,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void submitSignature() {
         dialog.setMessage(EMSWalker.this.activity.getString(R.string.processing_credit_card));
         if (signature.checkSignature()) {
+            terminal.submitSignature(signature);
             // signature.signatureText();
 //            signature.submitSignature();
         }

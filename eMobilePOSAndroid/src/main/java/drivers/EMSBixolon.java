@@ -427,6 +427,11 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void errorOccurred(ErrorEvent errorEvent) {
         Log.d("errorOccurred", errorEvent.toString());
 

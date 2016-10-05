@@ -1041,6 +1041,11 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
     }

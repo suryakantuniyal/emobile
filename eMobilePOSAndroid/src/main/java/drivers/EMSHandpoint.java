@@ -527,6 +527,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void deviceLogsReady(String s, Device device) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");

@@ -425,6 +425,11 @@ public class EMSPAT215 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
         return "";
     }

@@ -731,6 +731,11 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void printHeader() {
         super.printHeader(LINE_WIDTH);
     }

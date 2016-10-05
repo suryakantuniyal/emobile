@@ -294,6 +294,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void registerAll() {
         this.registerPrinter();
     }

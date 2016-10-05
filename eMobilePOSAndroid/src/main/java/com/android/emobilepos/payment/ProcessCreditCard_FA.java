@@ -1681,7 +1681,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
 
         if (resultCode == -1) {
-//            if (myPref.getSwiperType() != Global.WALKER) {
+            if (myPref.getSwiperType() != Global.WALKER) {
             if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
                 StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
                 Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid());
@@ -1700,12 +1700,12 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     showPrintDlg(false, false, PaymentsHandler.getLastPaymentInserted());
             } else
                 finishPaymentTransaction(PaymentsHandler.getLastPaymentInserted());
-//            }
-//            else {
-//                PaymentsHandler payHandler = new PaymentsHandler(this);
-//                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
-//                walkerReader.submitSignature();
-//            }
+            }
+            else {
+                PaymentsHandler payHandler = new PaymentsHandler(this);
+                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+                Global.btSwiper.getCurrentDevice().submitSignature();
+            }
         }
     }
 

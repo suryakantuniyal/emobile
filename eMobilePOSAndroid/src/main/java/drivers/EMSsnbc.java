@@ -459,4 +459,9 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     public void updateFirmware() {
 
     }
+
+    @Override
+    public void submitSignature() {
+
+    }
 }

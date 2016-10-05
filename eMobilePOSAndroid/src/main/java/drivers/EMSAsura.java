@@ -1336,6 +1336,11 @@ public class EMSAsura extends EMSDeviceDriver
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void msrError() {
         // TODO Auto-generated method stub
 

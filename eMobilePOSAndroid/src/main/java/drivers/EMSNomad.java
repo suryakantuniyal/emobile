@@ -260,6 +260,11 @@ public class EMSNomad extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void onMessage(CoreMessage coreMessage) {
 
     }

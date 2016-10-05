@@ -411,6 +411,11 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void PinPadMessageCallBack(MESSAGE_ID msgID) {
         switch (msgID) {
 

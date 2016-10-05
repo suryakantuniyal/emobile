@@ -83,4 +83,6 @@ public interface EMSDeviceManagerPrinterDelegate {
     void sendEmailLog();
 
     void updateFirmware();
+
+    void submitSignature();
 }
