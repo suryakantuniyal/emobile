@@ -35,8 +35,10 @@ import com.payments.core.common.enums.CoreDeviceError;
 import com.payments.core.common.enums.CoreError;
 import com.payments.core.common.enums.CoreMessage;
 import com.payments.core.common.enums.CoreMode;
+import com.payments.core.common.enums.Currency;
 import com.payments.core.common.enums.DeviceEnum;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -105,6 +107,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     private void initDevice() {
         terminal.setMode(CoreMode.DEMO);
+        terminal.setCurrency(Currency.USD);
         terminal.initWithConfiguration(activity, TERMINAL_ID, SECRET);
     }
 
@@ -116,7 +119,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     @Override
     public void registerPrinter() {
         edm.setCurrentDevice(this);
-        Global.btSwiper.setCurrentDevice( this);
+        Global.btSwiper.setCurrentDevice(this);
     }
 
     @Override
@@ -262,7 +265,8 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void salePayment(Payment payment) {
-
+        CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
+        terminal.processSale(sale);
     }
 
     @Override
@@ -426,7 +430,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void onSignatureRequired(CoreSignature _signature) {
         signature = _signature;
         try {
-            EMSCallBack callBack = (EMSCallBack) activity;
+            EMSCallBack callBack = (EMSCallBack) msrCallBack;
             callBack.startSignature();
         } catch (Exception ex) {
             ex.printStackTrace();
