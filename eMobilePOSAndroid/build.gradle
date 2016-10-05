@@ -13,10 +13,10 @@ android {
         }
     }
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '24.0.2'
     dexOptions {
         preDexLibraries = false
-//        incremental true
+        incremental true
         javaMaxHeapSize "4g"
     }
     packagingOptions {
@@ -192,7 +192,6 @@ dependencies {
     compile files('libs/do_androidsdk.jar')
     //        compile files('libs/IDTuniMagSDKAndroid.jar')
     compile files('libs/JAsura_Android.jar')
-    compile files('libs/ksoap2-android-assembly-2.6.5-jar-with-dependencies.jar')
     compile files('libs/libuart.jar')
     compile files('libs/magtek-scra.jar')
     compile files('libs/MobilePrinter.jar')
@@ -239,6 +238,12 @@ dependencies {
     compile 'com.android.support.test.uiautomator:uiautomator-v18:2.0.0'
     compile 'com.google.code.gson:gson:2.6.2'
     compile files('libs/coresdk.jar')
+    compile files('libs/dspread_1_2_1.jar')
+    compile files('libs/nomad_1_2_1.jar')
+    compile files('libs/rambler_1_2_1.jar')
+    compile files('libs/spm2_1_2_1.jar')
+    compile files('libs/walker_1_2_1.jar')
+    compile files('libs/coresdk_1_2_1.jar')
 }
 
 dependencies {

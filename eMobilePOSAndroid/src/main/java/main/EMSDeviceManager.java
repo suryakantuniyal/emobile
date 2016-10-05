@@ -219,6 +219,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.HANDPOINT:
                 aDevice = new EMSHandpoint();
                 break;
+            case Global.WALKER:
+                aDevice = new EMSWalker();
+                break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
                 break;

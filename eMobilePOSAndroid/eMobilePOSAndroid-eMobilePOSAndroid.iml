@@ -66,14 +66,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/ems/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/ems/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/assets" type="java-test-resource" />
@@ -82,6 +74,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testEms/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
@@ -106,14 +106,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
@@ -122,8 +114,17 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
@@ -201,12 +202,18 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/stickyListHeaders-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/viewPagerIndicator-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-resources" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
@@ -224,6 +231,7 @@
     <orderEntry type="library" exported="" name="roverapi-android-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="bouncycastle" level="project" />
     <orderEntry type="library" exported="" name="elotouchcashdrawer" level="project" />
+    <orderEntry type="library" exported="" name="dspread_1_2_1" level="project" />
     <orderEntry type="library" exported="" name="PAT215Cashdrawer1.0.0" level="project" />
     <orderEntry type="library" exported="" name="bixolon_printer" level="project" />
     <orderEntry type="library" exported="" name="firebase-storage-9.2.1" level="project" />
@@ -237,6 +245,7 @@
     <orderEntry type="library" exported="" name="play-services-gcm-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="uiautomator-v18-2.0.0" level="project" />
+    <orderEntry type="library" exported="" name="walker_1_2_1" level="project" />
     <orderEntry type="library" exported="" name="pat100Cashdrawer1.1" level="project" />
     <orderEntry type="library" exported="" name="dragSortLibrary-release-" level="project" />
     <orderEntry type="library" exported="" name="play-services-cast-framework-9.2.1" level="project" />
@@ -247,14 +256,15 @@
     <orderEntry type="library" exported="" name="StarIO_Extension" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-lite-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="spring-android-core-1.0.1.RELEASE" level="project" />
+    <orderEntry type="library" exported="" name="coresdk_1_2_1" level="project" />
     <orderEntry type="library" exported="" name="play-services-contextmanager-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="magtek-scra" level="project" />
     <orderEntry type="library" exported="" name="gson-2.6.2" level="project" />
     <orderEntry type="library" exported="" name="nostraLoader-release-" level="project" />
     <orderEntry type="library" exported="" name="play-services-nearby-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-core-9.2.1" level="project" />
-    <orderEntry type="library" exported="" name="pat215msr1.0.0" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.4.0" level="project" />
+    <orderEntry type="library" exported="" name="pat215msr1.0.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.0.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-auth-common-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="honeywell-release-" level="project" />
@@ -271,6 +281,7 @@
     <orderEntry type="library" exported="" name="crashlytics-core-2.3.8" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="stickyListHeaders-release-" level="project" />
+    <orderEntry type="library" exported="" name="rambler_1_2_1" level="project" />
     <orderEntry type="library" exported="" name="firebase-crash-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-safetynet-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
@@ -278,6 +289,7 @@
     <orderEntry type="library" exported="" name="sqlcipher" level="project" />
     <orderEntry type="library" exported="" name="hamcrest-core-1.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-9.2.1" level="project" />
+    <orderEntry type="library" exported="" name="nomad_1_2_1" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="xerces" level="project" />
     <orderEntry type="library" exported="" name="relinker-1.2.1" level="project" />
@@ -287,9 +299,9 @@
     <orderEntry type="library" exported="" name="play-services-wearable-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="hapi-android-3.2.5" level="project" />
     <orderEntry type="library" exported="" name="realm-android-library-1.2.0" level="project" />
-    <orderEntry type="library" exported="" name="ksoap2-android-assembly-2.6.5-jar-with-dependencies" level="project" />
     <orderEntry type="library" exported="" name="commons-lang3-3.4" level="project" />
     <orderEntry type="library" exported="" name="play-services-drive-9.2.1" level="project" />
+    <orderEntry type="library" exported="" name="spm2_1_2_1" level="project" />
     <orderEntry type="library" exported="" name="play-services-tagmanager-api-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="jpos114-controls" level="project" />

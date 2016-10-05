@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,10 +28,14 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.payments.core.admin.AndroidTerminal;
+import com.payments.core.common.enums.CoreMode;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
+import drivers.EMSWalker;
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
 

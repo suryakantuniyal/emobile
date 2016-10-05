@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
@@ -20,7 +21,7 @@ public class DeviceUtils {
         MyPreferences myPref = new MyPreferences(activity);
         StringBuilder sb = new StringBuilder();
         RealmResults<Device> devices = DeviceTableDAO.getAll();
-        HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
         if (forceReload) {
             int i = 0;
