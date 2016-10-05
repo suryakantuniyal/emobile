@@ -95,7 +95,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 //                e.printStackTrace();
 //            }
 //        }
-
         return true;
     }
 
@@ -429,6 +428,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         if (!isAutoConnect) {
             dismissDialog();
         }
+        Looper.myLooper().quit();
     }
 
     @Override
