@@ -1205,7 +1205,7 @@
     <string name="amount_added">Amount Added</string>
     <string name="manualEntry">Manual entry</string>
     <string name="handpoint_payment_error">Error processing handpoint payment.</string>
-    <string name="connecting_handpoint">Connecting Handpoint device...</string>
+    <string name="connecting_handpoint">Connecting device...</string>
     <string name="void_fail">Error processing void</string>
     <string name="select_number_guests">Select number of guests</string>
     <string name="fail_to_connect">Failed to connect</string>

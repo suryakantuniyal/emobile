@@ -166,7 +166,7 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        EMSDeviceManagerPrinterDelegate currentDevice = Global.mainPrinterManager.currentDevice;
+        EMSDeviceManagerPrinterDelegate currentDevice = Global.mainPrinterManager.getCurrentDevice();
         currentDevice.printTransaction(ordID, saleTypes, isFromHistory, fromOnHold);
         return true;
     }
@@ -235,12 +235,12 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override

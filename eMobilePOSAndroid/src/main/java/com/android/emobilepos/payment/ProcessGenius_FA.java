@@ -417,8 +417,8 @@ public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements O
             @Override
             protected Void doInBackground(Void... params) {
 
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.getPay_id(), 1, true, payment.getEmvContainer());
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1, true, payment.getEmvContainer());
                 }
                 return null;
             }

@@ -354,12 +354,12 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override

@@ -349,8 +349,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         @Override
         protected Void doInBackground(Void... params) {
 
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(Global.lastOrdID, orderType, false, true);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(Global.lastOrdID, orderType, false, true);
             }
             return null;
         }

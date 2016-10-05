@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
@@ -55,6 +56,9 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     private CreditCardInfo cardManager;
     public static CoreSignature signature;
     public boolean isReadingCard = false;
+    private Handler handler;
+    private EMSCallBack msrCallBack;
+
     public boolean failedProcessing = false;
     private ProgressDialog dialog;
     private EMSDeviceManager edm;
@@ -68,14 +72,15 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         terminal = new AndroidTerminal(this);
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
-        synchronized (terminal) {
-            new connectWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            try {
-                terminal.wait(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        synchronized (terminal) {
+        new connectWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+//            try {
+//                terminal.wait(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     @Override
@@ -101,6 +106,17 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     private void initDevice() {
         terminal.setMode(CoreMode.DEMO);
         terminal.initWithConfiguration(activity, TERMINAL_ID, SECRET);
+    }
+
+    @Override
+    public void registerAll() {
+        this.registerPrinter();
+    }
+
+    @Override
+    public void registerPrinter() {
+        edm.setCurrentDevice(this);
+        Global.btSwiper.setCurrentDevice( this);
     }
 
     @Override
@@ -178,10 +194,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     }
 
-    @Override
-    public void registerPrinter() {
-
-    }
 
     @Override
     public void unregisterPrinter() {
@@ -190,8 +202,23 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void loadCardReader(EMSCallBack callBack, boolean isDebitCard) {
-
+        if (handler == null)
+            handler = new Handler();
+        msrCallBack = callBack;
+        handler.post(doUpdateDidConnect);
     }
+
+    private Runnable doUpdateDidConnect = new Runnable() {
+        public void run() {
+            try {
+                if (msrCallBack != null)
+                    msrCallBack.readerConnectedSuccessfully(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    };
 
     @Override
     public void loadScanner(EMSCallBack _callBack) {
@@ -427,8 +454,9 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 //        }
         if (!isAutoConnect) {
             dismissDialog();
+        } else {
+            Looper.myLooper().quit();
         }
-        Looper.myLooper().quit();
     }
 
     @Override

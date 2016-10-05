@@ -506,13 +506,12 @@ public class EMSMagtekAudioCardReader extends EMSDeviceDriver implements EMSDevi
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
-
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
 

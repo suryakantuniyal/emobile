@@ -138,14 +138,14 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
 
+    @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
+    @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override

@@ -110,7 +110,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         if (hasBeenCreated && !global.loggedIn
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
-                && (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)))) {
+                && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
             global.promptForMandatoryLogin(activity);
@@ -193,7 +193,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             loadMultiPrinter = (Global.multiPrinterManager == null
                     || Global.multiPrinterManager.size() == 0)
                     && (Global.mainPrinterManager == null
-                    || Global.mainPrinterManager.currentDevice == null);
+                    || Global.mainPrinterManager.getCurrentDevice() == null);
 
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage(getString(R.string.connecting_devices));
@@ -212,9 +212,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             if (myPref.getPrinterType() == Global.POWA) {
                 isUSB = true;
             }
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null &&
-                    Global.mainPrinterManager.currentDevice instanceof EMSsnbc) {
-                ((EMSsnbc) Global.mainPrinterManager.currentDevice).closeUsbInterface();
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
+                    Global.mainPrinterManager.getCurrentDevice() instanceof EMSsnbc) {
+                ((EMSsnbc) Global.mainPrinterManager.getCurrentDevice()).closeUsbInterface();
             }
             return autoConnect;
         }
@@ -223,7 +223,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String result) {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
-            else if (isUSB && (Global.mainPrinterManager == null || Global.mainPrinterManager.currentDevice == null)) {
+            else if (isUSB && (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null)) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();

@@ -624,8 +624,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPreExecute() {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadScanner(null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage("Printing...");
@@ -641,14 +641,14 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices") ||
                         (emvContainer != null && emvContainer.getGeniusResponse() != null &&
                                 emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, orderType,
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
                             wasReprint, false, emvContainer);
             }
             return null;

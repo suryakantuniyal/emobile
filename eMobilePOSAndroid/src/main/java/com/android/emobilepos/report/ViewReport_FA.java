@@ -236,8 +236,8 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
-				printSuccessful = Global.mainPrinterManager.currentDevice.printReport(curDate);
+			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.getCurrentDevice()!=null)
+				printSuccessful = Global.mainPrinterManager.getCurrentDevice().printReport(curDate);
 			return null;
 		}
 

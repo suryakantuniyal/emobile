@@ -211,11 +211,12 @@ public class EMSIngenicoEVO extends EMSDeviceDriver implements EMSDeviceManagerP
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
+        edm.setCurrentDevice(null);
     }
 
 

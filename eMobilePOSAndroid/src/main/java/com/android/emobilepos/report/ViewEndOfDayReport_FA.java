@@ -178,8 +178,8 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
 
         @Override
         protected Void doInBackground(Boolean... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                Global.mainPrinterManager.currentDevice.printEndOfDayReport(curDate, null, params[0]);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().printEndOfDayReport(curDate, null, params[0]);
             return null;
         }
 

@@ -580,15 +580,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     getActivity().startActivity(getActivity().getIntent());
                     break;
                 case R.string.config_toggle_elo_bcr:
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                        Global.mainPrinterManager.currentDevice.toggleBarcodeReader();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                        Global.mainPrinterManager.getCurrentDevice().toggleBarcodeReader();
                     break;
                 case R.string.config_change_password:
                     changePassword(false, null);
                     break;
                 case R.string.config_open_cash_drawer:
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                        Global.mainPrinterManager.currentDevice.openCashDrawer();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
                     break;
                 case R.string.config_configure_cash_drawer:
                     break;
@@ -681,13 +681,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     confirmTroubleshoot(R.string.config_backup_data);
                     break;
                 case R.string.config_send_handpoint_log:
-                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
-                        Global.btSwiper.currentDevice.sendEmailLog();
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.getCurrentDevice() != null) {
+                        Global.btSwiper.getCurrentDevice().sendEmailLog();
                     }
                     break;
                 case R.string.config_handpoint_update:
-                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
-                        Global.btSwiper.currentDevice.updateFirmware();
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.getCurrentDevice() != null) {
+                        Global.btSwiper.getCurrentDevice().updateFirmware();
                     }
                     break;
                 case R.string.config_salesassociate_config:

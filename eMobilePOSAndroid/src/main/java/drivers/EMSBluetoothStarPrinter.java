@@ -411,13 +411,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
-
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override

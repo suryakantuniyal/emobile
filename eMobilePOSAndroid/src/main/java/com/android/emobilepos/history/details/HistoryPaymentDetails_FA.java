@@ -332,8 +332,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
         @Override
         protected String doInBackground(String... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(pay_id, 1, true, null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(pay_id, 1, true, null);
             }
             return null;
         }
@@ -393,10 +393,10 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
             EMSDeviceManagerPrinterDelegate device;
-            if (Global.btSwiper != null && Global.btSwiper.currentDevice != null) {
-                device = Global.btSwiper.currentDevice;
+            if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
+                device = Global.btSwiper.getCurrentDevice();
             } else {
-                device = Global.mainPrinterManager.currentDevice;
+                device = Global.mainPrinterManager.getCurrentDevice();
             }
             if (device != null) {
                 device.loadCardReader(this, false);

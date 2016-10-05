@@ -331,7 +331,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             if (paymentsToVoid.size() > 0) {
                 String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
+                Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
             } else {
@@ -386,13 +386,13 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             Bundle extras = activity.getIntent().getExtras();
             String trans_type = extras.getString("trans_type");
             int type = Integer.parseInt(trans_type);
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) == Global.OrderType.CONSIGNMENT_FILLUP) {
 
                 } else if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) == Global.OrderType.CONSIGNMENT_PICKUP) {
 
                 } else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
             }
             return null;
         }
@@ -656,8 +656,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 voidTransaction();
             }
         } else if (myPref.getSwiperType() == Global.HANDPOINT) {
-            if (Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadCardReader(this, false);
+            if (Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadCardReader(this, false);
                 voidTransaction();
 //                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(order.ord_total);
 //                BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
@@ -712,7 +712,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 //                for (Payment p : listVoidPayments) {
                 String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
                 BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-                Global.mainPrinterManager.currentDevice.saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
+                Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
 //                }
