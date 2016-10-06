@@ -362,7 +362,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         System.out.print(s.toString());
         failedProcessing = true;
         isReadingCard = false;
-        if (!TextUtils.isEmpty(s)) {
+        if (msrCallBack != null) {
             msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
         }
     }

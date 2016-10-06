@@ -239,11 +239,11 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile files('libs/coresdk.jar')
     compile files('libs/dspread_1_2_1.jar')
-    compile files('libs/nomad_1_2_1.jar')
+    compile files('libs/nomad_1_2_2.jar')
     compile files('libs/rambler_1_2_1.jar')
     compile files('libs/spm2_1_2_1.jar')
     compile files('libs/walker_1_2_1.jar')
-    compile files('libs/coresdk_1_2_1.jar')
+    compile files('libs/coresdk_1_2_2.jar')
 }
 
 dependencies {
