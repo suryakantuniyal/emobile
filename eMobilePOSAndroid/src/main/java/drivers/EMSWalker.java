@@ -37,6 +37,7 @@ import com.payments.core.common.enums.CoreMessage;
 import com.payments.core.common.enums.CoreMode;
 import com.payments.core.common.enums.Currency;
 import com.payments.core.common.enums.DeviceEnum;
+import com.payments.core.common.enums.TerminalType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -347,7 +348,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     }
 
     public void submitSignature() {
-        dialog.setMessage(EMSWalker.this.activity.getString(R.string.processing_credit_card));
+//        dialog.setMessage(EMSWalker.this.activity.getString(R.string.processing_credit_card));
         if (signature.checkSignature()) {
             terminal.submitSignature(signature);
             // signature.signatureText();
@@ -361,8 +362,9 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         System.out.print(s.toString());
         failedProcessing = true;
         isReadingCard = false;
-        if (!TextUtils.isEmpty(s))
-            Global.showPrompt(EMSWalker.this.activity, R.string.card_credit_card, s);
+        if (!TextUtils.isEmpty(s)) {
+            msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
+        }
     }
 
     @Override
