@@ -927,6 +927,17 @@ public class MyPreferences {
         return false;
     }
 
+    public boolean isMEPOS() {
+        String device_mepos = "device_mepos";
+        return prefs.getBoolean(device_mepos, false);
+    }
+
+    public boolean setIsMEPOS(boolean value) {
+        String device_mepos = "device_mepos";
+        prefEditor.putBoolean(device_mepos, value);
+        prefEditor.commit();
+        return false;
+    }
     public boolean isPOWA() {
         String device_powa = "device_powa";
         return prefs.getBoolean(device_powa, false);

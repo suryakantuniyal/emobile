@@ -139,6 +139,8 @@ public class Global extends MultiDexApplication {
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
+    public static final int MEPOS = 20;
+
 
 
     public enum BuildModel {
@@ -541,6 +543,9 @@ public class Global extends MultiDexApplication {
                 break;
             case HANDPOINT:
                 _name = "HANDPOINT";
+                break;
+            case MEPOS:
+                _name = "MEPOS";
                 break;
             case ICMPEVO:
                 _name = "ICMPEVO";

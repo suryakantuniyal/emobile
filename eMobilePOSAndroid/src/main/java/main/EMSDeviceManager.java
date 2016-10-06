@@ -31,6 +31,7 @@ import drivers.EMSPAT100;
 import drivers.EMSPAT215;
 import drivers.EMSPowaPOS;
 import drivers.EMSZebraEM220ii;
+import drivers.EMSmePOS;
 import drivers.EMSsnbc;
 import drivers.EMSEM70;
 import drivers.EMSELO;
@@ -144,6 +145,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSHandpoint();
                 aDevice.connect(activity, -1, false, instance);
                 break;
+            case Global.MEPOS:
+                aDevice = new EMSmePOS();
+                aDevice.connect(activity, -1, false, instance);
+                break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();
                 aDevice.connect(activity, -1, true, instance);
@@ -213,6 +218,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.HANDPOINT:
                 aDevice = new EMSHandpoint();
+                break;
+            case Global.MEPOS:
+                aDevice = new EMSmePOS();
                 break;
             case Global.ESY13P1:
                 aDevice = new EMSELO();

@@ -13,10 +13,10 @@ android {
         }
     }
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '24.0.2'
     dexOptions {
         preDexLibraries = false
-//        incremental true
+        incremental true
         javaMaxHeapSize "4g"
     }
     packagingOptions {
@@ -161,6 +161,7 @@ android {
         icmpevoCompile files('libs_icmpevo/Android_Platform_Adapter.jar')
         icmpevoCompile files('libs/RBA_SDK.jar')
         compile(name: 'dragSortLibrary-release', ext: 'aar')
+        compile(name: 'MePOSConnect', ext: 'aar')
 //        compile(name: 'mDOpenCV-release', ext: 'aar')
         compile(name: 'honeywell-release', ext: 'aar')
         compile(name: 'stickyListHeaders-release', ext: 'aar')
