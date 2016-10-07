@@ -1796,7 +1796,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             public void onClick(View v) {
                 dlog.dismiss();
                 new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, isReprint, payment);
-
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {

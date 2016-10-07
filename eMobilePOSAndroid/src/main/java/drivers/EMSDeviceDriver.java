@@ -50,6 +50,10 @@ import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
+import com.uniquesecure.meposconnect.MePOS;
+import com.uniquesecure.meposconnect.MePOSReceipt;
+import com.uniquesecure.meposconnect.MePOSReceiptImageLine;
+import com.uniquesecure.meposconnect.MePOSReceiptLine;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,9 +105,11 @@ public class EMSDeviceDriver {
     protected static PrinterApiContext printerApi;
     protected Connection_Bluetooth device;
     protected PowaPOS powaPOS;
+    protected MePOS mePOS;
     protected POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
     protected POSPrinter bixolonPrinter;
+    MePOSReceipt mePOSReceipt;
 
 
     protected final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
@@ -222,6 +228,8 @@ public class EMSDeviceDriver {
         }
         if (this instanceof EMSELO) {
             eloPrinterApi.print(str);
+        } else if (this instanceof EMSmePOS) {
+            mePOS.printRAW(str);
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 printStar(str, false);
@@ -282,6 +290,8 @@ public class EMSDeviceDriver {
 
         if (this instanceof EMSELO) {
             eloPrinterApi.print(new String(byteArray));
+        } else if (this instanceof EMSmePOS) {
+            mePOS.printRAW(new String(byteArray));
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 printStar(new String(byteArray), false);
@@ -388,6 +398,8 @@ public class EMSDeviceDriver {
         }
         if (this instanceof EMSELO) {
             eloPrinterApi.print(str);
+        } else if (this instanceof EMSmePOS) {
+            mePOS.printRAW(str);
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 printStar(str, isLargeFont);
@@ -1088,6 +1100,10 @@ public class EMSDeviceDriver {
 
             } else if (this instanceof EMSPAT100) {
                 printerApi.printImage(bitmap, 0);
+            } else if (this instanceof EMSmePOS) {
+                MePOSReceipt receipt = new MePOSReceipt();
+                receipt.addLine(new MePOSReceiptImageLine(bitmap));
+                mePOS.print(receipt);
             } else if (this instanceof EMSBlueBambooP25) {
                 EMSBambooImageLoader loader = new EMSBambooImageLoader();
                 ArrayList<ArrayList<Byte>> arrayListList = loader.bambooDataWithAlignment(0, bitmap);

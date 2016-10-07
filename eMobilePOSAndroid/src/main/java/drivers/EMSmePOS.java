@@ -1,30 +1,31 @@
 package drivers;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 import com.handpoint.api.Device;
-import com.handpoint.api.Hapi;
+import com.starmicronics.stario.StarIOPortException;
 import com.uniquesecure.meposconnect.MePOS;
+import com.uniquesecure.meposconnect.MePOSConnectionManager;
 import com.uniquesecure.meposconnect.MePOSConnectionType;
+import com.uniquesecure.meposconnect.MePOSException;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
@@ -36,20 +37,41 @@ import main.EMSDeviceManager;
 
 public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate {
 
+    private static final int LINE_WIDTH = 48;
     private EMSDeviceManager edm;
     protected static Device device;
-    private Handler handler;
-    private EMSCallBack msrCallBack;
     String msg = "Failed to connect";
-    static boolean connected = false;
-    private static ProgressDialog myProgressDialog;
-    private Activity activity;
-    private MePOS mePOS;
-
+    private static boolean connected = false;
 
     @Override
     public void connect(final Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
+        this.edm = edm;
+        myPref = new MyPreferences(activity);
+        init();
+        if (mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
+            edm.driverDidConnectToDevice(this, true);
+        } else {
+            edm.driverDidNotConnectToDevice(this, msg, true);
+        }
+    }
+
+
+    @Override
+    public boolean autoConnect(final Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
+        this.activity = activity;
+        this.edm = edm;
+        myPref = new MyPreferences(activity);
+        init();
+        if (mePOS.getConnectionManager().getConnectionStatus() == MePOSConnectionManager.STATUS_CONNECTED_USB) {
+            edm.driverDidConnectToDevice(this, false);
+        } else {
+            edm.driverDidNotConnectToDevice(this, msg, false);
+        }
+        return true;
+    }
+
+    private void init() {
         mePOS = new MePOS(activity, MePOSConnectionType.USB);
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
@@ -60,9 +82,11 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 if (intent.getAction().contains("ATTACHED")) {
                     mePOS = new MePOS(context, MePOSConnectionType.USB);
                     Toast.makeText(activity, "MePOS connected", Toast.LENGTH_SHORT).show();
+                    connected = true;
                 } else if (intent.getAction().contains("DETACHED")) {
                     mePOS.getConnectionManager().disconnect();
                     Toast.makeText(activity, "MePOS disconnected", Toast.LENGTH_SHORT).show();
+                    connected = false;
                 }
             }
         };
@@ -70,53 +94,56 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
     @Override
-    public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
-        return super.autoConnect(activity, edm, paperSize, isPOSPrinter, portName, portNumber);
-    }
-
-    @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        return false;
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+        return true;
     }
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
-        return false;
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        printTransaction(ordID, type, isFromHistory, fromOnHold, null);
+        return true;
     }
 
+
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
-        return false;
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+        return true;
     }
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
-        return false;
+        return printBalanceInquiry(values, LINE_WIDTH);
     }
 
     @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        return true;
     }
 
     @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        return false;
+        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+        return true;
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        return null;
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        return false;
+        printOpenInvoicesReceipt(invID, LINE_WIDTH);
+        return true;
     }
 
     @Override
@@ -136,27 +163,34 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printReport(String curDate) {
-        return false;
+        printReportReceipt(curDate, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
+
+    @Override
+    public void registerAll() {
+        this.registerPrinter();
+    }
+
 
     @Override
     public void registerPrinter() {
-
+        edm.currentDevice = this;
     }
 
     @Override
     public void unregisterPrinter() {
-
+        edm.currentDevice = null;
     }
 
     @Override
@@ -177,6 +211,17 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public void openCashDrawer() {
 
+        new Thread(new Runnable() {
+            public void run() {
+                if (mePOS != null) {
+                    try {
+                        mePOS.openCashDrawer();
+                    } catch (MePOSException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -191,7 +236,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean isUSBConnected() {
-        return false;
+        return connected;
     }
 
     @Override
@@ -201,7 +246,14 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void printReceiptPreview(View view) {
-
+        try {
+            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(bitmap, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
