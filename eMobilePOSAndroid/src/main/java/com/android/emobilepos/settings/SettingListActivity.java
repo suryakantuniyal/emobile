@@ -63,10 +63,12 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import drivers.EMSWalker;
 import main.EMSDeviceManager;
 
 /**
@@ -1182,7 +1184,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                         public void onClick(DialogInterface dialog, int which) {
                             MyPreferences myPref = new MyPreferences(getActivity());
                             String strDeviceName = val[pos];
-
                             if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
                             // swiper
                             {
@@ -1265,7 +1266,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, false);
 
-                            }else if (val[pos].toUpperCase(Locale.getDefault()).contains("WPFFFF")) {
+                            }else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("WP")) {
                                 myPref.setSwiperType(Global.WALKER);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);

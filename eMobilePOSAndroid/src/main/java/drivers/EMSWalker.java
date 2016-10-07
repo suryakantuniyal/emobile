@@ -2,6 +2,7 @@ package drivers;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -54,8 +55,8 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     private Activity activity;
     private AndroidTerminal terminal;
-    private String TERMINAL_ID = "1007";
-    private String SECRET = "secretpass";
+    private static String TERMINAL_ID = "2993001";
+    private static String SECRET = "password";
     private CreditCardInfo cardManager;
     public static CoreSignature signature;
     public boolean isReadingCard = false;
@@ -67,6 +68,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     private EMSDeviceManager edm;
     private static ProgressDialog myProgressDialog;
     private boolean isAutoConnect = false;
+
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
