@@ -1338,7 +1338,11 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.OT310, false);
-            } else {
+            } else if (myPref.isMEPOS()) {
+                myPref.setPrinterType(Global.MEPOS);
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, false);
+            }else {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.POWA, false);

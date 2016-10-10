@@ -227,7 +227,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 }
             }
 //            String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
-            if (myPref.getPrinterType() == Global.POWA) {
+            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS) {
                 isUSB = true;
             }
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
@@ -241,7 +241,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String result) {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
-            else if (isUSB && (Global.mainPrinterManager == null || Global.mainPrinterManager.getCurrentDevice() == null)) {
+            else if (isUSB && (Global.mainPrinterManager == null ||
+                    Global.mainPrinterManager.currentDevice == null)) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();

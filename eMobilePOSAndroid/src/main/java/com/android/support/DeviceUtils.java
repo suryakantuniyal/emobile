@@ -88,7 +88,9 @@ public class DeviceUtils {
             String _portNumber = myPref.getStarPort();
             boolean isPOS = myPref.posPrinter(true, false);
             int txtAreaSize = myPref.printerAreaSize(true, -1);
-            if (myPref.getPrinterType() != Global.POWA && myPref.getPrinterType() != Global.PAT215) {
+            if (myPref.getPrinterType() != Global.POWA
+                    && myPref.getPrinterType() != Global.MEPOS
+                    && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager == null || forceReload) {
                     if (Global.mainPrinterManager == null) {
                         edm = new EMSDeviceManager();
