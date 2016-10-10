@@ -1,5 +1,6 @@
 package drivers;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +63,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public static CoreSignature signature;
     public boolean isReadingCard = false;
     private Handler handler;
-    private EMSCallBack msrCallBack;
+    private static EMSCallBack msrCallBack;
 
     public boolean failedProcessing = false;
     private ProgressDialog dialog;
@@ -90,7 +92,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
-        Looper.prepare();
+//        Looper.prepare();
         this.activity = activity;
         isAutoConnect = true;
         terminal = new AndroidTerminal(this);
@@ -383,7 +385,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
                 isReadingCard = false;
             } else if (msg.equals(CoreMessage.CARD_ERROR))
                 isReadingCard = false;
-
         }
 
     }
@@ -397,15 +398,14 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void onSaleResponse(CoreSaleResponse response) {
         isReadingCard = false;
         try {
-            EMSCallBack callBack = (EMSCallBack) activity;
             cardManager = new CreditCardInfo();
             cardManager.setCardOwnerName(response.getCardHolderName());
             cardManager.setCardType(response.getCardType());
             cardManager.authcode = response.getApprovalCode();
             cardManager.transid = response.getUniqueRef();
-            cardManager.setWasSwiped(false);
+            cardManager.setWasSwiped(true);
             cardManager.setCardLast4(response.getCardNumber().substring(response.getCardNumber().length() - 4));
-            callBack.cardWasReadSuccessfully(true, cardManager);
+            msrCallBack.cardWasReadSuccessfully(true, cardManager);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -464,7 +464,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         if (!isAutoConnect) {
             dismissDialog();
         } else {
-            Looper.myLooper().quit();
+//            Looper.myLooper().quit();
         }
     }
 
@@ -478,7 +478,10 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void onDeviceError(CoreDeviceError arg0, String arg1) {
-        this.edm.driverDidNotConnectToDevice(this, arg1, false);
+        this.edm.driverDidNotConnectToDevice(this, arg1, !isAutoConnect);
+        if (msrCallBack != null) {
+            msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
+        }
         dismissDialog();
     }
 
@@ -490,17 +493,33 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     @Override
     public void onSelectBTDevice(ArrayList<String> devices) {
         CharSequence items[] = devices.toArray(new CharSequence[devices.size()]);
-        if (items.length > 0) {
-            terminal.selectBTDevice(0);
-        } else {
-            this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
+        int nomadIdx = -1;
+        int i = 0;
+        for (String device : devices) {
+            if (device.startsWith("WP")) {
+                nomadIdx = i;
+                break;
+            }
+            i++;
+        }
+        if (nomadIdx > -1) {
+            terminal.selectBTDevice(i);
+//            } else {
+//                this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
+//            }
+//        } else {
+//            terminal.initDevice(DeviceEnum.NOMAD);
         }
     }
 
     @Override
     public void onDeviceConnectionError() {
         this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
-        dismissDialog();
+        if (!isAutoConnect) {
+            dismissDialog();
+        } else {
+//            Looper.myLooper().quit();
+        }
     }
 
     @Override

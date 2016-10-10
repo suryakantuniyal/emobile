@@ -208,7 +208,25 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(String... params) {
-            String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
+            final String autoConnect = "";
+
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    DeviceUtils.autoConnect(activity, true);
+                    synchronized (autoConnect){
+                        autoConnect.notifyAll();
+                    }
+                }
+            });
+            synchronized (autoConnect){
+                try {
+                    autoConnect.wait(30000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+//            String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA) {
                 isUSB = true;
             }

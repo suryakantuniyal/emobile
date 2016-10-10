@@ -1579,41 +1579,41 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         }
         payHandler.insert(payment);
-//        if (walkerReader == null) {
-        if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
-            new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, payment);
-        } else if (!isDebit) {
+        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT
+                && myPref.getSwiperType() != Global.ICMPEVO) {
+            if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, payment);
+            } else if (!isDebit) {
 
-            Intent intent = new Intent(activity, DrawReceiptActivity.class);
-            intent.putExtra("isFromPayment", true);
-            intent.putExtra("card_type", payment.getCard_type());
-            intent.putExtra("pay_amount", payment.getPay_amount());
-            startActivityForResult(intent, requestCode);
+                Intent intent = new Intent(activity, DrawReceiptActivity.class);
+                intent.putExtra("isFromPayment", true);
+                intent.putExtra("card_type", payment.getCard_type());
+                intent.putExtra("pay_amount", payment.getPay_amount());
+                startActivityForResult(intent, requestCode);
+            } else {
+                finishPaymentTransaction(payment);
+            }
         } else {
-            finishPaymentTransaction(payment);
+            if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+                StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
+                Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.getPay_uuid());
+
+                OrdersHandler dbOrders = new OrdersHandler(this);
+                dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
+            } else {
+                PaymentsHandler payHandler = new PaymentsHandler(this);
+                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+            }
+
+            if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+                if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
+                    new printAsync().execute(false, payment);
+                else
+                    showPrintDlg(false, false, payment);
+            } else
+                finishPaymentTransaction(payment);
         }
     }
-//    else {
-//            if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-//                StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-//                Global.amountPaid = dbStoredPayments.updateSignaturePayment(payment.getPay_uuid());
-//
-//                OrdersHandler dbOrders = new OrdersHandler(this);
-//                dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
-//            } else {
-//                PaymentsHandler payHandler = new PaymentsHandler(this);
-//                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
-//            }
-//
-//            if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
-//                if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
-//                    new printAsync().execute(false, payment);
-//                else
-//                    showPrintDlg(false, false, payment);
-//            } else
-//                finishPaymentTransaction(payment);
-//        }
-//    }
 
 
     public static HashMap<String, String> generateReverseXML(Activity activity, String chargeXml) {
@@ -1682,26 +1682,25 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         if (resultCode == -1) {
             if (myPref.getSwiperType() != Global.WALKER) {
-            if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
-                Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid());
+                if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
+                    StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
+                    Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid());
 
-                OrdersHandler dbOrders = new OrdersHandler(this);
-                dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().getJob_id(), "1");
+                    OrdersHandler dbOrders = new OrdersHandler(this);
+                    dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().getJob_id(), "1");
+                } else {
+                    PaymentsHandler payHandler = new PaymentsHandler(this);
+                    Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+                }
+
+                if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+                    if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
+                        new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, PaymentsHandler.getLastPaymentInserted());
+                    else
+                        showPrintDlg(false, false, PaymentsHandler.getLastPaymentInserted());
+                } else
+                    finishPaymentTransaction(PaymentsHandler.getLastPaymentInserted());
             } else {
-                PaymentsHandler payHandler = new PaymentsHandler(this);
-                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
-            }
-
-            if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
-                if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, PaymentsHandler.getLastPaymentInserted());
-                else
-                    showPrintDlg(false, false, PaymentsHandler.getLastPaymentInserted());
-            } else
-                finishPaymentTransaction(PaymentsHandler.getLastPaymentInserted());
-            }
-            else {
                 PaymentsHandler payHandler = new PaymentsHandler(this);
                 Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
                 Global.btSwiper.getCurrentDevice().submitSignature();
