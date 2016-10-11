@@ -1286,7 +1286,10 @@
     <string name="timeout_try_again">TIME OUT, would you like to try again?</string>
     <string name="can_not_proceed">Can not proceed...</string>
     <string name="invalid_payment_type">Invalid Payment Type</string>
-    <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string>
+    <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string><string name="title_activity_sales_associate_dinning_tables">SalesAssociateDinningTables
+    </string>
+    <string name="title_activity_sales_associate_configuration">SalesAssociateConfiguration</string>
+    <string name="config_salesassociate_config">Sales Associate Configuration</string>
 
 
 </resources>

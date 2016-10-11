@@ -135,7 +135,7 @@ android {
     buildTypes {
         debug {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "false"
-            buildConfigField "boolean", "PRINT_TO_LOG", "true"
+            buildConfigField "boolean", "PRINT_TO_LOG", "false"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
             minifyEnabled false
             multiDexEnabled true
@@ -189,7 +189,6 @@ dependencies {
     compile files('libs/commons-codec-1.4.0.jar')
     compile files('libs/commons-io-1.3.2.jar')
     compile files('libs/commons-lang3-3.4.jar')
-    compile files('libs/core-sdk.jar')
     compile files('libs/do_androidsdk.jar')
     //        compile files('libs/IDTuniMagSDKAndroid.jar')
     compile files('libs/JAsura_Android.jar')
@@ -239,11 +238,11 @@ dependencies {
     compile 'com.android.support.test.uiautomator:uiautomator-v18:2.0.0'
     compile 'com.google.code.gson:gson:2.6.2'
     compile files('libs/dspread_1_2_1.jar')
-    compile files('libs/nomad_1_2_2.jar')
+    compile files('libs/nomad_1_2_1.jar')
     compile files('libs/rambler_1_2_1.jar')
     compile files('libs/spm2_1_2_1.jar')
     compile files('libs/walker_1_2_1.jar')
-    compile files('libs/coresdk_1_2_2.jar')
+    compile files('libs/coresdk_1_2_1.jar')
 }
 
 dependencies {

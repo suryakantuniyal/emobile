@@ -314,7 +314,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
     /* Printer */
     public EMSPrintingDelegate printingDelegate;
-    private static EMSDeviceManagerPrinterDelegate currentDevice;
+    private EMSDeviceManagerPrinterDelegate currentDevice;
 
     public EMSDeviceManagerPrinterDelegate getCurrentDevice() {
         return currentDevice;

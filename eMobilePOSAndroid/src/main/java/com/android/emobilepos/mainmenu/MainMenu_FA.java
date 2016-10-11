@@ -213,7 +213,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    DeviceUtils.autoConnect(activity, true);
+                    DeviceUtils.autoConnect(activity, loadMultiPrinter);
                     synchronized (autoConnect){
                         autoConnect.notifyAll();
                     }
@@ -242,7 +242,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
             else if (isUSB && (Global.mainPrinterManager == null ||
-                    Global.mainPrinterManager.currentDevice == null)) {
+                    Global.mainPrinterManager.getCurrentDevice() == null)) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();

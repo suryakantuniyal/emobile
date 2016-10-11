@@ -7,7 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -1009,18 +1012,14 @@ public class EMSDeviceDriver {
             } else if (this instanceof EMSPowaPOS) {
                 powaPOS.printImage(myBitmap);
             } else if (this instanceof EMSmePOS) {
-                Bitmap bmp = myBitmap.copy(Bitmap.Config.ARGB_8888, true);
-                int w = bmp.getWidth();
-                int h = bmp.getHeight();
-                int pixel;
-                for (int x = 0; x < w; x++) {
-                    for (int y = 0; y < h; y++) {
-                        pixel = bmp.getPixel(x, y);
-                        if (pixel == Color.TRANSPARENT)
-                            bmp.setPixel(x, y, Color.WHITE);
-                    }
-                }
-                mePOSReceipt.addLine(new MePOSReceiptImageLine(bmp));
+                Bitmap bmpMonochrome = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bmpMonochrome);
+                ColorMatrix ma = new ColorMatrix();
+                ma.setSaturation(0);
+                Paint paint = new Paint();
+                paint.setColorFilter(new ColorMatrixColorFilter(ma));
+                canvas.drawBitmap(myBitmap, 0, 0, paint);
+                mePOSReceipt.addLine(new MePOSReceiptImageLine(bmpMonochrome));
             } else if (this instanceof EMSsnbc) {
                 int PrinterWidth = 640;
 
