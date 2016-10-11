@@ -10,7 +10,9 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -47,6 +49,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     private static MyPreferences myPref;
     private TextView synchTextView, tvStoreForward;
     private AdapterTabs tabsAdapter;
+    private static ProgressDialog myProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -182,10 +185,20 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         this.tabsAdapter = tabsAdapter;
     }
 
+    public static Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
+            }
+            return true;
+        }
+    });
+
+
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
-        private boolean loadMultiPrinter;
-        private ProgressDialog myProgressDialog;
+        private Boolean loadMultiPrinter;
 
         @Override
         protected void onPreExecute() {
@@ -249,8 +262,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
-            if (myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+//            if (myProgressDialog != null && myProgressDialog.isShowing())
+//                myProgressDialog.dismiss();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }

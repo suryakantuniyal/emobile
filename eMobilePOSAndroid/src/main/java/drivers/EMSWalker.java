@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
@@ -464,6 +465,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         if (!isAutoConnect) {
             dismissDialog();
         } else {
+            MainMenu_FA.handler.sendEmptyMessage(0);
 //            Looper.myLooper().quit();
         }
     }
