@@ -8,7 +8,7 @@ android {
         config {
             keyAlias 'emobilepos'
             keyPassword '1Enabler1'
-            storeFile file('/AndroidAPKCerts/eMobileKeystore')
+            storeFile file('/home/guarionex/Develop/AndroidAPKCerts')
             storePassword '1Enabler1'
         }
     }
@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.59"
+            versionName "1.2.0.60"
             versionCode 104
             targetSdkVersion 23
             multiDexEnabled = true
@@ -64,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.59"
+            versionName "1.2.0.60"
             versionCode 104
             targetSdkVersion 23
             multiDexEnabled = true
@@ -78,7 +78,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.59"
+            versionName "1.2.0.60"
             versionCode 104
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.59"
+            versionName "1.2.0.60"
             versionCode 104
             targetSdkVersion 23
             multiDexEnabled = true
@@ -106,7 +106,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.69"
+            versionName "1.1.1.70"
             versionCode 104
             targetSdkVersion 23
             multiDexEnabled = true
@@ -120,7 +120,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.69"
+            versionName "1.1.1.70"
             versionCode 104
             targetSdkVersion 23
             multiDexEnabled = true
@@ -238,11 +238,11 @@ dependencies {
     compile 'com.android.support.test.uiautomator:uiautomator-v18:2.0.0'
     compile 'com.google.code.gson:gson:2.6.2'
     compile files('libs/dspread_1_2_1.jar')
-    compile files('libs/nomad_1_2_1.jar')
+    compile files('libs/nomad_1_2_3.jar')
     compile files('libs/rambler_1_2_1.jar')
     compile files('libs/spm2_1_2_1.jar')
     compile files('libs/walker_1_2_1.jar')
-    compile files('libs/coresdk_1_2_1.jar')
+    compile files('libs/coresdk_1_2_3.jar')
 }
 
 dependencies {
