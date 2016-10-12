@@ -50,6 +50,18 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     private TextView synchTextView, tvStoreForward;
     private AdapterTabs tabsAdapter;
     private static ProgressDialog myProgressDialog;
+//    public static Handler handler = new Handler(new Handler.Callback() {
+//        @Override
+//        public boolean handleMessage(Message msg) {
+////            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+////                myProgressDialog.dismiss();
+////            }
+//            synchronized (activity){
+//                activity.notifyAll();
+//            }
+//            return true;
+//        }
+//    });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,16 +197,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         this.tabsAdapter = tabsAdapter;
     }
 
-    public static Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            if (myProgressDialog != null && myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
-            }
-            return true;
-        }
-    });
-
 
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
@@ -227,18 +229,15 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 @Override
                 public void run() {
                     DeviceUtils.autoConnect(activity, loadMultiPrinter);
-                    synchronized (autoConnect){
-                        autoConnect.notifyAll();
-                    }
                 }
             });
-            synchronized (autoConnect){
-                try {
-                    autoConnect.wait(30000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            synchronized (activity) {
+//                try {
+//                    activity.wait(30000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 //            String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS) {
                 isUSB = true;
@@ -262,8 +261,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
-//            if (myProgressDialog != null && myProgressDialog.isShowing())
-//                myProgressDialog.dismiss();
+            if (myProgressDialog != null && myProgressDialog.isShowing())
+                myProgressDialog.dismiss();
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }

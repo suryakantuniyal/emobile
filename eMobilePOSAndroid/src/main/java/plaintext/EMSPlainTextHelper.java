@@ -155,7 +155,7 @@ public class EMSPlainTextHelper {
             sb.append(this.spaces(theIndentation));
             sb.append(leftText);
             sb.append(this.spaces(numSpaces - theIndentation));
-            sb.append(rightText);
+            sb.append(rightText).append("\n");
         } else {
             sb.append(this.spaces(theIndentation));
             sb.append(leftText).append("\n");
@@ -190,7 +190,7 @@ public class EMSPlainTextHelper {
             sb.append(this.spaces(numSpaces - theIndentation));
             sb.append(second);
             sb.append(this.spaces(numSpaces - theIndentation));
-            sb.append(third);
+            sb.append(third).append("\n");
 
         } else {
             sb.append(this.spaces(theIndentation));
@@ -242,7 +242,7 @@ public class EMSPlainTextHelper {
             sb.append(third);
             sb.append(this.spaces(numSpaces - theIndentation));
             sb.append(fourth);
-            sb.append(this.spaces(numSpaces - theIndentation));
+            sb.append(this.spaces(numSpaces - theIndentation)).append("\n");
         } else {
             sb.append(this.spaces(theIndentation));
             sb.append(first).append("\n");

@@ -49,7 +49,6 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
-import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
@@ -63,12 +62,10 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import drivers.EMSWalker;
 import main.EMSDeviceManager;
 
 /**
@@ -625,7 +622,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     connectUSBDevice();
                     break;
                 case R.string.config_redetect_peripherals:
-                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    DeviceUtils.autoConnect(getActivity(), true);
+//                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:
                     intent = new Intent(getActivity(), ViewStoreForwardTrans_FA.class);
@@ -1266,7 +1264,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, false);
 
-                            }else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("WP")) {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("WP")) {
                                 myPref.setSwiperType(Global.WALKER);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
@@ -1342,7 +1340,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.MEPOS);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, false);
-            }else {
+            } else {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.POWA, false);

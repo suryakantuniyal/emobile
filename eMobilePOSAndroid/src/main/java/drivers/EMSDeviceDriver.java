@@ -894,6 +894,14 @@ public class EMSDeviceDriver {
         } else if (isPOSPrinter) {
             print(new byte[]{0x1b, 0x64, 0x02}); // Cut
         } else if (this instanceof EMSmePOS) {
+            try {
+                printImage(0);
+            } catch (StarIOPortException e) {
+                e.printStackTrace();
+            } catch (JAException e) {
+                e.printStackTrace();
+            }
+
             finishReceipt();
         }
     }

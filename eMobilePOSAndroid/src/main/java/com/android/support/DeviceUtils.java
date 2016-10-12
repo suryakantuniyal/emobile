@@ -1,9 +1,6 @@
 package com.android.support;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
@@ -117,6 +114,15 @@ public class DeviceUtils {
                 else
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
+//        if (Global.btSwiper == null || myPref.getSwiperType() != Global.WALKER) {
+//            try {
+//                synchronized (activity) {
+//                    activity.notifyAll();
+//                }
+//            } catch (Exception e) {
+//
+//            }
+//        }
         return sb.toString();
     }
 }

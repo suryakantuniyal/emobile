@@ -1,26 +1,19 @@
 package drivers;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.emobilepos.R;
-import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.payment.ProcessCreditCard_FA;
+import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
@@ -41,14 +34,11 @@ import com.payments.core.common.enums.CoreMessage;
 import com.payments.core.common.enums.CoreMode;
 import com.payments.core.common.enums.Currency;
 import com.payments.core.common.enums.DeviceEnum;
-import com.payments.core.common.enums.TerminalType;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
@@ -57,7 +47,7 @@ import main.EMSDeviceManager;
 public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDeviceManagerPrinterDelegate {
 
     private Activity activity;
-    private AndroidTerminal terminal;
+    private static AndroidTerminal terminal;
     private static String TERMINAL_ID = "2993001";
     private static String SECRET = "password";
     private CreditCardInfo cardManager;
@@ -68,7 +58,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     public boolean failedProcessing = false;
     private ProgressDialog dialog;
-    private EMSDeviceManager edm;
+    private static EMSDeviceManager edm;
     private static ProgressDialog myProgressDialog;
     private boolean isAutoConnect = false;
 
@@ -77,6 +67,9 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         isAutoConnect = false;
+        if (terminal != null) {
+            terminal.releaseResources();
+        }
         terminal = new AndroidTerminal(this);
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
@@ -93,20 +86,40 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter, String portName, String portNumber) {
-//        Looper.prepare();
+//        if (activity instanceof SettingListActivity) {
+//            Looper.prepare();
+//        }
         this.activity = activity;
         isAutoConnect = true;
-        terminal = new AndroidTerminal(this);
+        if (terminal != null && (activity instanceof SettingListActivity
+                || !deviceConnected())) {
+            terminal.releaseResources();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else if (terminal != null && deviceConnected()) {
+            if(Global.btSwiper.getCurrentDevice() == null){
+                registerAll();
+            }
+            return true;
+        }
         myPref = new MyPreferences(this.activity);
         this.edm = edm;
-        initDevice();
-//        synchronized (terminal) {
-//        new connectWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        terminal = new AndroidTerminal(this);
+
+//        initDevice();
+//        synchronized (myPref) {
+        new connectWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //            try {
-//                terminal.wait(10000);
+//                myPref.wait(30000);
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
+//        }
+//        if (activity instanceof SettingListActivity) {
+//            Looper.myLooper().quit();
 //        }
         return true;
     }
@@ -349,6 +362,9 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     }
 
     public boolean deviceConnected() {
+        if (terminal == null || terminal.getDevice() == null) {
+            return false;
+        }
         return terminal.getDevice().equals(DeviceEnum.NOMAD);
     }
 
@@ -369,6 +385,13 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         isReadingCard = false;
         if (msrCallBack != null) {
             msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
+        }
+        if (!isAutoConnect) {
+            dismissDialog();
+        } else {
+            dismissDialog();
+//            MainMenu_FA.handler.sendEmptyMessage(0);
+//            Looper.myLooper().quit();
         }
     }
 
@@ -465,7 +488,8 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         if (!isAutoConnect) {
             dismissDialog();
         } else {
-            MainMenu_FA.handler.sendEmptyMessage(0);
+            dismissDialog();
+//            MainMenu_FA.handler.sendEmptyMessage(0);
 //            Looper.myLooper().quit();
         }
     }
@@ -475,6 +499,14 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
         this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
         dismissDialog();
+        if (!isAutoConnect) {
+//            dismissDialog();
+        } else {
+//            synchronized (activity) {
+//                activity.notifyAll();
+//        }
+//            MainMenu_FA.handler.sendEmptyMessage(0);
+        }
 
     }
 
@@ -484,7 +516,14 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         if (msrCallBack != null) {
             msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
         }
-        dismissDialog();
+        if (!isAutoConnect) {
+            dismissDialog();
+        } else {
+//            synchronized (activity) {
+//                activity.notifyAll();
+//            }
+//            MainMenu_FA.handler.sendEmptyMessage(0);
+        }
     }
 
     @Override
@@ -520,7 +559,10 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         if (!isAutoConnect) {
             dismissDialog();
         } else {
-//            Looper.myLooper().quit();
+//            synchronized (activity) {
+//                activity.notifyAll();
+//            }
+//            MainMenu_FA.handler.sendEmptyMessage(0);
         }
     }
 

@@ -822,7 +822,7 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("MC40N0")) {
             myPref.isMC40(false, true);
             return false;
-        }  else if (model.equals("Lenovo TB3-X70F")) {
+        }  else if (model.startsWith("Lenovo")) {
             myPref.setIsMEPOS(true);
             return true;
         }else if (model.equals("M2MX60P") || model.equals("M2MX6OP")) {
