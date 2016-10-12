@@ -16,8 +16,10 @@ import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
+import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.payments.core.CoreRefund;
 import com.payments.core.CoreRefundResponse;
 import com.payments.core.CoreResponse;
 import com.payments.core.CoreSale;
@@ -94,11 +96,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         if (terminal != null && (activity instanceof SettingListActivity
                 || !deviceConnected())) {
             terminal.releaseResources();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         } else if (terminal != null && deviceConnected()) {
             if(Global.btSwiper.getCurrentDevice() == null){
                 registerAll();
@@ -295,7 +292,12 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void refund(Payment payment) {
-
+        GenerateNewID newID=new GenerateNewID(activity);
+        payment.setPay_id(newID.getNextID(GenerateNewID.IdType.PAYMENT_ID));
+        CoreRefund refund = new CoreRefund(new BigDecimal(payment.getPay_amount()));
+        refund.setUniqueRef(payment.getPay_id());
+        refund.setReason("payment refund");
+        terminal.processRefund(refund);
     }
 
     @Override
@@ -414,7 +416,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     }
 
     @Override
-    public void onRefundResponse(CoreRefundResponse arg0) {
+    public void onRefundResponse(CoreRefundResponse response) {
 
     }
 
@@ -498,7 +500,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void onDeviceDisconnected(DeviceEnum deviceEnum) {
         Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
         this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
-        dismissDialog();
         if (!isAutoConnect) {
 //            dismissDialog();
         } else {
@@ -533,7 +534,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void onSelectBTDevice(ArrayList<String> devices) {
-        CharSequence items[] = devices.toArray(new CharSequence[devices.size()]);
         int nomadIdx = -1;
         int i = 0;
         for (String device : devices) {
