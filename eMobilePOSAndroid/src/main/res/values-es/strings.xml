@@ -1294,6 +1294,8 @@
     </string>
     <string name="title_activity_sales_associate_configuration">SalesAssociateConfiguration</string>
     <string name="config_salesassociate_config">Sales Associate Configuration</string>
+    <string name="device_name">Device Name</string>
+    <string name="unknown">Unknown</string>
 
 
 </resources>

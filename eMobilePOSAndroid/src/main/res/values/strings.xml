@@ -1225,6 +1225,8 @@
     <string name="loading_orders">Loading orders. Please wait.</string>
     <string name="sync_dload_settings">Loading settings...</string>
     <string name="sync_saving_settings">Saving settings...</string>
+    <string name="device_name">Device Name</string>
+    <string name="unknown">Unknown</string>
 
 
 </resources>
