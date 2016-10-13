@@ -1102,6 +1102,7 @@
     <string name="select_table_seats_amount">Select the amount of seats</string>
     <string name="split_by_seats">Split bill by seats</string>
     <string name="split_equally">Split bill equally</string>
+    <string name="split_single">Single Receipt</string>
     <string name="split_by_group_seats">Split bill seats group</string>
     <string name="split_bill_by">Split Bill:</string>
     <string name="splited_order_summary">Split Order Summary</string>

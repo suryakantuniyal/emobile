@@ -1296,6 +1296,7 @@
     <string name="config_salesassociate_config">Sales Associate Configuration</string>
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
+    <string name="split_single">Single Receipt</string>
 
 
 </resources>
