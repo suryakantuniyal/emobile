@@ -570,7 +570,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "numberOfSeats");
 
                 serializer.startTag(empstr, "ord_timeStarted");
-                serializer.text(order.ord_timeStarted);
+                serializer.text(StringUtil.nullStringToEmpty(order.ord_timeStarted));
                 serializer.endTag(empstr, "ord_timeStarted");
 
                 serializer.startTag(empstr, "ord_id");
