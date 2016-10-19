@@ -3,11 +3,12 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.Global;
+import com.android.support.DateUtils;
 
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -111,7 +112,7 @@ public class DrawInfoHandler {
     public String getDrawDate() {
         //SQLiteDatabase db = dbManager.openReadableDB();
 
-        Cursor cursor = DBManager._db.rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + Global.getCurrentDate() + "','localtime') ORDER BY CutOffDate ", null);
+        Cursor cursor = DBManager._db.rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss) + "','localtime') ORDER BY CutOffDate ", null);
 
         String drawDate = "N/A";
         if (cursor.moveToFirst()) {

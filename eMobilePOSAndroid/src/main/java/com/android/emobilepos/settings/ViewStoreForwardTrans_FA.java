@@ -22,8 +22,8 @@ import com.android.dao.StoredPaymentsDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.storedAndForward.StoreAndForward;
+import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.emobilepos.storedforward.BoloroPayment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -328,7 +328,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             Realm realm = Realm.getDefaultInstance();
             if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 realm.beginTransaction();
-                storeAndForwards = realm.where(StoreAndForward.class).findAll();
+                storeAndForwards =StoredPaymentsDAO.getAll(); //realm.where(StoreAndForward.class).findAll();
                 realm.commitTransaction();
                 for (StoreAndForward storeAndForward : storeAndForwards) {
                     if (!livePaymentRunning) {

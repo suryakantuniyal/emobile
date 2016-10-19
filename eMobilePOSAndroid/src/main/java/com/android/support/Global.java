@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.dao.RealmModule;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -39,7 +40,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -68,7 +69,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -98,9 +98,11 @@ public class Global extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
-        RealmConfiguration config = new RealmConfiguration.Builder(this)
+        RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
+                .modules(Realm.getDefaultModule(), new RealmModule())
                 .build();
         Realm.setDefaultConfiguration(config);
     }
@@ -891,21 +893,6 @@ public class Global extends MultiDexApplication {
         return formatedDate;
     }
 
-    public static String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        SimpleDateFormat sdfTZ = new SimpleDateFormat("Z", Locale.getDefault());
-        Calendar cal = Calendar.getInstance();
-        TimeZone tz = cal.getTimeZone();
-        sdfTZ.setTimeZone(tz);
-        Date date = new Date();
-        String cur_date = sdf.format(date);
-        String TimeZone = sdfTZ.format(date);
-
-        String ending = TimeZone.substring(TimeZone.length() - 2, TimeZone.length());
-        String begining = TimeZone.substring(0, TimeZone.length() - 2);
-
-        return cur_date + begining + ":" + ending;
-    }
 
     public boolean isApplicationSentToBackground(final Context context) {
 
@@ -1320,7 +1307,6 @@ public class Global extends MultiDexApplication {
 
         return returnedVal;
     }
-
 
 
     public List<HashMap<String, Integer>> dictionary;

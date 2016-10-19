@@ -3,7 +3,8 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.dao.PaymentMethodDAO;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -84,10 +85,7 @@ public class PayMethodsHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            realm.insert(paymentMethods);
-            realm.commitTransaction();
+            PaymentMethodDAO.insert(paymentMethods);
             insert.close();
             DBManager._db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -99,11 +97,8 @@ public class PayMethodsHandler {
 
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(PaymentMethod.class);
-        realm.commitTransaction();
+            DBManager._db.execSQL("DELETE FROM " + table_name);
+            PaymentMethodDAO.truncate();
     }
 
     public List<PaymentMethod> getPayMethod() {
@@ -165,7 +160,7 @@ public class PayMethodsHandler {
 
         return data;
     }
-    
+
 
     public String getSpecificPayMethodId(String methodName) {
         String[] fields = new String[]{paymethod_id};

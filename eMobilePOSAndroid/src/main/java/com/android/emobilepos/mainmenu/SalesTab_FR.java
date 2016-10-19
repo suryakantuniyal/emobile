@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -30,7 +29,6 @@ import com.android.dao.SalesAssociateDAO;
 import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
-import com.android.database.Locations_DB;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTableSeatsAdapter;
@@ -45,8 +43,8 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -54,6 +52,7 @@ import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.SynchMethods;
 
 import java.util.HashMap;
 
@@ -383,7 +382,10 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD:            //On Hold
                 {
                     DBManager dbManager = new DBManager(activity);
-                    dbManager.synchSendOrdersOnHold(true, false);
+//                    dbManager.synchSendOrdersOnHold(true, false);
+
+                    SynchMethods sm = new SynchMethods(dbManager);
+                    sm.synchSendOnHold(true, false);
                     break;
                 }
                 case CONSIGNMENT:                //Consignment
@@ -471,8 +473,13 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case ON_HOLD://on Hold
+//                    DBManager dbManager = new DBManager(activity);
+//                    dbManager.synchSendOrdersOnHold(true, false);
+
                     DBManager dbManager = new DBManager(activity);
-                    dbManager.synchSendOrdersOnHold(true, false);
+                    SynchMethods sm = new SynchMethods(dbManager);
+                    sm.synchSendOnHold(true, false);
+
                     break;
                 case LOCATION:
                     pickLocations(true);
@@ -607,7 +614,7 @@ public class SalesTab_FR extends Fragment {
 
     public void selectDinnerTable() {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
-        intent.putExtra("associateId",associateId);
+        intent.putExtra("associateId", associateId);
         startActivityForResult(intent, 0);
 
     }
@@ -649,7 +656,7 @@ public class SalesTab_FR extends Fragment {
             }
 
 //            if (myPref.isSam4s(true, true) || myPref.isPAT100() || myPref.isPAT215()) {
-                Global.showCDTDefault(activity);
+            Global.showCDTDefault(activity);
 //            }
         }
     }
@@ -771,7 +778,7 @@ public class SalesTab_FR extends Fragment {
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                     askEatInToGo();
-                }else{
+                } else {
                     Intent intent = new Intent(activity, OrderingMain_FA.class);
                     intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                     intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
@@ -790,7 +797,7 @@ public class SalesTab_FR extends Fragment {
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                     askEatInToGo();
-                }else{
+                } else {
                     Intent intent = new Intent(activity, OrderingMain_FA.class);
                     intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                     intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);

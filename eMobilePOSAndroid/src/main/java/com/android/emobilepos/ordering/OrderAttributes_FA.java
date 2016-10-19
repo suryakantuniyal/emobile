@@ -15,9 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.dao.OrderProductAttributeDAO;
-import com.android.database.OrdProdAttrList_DB;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 

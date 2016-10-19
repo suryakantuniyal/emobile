@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,8 +43,8 @@ import com.android.emobilepos.ShowProductImageActivity;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.PriceLevel;
-import com.android.emobilepos.models.ProductAttribute;
-import com.android.emobilepos.models.UOM;
+import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.emobilepos.models.realms.UOM;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
 import com.android.support.Global;
@@ -66,7 +65,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.realm.RealmResults;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class PickerProduct_FA extends FragmentActivity implements OnClickListener, OnItemClickListener {
 

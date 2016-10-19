@@ -1,16 +1,6 @@
 package com.android.database;
 
-import android.app.Activity;
-import android.database.Cursor;
-
-import net.sqlcipher.database.SQLiteStatement;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-public class UOMHandler 
+public class UOMHandler
 {
 //	private final String TABLE_NAME = "UOM";
 //	private String uomitem_id = "uomitem_id";

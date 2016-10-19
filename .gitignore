@@ -7,4 +7,6 @@ local.properties
 build/
 .gradle/
 eMobilePOSAndroid/gradle/
-
+projectFilesBackup/
+oauthclient/build/
+oauthclient/libs/

@@ -3,6 +3,7 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,15 +21,16 @@ import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.DinningTableOrder;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
-import com.android.support.MyPreferences;
 
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,14 +43,16 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
     public TablesMapFragment() {
     }
 
+    private DinningTablesActivity getDinningTablesActivity() {
+        return (DinningTablesActivity) getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
-        DinningTablesActivity activity = (DinningTablesActivity) getActivity();
-        if (!TextUtils.isEmpty(activity.associateId)) {
-            associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(activity.associateId));
+        if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
+            associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
         dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getActivity());
 
@@ -173,7 +177,11 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                 DinningTable table = (DinningTable) v.getTag();
                 if (associate != null && associate.getAssignedDinningTables().contains(table)) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
-                    if (tableOrder == null) {
+                    if (tableOrder != null) {
+                        Realm realm = Realm.getDefaultInstance();
+                        getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
+                                , realm.copyFromRealm(tableOrder), realm.copyFromRealm(table));
+                    } else {
                         Intent result = new Intent();
                         result.putExtra("tableId", table.getId());
                         getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
@@ -211,4 +219,6 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         }
         return false;
     }
+
+
 }

@@ -1,5 +1,7 @@
 package com.android.emobilepos.models;
 
+import com.android.emobilepos.models.realms.MixMatch;
+
 /**
  * Created by Guarionex on 5/23/2016.
  */

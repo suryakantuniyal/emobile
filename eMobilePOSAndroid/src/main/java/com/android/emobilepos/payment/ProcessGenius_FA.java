@@ -29,7 +29,7 @@ import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.genius.GeniusResponse;
 import com.android.emobilepos.models.genius.GeniusTransportToken;
 import com.android.payments.EMSPayGate_Default;
@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class ProcessGenius_FA extends BaseFragmentActivityActionBar implements OnClickListener {
     private String paymethod_id;

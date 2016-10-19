@@ -40,18 +40,23 @@ import com.android.database.TemplateHandler;
 import com.android.database.TimeClockHandler;
 import com.android.database.TransferLocations_DB;
 import com.android.database.VoidTransactionsHandler;
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.PaymentMethod;
-import com.android.emobilepos.models.MixMatch;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.MixMatch;
+import com.android.emobilepos.models.realms.PaymentMethod;
+import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.emobilepos.models.salesassociates.DinningLocationConfiguration;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.saxhandler.SAXParserPost;
 import com.android.saxhandler.SAXPostHandler;
@@ -85,19 +90,22 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import io.realm.Realm;
-import util.JsonUtils;
+import oauthclient.OAuthClient;
+import oauthclient.OAuthManager;
+import util.json.JsonUtils;
 
 public class SynchMethods {
     private Post post;
@@ -121,6 +129,11 @@ public class SynchMethods {
     private HttpClient client;
     private Gson gson = JsonUtils.getInstance();
 
+    private static OAuthManager getOAuthManager(Activity activity) {
+        MyPreferences preferences = new MyPreferences(activity);
+        return OAuthManager.getInstance(activity, preferences.getAcctNumber(), preferences.getAcctPassword());
+
+    }
 
     public SynchMethods(DBManager managerInst) {
         post = new Post();
@@ -129,21 +142,23 @@ public class SynchMethods {
         activity = managerInst.getActivity();
         dbManager = managerInst;
         data = new ArrayList<>();
+        if(OAuthManager.isExpired(activity)) {
+            OAuthManager oAuthManager = getOAuthManager(activity);
+            try {
+                oAuthManager.requestToken();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         tempFilePath = activity.getApplicationContext().getFilesDir().getAbsolutePath() + "/temp.xml";
         try {
             sp = spf.newSAXParser();
             xr = sp.getXMLReader();
         } catch (ParserConfigurationException e) {
-            handleGoogleAnalytic(e.getMessage() + " [com.android.support.SynchMethods (at Class.SynchMethods) ]");
         } catch (SAXException e) {
-            handleGoogleAnalytic(e.getMessage() + " [com.android.support.SynchMethods (at Class.SynchMethods)]");
         }
     }
 
-
-    private String getString(int id) {
-        return activity.getResources().getString(id);
-    }
 
     private boolean isReceive = false;
 
@@ -156,6 +171,7 @@ public class SynchMethods {
     public void getLocationsInventory() {
         new asyncGetLocationsInventory().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
+
 
     private class resynchAsync extends AsyncTask<String, String, String> {
         MyPreferences myPref = new MyPreferences(activity);
@@ -213,6 +229,7 @@ public class SynchMethods {
 
                 synchProducts(this);
 
+
                 synchProductAliases(this);
 
                 synchProductImages(this);
@@ -255,6 +272,7 @@ public class SynchMethods {
                 synchDownloadClerks(this);
                 synchDownloadSalesAssociate(this);
                 synchDownloadDinnerTable(this);
+                synchSalesAssociateDinnindTablesConfiguration(activity);
                 synchDownloadMixMatch(this);
                 synchDownloadTermsAndConditions(this);
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
@@ -366,63 +384,63 @@ public class SynchMethods {
             if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
 
-                    synchStage = getString(R.string.sync_sending_reverse);
+                    synchStage = activity.getString(R.string.sync_sending_reverse);
                     sendReverse(this);
 
-                    synchStage = getString(R.string.sync_sending_payment);
+                    synchStage = activity.getString(R.string.sync_sending_payment);
                     sendPayments(this);
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_void);
+                        synchStage = activity.getString(R.string.sync_sending_void);
                         sendVoidTransactions(this);
 
                     }
 
                     // add signatures
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_templates);
+                        synchStage = activity.getString(R.string.sync_sending_templates);
                         sendTemplates(this);
                     }
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_cust);
+                        synchStage = activity.getString(R.string.sync_sending_cust);
                         sendNewCustomers(this);
                     }
 
                     // add shifts
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_wallet_order);
+                        synchStage = activity.getString(R.string.sync_sending_wallet_order);
                         sendWalletOrders(this);
                     }
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_orders);
+                        synchStage = activity.getString(R.string.sync_sending_orders);
                         sendOrders(this);
                     }
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_inventory_transfer);
+                        synchStage = activity.getString(R.string.sync_sending_inventory_transfer);
                         sendInventoryTransfer(this);
                     }
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_customer_inventory);
+                        synchStage = activity.getString(R.string.sync_sending_customer_inventory);
                         sendCustomerInventory(this);
                     }
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_consignment_transaction);
+                        synchStage = activity.getString(R.string.sync_sending_consignment_transaction);
                         sendConsignmentTransaction(this);
                     }
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_shifts);
+                        synchStage = activity.getString(R.string.sync_sending_shifts);
                         sendShifts(this);
                     }
 
                     if (didSendData) {
-                        synchStage = getString(R.string.sync_sending_time_clock);
+                        synchStage = activity.getString(R.string.sync_sending_time_clock);
                         sendTimeClock(this);
                     }
 
@@ -592,8 +610,7 @@ public class SynchMethods {
     public void synchSendOnHold(boolean downloadHoldList, boolean checkoutOnHold) {
         this.downloadHoldList = downloadHoldList;
         this.checkoutOnHold = checkoutOnHold;
-        Boolean[] temp = new Boolean[]{downloadHoldList, checkoutOnHold};
-        new synchSendOrdersOnHold().execute(temp);
+        new synchSendOrdersOnHold().execute();
     }
 
 
@@ -626,7 +643,8 @@ public class SynchMethods {
         protected String doInBackground(String... params) {
             if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
-                    synchOrdersOnHoldList(this);
+                    updateProgress(activity.getString(R.string.sync_dload_ordersonhold));
+                    synchOrdersOnHoldList(activity);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -674,13 +692,14 @@ public class SynchMethods {
         @Override
         protected String doInBackground(String... params) {
             try {
-                synchOrdersOnHoldDetails(this, params[0]);
+                updateProgress(activity.getString(R.string.sync_dload_ordersonhold));
+                synchOrdersOnHoldDetails(activity, params[0]);
                 OrderProductsHandler orderProdHandler = new OrderProductsHandler(activity);
                 Cursor c = orderProdHandler.getOrderProductsOnHold(params[0]);
-                if (c != null && c.getCount() > 0) {
+                if (BuildConfig.DELETE_INVALID_HOLDS || (c != null && c.getCount() > 0)) {
                     proceedToView = true;
                     if (type == 0)
-                        ((OnHoldActivity) activity).addOrder(c);
+                        ((OnHoldActivity) activity).addOrderProducts(activity, c);
                 } else
                     proceedToView = false;
                 if (c != null) {
@@ -709,7 +728,7 @@ public class SynchMethods {
     }
 
 
-    private class synchSendOrdersOnHold extends AsyncTask<Boolean[], String, String> {
+    private class synchSendOrdersOnHold extends AsyncTask<Void, String, String> {
         boolean isError = false;
         String err_msg = "";
 
@@ -743,7 +762,7 @@ public class SynchMethods {
 
 
         @Override
-        protected String doInBackground(Boolean[]... params) {
+        protected String doInBackground(Void... params) {
             try {
                 if (NetworkUtils.isConnectedToInternet(activity)) {
                     err_msg = sendOrdersOnHold(this);
@@ -844,9 +863,9 @@ public class SynchMethods {
             int size = c.getCount();
             if (size > 0) {
                 if (Global.isForceUpload)
-                    ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_reverse));
+                    ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_reverse));
                 else
-                    ((sendAsync) task).updateProgress(getString(R.string.sync_sending_reverse));
+                    ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_reverse));
 
                 do {
 
@@ -887,9 +906,9 @@ public class SynchMethods {
         CustomersHandler custHandler = new CustomersHandler(activity);
         if (custHandler.getNumUnsyncCustomers() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_cust));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_cust));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_cust));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_cust));
             xml = post.postData(Global.S_SUBMIT_CUSTOMER, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(custSaxHandler);
@@ -908,9 +927,9 @@ public class SynchMethods {
         PaymentsHandler payHandler = new PaymentsHandler(activity);
         if (payHandler.getNumUnsyncPayments() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_payment));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_payment));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_payment));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_payment));
             xml = post.postData(Global.S_SUBMIT_PAYMENTS, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler2);
@@ -929,9 +948,9 @@ public class SynchMethods {
 
         if (voidTrans.getNumUnsyncVoids() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_void));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_void));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_void));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_void));
             xml = post.postData(Global.S_SUBMIT_VOID_TRANSACTION, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(voidHandler);
@@ -950,9 +969,9 @@ public class SynchMethods {
         if ((Global.isForceUpload && ordersHandler.getNumUnsyncOrders() > 0) ||
                 (!Global.isForceUpload && ordersHandler.getNumUnsyncProcessedOrders() > ordersHandler.getNumUnsyncOrdersStoredFwd())) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_orders));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_orders));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_orders));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_orders));
             xml = post.postData(Global.S_GET_XML_ORDERS, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -970,9 +989,9 @@ public class SynchMethods {
         TransferLocations_DB dbHandler = new TransferLocations_DB(activity);
         if (dbHandler.getNumUnsyncTransfers() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_inventory_transfer));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_inventory_transfer));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_inventory_transfer));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_inventory_transfer));
             xml = post.postData(Global.S_SUBMIT_LOCATIONS_INVENTORY, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(saxHandler);
@@ -991,9 +1010,9 @@ public class SynchMethods {
 
         if (timeClockHandler.getNumUnsyncTimeClock() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_time_clock));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_time_clock));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_time_clock));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_time_clock));
             xml = post.postData(Global.S_SUBMIT_TIME_CLOCK, activity, null);
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -1016,9 +1035,9 @@ public class SynchMethods {
         CustomerInventoryHandler custInventoryHandler = new CustomerInventoryHandler(activity);
         if (custInventoryHandler.getNumUnsyncItems() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_customer_inventory));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_customer_inventory));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_customer_inventory));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_customer_inventory));
             xml = post.postData(Global.S_SUBMIT_CUSTOMER_INVENTORY, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -1036,9 +1055,9 @@ public class SynchMethods {
         ConsignmentTransactionHandler consTransDBHandler = new ConsignmentTransactionHandler(activity);
         if (consTransDBHandler.getNumUnsyncItems() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_consignment_transaction));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_consignment_transaction));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_consignment_transaction));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_consignment_transaction));
             xml = post.postData(Global.S_SUBMIT_CONSIGNMENT_TRANSACTION, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -1057,9 +1076,9 @@ public class SynchMethods {
 
         if (dbHandler.getNumUnsyncShifts() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_shifts));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_shifts));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_shifts));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_shifts));
             xml = post.postData(Global.S_SUBMIT_SHIFT, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -1079,9 +1098,9 @@ public class SynchMethods {
         if (dbHandler.getNumUnsyncTupyxOrders() > 0) {
 
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_wallet_order));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_wallet_order));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_wallet_order));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_wallet_order));
             xml = post.postData(Global.S_SUBMIT_WALLET_RECEIPTS, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -1099,9 +1118,9 @@ public class SynchMethods {
         TemplateHandler templateHandler = new TemplateHandler(activity);
         if (templateHandler.getNumUnsyncTemplates() > 0) {
             if (Global.isForceUpload)
-                ((forceSendAsync) task).updateProgress(getString(R.string.sync_sending_templates));
+                ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_templates));
             else
-                ((sendAsync) task).updateProgress(getString(R.string.sync_sending_templates));
+                ((sendAsync) task).updateProgress(activity.getString(R.string.sync_sending_templates));
             xml = post.postData(Global.S_SUBMIT_TEMPLATES, activity, "");
             inSource = new InputSource(new StringReader(xml));
             xr.setContentHandler(handler);
@@ -1124,7 +1143,7 @@ public class SynchMethods {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         if (ordersHandler.getNumUnsyncOrdersOnHold() > 0) {
-            task.updateProgress(getString(R.string.sync_sending_orders));
+            task.updateProgress(activity.getString(R.string.sync_sending_orders));
             xml = post.postData(Global.S_SUBMIT_ON_HOLD, activity, "");
             if (xml.contains("error")) {
                 return getTagValue(xml, "error");
@@ -1146,12 +1165,11 @@ public class SynchMethods {
         return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
     }
 
-    private void synchOrdersOnHoldList(synchDownloadOnHoldProducts task) throws SAXException, IOException {
+    public static void synchOrdersOnHoldList(Activity activity) throws SAXException, IOException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_ordersonhold));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = new HttpClient().httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("GetOrdersOnHoldList"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<Order> orders = new ArrayList<>();
@@ -1179,14 +1197,34 @@ public class SynchMethods {
         }
     }
 
-    private void synchOrdersOnHoldDetails(synchDownloadOnHoldDetails task, String ordID) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_ordersonhold));
-        post.postData(Global.S_ORDERS_ON_HOLD_DETAILS, activity, ordID);
-        SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ORDERS_ON_HOLD_DETAILS);
-        File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_ordersonhold));
-        sp.parse(tempFile, synchHandler);
-        tempFile.delete();
+    public static void synchOrdersOnHoldDetails(Activity activity, String ordID) throws SAXException, IOException {
+        try {
+            HttpClient client = new HttpClient();
+            Gson gson = JsonUtils.getInstance();
+            GenerateXML xml = new GenerateXML(activity);
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
+                    xml.getOnHold(Global.S_ORDERS_ON_HOLD_DETAILS, ordID));
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<OrderProduct> orderProducts = new ArrayList<>();
+            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
+            reader.beginArray();
+            int i = 0;
+            while (reader.hasNext()) {
+                OrderProduct product = gson.fromJson(reader, OrderProduct.class);
+                orderProducts.add(product);
+                i++;
+                if (i == 1000) {
+                    orderProductsHandler.insert(orderProducts);
+                    orderProducts.clear();
+                    i = 0;
+                }
+            }
+            orderProductsHandler.insert(orderProducts);
+            reader.endArray();
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -1197,72 +1235,72 @@ public class SynchMethods {
 
     private void synchAddresses(resynchAsync task) throws SAXException, IOException {
 
-        task.updateProgress(getString(R.string.sync_dload_address));
+        task.updateProgress(activity.getString(R.string.sync_dload_address));
         post.postData(7, activity, "Address");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ADDRESS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_address));
+        task.updateProgress(activity.getString(R.string.sync_saving_address));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchCategories(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_categories));
+        task.updateProgress(activity.getString(R.string.sync_dload_categories));
         post.postData(7, activity, "Categories");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CATEGORIES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_categories));
+        task.updateProgress(activity.getString(R.string.sync_saving_categories));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchCustomers(resynchAsync task) throws IOException, SAXException {
 
-        task.updateProgress(getString(R.string.sync_dload_cust));
+        task.updateProgress(activity.getString(R.string.sync_dload_cust));
         post.postData(7, activity, "Customers");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CUSTOMERS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_customers));
+        task.updateProgress(activity.getString(R.string.sync_saving_customers));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchEmpInv(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_emp_inv));
+        task.updateProgress(activity.getString(R.string.sync_dload_emp_inv));
         post.postData(7, activity, "EmpInv");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_EMPLOYEE_INVOICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_emp_inv));
+        task.updateProgress(activity.getString(R.string.sync_saving_emp_inv));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchProdInv(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_prod_inv));
+        task.updateProgress(activity.getString(R.string.sync_dload_prod_inv));
         post.postData(7, activity, "InvProducts");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS_INVOICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_prod_inv));
+        task.updateProgress(activity.getString(R.string.sync_saving_prod_inv));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchInvoices(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_invoices));
+        task.updateProgress(activity.getString(R.string.sync_dload_invoices));
         post.postData(7, activity, "Invoices");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_INVOICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_invoices));
+        task.updateProgress(activity.getString(R.string.sync_saving_invoices));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchPaymentMethods(resynchAsync task) throws IOException, SAXException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_pay_methods));
+            task.updateProgress(activity.getString(R.string.sync_dload_pay_methods));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PayMethods"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<PaymentMethod> methods = new ArrayList<>();
@@ -1292,13 +1330,13 @@ public class SynchMethods {
 
     private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_price_levels));
+            task.updateProgress(activity.getString(R.string.sync_dload_price_levels));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevel"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
-            List<PriceLevel> priceLevels = new ArrayList<PriceLevel>();
+            List<PriceLevel> priceLevels = new ArrayList<>();
             PriceLevelHandler priceLevelHandler = new PriceLevelHandler();
             priceLevelHandler.emptyTable();
             reader.beginArray();
@@ -1325,10 +1363,10 @@ public class SynchMethods {
 
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_item_price_levels));
+            task.updateProgress(activity.getString(R.string.sync_dload_item_price_levels));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("PriceLevelItems"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<ItemPriceLevel> itemPriceLevels = new ArrayList<>();
@@ -1355,10 +1393,10 @@ public class SynchMethods {
     }
 
     private void synchPrinters(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_printers));
+        task.updateProgress(activity.getString(R.string.sync_dload_printers));
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(activity);
-        String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+        String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.downloadAll("Printers"));
         try {
             DeviceTableDAO.truncate();
@@ -1369,31 +1407,31 @@ public class SynchMethods {
     }
 
     private void synchProdCatXref(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_prodcatxref));
+        task.updateProgress(activity.getString(R.string.sync_dload_prodcatxref));
         post.postData(7, activity, "ProdCatXref");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODCATXREF);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_prodcatxref));
+        task.updateProgress(activity.getString(R.string.sync_saving_prodcatxref));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchProdChain(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_productchainxref));
+        task.updateProgress(activity.getString(R.string.sync_dload_productchainxref));
         post.postData(7, activity, "ProductChainXRef");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PROD_CHAIN);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_productchainxref));
+        task.updateProgress(activity.getString(R.string.sync_saving_productchainxref));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchProdAddon(resynchAsync task) throws IOException, SAXException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_product_addons));
+            task.updateProgress(activity.getString(R.string.sync_dload_product_addons));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Product_addons"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<ProductAddons> addonses = new ArrayList<>();
@@ -1422,10 +1460,10 @@ public class SynchMethods {
     private void synchProducts(resynchAsync task) throws IOException, SAXException {
         try {
             ProductsHandler productsHandler = new ProductsHandler(activity);
-            task.updateProgress(getString(R.string.sync_dload_products));
+            task.updateProgress(activity.getString(R.string.sync_dload_products));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("Products"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<Product> products = new ArrayList<>();
@@ -1449,17 +1487,78 @@ public class SynchMethods {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    public static void postSalesAssociatesConfiguration(Activity activity, List<SalesAssociate> salesAssociates) throws Exception {
+        List<DinningLocationConfiguration> configurations = new ArrayList<>();
+
+        HashMap<String, List<SalesAssociate>> locations = SalesAssociateDAO.getSalesAssociatesByLocation();
+        for (Map.Entry<String, List<SalesAssociate>> location : locations.entrySet()) {
+            DinningLocationConfiguration configuration = new DinningLocationConfiguration();
+            configuration.setLocationId(location.getKey());
+            configuration.setSalesAssociates(location.getValue());
+            configurations.add(configuration);
+        }
+
+        MyPreferences preferences = new MyPreferences(activity);
+        StringBuilder url = new StringBuilder(activity.getString(R.string.sync_enablermobile_mesasconfig));
+        url.append("/").append(URLEncoder.encode(preferences.getEmpID(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getDeviceID(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
+
+        if(OAuthManager.isExpired(activity)) {
+            getOAuthManager(activity);
+        }
+        OAuthClient authClient = OAuthManager.getOAuthClient(activity);
+        Gson gson = JsonUtils.getInstance();
+        String json = gson.toJson(configurations);
+        oauthclient.HttpClient httpClient = new oauthclient.HttpClient();
+        httpClient.post(url.toString(), json, authClient);
+    }
+
+    public static void synchSalesAssociateDinnindTablesConfiguration(Activity activity) throws IOException, SAXException {
+        try {
+            oauthclient.HttpClient client = new oauthclient.HttpClient();
+            Gson gson = JsonUtils.getInstance();
+            if(OAuthManager.isExpired(activity)) {
+                getOAuthManager(activity);
+            }
+            OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
+            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+            InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+            JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
+            List<DinningLocationConfiguration> configurations = new ArrayList<>();
+            reader.beginArray();
+            while (reader.hasNext()) {
+                DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
+                configurations.add(configuration);
+            }
+
+            reader.endArray();
+            reader.close();
+            for (DinningLocationConfiguration configuration : configurations) {
+                for (SalesAssociate associate : configuration.getSalesAssociates()) {
+                    SalesAssociateDAO.clearAllAssignedTable(associate);
+                    for (DinningTable table : associate.getAssignedDinningTables()) {
+                        DinningTable dinningTable = DinningTableDAO.getById(table.getId());
+                        SalesAssociateDAO.addAssignedTable(associate, dinningTable);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void synchProductAliases(resynchAsync task) throws IOException, SAXException {
         try {
             ProductAliases_DB productAliasesDB = new ProductAliases_DB(activity);
-            task.updateProgress(getString(R.string.sync_dload_product_aliases));
+            task.updateProgress(activity.getString(R.string.sync_dload_product_aliases));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("ProductAliases"));
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             Log.d("GSon Start Reading", new Date().toString());
@@ -1490,111 +1589,111 @@ public class SynchMethods {
     }
 
     private void synchProductImages(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_products_images));
+        task.updateProgress(activity.getString(R.string.sync_dload_products_images));
         post.postData(7, activity, "Products_Images");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PROD_IMG);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_products_images));
+        task.updateProgress(activity.getString(R.string.sync_saving_products_images));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchSalesTaxCode(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_salestaxcodes));
+        task.updateProgress(activity.getString(R.string.sync_dload_salestaxcodes));
         post.postData(7, activity, "SalesTaxCodes");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_SALES_TAX_CODE);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_salestaxcodes));
+        task.updateProgress(activity.getString(R.string.sync_saving_salestaxcodes));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchShippingMethods(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_shipmethod));
+        task.updateProgress(activity.getString(R.string.sync_dload_shipmethod));
         post.postData(7, activity, "ShipMethod");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_SHIP_METHODS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_shipmethod));
+        task.updateProgress(activity.getString(R.string.sync_saving_shipmethod));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchTaxes(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_taxes));
+        task.updateProgress(activity.getString(R.string.sync_dload_taxes));
         post.postData(7, activity, "Taxes");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TAXES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_taxes));
+        task.updateProgress(activity.getString(R.string.sync_saving_taxes));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchTaxGroup(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_taxes_group));
+        task.updateProgress(activity.getString(R.string.sync_dload_taxes_group));
         post.postData(7, activity, "Taxes_Group");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TAX_GROUP);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_taxes_group));
+        task.updateProgress(activity.getString(R.string.sync_saving_taxes_group));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchTerms(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_terms));
+        task.updateProgress(activity.getString(R.string.sync_dload_terms));
         post.postData(7, activity, "Terms");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TERMS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_terms));
+        task.updateProgress(activity.getString(R.string.sync_saving_terms));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchMemoText(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_memotext));
+        task.updateProgress(activity.getString(R.string.sync_dload_memotext));
         post.postData(7, activity, "memotext");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_MEMO_TXT);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_memotext));
+        task.updateProgress(activity.getString(R.string.sync_saving_memotext));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchGetTemplates(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_templates));
+        task.updateProgress(activity.getString(R.string.sync_dload_templates));
         post.postData(7, activity, "Templates");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TEMPLATES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_templates));
+        task.updateProgress(activity.getString(R.string.sync_saving_templates));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchDownloadCustomerInventory(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_customer_inventory));
+        task.updateProgress(activity.getString(R.string.sync_dload_customer_inventory));
         post.postData(7, activity, "GetCustomerInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CUSTOMER_INVENTORY);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_customer_inventory));
+        task.updateProgress(activity.getString(R.string.sync_saving_customer_inventory));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchDownloadConsignmentTransaction(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_consignment_transaction));
+        task.updateProgress(activity.getString(R.string.sync_dload_consignment_transaction));
         post.postData(7, activity, "GetConsignmentTransaction");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CONSIGNMENT_TRANSACTION);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_consignment_transaction));
+        task.updateProgress(activity.getString(R.string.sync_saving_consignment_transaction));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchIvuLottoDrawDates(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_ivudrawdates));
+        task.updateProgress(activity.getString(R.string.sync_dload_ivudrawdates));
         post.postData(7, activity, "ivudrawdates");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_IVU_LOTTO);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_ivudrawdates));
+        task.updateProgress(activity.getString(R.string.sync_saving_ivudrawdates));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
@@ -1605,12 +1704,12 @@ public class SynchMethods {
         URL url;
         InputStream is;
         try {
-            task.updateProgress(getString(R.string.sync_dload_logo));
+            task.updateProgress(activity.getString(R.string.sync_dload_logo));
             url = new URL(generator.getAccountLogo());
             is = url.openStream();
             Bitmap bmp = BitmapFactory.decodeStream(is);
 
-            task.updateProgress(getString(R.string.sync_saving_logo));
+            task.updateProgress(activity.getString(R.string.sync_saving_logo));
             int width = bmp.getWidth();
             int height = bmp.getHeight();
             float scale = 0;
@@ -1631,30 +1730,27 @@ public class SynchMethods {
             newBitmap.recycle();
 
         } catch (MalformedURLException e) {
-            handleGoogleAnalytic(e.getMessage() + " [com.android.support.SynchMethods (at Class.syncAccountLogo)]");
         } catch (IOException e) {
-            handleGoogleAnalytic(e.getMessage() + " [com.android.support.SynchMethods (at Class.synchAccountLogo)]");
         } catch (Exception e) {
-            handleGoogleAnalytic(e.getMessage() + " [com.android.support.SynchMethods (at Class.synchAccountLogo)]");
         }
     }
 
     private void synchDownloadProductsAttr(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_products_attributes));
+        task.updateProgress(activity.getString(R.string.sync_dload_products_attributes));
         post.postData(7, activity, "ProductsAttr");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS_ATTRIBUTES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_products_attributes));
+        task.updateProgress(activity.getString(R.string.sync_saving_products_attributes));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchDownloadClerks(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_clerks));
+        task.updateProgress(activity.getString(R.string.sync_dload_clerks));
         post.postData(7, activity, "Clerks");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CLERKS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_clerks));
+        task.updateProgress(activity.getString(R.string.sync_saving_clerks));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
@@ -1677,10 +1773,10 @@ public class SynchMethods {
 
 
     private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_dinnertables));
+        task.updateProgress(activity.getString(R.string.sync_dload_dinnertables));
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(activity);
-        String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+        String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                 xml.getDinnerTables());
         try {
             DinningTableDAO.truncate();
@@ -1692,12 +1788,12 @@ public class SynchMethods {
 
     private void synchDownloadMixMatch(resynchAsync task) throws SAXException, IOException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_mixmatch));
+            task.updateProgress(activity.getString(R.string.sync_dload_mixmatch));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
 
 
-            InputStream inputStream = client.httpInputStreamRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getMixMatch());
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<MixMatch> mixMatches = new ArrayList<MixMatch>();
@@ -1726,12 +1822,12 @@ public class SynchMethods {
 
     private void synchDownloadSalesAssociate(resynchAsync task) throws SAXException, IOException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_salesassociate));
+            task.updateProgress(activity.getString(R.string.sync_dload_salesassociate));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
-            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getSalesAssociate());
-            task.updateProgress(getString(R.string.sync_saving_salesassociate));
+            task.updateProgress(activity.getString(R.string.sync_saving_salesassociate));
             try {
                 SalesAssociateDAO.truncate();
                 SalesAssociateDAO.insert(jsonRequest);
@@ -1744,23 +1840,23 @@ public class SynchMethods {
     }
 
     private void synchDownloadTermsAndConditions(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(getString(R.string.sync_dload_termsandconditions));
+        task.updateProgress(activity.getString(R.string.sync_dload_termsandconditions));
         post.postData(7, activity, "TermsAndConditions");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TERMS_AND_CONDITIONS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_termsandconditions));
+        task.updateProgress(activity.getString(R.string.sync_saving_termsandconditions));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchUoM(resynchAsync task) throws IOException, SAXException {
         try {
-            task.updateProgress(getString(R.string.sync_dload_uom));
+            task.updateProgress(activity.getString(R.string.sync_dload_uom));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
-            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("UoM"));
-            task.updateProgress(getString(R.string.sync_saving_uom));
+            task.updateProgress(activity.getString(R.string.sync_saving_uom));
             try {
                 UomDAO.truncate();
                 UomDAO.insert(jsonRequest);
@@ -1777,12 +1873,12 @@ public class SynchMethods {
     private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {
 
         try {
-            task.updateProgress(getString(R.string.sync_dload_ordprodattr));
+            task.updateProgress(activity.getString(R.string.sync_dload_ordprodattr));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
-            String jsonRequest = client.httpJsonRequest(getString(R.string.sync_enablermobile_deviceasxmltrans) +
+            String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("GetOrderProductsAttr"));
-            task.updateProgress(getString(R.string.sync_saving_uom));
+            task.updateProgress(activity.getString(R.string.sync_saving_uom));
             try {
                 OrderProductAttributeDAO.truncate();
                 OrderProductAttributeDAO.insert(jsonRequest);
@@ -1817,13 +1913,13 @@ public class SynchMethods {
         SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(activity);
 
         try {
-            task.updateProgress(getString(R.string.sync_dload_employee_data));
+            task.updateProgress(activity.getString(R.string.sync_dload_employee_data));
             String xml = post.postData(4, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
-            task.updateProgress(getString(R.string.sync_saving_employee_data));
+            task.updateProgress(activity.getString(R.string.sync_saving_employee_data));
             xr.parse(inSource);
             MyPreferences myPref = new MyPreferences(activity);
             data = handler.getEmpData();
@@ -1831,7 +1927,6 @@ public class SynchMethods {
 
 
         } catch (Exception e) {
-            handleGoogleAnalytic(e.getMessage() + " [com.android.support.SynchMethods (at Class.synchEmployeeData)]");
         }
         data.clear();
     }
@@ -1841,13 +1936,13 @@ public class SynchMethods {
         SaxLoginHandler handler = new SaxLoginHandler();
 
         try {
-            task.updateProgress(getString(R.string.sync_dload_last_pay_id));
+            task.updateProgress(activity.getString(R.string.sync_dload_last_pay_id));
             String xml = post.postData(6, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
-            task.updateProgress(getString(R.string.sync_saving_last_pay_id));
+            task.updateProgress(activity.getString(R.string.sync_saving_last_pay_id));
             xr.parse(inSource);
             if (!handler.getData().isEmpty()) {
                 MyPreferences myPref = new MyPreferences(activity);
@@ -1855,65 +1950,61 @@ public class SynchMethods {
             }
 
         } catch (Exception e) {
-            handleGoogleAnalytic(e.getMessage() + " [com.android.support.SynchMethods (at Class.synchDownloadLastPayID)]");
         }
     }
 
     private void synchDeviceDefaultValues(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_device_default_values));
+        task.updateProgress(activity.getString(R.string.sync_dload_device_default_values));
         post.postData(7, activity, "DeviceDefaultValues");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_DEVICE_DEFAULT_VAL);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_device_default_values));
+        task.updateProgress(activity.getString(R.string.sync_saving_device_default_values));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
 
     }
 
     private void synchVolumePrices(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(getString(R.string.sync_dload_volume_prices));
+        task.updateProgress(activity.getString(R.string.sync_dload_volume_prices));
         post.postData(7, activity, "VolumePrices");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_VOLUME_PRICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(getString(R.string.sync_saving_volume_prices));
+        task.updateProgress(activity.getString(R.string.sync_saving_volume_prices));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchLocations(Object task) throws IOException, SAXException {
         if (isReceive)
-            ((resynchAsync) task).updateProgress(getString(R.string.sync_dload_locations));
+            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_dload_locations));
         else
-            ((asyncGetLocationsInventory) task).updateProgress(getString(R.string.sync_dload_locations));
+            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_dload_locations));
         post.postData(7, activity, "GetLocations");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_LOCATIONS);
         //tempGenerateFile(false);
         File tempFile = new File(tempFilePath);
         if (isReceive)
-            ((resynchAsync) task).updateProgress(getString(R.string.sync_saving_locations));
+            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_saving_locations));
         else
-            ((asyncGetLocationsInventory) task).updateProgress(getString(R.string.sync_saving_locations));
+            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_saving_locations));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
     private void synchLocationsInventory(Object task) throws IOException, SAXException {
         if (isReceive)
-            ((resynchAsync) task).updateProgress(getString(R.string.sync_dload_locations_inventory));
+            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
         else
-            ((asyncGetLocationsInventory) task).updateProgress(getString(R.string.sync_dload_locations_inventory));
+            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
         post.postData(7, activity, "GetLocationsInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_LOCATIONS_INVENTORY);
         File tempFile = new File(tempFilePath);
         if (isReceive)
-            ((resynchAsync) task).updateProgress(getString(R.string.sync_saving_locations_inventory));
+            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_saving_locations_inventory));
         else
-            ((asyncGetLocationsInventory) task).updateProgress(getString(R.string.sync_saving_locations_inventory));
+            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_saving_locations_inventory));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-
-    private void handleGoogleAnalytic(String stack) {
-    }
 }

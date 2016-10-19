@@ -49,10 +49,10 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
-import com.android.emobilepos.mainmenu.SettingsTab_FR;
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
+import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
@@ -63,6 +63,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -691,7 +692,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     }
                     break;
                 case R.string.config_salesassociate_config:
-                    intent = new Intent(getActivity(), SalesAssociateConfiguration.class);
+                    intent = new Intent(getActivity(), SalesAssociateConfigurationActivity.class);
                     startActivity(intent);
                     break;
             }
@@ -1137,8 +1138,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                         ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(getActivity());
                         handler.updateShift(myPref.getShiftID(), "entered_close_amount", Double.toString(amount));
-                        handler.updateShift(myPref.getShiftID(), "endTime", Global.getCurrentDate());
-                        handler.updateShift(myPref.getShiftID(), "endTimeLocal", Global.getCurrentDate());
+                        handler.updateShift(myPref.getShiftID(), "endTime", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
+                        handler.updateShift(myPref.getShiftID(), "endTimeLocal", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
 
                         myPref.setShiftIsOpen(true);
                         myPref.setShiftID(""); //erase the shift ID

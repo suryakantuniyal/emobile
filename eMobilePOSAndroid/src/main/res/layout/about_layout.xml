@@ -132,10 +132,32 @@
             android:textSize="@dimen/about_main_text_size"/>
 
         <TextView
+            android:id="@+id/deviceModelTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/copyrightTag"
+            android:layout_marginTop="47dp"
+            android:text="@string/device_name"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"/>
+
+        <TextView
+            android:id="@+id/deviceModelText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/deviceModelTag"
+            android:layout_alignBottom="@+id/deviceModelTag"
+            android:layout_alignParentRight="true"
+            android:text="@string/unknown"
+            android:textAppearance="@style/black_text_appearance_unbold"
+            android:textSize="@dimen/about_main_text_size"/>
+
+        <TextView
             android:id="@+id/footerText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/copyrightTag"
+            android:layout_below="@+id/deviceModelTag"
             android:layout_centerHorizontal="true"
             android:gravity="center"
             android:layout_marginTop="60dp"

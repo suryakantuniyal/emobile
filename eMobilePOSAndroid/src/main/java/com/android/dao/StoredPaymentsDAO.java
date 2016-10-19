@@ -6,9 +6,9 @@ import android.text.TextUtils;
 
 import com.android.database.DBManager;
 import com.android.database.PaymentsHandler;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.storedAndForward.StoreAndForward;
+import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -34,10 +34,14 @@ public class StoredPaymentsDAO {
 
     public String updateSignaturePayment(String pay_uuid) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        StoreAndForward storeAndForward = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
-        storeAndForward.getPayment().setPay_signature(global.encodedImage);
-        realm.commitTransaction();
+        StoreAndForward storeAndForward;
+        try {
+            realm.beginTransaction();
+            storeAndForward = realm.where(StoreAndForward.class).equalTo("payment.pay_uuid", pay_uuid).findFirst();
+            storeAndForward.getPayment().setPay_signature(global.encodedImage);
+        } finally {
+            realm.commitTransaction();
+        }
         return storeAndForward.getPayment().getPay_amount();
     }
 
@@ -54,22 +58,29 @@ public class StoredPaymentsDAO {
 
     public void deletePaymentFromJob(String _job_id) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        StoreAndForward first = realm.where(StoreAndForward.class)
-                .equalTo("payment.job_id", _job_id).findFirst();
-        if (first != null && first.isValid()) {
-            first.deleteFromRealm();
+        try {
+            realm.beginTransaction();
+            StoreAndForward first = realm.where(StoreAndForward.class)
+                    .equalTo("payment.job_id", _job_id).findFirst();
+            if (first != null && first.isValid()) {
+                first.deleteFromRealm();
+            }
+        } finally {
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
     }
 
 
     public PaymentDetails getPrintingForPaymentDetails(String payID, int type) {
         StringBuilder sb = new StringBuilder();
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        Payment payment = realm.where(StoreAndForward.class).equalTo("payment.pay_id", payID).findFirst().getPayment();
-        realm.commitTransaction();
+        Payment payment;
+        try {
+            realm.beginTransaction();
+            payment = realm.where(StoreAndForward.class).equalTo("payment.pay_id", payID).findFirst().getPayment();
+        } finally {
+            realm.commitTransaction();
+        }
         switch (type) {
             // May come from History>Payment>Details
 //            case 0:
@@ -154,9 +165,13 @@ public class StoredPaymentsDAO {
 
     public List<PaymentDetails> getPaymentForPrintingTransactions(String jobID) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        RealmResults<StoreAndForward> storeAndForwards = realm.where(StoreAndForward.class).equalTo("payment.job_id", jobID).findAll();
-        realm.commitTransaction();
+        RealmResults<StoreAndForward> storeAndForwards;
+        try {
+            realm.beginTransaction();
+            storeAndForwards = realm.where(StoreAndForward.class).equalTo("payment.job_id", jobID).findAll();
+        } finally {
+            realm.commitTransaction();
+        }
         List<PaymentDetails> list = new ArrayList<>();
 
         PaymentDetails details = new PaymentDetails();
@@ -179,54 +194,69 @@ public class StoredPaymentsDAO {
 
     public static void updateStatusDeleted(StoreAndForward storeAndForward) {
         Realm realm = Realm.getDefaultInstance();
-        long id = storeAndForward.getId();
-        realm.beginTransaction();
-        RealmResults<StoreAndForward> all = realm.where(StoreAndForward.class).equalTo("id", id).findAll();
-        if (all.isValid()) {
-            all.deleteAllFromRealm();
+        try {
+            long id = storeAndForward.getId();
+            realm.beginTransaction();
+            RealmResults<StoreAndForward> all = realm.where(StoreAndForward.class).equalTo("id", id).findAll();
+            if (all.isValid()) {
+                all.deleteAllFromRealm();
+            }
+        } finally {
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
     }
 
     public static void purgeDeletedStoredPayment() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.where(StoreAndForward.class).equalTo("status"
-                , StoreAndForward.StoreAndForwatdStatus.DELETED.getCode())
-                .findAll().deleteAllFromRealm();
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.where(StoreAndForward.class).equalTo("status"
+                    , StoreAndForward.StoreAndForwatdStatus.DELETED.getCode())
+                    .findAll().deleteAllFromRealm();
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public void updateStoredPaymentForRetry(StoreAndForward storeAndForward) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        storeAndForward.setRetry(true);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            storeAndForward.setRetry(true);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
 
     public void insert(Activity activity, Payment payment, StoreAndForward.PaymentType paymentType) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
-        storeAndForward.setPaymentType(paymentType);
-        storeAndForward.setPaymentXml(payment.getPayment_xml());
-        storeAndForward.setPayment(realm.copyToRealm(payment));
-        storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
-        storeAndForward.setRetry(false);
-        storeAndForward.setCreationDate(new Date());
-        storeAndForward.setId(System.currentTimeMillis());
-        realm.insert(storeAndForward);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            StoreAndForward storeAndForward = realm.createObject(StoreAndForward.class);
+            storeAndForward.setPaymentType(paymentType);
+            storeAndForward.setPaymentXml(payment.getPayment_xml());
+            storeAndForward.setPayment(realm.copyToRealm(payment));
+            storeAndForward.setStoreAndForwatdStatus(StoreAndForward.StoreAndForwatdStatus.PENDING);
+            storeAndForward.setRetry(false);
+            storeAndForward.setCreationDate(new Date());
+            storeAndForward.setId(System.currentTimeMillis());
+            realm.insert(storeAndForward);
+        } finally {
+            realm.commitTransaction();
+        }
         PaymentsHandler.setLastPaymentInserted(payment);
         new MyPreferences(activity).setLastPayID(payment.getPay_id());
     }
 
     public static void updateStoreForwardPaymentToRetry(StoreAndForward storeAndForward) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        storeAndForward.setRetry(true);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            storeAndForward.setRetry(true);
+        } finally {
+            realm.commitTransaction();
+        }
     }
 
     public static String getLastPaymentId(Activity activity, int deviceId, int year) {
@@ -254,5 +284,9 @@ public class StoredPaymentsDAO {
             myPref.setLastPayID(lastPayID);
         }
         return lastPayID;
+    }
+
+    public static RealmResults<StoreAndForward> getAll() {
+        return Realm.getDefaultInstance().where(StoreAndForward.class).findAll();
     }
 }
