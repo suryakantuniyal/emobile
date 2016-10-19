@@ -568,7 +568,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setOrdprod_desc(c.getString(c.getColumnIndex("ordprod_desc")));
             ord.setProd_id(c.getString(c.getColumnIndex("prod_id")));
             ord.setProd_price(c.getString(c.getColumnIndex("prod_price")));
-            ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
+//            ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
             ord.setOverwrite_price(c.getString(c.getColumnIndex("overwrite_price")) != null
                     ? new BigDecimal(c.getString(c.getColumnIndex("overwrite_price")))
                     : null);
