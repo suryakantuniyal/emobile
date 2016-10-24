@@ -3,6 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
+import com.android.dao.PayMethodsDAO;
 import com.android.emobilepos.models.PaymentMethod;
 import com.android.support.MyPreferences;
 
@@ -14,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.Sort;
 import util.StringUtil;
 
 public class PayMethodsHandler {
@@ -100,15 +100,11 @@ public class PayMethodsHandler {
 
     public void emptyTable() {
         DBManager._db.execSQL("DELETE FROM " + table_name);
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(PaymentMethod.class);
-        realm.commitTransaction();
+        PayMethodsDAO.truncate();
     }
 
     public List<PaymentMethod> getPayMethod() {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
+        return PayMethodsDAO.getAllSortByName();
     }
 
 
@@ -165,7 +161,7 @@ public class PayMethodsHandler {
 
         return data;
     }
-    
+
 
     public String getSpecificPayMethodId(String methodName) {
         String[] fields = new String[]{paymethod_id};
