@@ -1212,9 +1212,10 @@
     <string name="error_processing_payment">Error processing payment</string>
     <string name="header_title_settings">Settings</string>
     <string name="timeout_try_again">TIME OUT, would you like to try again?</string>
-    <string name="can_not_proceed">Can not proceed...</string>
+    <string name="can_not_proceed">Can not proceed…</string>
     <string name="invalid_payment_type">Invalid Payment Type</string>
     <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string>
+    <string name="sync_fail">Synchronization has fail.</string>
 
 
 </resources>

@@ -34,6 +34,7 @@ public class TermsHandler {
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -65,7 +66,7 @@ public class TermsHandler {
 
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			addrData = data;
@@ -73,7 +74,7 @@ public class TermsHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -91,7 +92,7 @@ public class TermsHandler {
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.TermsHandler (at Class.insert)]");
@@ -99,14 +100,14 @@ public class TermsHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	
@@ -115,7 +116,7 @@ public class TermsHandler {
 		//SQLiteDatabase db = dbManager.openReadableDB();
 		
 		String query = "SELECT terms_name,terms_id FROM Terms WHERE isactive='1' ORDER BY terms_name";
-		Cursor cursor = DBManager._db.rawQuery(query, null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
 		List<String[]> arrayList = new ArrayList<String[]>();
 		String[] arrayValues = new String[2];
 		//int i = 0;

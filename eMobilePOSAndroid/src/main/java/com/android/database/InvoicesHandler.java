@@ -56,6 +56,7 @@ public class InvoicesHandler {
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -86,7 +87,7 @@ public class InvoicesHandler {
 	}
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			addrData = data;
@@ -95,7 +96,7 @@ public class InvoicesHandler {
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -125,7 +126,7 @@ public class InvoicesHandler {
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.InvoicesHandler (at Class.insert)]");
@@ -134,14 +135,14 @@ public class InvoicesHandler {
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 
 	public long getDBSize() {
@@ -150,7 +151,7 @@ public class InvoicesHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name);
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();
@@ -164,7 +165,7 @@ public class InvoicesHandler {
 	// sb.append("SELECT inv_id FROM ").append(table_name).append(" WHERE inv_id
 	// = (select max(inv_id) FROM ").append(table_name).append(")");
 	//
-	// SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+	// SQLiteStatement stmt = DBManager.database.compileStatement(sb.toString());
 	//
 	// String val = stmt.simpleQueryForString();
 	// // db.close();
@@ -186,7 +187,7 @@ public class InvoicesHandler {
 		} else {
 			args.put(inv_balance, remainingBalance);
 		}
-		DBManager._db.update(table_name, args, sb.toString(), new String[] { param });
+		DBManager.getDatabase().update(table_name, args, sb.toString(), new String[] { param });
 
 		// db.close();
 
@@ -198,7 +199,7 @@ public class InvoicesHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name).append(" WHERE inv_ispaid = ?");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { type });
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { type });
 
 		cursor.moveToFirst();
 		// db.close();
@@ -222,7 +223,7 @@ public class InvoicesHandler {
 		 * );
 		 */
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { id });
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { id });
 
 		cursor.moveToFirst();
 		// db.close();
@@ -237,7 +238,7 @@ public class InvoicesHandler {
 				"SELECT i.inv_id as _id, c.cust_name, i.txnID,i.inv_balance,i.inv_ispaid,i.inv_total,i.inv_duedate,i.inv_shipdate,i.inv_timecreated "
 						+ ",c.cust_id,c.custidkey FROM Invoices i, Customers c WHERE i.cust_id = c.cust_id ORDER BY c.cust_name AND i.inv_ispaid");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 
 		cursor.moveToFirst();
 		// db.close();
@@ -253,12 +254,12 @@ public class InvoicesHandler {
 			sb.append(
 					"SELECT i.inv_id as _id, c.cust_name, i.txnID,i.inv_balance,i.inv_ispaid,i.inv_total,i.inv_duedate,i.inv_shipdate,i.inv_timecreated "
 							+ ",c.cust_id,c.custidkey FROM Invoices i, Customers c WHERE i.cust_id = c.cust_id AND i.inv_id LIKE ? ORDER BY c.cust_name");
-			cursor = DBManager._db.rawQuery(sb.toString(), new String[] { "%" + pattern + "%" });
+			cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { "%" + pattern + "%" });
 		} else {
 			sb.append(
 					"SELECT i.inv_id as _id, c.cust_name, i.txnID,i.inv_balance,i.inv_ispaid,i.inv_total,i.inv_duedate,i.inv_shipdate,i.inv_timecreated "
 							+ ",c.cust_id,c.custidkey FROM Invoices i, Customers c WHERE i.cust_id = c.cust_id AND i.cust_id = ? AND i.inv_id LIKE ? ORDER BY c.cust_name");
-			cursor = DBManager._db.rawQuery(sb.toString(), new String[] { myPref.getCustID(), "%" + pattern + "%" });
+			cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { myPref.getCustID(), "%" + pattern + "%" });
 		}
 
 		// Cursor cursor = db.rawQuery(sb.toString(), new String[] {"%" +
@@ -277,7 +278,7 @@ public class InvoicesHandler {
 				"SELECT c.cust_name, i.inv_id , i.txnID,i.inv_total, i.inv_balance,i.inv_timecreated,i.inv_duedate,i.inv_shipdate,i.inv_ispaid "
 						+ ",i.inv_terms,i.inv_ponumber, i.inv_total, i.inv_balance FROM Invoices i, Customers c WHERE i.cust_id = c.cust_id AND  i.inv_id = ?");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { invID });
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { invID });
 
 		String[] arrayVal = new String[14];
 
@@ -320,7 +321,7 @@ public class InvoicesHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE inv_ispaid = '0'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();

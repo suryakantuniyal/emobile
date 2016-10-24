@@ -291,7 +291,7 @@ public class SAXSynchHandler extends DefaultHandler {
 				salesTaxCodesHandler.insert(dataList,dictionaryListMap);
 			else
 			{
-				salesTaxCodesHandler = new SalesTaxCodesHandler();
+				salesTaxCodesHandler = new SalesTaxCodesHandler(activity);
 				salesTaxCodesHandler.emptyTable();
 			}
 			break;

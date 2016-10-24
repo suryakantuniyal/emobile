@@ -43,6 +43,7 @@ public class CustomerInventoryHandler {
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -91,7 +92,7 @@ public class CustomerInventoryHandler {
 			sb.append("SELECT consignment_id FROM ").append(TABLE_NAME).append(" WHERE ");
 			sb.append(cust_id).append(" = '").append(inv.cust_id).append("' AND ");
 			sb.append(prod_id).append(" = '").append(inv.prod_id).append("'");
-			cursor = DBManager._db.rawQuery(sb.toString(), null);
+			cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 			if (cursor.moveToFirst())
 				consignmentID = cursor.getString(0);
 
@@ -105,7 +106,7 @@ public class CustomerInventoryHandler {
 				values.put(prod_name, inv.prod_name);
 				values.put(is_synched, inv.is_synched);
 
-				DBManager._db.update(TABLE_NAME, values, sb.toString(), new String[] { consignmentID });
+				DBManager.getDatabase().update(TABLE_NAME, values, sb.toString(), new String[] { consignmentID });
 
 				consignmentID = null;
 			} else {
@@ -117,7 +118,7 @@ public class CustomerInventoryHandler {
 				values.put(cust_update, inv.cust_update);
 				values.put(is_synched, inv.is_synched);
 
-				DBManager._db.insert(TABLE_NAME, null, values);
+				DBManager.getDatabase().insert(TABLE_NAME, null, values);
 			}
 			cursor.close();
 		}
@@ -125,7 +126,7 @@ public class CustomerInventoryHandler {
 	}
 
 	public void insert(List<String[]> Data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 			data = Data;
 			dictionaryListMap = dictionary;
@@ -133,7 +134,7 @@ public class CustomerInventoryHandler {
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(",is_synched) ")
 					.append("VALUES (").append(sb2.toString()).append(",?)");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = data.size();
 			int offsetIndex = attr.size() + 1;
@@ -156,18 +157,18 @@ public class CustomerInventoryHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(TABLE_NAME);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 
 	public Cursor getCustomerInventoryCursor() {
@@ -205,7 +206,7 @@ public class CustomerInventoryHandler {
 		sb.append(
 				" LEFT OUTER JOIN ProductChainXRef ch ON ci.prod_id = ch.prod_id AND ch.cust_chain = ci.cust_id WHERE ci.cust_id = ?");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(),
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(),
 				new String[] { priceLevelID, priceLevelID, myPref.getCustID() });
 		cursor.moveToFirst();
 		// db.close();
@@ -244,7 +245,7 @@ public class CustomerInventoryHandler {
 		sb.append(
 				" LEFT OUTER JOIN ProductChainXRef ch ON ci.prod_id = ch.prod_id AND ch.cust_chain = ci.cust_id WHERE ci.cust_id = ? AND qty != '0'");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(),
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(),
 				new String[] { priceLevelID, priceLevelID, myPref.getCustID() });
 		HashMap<String, String[]> tempMap = new HashMap<String, String[]>();
 		List<String> keys = new ArrayList<String>();
@@ -298,7 +299,7 @@ public class CustomerInventoryHandler {
 		sb.append("SELECT ").append(qty).append(" FROM ").append(TABLE_NAME)
 				.append(" WHERE prod_id = ? AND cust_id = ?");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { prod_id, myPref.getCustID() });
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { prod_id, myPref.getCustID() });
 		double value = 0.0;
 
 		if (cursor.moveToFirst()) {
@@ -314,7 +315,7 @@ public class CustomerInventoryHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(TABLE_NAME)
 				.append(" WHERE is_synched = '0'");
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 
 		return cursor;
 	}
@@ -328,7 +329,7 @@ public class CustomerInventoryHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(TABLE_NAME).append(" WHERE is_synched = '0'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();
@@ -353,7 +354,7 @@ public class CustomerInventoryHandler {
 				args.put(is_synched, "1");
 			else
 				args.put(is_synched, "0");
-			DBManager._db.update(TABLE_NAME, args, sb.toString(), new String[] { list.get(i)[1], list.get(i)[2] });
+			DBManager.getDatabase().update(TABLE_NAME, args, sb.toString(), new String[] { list.get(i)[1], list.get(i)[2] });
 		}
 		// db.close();
 	}

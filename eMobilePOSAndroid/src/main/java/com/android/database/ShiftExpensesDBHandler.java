@@ -1,20 +1,18 @@
 
 package com.android.database;
 
-        import android.app.Activity;
-        import android.content.ContentValues;
-        import android.database.Cursor;
-        import android.util.SparseArray;
+import android.app.Activity;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.util.SparseArray;
 
-        import com.android.emobilepos.models.ShiftPeriods;
-        import com.android.support.Global;
+import com.android.support.Global;
 
-        import net.sqlcipher.database.SQLiteStatement;
+import net.sqlcipher.database.SQLiteStatement;
 
-        import java.util.ArrayList;
-        import java.util.Arrays;
-        import java.util.HashMap;
-        import java.util.List;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by tirizar on 1/5/2016.
@@ -45,6 +43,7 @@ public class ShiftExpensesDBHandler {
         attrHash = new HashMap<String, Integer>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
+        new DBManager(activity);
 
         initDictionary();
     }
@@ -78,14 +77,14 @@ public class ShiftExpensesDBHandler {
         Long milliseconds = (Long) System.currentTimeMillis();
         expID = milliseconds.toString(); //use time stamp as expenseID
 
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
 
             SQLiteStatement insert = null;
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
                     .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            insert = DBManager.getDatabase().compileStatement(sb.toString());
 
             insert.bindString(index(expenseID), expID == null ? "" : expID);
             insert.bindString(index(shiftPeriodID), spID == null ? "" : spID);
@@ -96,7 +95,7 @@ public class ShiftExpensesDBHandler {
             insert.execute();
             insert.clearBindings();
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             StringBuilder sb = new StringBuilder();
@@ -105,7 +104,7 @@ public class ShiftExpensesDBHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
 
         //update the ending petty cash due to the expense section
@@ -117,7 +116,7 @@ public class ShiftExpensesDBHandler {
     public void emptyTable() {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager.getDatabase().execSQL(sb.toString());
     }
 
     // public void emptyTable() {
@@ -138,7 +137,7 @@ public class ShiftExpensesDBHandler {
         ContentValues args = new ContentValues();
 
         args.put(attr, val);
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{expenseID});
+        DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{expenseID});
 
         // db.close();
     }
@@ -150,7 +149,7 @@ public class ShiftExpensesDBHandler {
 
         sb.append("SELECT * FROM ").append(table_name).append(" WHERE expenseID = ?");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[] { expenseID });
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { expenseID });
 
         if (c.moveToFirst()) {
 
@@ -179,7 +178,7 @@ public class ShiftExpensesDBHandler {
 
         query = sb.toString();
 
-        Cursor cursor = DBManager._db.rawQuery(query, parameters);
+        Cursor cursor = DBManager.getDatabase().rawQuery(query, parameters);
         cursor.moveToFirst();
         // db.close();
 
@@ -201,7 +200,7 @@ public class ShiftExpensesDBHandler {
 
         query = sb.toString();
 
-        Cursor cursor = DBManager._db.rawQuery(query, parameters);
+        Cursor cursor = DBManager.getDatabase().rawQuery(query, parameters);
         cursor.moveToFirst();
 
         String theTotalExpenses = cursor.getString(0); //get the computed total

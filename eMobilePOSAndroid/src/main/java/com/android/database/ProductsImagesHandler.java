@@ -32,6 +32,7 @@ public class ProductsImagesHandler {
 		prodData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -64,7 +65,7 @@ public class ProductsImagesHandler {
 
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 
 		try {
 
@@ -73,7 +74,7 @@ public class ProductsImagesHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = prodData.size();
 
@@ -89,7 +90,7 @@ public class ProductsImagesHandler {
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductsImagesHandler (at Class.insert)]");
@@ -97,7 +98,7 @@ public class ProductsImagesHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
@@ -105,7 +106,7 @@ public class ProductsImagesHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 
 	public List<String> getColumn(String tag) {
@@ -115,7 +116,7 @@ public class ProductsImagesHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ").append(tag).append(" FROM ").append(table_name);
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 
 		if (cursor.moveToFirst()) {
 			do {
@@ -136,7 +137,7 @@ public class ProductsImagesHandler {
 		String[] fields = new String[] { prod_id, prod_img_name };
 		String[] arguments = new String[] { type };
 
-		Cursor cursor = DBManager._db.query(true, table_name, fields, "type=?", arguments, null, null, null, null);
+		Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "type=?", arguments, null, null, null, null);
 
 		if (cursor.moveToFirst()) {
 			do {
@@ -158,7 +159,7 @@ public class ProductsImagesHandler {
 		String[] fields = new String[] { prod_img_name };
 		String[] arguments = new String[] { type, prodID };
 
-		Cursor cursor = DBManager._db.query(true, table_name, fields, "type=? AND prod_id=?", arguments, null, null, null, null);
+		Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "type=? AND prod_id=?", arguments, null, null, null, null);
 
 		if (cursor.moveToFirst()) {
 			do {
@@ -178,7 +179,7 @@ public class ProductsImagesHandler {
 		
 		
 
-		Cursor cursor = DBManager._db.rawQuery("SELECT prod_img_name FROM Products_Images WHERE type='I'", null);
+		Cursor cursor = DBManager.getDatabase().rawQuery("SELECT prod_img_name FROM Products_Images WHERE type='I'", null);
 		
 		String[] links = new String[cursor.getCount()];
 		int i = 0;

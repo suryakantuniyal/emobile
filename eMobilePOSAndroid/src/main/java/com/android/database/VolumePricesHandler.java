@@ -37,6 +37,7 @@ public class VolumePricesHandler {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
+        new DBManager(activity);
 
         initDictionary();
     }
@@ -68,12 +69,12 @@ public class VolumePricesHandler {
     }
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
             addrData = data;
             dictionaryListMap = dictionary;
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             int size = addrData.size();
             for (int i = 0; i < size; i++) {
                 insert.bindString(index(id_key), getData(id_key, i)); // id_key
@@ -88,15 +89,15 @@ public class VolumePricesHandler {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
     public String[] getVolumePrice(String qty, String prod_id) {
@@ -114,7 +115,7 @@ public class VolumePricesHandler {
         sb.append("SELECT * From VolumePrices WHERE prod_id = '");
         sb.append(prod_id).append("' and pricelevel_id = '");
         sb.append(priceLevelID).append("' ORDER BY minQty");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         String[] values = new String[2];
         if (cursor.moveToFirst()) {
             do {

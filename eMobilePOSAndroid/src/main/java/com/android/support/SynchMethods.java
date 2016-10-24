@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -45,8 +46,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
 import com.android.emobilepos.models.ItemPriceLevel;
-import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.MixMatch;
+import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
@@ -95,7 +96,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import io.realm.Realm;
 import util.JsonUtils;
 
 public class SynchMethods {
@@ -458,6 +458,9 @@ public class SynchMethods {
                 dbManager.updateDB();
             } else if (!proceed) {
                 // failed to synch....
+                if(TextUtils.isEmpty(xml)){
+                    xml = getString(R.string.sync_fail);
+                }
                 Global.showPrompt(activity, R.string.dlog_title_error, xml);
             }
 

@@ -40,6 +40,7 @@ public class ProductsAttrHandler
 		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 	
@@ -73,18 +74,18 @@ public class ProductsAttrHandler
 	
 	public void emptyTable() 
 	{
-		DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
+		DBManager.getDatabase().execSQL("DELETE FROM " + TABLE_NAME);
 	}
 	
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			this.data = data;
 			dictionaryListMap = dictionary;
 			SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
 			int size = this.data.size();
 
@@ -100,11 +101,11 @@ public class ProductsAttrHandler
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 		} finally {
 
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
@@ -118,7 +119,7 @@ public class ProductsAttrHandler
 		sb.append("SELECT pa.attr_id as '_id',pa.attr_name,pa.attr_desc " +
 				"FROM ProductsAttr pa LEFT OUTER JOIN Products p ON pa.prod_id = p.prod_id ");
 		sb.append("WHERE p.prod_name = ? GROUP BY attr_desc ORDER BY pa.attr_name, attr_desc");
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{prodName});
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{prodName});
 		if(cursor.moveToFirst())
 		{
 			int i_attr_desc = cursor.getColumnIndex(attr_desc);
@@ -147,7 +148,7 @@ public class ProductsAttrHandler
 		sb.append("SELECT pa.prod_id as '_id', pa.prodAttrKey,pa.attr_id,pa.attr_name,pa.attr_desc FROM ProductsAttr pa ");
 		sb.append("LEFT OUTER JOIN Products p ON pa.prod_id = p.prod_id WHERE p.prod_id = '").append(prod_id).append("' ORDER BY pa.attr_name, attr_desc");
 		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		if(cursor.moveToFirst())
 		{
 			int i_attr_desc = cursor.getColumnIndex(attr_desc);
@@ -188,7 +189,7 @@ public class ProductsAttrHandler
 		
 		sb_1.append(" GROUP BY pa.prod_id ORDER BY count DESC");
 		
-		cursor = DBManager._db.rawQuery(sb_1.toString(), param);
+		cursor = DBManager.getDatabase().rawQuery(sb_1.toString(), param);
 		
 		if(cursor.moveToFirst())
 		{
@@ -212,7 +213,7 @@ public class ProductsAttrHandler
 			sb_1.append(prodID).append("'");
 			
 			cursor.close();
-			cursor = DBManager._db.rawQuery(sb_1.toString(), new String[]{priceLevelID,priceLevelID,myPref.getCustID()});
+			cursor = DBManager.getDatabase().rawQuery(sb_1.toString(), new String[]{priceLevelID,priceLevelID,myPref.getCustID()});
 			cursor.moveToFirst();
 		}
 		

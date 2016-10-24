@@ -42,6 +42,7 @@ public class MemoTextHandler {
 		myPref = new MyPreferences(activity);
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -73,7 +74,7 @@ public class MemoTextHandler {
 
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 
 		try {
 
@@ -82,7 +83,7 @@ public class MemoTextHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -103,7 +104,7 @@ public class MemoTextHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.MemoTextHandler (at Class.insert)]");
@@ -111,14 +112,14 @@ public class MemoTextHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	public String[] getHeader()
@@ -127,7 +128,7 @@ public class MemoTextHandler {
 		String [] header = new String[3];
 		String query = "SELECT memo_headerLine1,memo_headerLine2,memo_headerLine3 FROM memotext";
 		
-		Cursor cursor = DBManager._db.rawQuery(query, null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
 		
 		if(cursor.moveToFirst())
 		{
@@ -149,7 +150,7 @@ public class MemoTextHandler {
 		
 		String query = "SELECT * FROM memotext";
 		
-		Cursor c = DBManager._db.rawQuery(query, null);
+		Cursor c = DBManager.getDatabase().rawQuery(query, null);
 		
 		if(c.moveToFirst())
 		{
@@ -177,7 +178,7 @@ public class MemoTextHandler {
 		String [] footer = new String[3];
 		String query = "SELECT memo_footerLine1,memo_footerLine2,memo_footerLine3 FROM memotext";
 		
-		Cursor cursor = DBManager._db.rawQuery(query, null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
 		
 		if(cursor.moveToFirst())
 		{
