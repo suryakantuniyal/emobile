@@ -3,6 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
@@ -101,11 +102,16 @@ public class DBManager {
         File dbPath = null;
         try {
             dbPath = activity.getDatabasePath(DB_NAME_OLD);
+            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
+            myPref.setEmpID("1");
+            myPref.setDeviceID("355b9d6313e9f4cb");
+            myPref.setAcctNumber("150622160307");
+            myPref.setAcctPassword("1gsgny#");
         } catch (Exception e1) {
             e1.printStackTrace();
         }
         File dbCipherPath = activity.getDatabasePath(CIPHER_DB_NAME);
-        if (dbPath.exists() && !dbCipherPath.exists()) {
+        if (dbPath.exists()){// && !dbCipherPath.exists()) {
             try {
                 encrypt(activity, DB_NAME_OLD, getPassword());
             } catch (IOException e) {
@@ -116,7 +122,7 @@ public class DBManager {
 
     public static void encrypt(Context ctxt, String dbName, String passphrase) throws IOException {
         File originalFile = ctxt.getDatabasePath(dbName);
-
+        originalFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
         if (originalFile.exists()) {
             File newFile = File.createTempFile("sqlcipherutils", "tmp", ctxt.getCacheDir());
 
@@ -144,7 +150,6 @@ public class DBManager {
                 originalFile.delete();
                 newFile.renameTo(ctxt.getDatabasePath(CIPHER_DB_NAME));
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -269,7 +274,6 @@ public class DBManager {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             //drop all the tables and recreate them
-            int size = TABLE_NAME.length;
             for (String tblName : TABLE_NAME) {
                 db.execSQL("DROP TABLE IF EXISTS " + tblName);
             }
