@@ -58,7 +58,7 @@ public class UOMHandler
 	
 	
 //	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-//		DBManager._db.beginTransaction();
+//		DBManager.database.beginTransaction();
 //		try {
 //
 //			uomData = data;
@@ -66,7 +66,7 @@ public class UOMHandler
 //			SQLiteStatement insert = null;
 //			StringBuilder sb = new StringBuilder();
 //			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-//			insert = DBManager._db.compileStatement(sb.toString());
+//			insert = DBManager.database.compileStatement(sb.toString());
 //
 //			int size = uomData.size();
 //
@@ -84,7 +84,7 @@ public class UOMHandler
 //
 //			}
 //			insert.close();
-//			DBManager._db.setTransactionSuccessful();
+//			DBManager.database.setTransactionSuccessful();
 //		} catch (Exception e) {
 //			StringBuilder sb = new StringBuilder();
 //			sb.append(e.getMessage()).append(" [com.android.emobilepos.UOMHandler (at Class.insert)]");
@@ -93,7 +93,7 @@ public class UOMHandler
 ////			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 //		} finally {
 //
-//			DBManager._db.endTransaction();
+//			DBManager.database.endTransaction();
 //		}
 //	}
 //
@@ -103,7 +103,7 @@ public class UOMHandler
 //		String[] data = new String[3];
 //		String[] fields = new String[] { uom_name, uom_id, uom_conversion };
 //		String[] arguments = new String[] { prodID };
-//		Cursor cursor = DBManager._db.query(true, TABLE_NAME, fields, "prod_id=?",arguments, null, null, uom_name, null);
+//		Cursor cursor = DBManager.database.query(true, TABLE_NAME, fields, "prod_id=?",arguments, null, null, uom_name, null);
 //
 //		if (cursor.moveToFirst()) {
 //			do {
@@ -124,6 +124,6 @@ public class UOMHandler
 //	public void emptyTable() {
 //		StringBuilder sb = new StringBuilder();
 //		sb.append("DELETE FROM ").append(TABLE_NAME);
-//		DBManager._db.execSQL(sb.toString());
+//		DBManager.database.execSQL(sb.toString());
 //	}
 }

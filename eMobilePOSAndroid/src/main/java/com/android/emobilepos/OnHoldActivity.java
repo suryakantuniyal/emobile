@@ -709,7 +709,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             HashMap<String, String> temp = ch.getCustomerInfo(custID);
 
 
-            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler();
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
             SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(temp.get("cust_taxable"));
             myPref.setCustTaxCode(taxable, temp.get("cust_salestaxcode"));
 

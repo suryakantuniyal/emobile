@@ -149,7 +149,7 @@ public class ViewCustomers_FA extends BaseFragmentActivityActionBar implements O
         String name = myCursor.getString(myCursor.getColumnIndex("cust_name"));
         results.putExtra("customer_name", name);
 
-        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler();
+        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
         SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(myCursor.getString(myCursor.getColumnIndex("cust_taxable")));
         myPref.setCustTaxCode(taxable, myCursor.getString(myCursor.getColumnIndex("cust_salestaxcode")));
 //        if (taxable == SalesTaxCodesHandler.TaxableCode.TAXABLE)

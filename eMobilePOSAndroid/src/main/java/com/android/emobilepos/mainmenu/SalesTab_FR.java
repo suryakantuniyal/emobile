@@ -881,7 +881,7 @@ public class SalesTab_FR extends Fragment {
                     map = custHandler.getCustomerInfo(val.replace("\n", "").trim());
 
                     if (map.size() > 0) {
-                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler();
+                        SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
                         SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(map.get("cust_taxable"));
                         myPref.setCustTaxCode(taxable, map.get("cust_taxable"));
 

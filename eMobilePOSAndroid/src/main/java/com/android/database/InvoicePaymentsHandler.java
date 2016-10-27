@@ -27,6 +27,7 @@ public class InvoicePaymentsHandler {
 		attrHash = new HashMap<String, Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -50,14 +51,14 @@ public class InvoicePaymentsHandler {
 
 	public void insert(List<String[]> payment) {
 		// SQLiteDatabase db = dbManager.openWritableDB();
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = payment.size();
 			for (int i = 0; i < size; i++) {
@@ -70,7 +71,7 @@ public class InvoicePaymentsHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -79,7 +80,7 @@ public class InvoicePaymentsHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 		// db.close();
 	}
@@ -87,7 +88,7 @@ public class InvoicePaymentsHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 
 	public long getDBSize() {
@@ -96,7 +97,7 @@ public class InvoicePaymentsHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name);
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();
@@ -110,7 +111,7 @@ public class InvoicePaymentsHandler {
 		sb.append("SELECT  ifnull(ROUND(sum(applied_amount),2),-1) as 'total' FROM InvoicePayments WHERE inv_id = '")
 				.append(invID).append("'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		String count = stmt.simpleQueryForString();
 		stmt.close();
 		// db.close();
@@ -123,7 +124,7 @@ public class InvoicePaymentsHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT txnID FROM InvoicePayments WHERE pay_id = '").append(payID).append("' GROUP BY txnID");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		sb.setLength(0);
 		if (cursor.moveToFirst()) {
 			do {
@@ -143,7 +144,7 @@ public class InvoicePaymentsHandler {
 
 		List<String[]> list = new ArrayList<String[]>();
 		String[] content = new String[2];
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		sb.setLength(0);
 		if (cursor.moveToFirst()) {
 			int i_inv_id = cursor.getColumnIndex(inv_id);

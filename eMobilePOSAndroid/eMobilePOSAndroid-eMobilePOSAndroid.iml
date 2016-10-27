@@ -8,80 +8,80 @@
     </facet>
     <facet type="android" name="Android">
       <configuration>
-        <option name="SELECTED_BUILD_VARIANT" value="emsDebug" />
+        <option name="SELECTED_BUILD_VARIANT" value="restoffivuposDebug" />
         <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
-        <option name="ASSEMBLE_TASK_NAME" value="assembleEmsDebug" />
-        <option name="COMPILE_JAVA_TASK_NAME" value="compileEmsDebugSources" />
+        <option name="ASSEMBLE_TASK_NAME" value="assembleRestoffivuposDebug" />
+        <option name="COMPILE_JAVA_TASK_NAME" value="compileRestoffivuposDebugSources" />
         <afterSyncTasks>
-          <task>generateEmsDebugSources</task>
+          <task>generateRestoffivuposDebugSources</task>
         </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
         <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
-        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/src/main/res;file://$MODULE_DIR$/src/ems/res" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/src/main/res;file://$MODULE_DIR$/src/restoffivupos/res" />
         <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
       </configuration>
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/build/intermediates/classes/ems/debug" />
-    <output-test url="file://$MODULE_DIR$/build/intermediates/classes/test/ems/debug" />
+    <output url="file://$MODULE_DIR$/build/intermediates/classes/restoffivupos/debug" />
+    <output-test url="file://$MODULE_DIR$/build/intermediates/classes/test/restoffivupos/debug" />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/ems/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/ems/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/ems/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/ems/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/ems/debug" isTestSource="false" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/fabric/res/ems/debug" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/ems/debug" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/ems/debug" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/res" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/assets" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/aidl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/jni" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/emsDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/ems/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/ems/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/ems/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEmsDebug/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/res" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/assets" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/aidl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/jni" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/rs" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/ems/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestEms/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/jni" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testEms/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/restoffivupos/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/restoffivupos/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/restoffivupos/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/restoffivupos/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/restoffivupos/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/fabric/res/restoffivupos/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/restoffivupos/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/restoffivupos/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/assets" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/aidl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/jni" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/rs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivuposDebug/shaders" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/restoffivupos/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/restoffivupos/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/restoffivupos/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/restoffivupos/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/restoffivupos/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/restoffivupos/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/restoffivupos/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivuposDebug/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/assets" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/aidl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/jni" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/rs" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/restoffivupos/shaders" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestRestoffivupos/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/jni" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testRestoffivupos/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
@@ -124,7 +124,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support.test.uiautomator/uiautomator-v18/2.1.2/jars" />
@@ -203,21 +202,12 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/stickyListHeaders-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/viewPagerIndicator-release/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-safeguard" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-resources" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/transforms" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>

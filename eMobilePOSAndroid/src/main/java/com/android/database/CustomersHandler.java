@@ -67,6 +67,7 @@ public class CustomersHandler {
 		custData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -97,7 +98,7 @@ public class CustomersHandler {
 	}
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			custData = data;
@@ -106,7 +107,7 @@ public class CustomersHandler {
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = custData.size();
 
@@ -148,7 +149,7 @@ public class CustomersHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.CustomersHandler (at Class.insert)]");
@@ -156,7 +157,7 @@ public class CustomersHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 
@@ -166,14 +167,14 @@ public class CustomersHandler {
 		// SQLiteDatabase.NO_LOCALIZED_COLLATORS|
 		// SQLiteDatabase.OPEN_READWRITE);
 		// SQLiteDatabase db = dbManager.openWritableDB();
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			insert.bindString(index(cust_id), customer.cust_id);
 			insert.bindString(index(cust_id_ref), customer.cust_id_ref);
@@ -208,7 +209,7 @@ public class CustomersHandler {
 			insert.execute();
 			insert.clearBindings();
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -217,7 +218,7 @@ public class CustomersHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 		// db.close();
 	}
@@ -225,7 +226,7 @@ public class CustomersHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 
 	public Cursor getUnsynchCustomers() {
@@ -233,7 +234,7 @@ public class CustomersHandler {
 		sb.append(
 				"SELECT cust_id,cust_name,cust_firstName,cust_lastName,CompanyName,cust_contact,cust_phone,cust_email,cust_dob FROM Customers WHERE qb_sync = '0'");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 
 		// cursor.moveToFirst();
 		return cursor;
@@ -250,7 +251,7 @@ public class CustomersHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE qb_sync = '0'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();
@@ -261,11 +262,11 @@ public class CustomersHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE qb_sync = '0'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 
 //		String str = "select count(*) from Products";
-//		stmt = DBManager._db.compileStatement(str);
+//		stmt = DBManager.database.compileStatement(str);
 //		long c = stmt.simpleQueryForLong();
 		stmt.close();
 		return count != 0;
@@ -289,7 +290,7 @@ public class CustomersHandler {
 		for (int i = 0; i < size; i++) {
 			if (list.get(i)[0].equals("0")) {
 				args.put(qb_sync, "1");
-				DBManager._db.update(table_name, args, sb.toString(), new String[] { list.get(i)[1] });
+				DBManager.getDatabase().update(table_name, args, sb.toString(), new String[] { list.get(i)[1] });
 			}
 		}
 		// db.close();
@@ -302,7 +303,7 @@ public class CustomersHandler {
 		String[] fields = new String[] { field };
 		String[] arguments = new String[] { param };
 
-		Cursor cursor = DBManager._db.query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
+		Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
 
 		if (cursor.moveToFirst()) {
 			do {
@@ -323,7 +324,7 @@ public class CustomersHandler {
 		String[] fields = new String[] { cust_name, cust_phone, cust_email };
 		String[] arguments = new String[] { id };
 
-		Cursor cursor = DBManager._db.query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
+		Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "cust_id=?", arguments, null, null, null, null);
 
 		if (cursor.moveToFirst()) {
 			do {
@@ -344,7 +345,7 @@ public class CustomersHandler {
 
 		String query = "SELECT cust_id as _id,AccountNumnber, custidkey, cust_name,c.pricelevel_id,pl.pricelevel_name,cust_taxable,cust_salestaxcode,cust_email,CompanyName,cust_phone FROM Customers c LEFT OUTER JOIN PriceLevel pl ON c.pricelevel_id = pl.pricelevel_id ORDER BY cust_name";
 
-		Cursor cursor = DBManager._db.rawQuery(query, null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
 		cursor.moveToFirst();
 		// db.close();
 		return cursor;
@@ -354,7 +355,7 @@ public class CustomersHandler {
 		// SQLiteDatabase db = dbManager.openReadableDB();
 
 		String query = "SELECT cust_id,cust_name,cust_taxable,cust_salestaxcode,custidkey,pricelevel_id,cust_email FROM Customers WHERE cust_id = ?";
-		Cursor c = DBManager._db.rawQuery(query, new String[] { custID });
+		Cursor c = DBManager.getDatabase().rawQuery(query, new String[] { custID });
 		HashMap<String, String> map = new HashMap<String, String>();
 		if (c.moveToFirst()) {
 			map.put(cust_id, c.getString(c.getColumnIndex(cust_id)));
@@ -392,7 +393,7 @@ public class CustomersHandler {
 		 * null, null, null);
 		 */
 
-		Cursor cursor = DBManager._db.rawQuery(subquery1, new String[] { custID });
+		Cursor cursor = DBManager.getDatabase().rawQuery(subquery1, new String[] { custID });
 
 		DecimalFormat frmt = new DecimalFormat("0.00");
 		String tab = " ";
@@ -499,7 +500,7 @@ public class CustomersHandler {
 		sb.append(
 				"WHERE c.cust_name LIKE ? OR c.cust_id LIKE ? OR c.AccountNumnber LIKE ? OR c.cust_email LIKE ? OR c.cust_phone LIKE ? OR c.CompanyName LIKE ? ORDER BY cust_name");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { "%" + search + "%", "%" + search + "%",
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { "%" + search + "%", "%" + search + "%",
 				"%" + search + "%", "%" + search + "%", "%" + search + "%", "%" + search + "%" });
 		cursor.moveToFirst();
 		return cursor;
@@ -517,7 +518,7 @@ public class CustomersHandler {
 					"b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode ");
 			sb.append("FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?");
 
-			Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { custID });
+			Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { custID });
 
 			if (cursor.moveToFirst()) {
 				mapValues.put("cust_fname", cursor.getString(cursor.getColumnIndex(cust_firstName)));
@@ -559,7 +560,7 @@ public class CustomersHandler {
 					"b.addr_b_zipcode,b.addr_s_str1,b.addr_s_str2,b.addr_s_str3,b.addr_s_city,b.addr_s_state,b.addr_s_country,b.addr_s_zipcode ");
 			sb.append("FROM Customers c LEFT OUTER JOIN Address b ON c.cust_id = b.cust_id WHERE c.cust_id = ?");
 
-			Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { customerId });
+			Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { customerId });
 
 			if (cursor.moveToFirst()) {
 				customer.cust_firstName = cursor.getString(cursor.getColumnIndex(cust_firstName));
@@ -592,7 +593,7 @@ public class CustomersHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT cust_phone,cust_email FROM Customers WHERE cust_id = ?");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { custID });
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { custID });
 		String[] data = new String[2];
 
 		if (cursor.moveToFirst()) {

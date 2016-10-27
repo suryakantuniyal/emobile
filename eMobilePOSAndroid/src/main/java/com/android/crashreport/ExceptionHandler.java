@@ -234,8 +234,8 @@ public class ExceptionHandler implements
 	public void uncaughtException(Thread thread, Throwable exception) {
 		recoltInformations(myContext);
 		
-		if(DBManager._db!=null&DBManager._db.isOpen()&&DBManager._db.inTransaction())
-			DBManager._db.endTransaction();
+		if(DBManager.getDatabase() !=null& DBManager.getDatabase().isOpen()&& DBManager.getDatabase().inTransaction())
+			DBManager.getDatabase().endTransaction();
 		
 //		String report = "";
 //		

@@ -1119,20 +1119,18 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     public static String getCardType(String number) {
         String ccType = "";
-        boolean isMasked = false;
+        boolean isMasked;
         try {
-            Long.parseLong(number);
-        } catch (NumberFormatException e) {
-            try {
-                if (TextUtils.isEmpty(number)) {
-                    return "";
-                } else {
-                    Long.parseLong(number.substring(0, 4));
-                    isMasked = true;
-                }
-            } catch (NumberFormatException ex) {
+            if (TextUtils.isEmpty(number) || !TextUtils.isDigitsOnly(number) || number.length() < 4) {
                 return "";
+            } else {
+                if(!TextUtils.isDigitsOnly(number.substring(0, 4))){
+                    return "";
+                }
+                isMasked = true;
             }
+        } catch (NumberFormatException ex) {
+            return "";
         }
         if (!isMasked && Integer.parseInt(number.substring(0, 6)) >= 622126
                 && Integer.parseInt(number.substring(0, 6)) <= 622925) {

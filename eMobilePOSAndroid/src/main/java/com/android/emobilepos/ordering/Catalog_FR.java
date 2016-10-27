@@ -425,18 +425,17 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
-
         myCursor = c;
         if (_typeCase != CASE_PRODUCTS && _typeCase != CASE_SEARCH_PROD) {
             categoryListAdapter = new MenuCatGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
             catalogList.setAdapter(categoryListAdapter);
-            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && myCursor.getCount() == 1 && _typeCase == CASE_CATEGORY)
+            if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && myCursor.getCount() == 1
+                    && _typeCase == CASE_CATEGORY && !Global.cat_id.equalsIgnoreCase("0"))
                 itemClicked(false);
         } else {
             prodListAdapter = new MenuProdGV_Adapter(this, getActivity(), c, CursorAdapter.NO_SELECTION, imageLoader);
             catalogList.setAdapter(prodListAdapter);
         }
-
     }
 
 

@@ -46,6 +46,7 @@ public class TaxesHandler {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -78,14 +79,14 @@ public class TaxesHandler {
 
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
 
         try {
 
             addrData = data;
             dictionaryListMap = dictionary;
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
 
@@ -108,7 +109,7 @@ public class TaxesHandler {
 
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             StringBuilder sb = new StringBuilder();
             sb.append(e.getMessage()).append(" [com.android.emobilepos.TaxesHandler (at Class.insert)]");
@@ -116,13 +117,13 @@ public class TaxesHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
 
@@ -136,9 +137,9 @@ public class TaxesHandler {
         Cursor cursor;
 
         if (myPref.getPreferences(MyPreferences.pref_show_only_group_taxes))
-            cursor = DBManager._db.query(false, table_name, fields, "tax_type = ?", new String[]{"G"}, null, null, tax_name, null);
+            cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_type = ?", new String[]{"G"}, null, null, tax_name, null);
         else
-            cursor = DBManager._db.query(false, table_name, fields, null, null, null, null, tax_name, null);
+            cursor = DBManager.getDatabase().query(false, table_name, fields, null, null, null, null, tax_name, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -166,9 +167,9 @@ public class TaxesHandler {
         Cursor cursor;
 
         if (myPref.getPreferences(MyPreferences.pref_show_only_group_taxes))
-            cursor = DBManager._db.query(false, table_name, fields, "tax_type = ? AND tax_id = ?", new String[]{"G", taxId}, null, null, tax_name, null);
+            cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_type = ? AND tax_id = ?", new String[]{"G", taxId}, null, null, tax_name, null);
         else
-            cursor = DBManager._db.query(false, table_name, fields, "tax_id = ?", new String[]{taxId}, null, null, tax_name, null);
+            cursor = DBManager.getDatabase().query(false, table_name, fields, "tax_id = ?", new String[]{taxId}, null, null, tax_name, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -190,7 +191,7 @@ public class TaxesHandler {
     public static List<GroupTax> getGroupTaxRate(String taxGroupId) {
         List<GroupTax> list = new ArrayList<GroupTax>();
         GroupTax data = new GroupTax();
-        Cursor cursor = DBManager._db.rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId WHERE tg.taxGroupId ='" + taxGroupId + "' ORDER BY t.tax_name ASC", null);
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT t.tax_name,t.tax_rate/100 as 'tax_rate',t.prTax FROM Taxes t INNER JOIN Taxes_Group tg ON t.tax_id = tg.taxId WHERE tg.taxGroupId ='" + taxGroupId + "' ORDER BY t.tax_name ASC", null);
         if (cursor.moveToFirst()) {
             do {
                 data.setTaxName(cursor.getString(cursor.getColumnIndex(tax_name)));
@@ -220,7 +221,7 @@ public class TaxesHandler {
             sb.append(" AND tax_code_id = '").append(taxType).append("'");
         }
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         boolean isGroupTax = false;
         if (cursor.moveToFirst()) {
             taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
@@ -235,7 +236,7 @@ public class TaxesHandler {
         if (isGroupTax && myPref.getPreferences(MyPreferences.pref_retail_taxes) && !taxType.isEmpty()) {
             sb.setLength(0);
             sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
-            cursor = DBManager._db.rawQuery(sb.toString(), new String[]{taxID, taxType});
+            cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{taxID, taxType});
             if (cursor.moveToFirst()) {
                 int i_tax_rate = cursor.getColumnIndex("tax_rate");
                 int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
@@ -276,7 +277,7 @@ public class TaxesHandler {
 //            sb.append(" AND tax_code_id = '").append(taxType).append("'");
 //        }
 //
-//        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+//        Cursor cursor = DBManager.database.rawQuery(sb.toString(), null);
 //        boolean isGroupTax = false;
 //        if (cursor.moveToFirst()) {
 //            taxRate = cursor.getString(cursor.getColumnIndex("tax_rate"));
@@ -289,7 +290,7 @@ public class TaxesHandler {
 //        if (isGroupTax && myPref.getPreferences(MyPreferences.pref_retail_taxes) && !taxType.isEmpty()) {
 //            sb.setLength(0);
 //            sb.append("SELECT tax_rate,taxLowRange,taxHighRange FROM Taxes_Group WHERE taxgroupid= ? AND taxcode_id = ?");
-//            cursor = DBManager._db.rawQuery(sb.toString(), new String[]{taxID, taxType});
+//            cursor = DBManager.database.rawQuery(sb.toString(), new String[]{taxID, taxType});
 //            if (cursor.moveToFirst()) {
 //                int i_tax_rate = cursor.getColumnIndex("tax_rate");
 //                int i_taxLowRange = cursor.getColumnIndex("taxLowRange");
@@ -326,7 +327,7 @@ public class TaxesHandler {
             sb.append(" AND tax_code_id = '").append(taxType).append("'");
         }
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), null);
         List<HashMap<String, String>> listMap = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> tempMap = new HashMap<String, String>();
         if (c.moveToFirst()) {
