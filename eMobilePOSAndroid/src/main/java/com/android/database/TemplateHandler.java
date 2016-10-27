@@ -57,6 +57,7 @@ public class TemplateHandler {
 		this.activity = activity;
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -93,7 +94,7 @@ public class TemplateHandler {
 		// SQLiteDatabase.OPEN_READWRITE);
 
 		// SQLiteDatabase db = dbManager.openWritableDB();
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			SQLiteStatement insert = null;
@@ -101,8 +102,8 @@ public class TemplateHandler {
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
 
-			DBManager._db.execSQL("DELETE FROM Templates WHERE cust_id='" + custID + "'");
-			insert = DBManager._db.compileStatement(sb.toString());
+			DBManager.getDatabase().execSQL("DELETE FROM Templates WHERE cust_id='" + custID + "'");
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = global.orderProducts.size();
 			for (int i = 0; i < size; i++) {
@@ -131,7 +132,7 @@ public class TemplateHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -140,13 +141,13 @@ public class TemplateHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 		// db.close();
 	}
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			addrData = data;
@@ -155,7 +156,7 @@ public class TemplateHandler {
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -183,7 +184,7 @@ public class TemplateHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductsHandler (at Class.insert)]");
@@ -191,7 +192,7 @@ public class TemplateHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 
@@ -229,7 +230,7 @@ public class TemplateHandler {
 		// Orders o LEFT OUTER JOIN Customers c ON o.cust_id = c.cust_id WHERE
 		// o.ord_id = '50-00000-2012'
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[] { custID });
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { custID });
 
 		if (cursor.moveToFirst()) {
 			int i_prod_id = cursor.getColumnIndex(product_id);
@@ -276,7 +277,7 @@ public class TemplateHandler {
 
 		sb.append("SELECT * FROM Templates WHERE isSync = '0'");
 
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		return cursor;
 
 	}
@@ -292,7 +293,7 @@ public class TemplateHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE isSync = '0'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();
@@ -303,7 +304,7 @@ public class TemplateHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE isSync = '0'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		return count != 0;
@@ -312,7 +313,7 @@ public class TemplateHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 
 	public void updateIsSync(List<String[]> list) {
@@ -330,7 +331,7 @@ public class TemplateHandler {
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
 			args.put("isSync", list.get(i)[0]);
-			DBManager._db.update(table_name, args, sb.toString(), new String[] { list.get(i)[1], list.get(i)[2] });
+			DBManager.getDatabase().update(table_name, args, sb.toString(), new String[] { list.get(i)[1], list.get(i)[2] });
 		}
 		// db.close();
 	}

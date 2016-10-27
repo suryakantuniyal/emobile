@@ -26,7 +26,7 @@ public class PaymentsXML_DB {
 		attrHash = new HashMap<String,Integer>();
 		mainSB1 = new StringBuilder();
 		mainSB2 = new StringBuilder();
-		
+		new DBManager(activity);
 		initDictionary();
 	}
 	private void initDictionary() {
@@ -51,14 +51,14 @@ public class PaymentsXML_DB {
 	public void insert(HashMap<String,String> _data) {
 		//SQLiteDatabase db = dbManager.openWritableDB();
 
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 
 		try {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(mainSB1.toString()).append(") ").append("VALUES (")
 					.append(mainSB2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 			
 			insert.bindString(index(app_id), _data.get(app_id));
 			insert.bindString(index(payment_xml), _data.get(payment_xml));
@@ -66,12 +66,12 @@ public class PaymentsXML_DB {
 			insert.execute();
 			insert.clearBindings();
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
@@ -89,7 +89,7 @@ public class PaymentsXML_DB {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(TABLE_NAME).append(" WHERE app_id = ?");
 		
-		DBManager._db.execSQL(sb.toString(),new String[]{_app_id});
+		DBManager.getDatabase().execSQL(sb.toString(),new String[]{_app_id});
 		//db.close();
 	}
 	
@@ -98,7 +98,7 @@ public class PaymentsXML_DB {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * FROM ").append(TABLE_NAME);
 		
-		Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		c.moveToFirst();
 		return c;
 	}

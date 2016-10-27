@@ -42,6 +42,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.PayMethodsDAO;
 import com.android.database.CategoriesHandler;
 import com.android.database.DBManager;
 import com.android.database.PayMethodsHandler;
@@ -49,7 +50,6 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
-import com.android.emobilepos.mainmenu.SettingsTab_FR;
 import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
@@ -387,6 +387,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
                     break;
                 case PAYMENT_METHODS:
+                    prefManager.findPreference("pref_mw_with_genius").setOnPreferenceClickListener(this);
+                    prefManager.findPreference("pref_pay_with_tupyx").setOnPreferenceClickListener(this);
                     prefManager.findPreference(MyPreferences.pref_config_genius_peripheral)
                             .setOnPreferenceClickListener(this);
 
@@ -461,7 +463,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_check_updates").setOnPreferenceClickListener(this);
                     break;
                 case OTHERS:
-                    if(settingsType==CASE_GENERAL) {
+                    if (settingsType == CASE_GENERAL) {
                         prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
                         prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
                     }
@@ -572,6 +574,34 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
         public boolean onPreferenceClick(Preference preference) {
             Intent intent;
             switch (preference.getTitleRes()) {
+                case R.string.config_mw_with_genius:
+                    CheckBoxPreference checkBoxPreference = (CheckBoxPreference) preference;
+                    if (checkBoxPreference.isChecked()) {
+                        PaymentMethod method = new PaymentMethod();
+                        method.setPaymethod_id("Genius");
+                        method.setPaymethod_name("Genius");
+                        method.setPaymentmethod_type("Genius");
+                        method.setImage_url("");
+                        method.setOriginalTransid("0");
+                        PayMethodsDAO.insert(method);
+                    } else {
+                        PayMethodsDAO.delete("Genius");
+                    }
+                    break;
+                case R.string.config_pay_with_tupyx:
+                    checkBoxPreference = (CheckBoxPreference) preference;
+                    if (checkBoxPreference.isChecked()) {
+                        PaymentMethod method = new PaymentMethod();
+                        method.setPaymethod_id("Wallet");
+                        method.setPaymethod_name("Tupyx");
+                        method.setPaymentmethod_type("Wallet");
+                        method.setImage_url("");
+                        method.setOriginalTransid("0");
+                        PayMethodsDAO.insert(method);
+                    } else {
+                        PayMethodsDAO.delete("Wallet");
+                    }
+                    break;
                 case R.string.config_use_navigationbar:
                     getActivity().finish();
                     getActivity().startActivity(getActivity().getIntent());

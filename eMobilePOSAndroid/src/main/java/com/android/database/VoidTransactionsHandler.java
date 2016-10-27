@@ -50,7 +50,7 @@ public class VoidTransactionsHandler {
 		insertValues.put(ord_timesync, values.ord_timesync == null ? "" : values.ord_timesync); // ord_timesync
 		insertValues.put(qb_synctime, values.qb_synctime == null ? "" : values.qb_synctime); // qb_synctime
 
-		DBManager._db.insert(table_name, null, insertValues);
+		DBManager.getDatabase().insert(table_name, null, insertValues);
 		// db.close();
 	}
 
@@ -61,7 +61,7 @@ public class VoidTransactionsHandler {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ord_id,ord_type FROM ").append(table_name).append(" WHERE is_sync = '1'");
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 
 		return cursor;
 	}
@@ -76,7 +76,7 @@ public class VoidTransactionsHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE is_sync = '1'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();
@@ -98,7 +98,7 @@ public class VoidTransactionsHandler {
 		int size = list.size();
 		for (int i = 0; i < size; i++) {
 			args.put(is_sync, list.get(i)[0]);
-			DBManager._db.update(table_name, args, sb.toString(), new String[] { list.get(i)[1] });
+			DBManager.getDatabase().update(table_name, args, sb.toString(), new String[] { list.get(i)[1] });
 		}
 		// db.close();
 	}

@@ -30,6 +30,7 @@ public class OrdProdAttrList_DB {
         global = (Global) activity.getApplication();
         mainSB1 = new StringBuilder();
         mainSB2 = new StringBuilder();
+        new DBManager(activity);
 
         initDictionary();
     }
@@ -62,7 +63,7 @@ public class OrdProdAttrList_DB {
 
 
 //	public void insert(List<String[]> _data, List<HashMap<String, Integer>> dictionary) {
-//		DBManager._db.beginTransaction();
+//		DBManager.database.beginTransaction();
 //
 //		try {
 //			data = _data;
@@ -71,7 +72,7 @@ public class OrdProdAttrList_DB {
 //			StringBuilder sb = new StringBuilder();
 //			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(mainSB1.toString()).append(") ").append("VALUES (").append(mainSB2.toString())
 //					.append(")");
-//			insert = DBManager._db.compileStatement(sb.toString());
+//			insert = DBManager.database.compileStatement(sb.toString());
 //
 //			int size = data.size();
 //
@@ -85,7 +86,7 @@ public class OrdProdAttrList_DB {
 //				insert.clearBindings();
 //			}
 //			insert.close();
-//			DBManager._db.setTransactionSuccessful();
+//			DBManager.database.setTransactionSuccessful();
 //		} catch (Exception e) {
 //			StringBuilder sb = new StringBuilder();
 //			sb.append(e.getMessage()).append(" [com.android.emobilepos.OrdProdAttrList_DB (at Class.insert)]");
@@ -93,7 +94,7 @@ public class OrdProdAttrList_DB {
 ////			Tracker tracker = EasyTracker.getInstance(activity);
 ////			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 //		} finally {
-//			DBManager._db.endTransaction();
+//			DBManager.database.endTransaction();
 //		}
 //	}
 
@@ -103,7 +104,7 @@ public class OrdProdAttrList_DB {
 //	{
 //		StringBuilder sb = new StringBuilder();
 //		sb.append("DELETE FROM ").append(TABLE_NAME);
-//		DBManager._db.execSQL(sb.toString());
+//		DBManager.database.execSQL(sb.toString());
 //	}
 
 
@@ -117,7 +118,7 @@ public class OrdProdAttrList_DB {
 //        }
 //
 ////        sb.append("SELECT * FROM ").append(TABLE_NAME).append(" WHERE Prod_id = ? AND required = 'true'");
-////        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{prodID});
+////        Cursor c = DBManager.database.rawQuery(sb.toString(), new String[]{prodID});
 ////
 ////        sb.setLength(0);
 ////        if (c.moveToFirst()) {
@@ -140,7 +141,7 @@ public class OrdProdAttrList_DB {
 //        ArrayList<OrdProdAttrHolder> listAttr = new ArrayList<OrdProdAttrHolder>();
 //
 //        sb.append("SELECT * FROM ").append(TABLE_NAME).append(" WHERE Prod_id = ? ORDER BY required");
-//        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{prodID});
+//        Cursor c = DBManager.database.rawQuery(sb.toString(), new String[]{prodID});
 //
 //        if (c.moveToFirst()) {
 //            OrdProdAttrHolder tempHolder = new OrdProdAttrHolder();

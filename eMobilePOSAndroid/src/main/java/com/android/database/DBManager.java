@@ -11,7 +11,6 @@ import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 
 import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteDiskIOException;
 
 import org.apache.commons.io.FileUtils;
 import org.kobjects.base64.Base64;
@@ -22,7 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 44;
+    public static final int VERSION = 45;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -33,9 +32,17 @@ public class DBManager {
     private int type;
     private MyPreferences myPref;
     private boolean sendAndReceive = false;
-    public static SQLiteDatabase _db;
+    private static SQLiteDatabase database;
 
-    public static final String PASSWORD = "em0b1l3p05";
+    private static final String PASSWORD = "em0b1l3p05";
+
+    public static SQLiteDatabase getDatabase() {
+        return database;
+    }
+
+    public static void setDatabase(SQLiteDatabase database) {
+        DBManager.database = database;
+    }
 
     private String getPassword() {
         MessageDigest digester;
@@ -56,8 +63,8 @@ public class DBManager {
 
     private void InitializeSQLCipher() {
         try {
-            _db = SQLiteDatabase.openDatabase(activity.getDatabasePath(CIPHER_DB_NAME).getAbsolutePath(), getPassword(),
-                    null, SQLiteDatabase.OPEN_READWRITE);
+            setDatabase(SQLiteDatabase.openDatabase(activity.getDatabasePath(CIPHER_DB_NAME).getAbsolutePath(), getPassword(),
+                    null, SQLiteDatabase.OPEN_READWRITE));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,7 +79,7 @@ public class DBManager {
 //		exportDBFile();
         dbMigration();
         this.DBHelper = new DatabaseHelper(this.activity);
-        if ((_db == null || !_db.isOpen()))
+        if ((getDatabase() == null || !getDatabase().isOpen()))
             InitializeSQLCipher();
 
     }
@@ -85,7 +92,7 @@ public class DBManager {
         SQLiteDatabase.loadLibs(activity);
 //		exportDBFile();
         dbMigration();
-        if ((_db == null || !_db.isOpen()))
+        if ((getDatabase() == null || !getDatabase().isOpen()))
             InitializeSQLCipher();
 
     }
@@ -94,6 +101,12 @@ public class DBManager {
         File dbPath = null;
         try {
             dbPath = activity.getDatabasePath(DB_NAME_OLD);
+//            dbPath = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
+//            myPref.setEmpID("1");
+//            myPref.setDeviceID("355b9d6313e9f4cb");
+//            myPref.setAcctNumber("150622160307");
+//            myPref.setAcctPassword("1gsgny#");
+//            myPref.setActivKey("27068R1401227533586Y2994Q2");
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -109,7 +122,7 @@ public class DBManager {
 
     public static void encrypt(Context ctxt, String dbName, String passphrase) throws IOException {
         File originalFile = ctxt.getDatabasePath(dbName);
-
+//        originalFile = new File(Environment.getExternalStorageDirectory() + "/emobilepos.sqlite");
         if (originalFile.exists()) {
             File newFile = File.createTempFile("sqlcipherutils", "tmp", ctxt.getCacheDir());
 
@@ -137,7 +150,6 @@ public class DBManager {
                 originalFile.delete();
                 newFile.renameTo(ctxt.getDatabasePath(CIPHER_DB_NAME));
             } catch (Exception e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -145,7 +157,7 @@ public class DBManager {
     }
 
 
-    public static void decrypt(Context ctxt, String dbName, String passphrase) throws IOException {
+    private static void decrypt(Context ctxt, String dbName, String passphrase) throws IOException {
         File originalFile = ctxt.getDatabasePath(CIPHER_DB_NAME);
 
         if (originalFile.exists()) {
@@ -206,11 +218,11 @@ public class DBManager {
 
     public boolean isNewDBVersion() {
         try {
-            int i = _db.getVersion();
+            int i = getDatabase().getVersion();
             if (VERSION > i) {
                 return true;
             }
-        } catch (SQLiteDiskIOException e) {
+        } catch (Exception e) {
             return false;
         }
         return false;
@@ -228,7 +240,7 @@ public class DBManager {
     public void deleteAllTablesData() {
         try {
             for (String table : TABLE_NAME) {
-                _db.execSQL("DELETE FROM " + table);
+                getDatabase().execSQL("DELETE FROM " + table);
             }
         } catch (Exception e) {
         }
@@ -248,12 +260,12 @@ public class DBManager {
                 db.execSQL(sql);
             }
 
-            if (_db != null && _db.isOpen())
-                _db.close();
+            if (getDatabase() != null && getDatabase().isOpen())
+                getDatabase().close();
 
             myPref.setDBpath(db.getPath());
 
-            _db = db;
+            setDatabase(db);
 
             SynchMethods sm = new SynchMethods(managerInstance);
             sm.synchReceive(type);
@@ -262,7 +274,6 @@ public class DBManager {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             //drop all the tables and recreate them
-            int size = TABLE_NAME.length;
             for (String tblName : TABLE_NAME) {
                 db.execSQL("DROP TABLE IF EXISTS " + tblName);
             }

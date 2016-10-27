@@ -37,6 +37,7 @@ public class CategoriesHandler {
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -70,7 +71,7 @@ public class CategoriesHandler {
 	
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			catData = data;
@@ -78,7 +79,7 @@ public class CategoriesHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = catData.size();
 			for (int j = 0; j < size; j++) {
@@ -94,7 +95,7 @@ public class CategoriesHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.CategoriesHandler (at Class.insert)]");
@@ -102,7 +103,7 @@ public class CategoriesHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
@@ -111,7 +112,7 @@ public class CategoriesHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 
@@ -126,7 +127,7 @@ public class CategoriesHandler {
 		Cursor cursor = null, cursor2 = null;
 		StringBuilder sb = new StringBuilder();
 
-		cursor = DBManager._db.query(true, table_name, fields, "parentID=?", new String[]{name}, null, null, cat_name, null);
+		cursor = DBManager.getDatabase().query(true, table_name, fields, "parentID=?", new String[]{name}, null, null, cat_name, null);
 		
 		
 		if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
@@ -146,7 +147,7 @@ public class CategoriesHandler {
 				else {
 
 					sb.append("SELECT Count(*) AS count FROM Categories WHERE parentID='").append(data[1]).append("'");
-					cursor2 = DBManager._db.rawQuery(sb.toString(), null);
+					cursor2 = DBManager.getDatabase().rawQuery(sb.toString(), null);
 					cursor2.moveToFirst();
 					data[2] = cursor2.getString(cursor2.getColumnIndex("count"));
 					data = new String[3];
@@ -175,9 +176,9 @@ public class CategoriesHandler {
 		StringBuilder sb = new StringBuilder();
 
 		if(myPref.getPreferences(MyPreferences.pref_enable_multi_category))
-			cursor = DBManager._db.query(true, table_name, fields, "parentID='' AND cat_id!=''", null, null, null, cat_name, null);
+			cursor = DBManager.getDatabase().query(true, table_name, fields, "parentID='' AND cat_id!=''", null, null, null, cat_name, null);
 		else
-			cursor = DBManager._db.query(true, table_name, fields, null, null, null, null, cat_name, null);
+			cursor = DBManager.getDatabase().query(true, table_name, fields, null, null, null, null, cat_name, null);
 		
 		
 		if (!myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
@@ -197,7 +198,7 @@ public class CategoriesHandler {
 				else {
 
 					sb.append("SELECT Count(*) AS count FROM Categories WHERE parentID='").append(data[1]).append("'");
-					cursor2 = DBManager._db.rawQuery(sb.toString(), null);
+					cursor2 = DBManager.getDatabase().rawQuery(sb.toString(), null);
 					cursor2.moveToFirst();
 					data[2] = cursor2.getString(cursor2.getColumnIndex("count"));
 					data = new String[3];
@@ -237,7 +238,7 @@ public class CategoriesHandler {
 		
 		sb.append(" ORDER BY c1.cat_name");
 		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		cursor.moveToFirst();
 		return cursor;
 	}
@@ -252,7 +253,7 @@ public class CategoriesHandler {
 		sb.append("SELECT cat_id as '_id',cat_name,url_icon,(SELECT Count(*)  FROM Categories c2 WHERE c2.parentID = c1.cat_id) AS num_subcategories FROM Categories c1 ");
 		sb.append("  WHERE c1.parentID=? ORDER BY c1.cat_name");
 		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{name});
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{name});
 		cursor.moveToFirst();
 		return cursor;
 	}
