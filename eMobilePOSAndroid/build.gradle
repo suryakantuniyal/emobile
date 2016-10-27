@@ -8,7 +8,7 @@ android {
         config {
             keyAlias 'emobilepos'
             keyPassword '1Enabler1'
-            storeFile file('/AndroidAPKCerts/eMobileKeystore')
+            storeFile file('/home/guarionex/Develop/AndroidAPKCerts/eMobileKeystore')
             storePassword '1Enabler1'
         }
     }
@@ -50,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.61"
+            versionName "1.2.0.62"
             versionCode 107
             targetSdkVersion 23
             multiDexEnabled = true
@@ -64,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.61"
+            versionName "1.2.0.62"
             versionCode 107
             targetSdkVersion 23
             multiDexEnabled = true
@@ -78,7 +78,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.61"
+            versionName "1.2.0.62"
             versionCode 107
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.61"
+            versionName "1.2.0.62"
             versionCode 107
             targetSdkVersion 23
             multiDexEnabled = true
@@ -106,7 +106,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.71"
+            versionName "1.1.1.72"
             versionCode 107
             targetSdkVersion 23
             multiDexEnabled = true
@@ -120,7 +120,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.71"
+            versionName "1.1.1.72"
             versionCode 107
             targetSdkVersion 23
             multiDexEnabled = true
