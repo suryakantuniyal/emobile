@@ -8,7 +8,7 @@ android {
         config {
             keyAlias 'emobilepos'
             keyPassword '1Enabler1'
-            storeFile file('/AndroidAPKCerts/eMobileKeystore')
+            storeFile file('/home/guarionex/Develop/AndroidAPKCerts/eMobileKeystore')
             storePassword '1Enabler1'
         }
     }
@@ -51,8 +51,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.61"
-            versionCode 107
+            versionName "1.2.0.63"
+            versionCode 108
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -65,8 +65,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.61"
-            versionCode 107
+            versionName "1.2.0.63"
+            versionCode 108
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -79,8 +79,8 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.61"
-            versionCode 107
+            versionName "1.2.0.63"
+            versionCode 108
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -93,8 +93,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.61"
-            versionCode 107
+            versionName "1.2.0.63"
+            versionCode 108
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -107,8 +107,8 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.71"
-            versionCode 107
+            versionName "1.1.1.73"
+            versionCode 108
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -121,8 +121,8 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.71"
-            versionCode 107
+            versionName "1.1.1.73"
+            versionCode 108
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -148,7 +148,6 @@ android {
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "false"
             minifyEnabled false
             multiDexEnabled true
-            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             signingConfig signingConfigs.config
         }
