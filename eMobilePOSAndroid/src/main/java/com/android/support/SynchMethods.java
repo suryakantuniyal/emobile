@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -477,6 +478,9 @@ public class SynchMethods {
                 dbManager.updateDB();
             } else if (!proceed) {
                 // failed to synch....
+                if(TextUtils.isEmpty(xml)){
+                    xml = activity.getString(R.string.sync_fail);
+                }
                 Global.showPrompt(activity, R.string.dlog_title_error, xml);
             }
 

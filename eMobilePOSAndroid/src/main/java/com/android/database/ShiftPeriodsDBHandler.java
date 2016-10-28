@@ -52,6 +52,7 @@ public class ShiftPeriodsDBHandler {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         this.activity = activity;
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -79,14 +80,14 @@ public class ShiftPeriodsDBHandler {
         // SQLiteDatabase.NO_LOCALIZED_COLLATORS|
         // SQLiteDatabase.OPEN_READWRITE);
         // SQLiteDatabase db = dbManager.openWritableDB();
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
 
             SQLiteStatement insert = null;
             StringBuilder sb = new StringBuilder();
             sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
                     .append("VALUES (").append(sb2.toString()).append(")");
-            insert = DBManager._db.compileStatement(sb.toString());
+            insert = DBManager.getDatabase().compileStatement(sb.toString());
 
             insert.bindString(index(shift_id), periods.shift_id == null ? "" : periods.shift_id); // shift_id
             insert.bindString(index(assignee_id), periods.assignee_id == null ? "" : periods.assignee_id); // assignee_id
@@ -111,7 +112,7 @@ public class ShiftPeriodsDBHandler {
             insert.execute();
             insert.clearBindings();
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             StringBuilder sb = new StringBuilder();
@@ -120,7 +121,7 @@ public class ShiftPeriodsDBHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
         // db.close();
     }
@@ -128,7 +129,7 @@ public class ShiftPeriodsDBHandler {
     public void emptyTable() {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager.getDatabase().execSQL(sb.toString());
     }
 
     // public void emptyTable() {
@@ -145,7 +146,7 @@ public class ShiftPeriodsDBHandler {
 
         sb.append("SELECT total_transaction_cash,ending_petty_cash FROM ").append(table_name)
                 .append(" WHERE shift_id=?");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{shiftID});
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{shiftID});
 
         if (c.moveToFirst()) {
             double totalTransactionCash = c.getDouble(c.getColumnIndex("total_transaction_cash"));
@@ -159,7 +160,7 @@ public class ShiftPeriodsDBHandler {
             sb.append(shift_id).append(" = ?");
             ContentValues args = new ContentValues();
             args.put(total_transaction_cash, Double.toString(totalTransactionCash));
-            DBManager._db.update(table_name, args, sb.toString(), new String[]{shiftID});
+            DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{shiftID});
             c.close();
         }
     }
@@ -170,7 +171,7 @@ public class ShiftPeriodsDBHandler {
 
         sb.append("SELECT ending_petty_cash FROM ").append(table_name)
                 .append(" WHERE shift_id=?");
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{shiftID});
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{shiftID});
 
         if (c.moveToFirst()) {
             double endingPettyCash = c.getDouble(c.getColumnIndex("ending_petty_cash"));
@@ -179,7 +180,7 @@ public class ShiftPeriodsDBHandler {
             sb.append(shift_id).append(" = ?");
             ContentValues args = new ContentValues();
             args.put(ending_petty_cash, Double.toString(endingPettyCash));
-            DBManager._db.update(table_name, args, sb.toString(), new String[]{shiftID});
+            DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{shiftID});
             c.close();
         }
     }
@@ -193,7 +194,7 @@ public class ShiftPeriodsDBHandler {
         ContentValues args = new ContentValues();
 
         args.put(attr, val);
-        DBManager._db.update(table_name, args, sb.toString(), new String[]{shiftID});
+        DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{shiftID});
 
         // db.close();
     }
@@ -207,7 +208,7 @@ public class ShiftPeriodsDBHandler {
                 "SELECT assignee_name,beginning_petty_cash,ending_petty_cash,total_transaction_cash,ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash', startTime, endTime, entered_close_amount, CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type' FROM ")
                 .append(table_name).append(" WHERE shift_id = ?");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{shiftID});
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{shiftID});
 
         ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
         String theTotalExpenses;
@@ -261,7 +262,7 @@ public class ShiftPeriodsDBHandler {
                         + "assignee_name,beginning_petty_cash FROM ")
                 .append(table_name).append(" WHERE date = ? ORDER BY startTime DESC");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{date});
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{date});
 
         c.moveToFirst();
         // db.close();
@@ -273,7 +274,7 @@ public class ShiftPeriodsDBHandler {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE shift_issync = '0'");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
         long count = stmt.simpleQueryForLong();
         stmt.close();
         // db.close();
@@ -295,7 +296,7 @@ public class ShiftPeriodsDBHandler {
                     args.put(shift_issync, "1");
                 else
                     args.put(shift_issync, "0");
-                DBManager._db.update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
+                DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{list.get(i)[1]});
             }
         }
         // db.close();
@@ -306,7 +307,7 @@ public class ShiftPeriodsDBHandler {
         sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE shift_id = '");
         sb.append(_shiftID).append("' AND endTime != ''");
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -316,7 +317,7 @@ public class ShiftPeriodsDBHandler {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT *,ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash' FROM ")
                 .append(table_name).append(" WHERE shift_issync = '0'");
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         return cursor;
     }
 
@@ -345,7 +346,7 @@ public class ShiftPeriodsDBHandler {
             where_values = new String[]{date};
         }
 
-        Cursor c = DBManager._db.rawQuery(query.toString(), where_values);
+        Cursor c = DBManager.getDatabase().rawQuery(query.toString(), where_values);
         //use this to find the expenses for each shift
         ShiftExpensesDBHandler shiftExpensesDBHandler = new ShiftExpensesDBHandler(activity);
         String theTotalExpenses;

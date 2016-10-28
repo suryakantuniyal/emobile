@@ -57,11 +57,11 @@ public class OrderTaxes_DB {
 
 	public void insert(List<DataTaxes> _data,String _ord_id) {
 
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 
 		try {
 			SQLiteStatement insert;
-			insert = DBManager._db.compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " (" + mainSB1.toString() + ") " + "VALUES (" + mainSB2.toString() + ")");
+			insert = DBManager.getDatabase().compileStatement("INSERT OR REPLACE INTO " + TABLE_NAME + " (" + mainSB1.toString() + ") " + "VALUES (" + mainSB2.toString() + ")");
 
 			int size = _data.size();
 
@@ -77,18 +77,18 @@ public class OrderTaxes_DB {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(Log.getStackTraceString(e), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
 	public void emptyTable() 
 	{
-		DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
+		DBManager.getDatabase().execSQL("DELETE FROM " + TABLE_NAME);
 	}
 	
 	public List<DataTaxes> getOrderTaxes(String _ord_id)
@@ -97,7 +97,7 @@ public class OrderTaxes_DB {
 		List<DataTaxes>list = new ArrayList<DataTaxes>();
 		DataTaxes dataTaxes;
 
-		Cursor c = DBManager._db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE ord_id = ?", new String[]{_ord_id});
+		Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE ord_id = ?", new String[]{_ord_id});
 		
 		if(c.moveToFirst())
 		{

@@ -28,6 +28,7 @@ public class ProductAliases_DB {
         addrData = new ArrayList<String[]>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
+        new DBManager(activity);
 
         initDictionary();
     }
@@ -60,10 +61,10 @@ public class ProductAliases_DB {
 
 
     public void insert(List<ProductAlias> aliases) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
 
@@ -74,15 +75,15 @@ public class ProductAliases_DB {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
 
     }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 }

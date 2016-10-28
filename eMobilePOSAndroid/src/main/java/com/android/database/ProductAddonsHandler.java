@@ -38,7 +38,7 @@ public class ProductAddonsHandler {
         addrData = new ArrayList<String[]>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
-
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -70,10 +70,10 @@ public class ProductAddonsHandler {
 
 
     public void insert(List<ProductAddons> addons) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
             for (ProductAddons addon : addons) {
                 insert.bindString(index(rest_addons), String.valueOf(addon.getRestAddons()));
                 insert.bindString(index(prod_id), addon.getProdId());
@@ -84,17 +84,17 @@ public class ProductAddonsHandler {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
 //
 //    public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-//        DBManager._db.beginTransaction();
+//        DBManager.database.beginTransaction();
 //
 //        try {
 //
@@ -103,7 +103,7 @@ public class ProductAddonsHandler {
 //            SQLiteStatement insert = null;
 //            StringBuilder sb = new StringBuilder();
 //            sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-//            insert = DBManager._db.compileStatement(sb.toString());
+//            insert = DBManager.database.compileStatement(sb.toString());
 //
 //            int size = addrData.size();
 //
@@ -119,7 +119,7 @@ public class ProductAddonsHandler {
 //
 //            }
 //            insert.close();
-//            DBManager._db.setTransactionSuccessful();
+//            DBManager.database.setTransactionSuccessful();
 //        } catch (Exception e) {
 //            StringBuilder sb = new StringBuilder();
 //            sb.append(e.getMessage()).append(" [com.android.emobilepos.ProductAddonsHandler (at Class.insert)]");
@@ -127,12 +127,12 @@ public class ProductAddonsHandler {
 ////			Tracker tracker = EasyTracker.getInstance(activity);
 ////			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 //        } finally {
-//            DBManager._db.endTransaction();
+//            DBManager.database.endTransaction();
 //        }
 //    }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
 
@@ -143,7 +143,7 @@ public class ProductAddonsHandler {
                 "ON pa.cat_id = p.cat_id LEFT OUTER JOIN Categories c ON pa.cat_id = c.cat_id WHERE pa.prod_id = '" +
                 prodID + "'  GROUP BY cat_name ORDER BY pa.rest_addons ASC";
 
-        Cursor cursor = DBManager._db.rawQuery(sb, null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
         List<HashMap<String, String>> listHashMap = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> hashMap = new HashMap<String, String>();
         Global.productParentAddonsDictionary = new HashMap<String, Integer>();
@@ -219,7 +219,7 @@ public class ProductAddonsHandler {
 
         for (int i = 0; i < size; i++) {
             sb2.append("' AND c.cat_id = '").append(addonParentList.get(i).get(cat_id)).append("' ORDER BY p.prod_name");
-            cursor = DBManager._db.rawQuery(sb.toString() + sb2.toString(), new String[]{myPref.getCustID()});
+            cursor = DBManager.getDatabase().rawQuery(sb.toString() + sb2.toString(), new String[]{myPref.getCustID()});
             if (cursor.moveToFirst()) {
                 linkedHashMap.put(addonParentList.get(i).get(cat_id), cursor);
             }
@@ -278,7 +278,7 @@ public class ProductAddonsHandler {
         sb.append(sb2.toString()).append(") ORDER BY pa.rest_addons ASC,p.prod_name");
 
         //db.close();
-        return DBManager._db.rawQuery(sb.toString(), null);
+        return DBManager.getDatabase().rawQuery(sb.toString(), null);
     }
 
     public Cursor getSpecificChildAddons(String prodID, String _parent_cat_id) {
@@ -325,7 +325,7 @@ public class ProductAddonsHandler {
         sb.append("'" + _parent_cat_id + "'").append(") ORDER BY pa.rest_addons ASC,p.prod_name");
 
         //db.close();
-        return DBManager._db.rawQuery(sb.toString(), null);
+        return DBManager.getDatabase().rawQuery(sb.toString(), null);
     }
 
 
@@ -338,7 +338,7 @@ public class ProductAddonsHandler {
 
         sb.append("SELECT cat_id FROM Products WHERE prod_id = '").append(addonProdID).append("'");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), null);
 
         if (c.moveToFirst()) {
             values[0] = c.getString(0);
@@ -348,7 +348,7 @@ public class ProductAddonsHandler {
             sb.append("LEFT OUTER JOIN Categories c ON pa.cat_id = c.cat_id WHERE pa.prod_id = '");
             sb.append(parentProdID).append("' AND c.cat_id = '").append(values[0]).append("' ORDER BY p.prod_name");
 
-            c = DBManager._db.rawQuery(sb.toString(), null);
+            c = DBManager.getDatabase().rawQuery(sb.toString(), null);
             if (c.moveToFirst()) {
                 do {
                     if (c.getString(0).equals(addonProdID)) {

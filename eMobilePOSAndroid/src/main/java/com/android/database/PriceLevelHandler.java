@@ -66,13 +66,13 @@ public class PriceLevelHandler {
 
 
 //    public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-//        DBManager._db.beginTransaction();
+//        DBManager.database.beginTransaction();
 //        try {
 //
 //            addrData = data;
 //            dictionaryListMap = dictionary;
 //            SQLiteStatement insert;
-//            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+//            insert = DBManager.database.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 //
 //            int size = addrData.size();
 //
@@ -89,20 +89,20 @@ public class PriceLevelHandler {
 //                insert.clearBindings();
 //            }
 //            insert.close();
-//            DBManager._db.setTransactionSuccessful();
+//            DBManager.database.setTransactionSuccessful();
 //        } catch (Exception e) {
 //
 //        } finally {
-//            DBManager._db.endTransaction();
+//            DBManager.database.endTransaction();
 //        }
 //    }
 
 
     public void insert(List<PriceLevel> priceLevels) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
 
@@ -118,16 +118,16 @@ public class PriceLevelHandler {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
 
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
     public List<PriceLevel> getFixedPriceLevel(String prod_id) {
@@ -138,7 +138,7 @@ public class PriceLevelHandler {
         sb.append("SELECT pl.pricelevel_name,pl.pricelevel_id,ROUND(((p.prod_price)+(p.prod_price*pl.pricelevel_fixedpct/100)),2) as result FROM Products p,PriceLevel pl WHERE  pl.pricelevel_type = 'FixedPercentage' AND p.prod_id = '");
         sb.append(prod_id).append("'");
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         PriceLevel data;
         if (cursor.moveToFirst()) {
             do {
@@ -158,7 +158,7 @@ public class PriceLevelHandler {
         sb.append("PriceLevelItems pli ON  pli.pricelevel_id = pl.pricelevel_id LEFT OUTER JOIN Products p ON  pli.pricelevel_prod_id = p.prod_id ");
         sb.append("WHERE  p.prod_id = '").append(prod_id).append("'");
 
-        cursor = DBManager._db.rawQuery(sb.toString(), null);
+        cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         if (cursor.moveToFirst()) {
             do {
                 data=new PriceLevel();
@@ -178,7 +178,7 @@ public class PriceLevelHandler {
         String[] data = new String[3];
         String[] fields = new String[]{pricelevel_name, pricelevel_id, pricelevel_fixedpct};
 
-        Cursor cursor = DBManager._db.query(true, table_name, fields, null, null, null, null, pricelevel_name, null);
+        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, null, null, null, null, pricelevel_name, null);
 
         if (cursor.moveToFirst()) {
             do {

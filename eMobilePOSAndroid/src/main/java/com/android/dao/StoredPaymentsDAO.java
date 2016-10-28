@@ -125,7 +125,7 @@ public class StoredPaymentsDAO {
         }
 
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         PaymentDetails paymentDetails = new PaymentDetails();
         boolean haveCustomer = cursor.moveToFirst();
         if (payment != null) {

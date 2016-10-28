@@ -64,13 +64,13 @@ public class Locations_DB {
 
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
 
         try {
             prodData = data;
             dictionaryListMap = dictionary;
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = prodData.size();
 
@@ -83,22 +83,22 @@ public class Locations_DB {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
+        DBManager.getDatabase().execSQL("DELETE FROM " + TABLE_NAME);
     }
 
     public List<Locations_Holder> getLocationsList() {
         List<Locations_Holder> list = new ArrayList<>();
-        Cursor c = DBManager._db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY loc_name ASC", null);
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY loc_name ASC", null);
         if (c.moveToFirst()) {
             int i_loc_key = c.getColumnIndex(loc_key);
             int i_loc_id = c.getColumnIndex(loc_id);
@@ -119,7 +119,7 @@ public class Locations_DB {
     }
 
     public Locations_Holder getLocationInfo(String _loc_key) {
-        Cursor c = DBManager._db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE loc_key = ?", new String[]{_loc_key});
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE loc_key = ?", new String[]{_loc_key});
         Locations_Holder location = new Locations_Holder();
         if (c.moveToFirst()) {
             int i_loc_key = c.getColumnIndex(loc_key);

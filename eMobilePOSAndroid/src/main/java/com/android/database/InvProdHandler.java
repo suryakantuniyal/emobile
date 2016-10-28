@@ -41,6 +41,7 @@ public class InvProdHandler {
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -73,7 +74,7 @@ public class InvProdHandler {
 
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			addrData = data;
@@ -81,7 +82,7 @@ public class InvProdHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -102,7 +103,7 @@ public class InvProdHandler {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.InvProdHandler (at Class.insert)]");
@@ -111,7 +112,7 @@ public class InvProdHandler {
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
 
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 		
@@ -119,7 +120,7 @@ public class InvProdHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	
@@ -131,7 +132,7 @@ public class InvProdHandler {
 		sb.append("SELECT p.prod_name,i.ordprod_desc,i.ordprod_qty,i.overwrite_price,ROUND(i.ordprod_qty*i.overwrite_price,2) as 'total', im.prod_img_name FROM InvProducts i,Products p LEFT OUTER JOIN " +
 				"Products_Images im ON i.prod_id = im.prod_id WHERE p.prod_id = i.prod_id AND  i.ord_id = ?");
 		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{invID});
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{invID});
 		
 		List<String[]> arrayList = new ArrayList<String[]>();
 		

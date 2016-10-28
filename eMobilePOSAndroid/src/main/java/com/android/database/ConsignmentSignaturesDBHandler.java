@@ -24,6 +24,7 @@ public class ConsignmentSignaturesDBHandler {
 		attrHash = new HashMap<String,Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 	
@@ -51,7 +52,7 @@ public class ConsignmentSignaturesDBHandler {
 		values.put(ConsTrans_ID, map.get(ConsTrans_ID));
 		values.put(encoded_signature, map.get(encoded_signature));
 
-		DBManager._db.insert(TABLE_NAME, null, values);
+		DBManager.getDatabase().insert(TABLE_NAME, null, values);
 
 		//db.close();
 	}
@@ -59,7 +60,7 @@ public class ConsignmentSignaturesDBHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(TABLE_NAME);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	public String getSignature(String _ConsTrans_ID)
@@ -69,7 +70,7 @@ public class ConsignmentSignaturesDBHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT encoded_signature FROM ").append(TABLE_NAME).append(" WHERE ConsTrans_ID = ?");
 		
-		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{_ConsTrans_ID});
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{_ConsTrans_ID});
 		
 		String value = "";
 		if(c.moveToFirst())

@@ -296,7 +296,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
     private void insertNewCustomer() {
         CustomersHandler custHandler = new CustomersHandler(activity);
         AddressHandler addressHandler = new AddressHandler(activity);
-        SalesTaxCodesHandler taxCodeHandler = new SalesTaxCodesHandler();
+        SalesTaxCodesHandler taxCodeHandler = new SalesTaxCodesHandler(activity);
 
         Customer custData = new Customer();
         Address addrData = new Address();

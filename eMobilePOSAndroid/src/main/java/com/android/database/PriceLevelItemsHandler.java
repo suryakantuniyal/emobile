@@ -34,6 +34,7 @@ public class PriceLevelItemsHandler {
         addrData = new ArrayList<String[]>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -65,10 +66,10 @@ public class PriceLevelItemsHandler {
     }
 
     public void insert(List<ItemPriceLevel> itemPriceLevels) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             for (ItemPriceLevel itemPriceLevel : itemPriceLevels) {
                 insert.bindString(index(pricelevel_prod_id), itemPriceLevel.getPricelevelProdId()); // pricelevel_prod_id
@@ -81,11 +82,11 @@ public class PriceLevelItemsHandler {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
 
     }
@@ -93,7 +94,7 @@ public class PriceLevelItemsHandler {
     public void emptyTable() {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM ").append(table_name);
-        DBManager._db.execSQL(sb.toString());
+        DBManager.getDatabase().execSQL(sb.toString());
     }
 
 }

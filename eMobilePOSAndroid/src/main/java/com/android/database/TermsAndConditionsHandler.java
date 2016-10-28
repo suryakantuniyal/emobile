@@ -30,6 +30,7 @@ public class TermsAndConditionsHandler
 		attrHash = new HashMap<String,Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 	
@@ -64,12 +65,12 @@ public class TermsAndConditionsHandler
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(TABLE_NAME);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			this.data = data;
@@ -77,7 +78,7 @@ public class TermsAndConditionsHandler
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = this.data.size();
 
@@ -90,7 +91,7 @@ public class TermsAndConditionsHandler
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.TermsAndConditionsHandler (at Class.insert)]");
@@ -98,7 +99,7 @@ public class TermsAndConditionsHandler
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 }

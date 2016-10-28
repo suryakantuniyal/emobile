@@ -34,6 +34,7 @@ public class TransferLocations_DB {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -56,12 +57,12 @@ public class TransferLocations_DB {
     }
 
     public void insert(TransferLocations_Holder location) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
             String sb = "INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " +
                     "VALUES (" + sb2.toString() + ")";
-            insert = DBManager._db.compileStatement(sb);
+            insert = DBManager.getDatabase().compileStatement(sb);
             insert.bindString(index(trans_id), location.getTrans_id());
             insert.bindString(index(loc_key_from), location.getLoc_key_from());
             insert.bindString(index(loc_key_to), location.getLoc_key_to());
@@ -70,36 +71,36 @@ public class TransferLocations_DB {
             insert.execute();
             insert.clearBindings();
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             myPref.setLastTransferID(location.getTrans_id());
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
+        DBManager.getDatabase().execSQL("DELETE FROM " + TABLE_NAME);
     }
 
     public static String getLastTransferID(int empId, int year) {
         String sb = "SELECT max(trans_id) FROM TransferLocations WHERE trans_id LIKE \"" + empId +
                 "-%-" + year + "\"";
 
-        SQLiteStatement stmt = DBManager._db.compileStatement(sb);
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb);
         String val = stmt.simpleQueryForString();
         stmt.close();
         return val;
     }
 
     public Cursor getUnsyncTransfers() {
-        return DBManager._db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE issync = '0'", null);
+        return DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE issync = '0'", null);
     }
 
     public long getNumUnsyncTransfers() {
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + TABLE_NAME + " WHERE issync = '0'");
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + TABLE_NAME + " WHERE issync = '0'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -115,12 +116,12 @@ public class TransferLocations_DB {
                 args.put(issync, "1");
             else
                 args.put(issync, "0");
-            DBManager._db.update(TABLE_NAME, args, sb.toString(), new String[]{list.get(i)[0]});
+            DBManager.getDatabase().update(TABLE_NAME, args, sb.toString(), new String[]{list.get(i)[0]});
         }
     }
 
     public Cursor getAllTransactions() {
-        Cursor c = DBManager._db.rawQuery("SELECT trans_id as '_id', * FROM " + TABLE_NAME + " ORDER BY trans_id DESC", null);
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT trans_id as '_id', * FROM " + TABLE_NAME + " ORDER BY trans_id DESC", null);
         c.moveToFirst();
         return c;
     }

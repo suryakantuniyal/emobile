@@ -61,6 +61,7 @@ public class AddressHandler {
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -93,7 +94,7 @@ public class AddressHandler {
 
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			addrData = data;
@@ -101,7 +102,7 @@ public class AddressHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -132,7 +133,7 @@ public class AddressHandler {
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.AddressHandler (at Class.insert)]");
@@ -141,7 +142,7 @@ public class AddressHandler {
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
@@ -150,14 +151,14 @@ public class AddressHandler {
 	public void insertOneAddress(Address address)
 	{
 		//SQLiteDatabase db = dbManager.openWritableDB();
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString())
 					.append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			insert.bindString(index(addr_id), address.addr_id==null?"":address.addr_id);
 			insert.bindString(index(cust_id), address.cust_id==null?"":address.cust_id);
@@ -185,14 +186,14 @@ public class AddressHandler {
 			insert.execute();
 			insert.clearBindings();
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
 			//e.printStackTrace();
 //			racker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(e.getMessage(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 		//db.close();
 	}
@@ -203,7 +204,7 @@ public class AddressHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	
@@ -214,7 +215,7 @@ public class AddressHandler {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT addr_id FROM Address WHERE addr_id like '").append(myPref.getEmpID()).append("-_____-____' ORDER BY addr_id");
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		String lastCustID = empStr;
 		if(cursor.moveToLast())
 		{
@@ -234,7 +235,7 @@ public class AddressHandler {
 		sb.append("SELECT addr_id,addr_b_str1,addr_b_str2,addr_b_str3,addr_b_city,addr_b_state,addr_b_country,addr_b_zipcode,");
 		sb.append("addr_s_str1,addr_s_str2,addr_s_str3,addr_s_city,addr_s_state,addr_s_country,addr_s_zipcode,addr_b_type,addr_s_type FROM Address WHERE cust_id = ?");
 		
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{custID});
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
 		
 		return cursor;
 	}
@@ -257,7 +258,7 @@ public class AddressHandler {
 			sb.append("SELECT addr_b_str1,addr_b_str2,addr_b_str3,addr_b_country,addr_b_city,addr_b_state,addr_b_zipcode FROM Address WHERE cust_id= ?");
 			//sb.append(subquery1).append(custID).append("'");
 			
-			cursor = DBManager._db.rawQuery(sb.toString(), new String[]{custID});
+			cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
 			if(cursor.moveToFirst())
 			{
 				int addrSTR1Index = cursor.getColumnIndex(addr_b_str1);
@@ -286,7 +287,7 @@ public class AddressHandler {
 			
 			sb.append("SELECT addr_s_str1,addr_s_str2,addr_s_str3,addr_s_country,addr_s_city,addr_s_state,addr_s_zipcode FROM Address WHERE cust_id=?");
 			//sb.append(subquery1).append(custID).append("'");
-			cursor = DBManager._db.rawQuery(sb.toString(), new String[]{custID});
+			cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
 			if(cursor.moveToFirst())
 			{
 				int addrSTR1Index = cursor.getColumnIndex(addr_s_str1);
@@ -330,7 +331,7 @@ public class AddressHandler {
 		String sb = "SELECT addr_id,addr_s_str1,addr_s_str2,addr_s_str3,addr_s_country,addr_s_city,addr_s_state,addr_s_zipcode FROM Address WHERE cust_id = ? " +
 				" AND cust_id != '' ORDER BY addr_id";
 
-		Cursor cursor = DBManager._db.rawQuery(sb, new String[]{StringUtil.nullStringToEmpty(myPref.getCustID())});
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{StringUtil.nullStringToEmpty(myPref.getCustID())});
 		List<String[]> arrayList = new ArrayList<>();
 		String[] arrayValues = new String[8];
 		
