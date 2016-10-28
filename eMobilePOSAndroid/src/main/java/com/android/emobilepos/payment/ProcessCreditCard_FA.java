@@ -112,7 +112,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private Global global;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private ProgressDialog myProgressDialog;
+    private  static ProgressDialog myProgressDialog;
 
     private PaymentsHandler payHandler;
     private InvoicePaymentsHandler invPayHandler;
@@ -1856,7 +1856,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     && Global.mainPrinterManager != null)
                 Global.mainPrinterManager.currentDevice.loadCardReader(callBack, isDebit);
         } else {
-            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+            if (myProgressDialog != null) {
                 myProgressDialog.dismiss();
             }
             if (read) {
