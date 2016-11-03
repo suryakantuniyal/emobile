@@ -3,11 +3,12 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.support.Global;
+import com.android.support.DateUtils;
 
 import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class DrawInfoHandler {
         attrHash = new HashMap<String, Integer>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -65,13 +67,13 @@ public class DrawInfoHandler {
     }
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
 
             addrData = data;
             dictionaryListMap = dictionary;
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
 
@@ -89,7 +91,7 @@ public class DrawInfoHandler {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
 //            StringBuilder sb = new StringBuilder();
@@ -98,20 +100,20 @@ public class DrawInfoHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
 
     public String getDrawDate() {
         //SQLiteDatabase db = dbManager.openReadableDB();
 
-        Cursor cursor = DBManager._db.rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + Global.getCurrentDate() + "','localtime') ORDER BY CutOffDate ", null);
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT DrawNumber,DrawDate FROM DrawDateInfo WHERE datetime(CutOffDateTime,'localtime') >= datetime('" + DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss) + "','localtime') ORDER BY CutOffDate ", null);
 
         String drawDate = "N/A";
         if (cursor.moveToFirst()) {

@@ -2,8 +2,10 @@ package com.android.emobilepos.holders;
 
 import android.app.Activity;
 
-import com.android.support.Global;
+import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
+
+import java.util.Date;
 
 public class TransferLocations_Holder {
 	private String trans_id = "";
@@ -15,7 +17,7 @@ public class TransferLocations_Holder {
 	public TransferLocations_Holder(Activity activity)
 	{
 		MyPreferences myPref = new MyPreferences(activity);
-		setTrans_timecreated(Global.getCurrentDate());
+		setTrans_timecreated(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
 		setEmp_id(myPref.getEmpID());
 	}
 

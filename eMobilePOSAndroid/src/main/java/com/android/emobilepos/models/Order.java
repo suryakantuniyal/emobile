@@ -3,11 +3,13 @@ package com.android.emobilepos.models;
 import android.app.Activity;
 
 import com.android.support.Customer;
-import com.android.support.Global;
+import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
 import com.google.gson.Gson;
 
-import util.JsonUtils;
+import java.util.Date;
+
+import util.json.JsonUtils;
 
 public class Order implements Cloneable {
     public String ord_id = "";
@@ -72,7 +74,7 @@ public class Order implements Cloneable {
         ord_issync = "0";
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
-        ord_timecreated = Global.getCurrentDate();
+        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
     }
 
     public Order(Activity activity) {
@@ -80,7 +82,7 @@ public class Order implements Cloneable {
         ord_issync = "0";
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
-        ord_timecreated = Global.getCurrentDate();
+        ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
         emp_id = myPref.getEmpID();
         custidkey = myPref.getCustIDKey();
     }

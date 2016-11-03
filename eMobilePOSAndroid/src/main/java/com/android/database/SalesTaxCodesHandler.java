@@ -1,5 +1,6 @@
 package com.android.database;
 
+import android.app.Activity;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -32,11 +33,12 @@ public class SalesTaxCodesHandler {
 
     private static final String table_name = "SalesTaxCodes";
 
-    public SalesTaxCodesHandler() {
+    public SalesTaxCodesHandler(Activity activity) {
         attrHash = new HashMap<>();
         addrData = new ArrayList<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -67,13 +69,13 @@ public class SalesTaxCodesHandler {
     }
 
     public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
 
             addrData = data;
             dictionaryListMap = dictionary;
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             int size = addrData.size();
 
@@ -90,21 +92,21 @@ public class SalesTaxCodesHandler {
 
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
 
     public String getTaxableTaxCode() {
-        Cursor c = DBManager._db.rawQuery("SELECT * FROM SalesTaxCodes WHERE taxcode_istaxable = '1' LIMIT 1", null);
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT * FROM SalesTaxCodes WHERE taxcode_istaxable = '1' LIMIT 1", null);
         String taxcode_id = "";
 
         if (c.moveToFirst()) {
@@ -120,7 +122,7 @@ public class SalesTaxCodesHandler {
         String subquery1 = "SELECT taxcode_istaxable FROM ";
         String subquery2 = " WHERE taxcode_id = '";
 
-        Cursor cursor = DBManager._db.rawQuery(subquery1 + table_name + subquery2 + cust_taxable + "'", null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + table_name + subquery2 + cust_taxable + "'", null);
 
         if (cursor.moveToFirst()) {
             if (cursor.getString(cursor.getColumnIndex(taxcode_istaxable)).equals("1")) {

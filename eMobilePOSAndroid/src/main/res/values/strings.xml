@@ -1102,6 +1102,7 @@
     <string name="select_table_seats_amount">Select the amount of seats</string>
     <string name="split_by_seats">Split bill by seats</string>
     <string name="split_equally">Split bill equally</string>
+    <string name="split_single">Single Receipt</string>
     <string name="split_by_group_seats">Split bill seats group</string>
     <string name="split_bill_by">Split Bill:</string>
     <string name="splited_order_summary">Split Order Summary</string>
@@ -1218,9 +1219,16 @@
     <string name="error_processing_payment">Error processing payment</string>
     <string name="header_title_settings">Settings</string>
     <string name="timeout_try_again">TIME OUT, would you like to try again?</string>
-    <string name="can_not_proceed">Can not proceed...</string>
+    <string name="can_not_proceed">Can not proceed…</string>
     <string name="invalid_payment_type">Invalid Payment Type</string>
     <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string>
+    <string name="sync_fail">Synchronization has fail.</string>
+    <string name="dlog_msg_cant_open_claimed_hold">Claimed orders can not be opened.</string>
+    <string name="loading_orders">Loading orders. Please wait.</string>
+    <string name="sync_dload_settings">Loading settings...</string>
+    <string name="sync_saving_settings">Saving settings...</string>
+    <string name="device_name">Device Name</string>
+    <string name="unknown">Unknown</string>
 
 
 </resources>

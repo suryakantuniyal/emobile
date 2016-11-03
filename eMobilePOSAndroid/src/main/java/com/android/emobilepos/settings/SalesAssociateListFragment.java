@@ -1,6 +1,8 @@
 package com.android.emobilepos.settings;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,12 @@ import android.widget.ListView;
 import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.SalesAssociateListAdapter;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.SalesAssociate;
+import com.android.support.SynchMethods;
+
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 import io.realm.RealmResults;
 
@@ -42,10 +49,10 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
         adapter = new SalesAssociateListAdapter(getActivity());
         list.setAdapter(adapter);
         if (associates != null && !associates.isEmpty()) {
-            SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+            SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
             activity.setSelectedSalesAssociate(associates.get(0));
-//            activity.getDinningTablesGridFragment().setSalesAssociateInfo(associates.get(0));
         }
+        new SynchDinnindTablesConfiguration().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
 
@@ -61,12 +68,48 @@ public class SalesAssociateListFragment extends Fragment implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//        view.setSelected(true);
+        reloadGrid(i);
+    }
+
+    private void reloadGrid(int i) {
         adapter.selectedIdx = i;
-        SalesAssociate associate = SalesAssociateDAO.getByEmpId(associates.get(i).getEmp_id());
-        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
-        activity.setSelectedSalesAssociate(associate);
-        activity.getDinningTablesGridFragment().refreshGrid();
-        adapter.notifyDataSetChanged();
+        if (associates != null && !associates.isEmpty()) {
+            SalesAssociate associate = SalesAssociateDAO.getByEmpId(associates.get(i).getEmp_id());
+            SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
+            activity.setSelectedSalesAssociate(associate);
+            activity.getDinningTablesGridFragment().refreshGrid();
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    private class SynchDinnindTablesConfiguration extends AsyncTask<Void, Void, Void> {
+        ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage(getString(R.string.sync_dload_settings));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                SynchMethods.synchSalesAssociateDinnindTablesConfiguration(getActivity());
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            progressDialog.dismiss();
+            reloadGrid(0);
+        }
     }
 }

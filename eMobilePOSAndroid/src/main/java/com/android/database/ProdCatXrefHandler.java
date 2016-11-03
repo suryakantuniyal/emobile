@@ -61,7 +61,7 @@ public class ProdCatXrefHandler {
 	}
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			addrData = data;
@@ -70,7 +70,7 @@ public class ProdCatXrefHandler {
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 			for (int j = 0; j < size; j++) {
@@ -86,7 +86,7 @@ public class ProdCatXrefHandler {
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProdCatXrefHandler (at Class.insert)]");
@@ -94,7 +94,7 @@ public class ProdCatXrefHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 
@@ -104,7 +104,7 @@ public class ProdCatXrefHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name);
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 		// db.close();
@@ -114,6 +114,6 @@ public class ProdCatXrefHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 }

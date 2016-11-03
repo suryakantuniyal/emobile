@@ -1,8 +1,9 @@
 package com.android.support;
 
 
+import java.util.Date;
 
-public class CustomerInventory 
+public class CustomerInventory
 {
 	private final String empt = "";
 	
@@ -18,6 +19,6 @@ public class CustomerInventory
 	
 	public CustomerInventory()
 	{
-		cust_update = Global.getCurrentDate();
+		cust_update = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
 	}
 }

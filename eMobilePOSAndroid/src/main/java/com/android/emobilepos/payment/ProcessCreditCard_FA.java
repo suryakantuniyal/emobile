@@ -44,8 +44,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.storedAndForward.StoreAndForward;
+import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.CreditCardInfo;
@@ -109,7 +109,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private Global global;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private ProgressDialog myProgressDialog;
+    private  static ProgressDialog myProgressDialog;
 
     private PaymentsHandler payHandler;
     private InvoicePaymentsHandler invPayHandler;
@@ -1117,20 +1117,18 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     public static String getCardType(String number) {
         String ccType = "";
-        boolean isMasked = false;
+        boolean isMasked;
         try {
-            Long.parseLong(number);
-        } catch (NumberFormatException e) {
-            try {
-                if (TextUtils.isEmpty(number)) {
-                    return "";
-                } else {
-                    Long.parseLong(number.substring(0, 4));
-                    isMasked = true;
-                }
-            } catch (NumberFormatException ex) {
+            if (TextUtils.isEmpty(number) || !TextUtils.isDigitsOnly(number) || number.length() < 4) {
                 return "";
+            } else {
+                if(!TextUtils.isDigitsOnly(number.substring(0, 4))){
+                    return "";
+                }
+                isMasked = true;
             }
+        } catch (NumberFormatException ex) {
+            return "";
         }
         if (!isMasked && Integer.parseInt(number.substring(0, 6)) >= 622126
                 && Integer.parseInt(number.substring(0, 6)) <= 622925) {
@@ -1857,7 +1855,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     && Global.mainPrinterManager != null)
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, isDebit);
         } else {
-            if (myProgressDialog != null && myProgressDialog.isShowing()) {
+            if (myProgressDialog != null) {
                 myProgressDialog.dismiss();
             }
             if (read) {

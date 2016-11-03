@@ -36,6 +36,7 @@ public class TimeClockHandler
 		attrHash = new HashMap<String, Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 
 		initDictionary();
 	}
@@ -60,20 +61,20 @@ public class TimeClockHandler
 
 	public void insert(List<TimeClock> timeClock, boolean deleteAll) {
 		// SQLiteDatabase db = dbManager.openWritableDB();
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ")
 					.append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = timeClock.size();
 
 			for (int i = 0; i < size; i++) {
 				if (deleteAll)
-					DBManager._db.delete(table_name, "emp_id = ? AND status = ?",
+					DBManager.getDatabase().delete(table_name, "emp_id = ? AND status = ?",
 							new String[] { timeClock.get(i).emp_id, timeClock.get(i).status });
 				insert.bindString(index(timeclockid), timeClock.get(i).timeclockid); // timeclockid
 				insert.bindString(index(emp_id), timeClock.get(i).emp_id); // emp_id
@@ -87,7 +88,7 @@ public class TimeClockHandler
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -96,7 +97,7 @@ public class TimeClockHandler
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 		// db.close();
 	}
@@ -109,7 +110,7 @@ public class TimeClockHandler
 
 		sb.append("SELECT * FROM ").append(table_name).append(" WHERE emp_id = ? ORDER BY punchtime DESC LIMIT 2");
 
-		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[] { empID });
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[] { empID });
 
 		if (c.moveToFirst()) {
 			int i_timeclockid = c.getColumnIndex(timeclockid);
@@ -143,7 +144,7 @@ public class TimeClockHandler
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
 				.append(" WHERE issync = '0' and emp_id NOT NULL and trim(emp_id) <> ''");
-		Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
 
 		return cursor;
 	}
@@ -165,13 +166,13 @@ public class TimeClockHandler
 			args.put(issync, "1");
 		else
 			args.put(issync, "0");
-		DBManager._db.update(table_name, args, sb.toString(), new String[] { timeclockID });
+		DBManager.getDatabase().update(table_name, args, sb.toString(), new String[] { timeclockID });
 	}
 
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 
 	public long getNumUnsyncTimeClock() {
@@ -181,7 +182,7 @@ public class TimeClockHandler
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) FROM ").append(table_name).append(" WHERE issync = '0'");
 
-		SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
+		SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
 		long count = stmt.simpleQueryForLong();
 		stmt.close();
 

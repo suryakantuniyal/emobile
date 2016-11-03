@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
-import com.android.emobilepos.models.Device;
+import com.android.emobilepos.models.realms.Device;
 
 import java.util.HashMap;
 

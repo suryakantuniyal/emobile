@@ -53,13 +53,13 @@ public class TransferInventory_DB {
 
 
     public void insert(List<TransferInventory_Holder> inventory) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
 
             SQLiteStatement insert;
             String sb = "INSERT INTO " + TABLE_NAME + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() +
                     ")";
-            insert = DBManager._db.compileStatement(sb);
+            insert = DBManager.getDatabase().compileStatement(sb);
 
             int size = inventory.size();
 
@@ -72,30 +72,30 @@ public class TransferInventory_DB {
                 insert.clearBindings();
             }
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
+        DBManager.getDatabase().execSQL("DELETE FROM " + TABLE_NAME);
     }
 
 
     public Cursor getInventoryTransactions(String _trans_id) {
-        return DBManager._db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE trans_id = ?", new String[]{_trans_id});
+        return DBManager.getDatabase().rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE trans_id = ?", new String[]{_trans_id});
     }
 
     public List<HashMap<String, String>> getInventoryTransactionMap(String _trans_id) {
         String sb = "SELECT p.prod_id, p.prod_name,ti.prod_qty FROM " + TABLE_NAME + " ti LEFT JOIN Products p ON ti.prod_id = p.prod_id WHERE " +
                 "trans_id = ?";
 
-        Cursor c = DBManager._db.rawQuery(sb, new String[]{_trans_id});
+        Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_trans_id});
 
         List<HashMap<String, String>> listMap = new ArrayList<>();
         if (c.moveToFirst()) {

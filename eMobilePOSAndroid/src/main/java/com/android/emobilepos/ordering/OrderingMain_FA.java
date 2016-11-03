@@ -50,9 +50,9 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.Product;
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -96,7 +96,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
 import io.realm.RealmResults;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,

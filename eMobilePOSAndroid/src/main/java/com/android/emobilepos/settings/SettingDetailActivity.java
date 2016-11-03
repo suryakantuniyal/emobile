@@ -1,12 +1,7 @@
 package com.android.emobilepos.settings;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.ActionBar;
 import android.os.PowerManager;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
 
 import com.android.emobilepos.R;
 import com.android.support.Global;
@@ -21,8 +16,6 @@ public class SettingDetailActivity extends BaseFragmentActivityActionBar {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_detail);
-
-
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
@@ -32,7 +25,6 @@ public class SettingDetailActivity extends BaseFragmentActivityActionBar {
             int section = extras.getInt("section");
             arguments.putInt("section", section);
             fragment.setArguments(arguments);
-
             getFragmentManager().beginTransaction()
                     .add(R.id.setting_detail_container, fragment)
                     .commit();

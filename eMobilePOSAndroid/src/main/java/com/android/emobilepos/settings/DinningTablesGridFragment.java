@@ -10,14 +10,12 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTablesAdapter;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.SalesAssociate;
 
-import java.util.List;
-
-import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
@@ -43,30 +41,32 @@ public class DinningTablesGridFragment extends Fragment implements AdapterView.O
         super.onViewCreated(view, savedInstanceState);
         RealmResults<DinningTable> realmResults = DinningTableDAO.getAll();
         realmResults.sort("number");
-        final List<DinningTable> dinningTables = realmResults;
         gridView = (GridView) view.findViewById(R.id.tablesGridLayout);
-        adapter = new DinningTablesAdapter(getActivity(), dinningTables);
+        adapter = new DinningTablesAdapter(getActivity(), realmResults);
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(this);
         refreshGrid();
     }
-    public void refreshGrid(){
-        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
+
+    public void refreshGrid() {
+        SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
         setSalesAssociateInfo(activity.getSelectedSalesAssociate());
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         final DinningTable table = (DinningTable) adapterView.getItemAtPosition(i);
-        SalesAssociateConfiguration activity = (SalesAssociateConfiguration) getActivity();
-        Realm.getDefaultInstance().beginTransaction();
+        SalesAssociateConfigurationActivity activity = (SalesAssociateConfigurationActivity) getActivity();
+//        Realm.getDefaultInstance().beginTransaction();
         boolean contains = activity.getSelectedSalesAssociate().getAssignedDinningTables().contains(table);
         if (contains) {
-            activity.getSelectedSalesAssociate().getAssignedDinningTables().remove(table);
+            SalesAssociateDAO.removeAssignedTable(activity.getSelectedSalesAssociate(), table);
+//            activity.getSelectedSalesAssociate().getAssignedDinningTables().remove(table);
         } else {
-            activity.getSelectedSalesAssociate().getAssignedDinningTables().add(table);
+            SalesAssociateDAO.addAssignedTable(activity.getSelectedSalesAssociate(), table);
+//            activity.getSelectedSalesAssociate().getAssignedDinningTables().add(table);
         }
-        Realm.getDefaultInstance().commitTransaction();
+//        Realm.getDefaultInstance().commitTransaction();
         adapter.setSelectedDinningTables(activity.getSelectedSalesAssociate().getAssignedDinningTables());
         adapter.notifyDataSetChanged();
     }

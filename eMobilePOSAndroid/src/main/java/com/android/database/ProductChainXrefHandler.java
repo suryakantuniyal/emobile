@@ -36,6 +36,7 @@ public class ProductChainXrefHandler {
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -66,7 +67,7 @@ public class ProductChainXrefHandler {
 	}
 
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			addrData = data;
@@ -74,7 +75,7 @@ public class ProductChainXrefHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -93,7 +94,7 @@ public class ProductChainXrefHandler {
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.ProdcutChainXrefHandler (at Class.insert)]");
@@ -101,14 +102,14 @@ public class ProductChainXrefHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	
@@ -119,7 +120,7 @@ public class ProductChainXrefHandler {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT Count(*) as 'count' FROM ").append(table_name).append(" WHERE cust_chain != '' AND cust_chain = ?");
 
-		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{custID});
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{custID});
 		long count = 0;
 		if(c.moveToFirst())
 		{

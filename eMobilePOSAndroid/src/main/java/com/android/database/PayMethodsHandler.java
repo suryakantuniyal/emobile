@@ -3,7 +3,9 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.dao.PayMethodsDAO;
+import com.android.dao.PaymentMethodDAO;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -13,8 +15,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.Sort;
 import util.StringUtil;
 
 public class PayMethodsHandler {
@@ -42,6 +42,7 @@ public class PayMethodsHandler {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -67,10 +68,10 @@ public class PayMethodsHandler {
 
     public void insert(List<PaymentMethod> paymentMethods) {
 
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         try {
             SQLiteStatement insert;
-            insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+            insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
             for (PaymentMethod method : paymentMethods) {
                 insert.bindString(index(paymethod_id), StringUtil.nullStringToEmpty(method.getPaymethod_id()));
@@ -84,31 +85,24 @@ public class PayMethodsHandler {
                 insert.execute();
                 insert.clearBindings();
             }
-            Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            realm.insert(paymentMethods);
-            realm.commitTransaction();
+            PaymentMethodDAO.insert(paymentMethods);
             insert.close();
-            DBManager._db.setTransactionSuccessful();
+            DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DBManager._db.endTransaction();
+            DBManager.getDatabase().endTransaction();
         }
     }
 
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(PaymentMethod.class);
-        realm.commitTransaction();
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
+        PaymentMethodDAO.truncate();
     }
 
     public List<PaymentMethod> getPayMethod() {
-        Realm realm = Realm.getDefaultInstance();
-        return realm.where(PaymentMethod.class).findAll().sort("paymethod_name", Sort.ASCENDING);
+        return PayMethodsDAO.getAllSortByName();
     }
 
 
@@ -117,7 +111,7 @@ public class PayMethodsHandler {
 
         String[] fields = new String[]{paymethod_id, paymethod_name};
 
-        Cursor cursor = DBManager._db.query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
+        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "paymethod_id!=''", null, null, null, paymethod_name + " ASC", null);
 
         //--------------- add additional payment methods ----------------
         if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
@@ -153,7 +147,7 @@ public class PayMethodsHandler {
 
         String[] fields = new String[]{paymethod_id};
 
-        Cursor cursor = DBManager._db.query(true, table_name, fields, "paymentmethod_type= '" + methodType + "'", null, null, null, null, null);
+        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "paymentmethod_type= '" + methodType + "'", null, null, null, null, null);
         String data = "";
         if (cursor.moveToFirst()) {
             do {
@@ -165,11 +159,11 @@ public class PayMethodsHandler {
 
         return data;
     }
-    
+
 
     public String getSpecificPayMethodId(String methodName) {
         String[] fields = new String[]{paymethod_id};
-        Cursor cursor = DBManager._db.query(true, table_name, fields, "paymethod_name = '" + methodName + "'", null, null, null, null, null);
+        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "paymethod_name = '" + methodName + "'", null, null, null, null, null);
         String data = "";
         if (cursor.moveToFirst()) {
             do {

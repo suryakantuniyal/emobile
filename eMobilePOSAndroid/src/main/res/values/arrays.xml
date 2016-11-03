@@ -209,7 +209,7 @@
 
     <string-array name="navigationbarByModels">
         <item name="paypoint">paypoint</item>
+        <item name="msm8960">msm8960</item>
     </string-array>
 
-    <string name="split_single">Single Receipt</string>
 </resources>

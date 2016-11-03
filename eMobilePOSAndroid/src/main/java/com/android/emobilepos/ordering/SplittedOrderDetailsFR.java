@@ -33,6 +33,7 @@ import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.SynchMethods;
 import com.android.support.TaxesCalculator;
 
 import java.io.File;
@@ -386,8 +387,13 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 }
 
 
+//                DBManager dbManager = new DBManager(getActivity());
+//                dbManager.synchSendOrdersOnHold(false, true);
+
                 DBManager dbManager = new DBManager(getActivity());
-                dbManager.synchSendOrdersOnHold(false, true);
+                SynchMethods sm = new SynchMethods(dbManager);
+                sm.synchSendOnHold(false, true);
+
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                 splitedOrder.ord_id = global.order.ord_id;
                 splitedOrder.syncOrderProductIds();

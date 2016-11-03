@@ -496,7 +496,7 @@
             <!--android:name=".settings.SalesAssociateDinningTables"-->
             <!--android:label="@string/title_activity_sales_associate_dinning_tables" />-->
         <activity
-            android:name=".settings.SalesAssociateConfiguration"
+            android:name=".settings.SalesAssociateConfigurationActivity"
             android:label="@string/title_activity_sales_associate_configuration"></activity>
     </application>
 

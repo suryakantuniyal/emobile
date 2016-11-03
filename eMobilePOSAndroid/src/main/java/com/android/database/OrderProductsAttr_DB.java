@@ -3,8 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
-
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -30,6 +29,7 @@ public class OrderProductsAttr_DB {
 		
 		mainSB1 = new StringBuilder();
 		mainSB2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 	private void initDictionary() {
@@ -53,14 +53,14 @@ public class OrderProductsAttr_DB {
 	public void insert(List<ProductAttribute> data) {
 
 		// SQLiteDatabase db = dbManager.openWritableDB();
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT OR REPLACE INTO ").append(TABLE_NAME).append(" (").append(mainSB1.toString()).append(") ").append("VALUES (")
 					.append(mainSB2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = data.size();
 
@@ -74,7 +74,7 @@ public class OrderProductsAttr_DB {
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
@@ -83,7 +83,7 @@ public class OrderProductsAttr_DB {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 		// db.close();
 	}
@@ -96,12 +96,12 @@ public class OrderProductsAttr_DB {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * FROM ").append(TABLE_NAME).append(" WHERE ordprod_id = ?");
-		Cursor c = DBManager._db.rawQuery(sb.toString(),new String[]{ordprodID});
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(),new String[]{ordprodID});
 		return c;
 	}
 	
 	public void deleteOrderProduct(String _ordprod_id)
 	{
-		DBManager._db.delete(TABLE_NAME, "ordprod_id = ?", new String[]{_ordprod_id});
+		DBManager.getDatabase().delete(TABLE_NAME, "ordprod_id = ?", new String[]{_ordprod_id});
 	}
 }

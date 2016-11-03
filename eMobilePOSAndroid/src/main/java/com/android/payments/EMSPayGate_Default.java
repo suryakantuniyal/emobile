@@ -7,7 +7,7 @@ import android.util.Xml;
 import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateXML;
@@ -932,11 +932,11 @@ public class EMSPayGate_Default {
         serializer.startTag(empstr, "EvertecTaxes");
 
         serializer.startTag(empstr, "Tax1"); // Estatal
-        serializer.text(payment.getTax1_amount());
+        serializer.text(TextUtils.isEmpty(payment.getTax1_amount()) ? "0" : payment.getTax1_amount());
         serializer.endTag(empstr, "Tax1");
 
         serializer.startTag(empstr, "Tax2"); // Municipal
-        serializer.text(payment.getTax2_amount());
+        serializer.text(TextUtils.isEmpty(payment.getTax2_amount()) ? "0" : payment.getTax2_amount());
         serializer.endTag(empstr, "Tax2");
 
         serializer.endTag(empstr, "EvertecTaxes");

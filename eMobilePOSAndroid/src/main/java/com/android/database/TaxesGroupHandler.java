@@ -37,6 +37,7 @@ public class TaxesGroupHandler {
 		addrData = new ArrayList<String[]>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 
@@ -68,7 +69,7 @@ public class TaxesGroupHandler {
 
 	
 	public void insert(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 
 		try {
 
@@ -77,7 +78,7 @@ public class TaxesGroupHandler {
 			SQLiteStatement insert = null;
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(table_name).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString()).append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = addrData.size();
 
@@ -97,7 +98,7 @@ public class TaxesGroupHandler {
 
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.TaxesGroupHandler (at Class.insert)]");
@@ -105,7 +106,7 @@ public class TaxesGroupHandler {
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
@@ -113,7 +114,7 @@ public class TaxesGroupHandler {
 	public void emptyTable() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(table_name);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	
@@ -124,7 +125,7 @@ public class TaxesGroupHandler {
 		//String query = "SELECT taxId,taxcode_id AS 'tax_name',tax_rate FROM Taxes_Group WHERE taxGroupId = ? AND taxcode_id = ?";
 		String query = "SELECT * FROM Taxes WHERE tax_id IN (SELECT taxId FROM TAXES_GROUP WHERE taxGroupId = ? AND taxcode_id = ?);";
 		
-		Cursor c = DBManager._db.rawQuery(query, new String[]{_tax_group_id,_taxcode_id});
+		Cursor c = DBManager.getDatabase().rawQuery(query, new String[]{_tax_group_id,_taxcode_id});
 		
 		List<HashMap<String,String>>listMap = new ArrayList<HashMap<String,String>>();
 		HashMap<String,String>tempMap;

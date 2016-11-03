@@ -42,7 +42,7 @@ import util.StringUtil;
 
 public class GenerateXML {
 
-    private static final String UTF_8 = "utf-8";
+    public static final String UTF_8 = "utf-8";
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
     private Activity thisActivity;
@@ -570,7 +570,7 @@ public class GenerateXML {
                 serializer.endTag(empstr, "numberOfSeats");
 
                 serializer.startTag(empstr, "ord_timeStarted");
-                serializer.text(order.ord_timeStarted);
+                serializer.text(StringUtil.nullStringToEmpty(order.ord_timeStarted));
                 serializer.endTag(empstr, "ord_timeStarted");
 
                 serializer.startTag(empstr, "ord_id");
@@ -1006,8 +1006,8 @@ public class GenerateXML {
         for (int i = 0; i < size; i++) {
             try {
                 OrderProduct product = OrderProductsHandler.getOrderProduct(cursor);
-                if (!isRestMode || (isRestMode && ((cursor.getString(cursor.getColumnIndex("addon")).equals("0"))
-                        || (cursor.getString(cursor.getColumnIndex("addon")).equals("1") && isOnHold)))) {
+                if (!isRestMode || (isRestMode && ((!product.isAddon())
+                        || (product.isAddon() && isOnHold)))) {
                     serializer.startTag(empstr, "OrderProduct");
 
                     String assignedSeat = product.getAssignedSeat();//cursor.getString(cursor.getColumnIndex("assignedSeat"));

@@ -1,6 +1,5 @@
 package com.android.support;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.android.emobilepos.R;

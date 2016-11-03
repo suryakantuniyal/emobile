@@ -10,7 +10,6 @@ import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +50,7 @@ public class ConsignmentTransactionHandler {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -97,7 +97,7 @@ public class ConsignmentTransactionHandler {
             // values.put(is_synched,list.get(i).getSetData(is_synched, true,
             // null));
 
-            DBManager._db.insert(TABLE_NAME, null, values);
+            DBManager.getDatabase().insert(TABLE_NAME, null, values);
 
         }
 
@@ -106,7 +106,7 @@ public class ConsignmentTransactionHandler {
     }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + TABLE_NAME);
+        DBManager.getDatabase().execSQL("DELETE FROM " + TABLE_NAME);
     }
 
 //	public List<ConsignmentTransaction> getLastConsTransaction() {
@@ -140,7 +140,7 @@ public class ConsignmentTransactionHandler {
 //		sb.append("ON ci.prod_id = ch.prod_id AND ch.cust_chain = ci.cust_id WHERE ct.ConsCust_ID = ?  ");
 //		sb.append("GROUP BY ct.ConsProd_ID ORDER BY ct.Cons_timecreated DESC ");
 //
-//		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[] { myPref.getCustID() });
+//		Cursor c = DBManager.database.rawQuery(sb.toString(), new String[] { myPref.getCustID() });
 //		List<ConsignmentTransaction> ctList = new ArrayList<ConsignmentTransaction>();
 //		ConsignmentTransaction ct = new ConsignmentTransaction();
 //		if (c.moveToFirst()) {
@@ -198,7 +198,7 @@ public class ConsignmentTransactionHandler {
 
     public long getDBSize() {
 
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(*) FROM " + TABLE_NAME);
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(*) FROM " + TABLE_NAME);
         long count = stmt.simpleQueryForLong();
         stmt.close();
         // db.close();
@@ -209,12 +209,12 @@ public class ConsignmentTransactionHandler {
         String sb = "SELECT " + sb1.toString() + " FROM " + TABLE_NAME +
                 " WHERE is_synched = '1'";
 
-        return DBManager._db.rawQuery(sb, null);
+        return DBManager.getDatabase().rawQuery(sb, null);
     }
 
     public long getNumUnsyncItems() {
 
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count;
@@ -229,13 +229,13 @@ public class ConsignmentTransactionHandler {
         int size = list.size();
         for (int i = 0; i < size; i++) {
             args.put(is_synched, list.get(i)[0]);
-            DBManager._db.update(TABLE_NAME, args, sb.toString(), new String[]{list.get(i)[1]});
+            DBManager.getDatabase().update(TABLE_NAME, args, sb.toString(), new String[]{list.get(i)[1]});
         }
     }
 
     public boolean unsyncConsignmentsLeft() {
 
-        SQLiteStatement stmt = DBManager._db.compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
+        SQLiteStatement stmt = DBManager.getDatabase().compileStatement("SELECT Count(DISTINCT ConsTrans_ID) FROM " + TABLE_NAME + " WHERE is_synched = '1'");
         long count = stmt.simpleQueryForLong();
         stmt.close();
         return count != 0;
@@ -257,7 +257,7 @@ public class ConsignmentTransactionHandler {
         }
         sb.append("GROUP BY ConsTrans_ID ORDER BY Cons_timecreated DESC");
 
-        Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+        Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), null);
         c.moveToFirst();
         return c;
     }
@@ -271,7 +271,7 @@ public class ConsignmentTransactionHandler {
                 "LEFT OUTER JOIN ConsignmentSignatures cs ON cs.ConsTrans_ID = ct.ConsTrans_ID WHERE ct.ConsTrans_ID = ?";
         HashMap<String, String> map = new HashMap<String, String>();
 
-        Cursor c = DBManager._db.rawQuery(sb, new String[]{_ConsTrans_ID});
+        Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
 
         if (c.moveToFirst()) {
             map.put("ConsTrans_ID", _ConsTrans_ID);
@@ -300,7 +300,7 @@ public class ConsignmentTransactionHandler {
                 "ci.cust_id LEFT OUTER JOIN Products_Images pi ON ct.ConsProd_ID = pi.prod_id AND pi.type = 'I' LEFT OUTER JOIN Products p ON " +
                 "ct.ConsProd_ID = p.prod_id WHERE ConsTrans_ID = ? ORDER BY p.prod_name ASC";
 
-        Cursor c = DBManager._db.rawQuery(sb, new String[]{_ConsTrans_ID});
+        Cursor c = DBManager.getDatabase().rawQuery(sb, new String[]{_ConsTrans_ID});
         c.moveToFirst();
         return c;
     }
@@ -326,8 +326,8 @@ public class ConsignmentTransactionHandler {
             sb.append("select max(ConsTrans_ID) from ").append(TABLE_NAME).append(" WHERE ConsTrans_ID like '").append(deviceId)
                     .append("-%-").append(year).append("'");
 
-            SQLiteStatement stmt = DBManager._db.compileStatement(sb.toString());
-            Cursor cursor = DBManager._db.rawQuery(sb.toString(), null);
+            SQLiteStatement stmt = DBManager.getDatabase().compileStatement(sb.toString());
+            Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
             cursor.moveToFirst();
             lastID = cursor.getString(0);
             cursor.close();

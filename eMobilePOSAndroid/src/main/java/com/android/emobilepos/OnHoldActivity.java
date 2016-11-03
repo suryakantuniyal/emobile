@@ -38,19 +38,15 @@ import com.android.saxhandler.SAXdownloadHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.OnHoldsManager;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 
@@ -58,7 +54,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Activity activity;
     private Cursor myCursor;
     private Global global;
-    private boolean isAddon = false;
     private Global.OrderType orderType = Global.OrderType.SALES_RECEIPT;
     boolean validPassword = true;
     private boolean isUpdateOnHold = false;
@@ -160,43 +155,42 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
-
-
                     if (!isUpdateOnHold) {
-                        String xml = httpClient.postData(Global.S_CHECK_STATUS_ON_HOLD, activity, ordID);
-
-                        if (xml.equals(Global.TIME_OUT)) {
-                            //errorMsg = "TIME OUT, would you like to try again?";
-                            timedOut = true;
-                        } else if (xml.equals(Global.NOT_VALID_URL)) {
-                            //errorMsg = "Can not proceed...";
-                        } else {
-                            InputSource inSource = new InputSource(new StringReader(xml));
-
-                            SAXParser sp = spf.newSAXParser();
-                            XMLReader xr = sp.getXMLReader();
-                            xr.setContentHandler(handler);
-                            xr.parse(inSource);
-                            List<String[]> temp = handler.getEmpData();
-
-                            if (temp != null && temp.size() > 0) {
-                                returnedPost = new String[handler.getEmpData().size()];
-                                returnedPost = handler.getEmpData().get(0);
-                            }
-
-
-                            if (returnedPost != null && returnedPost.length > 0 && returnedPost[1].equals("0")) {
-                                wasProcessed = true;
-                                httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD, activity, ordID);
-                            }
+//                        String xml = httpClient.postData(Global.S_CHECK_STATUS_ON_HOLD, activity, ordID);
+//
+//                        switch (xml) {
+//                            case Global.TIME_OUT:
+//                                timedOut = true;
+//                                break;
+//                            case Global.NOT_VALID_URL:
+//                                break;
+//                            default:
+//                                InputSource inSource = new InputSource(new StringReader(xml));
+//                                SAXParser sp = spf.newSAXParser();
+//                                XMLReader xr = sp.getXMLReader();
+//                                xr.setContentHandler(handler);
+//                                xr.parse(inSource);
+//                                List<String[]> temp = handler.getEmpData();
+//
+//                                if (temp != null && temp.size() > 0) {
+//                                    returnedPost = new String[handler.getEmpData().size()];
+//                                    returnedPost = handler.getEmpData().get(0);
+//                                }
+//                                if (returnedPost != null && returnedPost.length > 0 && returnedPost[1].equals("0")) {
+                        if (!OnHoldsManager.isOnHoldAdminClaimRequired(ordID, activity)) {
+                            wasProcessed = true;
+                            OnHoldsManager.updateStatusOnHold(ordID, activity);
+//                            httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD, activity, ordID);
                         }
+//                                }
+//                                break;
+//                        }
                     } else {
                         wasProcessed = true;
-                        httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD, activity, ordID);
+                        OnHoldsManager.updateStatusOnHold(ordID, activity);
+//                        httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD, activity, ordID);
                     }
-
                 } catch (Exception e) {
-
                 }
 
                 return null;
@@ -312,9 +306,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 int size = c.getCount();
                 if (size > 0) {
                     if (!forPrinting) {
-                        addOrder(c);
-                        isAddon = false;
-
+                        addOrderProducts(OnHoldActivity.this, c);
                         startActivityForResult(intent, 0);
                         activity.finish();
                     } else {
@@ -546,7 +538,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
     }
 
 
-    public void addOrder(Cursor c) {
+    public static void addOrderProducts(Activity activity, Cursor c) {
         int size = c.getCount();
         OrderProduct ord = new OrderProduct();
         ProductAddonsHandler prodAddonHandler = new ProductAddonsHandler(activity);
@@ -554,12 +546,14 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         String[] discountInfo;
         double total;
         double itemTotal = 0;
-
+        boolean isAddon;
+        Global global = (Global) activity.getApplication();
+        global.orderProducts = new ArrayList<>();
 
         for (int i = 0; i < size; i++) {
+            isAddon = false;
             double discAmount = 0;
             ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
-//            global.qtyCounter.put(c.getString(c.getColumnIndex("prod_id")), c.getString(c.getColumnIndex("ordprod_qty")));
 
             ord.setAssignedSeat(c.getString(c.getColumnIndex("assignedSeat")));
             ord.setSeatGroupId(c.getInt(c.getColumnIndex("seatGroupId")));
@@ -568,7 +562,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setOrdprod_desc(c.getString(c.getColumnIndex("ordprod_desc")));
             ord.setProd_id(c.getString(c.getColumnIndex("prod_id")));
             ord.setProd_price(c.getString(c.getColumnIndex("prod_price")));
-            ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
+//            ord.setOverwrite_price(BigDecimal.valueOf(c.getDouble(c.getColumnIndex("overwrite_price"))));
             ord.setOverwrite_price(c.getString(c.getColumnIndex("overwrite_price")) != null
                     ? new BigDecimal(c.getString(c.getColumnIndex("overwrite_price")))
                     : null);
@@ -622,11 +616,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setItemSubtotal(Double.toString(total));
 
             ord.setOrd_id(c.getString(c.getColumnIndex("ord_id")));
-
-
-            if (global.orderProducts == null) {
-                global.orderProducts = new ArrayList<OrderProduct>();
-            }
 
 
             ord.setOrdprod_id(c.getString(c.getColumnIndex("ordprod_id")));
@@ -705,8 +694,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
                     }
                 }
-
-                isAddon = false;
                 global.orderProducts.add(ord);
 
             }
@@ -722,7 +709,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             HashMap<String, String> temp = ch.getCustomerInfo(custID);
 
 
-            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler();
+            SalesTaxCodesHandler taxHandler = new SalesTaxCodesHandler(activity);
             SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(temp.get("cust_taxable"));
             myPref.setCustTaxCode(taxable, temp.get("cust_salestaxcode"));
 

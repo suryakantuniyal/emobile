@@ -67,6 +67,7 @@ public class ProductsHandler {
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
+        new DBManager(activity);
         initDictionary();
     }
 
@@ -90,9 +91,9 @@ public class ProductsHandler {
     }
 
     public void insert(List<Product> products) {
-        DBManager._db.beginTransaction();
+        DBManager.getDatabase().beginTransaction();
         SQLiteStatement insert;
-        insert = DBManager._db.compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
+        insert = DBManager.getDatabase().compileStatement("INSERT INTO " + table_name + " (" + sb1.toString() + ") " + "VALUES (" + sb2.toString() + ")");
 
         for (Product product : products) {
             insert.bindString(index(prod_id), product.getId()); // prod_id
@@ -129,12 +130,12 @@ public class ProductsHandler {
             insert.clearBindings();
         }
         insert.close();
-        DBManager._db.setTransactionSuccessful();
-        DBManager._db.endTransaction();
+        DBManager.getDatabase().setTransactionSuccessful();
+        DBManager.getDatabase().endTransaction();
     }
 
     public void emptyTable() {
-        DBManager._db.execSQL("DELETE FROM " + table_name);
+        DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
     }
 
     public Cursor getCatalogData(int limit, int offset) {
@@ -363,7 +364,7 @@ public class ProductsHandler {
             query = sb.toString();
         }
 
-        Cursor cursor = DBManager._db.rawQuery(query + " LIMIT " + limit + " OFFSET " + offset, parameters);
+        Cursor cursor = DBManager.getDatabase().rawQuery(query + " LIMIT " + limit + " OFFSET " + offset, parameters);
         cursor.moveToFirst();
         // db.close();
 
@@ -378,7 +379,7 @@ public class ProductsHandler {
                 table_name +
                 " WHERE prod_expense = 'true'";
 
-        Cursor cursor = DBManager._db.rawQuery(query, null);
+        Cursor cursor = DBManager.getDatabase().rawQuery(query, null);
         cursor.moveToFirst();
 
         return cursor;
@@ -481,7 +482,7 @@ public class ProductsHandler {
         String[] parameters = new String[]{priceLevelID, priceLevelID, myPref.getCustID(), value, value, value};
         query = sb.toString();
 
-        Cursor cursor = DBManager._db.rawQuery(query, parameters);
+        Cursor cursor = DBManager.getDatabase().rawQuery(query, parameters);
 
         if (cursor.moveToFirst()) {
 
@@ -603,7 +604,7 @@ public class ProductsHandler {
         String[] parameters = new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), _prod_id};
         query = sb.toString();
 
-        Cursor cursor = DBManager._db.rawQuery(query, parameters);
+        Cursor cursor = DBManager.getDatabase().rawQuery(query, parameters);
 
         if (cursor.moveToFirst()) {
 
@@ -661,7 +662,7 @@ public class ProductsHandler {
         List<String> list = new ArrayList<>();
         String sb = "SELECT p.prod_name, p.prod_desc, p.prod_extradesc, p.prod_type, t.taxcode_name as 'prod_taxcode', p.prod_price, p.prod_disc_type " +
                 ",p.prod_price_points,p.prod_value_points FROM Products p LEFT OUTER JOIN SalesTaxCodes t ON p.prod_taxcode = t.taxcode_id WHERE p.prod_id = ?";
-        Cursor cursor = DBManager._db.rawQuery(sb, new String[]{id});
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb, new String[]{id});
         DecimalFormat frmt = new DecimalFormat("0.00");
         if (cursor.moveToFirst()) {
             do {
@@ -701,7 +702,7 @@ public class ProductsHandler {
 
     public List<String> getProdInventory(String id) {
         List<String> list = new ArrayList<>();
-        Cursor cursor = DBManager._db.rawQuery("SELECT p.prod_onhand AS 'master_prod_onhand',ei.prod_onhand AS 'local_prod_onhand' FROM Products p LEFT OUTER JOIN " + "EmpInv ei ON p.prod_id = ei.prod_id WHERE p.prod_id = ?", new String[]{id});
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.prod_onhand AS 'master_prod_onhand',ei.prod_onhand AS 'local_prod_onhand' FROM Products p LEFT OUTER JOIN " + "EmpInv ei ON p.prod_id = ei.prod_id WHERE p.prod_id = ?", new String[]{id});
         String master, local;
         if (cursor.moveToFirst()) {
             do {
@@ -726,7 +727,7 @@ public class ProductsHandler {
         List<String> list = new ArrayList<>();
         String[] fields = new String[]{prod_sku, cat_id, prod_upc};
         String[] arguments = new String[]{id};
-        Cursor cursor = DBManager._db.query(true, table_name, fields, "prod_id=?", arguments, null, null, null, null);
+        Cursor cursor = DBManager.getDatabase().query(true, table_name, fields, "prod_id=?", arguments, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
                 String data = cursor.getString(cursor.getColumnIndex(prod_sku));
@@ -747,7 +748,7 @@ public class ProductsHandler {
     public List<Discount> getDiscounts() {
         List<Discount> list = new ArrayList<>();
         Discount data = new Discount();
-        Cursor cursor = DBManager._db.rawQuery("SELECT p.prod_name,p.prod_disc_type,p.prod_price,IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE p.prod_type = 'Discount' ORDER BY p.prod_name ASC", null);
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.prod_name,p.prod_disc_type,p.prod_price,IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE p.prod_type = 'Discount' ORDER BY p.prod_name ASC", null);
         if (cursor.moveToFirst()) {
             do {
                 data.setProductName(cursor.getString(cursor.getColumnIndex(prod_name)));
@@ -769,7 +770,7 @@ public class ProductsHandler {
             discount_id = "";
         HashMap<String, String> map = new HashMap<>();
 
-        Cursor c = DBManager._db.rawQuery("SELECT prod_disc_type,prod_price FROM Products WHERE prod_id LIKE ?", new String[]{discount_id});
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT prod_disc_type,prod_price FROM Products WHERE prod_id LIKE ?", new String[]{discount_id});
         if (c.moveToFirst()) {
             map.put("discount_type", c.getString(c.getColumnIndex(prod_disc_type)));
             map.put("discount_price", c.getString(c.getColumnIndex(prod_price)));
@@ -859,14 +860,14 @@ public class ProductsHandler {
 
         sb.setLength(0);
         sb.append(subquery1).append(type).append(subquery2.toString());
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(),
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(),
                 new String[]{priceLevelID, priceLevelID, priceLevelID, myPref.getCustID(), "%" + search + "%"});
         cursor.moveToFirst();
         return cursor;
     }
 
     public String[] getDiscount(String discountID, String prodPrice) {
-        Cursor c = DBManager._db.rawQuery("SELECT p.prod_price,p.prod_disc_type, p.prod_sku as prod_sku, p.prod_upc as prod_upc, CASE WHEN p.prod_disc_type = 'Fixed' THEN (" + prodPrice + "-p.prod_price) ELSE ROUND((" + prodPrice + "-(" + prodPrice + "*CAST(p.prod_price AS REAL)/100)),2) END AS discount, " + "CASE WHEN p.prod_disc_type = 'Fixed' THEN (p.prod_price) ELSE ROUND(((" + prodPrice + "*CAST(p.prod_price AS REAL)/100)),2) END AS discAmount,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' " + "FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE prod_id = '" + discountID + "'", null);
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT p.prod_price,p.prod_disc_type, p.prod_sku as prod_sku, p.prod_upc as prod_upc, CASE WHEN p.prod_disc_type = 'Fixed' THEN (" + prodPrice + "-p.prod_price) ELSE ROUND((" + prodPrice + "-(" + prodPrice + "*CAST(p.prod_price AS REAL)/100)),2) END AS discount, " + "CASE WHEN p.prod_disc_type = 'Fixed' THEN (p.prod_price) ELSE ROUND(((" + prodPrice + "*CAST(p.prod_price AS REAL)/100)),2) END AS discAmount,CASE WHEN p.prod_taxcode='' THEN '0' ELSE IFNULL(s.taxcode_istaxable,'1')  END AS 'prod_istaxable' " + "FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id WHERE prod_id = '" + discountID + "'", null);
         String[] values = new String[5];
         if (c.moveToFirst()) {
             values[0] = c.getString(c.getColumnIndex("prod_price"));
@@ -908,7 +909,7 @@ public class ProductsHandler {
         sb.append(
                 "LEFT OUTER JOIN CustomerInventory ci ON ci.prod_id = p.prod_id AND ci.cust_id = ? WHERE p.prod_id = ?");
 
-        Cursor cursor = DBManager._db.rawQuery(sb.toString(), new String[]{priceLevelID, priceLevelID, priceLevelID,
+        Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{priceLevelID, priceLevelID, priceLevelID,
                 myPref.getCustID(), myPref.getCustID(), prodID});
         String tempPrice = "";
         HashMap<String, String> map = new HashMap<>();
@@ -944,7 +945,7 @@ public class ProductsHandler {
     }
 
     public String getProductPrice(String prodID) {
-        Cursor c = DBManager._db.rawQuery("SELECT prod_price FROM Products WHERE prod_id = ?", new String[]{prodID});
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT prod_price FROM Products WHERE prod_id = ?", new String[]{prodID});
         String price = "0";
         if (c.moveToFirst())
             price = c.getString(c.getColumnIndex("prod_price"));
@@ -962,7 +963,7 @@ public class ProductsHandler {
         ContentValues args = new ContentValues();
 
         args.put(prod_onhand, Double.toString(qty));
-        if (DBManager._db.update("EmpInv", args, sb.toString(), new String[]{prodID}) == 0)
-            DBManager._db.update(table_name, args, sb.toString(), new String[]{prodID});
+        if (DBManager.getDatabase().update("EmpInv", args, sb.toString(), new String[]{prodID}) == 0)
+            DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{prodID});
     }
 }

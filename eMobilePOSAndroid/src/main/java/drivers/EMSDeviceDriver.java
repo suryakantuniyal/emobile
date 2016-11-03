@@ -40,7 +40,7 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
 import com.android.emobilepos.payment.ProcessGenius_FA;
@@ -1732,7 +1732,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     myConsignment.get(0).ConsTrans_ID, lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), lineWidth, 0));
             sb.append(textHandler.newLines(1));
             for (int i = 0; i < size; i++) {
                 if (!myConsignment.get(i).ConsOriginal_Qty.equals("0")) {
@@ -1837,7 +1837,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     map.get("ConsTrans_ID"), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), lineWidth, 0));
             sb.append(textHandler.newLines(1));
             for (int i = 0; i < size; i++) {
                 c.moveToPosition(i);
@@ -1934,7 +1934,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     myPref.getEmpName(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), lineWidth, 0));
             sb.append(textHandler.newLines(1));
             for (int i = 0; i < size; i++) {
                 map = productDBHandler.getProductMap(myConsignment.get(i).ConsProd_ID, true);

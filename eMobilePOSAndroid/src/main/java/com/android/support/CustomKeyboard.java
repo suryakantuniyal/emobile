@@ -5,16 +5,13 @@ package com.android.support;
  */
 
 import android.app.Activity;
-import android.content.Context;
 import android.inputmethodservice.Keyboard;
-import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.InputType;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;

@@ -52,6 +52,7 @@ public class ClerksHandler
 		attrHash = new HashMap<String,Integer>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
+		new DBManager(activity);
 		initDictionary();
 	}
 	
@@ -86,13 +87,13 @@ public class ClerksHandler
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM ").append(TABLE_NAME);
-		DBManager._db.execSQL(sb.toString());
+		DBManager.getDatabase().execSQL(sb.toString());
 	}
 	
 	
 	public void insert(List<String[]>data, List<HashMap<String,Integer>>dictionary)
 	{
-		DBManager._db.beginTransaction();
+		DBManager.getDatabase().beginTransaction();
 		try {
 
 			this.data = data;
@@ -101,7 +102,7 @@ public class ClerksHandler
 			StringBuilder sb = new StringBuilder();
 			sb.append("INSERT INTO ").append(TABLE_NAME).append(" (").append(sb1.toString()).append(") ").append("VALUES (").append(sb2.toString())
 					.append(")");
-			insert = DBManager._db.compileStatement(sb.toString());
+			insert = DBManager.getDatabase().compileStatement(sb.toString());
 
 			int size = this.data.size();
 			
@@ -133,7 +134,7 @@ public class ClerksHandler
 				insert.clearBindings();
 			}
 			insert.close();
-			DBManager._db.setTransactionSuccessful();
+			DBManager.getDatabase().setTransactionSuccessful();
 		} catch (Exception e) {
 			StringBuilder sb = new StringBuilder();
 			sb.append(e.getMessage()).append(" [com.android.emobilepos.ClerksHandler (at Class.insert)]");
@@ -141,7 +142,7 @@ public class ClerksHandler
 //			Tracker tracker = EasyTracker.getInstance(activity);
 //			tracker.send(MapBuilder.createException(sb.toString(), false).build());
 		} finally {
-			DBManager._db.endTransaction();
+			DBManager.getDatabase().endTransaction();
 		}
 	}
 	
@@ -152,7 +153,7 @@ public class ClerksHandler
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT emp_id,emp_name FROM ").append(TABLE_NAME).append(" WHERE emp_pwd = ?");
-		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{pwd});
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{pwd});
 		
 		String[] data = null;
 		
@@ -187,7 +188,7 @@ public class ClerksHandler
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append("SELECT emp_id AS '_id',* FROM ").append(TABLE_NAME).append(" ORDER BY emp_name");
-		Cursor c = DBManager._db.rawQuery(sb.toString(), null);
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), null);
 		
 		c.moveToFirst();
 		//db.close();
@@ -201,7 +202,7 @@ public class ClerksHandler
 		
 		sb.append("SELECT emp_name FROM ").append(TABLE_NAME).append(" WHERE emp_id = ?");
 		
-		Cursor c = DBManager._db.rawQuery(sb.toString(), new String[]{_emp_id});
+		Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{_emp_id});
 		
 		c.moveToFirst();
 		//db.close();

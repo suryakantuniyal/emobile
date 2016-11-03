@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.android.database.PaymentsHandler;
 import com.android.database.PaymentsXML_DB;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.Global;
