@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -32,7 +31,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
@@ -84,9 +82,7 @@ import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import drivers.EMSWalker;
 import interfaces.EMSCallBack;
-import util.StringUtil;
 
 public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, TextWatcherCallback {
 
@@ -1607,7 +1603,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
                 if (myPref.getPreferences(MyPreferences.pref_automatic_printing))
-                    new printAsync().execute(false, payment);
+                    new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, payment);
                 else
                     showPrintDlg(false, false, payment);
             } else

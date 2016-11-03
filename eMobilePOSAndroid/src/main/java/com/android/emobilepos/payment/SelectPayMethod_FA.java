@@ -76,6 +76,7 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import drivers.EMSmePOS;
 import io.realm.Realm;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
@@ -638,7 +639,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected String doInBackground(Object... params) {
             wasReprint = (Boolean) params[0];
-
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
@@ -1307,9 +1307,9 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             initIntents(extras, intent);
         } else {
             boolean isDebit = payTypeList.get(position).getPaymentmethod_type().toUpperCase(Locale.getDefault()).trim().contains("DEBIT");
-            if (myPref.isPrefUseStoreForward() && isDebit){
+            if (myPref.isPrefUseStoreForward() && isDebit) {
                 Global.showPrompt(activity, R.string.invalid_payment_type, getString(R.string.invalid_storeforward_payment_type));
-            }else {
+            } else {
                 Intent intent = new Intent(this, ProcessCreditCard_FA.class);
                 intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());
                 intent.putExtra("paymentmethod_type", payTypeList.get(position).getPaymentmethod_type());

@@ -54,6 +54,9 @@ import com.starmicronics.stario.StarIOPort;
 import com.starmicronics.stario.StarIOPortException;
 import com.starmicronics.starioextension.commandbuilder.Bitmap.SCBBitmapConverter;
 import com.uniquesecure.meposconnect.MePOS;
+import com.uniquesecure.meposconnect.MePOSConnectionType;
+import com.uniquesecure.meposconnect.MePOSException;
+import com.uniquesecure.meposconnect.MePOSPrinterCallback;
 import com.uniquesecure.meposconnect.MePOSReceipt;
 import com.uniquesecure.meposconnect.MePOSReceiptImageLine;
 import com.uniquesecure.meposconnect.MePOSReceiptTextLine;
@@ -111,7 +114,7 @@ public class EMSDeviceDriver {
     POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
     POSPrinter bixolonPrinter;
-    private MePOSReceipt mePOSReceipt;
+    MePOSReceipt mePOSReceipt;
 
 
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
@@ -363,8 +366,38 @@ public class EMSDeviceDriver {
 
     private void finishReceipt() {
         if (this instanceof EMSmePOS) {
-            mePOS.print(mePOSReceipt);
-            startReceipt();
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            mePOS.print(mePOSReceipt, new MePOSPrinterCallback() {
+                @Override
+                public void onPrinterStarted(MePOSConnectionType mePOSConnectionType, String s) {
+                }
+
+                @Override
+                public void onPrinterCompleted(MePOSConnectionType mePOSConnectionType, String s) {
+                    synchronized (mePOSReceipt) {
+                        mePOSReceipt.notifyAll();
+                    }
+                }
+
+                @Override
+                public void onPrinterError(MePOSException e) {
+                    synchronized (mePOSReceipt) {
+                        mePOSReceipt.notifyAll();
+                    }
+                }
+            });
+            synchronized (mePOSReceipt) {
+                try {
+                    mePOSReceipt.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            mePOSReceipt = null;
         }
     }
 

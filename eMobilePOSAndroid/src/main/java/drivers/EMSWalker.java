@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -97,7 +98,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
                 || !deviceConnected())) {
             terminal.releaseResources();
         } else if (terminal != null && deviceConnected()) {
-            if(Global.btSwiper.getCurrentDevice() == null){
+            if (Global.btSwiper.getCurrentDevice() == null) {
                 registerAll();
             }
             return true;
@@ -292,7 +293,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void refund(Payment payment) {
-        GenerateNewID newID=new GenerateNewID(activity);
+        GenerateNewID newID = new GenerateNewID(activity);
         payment.setPay_id(newID.getNextID(GenerateNewID.IdType.PAYMENT_ID));
         CoreRefund refund = new CoreRefund(new BigDecimal(payment.getPay_amount()));
         refund.setUniqueRef(payment.getPay_id());
@@ -404,7 +405,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void onMessage(CoreMessage msg) {
-        System.out.print(msg.toString());
+        Log.d("NOMAD onMessage:", msg.toString());
         if (isReadingCard) {
             if (msg.equals(CoreMessage.DEVICE_NOT_CONNECTED)) {
                 failedProcessing = true;

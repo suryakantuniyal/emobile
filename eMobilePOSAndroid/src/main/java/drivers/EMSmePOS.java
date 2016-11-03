@@ -93,14 +93,27 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         activity.getApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
     }
 
+
+    private void verifyPrinterStatus() {
+        while (mePOSReceipt != null) {
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
+        verifyPrinterStatus();
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        verifyPrinterStatus();
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
@@ -108,6 +121,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+        verifyPrinterStatus();
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
         return true;
     }
