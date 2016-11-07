@@ -1405,38 +1405,38 @@ public class EMSDeviceDriver {
                     printHeader(lineWidth);
                 sb.append("* ").append(payArray.getPaymethod_name());
                 if (payArray.getIs_refund() != null && payArray.getIs_refund().equals("1"))
-                    sb.append(" Refund *\n\n");
+                    sb.append(" Refund *\n");
                 else
-                    sb.append(" Sale *\n\n");
+                    sb.append(" Sale *\n");
                 print(textHandler.centeredString(sb.toString(), lineWidth), FORMAT);
 
                 sb.setLength(0);
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                        getString(R.string.receipt_time), lineWidth, 0)).append("\n");
+                        getString(R.string.receipt_time), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(payArray.getPay_date(), payArray.getPay_timecreated(), lineWidth, 0))
-                        .append("\n\n");
+                        .append("\n");
 
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer), payArray.getCust_name(),
-                        lineWidth, 0)).append("\n");
+                        lineWidth, 0));
 
                 if (payArray.getJob_id() != null && !payArray.getJob_id().isEmpty())
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_order_id),
-                            payArray.getJob_id(), lineWidth, 0)).append("\n");
+                            payArray.getJob_id(), lineWidth, 0));
                 else if (payArray.getInv_id() != null && !payArray.getInv_id().isEmpty()) // invoice
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_invoice_ref),
-                            payArray.getInv_id(), lineWidth, 0)).append("\n");
+                            payArray.getInv_id(), lineWidth, 0));
 
                 if (!isStoredFwd)
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_idnum), payID,
-                            lineWidth, 0)).append("\n");
+                            lineWidth, 0));
 
                 if (!isCashPayment && !isCheckPayment) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cardnum),
-                            "*" + payArray.getCcnum_last4(), lineWidth, 0)).append("\n");
+                            "*" + payArray.getCcnum_last4(), lineWidth, 0));
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText("TransID:", payArray.getPay_transid(), lineWidth, 0)).append("\n");
                 } else if (isCheckPayment) {
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_checknum),
-                            payArray.getPay_check(), lineWidth, 0)).append("\n");
+                            payArray.getPay_check(), lineWidth, 0));
                 }
                 print(sb.toString());
                 sb.setLength(0);
@@ -1479,13 +1479,13 @@ public class EMSDeviceDriver {
                         print(textHandler.newLines(1), FORMAT);
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tip),
                                 textHandler.lines(lineWidth / 2), lineWidth, 0))
-                                .append("\n\n");
+                                .append("\n");
                         print(sb.toString(), FORMAT);
                         sb.setLength(0);
                         print(textHandler.newLines(1), FORMAT);
                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                 textHandler.lines(lineWidth / 2), lineWidth, 0))
-                                .append("\n\n");
+                                .append("\n");
                         print(sb.toString(), FORMAT);
                         sb.setLength(0);
                     }

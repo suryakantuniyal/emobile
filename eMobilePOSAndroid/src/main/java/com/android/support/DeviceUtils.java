@@ -114,15 +114,7 @@ public class DeviceUtils {
                 else
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
-//        if (Global.btSwiper == null || myPref.getSwiperType() != Global.WALKER) {
-//            try {
-//                synchronized (activity) {
-//                    activity.notifyAll();
-//                }
-//            } catch (Exception e) {
-//
-//            }
-//        }
+
         return sb.toString();
     }
 }
