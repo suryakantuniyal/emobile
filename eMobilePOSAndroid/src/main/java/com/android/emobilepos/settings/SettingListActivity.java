@@ -50,7 +50,6 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
-import com.android.emobilepos.models.PaymentMethod;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;

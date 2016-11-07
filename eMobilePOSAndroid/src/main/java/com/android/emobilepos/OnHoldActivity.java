@@ -34,20 +34,15 @@ import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.ordering.OrderingMain_FA;
-import com.android.saxhandler.SAXdownloadHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.OnHoldsManager;
-import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import javax.xml.parsers.SAXParserFactory;
 
 
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
@@ -123,12 +118,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
     public class checkHoldStatus extends AsyncTask<Void, String, String> {
-
-        private String[] returnedPost;
-        boolean timedOut = false;
         boolean wasProcessed = false;
         private ProgressDialog myProgressDialog;
-
 
         @Override
         protected void onPreExecute() {
@@ -137,58 +128,24 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
         protected String doInBackground(Void... params) {
-            Post httpClient = new Post();
-
-            SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXdownloadHandler handler = new SAXdownloadHandler(activity);
             myCursor.moveToPosition(selectedPos);
             myPref.setCustSelected(false);
-
             String ordID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
             global.setSelectedComments(myCursor.getString(myCursor.getColumnIndex("ord_comment")));
-
-
             if (NetworkUtils.isConnectedToInternet(activity)) {
                 try {
                     if (!isUpdateOnHold) {
-//                        String xml = httpClient.postData(Global.S_CHECK_STATUS_ON_HOLD, activity, ordID);
-//
-//                        switch (xml) {
-//                            case Global.TIME_OUT:
-//                                timedOut = true;
-//                                break;
-//                            case Global.NOT_VALID_URL:
-//                                break;
-//                            default:
-//                                InputSource inSource = new InputSource(new StringReader(xml));
-//                                SAXParser sp = spf.newSAXParser();
-//                                XMLReader xr = sp.getXMLReader();
-//                                xr.setContentHandler(handler);
-//                                xr.parse(inSource);
-//                                List<String[]> temp = handler.getEmpData();
-//
-//                                if (temp != null && temp.size() > 0) {
-//                                    returnedPost = new String[handler.getEmpData().size()];
-//                                    returnedPost = handler.getEmpData().get(0);
-//                                }
-//                                if (returnedPost != null && returnedPost.length > 0 && returnedPost[1].equals("0")) {
                         if (!OnHoldsManager.isOnHoldAdminClaimRequired(ordID, activity)) {
                             wasProcessed = true;
                             OnHoldsManager.updateStatusOnHold(ordID, activity);
-//                            httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD, activity, ordID);
                         }
-//                                }
-//                                break;
-//                        }
                     } else {
                         wasProcessed = true;
                         OnHoldsManager.updateStatusOnHold(ordID, activity);
-//                        httpClient.postData(Global.S_UPDATE_STATUS_ON_HOLD, activity, ordID);
                     }
                 } catch (Exception e) {
                 }
@@ -198,7 +155,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                 OrdersHandler ordersHandler = new OrdersHandler(activity);
                 if (ordersHandler.isOrderOffline(ordID))
                     wasProcessed = true;
-
                 return null;
             }
         }
@@ -630,44 +586,33 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             if (c.getString(c.getColumnIndex("addon")).equals("1"))        //is an addon
             {
-                isAddon = true;
                 String isAdded = "2";
 
                 if (global.addonSelectionType == null)
-                    global.addonSelectionType = new HashMap<String, String[]>();
-
+                    global.addonSelectionType = new HashMap<>();
                 if (c.getString(c.getColumnIndex("isAdded")).equals("1"))
                     isAdded = "1";
-
-
                 int pos = global.orderProducts.size();
                 OrderProduct temp = null;
-                if (pos > 0)
+                if (pos > 0) {
                     temp = global.orderProducts.get(pos - 1);
-
-
-                String[] tempVal = prodAddonHandler.getAddonDetails(temp.getProd_id(), ord.getProd_id());
-
-
-                global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{isAdded, tempVal[1], tempVal[0]});
-
-
+                    String[] tempVal = prodAddonHandler.getAddonDetails(temp.getProd_id(), ord.getProd_id());
+                    global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{isAdded, tempVal[1], tempVal[0]});
+                }
                 global.orderProductAddons.add(ord);
-
-
                 if (i + 1 >= size) {
                     if (Global.addonSelectionMap == null)
-                        Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
+                        Global.addonSelectionMap = new HashMap<>();
                     if (Global.orderProductAddonsMap == null)
-                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
+                        Global.orderProductAddonsMap = new HashMap<>();
 
-                    if (global.addonSelectionType.size() > 0 && temp != null) {
+                    if (global.addonSelectionType.size() > 0) {
                         Global.addonSelectionMap.put(temp.getOrdprod_id(), global.addonSelectionType);
                         Global.orderProductAddonsMap.put(temp.getOrdprod_id(), global.orderProductAddons);
 
 
-                        global.orderProductAddons = new ArrayList<OrderProduct>();
-                        global.addonSelectionType = new HashMap<String, String[]>();
+                        global.orderProductAddons = new ArrayList<>();
+                        global.addonSelectionType = new HashMap<>();
                     }
                 }
             } else {
@@ -680,17 +625,17 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
 
                     if (Global.addonSelectionMap == null)
-                        Global.addonSelectionMap = new HashMap<String, HashMap<String, String[]>>();
+                        Global.addonSelectionMap = new HashMap<>();
                     if (Global.orderProductAddonsMap == null)
-                        Global.orderProductAddonsMap = new HashMap<String, List<OrderProduct>>();
+                        Global.orderProductAddonsMap = new HashMap<>();
 
                     if (global.addonSelectionType.size() > 0 && temp != null) {
                         Global.addonSelectionMap.put(temp.getOrdprod_id(), global.addonSelectionType);
                         Global.orderProductAddonsMap.put(temp.getOrdprod_id(), global.orderProductAddons);
 
 
-                        global.orderProductAddons = new ArrayList<OrderProduct>();
-                        global.addonSelectionType = new HashMap<String, String[]>();
+                        global.orderProductAddons = new ArrayList<>();
+                        global.addonSelectionType = new HashMap<>();
 
                     }
                 }
@@ -713,14 +658,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             SalesTaxCodesHandler.TaxableCode taxable = taxHandler.checkIfCustTaxable(temp.get("cust_taxable"));
             myPref.setCustTaxCode(taxable, temp.get("cust_salestaxcode"));
 
-//            if (taxable == SalesTaxCodesHandler.TaxableCode.TAXABLE)
-//                myPref.setCustTaxCode(temp.get("cust_salestaxcode"));
-//            else if (taxable == SalesTaxCodesHandler.TaxableCode.NON_TAXABLE)
-//                myPref.setCustTaxCode("");
-//            else
-//                myPref.setCustTaxCode(null);
-
-
             myPref.setCustID(temp.get("cust_id"));    //getting cust_id as _id
             myPref.setCustName(temp.get("cust_name"));
             myPref.setCustIDKey(temp.get("custidkey"));
@@ -735,7 +672,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         private LayoutInflater inflater;
 
 
-        public ListViewCursorAdapter(Context context, Cursor c, int flags) {
+        ListViewCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
             inflater = LayoutInflater.from(context);
 

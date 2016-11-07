@@ -40,9 +40,9 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
@@ -378,21 +378,25 @@ public class EMSDeviceDriver {
 
                 @Override
                 public void onPrinterCompleted(MePOSConnectionType mePOSConnectionType, String s) {
-                    synchronized (mePOSReceipt) {
-                        mePOSReceipt.notifyAll();
+                    if (mePOSReceipt != null) {
+                        synchronized (mePOSReceipt) {
+                            mePOSReceipt.notifyAll();
+                        }
                     }
                 }
 
                 @Override
                 public void onPrinterError(MePOSException e) {
-                    synchronized (mePOSReceipt) {
-                        mePOSReceipt.notifyAll();
+                    if (mePOSReceipt != null) {
+                        synchronized (mePOSReceipt) {
+                            mePOSReceipt.notifyAll();
+                        }
                     }
                 }
             });
             synchronized (mePOSReceipt) {
                 try {
-                    mePOSReceipt.wait();
+                    mePOSReceipt.wait(12000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

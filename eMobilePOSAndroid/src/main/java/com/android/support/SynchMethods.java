@@ -143,7 +143,7 @@ public class SynchMethods {
         activity = managerInst.getActivity();
         dbManager = managerInst;
         data = new ArrayList<>();
-        if(OAuthManager.isExpired(activity)) {
+        if(OAuthManager.isExpired(activity) && NetworkUtils.isConnectedToInternet(activity)) {
             OAuthManager oAuthManager = getOAuthManager(activity);
             try {
                 oAuthManager.requestToken();

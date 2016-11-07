@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -261,6 +261,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public void printReceiptPreview(View view) {
         try {
+            setPaperWidth(LINE_WIDTH);
             Bitmap bitmap = loadBitmapFromView(view);
             super.printReceiptPreview(bitmap, LINE_WIDTH);
         } catch (JAException e) {
