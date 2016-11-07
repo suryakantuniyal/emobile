@@ -260,7 +260,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
@@ -524,6 +524,11 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     @Override
     public void updateFirmware() {
         boolean update = hapi.update();
+    }
+
+    @Override
+    public void submitSignature() {
+
     }
 
     @Override

@@ -225,12 +225,12 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -573,6 +573,11 @@ public class EMSZebraEM220ii extends EMSDeviceDriver implements EMSDeviceManager
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

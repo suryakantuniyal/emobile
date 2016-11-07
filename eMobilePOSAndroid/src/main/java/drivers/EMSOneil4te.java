@@ -819,21 +819,18 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = this;
+        edm.setCurrentDevice( this);
         this.printingDelegate = edm;
     }
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
         this.printingDelegate = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -1042,6 +1039,11 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

@@ -241,13 +241,13 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     public void registerPrinter() {
 
-        edm.currentDevice = thisInstance;
+        edm.setCurrentDevice(thisInstance);
     }
 
     public void unregisterPrinter() {
         kdcReader.DisableNFC_POS();
 
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -350,6 +350,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

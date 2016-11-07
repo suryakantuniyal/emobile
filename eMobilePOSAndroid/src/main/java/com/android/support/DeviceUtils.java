@@ -20,7 +20,7 @@ public class DeviceUtils {
         MyPreferences myPref = new MyPreferences(activity);
         StringBuilder sb = new StringBuilder();
         RealmResults<Device> devices = DeviceTableDAO.getAll();
-        HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
         if (forceReload) {
             int i = 0;
@@ -87,7 +87,9 @@ public class DeviceUtils {
             String _portNumber = myPref.getStarPort();
             boolean isPOS = myPref.posPrinter(true, false);
             int txtAreaSize = myPref.printerAreaSize(true, -1);
-            if (myPref.getPrinterType() != Global.POWA && myPref.getPrinterType() != Global.PAT215) {
+            if (myPref.getPrinterType() != Global.POWA
+                    && myPref.getPrinterType() != Global.MEPOS
+                    && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager == null || forceReload) {
                     if (Global.mainPrinterManager == null) {
                         edm = new EMSDeviceManager();
@@ -112,6 +114,15 @@ public class DeviceUtils {
                 else
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
+//        if (Global.btSwiper == null || myPref.getSwiperType() != Global.WALKER) {
+//            try {
+//                synchronized (activity) {
+//                    activity.notifyAll();
+//                }
+//            } catch (Exception e) {
+//
+//            }
+//        }
         return sb.toString();
     }
 }

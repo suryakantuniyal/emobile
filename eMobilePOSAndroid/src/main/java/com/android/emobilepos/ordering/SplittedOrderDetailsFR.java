@@ -267,14 +267,14 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             }
             case R.id.printReceiptbutton2: {
                 if (Global.mainPrinterManager != null
-                        && Global.mainPrinterManager.currentDevice != null) {
+                        && Global.mainPrinterManager.getCurrentDevice() != null) {
                     new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, receiptPreview);
                 }
                 break;
             }
             case R.id.printAllReceiptbutton3: {
                 if (Global.mainPrinterManager != null
-                        && Global.mainPrinterManager.currentDevice != null) {
+                        && Global.mainPrinterManager.getCurrentDevice() != null) {
                     final int[] count = {0};
                     SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
                     final SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) orderSummaryFa.getOrderSummaryFR().getGridView().getAdapter();
@@ -283,7 +283,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                         @Override
                         public void onGlobalLayout() {
                             count[0]++;
-                            Global.mainPrinterManager.currentDevice.printReceiptPreview(receiptPreview);
+                            Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(receiptPreview);
                             if (count[0] < adapter.getCount()) {
                                 setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
                             } else {
@@ -314,7 +314,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
         @Override
         protected Void doInBackground(LinearLayout... params) {
-            Global.mainPrinterManager.currentDevice.printReceiptPreview(params[0]);
+            Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(params[0]);
             return null;
         }
 
