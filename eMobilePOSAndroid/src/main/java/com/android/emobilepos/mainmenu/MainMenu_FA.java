@@ -226,12 +226,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         protected String doInBackground(String... params) {
             final String autoConnect = "";
 
-//            activity.runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    DeviceUtils.autoConnect(activity, loadMultiPrinter);
-//                }
-//            });
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    DeviceUtils.autoConnect(activity, loadMultiPrinter);
+                }
+            });
 //            synchronized (activity) {
 //                try {
 //                    activity.wait(30000);
@@ -239,7 +239,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //                    e.printStackTrace();
 //                }
 //            }
-            String connect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
+//            String connect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS) {
                 isUSB = true;
             }
