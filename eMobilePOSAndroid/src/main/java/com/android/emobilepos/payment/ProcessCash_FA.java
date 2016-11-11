@@ -308,11 +308,14 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
 
             if (customerInfo != null) {
-                if (!customerInfo.get("cust_name").isEmpty())
+                if (customerInfo.containsKey("cust_name") &&
+                        !customerInfo.get("cust_name").isEmpty())
                     customerNameField.setText(customerInfo.get("cust_name"));
-                if (!customerInfo.get("cust_phone").isEmpty())
+                if (customerInfo.containsKey("cust_phone") &&
+                        !customerInfo.get("cust_phone").isEmpty())
                     phoneNumberField.setText(customerInfo.get("cust_phone"));
-                if (!customerInfo.get("cust_email").isEmpty())
+                if (customerInfo.containsKey("cust_email") &&
+                        !customerInfo.get("cust_email").isEmpty())
                     customerEmailField.setText(customerInfo.get("cust_email"));
             }
         } else if (!extras.getString("order_email", "").isEmpty()) {
