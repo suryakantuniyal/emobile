@@ -78,7 +78,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.62"
+            versionName "1.2.0.74"
             versionCode 109
             targetSdkVersion 23
             multiDexEnabled = true
@@ -92,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.62"
+            versionName "1.2.0.74"
             versionCode 109
             targetSdkVersion 23
             multiDexEnabled = true
@@ -106,7 +106,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.72"
+            versionName "1.1.1.74"
             versionCode 109
             targetSdkVersion 23
             multiDexEnabled = true
@@ -120,7 +120,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.72"
+            versionName "1.1.1.74"
             versionCode 109
             targetSdkVersion 23
             multiDexEnabled = true
