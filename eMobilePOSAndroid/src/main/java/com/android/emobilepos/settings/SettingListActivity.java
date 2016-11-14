@@ -1215,9 +1215,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                             MyPreferences myPref = new MyPreferences(getActivity());
                             String strDeviceName = val[pos];
 
-                            if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) // magtek
-                            // swiper
-                            {
+                            if (val[pos].toUpperCase(Locale.getDefault()).contains("MAGTEK")) {
                                 myPref.setSwiperType(Global.MAGTEK);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
 
@@ -1225,9 +1223,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.MAGTEK, false);
 
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) // star
-                            // micronics
-                            {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
@@ -1236,15 +1232,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.STAR, false);
 
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) { // Bixolon
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("SPP-R")) {
                                 myPref.setPrinterType(Global.BIXOLON);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.BIXOLON, false);
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) // bamboo
-                            {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("P25")) {
                                 myPref.setPrinterType(Global.BAMBOO);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
@@ -1262,8 +1257,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.ISMP, false);
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) // Zebra
-                            {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("EM220")) {
                                 myPref.setPrinterType(Global.ZEBRA);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
@@ -1271,8 +1265,7 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ZEBRA, false);
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MP")) // Oneil
-                            {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MP")) {
                                 myPref.setPrinterType(Global.ONEIL);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
@@ -1280,15 +1273,14 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.ONEIL, false);
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) // KDC500
-                            {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("KDC500")) {
                                 myPref.setPrinterType(Global.KDC500);
                                 myPref.setPrinterMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperType(Global.KDC500);
                                 EMSDeviceManager edm = new EMSDeviceManager();
                                 Global.mainPrinterManager = edm.getManager();
                                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.KDC500, false);
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0615")) {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("PP0")) {
                                 myPref.setSwiperType(Global.HANDPOINT);
                                 myPref.setSwiperMACAddress(macAddressList.get(pos));
                                 myPref.setSwiperName(strDeviceName);
