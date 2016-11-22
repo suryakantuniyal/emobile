@@ -406,10 +406,10 @@ public class OrdersHandler {
     {
         StringBuilder sb = new StringBuilder();
         if (Global.isForceUpload)
-            sb.append("SELECT * FROM ").append(table_name).append(" WHERE ord_issync = '0'");
+            sb.append("SELECT * FROM ").append(table_name).append(" WHERE ord_issync = '0' LIMIT 5");
         else
             sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
-                    .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0'");
+                    .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0' LIMIT 5");
 
         net.sqlcipher.Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
         List<Order> orders = getOrders(cursor);
@@ -429,7 +429,7 @@ public class OrdersHandler {
     }
 
     public List<Order> getUnsyncOrdersOnHold() {
-        net.sqlcipher.Cursor cursor = DBManager.getDatabase().rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'", null);
+        net.sqlcipher.Cursor cursor = DBManager.getDatabase().rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'  LIMIT 5", null);
         List<Order> orders = getOrders(cursor);
         cursor.close();
         return orders;

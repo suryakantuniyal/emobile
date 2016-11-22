@@ -112,7 +112,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private Global global;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private  static ProgressDialog myProgressDialog;
+    private static ProgressDialog myProgressDialog;
 
     private PaymentsHandler payHandler;
     private InvoicePaymentsHandler invPayHandler;
@@ -1124,7 +1124,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (TextUtils.isEmpty(number) || !TextUtils.isDigitsOnly(number) || number.length() < 4) {
                 return "";
             } else {
-                if(!TextUtils.isDigitsOnly(number.substring(0, 4))){
+                if (!TextUtils.isDigitsOnly(number.substring(0, 4))) {
                     return "";
                 }
                 isMasked = true;
@@ -1554,6 +1554,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
             payment.setPay_transid(parsedMap.get("CreditCardTransID"));
             payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+            if (parsedMap.containsKey("AuthorizedAmount")) {
+                payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
+            }
             payment.setProcessed("9");
         } else {
             if (isRefund) {

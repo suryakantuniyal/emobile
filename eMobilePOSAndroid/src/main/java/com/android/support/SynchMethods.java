@@ -970,7 +970,7 @@ public class SynchMethods {
     private void sendOrders(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
         OrdersHandler ordersHandler = new OrdersHandler(activity);
-        if ((Global.isForceUpload && ordersHandler.getNumUnsyncOrders() > 0) ||
+        while ((Global.isForceUpload && ordersHandler.getNumUnsyncOrders() > 0) ||
                 (!Global.isForceUpload && ordersHandler.getNumUnsyncProcessedOrders() > ordersHandler.getNumUnsyncOrdersStoredFwd())) {
             if (Global.isForceUpload)
                 ((forceSendAsync) task).updateProgress(activity.getString(R.string.sync_sending_orders));
