@@ -480,10 +480,9 @@
         </receiver>
 
         <activity android:name=".payment.TipAdjustmentFA" />
-
         <activity
             android:name=".settings.SettingListActivity"
-            android:label="@string/title_setting_list"></activity>
+            android:label="@string/title_setting_list" />
         <activity
             android:name=".settings.SettingDetailActivity"
             android:label="@string/title_setting_detail"
@@ -492,12 +491,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.android.emobilepos.settings.SettingListActivity" />
         </activity>
-        <!--<activity-->
-            <!--android:name=".settings.SalesAssociateDinningTables"-->
-            <!--android:label="@string/title_activity_sales_associate_dinning_tables" />-->
         <activity
             android:name=".settings.SalesAssociateConfigurationActivity"
-            android:label="@string/title_activity_sales_associate_configuration"></activity>
+            android:label="@string/title_activity_sales_associate_configuration" />
+
+        <service android:name=".firebase.FirebaseService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".firebase.FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
