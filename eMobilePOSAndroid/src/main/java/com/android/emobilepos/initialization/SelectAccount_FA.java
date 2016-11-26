@@ -10,19 +10,28 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.firebase.MyHandler;
+import com.android.emobilepos.firebase.NotificationSettings;
+import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.microsoft.windowsazure.notifications.NotificationsManager;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -38,7 +47,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     private ProgressDialog myProgressDialog;
     private Activity activity;
     private Dialog promptDialog;
-
     private DBManager dbManager;
 
     @Override

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -22,11 +24,17 @@ import android.widget.Toast;
 
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.firebase.MyHandler;
+import com.android.emobilepos.firebase.NotificationSettings;
+import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.microsoft.windowsazure.notifications.NotificationsManager;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -42,6 +50,10 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     private static MyPreferences myPref;
     private TextView synchTextView, tvStoreForward;
     private AdapterTabs tabsAdapter;
+    public static MainMenu_FA mainActivity;
+    public static Boolean isVisible = false;
+    private static final String TAG = "MainActivity";
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +64,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         synchTextView = (TextView) findViewById(R.id.synch_title);
         synchTextView.setVisibility(View.GONE);
         tvStoreForward = (TextView) findViewById(R.id.label_cc_offline);
-
+        mainActivity = this;
+        NotificationsManager.handleNotifications(this, NotificationSettings.SenderId, MyHandler.class);
+        registerWithNotificationHubs();
         myPref = new MyPreferences(this);
 
         activity = this;
@@ -95,6 +109,46 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         hasBeenCreated = true;
     }
 
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported by Google Play Services.");
+                ToastNotify("This device is not supported by Google Play Services.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public void ToastNotify(final String notificationMessage) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
+//                TextView helloText = (TextView) findViewById(R.id.);
+//                helloText.setText(notificationMessage);
+            }
+        });
+    }
+
+    public void registerWithNotificationHubs() {
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with FCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
+    }
 
     @Override
     public void onResume() {

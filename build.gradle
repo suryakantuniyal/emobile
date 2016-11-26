@@ -2,7 +2,12 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url 'https://maven.fabric.io/public' }
+        maven {
+            url 'https://maven.fabric.io/public'
+        }
+        maven {
+            url "http://dl.bintray.com/microsoftazuremobile/SDK"
+        }
     }
     dependencies {
         classpath "io.realm:realm-gradle-plugin:2.0.0"
