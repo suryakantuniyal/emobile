@@ -28,7 +28,6 @@ android {
         minSdkVersion 15
         targetSdkVersion 15
         multiDexEnabled = true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
 //    splits {
@@ -50,8 +49,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.76"
-            versionCode 111
+            versionName "1.2.0.78"
+            versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -64,8 +63,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.76"
-            versionCode 111
+            versionName "1.2.0.78"
+            versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -78,8 +77,8 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.76"
-            versionCode 111
+            versionName "1.2.0.78"
+            versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -92,8 +91,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.76"
-            versionCode 110
+            versionName "1.2.0.78"
+            versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -106,8 +105,8 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.76"
-            versionCode 111
+            versionName "1.1.1.78"
+            versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -120,8 +119,8 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.76"
-            versionCode 111
+            versionName "1.1.1.78"
+            versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -227,8 +226,6 @@ android {
         compile files('libs/pat215msr1.0.0.jar')
         compile 'com.google.firebase:firebase-core:9.2.1'
         compile 'com.google.android.gms:play-services:9.2.1'
-        compile 'com.android.support.test:testing-support-lib:0.1'
-        compile 'com.android.support.test.uiautomator:uiautomator-v18:2.0.0'
     }
 }
 

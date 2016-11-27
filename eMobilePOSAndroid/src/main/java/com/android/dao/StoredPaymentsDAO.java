@@ -8,7 +8,7 @@ import com.android.database.DBManager;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
-import com.android.emobilepos.models.storedAndForward.StoreAndForward;
+import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 

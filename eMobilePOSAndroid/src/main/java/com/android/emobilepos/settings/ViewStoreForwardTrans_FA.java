@@ -23,7 +23,7 @@ import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.storedAndForward.StoreAndForward;
+import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.emobilepos.storedforward.BoloroPayment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -59,10 +59,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     //private SQLiteDatabase db;
     private StoredPaymentsDAO dbStoredPay;
     private CustomCursorAdapter adapter;
-    private RecyclerView listView;
     private RealmResults<StoreAndForward> storeAndForwards;
     private Button btnProcessAll;
     private static Realm realm = Realm.getDefaultInstance();
+    private boolean livePaymentRunning = false;
+    private ProgressDialog myProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,11 +75,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         btnProcessAll = (Button) findViewById(R.id.btnProcessAll);
         btnProcessAll.setOnClickListener(this);
         btnProcessAll.setEnabled(true);
-        //DBManager dbManager = new DBManager(this);
-        //db = dbManager.openWritableDB();
         dbStoredPay = new StoredPaymentsDAO(this);
-//        myCursor = dbStoredPay.getStoredPayments();
-        listView = (RecyclerView) findViewById(R.id.listView);
+        RecyclerView listView = (RecyclerView) findViewById(R.id.listView);
         storeAndForwards = realm.where(StoreAndForward.class).findAll();
         RealmChangeListener<RealmResults<StoreAndForward>> changeListener = new RealmChangeListener<RealmResults<StoreAndForward>>() {
 
@@ -94,20 +92,15 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         listView.setLayoutManager(mLayoutManager);
         listView.setItemAnimator(new DefaultItemAnimator());
         listView.setAdapter(adapter);
-//        listView.setOnItemClickListener(this);
-
         hasBeenCreated = true;
     }
 
 
     @Override
     public void onResume() {
-
         if (global.isApplicationSentToBackground(this))
             global.loggedIn = false;
-
         global.stopActivityTransitionTimer();
-
         if (hasBeenCreated && !global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
@@ -130,14 +123,11 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        myCursor.close();
-        //db.close();
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-
     }
 
 
@@ -151,11 +141,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         }
     }
 
-
-    private boolean livePaymentRunning = false;
-    private String _charge_xml = "";
-    private String _verify_payment_xml = "";
-    private ProgressDialog myProgressDialog;
 
     private class processLivePaymentAsync extends AsyncTask<Void, Void, Void> {
         private HashMap<String, String> boloroHashMap = new HashMap<String, String>();
@@ -202,10 +187,10 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             //remove from StoredPayment and change order to Invoice
                             StringBuilder sb = new StringBuilder();
                             sb.append(dbOrdHandler.getColumnValue("ord_comment", _job_id)).append("  ");
-                            sb.append("(Card Holder: ").append(storeAndForward.getPayment().getPay_name());//myCursor.getString(myCursor.getColumnIndex("pay_name")));
-                            sb.append("; Last 4: ").append(storeAndForward.getPayment().getCcnum_last4());//myCursor.getString(myCursor.getColumnIndex("ccnum_last4")));
-                            sb.append("; Exp date: ").append(storeAndForward.getPayment().getPay_expmonth());//myCursor.getString(myCursor.getColumnIndex("pay_expmonth")));
-                            sb.append("/").append(storeAndForward.getPayment().getPay_expyear());//myCursor.getString(myCursor.getColumnIndex("pay_expyear")));
+                            sb.append("(Card Holder: ").append(storeAndForward.getPayment().getPay_name());
+                            sb.append("; Last 4: ").append(storeAndForward.getPayment().getCcnum_last4());
+                            sb.append("; Exp date: ").append(storeAndForward.getPayment().getPay_expmonth());
+                            sb.append("/").append(storeAndForward.getPayment().getPay_expyear());
                             sb.append("; Status Msg: ").append(parsedMap.get("statusMessage"));
                             sb.append("; Status Code: ").append(parsedMap.get("statusCode"));
                             sb.append("; TransID: ").append(parsedMap.get("CreditCardTransID"));
@@ -215,7 +200,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             if (dbOrdHandler.getColumnValue("ord_type", _job_id).equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
                                 dbOrdHandler.updateOrderTypeToInvoice(_job_id);
                             dbOrdHandler.updateOrderComment(_job_id, sb.toString());
-
                             //Remove as pending stored & forward if no more payments are pending to be processed.
                             if (dbStoredPay.getCountPendingStoredPayments(_job_id) <= 0)
                                 dbOrdHandler.updateOrderStoredFwd(_job_id, "0");
@@ -287,23 +271,21 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                                     .equals(Global.OrderType.SALES_RECEIPT.getCodeString()))
                                 dbOrdHandler.updateOrderTypeToInvoice(norealmStrFwd.getPayment().getJob_id());
                             dbOrdHandler.updateOrderComment(norealmStrFwd.getPayment().getJob_id(), sb.toString());
-
+                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
                             //Remove as pending stored & forward if no more payments are pending to be processed.
                             if (dbStoredPay.getCountPendingStoredPayments(norealmStrFwd.getPayment().getJob_id()) <= 0)
                                 dbOrdHandler.updateOrderStoredFwd(norealmStrFwd.getPayment().getJob_id(), "0");
                             insertDeclinedPayment(norealmStrFwd.getPayment());
-                            StoredPaymentsDAO.updateStatusDeleted(storeAndForward);
+
                             _count_decline++;
                         }
                     } else {
                         //mark StoredPayment for retry
                         StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
-//                        dbStoredPay.updateStoredPaymentForRetry(_pay_uuid);
                     }
                 } else {
                     //mark StoredPayment for retry
                     StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
-//                    dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
                     _count_conn_error++;
                 }
             }
@@ -333,8 +315,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                 for (StoreAndForward storeAndForward : storeAndForwards) {
                     if (!livePaymentRunning) {
                         livePaymentRunning = true;
-                        _charge_xml = storeAndForward.getPaymentXml();//myCursor.getString(i_payment_xml);
-                        _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>" + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
+                        String _charge_xml = storeAndForward.getPaymentXml();
+                        String _verify_payment_xml = _charge_xml.replaceAll("<action>.*?</action>", "<action>" + EMSPayGate_Default.getPaymentAction("CheckTransactionStatus") + "</action>");
 
                         try {
 
@@ -398,7 +380,6 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                             e.printStackTrace();
                         } catch (Exception e) {
                             StoredPaymentsDAO.updateStoreForwardPaymentToRetry(storeAndForward);
-//                            dbStoredPay.updateStoredPaymentForRetry(myCursor.getString(myCursor.getColumnIndex("pay_uuid")));
                         }
 
                         livePaymentRunning = false;
@@ -406,6 +387,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
                         _count_conn_error++;
                     }
                 }
+            }else{
+                _count_conn_error++;
             }
             return null;
         }
@@ -414,18 +397,8 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
         protected void onPostExecute(Void unused) {
             myProgressDialog.dismiss();
             btnProcessAll.setEnabled(true);
-//            if(boloroHashMap!=null){
-//                if (boloroHashMap.containsKey("next_action") && boloroHashMap.get("next_action").equals("SUCCESS")) {
-//                    Global.showPrompt(activity, R.string.dlog_title_transaction_failed_to_process, sb.toString());
-//                }
-//            }else {
-            //refresh the list view;
             StoredPaymentsDAO.purgeDeletedStoredPayment();
             adapter.notifyDataSetChanged();
-//            myCursor = dbStoredPay.getStoredPayments();
-//            adapter.notifyDataSetChanged();
-//            adapter = new CustomCursorAdapter(Realm.getDefaultInstance().where(StoreAndForward.class).findAll());
-//            listView.setAdapter(adapter);
             StringBuilder sb = new StringBuilder();
             if (_count_conn_error > 0) {
                 sb.append("\t -").append("Connection Error (").append(Integer.toString(_count_conn_error)).append("): ");
