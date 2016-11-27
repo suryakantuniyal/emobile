@@ -550,7 +550,7 @@ public class OrdersHandler {
     }
 
     public String updateFinishOnHold(String ordID) {
-        StringBuilder sb = new StringBuilder();
+//        StringBuilder sb = new StringBuilder();
         Cursor c = DBManager.getDatabase().rawQuery("SELECT ord_timecreated FROM Orders WHERE ord_id = ?",
                 new String[]{ordID});
         String dateCreated = Global.getCurrentDate();
@@ -558,8 +558,8 @@ public class OrdersHandler {
         if (c.moveToFirst())
             dateCreated = c.getString(c.getColumnIndex(ord_timecreated));
 
-        sb.append("DELETE FROM ").append(table_name).append(" WHERE ord_id = '").append(ordID).append("'");
-        sb2.append("DELETE FROM OrderProduct WHERE ord_id = '").append(ordID).append("'");
+//        sb.append("DELETE FROM ").append(table_name).append(" WHERE ord_id = '").append(ordID).append("'");
+//        sb2.append("DELETE FROM OrderProduct WHERE ord_id = '").append(ordID).append("'");
 
         DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{ordID});
         DBManager.getDatabase().delete("OrderProduct", "ord_id = ?", new String[]{ordID});
