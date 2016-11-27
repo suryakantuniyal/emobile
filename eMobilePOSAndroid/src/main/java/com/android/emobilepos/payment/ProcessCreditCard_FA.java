@@ -109,7 +109,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private Global global;
     private Activity activity;
     private boolean hasBeenCreated = false;
-    private  static ProgressDialog myProgressDialog;
+    private static ProgressDialog myProgressDialog;
 
     private PaymentsHandler payHandler;
     private InvoicePaymentsHandler invPayHandler;
@@ -676,7 +676,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     private void processMultiInvoicePayment() {
         populateCardInfo();
         invPayHandler = new InvoicePaymentsHandler(activity);
-        invPaymentList = new ArrayList<String[]>();
+        invPaymentList = new ArrayList<>();
         String[] content = new String[4];
 
         int size = inv_id_array.length;
@@ -716,14 +716,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     break;
             }
         }
-
-        // if(contentList.size()>0)
-        // invHandler.insert(contentList);
-
-        // MyPreferences myPref = new MyPreferences(activity);
-
         payHandler = new PaymentsHandler(activity);
-
 
         String clerkId = null;
         if (!myPref.getShiftIsOpen())
@@ -734,12 +727,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDueField));
-
-        String pay_dueamount = extras.getString("amount");
-
         Global.tipPaid = Double.toString(amountToTip);
-
-
         String taxName2 = null;
         String taxAmnt2 = null;
         String taxName1 = null;
@@ -861,20 +849,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         LayoutInflater inflater = LayoutInflater.from(activity);
         View dialogLayout = inflater.inflate(R.layout.tip_dialog_layout, null);
 
-        // ****Method that works with both jelly bean/gingerbread
-        // AlertDialog.Builder dialog = new
-        // AlertDialog.Builder(this,R.style.TransparentDialog);
-
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final AlertDialog dialog = builder.create();
         dialog.setView(dialogLayout, 0, 0, 0, 0);
         dialog.setInverseBackgroundForced(true);
         dialog.setCancelable(false);
-        // *****Method that works only with gingerbread and removes background
-        /*
-         * final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
-		 * dialog.setContentView(dialogLayout);
-		 */
 
         double amountToBePaid = Global
                 .formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
@@ -904,7 +883,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                numberUtils.parseInputedCurrency(s, promptTipField);
+                if (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString())) > 0) {
+                    double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+                    amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString()));
+                    grandTotalAmount = amountToBePaid + amountToTip;
+                    dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                }
+                NumberUtils.parseInputedCurrency(s, promptTipField);
             }
         });
 
@@ -912,7 +897,6 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                // TODO Auto-generated method stub
                 if (v.hasFocus()) {
                     Selection.setSelection(promptTipField.getText(), promptTipField.getText().length());
                 }
@@ -1009,35 +993,24 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         LayoutInflater inflater = LayoutInflater.from(activity);
         View dialogLayout = inflater.inflate(R.layout.confirmation_amount_layout, null);
 
-        // ****Method that works with both jelly bean/gingerbread
-        // AlertDialog.Builder dialog = new
-        // AlertDialog.Builder(this,R.style.TransparentDialog);
-
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final AlertDialog dialog = builder.create();
         dialog.setView(dialogLayout, 0, 0, 0, 0);
         dialog.setInverseBackgroundForced(true);
         dialog.setCancelable(false);
-        // *****Method that works only with gingerbread and removes background
-        /*
-         * final Dialog dialog = new Dialog(activity,R.style.TransparentDialog);
-		 * dialog.setContentView(dialogLayout);
-		 */
-
         dlogGrandTotal = (TextView) dialogLayout.findViewById(R.id.confirmTotalView);
         TextView dlogCardType = (TextView) dialogLayout.findViewById(R.id.confirmCardType);
         TextView dlogCardExpDate = (TextView) dialogLayout.findViewById(R.id.confirmExpDate);
         TextView dlogCardNum = (TextView) dialogLayout.findViewById(R.id.confirmCardNumber);
-        double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
 
-        grandTotalAmount = amountToBePaid;
+        grandTotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
         dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
         dlogCardType.setText(creditCardType);
         int size = cardNum.getText().toString().length();
         String last4Digits = "";
         if (size > 0)
             last4Digits = (String) cardNum.getText().toString().subSequence(size - 4, size);
-        dlogCardNum.setText("*" + last4Digits);
+        dlogCardNum.setText(String.format("*%s", last4Digits));
         dlogCardExpDate.setText(month.getText().toString() + "/" + year.getText().toString());
 
         Button cancelButton = (Button) dialogLayout.findViewById(R.id.cancelButton);
@@ -1122,7 +1095,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             if (TextUtils.isEmpty(number) || !TextUtils.isDigitsOnly(number) || number.length() < 4) {
                 return "";
             } else {
-                if(!TextUtils.isDigitsOnly(number.substring(0, 4))){
+                if (!TextUtils.isDigitsOnly(number.substring(0, 4))) {
                     return "";
                 }
                 isMasked = true;
@@ -1364,7 +1337,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     private class processLivePaymentAsync extends AsyncTask<Object, String, Payment> {
 
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private HashMap<String, String> parsedMap = new HashMap<>();
         private boolean wasProcessed = false;
         private boolean connectionFailed = false;
         private String errorMsg = getString(R.string.dlog_msg_no_internet_access);
@@ -1445,11 +1418,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
     }
 
-    private String reverseXml = "";
-
     private class processReverseAsync extends AsyncTask<Payment, Void, Payment> {
 
-        private HashMap<String, String> parsedMap = new HashMap<String, String>();
+        private HashMap<String, String> parsedMap = new HashMap<>();
 
         private boolean reverseWasProcessed = false;
         private boolean paymentWasApproved = false;
@@ -1475,6 +1446,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
 
                 try {
+                    String reverseXml = "";
                     String xml = httpClient.postData(13, activity, reverseXml);
 
                     if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
@@ -1553,6 +1525,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
             payment.setPay_transid(parsedMap.get("CreditCardTransID"));
             payment.setAuthcode(parsedMap.get("AuthorizationCode"));
+            if (parsedMap.containsKey("AuthorizedAmount")) {
+                payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
+            }
             payment.setProcessed("9");
         } else {
             if (isRefund) {
@@ -2070,18 +2045,18 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         return !error;
     }
 
-
-    private class ProcessHanpointAsync extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            if (Global.mainPrinterManager.getCurrentDevice() != null) {
-                Payment p = new Payment(activity);
-                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
-                Global.mainPrinterManager.getCurrentDevice().salePayment(p);
-            }
-            return null;
-        }
-    }
+//
+//    private class ProcessHanpointAsync extends AsyncTask<Void, Void, Void> {
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//            if (Global.mainPrinterManager.currentDevice != null) {
+//                Payment p = new Payment(activity);
+//                p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+//                Global.mainPrinterManager.currentDevice.salePayment(p);
+//            }
+//            return null;
+//        }
+//    }
 
 //    private class ProcessWalkerAsync extends AsyncTask<Void, Void, Void> {
 //        private ProcessWalkerAsync myTask;

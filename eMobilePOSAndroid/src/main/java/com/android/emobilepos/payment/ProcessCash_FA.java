@@ -465,12 +465,19 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         promptTipField.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
+
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString())) > 0) {
+                    double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+                    amountToTip = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(s.toString()));
+                    grandTotalAmount = amountToBePaid + amountToTip;
+                    dlogGrandTotal.setText(Global.formatDoubleToCurrency(grandTotalAmount));
+                }
                 NumberUtils.parseInputedCurrency(s, promptTipField);
             }
         });
