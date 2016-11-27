@@ -88,7 +88,6 @@ public class OrdersHandler {
 
     public static final String table_name = "Orders";
     private Activity activity;
-
     public static OrdersHandler getInstance(Activity activity) {
         return new OrdersHandler(activity);
     }
@@ -315,7 +314,6 @@ public class OrdersHandler {
         Cursor c = DBManager.getDatabase().rawQuery(sb, null);
         boolean exists = (c.getCount() > 0);
         c.close();
-
         return exists;
     }
 
@@ -380,7 +378,6 @@ public class OrdersHandler {
     {
         String sb = "SELECT " + sb1.toString() + " FROM " + table_name + " WHERE ord_id = '" +
                 orderId + "'";
-
         Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
         Order order = new Order(this.activity);
         if (cursor.moveToFirst()) {
@@ -525,8 +522,6 @@ public class OrdersHandler {
     public Cursor getReceipts1Data(Global.OrderType[] orderTypes) // Transactions Receipts first
     // listview
     {
-
-
         String subquery1 = "SELECT ord_id as _id,ord_total,ord_issync,cust_id,isVoid,ord_type" +
                 " FROM Orders WHERE ord_type IN (";
         String subquery2 = ") AND isOnHold = '0' ORDER BY rowid DESC";
@@ -541,7 +536,6 @@ public class OrdersHandler {
         String subquery2 = ") AND cust_id = ?";
         String subquery3 = " AND isOnHold = '0' ORDER BY rowid DESC";
         Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + getOrderTypesAsSQLArray(orderTypes) + subquery2 + subquery3, new String[]{custID});
-
         cursor.moveToFirst();
         return cursor;
 
@@ -680,68 +674,6 @@ public class OrdersHandler {
         return offline;
 
     }
-
-
-//    public HashMap<String, String> getOrderDetails(String ordID) {
-//        HashMap<String, String> map = new HashMap<String, String>();
-//        String subquery1 = "SELECT o.ord_id as _id,o.ord_total ,o.ord_timecreated,o.ord_type,o.isVoid,o.clerk_id," +
-//                "o.ord_comment,o.ord_shipvia,o.ord_terms,o.ord_delivery,"
-//                + "o.c_email,o.cust_id, o.ord_signature,o.ord_po,o.ord_latitude,o.ord_longitude " +
-//                "FROM Orders o  WHERE o.ord_id ='";
-//        String subquery2 = "'";
-//        Cursor cursor = DBManager.database.rawQuery(subquery1 + ordID + subquery2, null);
-//        if (cursor.moveToFirst()) {
-//            do {
-//                String data = cursor.getString(cursor.getColumnIndex(ord_total));
-//                map.put(ord_total, data);
-//
-//                data = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(ord_timecreated)), activity,
-//                        0);
-//                map.put(ord_timecreated, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(clerk_id));
-//                map.put(clerk_id, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_comment));
-//                map.put(ord_comment, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_shipvia));
-//                map.put(ord_shipvia, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_terms));
-//                map.put(ord_terms, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_delivery));
-//                map.put(ord_delivery, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(c_email));
-//                map.put(c_email, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(cust_id));
-//                map.put(cust_id, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_signature));
-//                map.put(ord_signature, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_po));
-//                map.put(ord_po, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_latitude));
-//                map.put(ord_latitude, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_longitude));
-//                map.put(ord_longitude, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(ord_type));
-//                map.put(ord_type, data);
-//
-//                data = cursor.getString(cursor.getColumnIndex(isVoid));
-//                map.put(isVoid, data);
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//        return map;
-//    }
 
     public Order getPrintedOrder(String ordID) {
         Order anOrder = new Order(activity);

@@ -58,10 +58,6 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 	private boolean hasBeenCreated = false;
 	
 
-	
-	
-	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
@@ -99,8 +95,6 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				// TODO Auto-generated method stub
-				
 				executeItemAction(position);
 			}
 		});
@@ -470,22 +464,18 @@ public class OrderDetailsActivity extends BaseFragmentActivityActionBar
 		
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return leftMenuList.size();
 		}
 		@Override
 		public Object getItem(int pos) {
-			// TODO Auto-generated method stub
 			return leftMenuList.get(pos);
 		}
 		@Override
 		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
 			ViewHolder holder;
 			int type = getItemViewType(position);
 			
