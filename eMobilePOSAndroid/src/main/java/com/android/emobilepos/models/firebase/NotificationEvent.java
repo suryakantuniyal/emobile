@@ -6,13 +6,10 @@ package com.android.emobilepos.models.firebase;
 
 public class NotificationEvent {
 
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
+    private String merchantAccount;
+    private NotificationEventAction notificationEventAction;
+    private String employeeId;
+    private String deviceId;
 
     public enum NotificationEventAction {
         SYNC_HOLDS(0), SYNC_PRODUCTS(1);
@@ -25,10 +22,14 @@ public class NotificationEvent {
         }
     }
 
-    private String merchantAccount;
-    private NotificationEventAction notificationEventAction;
-    private String targetEmployeeId;
-    private String deviceId;
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
+
 
     public String getMerchantAccount() {
         return merchantAccount;
@@ -46,12 +47,12 @@ public class NotificationEvent {
         this.notificationEventAction = notificationEventAction;
     }
 
-    public String getTargetEmployeeId() {
-        return targetEmployeeId;
+    public String getDeviceId() {
+        return deviceId;
     }
 
-    public void setTargetEmployeeId(String targetEmployeeId) {
-        this.targetEmployeeId = targetEmployeeId;
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
 

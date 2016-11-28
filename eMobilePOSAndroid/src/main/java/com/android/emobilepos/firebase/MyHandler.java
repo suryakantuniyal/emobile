@@ -19,19 +19,14 @@ import com.microsoft.windowsazure.notifications.NotificationsHandler;
  */
 
 public class MyHandler extends NotificationsHandler {
-    public static final int NOTIFICATION_ID = 1;
-    private NotificationManager mNotificationManager;
-    NotificationCompat.Builder builder;
-    Context ctx;
+    private static final int NOTIFICATION_ID = 1;
+    private Context ctx;
 
     @Override
     public void onReceive(Context context, Bundle bundle) {
         ctx = context;
         String nhMessage = bundle.getString("message");
         sendNotification(nhMessage);
-        if (MainMenu_FA.isVisible) {
-            MainMenu_FA.mainActivity.ToastNotify(nhMessage);
-        }
     }
 
     private void sendNotification(String msg) {
@@ -39,7 +34,7 @@ public class MyHandler extends NotificationsHandler {
         Intent intent = new Intent(ctx, MainMenu_FA.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        mNotificationManager = (NotificationManager)
+        NotificationManager mNotificationManager = (NotificationManager)
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 
         PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0,

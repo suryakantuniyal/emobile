@@ -50,9 +50,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     private static MyPreferences myPref;
     private TextView synchTextView, tvStoreForward;
     private AdapterTabs tabsAdapter;
-    public static MainMenu_FA mainActivity;
-    public static Boolean isVisible = false;
-    private static final String TAG = "MainActivity";
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
@@ -64,7 +61,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         synchTextView = (TextView) findViewById(R.id.synch_title);
         synchTextView.setVisibility(View.GONE);
         tvStoreForward = (TextView) findViewById(R.id.label_cc_offline);
-        mainActivity = this;
         NotificationsManager.handleNotifications(this, NotificationSettings.SenderId, MyHandler.class);
         registerWithNotificationHubs();
         myPref = new MyPreferences(this);
@@ -122,7 +118,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
             } else {
-                Log.i(TAG, "This device is not supported by Google Play Services.");
+                Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
                 ToastNotify("This device is not supported by Google Play Services.");
                 finish();
             }
