@@ -42,10 +42,13 @@ import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.GiftCardTextWatcher;
+import com.crashlytics.android.Crashlytics;
 
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -515,32 +519,44 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
 
             try {
                 String xml = httpClient.postData(13, activity, urlToPost);
-                if (xml.equals(Global.TIME_OUT)) {
-                    errorMsg = getString(R.string.timeout_tryagain);
-                } else if (xml.equals(Global.NOT_VALID_URL)) {
-                    errorMsg = getString(R.string.cannot_proceed);
-                } else {
-                    InputSource inSource = new InputSource(new StringReader(xml));
+                switch (xml) {
+                    case Global.TIME_OUT:
+                        errorMsg = getString(R.string.timeout_tryagain);
+                        break;
+                    case Global.NOT_VALID_URL:
+                        errorMsg = getString(R.string.cannot_proceed);
+                        break;
+                    default:
+                        InputSource inSource = new InputSource(new StringReader(xml));
 
-                    SAXParser sp = spf.newSAXParser();
-                    XMLReader xr = sp.getXMLReader();
-                    xr.setContentHandler(handler);
-                    xr.parse(inSource);
-                    parsedMap = handler.getData();
-                    payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
-                    double due = Double.parseDouble(payment.getOriginalTotalAmount())
-                            - Double.parseDouble(payment.getPay_amount());
-                    payment.setPay_dueamount(String.valueOf(due));
-                    Global.amountPaid = payment.getPay_amount();
-                    if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
-                        wasProcessed = true;
-                    else if (parsedMap != null && parsedMap.size() > 0) {
-                        errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-                    } else
-                        errorMsg = xml;
+                        SAXParser sp = spf.newSAXParser();
+                        XMLReader xr = sp.getXMLReader();
+                        xr.setContentHandler(handler);
+                        xr.parse(inSource);
+                        parsedMap = handler.getData();
+                        payment.setPay_amount(parsedMap.get("AuthorizedAmount"));
+                        double due = Double.parseDouble(payment.getOriginalTotalAmount())
+                                - Double.parseDouble(payment.getPay_amount());
+                        payment.setPay_dueamount(String.valueOf(due));
+                        Global.amountPaid = payment.getPay_amount();
+                        if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
+                            wasProcessed = true;
+                        else if (parsedMap != null && parsedMap.size() > 0) {
+                            errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+                        } else
+                            errorMsg = xml;
+                        break;
                 }
 
-            } catch (Exception e) {
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
 
             return null;
@@ -612,7 +628,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             Date date = dt2.parse(cardInfoManager.getCardExpYear());
             formatedYear = dt.format(date);
         } catch (ParseException e) {
-
+            Crashlytics.logException(e);
         }
 
         cardInfoManager.setCardExpYear(formatedYear);
