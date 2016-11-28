@@ -814,14 +814,11 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         protected Payment doInBackground(Boolean... params) {
             Payment payment = null;
             boolean isMultiPayment = params[0];
-            try {
-                if (isMultiPayment)
-                    payment = processMultiInvoicePayment();
-                else
-                    payment = processPayment();
-            } catch (Exception e) {
+            if (isMultiPayment)
+                payment = processMultiInvoicePayment();
+            else
+                payment = processPayment();
 
-            }
             return payment;
         }
 
@@ -873,24 +870,18 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         @Override
         protected void onPostExecute(Payment payment) {
-            try {
-                if (myProgressDialog.isShowing()) {
-                    myProgressDialog.dismiss();
-                }
-                double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
-                double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
-
-                if (printSuccessful) {
-                    if (amountToBePaid <= actualAmount)
-                        finish();
-                } else {
-                    showPrintDlg(true, payment);
-                }
-            } catch (Exception e) {
-
+            if (myProgressDialog.isShowing()) {
+                myProgressDialog.dismiss();
             }
-//			if(amountToBePaid<=actualAmount)
-//				finish();
+            double actualAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(amountDue));
+            double amountToBePaid = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(paid));
+
+            if (printSuccessful) {
+                if (amountToBePaid <= actualAmount)
+                    finish();
+            } else {
+                showPrintDlg(true, payment);
+            }
         }
     }
 

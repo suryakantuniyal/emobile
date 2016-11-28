@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.dao.MixMatchDAO;
-import com.android.database.PriceLevelHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
@@ -30,11 +29,11 @@ import com.android.emobilepos.models.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Tax;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
+import com.crashlytics.android.Crashlytics;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -541,6 +540,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                         orderProduct = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
                     } catch (CloneNotSupportedException e) {
                         e.printStackTrace();
+                        Crashlytics.logException(e);
                     }
                     orderProduct.setProd_price(String.valueOf(xyzProduct.getPrice()));
                     orderProduct.setOrdprod_qty(String.valueOf(prodQty));
@@ -555,6 +555,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             clone = (OrderProduct) orderProduct.clone();
                         } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                         clone.setOrdprod_qty("1");
                         clone.setProd_price(String.valueOf(xyzProduct.getPrice()));
@@ -575,6 +576,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             orderProduct = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
                         } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                         orderProduct.setProd_price(String.valueOf(xyzProduct.getPrice()));
                         orderProduct.setOrdprod_qty(String.valueOf(regularPriced));
@@ -597,6 +599,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
+                                Crashlytics.logException(e);
                             }
                         }
 
@@ -610,6 +613,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                             orderProduct = (OrderProduct) xyzProduct.getOrderProducts().get(0).clone();
                         } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                         orderProduct.setOrdprod_qty(String.valueOf(discountPriced));
                         orderProduct.setMixMatchQtyApplied(discountPriced);
@@ -647,6 +651,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                                 orderProducts.add(clone);
                             } catch (CloneNotSupportedException e) {
                                 e.printStackTrace();
+                                Crashlytics.logException(e);
                             }
                         }
 
@@ -786,12 +791,11 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                     val = "0.00";
                 prodPrice = new BigDecimal(val);
                 discountableAmount = discountableAmount.add(prodPrice);
-                try {
-                    if (orderProducts.get(i).getDiscount_value() != null
-                            && !orderProducts.get(i).getDiscount_value().isEmpty())
-                        itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).getDiscount_value()));
-                } catch (NumberFormatException e) {
-                }
+
+                if (orderProducts.get(i).getDiscount_value() != null
+                        && !orderProducts.get(i).getDiscount_value().isEmpty())
+                    itemsDiscountTotal = itemsDiscountTotal.add(new BigDecimal(orderProducts.get(i).getDiscount_value()));
+
                 amount = amount.add(prodPrice);
                 pointsSubTotal += Double.parseDouble(orderProducts.get(i).getProd_price_points());
                 pointsAcumulable += Double.parseDouble(orderProducts.get(i).getProd_value_points());

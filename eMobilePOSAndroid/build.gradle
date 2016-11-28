@@ -12,7 +12,7 @@ android {
             storePassword '1Enabler1'
         }
     }
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion "23.0.2"
     dexOptions {
         preDexLibraries = false
@@ -26,8 +26,9 @@ android {
     defaultConfig {
         applicationId "com.emobilepos.app"
         minSdkVersion 15
-        targetSdkVersion 15
+        targetSdkVersion 25
         multiDexEnabled = true
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
 //    splits {
@@ -49,7 +50,7 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.78"
+            versionName "1.2.0.79"
             versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
@@ -63,7 +64,7 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.78"
+            versionName "1.2.0.79"
             versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
@@ -77,7 +78,7 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.78"
+            versionName "1.2.0.79"
             versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
@@ -91,7 +92,7 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.78"
+            versionName "1.2.0.79"
             versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
@@ -105,7 +106,7 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.78"
+            versionName "1.1.1.79"
             versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
@@ -119,7 +120,7 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.78"
+            versionName "1.1.1.79"
             versionCode 113
             targetSdkVersion 23
             multiDexEnabled = true
@@ -210,8 +211,6 @@ android {
         compile files('libs/hapi-android-3.2.5.jar')
         compile 'com.google.guava:guava:18.0'
         compile 'com.android.support:multidex:1.0.1'
-        compile 'com.google.guava:guava:18.0'
-        compile 'com.android.support:multidex:1.0.1'
         compile 'com.android.support:support-v4:24.0.0'
         compile 'com.android.support:support-v13:24.0.0'
         compile files('libs/bixolon_printer.jar')
@@ -230,7 +229,16 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
     compile files('libs/UniMag_SDK_v5.0.jar')
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 }

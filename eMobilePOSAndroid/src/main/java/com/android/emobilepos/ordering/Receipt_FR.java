@@ -45,7 +45,6 @@ import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
-import com.android.database.Locations_DB;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
@@ -1792,6 +1791,10 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
     }
 
+    private OrderingMain_FA getOrderingMainFa() {
+        return (OrderingMain_FA) getActivity();
+    }
+
     private class printAsync extends AsyncTask<Boolean, Integer, String> {
         boolean isPrintStationPrinter = false;
         boolean printSuccessful = true;
@@ -2217,13 +2220,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 .getPreferencesValue(MyPreferences.pref_default_transaction);
         int transType;
         global.order = new Order(activity);
-        try {
-            if (type == null || type.isEmpty())
-                type = "-1";
-            transType = Integer.parseInt(type);
-        } catch (NumberFormatException e) {
-            transType = -1;
-        }
+        if (type == null || type.isEmpty())
+            type = "-1";
+        transType = Integer.parseInt(type);
 
         if (transType != -1) {
             Intent intent;
