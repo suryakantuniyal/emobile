@@ -60,6 +60,7 @@ import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.android.support.textwatcher.CreditCardTextWatcher;
 import com.android.support.textwatcher.TextWatcherCallback;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
@@ -1325,10 +1326,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         } catch (XmlPullParserException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         } catch (IOException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
         return value;
@@ -1392,8 +1396,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     }
 
                 } catch (Exception e) {
-
                     connectionFailed = true;
+                    Crashlytics.logException(e);
                 }
             }
 
@@ -1490,7 +1494,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     }
 
                 } catch (Exception e) {
-
+                    Crashlytics.logException(e);
                     errorMsg = e.getMessage();
                 }
             }
@@ -1621,10 +1625,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         } catch (XmlPullParserException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         } catch (IOException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
 
         String reverseXml = chargeXml.replaceAll("<action>.*?</action>",
