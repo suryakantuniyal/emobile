@@ -530,44 +530,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
             section = getSettingSectionBy(section, settingsType);
             int layoutId = getLayoutId(section);
             PreferenceManager prefManager;
-            // Load the preferences from an XML resource
-//            switch (settingsType) {
-//                case SettingsTab_FR.CASE_ADMIN:
             addPreferencesFromResource(layoutId);
             prefManager = getPreferenceManager();
             setPrefManager(section, prefManager);
-//                    break;
-//                case SettingsTab_FR.CASE_MANAGER:
-//                    addPreferencesFromResource(R.xml.settings_manager_layout);
-//                    prefManager = getPreferenceManager();
-//                    prefManager.findPreference("pref_open_cash_drawer").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
-//                    openShiftPref = getPreferenceManager().findPreference("pref_open_shift");
-//                    if (!myPref.getShiftIsOpen()) {
-//                        CharSequence c = "\t\t" + getString(R.string.admin_close_shift) + " <" + myPref.getShiftClerkName() + ">";
-//                        openShiftPref.setSummary(c);
-//                    }
-//                    openShiftPref.setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_expenses").setOnPreferenceClickListener(this);
-//
-//                    break;
-//                case SettingsTab_FR.CASE_GENERAL:
-//                    addPreferencesFromResource(R.xml.settings_general_layout);
-//                    prefManager = getPreferenceManager();
-//                    prefManager.findPreference("pref_clear_images_cache").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_connect_to_bluetooth_peripheral").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_connect_to_usb_peripheral").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_redetect_peripherals").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_delete_saved_peripherals").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_toggle_elo_bcr").setOnPreferenceClickListener(this);
-//                    prefManager.findPreference("pref_use_navigationbar").setOnPreferenceClickListener(this);
-//                    break;
-
-//        }
         }
 
         @Override
@@ -577,13 +542,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_mw_with_genius:
                     CheckBoxPreference checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
-                        PaymentMethod method = new PaymentMethod();
-                        method.setPaymethod_id("Genius");
-                        method.setPaymethod_name("Genius");
-                        method.setPaymentmethod_type("Genius");
-                        method.setImage_url("");
-                        method.setOriginalTransid("0");
-                        PayMethodsDAO.insert(method);
+//                        PaymentMethod method = new PaymentMethod();
+//                        method.setPaymethod_id("Genius");
+//                        method.setPaymethod_name("Genius");
+//                        method.setPaymentmethod_type("Genius");
+//                        method.setImage_url("");
+//                        method.setOriginalTransid("0");
+                        PayMethodsDAO.insert(PaymentMethod.getGeniusPaymentMethod());
                     } else {
                         PayMethodsDAO.delete("Genius");
                     }
@@ -591,13 +556,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_pay_with_tupyx:
                     checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
-                        PaymentMethod method = new PaymentMethod();
-                        method.setPaymethod_id("Wallet");
-                        method.setPaymethod_name("Tupyx");
-                        method.setPaymentmethod_type("Wallet");
-                        method.setImage_url("");
-                        method.setOriginalTransid("0");
-                        PayMethodsDAO.insert(method);
+//                        PaymentMethod method = new PaymentMethod();
+//                        method.setPaymethod_id("Wallet");
+//                        method.setPaymethod_name("Tupyx");
+//                        method.setPaymentmethod_type("Wallet");
+//                        method.setImage_url("");
+//                        method.setOriginalTransid("0");
+                        PayMethodsDAO.insert(PaymentMethod.getTupyxPaymentMethod());
                     } else {
                         PayMethodsDAO.delete("Wallet");
                     }
