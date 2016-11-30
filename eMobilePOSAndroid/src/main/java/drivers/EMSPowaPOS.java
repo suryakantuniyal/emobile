@@ -26,6 +26,7 @@ import com.android.support.MyPreferences;
 import com.mpowa.android.powapos.accessory.abstraction.PowaHidKeyDecoder;
 import com.mpowa.android.powapos.accessory.hid.PowaHidScanner;
 import com.mpowa.android.sdk.powapos.PowaPOS;
+import com.mpowa.android.sdk.powapos.common.base.PowaEnums;
 import com.mpowa.android.sdk.powapos.common.base.PowaLog;
 import com.mpowa.android.sdk.powapos.common.dataobjects.PowaDeviceObject;
 import com.mpowa.android.sdk.powapos.common.utils.ByteUtils;
@@ -113,12 +114,13 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
             handler.post(runnableScannedData);
         }
 
-//        @Override
-//        public void onScannerRead(byte[] data) {
-//            scannedData = new String(data);
-//            handler.post(runnableScannedData);
-//        }
-
+        @Override
+        public void onScannerConnectionStateChanged(PowaEnums.ConnectionState newState) {
+            if (newState.equals(PowaEnums.ConnectionState.CONNECTED)) {
+                powaPOS.getScanner().scannerBeep(PowaPOSEnums.PowaScannerBeep.SHORT_2_BEEP_HIGH);
+                powaPOS.getScanner().setScannerAutoScan(true);
+            }
+        }
 
     };
     // ===================================== SCANNER CALLBACK
@@ -138,21 +140,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         public void onControlKeyScanned(PowaHidKeyDecoder.CONTROL_KEY controlKey) {
             Toast.makeText(EMSPowaPOS.this.activity, controlKey.name() + " has been received", Toast.LENGTH_SHORT)
                     .show();
-            // Some scanners send CONTROL KEYS at the start/end of the data,
-            // this way users may identify
-            // different events happening. Check if your scanner brand send any
-            // of them by overriding this
-            // method.
         }
 
         @Override
         public void onScanStartDecoding() {
             Log.d("", "onScanStartDecoding()");
-            // This event is only useful for providing animation while the
-            // decoding is in process.
-            // Usually this process take about 1.5 second, so developers can
-            // start playing a nice animation
-            // at this point.
         }
 
         @Override
@@ -421,10 +413,16 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         if (handler == null)
             handler = new Handler();
         if (_callBack != null && powaPOS != null) {
-
             List<PowaDeviceObject> availScanners = powaPOS.getAvailableScanners();
             if (availScanners.size() > 0) {
                 powaPOS.getScanner().selectScanner(availScanners.get(0));
+            }
+        } else if (powaPOS != null) {
+            List<PowaDeviceObject> availScanners = powaPOS.getAvailableScanners();
+            if (availScanners.size() > 0) {
+                powaPOS.getScanner().selectScanner(availScanners.get(0));
+                powaPOS.getScanner().setScannerAutoScan(false);
+                powaPOS.getScanner().scannerBeep(PowaPOSEnums.PowaScannerBeep.FAST_WARBLE_BEEP_4_HI_LO_HI_LO);
             }
         }
     }

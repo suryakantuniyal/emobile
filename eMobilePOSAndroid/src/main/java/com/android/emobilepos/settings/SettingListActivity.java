@@ -542,12 +542,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_mw_with_genius:
                     CheckBoxPreference checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
-//                        PaymentMethod method = new PaymentMethod();
-//                        method.setPaymethod_id("Genius");
-//                        method.setPaymethod_name("Genius");
-//                        method.setPaymentmethod_type("Genius");
-//                        method.setImage_url("");
-//                        method.setOriginalTransid("0");
                         PayMethodsDAO.insert(PaymentMethod.getGeniusPaymentMethod());
                     } else {
                         PayMethodsDAO.delete("Genius");
@@ -556,12 +550,6 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 case R.string.config_pay_with_tupyx:
                     checkBoxPreference = (CheckBoxPreference) preference;
                     if (checkBoxPreference.isChecked()) {
-//                        PaymentMethod method = new PaymentMethod();
-//                        method.setPaymethod_id("Wallet");
-//                        method.setPaymethod_name("Tupyx");
-//                        method.setPaymentmethod_type("Wallet");
-//                        method.setImage_url("");
-//                        method.setOriginalTransid("0");
                         PayMethodsDAO.insert(PaymentMethod.getTupyxPaymentMethod());
                     } else {
                         PayMethodsDAO.delete("Wallet");
