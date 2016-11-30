@@ -85,6 +85,12 @@ public class PayMethodsHandler {
                 insert.execute();
                 insert.clearBindings();
             }
+            if (myPref.getPreferences(MyPreferences.pref_mw_with_genius)) {
+                paymentMethods.add(PaymentMethod.getGeniusPaymentMethod());
+            }
+            if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
+                paymentMethods.add(PaymentMethod.getTupyxPaymentMethod());
+            }
             Realm realm = Realm.getDefaultInstance();
             realm.beginTransaction();
             realm.insert(paymentMethods);

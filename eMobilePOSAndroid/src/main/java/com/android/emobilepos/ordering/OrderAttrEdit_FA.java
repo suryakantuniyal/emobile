@@ -206,7 +206,6 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             Global.btSwiper.currentDevice.releaseCardReader();
         else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
             Global.mainPrinterManager.currentDevice.releaseCardReader();
-            // Global.mainPrinterManager.currentDevice.loadScanner(null);
             Global.mainPrinterManager.currentDevice.loadScanner(OrderingMain_FA.instance.callBackMSR);
         }
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
