@@ -777,4 +777,9 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public boolean isAddon() {
         return !TextUtils.isEmpty(getAddon()) && (getAddon().equals("1") || getAddon().equals("true"));
     }
+
+    @Override
+    public String toString() {
+        return getProd_id() + "-" + getOrdprod_name();
+    }
 }
