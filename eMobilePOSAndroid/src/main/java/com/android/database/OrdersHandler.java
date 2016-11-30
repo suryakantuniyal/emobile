@@ -684,7 +684,7 @@ public class OrdersHandler {
                 where_values = new String[]{clerk_id, date};
             }
         } else if (date != null && !date.isEmpty()) {
-            query.append(" WHERE  date = ? AND isVoid = '0' ");
+            query.append(" WHERE  date = ? AND isVoid = '0'  AND isOnHold = '0' ");
             where_values = new String[]{date};
         } else {
             query.append(" WHERE  isVoid = '0' ");
