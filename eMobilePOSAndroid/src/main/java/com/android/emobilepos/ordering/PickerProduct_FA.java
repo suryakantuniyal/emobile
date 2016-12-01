@@ -517,7 +517,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     private void refreshAttributeProduct(Cursor myCursor) {
 
 //        OrderProduct orderProduct = new OrderProduct();
-        orderProduct=global.orderProducts.get(modifyOrderPosition);
+        orderProduct = global.orderProducts.get(modifyOrderPosition);
         orderProduct.setProd_id(myCursor.getString(myCursor.getColumnIndex("_id")));
         orderProduct.setOrdprod_name(myCursor.getString(myCursor.getColumnIndex("prod_name")));
 
@@ -623,7 +623,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 if (!isModify)
                     preValidateSettings();
                 else
-                    setProductInfo(global.orderProducts.get(modifyOrderPosition));
+                    setProductInfo(OrderProductUtils.getOrderProducts(global.orderProducts, orderProduct.getProd_id()).get(0));
 
                 activity.setResult(2);
                 activity.finish();
@@ -993,7 +993,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN) {
             itemTotal = total.abs().subtract(Global.getBigDecimalNum(disTotal).abs());
             itemTotal = itemTotal.negate();
-        }else{
+        } else {
             itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
         }
         orderProduct.setItemTotal(itemTotal.toString());

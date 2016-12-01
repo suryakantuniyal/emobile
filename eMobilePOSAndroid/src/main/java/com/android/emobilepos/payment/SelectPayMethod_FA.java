@@ -56,6 +56,7 @@ import com.android.support.NumberUtils;
 import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -65,15 +66,18 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -794,8 +798,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         parsedMap.clear();
                     }
                 }
-            } catch (Exception e) {
-
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             activity.setResult(3);
             activity.finish();
@@ -1093,22 +1104,6 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         if (parsedMap != null && parsedMap.size() > 0
                                 && parsedMap.get("epayStatusCode").equals("APPROVED")) {
                             wasProcessed = true;
-                        /*
-                         * xml = httpClient.postData(13, activity,
-						 * reqAddLoyalty); inSource = new InputSource(new
-						 * StringReader(xml)); xr.parse(inSource); parsedMap =
-						 * handler.getData();
-						 *
-						 * if (parsedMap != null && parsedMap.size() > 0 &&
-						 * parsedMap.get("epayStatusCode").equals("APPROVED")) {
-						 * wasProcessed = true; } else if (parsedMap != null &&
-						 * parsedMap.size() > 0) { StringBuilder sb = new
-						 * StringBuilder(); sb.append("statusCode = "
-						 * ).append(parsedMap.get("statusCode")).append("\n");
-						 * sb.append(parsedMap.get("statusMessage")); errorMsg =
-						 * sb.toString(); } else errorMsg = xml;
-						 */
-
                         } else if (parsedMap != null && parsedMap.size() > 0) {
                             errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                         } else
@@ -1116,7 +1111,15 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         break;
                 }
 
-            } catch (Exception e) {
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
             return null;
         }
@@ -1137,9 +1140,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
     }
 
-    private class processRewardAsync extends AsyncTask<Void, Void, Void> {
+    private class processRewardAsync extends AsyncTask<Void, Void, HashMap<String, String>> {
 
-        private HashMap<String, String> parsedMap = new HashMap<>();
         private boolean wasProcessed = false;
         private String errorMsg = "Reward could not be processed.";
 
@@ -1154,12 +1156,12 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected  HashMap<String, String> doInBackground(Void... params) {
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-
+            HashMap<String, String> parsedMap = new HashMap<>();
             try {
                 String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
                 Global.generateDebugFile(reqChargeLoyaltyReward);
@@ -1189,14 +1191,21 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                         break;
                 }
 
-            } catch (Exception e) {
-
+            } catch (SAXException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Crashlytics.logException(e);
             }
-            return null;
+            return parsedMap;
         }
 
         @Override
-        protected void onPostExecute(Void unused) {
+        protected void onPostExecute(HashMap<String, String> parsedMap) {
             myProgressDialog.dismiss();
 
             if (wasProcessed) // payment processing succeeded

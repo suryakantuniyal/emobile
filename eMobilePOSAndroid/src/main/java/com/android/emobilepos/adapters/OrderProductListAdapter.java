@@ -70,7 +70,6 @@ public class OrderProductListAdapter extends BaseAdapter {
         }
     }
 
-
     public int getSeatsAmount() {
         int count = 0;
         for (OrderSeatProduct seatProduct : orderSeatProductList) {
@@ -184,7 +183,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     private List<OrderSeatProduct> getValidOrderSeatProductList() {
-        ArrayList<OrderSeatProduct> l = new ArrayList<OrderSeatProduct>();
+        ArrayList<OrderSeatProduct> l = new ArrayList<>();
         if (orderSeatProductFullList.size() > 0) {
             for (OrderSeatProduct seatProduct : orderSeatProductFullList) {
                 if (seatProduct.rowType == RowType.TYPE_HEADER && !seatProduct.isDeleted) {
