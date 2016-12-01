@@ -2055,7 +2055,7 @@ public class EMSDeviceDriver {
         BigDecimal salesAmount = new BigDecimal("0");
         BigDecimal invoiceAmount = new BigDecimal("0");
         sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
-        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate);
+        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate, false);
         for (Order ord : listOrder) {
 
             switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {

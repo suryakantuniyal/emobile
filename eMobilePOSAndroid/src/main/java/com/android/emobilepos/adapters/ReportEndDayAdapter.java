@@ -86,8 +86,9 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
     }
 
     private void getOrders() {
-        listOrdTypes = ordHandler.getOrderDayReport(clerk_id, mDate);
+        listOrdTypes = ordHandler.getOrderDayReport(clerk_id, mDate, false);
         listSummary = new ArrayList<>();
+        List<Order> listOrdOnHoldTypes = ordHandler.getOrderDayReport(clerk_id, mDate, true);
 
         BigDecimal returnAmount = new BigDecimal("0");
         BigDecimal salesAmount = new BigDecimal("0");
@@ -145,6 +146,13 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
         ord.ord_type_name = "Invoice";
 
         listSummary.add(ord);
+
+        if(listOrdOnHoldTypes!=null && !listOrdOnHoldTypes.isEmpty()) {
+            ord = new Order(activity);
+            ord.ord_total = listOrdOnHoldTypes.get(0).ord_total;
+            ord.ord_type_name = "On Holds";
+            listSummary.add(ord);
+        }
 
         ord = new Order(activity);
         ord.ord_total = salesAmount.add(invoiceAmount).subtract(returnAmount).toString();

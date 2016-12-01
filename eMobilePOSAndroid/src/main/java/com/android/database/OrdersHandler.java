@@ -82,6 +82,7 @@ public class OrdersHandler {
     private MyPreferences myPref;
     private static final String table_name = "Orders";
     private Activity activity;
+
     public static OrdersHandler getInstance(Activity activity) {
         return new OrdersHandler(activity);
     }
@@ -666,9 +667,9 @@ public class OrdersHandler {
         return value;
     }
 
-    public List<Order> getOrderDayReport(String clerk_id, String date) {
+    public List<Order> getOrderDayReport(String clerk_id, String date, boolean onlyOnholds) {
         List<Order> listOrder = new ArrayList<>();
-
+        String isOnHolds = onlyOnholds ? "1" : "0";
         StringBuilder query = new StringBuilder();
         query.append(
                 "SELECT ord_type,sum(ord_subtotal) as 'ord_subtotal',sum(ord_discount) as 'ord_discount', sum(ord_taxamount) as 'ord_taxamount' ,  ");
@@ -676,18 +677,19 @@ public class OrdersHandler {
 
         String[] where_values = null;
         if (clerk_id != null && !clerk_id.isEmpty()) {
-            query.append("WHERE clerk_id = ? AND isVoid = '0' ");
-            where_values = new String[]{clerk_id};
+            query.append("WHERE clerk_id = ? AND isVoid = '0' AND isOnHold = ? ");
+            where_values = new String[]{clerk_id, isOnHolds};
 
             if (date != null && !date.isEmpty()) {
                 query.append(" AND date = ? ");
-                where_values = new String[]{clerk_id, date};
+                where_values = new String[]{clerk_id, isOnHolds, date};
             }
         } else if (date != null && !date.isEmpty()) {
-            query.append(" WHERE  date = ? AND isVoid = '0'  AND isOnHold = '0' ");
-            where_values = new String[]{date};
+            query.append(" WHERE  date = ? AND isVoid = '0' AND isOnHold = ? ");
+            where_values = new String[]{date, isOnHolds};
         } else {
-            query.append(" WHERE  isVoid = '0' ");
+            where_values = new String[]{isOnHolds};
+            query.append(" WHERE  isVoid = '0' AND isOnHold = ? ");
         }
         query.append(" GROUP BY ord_type");
 

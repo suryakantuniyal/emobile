@@ -62,45 +62,31 @@ public class ShiftDetailsAdapter extends BaseAdapter
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 
 		return title.length;
 	}
 
 	@Override
 	public Object getItem(int index) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	// use the 'position' or array index as item id
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
 		return position;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-
 		ViewHolder holder;
-		
-
 		if (convertView == null) {
-
 			holder = new ViewHolder();
-			
-			
 			convertView = mInflater.inflate(R.layout.report_shift_lv_adapter,null);
-
 			holder.top = (TextView) convertView.findViewById(R.id.shiftPeriod);
 			holder.bottom = (TextView) convertView.findViewById(R.id.clerkName);
-
 			setHolderValues(position, holder);
-
 			convertView.setTag(holder);
-
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 			setHolderValues(position,holder);
@@ -110,7 +96,6 @@ public class ShiftDetailsAdapter extends BaseAdapter
 
 	private void setHolderValues(int position,ViewHolder holder)
 	{
-	
 			holder.top.setText(title[position]);
 			holder.bottom.setText(map.get(position));
 	}
