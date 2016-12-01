@@ -81,9 +81,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import drivers.EMSmePOS;
-import io.realm.Realm;
-
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
     private CardsListAdapter myAdapter;

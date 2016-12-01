@@ -202,11 +202,11 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             uniMagReader.release();
         else if (magtekReader != null)
             magtekReader.closeDevice();
-        else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
-            Global.btSwiper.currentDevice.releaseCardReader();
-        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-            Global.mainPrinterManager.currentDevice.releaseCardReader();
-            Global.mainPrinterManager.currentDevice.loadScanner(OrderingMain_FA.instance.callBackMSR);
+        else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+            Global.btSwiper.getCurrentDevice().releaseCardReader();
+        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
+            Global.mainPrinterManager.getCurrentDevice().loadScanner(OrderingMain_FA.instance.callBackMSR);
         }
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
