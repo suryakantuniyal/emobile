@@ -625,6 +625,10 @@ public class MyPreferences {
         return sharedPref.getBoolean(key, false);
     }
 
+    public boolean requiresWaiterLogin() {
+        return getPreferences(MyPreferences.pref_require_waiter_signin);
+    }
+
     public String getPreferencesValue(String key) {
         return sharedPref.getString(key, "");
     }
@@ -938,6 +942,7 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
+
     public boolean isPOWA() {
         String device_powa = "device_powa";
         return prefs.getBoolean(device_powa, false);
