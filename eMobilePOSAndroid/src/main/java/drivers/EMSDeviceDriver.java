@@ -367,7 +367,14 @@ public class EMSDeviceDriver {
     private void finishReceipt() {
         if (this instanceof EMSmePOS) {
             try {
-                Thread.sleep(3000);
+                int loopCount = 0;
+                while (mePOS.printerBusy()) {
+                    Thread.sleep(8000);
+                    loopCount++;
+                    if (loopCount > 6) {
+                        break;
+                    }
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -395,11 +402,11 @@ public class EMSDeviceDriver {
                 }
             });
             synchronized (mePOSReceipt) {
-                try {
-                    mePOSReceipt.wait(12000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    mePOSReceipt.wait(12000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
             mePOSReceipt = null;
         }
