@@ -284,7 +284,7 @@ public class EMSReceiptHelper {
         BigDecimal invoiceAmount = new BigDecimal("0");
 
         sb_ord_types.append(centerText("Totals By Order Types"));
-        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate);
+        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate, false);
         for (Order ord : listOrder) {
             switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
                 case RETURN:
