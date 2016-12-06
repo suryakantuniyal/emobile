@@ -155,7 +155,7 @@ public class EMSPlainTextHelper {
             sb.append(this.spaces(theIndentation));
             sb.append(leftText);
             sb.append(this.spaces(numSpaces - theIndentation));
-            sb.append(rightText);
+            sb.append(rightText).append("\n");
         } else {
             sb.append(this.spaces(theIndentation));
             sb.append(leftText).append("\n");

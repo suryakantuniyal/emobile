@@ -205,8 +205,11 @@ public class ShiftPeriodsDBHandler {
         StringBuilder sb = new StringBuilder();
 
         sb.append(
-                "SELECT assignee_name,beginning_petty_cash,ending_petty_cash,total_transaction_cash,ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash', startTime, endTime, entered_close_amount, CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type' FROM ")
-                .append(table_name).append(" WHERE shift_id = ?");
+                "SELECT assignee_name,beginning_petty_cash,ending_petty_cash,total_transaction_cash," +
+                        "ROUND(ending_petty_cash+total_transaction_cash,2) as 'total_ending_cash', " +
+                        "startTime, endTime, entered_close_amount, " +
+                        "CASE WHEN endTime != '' THEN endTime ELSE 'Open' END AS 'end_type' FROM ")
+                .append(table_name).append(" WHERE shift_id = ? ");
 
         Cursor c = DBManager.getDatabase().rawQuery(sb.toString(), new String[]{shiftID});
 

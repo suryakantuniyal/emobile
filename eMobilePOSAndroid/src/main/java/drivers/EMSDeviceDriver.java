@@ -2054,10 +2054,12 @@ public class EMSDeviceDriver {
         BigDecimal returnAmount = new BigDecimal("0");
         BigDecimal salesAmount = new BigDecimal("0");
         BigDecimal invoiceAmount = new BigDecimal("0");
-        sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
-        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate);
-        for (Order ord : listOrder) {
+        BigDecimal onHoldAmount = new BigDecimal("0");
 
+        sb_ord_types.append(textHandler.centeredString("Totals By Order Types", lineWidth));
+        List<Order> listOrder = ordHandler.getOrderDayReport(null, mDate, false);
+        List<Order> listOrderHolds = ordHandler.getOrderDayReport(null, mDate, true);
+        for (Order ord : listOrder) {
             switch (Global.OrderType.getByCode(Integer.parseInt(ord.ord_type))) {
                 case RETURN:
                     sb_ord_types.append(textHandler.oneColumnLineWithLeftAlignedText("Return", lineWidth, 0));
@@ -2084,12 +2086,15 @@ public class EMSDeviceDriver {
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Tax Total", Global.formatDoubleStrToCurrency(ord.ord_taxamount), lineWidth, 3));
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Net Total", Global.formatDoubleStrToCurrency(ord.ord_total), lineWidth, 3));
         }
-
+        if(listOrderHolds!=null && !listOrderHolds.isEmpty()){
+            onHoldAmount = new BigDecimal(listOrderHolds.get(0).ord_total);
+        }
         listOrder.clear();
 
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Return", "(" + Global.formatDoubleStrToCurrency(returnAmount.toString()) + ")", lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Receipt", Global.formatDoubleStrToCurrency(salesAmount.toString()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Invoice", Global.formatDoubleStrToCurrency(invoiceAmount.toString()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("On Holds", Global.formatDoubleStrToCurrency(onHoldAmount.toString()), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total", Global.formatDoubleStrToCurrency(salesAmount.add(invoiceAmount).subtract(returnAmount).toString()), lineWidth, 0));
 
         listOrder = ordHandler.getARTransactionsDayReport(null, mDate);
