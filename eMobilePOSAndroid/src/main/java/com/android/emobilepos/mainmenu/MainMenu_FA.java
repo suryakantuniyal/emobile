@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -34,6 +35,8 @@ import com.android.support.NetworkUtils;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 import com.microsoft.windowsazure.notifications.NotificationsManager;
 
 import java.lang.reflect.Method;
@@ -61,7 +64,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         synchTextView = (TextView) findViewById(R.id.synch_title);
         synchTextView.setVisibility(View.GONE);
         tvStoreForward = (TextView) findViewById(R.id.label_cc_offline);
-        NotificationsManager.handleNotifications(this, NotificationSettings.SenderId, MyHandler.class);
+        NotificationsManager.handleNotifications(this, NotificationSettings.getSenderId(), MyHandler.class);
         registerWithNotificationHubs();
         myPref = new MyPreferences(this);
 
@@ -103,6 +106,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         }).start();
 
         hasBeenCreated = true;
+
+
     }
 
     /**
@@ -141,13 +146,40 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     public void registerWithNotificationHubs() {
         if (checkPlayServices()) {
             // Start IntentService to register this application with FCM.
+            FirebaseMessaging.getInstance().subscribeToTopic("holds_sync");
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
     }
 
+    private void sendFirebaseMessage() {
+        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
+        messaging.send(new RemoteMessage.Builder(NotificationSettings.getSenderId() + "@gcm.googleapis.com")
+                .setMessageId(String.valueOf(SystemClock.currentThreadTimeMillis()))
+                .addData("my_message", "Hello world")
+                .addData("my_action", "SAY_HELLO")
+                .build()
+        );
+
+        oauthclient.HttpClient client = new oauthclient.HttpClient();
+        String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
+        String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFFfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
+        try {
+            client.postAuthorizationHeader("https://fcm.googleapis.com/fcm/send", json, authorizationKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
     @Override
     public void onResume() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendFirebaseMessage();
+            }
+        }).start();
         if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
         }

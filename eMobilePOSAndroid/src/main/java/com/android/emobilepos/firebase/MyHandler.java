@@ -25,7 +25,7 @@ public class MyHandler extends NotificationsHandler {
     @Override
     public void onReceive(Context context, Bundle bundle) {
         ctx = context;
-        String nhMessage = bundle.getString("message");
+        String nhMessage = bundle.getString("gcm.notification.body");
         sendNotification(nhMessage);
     }
 

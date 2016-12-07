@@ -40,15 +40,14 @@ public class RegistrationIntentService extends IntentService {
             // otherwise your server should have already received the token.
             if (((regID = sharedPreferences.getString("registrationID", null)) == null)) {
 
-                NotificationHub hub = new NotificationHub(NotificationSettings.HubName,
-                        NotificationSettings.HubListenConnectionString, this);
+                NotificationHub hub = new NotificationHub(NotificationSettings.getHubName(),
+                        NotificationSettings.getHubListenConnectionString(), this);
                 Log.d(TAG, "Attempting a new registration with NH using FCM token : " + FCM_token);
-                regID = hub.register(FCM_token).getRegistrationId();
+                regID = hub.register(FCM_token, "holds_sync").getRegistrationId();
 
                 // If you want to use tags...
                 // Refer to : https://azure.microsoft.com/en-us/documentation/articles/notification-hubs-routing-tag-expressions/
                 // regID = hub.register(token, "tag1,tag2").getRegistrationId();
-
                 resultString = "New NH Registration Successfully - RegId : " + regID;
                 Log.d(TAG, resultString);
 
@@ -59,8 +58,8 @@ public class RegistrationIntentService extends IntentService {
             // Check if the token may have been compromised and needs refreshing.
             else if ((storedToken = sharedPreferences.getString("FCMtoken", "")) != FCM_token) {
 
-                NotificationHub hub = new NotificationHub(NotificationSettings.HubName,
-                        NotificationSettings.HubListenConnectionString, this);
+                NotificationHub hub = new NotificationHub(NotificationSettings.getHubName(),
+                        NotificationSettings.getHubListenConnectionString(), this);
                 Log.d(TAG, "NH Registration refreshing with token : " + FCM_token);
                 regID = hub.register(FCM_token).getRegistrationId();
 

@@ -19,4 +19,8 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     }
 
+    @Override
+    public void onMessageSent(String s) {
+        super.onMessageSent(s);
+    }
 }

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -103,6 +104,26 @@ public class HttpClient {
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(true);
         httpURLConnection.setUseCaches(false);
+        httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        DataOutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());
+        out.write(rawData.getBytes());
+        out.flush();
+        out.close();
+        return convertStreamToString(httpURLConnection.getInputStream());
+
+    }
+
+    public String postAuthorizationHeader(String urlAddress, String rawData, String authorization)
+            throws Exception {
+        URL url = new URL(urlAddress);
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        httpURLConnection.setRequestMethod("POST");
+        if (authorization != null) {
+            httpURLConnection.setRequestProperty("Authorization", authorization);
+        }
+//        httpURLConnection.setDoInput(true);
+        httpURLConnection.setDoOutput(true);
+//        httpURLConnection.setUseCaches(false);
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
         DataOutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());
         out.write(rawData.getBytes());
