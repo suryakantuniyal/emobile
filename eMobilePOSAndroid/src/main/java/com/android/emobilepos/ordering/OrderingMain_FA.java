@@ -194,6 +194,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
             Gson gson = JsonUtils.getInstance();
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
+            Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
+            Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
+
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
@@ -398,7 +401,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     }
 
 
-
     public static void switchHeaderTitle(boolean newTitle, String title) {
         if (mTransType == Global.TransactionType.RETURN || newTitle) {
             savedHeaderTitle = headerTitle.getText().toString();
@@ -595,7 +597,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.clearListViewData();
             Global.showCDTDefault(this);
             reloadDefaultTransaction();
-        }  else if (resultCode == 2 || resultCode == 0)
+        } else if (resultCode == 2 || resultCode == 0)
             this.refreshView();
     }
 

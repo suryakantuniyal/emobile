@@ -203,7 +203,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 final DinningTable table = (DinningTable) v.getTag();
-                if (associate.getAssignedDinningTables().contains(table)) {
+                if (!preferences.requiresWaiterLogin() || associate.getAssignedDinningTables().contains(table)) {
                     PopupMenu popup = new PopupMenu(getActivity(), v);
                     popup.getMenuInflater().inflate(R.menu.dinning_table_map_menu, popup.getMenu());
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

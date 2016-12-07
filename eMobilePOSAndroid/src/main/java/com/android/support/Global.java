@@ -1521,6 +1521,7 @@ public class Global extends MultiDexApplication {
             sock.close();
             exists = true;
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return exists;

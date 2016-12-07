@@ -96,7 +96,7 @@
     <string name="dlog_msg_error_failed_disable_employee">Failed to disable employee, Please try again\u002E\u002E\u002E</string>
     <string name="dlog_msg_error_shift_needs_to_be_open">Open shift before performing this action</string>
     <string name="dlog_title_claimed_hold">Transaction Claimed</string>
-    <string name="dlog_msg_claimed_hold">Admin Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
+    <string name="dlog_msg_claimed_hold">Manager Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
     <string name="dlog_title_enter_clerk_password">Enter Clerk Password</string>
     <string name="dlog_msg_swiper_loading">Swiper is:</string>
     <string name="connected">CONNECTED</string>
