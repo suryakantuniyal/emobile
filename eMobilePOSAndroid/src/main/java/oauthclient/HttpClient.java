@@ -118,17 +118,20 @@ public class HttpClient {
         URL url = new URL(urlAddress);
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setRequestMethod("POST");
+        httpURLConnection.setRequestProperty("Content-Type", "application/json");
+        httpURLConnection.setRequestProperty("Accept", "application/json");
         if (authorization != null) {
             httpURLConnection.setRequestProperty("Authorization", authorization);
         }
-//        httpURLConnection.setDoInput(true);
+        httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(true);
 //        httpURLConnection.setUseCaches(false);
-        httpURLConnection.setRequestProperty("Content-Type", "application/json");
+
         DataOutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());
         out.write(rawData.getBytes());
         out.flush();
         out.close();
+        int responseCode = httpURLConnection.getResponseCode();
         return convertStreamToString(httpURLConnection.getInputStream());
 
     }

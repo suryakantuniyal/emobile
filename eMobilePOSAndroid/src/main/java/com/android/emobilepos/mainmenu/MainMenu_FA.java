@@ -163,7 +163,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         oauthclient.HttpClient client = new oauthclient.HttpClient();
         String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
-        String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFFfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
+        String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
         try {
             client.postAuthorizationHeader("https://fcm.googleapis.com/fcm/send", json, authorizationKey);
         } catch (Exception e) {
