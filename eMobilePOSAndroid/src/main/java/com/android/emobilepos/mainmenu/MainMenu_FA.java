@@ -28,6 +28,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.MyHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.RegistrationIntentService;
+import com.android.emobilepos.models.firebase.NotificationEvent;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -37,6 +38,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
 import com.microsoft.windowsazure.notifications.NotificationsManager;
 
 import java.lang.reflect.Method;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
+import util.json.JsonUtils;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
@@ -64,9 +67,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         synchTextView = (TextView) findViewById(R.id.synch_title);
         synchTextView.setVisibility(View.GONE);
         tvStoreForward = (TextView) findViewById(R.id.label_cc_offline);
-        NotificationsManager.handleNotifications(this, NotificationSettings.getSenderId(), MyHandler.class);
-        registerWithNotificationHubs();
+        NotificationsManager.handleNotifications(this, new NotificationSettings().getSenderId(), MyHandler.class);
         myPref = new MyPreferences(this);
+        registerWithNotificationHubs();
 
         activity = this;
         global = (Global) getApplication();
@@ -145,8 +148,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     public void registerWithNotificationHubs() {
         if (checkPlayServices()) {
+            String accountNumber = myPref.getAcctNumber();
+            FirebaseMessaging.getInstance().subscribeToTopic(accountNumber);
             // Start IntentService to register this application with FCM.
-            FirebaseMessaging.getInstance().subscribeToTopic("holds_sync");
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
@@ -154,7 +158,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     private void sendFirebaseMessage() {
         FirebaseMessaging messaging = FirebaseMessaging.getInstance();
-        messaging.send(new RemoteMessage.Builder(NotificationSettings.getSenderId() + "@gcm.googleapis.com")
+        messaging.send(new RemoteMessage.Builder(new NotificationSettings().getSenderId() + "@gcm.googleapis.com")
                 .setMessageId(String.valueOf(SystemClock.currentThreadTimeMillis()))
                 .addData("my_message", "Hello world")
                 .addData("my_action", "SAY_HELLO")
@@ -165,6 +169,14 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
         String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
         try {
+            NotificationEvent event = new NotificationEvent();
+            event.setTo("/topics/" + myPref.getAcctNumber());
+            event.getNotification().setMerchantAccount(myPref.getAcctNumber());
+            event.getNotification().setDeviceId(myPref.getDeviceID());
+            event.getNotification().setEmployeeId(myPref.getEmpID());
+            event.getNotification().setNotificationEventAction(NotificationEvent.NotificationEventAction.SYNC_HOLDS);
+            Gson gson = JsonUtils.getInstance();
+            json = gson.toJson(event);
             client.postAuthorizationHeader("https://fcm.googleapis.com/fcm/send", json, authorizationKey);
         } catch (Exception e) {
             e.printStackTrace();

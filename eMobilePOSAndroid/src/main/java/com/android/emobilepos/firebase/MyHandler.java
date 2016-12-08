@@ -9,9 +9,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
+import com.android.database.DBManager;
 import com.android.emobilepos.R;
-import com.android.emobilepos.initialization.SelectAccount_FA;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.firebase.NotificationEvent;
+import com.android.support.SynchMethods;
 import com.microsoft.windowsazure.notifications.NotificationsHandler;
 
 /**
@@ -25,8 +27,12 @@ public class MyHandler extends NotificationsHandler {
     @Override
     public void onReceive(Context context, Bundle bundle) {
         ctx = context;
-        String nhMessage = bundle.getString("gcm.notification.body");
-        sendNotification(nhMessage);
+        String eventAction = bundle.getString("gcm.notification.notificationEventAction");
+        NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.valueOf(eventAction);
+        sendNotification(eventAction);
+
+//        DBManager dbManager = new DBManager(getActivity());
+//        SynchMethods sm = new SynchMethods(dbManager);
     }
 
     private void sendNotification(String msg) {

@@ -9,32 +9,36 @@ import io.realm.annotations.PrimaryKey;
 
 public class NotificationSettings extends RealmObject {
     @PrimaryKey
-    private static String SenderId = "555089729868";
-    private static String HubName = "eMobilePOSNotification";
-    private static String HubListenConnectionString = "Endpoint=sb://emobileposnotification.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=UvYALhl8TJM71bt9OjK/WMmvwtexf1nsRztV6mMsW1c=";
+    private  String SenderId = "555089729868";
+    private  String HubName = "eMobilePOSNotification";
+    private  String HubListenConnectionString = "Endpoint=sb://emobileposnotification.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=UvYALhl8TJM71bt9OjK/WMmvwtexf1nsRztV6mMsW1c=";
     private String registrationToken;
+    private String topicId;
+    private String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
 
-    public static String getSenderId() {
+
+
+    public  String getSenderId() {
         return SenderId;
     }
 
-    public static void setSenderId(String senderId) {
+    public  void setSenderId(String senderId) {
         SenderId = senderId;
     }
 
-    public static String getHubName() {
+    public  String getHubName() {
         return HubName;
     }
 
-    public static void setHubName(String hubName) {
+    public  void setHubName(String hubName) {
         HubName = hubName;
     }
 
-    public static String getHubListenConnectionString() {
+    public  String getHubListenConnectionString() {
         return HubListenConnectionString;
     }
 
-    public static void setHubListenConnectionString(String hubListenConnectionString) {
+    public  void setHubListenConnectionString(String hubListenConnectionString) {
         HubListenConnectionString = hubListenConnectionString;
     }
 
@@ -44,5 +48,21 @@ public class NotificationSettings extends RealmObject {
 
     public void setRegistrationToken(String registrationToken) {
         this.registrationToken = registrationToken;
+    }
+
+    public String getTopicId() {
+        return topicId;
+    }
+
+    public void setTopicId(String topicId) {
+        this.topicId = topicId;
+    }
+
+    public String getAuthorizationKey() {
+        return authorizationKey;
+    }
+
+    public void setAuthorizationKey(String authorizationKey) {
+        this.authorizationKey = authorizationKey;
     }
 }
