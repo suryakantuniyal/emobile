@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.CustomerInventory;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -193,8 +195,11 @@ public class CustomerInventoryHandler {
 		String priceLevelID = new String();
 		if (myPref.isCustSelected())
 			priceLevelID = myPref.getCustPriceLevel();
-		else
-			priceLevelID = myPref.getEmployeePriceLevel();
+		else {
+			AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
+			priceLevelID = assignEmployee.getPricelevelId();
+		}
 
 		sb.append(
 				"SELECT ci.prod_id as '_id', p.prod_name,ci.qty,ci.cust_update,ci.price as 'cust_price',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
@@ -232,8 +237,10 @@ public class CustomerInventoryHandler {
 		String priceLevelID = new String();
 		if (myPref.isCustSelected())
 			priceLevelID = myPref.getCustPriceLevel();
-		else
-			priceLevelID = myPref.getEmployeePriceLevel();
+		else {
+			AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+			priceLevelID = assignEmployee.getPricelevelId();
+		}
 
 		sb.append(
 				"SELECT ci.prod_id, p.prod_name,ci.qty,p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price'");

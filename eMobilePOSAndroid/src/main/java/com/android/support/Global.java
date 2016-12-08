@@ -314,6 +314,7 @@ public class Global extends MultiDexApplication {
     public final static int S_GET_ORDER_PRODUCTS_ATTR = 54;
     public final static int S_PRODUCT_ALIASES = 55;
 
+    public final static int S_GET_ASSIGN_EMPLOYEES = 4;
     public final static int S_GET_SERVER_TIME = 56;
     public final static int S_UPDATE_SYNC_TIME = 57;
     public final static int S_LOCATIONS = 58;

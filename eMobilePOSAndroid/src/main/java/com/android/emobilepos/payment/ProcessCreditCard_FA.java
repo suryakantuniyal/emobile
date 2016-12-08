@@ -34,6 +34,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
@@ -46,6 +47,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
@@ -170,7 +172,8 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         activity = this;
         global = (Global) getApplication();
         myPref = new MyPreferences(activity);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(myPref.getEmployeeDefaultTax());
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        groupTaxRate = TaxesHandler.getGroupTaxRate(assignEmployee.getTaxDefault());
 
         Global.isEncryptSwipe = true;
         cardInfoManager = new CreditCardInfo();

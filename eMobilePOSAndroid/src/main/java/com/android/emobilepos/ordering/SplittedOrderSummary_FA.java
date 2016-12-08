@@ -18,6 +18,7 @@ import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.OrderProductsAttr_DB;
 import com.android.database.OrderProductsHandler;
 import com.android.database.OrderTaxes_DB;
@@ -33,6 +34,7 @@ import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
@@ -76,6 +78,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     GenerateNewID generateNewID;
     public SalesReceiptSplitTypes splitType;
     private Button splitEquallyQtyBtn;
+    private AssignEmployee assignEmployee;
 
     public String getTaxID() {
         return taxID;
@@ -204,6 +207,8 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         Bundle extras = this.getIntent().getExtras();
         preferences = new MyPreferences(this);
         generateNewID = new GenerateNewID(this);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         Gson gson = JsonUtils.getInstance();
         if (extras != null) {
             Type listType = new TypeToken<List<OrderSeatProduct>>() {
@@ -297,7 +302,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         splitEquallyQtyBtn.setVisibility(View.GONE);
         switch (splitType) {
             case SPLIT_SINGLE: {
-                String nextID = preferences.getLastOrdID();
+                String nextID = assignEmployee.getMSLastOrderID();
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                         Order order = null;
@@ -347,7 +352,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 break;
             case SPLIT_BY_SEATS: {
                 HashSet<Integer> joinedGroupIds = new HashSet<Integer>();
-                String nextID = preferences.getLastOrdID();
+                String nextID = assignEmployee.getMSLastOrderID();
 
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER &&
@@ -387,7 +392,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     }
 
     private void setSplitEquallyReceipt(int splitQty) {
-        String nextID = preferences.getLastOrdID();
+        String nextID = assignEmployee.getMSLastOrderID();
         final List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
         for (OrderSeatProduct seatProduct : orderSeatProducts) {
             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {

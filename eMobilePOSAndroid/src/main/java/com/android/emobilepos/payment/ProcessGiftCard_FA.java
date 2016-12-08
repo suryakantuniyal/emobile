@@ -23,12 +23,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.DrawReceiptActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -92,6 +94,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private EMSIDTechUSB _msrUsbSams;
     private NumberUtils numberUtils = new NumberUtils();
     private GiftCardTextWatcher msrTextWatcher;
+    private AssignEmployee assignEmployee;
 
 
     @Override
@@ -100,10 +103,12 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         global = (Global) getApplication();
         activity = this;
         callBack = this;
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         Global.isEncryptSwipe = true;
         myPref = new MyPreferences(activity);
         setContentView(R.layout.process_giftcard_layout);
-        groupTaxRate = TaxesHandler.getGroupTaxRate(myPref.getEmployeeDefaultTax());
+        groupTaxRate = TaxesHandler.getGroupTaxRate(assignEmployee.getTaxDefault());
         cardInfoManager = new CreditCardInfo();
         cardSwipe = (CheckBox) findViewById(R.id.checkboxCardSwipe);
         redeemAll = (CheckBox) findViewById(R.id.checkboxRedeemAll);
@@ -382,7 +387,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
         String cardType = extras.getString("paymentmethod_type");
         payment.setPay_id(extras.getString("pay_id"));
 
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(inv_id);

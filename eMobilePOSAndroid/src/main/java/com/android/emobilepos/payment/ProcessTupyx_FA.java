@@ -21,8 +21,10 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -56,12 +58,15 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
     private Global global;
     private boolean hasBeenCreated = false;
     private NumberUtils numberUtils = new NumberUtils();
+    private AssignEmployee assignEmployee;
 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
         global = (Global) getApplication();
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.tupyx_main_layout);
 
@@ -225,7 +230,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
 
         payment.setPay_id(extras.getString("pay_id"));
 
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(extras.getString("job_id"));

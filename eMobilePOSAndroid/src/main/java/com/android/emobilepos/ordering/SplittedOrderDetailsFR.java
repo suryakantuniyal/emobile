@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.database.MemoTextHandler;
 import com.android.database.OrderProductsHandler;
@@ -28,6 +29,7 @@ import com.android.emobilepos.adapters.SplittedOrderSummaryAdapter;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
@@ -63,6 +65,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
     public SplitedOrder restaurantSplitedOrder;
     private LinearLayout receiptPreview;
+    private AssignEmployee assignEmployee;
 
 
     @Nullable
@@ -72,6 +75,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         MemoTextHandler handler = new MemoTextHandler(getActivity());
         String[] header = handler.getHeader();
         String[] footer = handler.getFooter();
@@ -104,7 +108,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         TextView footer3 = (TextView) detailView.findViewById(R.id.footerLine3textView);
         orderProductSection = (LinearLayout) detailView.findViewById(R.id.order_products_section_linearlayout);
         receiptPreview = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
-        deviceName.setText(String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()));
+        deviceName.setText(String.format("%s(%s)", assignEmployee.getEmpName(), String.valueOf(assignEmployee.getEmpId())));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
 
 

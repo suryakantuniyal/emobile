@@ -17,6 +17,8 @@ import android.util.SparseArray;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
+import com.android.dao.AssignEmployeeDAO;
+import com.android.dao.StoredPaymentsDAO;
 import com.android.database.ClerksHandler;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
@@ -29,7 +31,6 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ProductsHandler;
 import com.android.database.ShiftExpensesDBHandler;
 import com.android.database.ShiftPeriodsDBHandler;
-import com.android.dao.StoredPaymentsDAO;
 import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
@@ -37,9 +38,10 @@ import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
+import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
@@ -104,6 +106,7 @@ public class EMSDeviceDriver {
     protected POSSDK pos_sdk = null;
     PrinterAPI eloPrinterApi;
     protected POSPrinter bixolonPrinter;
+    AssignEmployee employee = AssignEmployeeDAO.getAssignEmployee();
 
 
     protected final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
@@ -531,9 +534,8 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_clerk),
                         clerkHandler.getClerkName(clerk_id) + "(" + clerk_id + ")", lineWidth, 0));
             }
-
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    myPref.getEmpName() + "(" + myPref.getEmpID() + ")", lineWidth, 0));
+                    employee.getEmpName() + "(" + employee.getEmpId() + ")", lineWidth, 0));
 
             String custName = anOrder.cust_name;
             if (custName != null && !custName.isEmpty())
@@ -1530,7 +1532,7 @@ public class EMSDeviceDriver {
                 Date startedDate = sdf1.parse(anOrder.ord_timecreated);
                 Date sentDate = new Date();
 
-                sb.append(getString(R.string.receipt_sent_by)).append(" ").append(myPref.getEmpName()).append(" (");
+                sb.append(getString(R.string.receipt_sent_by)).append(" ").append(employee.getEmpName()).append(" (");
 
                 if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
                     sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), activity, -1)).append(")");
@@ -1740,7 +1742,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
                     myPref.getCustName(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    myPref.getEmpName(), lineWidth, 0));
+                    employee.getEmpName(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     myConsignment.get(0).ConsTrans_ID, lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
@@ -1859,7 +1861,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
                     map.get("cust_name"), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    myPref.getEmpName(), lineWidth, 0));
+                    employee.getEmpName(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     map.get("ConsTrans_ID"), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
@@ -1978,7 +1980,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
                     myPref.getCustName(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    myPref.getEmpName(), lineWidth, 0));
+                    employee.getEmpName(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), lineWidth, 0));
             sb.append(textHandler.newLines(1));
@@ -2047,7 +2049,7 @@ public class EMSDeviceDriver {
         sb.append(textHandler.centeredString("End Of Day Report", lineWidth));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Date", Global.formatToDisplayDate(curDate, activity, 1), lineWidth, 0));
         sb.append(textHandler.newLines(2));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", myPref.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", employee.getEmpName(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
         sb.append(textHandler.centeredString("Summary", lineWidth));
         sb.append(textHandler.newLines(1));
@@ -2266,7 +2268,7 @@ public class EMSDeviceDriver {
 
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk:", shift.get(0), lineWidth, 0));
         MyPreferences myPreferences = new MyPreferences(activity);
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", myPreferences.getEmpName(), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee: ", employee.getEmpName(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
         sb.append("From: ").append(shift.get(7)); //startTime
         sb.append(textHandler.newLines(1));
@@ -2318,7 +2320,7 @@ public class EMSDeviceDriver {
                     0));
 
             sb.append(textHandler.newLines(2));
-            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", myPref.getEmpName(), lineWidth, 0));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", employee.getEmpName(), lineWidth, 0));
             sb.append(textHandler.newLines(2));
 
             sb_refunds.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_refund_summmary),

@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.android.database.DBManager;
 import com.android.database.PaymentsHandler;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.realms.StoreAndForward;
@@ -279,7 +280,8 @@ public class StoredPaymentsDAO {
                     .endsWith("pay_id", "-" + year).findFirst();
             lastPayID = storeAndForward.getPayment().getPay_id();
             if (TextUtils.isEmpty(lastPayID)) {
-                lastPayID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastPayID(lastPayID);
         }

@@ -14,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 public class AboutTab_FR extends Fragment implements OnClickListener {
@@ -31,6 +33,7 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.about_layout, container, false);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         activity = getActivity();
         MyPreferences myPref = new MyPreferences(getActivity());
@@ -42,7 +45,7 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
         posLogo = (ImageView) view.findViewById(R.id.aboutMainLogo);
         posLogo.setOnClickListener(this);
         StringBuilder sb = new StringBuilder();
-        sb.append(myPref.getEmpName()).append(" (").append(myPref.getEmpID()).append(")");
+        sb.append(assignEmployee.getEmpName()).append(" (").append(assignEmployee.getEmpId()).append(")");
         acctNumber.setText(myPref.getAcctNumber());
         employee.setText(sb.toString());
         version.setText(myPref.getBundleVersion());
@@ -52,7 +55,6 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         if (!deleteIsRunning) {
             if (_last_time != 0) {
                 _time_difference = System.currentTimeMillis() - _last_time;
@@ -86,7 +88,6 @@ public class AboutTab_FR extends Fragment implements OnClickListener {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // TODO Auto-generated method stub
             DBManager dbManager = new DBManager(activity);
             dbManager.deleteAllTablesData();
             return null;

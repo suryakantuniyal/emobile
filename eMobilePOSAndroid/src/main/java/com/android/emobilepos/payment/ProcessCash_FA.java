@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
@@ -29,6 +30,7 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -88,7 +90,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
         if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
         } else {
-            custTaxCode = myPref.getEmployeeDefaultTax();
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            custTaxCode = assignEmployee.getTaxDefault();
         }
         groupTaxRate = TaxesHandler.getGroupTaxRate(custTaxCode);
         if (!myPref.getPreferences(MyPreferences.pref_show_tips_for_cash)) {
@@ -820,7 +823,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 else
                     payment = processPayment();
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
             return payment;
         }

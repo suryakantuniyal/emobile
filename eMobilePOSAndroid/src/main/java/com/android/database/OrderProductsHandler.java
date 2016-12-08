@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -379,9 +381,11 @@ public class OrderProductsHandler {
     }
 
     public Cursor getCursorData(String parameter) {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT ").append(sb1.toString()).append(",");
-        if (myPref.getIsVAT())
+        if (assignEmployee.isVAT())
             sb.append("itemTotal AS 'totalLineValue' FROM ");
         else
             sb.append("(itemTotal+prod_taxValue) AS 'totalLineValue' FROM ");

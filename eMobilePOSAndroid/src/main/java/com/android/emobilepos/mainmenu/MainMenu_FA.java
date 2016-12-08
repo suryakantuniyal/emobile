@@ -23,12 +23,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.firebase.MyHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.RegistrationIntentService;
 import com.android.emobilepos.models.firebase.NotificationEvent;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -169,11 +171,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
         String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
         try {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             NotificationEvent event = new NotificationEvent();
             event.setTo("/topics/" + myPref.getAcctNumber());
             event.getNotification().setMerchantAccount(myPref.getAcctNumber());
             event.getNotification().setDeviceId(myPref.getDeviceID());
-            event.getNotification().setEmployeeId(myPref.getEmpID());
+            event.getNotification().setEmployeeId(String.valueOf(assignEmployee.getEmpId()));
             event.getNotification().setNotificationEventAction(NotificationEvent.NotificationEventAction.SYNC_HOLDS);
             Gson gson = JsonUtils.getInstance();
             json = gson.toJson(event);

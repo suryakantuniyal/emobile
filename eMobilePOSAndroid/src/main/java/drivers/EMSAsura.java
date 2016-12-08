@@ -26,6 +26,7 @@ import com.StarMicronics.jasura.JAMagstripeReader;
 import com.StarMicronics.jasura.JAPrinter;
 import com.StarMicronics.jasura.JAPrinter.JAPrintCashDrawer;
 import com.StarMicronics.jasura.JAPrinterStatus;
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.MemoTextHandler;
@@ -35,6 +36,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
@@ -95,6 +97,7 @@ public class EMSAsura extends EMSDeviceDriver
     private JABarcodeReader barcodeReader;
     private JAPrinterStatus status;
     private JAPrintCashDrawer cashDrawer;
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
@@ -949,7 +952,6 @@ public class EMSAsura extends EMSDeviceDriver
         try {
             // port = StarIOPort.getPort(portName, portSettings, 10000,
             // this.activity);
-
             printPref = myPref.getPrintingPreferences();
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
             StringBuilder sb = new StringBuilder();
@@ -970,7 +972,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
                     myPref.getCustName(), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    myPref.getEmpName(), LINE_WIDTH, 0));
+                    assignEmployee.getEmpName(), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0));
             sb.append(textHandler.newLines(3));
@@ -1155,7 +1157,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
                     map.get("cust_name"), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    myPref.getEmpName(), LINE_WIDTH, 0));
+                    assignEmployee.getEmpName(), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     map.get("ConsTrans_ID"), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),

@@ -3,7 +3,9 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.ProductAddons;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -24,6 +26,7 @@ public class ProductAddonsHandler {
     private final String isactive = "isactive";
 
     private final List<String> attr = Arrays.asList(rest_addons, prod_id, cat_id, isactive, _update);
+    private final AssignEmployee assignEmployee;
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
     private List<String[]> addrData;
@@ -34,6 +37,7 @@ public class ProductAddonsHandler {
 
     public ProductAddonsHandler(Activity activity) {
         myPref = new MyPreferences(activity);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         attrHash = new HashMap<String, Integer>();
         addrData = new ArrayList<String[]>();
         sb1 = new StringBuilder();
@@ -195,7 +199,7 @@ public class ProductAddonsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
-            priceLevelID = myPref.getEmployeePriceLevel();
+            priceLevelID = assignEmployee.getPricelevelId();
 
 
         sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");
@@ -246,7 +250,7 @@ public class ProductAddonsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
-            priceLevelID = myPref.getEmployeePriceLevel();
+            priceLevelID = assignEmployee.getPricelevelId();
 
 
         sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");
@@ -294,7 +298,7 @@ public class ProductAddonsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
-            priceLevelID = myPref.getEmployeePriceLevel();
+            priceLevelID = assignEmployee.getPricelevelId();
 
 
         sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");

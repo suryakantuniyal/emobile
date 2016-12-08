@@ -8,6 +8,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.SalesTaxCodesHandler;
 
 import java.security.AccessControlException;
@@ -28,7 +29,7 @@ public class MyPreferences {
 
 
     private final String db_path = "db_path";
-    private final String emp_id = "emp_id";
+//    private final String emp_id = "emp_id";
     private final String ActivationKey = "ActivationKey";
     private final String DeviceID = "DeviceID";
     private final String BundleVersion = "BundleVersion";
@@ -36,19 +37,19 @@ public class MyPreferences {
     private final String AccountNumber = "AccountNumber";
     private final String AccountPassword = "AccountPassword";
     private final String LoginPass = "LoginPass";
-    private final String zone_id = "zone_id";
-    private final String VAT = "VAT";
+//    private final String zone_id = "zone_id";
+//    private final String VAT = "VAT";
 
-    private final String emp_name = "emp_name";
-    private final String emp_lastlogin = "emp_lastlogin";
-    private final String emp_pos = "emp_pos";
-    private final String MSOrderEntry = "MSOrderEntry";
-    private final String MSCardProcessor = "MSCardProcessor";
-    private final String GatewayURL = "GatewayURL";
-    private final String approveCode = "approveCode";
-    private final String MSLastOrderID = "MSLastOrderID";
-    private final String tax_default = "tax_default";
-    private final String pricelevel_id = "pricelevel_id";
+//    private final String emp_name = "emp_name";
+//    private final String emp_lastlogin = "emp_lastlogin";
+//    private final String emp_pos = "emp_pos";
+//    private final String MSOrderEntry = "MSOrderEntry";
+//    private final String MSCardProcessor = "MSCardProcessor";
+//    private final String GatewayURL = "GatewayURL";
+//    private final String approveCode = "approveCode";
+//    private final String MSLastOrderID = "MSLastOrderID";
+//    private final String tax_default = "tax_default";
+//    private final String pricelevel_id = "pricelevel_id";
     private final String pay_id = "pay_id";
     private final String isLoggedIn = "isLoggedIn";
     private final String cust_id = "cust_id";
@@ -57,7 +58,7 @@ public class MyPreferences {
     private final String cust_pricelevel_id = "cust_pricelevel_id";
     private final String cust_email = "cust_email";
     private final String ConsTrans_ID = "ConsTrans_ID";
-    private final String MSLastTransferID = "MSLastTransferID";
+//    private final String MSLastTransferID = "MSLastTransferID";
 
     // Settings from the 'Settings' app menu
     private final String fast_scanning = "fast_scanning";
@@ -255,20 +256,20 @@ public class MyPreferences {
         return "";
     }
 
-    public String getZoneID() {
-        // return "1";
-        return (prefs.getString(zone_id, ""));
-    }
+//    public String getZoneID() {
+//        // return "1";
+//        return (prefs.getString(zone_id, ""));
+//    }
 
-    /* Set/Get Employee ID */
-    public void setEmpID(String id) {
-        prefEditor.putString(emp_id, id);
-        prefEditor.commit();
-    }
-
-    public String getEmpID() {
-        return (prefs.getString(emp_id, ""));
-    }
+//    /* Set/Get Employee ID */
+//    public void setEmpID(String id) {
+//        prefEditor.putString(emp_id, id);
+//        prefEditor.commit();
+//    }
+//
+//    public String getEmpID() {
+//        return (prefs.getString(emp_id, ""));
+//    }
 
     /* Set/Get Password */
     public void setAcctNumber(String number) {
@@ -337,28 +338,28 @@ public class MyPreferences {
         return (prefs.getString(LoginPass, ""));
     }
 
-    public void setAllEmpData(List<String[]> emp_data) {
-
-        prefEditor.putString(emp_id, getData(emp_id, 0, emp_data));
-        prefEditor.putString(zone_id, getData(zone_id, 0, emp_data));
-        prefEditor.putString(emp_name, getData(emp_name, 0, emp_data));
-        prefEditor.putString(emp_lastlogin, getData(emp_lastlogin, 0, emp_data));
-
-        prefEditor.putString(emp_pos, getData(emp_pos, 0, emp_data));
-        prefEditor.putString(MSOrderEntry, getData(MSOrderEntry, 0, emp_data));
-        prefEditor.putString(MSCardProcessor, getData(MSCardProcessor, 0, emp_data));
-        prefEditor.putString(GatewayURL, getData(GatewayURL, 0, emp_data));
-        prefEditor.putString(approveCode, getData(approveCode, 0, emp_data));
-        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), getData(MSLastOrderID, 0, emp_data)));
-        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), getData(MSLastTransferID, 0, emp_data)));
-
-        prefEditor.putString(tax_default, getData(tax_default, 0, emp_data));
-        prefEditor.putString(pricelevel_id, getData(pricelevel_id, 0, emp_data));
-        String val = getData(VAT, 0, emp_data);
-        prefEditor.putBoolean(VAT, Boolean.parseBoolean(val));
-
-        prefEditor.commit();
-    }
+//    public void setAllEmpData(List<String[]> emp_data) {
+//
+//        prefEditor.putString(emp_id, getData(emp_id, 0, emp_data));
+//        prefEditor.putString(zone_id, getData(zone_id, 0, emp_data));
+//        prefEditor.putString(emp_name, getData(emp_name, 0, emp_data));
+//        prefEditor.putString(emp_lastlogin, getData(emp_lastlogin, 0, emp_data));
+//
+//        prefEditor.putString(emp_pos, getData(emp_pos, 0, emp_data));
+//        prefEditor.putString(MSOrderEntry, getData(MSOrderEntry, 0, emp_data));
+//        prefEditor.putString(MSCardProcessor, getData(MSCardProcessor, 0, emp_data));
+//        prefEditor.putString(GatewayURL, getData(GatewayURL, 0, emp_data));
+//        prefEditor.putString(approveCode, getData(approveCode, 0, emp_data));
+//        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), getData(MSLastOrderID, 0, emp_data)));
+//        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), getData(MSLastTransferID, 0, emp_data)));
+//
+//        prefEditor.putString(tax_default, getData(tax_default, 0, emp_data));
+//        prefEditor.putString(pricelevel_id, getData(pricelevel_id, 0, emp_data));
+//        String val = getData(VAT, 0, emp_data);
+//        prefEditor.putBoolean(VAT, Boolean.parseBoolean(val));
+//
+//        prefEditor.commit();
+//    }
 
     public String getData(String tag, int record, List<String[]> data) {
         Integer i = global.dictionary.get(record).get(tag);
@@ -367,30 +368,30 @@ public class MyPreferences {
         }
         return "";
     }
-
-    public String getEmployeePriceLevel() {
-        return prefs.getString(pricelevel_id, "");
-    }
-
-    public String getEmployeeDefaultTax() {
-        return prefs.getString(tax_default, "");
-    }
-
-    public String getEmpName() {
-        return (prefs.getString(emp_name, ""));
-    }
-
-    public String getCardProcessor() {
-        return (prefs.getString(MSCardProcessor, "-1"));
-    }
-
-    public String getGatewayURL() {
-        return (prefs.getString(GatewayURL, ""));
-    }
-
-    public String getApproveCode() {
-        return (prefs.getString(approveCode, ""));
-    }
+//
+//    public String getEmployeePriceLevel() {
+//        return prefs.getString(pricelevel_id, "");
+//    }
+//
+//    public String getEmployeeDefaultTax() {
+//        return prefs.getString(tax_default, "");
+//    }
+//
+//    public String getEmpName() {
+//        return (prefs.getString(emp_name, ""));
+//    }
+//
+//    public String getCardProcessor() {
+//        return (prefs.getString(MSCardProcessor, "-1"));
+//    }
+//
+//    public String getGatewayURL() {
+//        return (prefs.getString(GatewayURL, ""));
+//    }
+//
+//    public String getApproveCode() {
+//        return (prefs.getString(approveCode, ""));
+//    }
 
     public void setLastPayID(String id) {
         prefEditor.putString(pay_id, getValidID(getLastPayID(), id));
@@ -410,25 +411,26 @@ public class MyPreferences {
         return (prefs.getString(ConsTrans_ID, ""));
     }
 
-    public void setLastTransferID(String id) {
-        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), id));
-        prefEditor.commit();
-    }
+//    public void setLastTransferID(String id) {
+//        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), id));
+//        prefEditor.commit();
+//    }
+//
+//    public String getLastTransferID() {
+//        return (prefs.getString(MSLastTransferID, ""));
+//    }
+//
+//    public void setLastOrdID(String id) {
+//        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), id));
+//        prefEditor.commit();
+//    }
 
-    public String getLastTransferID() {
-        return (prefs.getString(MSLastTransferID, ""));
-    }
-
-    public void setLastOrdID(String id) {
-        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), id));
-        prefEditor.commit();
-    }
-
-    public String getLastOrdID() {
-        return (prefs.getString(MSLastOrderID, ""));
-    }
+//    public String getLastOrdID() {
+//        return (prefs.getString(MSLastOrderID, ""));
+//    }
 
     private String getValidID(String curr_id, String new_id) {
+
         if (new_id.length() > 4) {
             String delims = "[\\-]";
             String[] tokens = new_id.split(delims);
@@ -451,7 +453,7 @@ public class MyPreferences {
                     return new_id;
                 else if (new_seq > curr_seq)
                     return new_id;
-            } else if (tokens[0].equals(getEmpID())) {
+            } else if (tokens[0].equals(AssignEmployeeDAO.getAssignEmployee().getEmpId())) {
                 return new_id;
             }
         }
@@ -550,9 +552,9 @@ public class MyPreferences {
         return prefs.getString(cust_name, "");
     }
 
-    public boolean getIsVAT() {
-        return prefs.getBoolean(VAT, false);
-    }
+//    public boolean getIsVAT() {
+//        return prefs.getBoolean(VAT, false);
+//    }
 
     public void setCustPriceLevel(String id) {
         prefEditor.putString(cust_pricelevel_id, id);

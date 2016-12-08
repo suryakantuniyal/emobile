@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -147,8 +149,10 @@ public class ProductsHandler {
         String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
+        else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            priceLevelID = assignEmployee.getPricelevelId();
+        }
 
         if (Global.cat_id.equals("0")) {
 
@@ -399,8 +403,10 @@ public class ProductsHandler {
         String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
+        else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            priceLevelID = assignEmployee.getPricelevelId();
+        }
 
         sb.append(
                 "SELECT  p.prod_id as '_id',p.prod_price as 'master_price'," +
@@ -537,8 +543,10 @@ public class ProductsHandler {
         String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
+        else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            priceLevelID = assignEmployee.getPricelevelId();
+        }
 
         sb.append(
                 "SELECT  p.prod_id as '_id', p.prod_sku as 'prod_sku', p.prod_upc as 'prod_upc',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
@@ -790,8 +798,10 @@ public class ProductsHandler {
         String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
+        else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            priceLevelID = assignEmployee.getPricelevelId();
+        }
 
         sb.append(
                 "SELECT  p.prod_id as '_id', p.prod_prices_group_id as 'prod_prices_group_id', p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ");
@@ -892,8 +902,10 @@ public class ProductsHandler {
         String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
+        else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            priceLevelID = assignEmployee.getPricelevelId();
+        }
 
         sb.append(
                 "SELECT  p.prod_id as '_id',ci.price as 'inventory_price', p.prod_price as 'master_price',vp.price as 'volume_price', p.prod_sku as prod_sku, p.prod_upc as prod_upc, ch.over_price_net as 'chain_price',");

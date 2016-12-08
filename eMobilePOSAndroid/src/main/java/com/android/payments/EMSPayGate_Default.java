@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.util.Xml;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -494,6 +496,8 @@ public class EMSPayGate_Default {
     }
 
     private void generateAccountInfo() throws IllegalArgumentException, IllegalStateException, IOException {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         Encrypt encrypt = new Encrypt(activity);
         serializer.setOutput(writer);
         serializer.startDocument("UTF-8", true);
@@ -505,7 +509,7 @@ public class EMSPayGate_Default {
         serializer.endTag(empstr, "DeviceID");
 
         serializer.startTag(empstr, "EmployeeID");
-        serializer.text(myPref.getEmpID());
+        serializer.text(String.valueOf(assignEmployee.getEmpId()));
         serializer.endTag(empstr, "EmployeeID");
 
         serializer.startTag(empstr, "Account");

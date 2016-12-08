@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.DateUtils;
@@ -1104,7 +1106,8 @@ public class PaymentsHandler {
             cursor.close();
             stmt.close();
             if (TextUtils.isEmpty(lastPayID)) {
-                lastPayID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                lastPayID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastPayID(lastPayID);
         }

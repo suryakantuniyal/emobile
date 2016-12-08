@@ -5,6 +5,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.MyPreferences;
 
@@ -333,7 +335,8 @@ public class ConsignmentTransactionHandler {
             cursor.close();
             stmt.close();
             if (TextUtils.isEmpty(lastID)) {
-                lastID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                lastID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
             myPref.setLastConsTransID(lastID);
         }

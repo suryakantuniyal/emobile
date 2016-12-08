@@ -21,12 +21,14 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCheckHandler;
@@ -89,6 +91,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
     private EditText subtotal, tax1, tax2, amountField;//,tipAmount,promptTipField
     private List<GroupTax> groupTaxRate;
     private NumberUtils numberUtils = new NumberUtils();
+    private AssignEmployee assignEmployee;
 
 
     @Override
@@ -96,13 +99,15 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         super.onCreate(savedInstanceState);
         extras = this.getIntent().getExtras();
         activity = this;
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         myPref = new MyPreferences(activity);
         String custTaxCode;
 
         if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
         } else {
-            custTaxCode = myPref.getEmployeeDefaultTax();
+            custTaxCode = assignEmployee.getTaxDefault();
         }
 
         if (myPref.getPreferences(MyPreferences.pref_process_check_online)) {
@@ -410,7 +415,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment.setAmountTender(amountTender);
         payment.setPay_id(extras.getString("pay_id"));
 
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(inv_id);
@@ -614,7 +619,7 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         payment = new Payment(activity);
 
         payment.setPay_id(extras.getString("pay_id"));
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         payment.setCust_id(extras.getString("cust_id"));
         payment.setCustidkey(custidkey);
 

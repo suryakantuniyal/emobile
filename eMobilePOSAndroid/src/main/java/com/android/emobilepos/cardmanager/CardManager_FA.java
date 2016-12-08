@@ -22,10 +22,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.database.OrderProductsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.realms.PaymentMethod;
@@ -503,6 +505,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
     private void processInquiry() {
         if (populateCardInfo()) {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
             payment = new Payment(this);
 
             GenerateNewID generator = new GenerateNewID(this);
@@ -514,7 +517,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
 
             payment.setCust_id(myPref.getCustID());
             payment.setCustidkey(myPref.getCustIDKey());
-            payment.setEmp_id(myPref.getEmpID());
+            payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
             payment.setPay_name(cardInfoManager.getCardOwnerName());
             payment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());

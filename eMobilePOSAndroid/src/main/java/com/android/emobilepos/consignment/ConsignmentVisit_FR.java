@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.ConsignmentSignaturesDBHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -34,6 +35,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.GenerateNewID;
@@ -115,6 +117,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
         @Override
         protected String doInBackground(String... params) {
             ordersHandler = new OrdersHandler(activity);
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
             orderProductsHandler = new OrderProductsHandler(activity);
             consTransDBHandler = new ConsignmentTransactionHandler(activity);
             ProductsHandler prodHandler = new ProductsHandler(activity);
@@ -132,7 +136,7 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
             consTransID = generator.getNextID(IdType.CONSIGNMENT_ID);
             signatureMap.put("ConsTrans_ID", consTransID);
             for (int i = 0; i < size; i++) {
-                consTransaction.ConsEmp_ID = myPref.getEmpID();
+                consTransaction.ConsEmp_ID = String.valueOf(assignEmployee.getEmpId());
                 consTransaction.ConsCust_ID = myPref.getCustID();
                 consTransaction.ConsProd_ID = Global.consignMapKey.get(i);
                 consTransaction.ConsTrans_ID = consTransID;

@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.MixMatchDAO;
 import com.android.database.ProductsHandler;
 import com.android.database.TaxesGroupHandler;
@@ -25,6 +26,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.MixAndMatchDiscount;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
@@ -68,6 +70,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
 
     private TaxesHandler taxHandler;
     private TaxesGroupHandler taxGroupHandler;
+    private AssignEmployee assignEmployee;
 
     public static OrderTotalDetails_FR init(int val) {
         OrderTotalDetails_FR frag = new OrderTotalDetails_FR();
@@ -95,6 +98,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.order_total_details_layout, container, false);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         myFrag = this;
         taxSelected = 0;
@@ -128,12 +132,12 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         if (myPref.isCustSelected()) {
             custTaxCode = myPref.getCustTaxCode();
             if (custTaxCode == null) {
-                custTaxCode = myPref.getEmployeeDefaultTax();
+                custTaxCode = assignEmployee.getTaxDefault();
             }
         } else if (Global.isFromOnHold)
             custTaxCode = Global.taxID;
         else {
-            custTaxCode = myPref.getEmployeeDefaultTax();
+            custTaxCode = assignEmployee.getTaxDefault();
         }
         taxes.add("Global Tax");
         discount.add("Global Discount");
@@ -753,7 +757,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         tempTaxableAmount = new BigDecimal("0");
         itemsDiscountTotal = new BigDecimal(0);
         setupTaxesHolder();
-        boolean isVAT = myPref.getIsVAT();
+        boolean isVAT = assignEmployee.isVAT();
 
         if (size > 0) {
             BigDecimal amount = new BigDecimal("0.00");

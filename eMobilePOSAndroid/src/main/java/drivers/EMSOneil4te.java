@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.InvProdHandler;
 import com.android.database.InvoicesHandler;
 import com.android.database.PayMethodsHandler;
@@ -17,6 +18,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
@@ -51,6 +53,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
     private EMSDeviceDriver thisInstance;
     private EMSDeviceManager edm;
     private Resources resources;
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
     public void registerAll() {
         this.registerPrinter();
@@ -467,7 +470,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_customer),
                     myPref.getCustName(), LINE_WIDTH, 0)).append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                    myPref.getEmpName(), LINE_WIDTH, 0)).append("\n");
+                    assignEmployee.getEmpName(), LINE_WIDTH, 0)).append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                     Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0)).append("\n");
             sb.append(textHandler.newLines(3));

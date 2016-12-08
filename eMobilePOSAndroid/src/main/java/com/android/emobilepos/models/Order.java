@@ -2,6 +2,8 @@ package com.android.emobilepos.models;
 
 import android.app.Activity;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.Customer;
 import com.android.support.DateUtils;
 import com.android.support.MyPreferences;
@@ -83,7 +85,8 @@ public class Order implements Cloneable {
         isVoid = "0";
         processed = "0"; //need to be 1 when order has been processed or 9 if voided
         ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
-        emp_id = myPref.getEmpID();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        emp_id = String.valueOf(assignEmployee != null ? assignEmployee.getEmpId() : "");
         custidkey = myPref.getCustIDKey();
     }
 

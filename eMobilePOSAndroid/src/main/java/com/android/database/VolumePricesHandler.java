@@ -3,6 +3,8 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -110,8 +112,10 @@ public class VolumePricesHandler {
         }
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
+        else {
+            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+            priceLevelID = assignEmployee.getPricelevelId();
+        }
         sb.append("SELECT * From VolumePrices WHERE prod_id = '");
         sb.append(prod_id).append("' and pricelevel_id = '");
         sb.append(priceLevelID).append("' ORDER BY minQty");

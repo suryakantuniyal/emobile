@@ -18,24 +18,33 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
+import com.android.emobilepos.models.realms.Device;
 import com.android.saxhandler.SaxAllEmployeesHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
+import com.magtek.mobile.android.scra.ArrayOfSCRAConfiguration;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import util.json.JsonUtils;
 
 public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     private ListView myListView;
@@ -224,27 +233,32 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
     public boolean AssignEmployees() {
         Post post = new Post();
-
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(this);
+//
+//        SAXParserFactory spf = SAXParserFactory.newInstance();
+//        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(this);
 
         try {
             String xml = post.postData(4, activity, "");
-            InputSource inSource = new InputSource(new StringReader(xml));
-
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-            xr.setContentHandler(handler);
-            xr.parse(inSource);
-
-            MyPreferences myPref = new MyPreferences(activity);
-            List<String[]> data = handler.getEmpData();
-            myPref.setAllEmpData(data);
+            Gson gson = JsonUtils.getInstance();
+            Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
+            }.getType();
+            List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
+            AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+//
+//            InputSource inSource = new InputSource(new StringReader(xml));
+//
+//            SAXParser sp = spf.newSAXParser();
+//            XMLReader xr = sp.getXMLReader();
+//            xr.setContentHandler(handler);
+//            xr.parse(inSource);
+//
+//            MyPreferences myPref = new MyPreferences(activity);
+//            List<String[]> data = handler.getEmpData();
+//            myPref.setAllEmpData(data);
 
             return true;
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             error_msg_id = R.string.dlog_msg_error_downloading_employee_data;
         }
         return false;
@@ -397,10 +411,18 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // TODO Auto-generated method stub
                 dialog.dismiss();
-                MyPreferences myPref = new MyPreferences(activity);
-                myPref.setEmpID(empID.get(position));
+//                MyPreferences myPref = new MyPreferences(activity);
+//                myPref.setEmpID(empID.get(position));
+                AssignEmployee assignEmployee = new AssignEmployee();
+                assignEmployee.setEmpId(Integer.parseInt(empID.get(position)));
+                try {
+                    List<AssignEmployee> assignEmployees= new ArrayList<>();
+                    assignEmployees.add(assignEmployee);
+                    AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 new selectEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
 
             }
@@ -409,7 +431,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // TODO Auto-generated method stub
                 dialog.dismiss();
             }
         });

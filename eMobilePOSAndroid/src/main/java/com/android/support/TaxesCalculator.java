@@ -2,6 +2,7 @@ package com.android.support;
 
 import android.app.Activity;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.TaxesGroupHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.models.DataTaxes;
@@ -9,6 +10,7 @@ import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.ordering.OrderLoyalty_FR;
 import com.android.emobilepos.ordering.OrderRewards_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
@@ -39,6 +41,7 @@ public class TaxesCalculator {
     private BigDecimal discountable_sub_total;
     private BigDecimal itemsDiscountTotal;
     private BigDecimal taxableDueAmount = new BigDecimal(0.00);
+    AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
     public TaxesCalculator(Activity activity, OrderProduct orderProduct, String taxID, Tax taxSelected,
                            Discount discount, BigDecimal discountable_sub_total, BigDecimal itemsDiscountTotal) {
@@ -85,7 +88,7 @@ public class TaxesCalculator {
         BigDecimal tempSubTotal = new BigDecimal(orderProduct.getItemSubtotal());
         BigDecimal prodQty = new BigDecimal(orderProduct.getOrdprod_qty());
         BigDecimal _temp_subtotal = tempSubTotal;
-        boolean isVAT = myPref.getIsVAT();
+        boolean isVAT = assignEmployee.isVAT();
         if (isVAT) {
             if (orderProduct.getProd_istaxable().equals("1")) {
                 if (orderProduct.getProd_price_updated().equals("0")) {
@@ -460,7 +463,7 @@ public class TaxesCalculator {
         BigDecimal tempTaxableAmount = new BigDecimal("0");
         itemsDiscountTotal = new BigDecimal(0);
         List<DataTaxes> taxesHolder = getTaxesHolder();
-        boolean isVAT = myPref.getIsVAT();
+        boolean isVAT = assignEmployee.isVAT();
 
         BigDecimal sub_total;
         BigDecimal gran_total;

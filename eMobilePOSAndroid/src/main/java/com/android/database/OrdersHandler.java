@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
 import com.android.support.Global;
@@ -189,7 +191,8 @@ public class OrdersHandler {
                 insert.close();
                 Log.d("Order Insert:", order.toString());
                 DinningTableOrderDAO.createDinningTableOrder(order);
-                myPref.setLastOrdID(order.ord_id);
+                AssignEmployeeDAO.updateLastOrderId(order.ord_id);
+//                myPref.setLastOrdID(order.ord_id);
             }
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
@@ -301,10 +304,11 @@ public class OrdersHandler {
     }
 
     public void emptyTableOnHold() {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         DBManager.getDatabase().delete("OrderProduct",
                 "OrderProduct.ord_id IN (SELECT op.ord_id FROM OrderProduct op LEFT JOIN Orders o ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)",
-                new String[]{myPref.getEmpID()});
-        DBManager.getDatabase().delete(table_name, "isOnHold = '1' AND emp_id != ?", new String[]{myPref.getEmpID()});
+                new String[]{String.valueOf(assignEmployee.getEmpId())});
+        DBManager.getDatabase().delete(table_name, "isOnHold = '1' AND emp_id != ?", new String[]{String.valueOf(assignEmployee.getEmpId())});
         DinningTableOrderDAO.truncate();
     }
 
@@ -455,13 +459,14 @@ public class OrdersHandler {
     }
 
     public String getLastOrderId(int deviceId, int year) {
-        String lastOrdID = myPref.getLastOrdID();
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+        String lastOrdID = assignEmployee.getMSLastOrderID();
         boolean getIdFromDB = false;
         StringBuilder sb = new StringBuilder();
         if (TextUtils.isEmpty(lastOrdID) || lastOrdID.length() <= 4) {
             getIdFromDB = true;
         } else {
-            String[] tokens = myPref.getLastOrdID().split("-");
+            String[] tokens = assignEmployee.getMSLastOrderID().split("-");
             if (!tokens[2].equalsIgnoreCase(String.valueOf(year))) {
                 getIdFromDB = true;
             }
@@ -478,9 +483,10 @@ public class OrdersHandler {
             cursor.close();
             stmt.close();
             if (TextUtils.isEmpty(lastOrdID)) {
-                lastOrdID = myPref.getEmpID() + "-" + "00001" + "-" + year;
+                lastOrdID = assignEmployee.getEmpId() + "-" + "00001" + "-" + year;
             }
-            myPref.setLastOrdID(lastOrdID);
+            AssignEmployeeDAO.updateLastOrderId(lastOrdID);
+//            myPref.setLastOrdID(lastOrdID);
         }
 
         return lastOrdID;

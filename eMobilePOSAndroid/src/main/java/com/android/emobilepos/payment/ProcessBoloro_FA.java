@@ -31,8 +31,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
@@ -84,11 +86,13 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
     private boolean hasBeenCreated = false;
     private long storeForwardPaymentId;
     private Button processButton;
+    private AssignEmployee assignEmployee;
 
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activity = this;
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         storeForwardPaymentId = System.currentTimeMillis();
         Bundle extras = this.getIntent().getExtras();
         global = (Global) getApplication();
@@ -199,7 +203,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         payment = new Payment(activity);
         MyPreferences myPref = new MyPreferences(activity);
         payment.setPay_id(extras.getString("pay_id"));
-        payment.setEmp_id(myPref.getEmpID());
+        payment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
 
         if (!extras.getBoolean("histinvoices")) {
             payment.setJob_id(extras.getString("job_id"));

@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.MixMatchDAO;
@@ -53,6 +54,7 @@ import com.android.emobilepos.models.PriceLevel;
 import com.android.emobilepos.models.Product;
 import com.android.emobilepos.models.ProductAddons;
 import com.android.emobilepos.models.ProductAlias;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.realms.PaymentMethod;
@@ -89,6 +91,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -1503,10 +1506,11 @@ public class SynchMethods {
             configuration.setSalesAssociates(location.getValue());
             configurations.add(configuration);
         }
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         MyPreferences preferences = new MyPreferences(activity);
         StringBuilder url = new StringBuilder(activity.getString(R.string.sync_enablermobile_mesasconfig));
-        url.append("/").append(URLEncoder.encode(preferences.getEmpID(), GenerateXML.UTF_8));
+        url.append("/").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getDeviceID(), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
@@ -1913,21 +1917,28 @@ public class SynchMethods {
 
     private void synchEmployeeData(resynchAsync task) throws IOException, SAXException {
 
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(activity);
+//        SAXParserFactory spf = SAXParserFactory.newInstance();
+//        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(activity);
 
         try {
             task.updateProgress(activity.getString(R.string.sync_dload_employee_data));
             String xml = post.postData(4, activity, "");
-            InputSource inSource = new InputSource(new StringReader(xml));
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-            xr.setContentHandler(handler);
-            task.updateProgress(activity.getString(R.string.sync_saving_employee_data));
-            xr.parse(inSource);
-            MyPreferences myPref = new MyPreferences(activity);
-            data = handler.getEmpData();
-            myPref.setAllEmpData(data);
+            Gson gson = JsonUtils.getInstance();
+            Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
+            }.getType();
+            List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
+            AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+//
+//
+//            InputSource inSource = new InputSource(new StringReader(xml));
+//            SAXParser sp = spf.newSAXParser();
+//            XMLReader xr = sp.getXMLReader();
+//            xr.setContentHandler(handler);
+//            task.updateProgress(activity.getString(R.string.sync_saving_employee_data));
+//            xr.parse(inSource);
+//            MyPreferences myPref = new MyPreferences(activity);
+//            data = handler.getEmpData();
+//            myPref.setAllEmpData(data);
 
 
         } catch (Exception e) {

@@ -41,6 +41,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.database.DBManager;
 import com.android.database.EmpInvHandler;
@@ -65,6 +66,7 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
 import com.android.support.GenerateNewID;
@@ -1096,6 +1098,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public static Order buildOrder(Activity activity, Global global,
                                    String _email, String ord_HoldName, String assignedTable, String associateId) {
         MyPreferences myPref = new MyPreferences(activity);
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         Order order = new Order(activity);
         order.assignedTable = assignedTable;
         order.associateID = associateId;
@@ -1122,7 +1126,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         order.tax_id = OrderTotalDetails_FR.taxID;
         order.ord_discount_id = OrderTotalDetails_FR.discountID;
 
-        if (myPref.getIsVAT()) {
+        if (assignEmployee.isVAT()) {
             order.VAT = "1";
         }
 

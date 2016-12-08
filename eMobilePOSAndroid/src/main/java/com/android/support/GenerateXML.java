@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Xml;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.AddressHandler;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.CustomerInventoryHandler;
@@ -25,6 +26,7 @@ import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.shifts.ClockInOut_FA;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -43,6 +45,7 @@ import util.StringUtil;
 public class GenerateXML {
 
     public static final String UTF_8 = "utf-8";
+    private final AssignEmployee assignEmployee;
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
     private Activity thisActivity;
@@ -51,6 +54,8 @@ public class GenerateXML {
 
     public GenerateXML(Activity activity) {
         info = new MyPreferences(activity);
+        assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+
         thisActivity = activity;
         myPref = new MyPreferences(activity);
         if (thisActivity instanceof ClockInOut_FA) {
@@ -65,7 +70,7 @@ public class GenerateXML {
             }
         } else {
             try {
-                ending.append("&EmpID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
+                ending.append("&EmpID=").append(URLEncoder.encode(String.valueOf(assignEmployee==null?"":assignEmployee.getEmpId()), UTF_8));
                 ending.append("&ActivationKey=").append(URLEncoder.encode(info.getActivKey(), UTF_8));
                 ending.append("&DeviceID=").append(URLEncoder.encode(info.getDeviceID(), UTF_8));
                 ending.append("&BundleVersion=").append(URLEncoder.encode(info.getBundleVersion(), UTF_8));
@@ -225,7 +230,7 @@ public class GenerateXML {
 
         try {
             sb.append("updateSyncTime.ashx?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append("&EmpID=").append(URLEncoder.encode(info.getEmpID(), UTF_8)).append("&syncTime=")
+            sb.append("&EmpID=").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), UTF_8)).append("&syncTime=")
                     .append(URLEncoder.encode(time, UTF_8));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -252,7 +257,7 @@ public class GenerateXML {
 
         try {
             sb.append("AssignEmployees.aspx?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append("&MSemployeeID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
+            sb.append("&MSemployeeID=").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -295,8 +300,8 @@ public class GenerateXML {
 
         try {
             sb.append(value).append("?RegID=").append(URLEncoder.encode(info.getAcctNumber(), UTF_8));
-            sb.append("&MSemployeeID=").append(URLEncoder.encode(info.getEmpID(), UTF_8));
-            sb.append("&MSZoneID=").append(URLEncoder.encode(info.getZoneID(), UTF_8));
+            sb.append("&MSemployeeID=").append(URLEncoder.encode(String.valueOf(assignEmployee.getEmpId()), UTF_8));
+            sb.append("&MSZoneID=").append(URLEncoder.encode(assignEmployee.getZoneId(), UTF_8));
             sb.append(ending.toString());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -312,7 +317,7 @@ public class GenerateXML {
         serializer.text(info.getDeviceID());
         serializer.endTag(empstr, "DeviceID");
         serializer.startTag(empstr, "EmployeeID");
-        serializer.text(info.getEmpID());
+        serializer.text(String.valueOf(assignEmployee.getEmpId()));
         serializer.endTag(empstr, "EmployeeID");
         serializer.startTag(empstr, "ActivationKey");
         serializer.text(info.getActivKey());

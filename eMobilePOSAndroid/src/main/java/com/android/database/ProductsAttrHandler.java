@@ -3,6 +3,8 @@ package com.android.database;
 import android.app.Activity;
 import android.database.Cursor;
 
+import com.android.dao.AssignEmployeeDAO;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -199,8 +201,10 @@ public class ProductsAttrHandler
 			String priceLevelID;
 			if(myPref.isCustSelected())
 				priceLevelID = myPref.getCustPriceLevel();
-			else
-				priceLevelID = myPref.getEmployeePriceLevel();
+			else {
+				AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+				priceLevelID = assignEmployee.getPricelevelId();
+			}
 
 			
 			sb_1.append("SELECT  p.prod_id as '_id',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");

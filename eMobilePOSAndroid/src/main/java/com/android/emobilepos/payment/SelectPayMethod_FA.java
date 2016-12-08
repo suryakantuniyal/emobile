@@ -29,6 +29,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.PaymentMethodDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
@@ -41,6 +42,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
@@ -985,6 +987,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
     private Payment loyaltyRewardPayment;
 
     private void processInquiry(boolean isLoyalty) {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         loyaltyRewardPayment = new Payment(this);
         Bundle extras = getIntent().getExtras();
@@ -1003,7 +1006,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         loyaltyRewardPayment.setPay_id(tempPay_id);
         loyaltyRewardPayment.setCust_id(Global.getValidString(extras.getString("cust_id")));
         loyaltyRewardPayment.setCustidkey(Global.getValidString(extras.getString("custidkey")));
-        loyaltyRewardPayment.setEmp_id(myPref.getEmpID());
+        loyaltyRewardPayment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         loyaltyRewardPayment.setJob_id(job_id);
         loyaltyRewardPayment.setPay_name(cardInfoManager.getCardOwnerName());
         loyaltyRewardPayment.setPay_ccnum(cardInfoManager.getCardNumAESEncrypted());

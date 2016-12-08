@@ -12,11 +12,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PayMethodsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.GenerateNewID;
@@ -161,6 +163,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
     }
 
     private Payment getPayment(boolean isLoyalty, BigDecimal chargeAmount) {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
         Payment loyaltyRewardPayment = new Payment(getActivity());
         MyPreferences preferences = new MyPreferences(getActivity());
@@ -182,7 +185,7 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
 
         loyaltyRewardPayment.setCust_id(Global.getValidString(preferences.getCustID()));
         loyaltyRewardPayment.setCustidkey(Global.getValidString(preferences.getCustIDKey()));
-        loyaltyRewardPayment.setEmp_id(preferences.getEmpID());
+        loyaltyRewardPayment.setEmp_id(String.valueOf(assignEmployee.getEmpId()));
         loyaltyRewardPayment.setJob_id(Global.lastOrdID);
 
         loyaltyRewardPayment.setPay_name(cardInfoManager.getCardOwnerName());

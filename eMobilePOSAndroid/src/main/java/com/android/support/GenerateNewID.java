@@ -2,11 +2,13 @@ package com.android.support;
 
 import android.app.Activity;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.ConsignmentTransactionHandler;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
 import com.android.database.TransferLocations_DB;
+import com.android.emobilepos.models.realms.AssignEmployee;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,6 +38,7 @@ public class GenerateNewID {
     }
 
     public String getNextID(IdType idType) {
+        AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
         StringBuilder sb = new StringBuilder();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy", Locale.getDefault());
         String year = sdf.format(new Date());
@@ -43,20 +46,20 @@ public class GenerateNewID {
 
         switch (idType) {
             case ORDER_ID:
-                lastID = OrdersHandler.getInstance(activity).getLastOrderId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                lastID = OrdersHandler.getInstance(activity).getLastOrderId(Integer.parseInt(String.valueOf(assignEmployee.getEmpId())), Integer.parseInt(year));
                 break;
             case PAYMENT_ID:
                 if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
-                    lastID = StoredPaymentsDAO.getLastPaymentId(activity, Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                    lastID = StoredPaymentsDAO.getLastPaymentId(activity, Integer.parseInt(String.valueOf(assignEmployee.getEmpId())), Integer.parseInt(year));
                 } else {
-                    lastID = PaymentsHandler.getInstance(activity).getLastPaymentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                    lastID = PaymentsHandler.getInstance(activity).getLastPaymentId(Integer.parseInt(String.valueOf(assignEmployee.getEmpId())), Integer.parseInt(year));
                 }
                 break;
             case CONSIGNMENT_ID:
-                lastID = ConsignmentTransactionHandler.getInstance(activity).getLastConsignmentId(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                lastID = ConsignmentTransactionHandler.getInstance(activity).getLastConsignmentId(Integer.parseInt(String.valueOf(assignEmployee.getEmpId())), Integer.parseInt(year));
                 break;
             case INVENTORY_TRANSFER_ID:
-                lastID = TransferLocations_DB.getLastTransferID(Integer.parseInt(myPref.getEmpID()), Integer.parseInt(year));
+                lastID = TransferLocations_DB.getLastTransferID(Integer.parseInt(String.valueOf(assignEmployee.getEmpId())), Integer.parseInt(year));
                 break;
         }
 
@@ -64,17 +67,17 @@ public class GenerateNewID {
             lastID = "";
 
         if (lastID.isEmpty() || lastID.length() <= 4) {
-            sb.append(myPref.getEmpID()).append("-").append("00001").append("-").append(year);
+            sb.append(assignEmployee.getEmpId()).append("-").append("00001").append("-").append(year);
         } else {
 
             String[] tokens = lastID.split(delims);
 
             if (tokens[2].equals(year)) {
                 int seq = Integer.parseInt(tokens[1]);
-                sb.append(myPref.getEmpID()).append("-").append(String.format("%05d", (seq + 1))).append("-")
+                sb.append(assignEmployee.getEmpId()).append("-").append(String.format("%05d", (seq + 1))).append("-")
                         .append(year);
             } else {
-                sb.append(myPref.getEmpID()).append("-").append("00001").append("-").append(year);
+                sb.append(assignEmployee.getEmpId()).append("-").append("00001").append("-").append(year);
             }
         }
 

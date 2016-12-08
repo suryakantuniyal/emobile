@@ -209,24 +209,24 @@ public class AddressHandler {
 	
 	
 	
-	public String getLastAddressID()
-	{
-		//SQLiteDatabase db = dbManager.openReadableDB();
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT addr_id FROM Address WHERE addr_id like '").append(myPref.getEmpID()).append("-_____-____' ORDER BY addr_id");
-		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
-		String lastCustID = empStr;
-		if(cursor.moveToLast())
-		{
-			lastCustID = cursor.getString(cursor.getColumnIndex(addr_id));
-		}
-		
-		cursor.close();
-		//db.close();
-		
-		return lastCustID;
-	}
+//	public String getLastAddressID()
+//	{
+//		//SQLiteDatabase db = dbManager.openReadableDB();
+//
+//		StringBuilder sb = new StringBuilder();
+//		sb.append("SELECT addr_id FROM Address WHERE addr_id like '").append(myPref.getEmpID()).append("-_____-____' ORDER BY addr_id");
+//		Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+//		String lastCustID = empStr;
+//		if(cursor.moveToLast())
+//		{
+//			lastCustID = cursor.getString(cursor.getColumnIndex(addr_id));
+//		}
+//
+//		cursor.close();
+//		//db.close();
+//
+//		return lastCustID;
+//	}
 	
 	public Cursor getCursorAddress(String custID)
 	{
