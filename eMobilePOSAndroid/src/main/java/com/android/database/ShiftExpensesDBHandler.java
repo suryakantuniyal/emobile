@@ -3,6 +3,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.util.SparseArray;
 
@@ -31,16 +32,15 @@ public class ShiftExpensesDBHandler {
     public StringBuilder sb1, sb2;
     public final String empStr = "";
     public HashMap<String, Integer> attrHash;
-    public Global global;
 
-    private Activity activity;
+    private Context activity;
 
     public static final String table_name = "Expenses";
 
-    public ShiftExpensesDBHandler(Activity activity) {
-        global = (Global) activity.getApplication();
+    public ShiftExpensesDBHandler(Context activity) {
+//        global = (Global) activity.getApplication();
         this.activity = activity;
-        attrHash = new HashMap<String, Integer>();
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         new DBManager(activity);

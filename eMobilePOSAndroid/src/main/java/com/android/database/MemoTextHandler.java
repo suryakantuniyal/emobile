@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -38,9 +39,9 @@ public class MemoTextHandler {
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 
-	public MemoTextHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		addrData = new ArrayList<String[]>();
+	public MemoTextHandler(Context activity) {
+		attrHash = new HashMap<>();
+		addrData = new ArrayList<>();
 		myPref = new MyPreferences(activity);
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();

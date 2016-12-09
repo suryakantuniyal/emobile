@@ -211,7 +211,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 publishProgress();
                 Post httpClient = new Post();
                 SAXParserFactory spf = SAXParserFactory.newInstance();
-                handler = new SAXPostHandler(activity);
+                handler = new SAXPostHandler();
                 try {
 
                     String xml = httpClient.postData(Global.S_SUBMIT_TIME_CLOCK, activity, null);
@@ -293,7 +293,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
-                handler = new SAXPostHandler(activity);
+                handler = new SAXPostHandler();
 
                 try {
 

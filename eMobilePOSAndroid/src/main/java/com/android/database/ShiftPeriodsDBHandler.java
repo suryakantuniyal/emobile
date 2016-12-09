@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.util.SparseArray;
 
@@ -44,11 +45,11 @@ public class ShiftPeriodsDBHandler {
 
 
     public static final String table_name = "ShiftPeriods";
-    private Activity activity;
+    private Context activity;
 
-    public ShiftPeriodsDBHandler(Activity activity) {
-        global = (Global) activity.getApplication();
-        attrHash = new HashMap<String, Integer>();
+    public ShiftPeriodsDBHandler(Context activity) {
+//        global = (Global) activity.getApplication();
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         this.activity = activity;

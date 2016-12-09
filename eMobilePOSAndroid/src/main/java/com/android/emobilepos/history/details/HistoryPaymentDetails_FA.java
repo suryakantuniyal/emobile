@@ -488,7 +488,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
             try {
                 String xml = post.postData(13, activity, params[0]);

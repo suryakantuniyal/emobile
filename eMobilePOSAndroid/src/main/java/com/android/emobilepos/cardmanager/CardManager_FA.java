@@ -591,7 +591,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
         protected String doInBackground(String... params) {
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
             try {
                 String xml = httpClient.postData(13, activity, urlToPost);

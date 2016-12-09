@@ -428,7 +428,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         @Override
         protected Void doInBackground(Void... params) {
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
             try {
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
                 String generatedURL;
@@ -484,7 +484,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         protected Boolean doInBackground(Void... params) {
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
 
             try {
 
@@ -595,7 +595,7 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
         protected Void doInBackground(Void... params) {
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
             try {
                 EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
                 String generatedURL;

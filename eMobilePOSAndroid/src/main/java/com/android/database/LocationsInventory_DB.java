@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -23,9 +24,9 @@ public class LocationsInventory_DB {
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
 	
-	public LocationsInventory_DB(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		prodData = new ArrayList<String[]>();
+	public LocationsInventory_DB(Context activity) {
+		attrHash = new HashMap<>();
+		prodData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

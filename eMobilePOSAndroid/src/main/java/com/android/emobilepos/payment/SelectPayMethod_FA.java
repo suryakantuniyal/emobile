@@ -716,7 +716,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         handler.updateIsVoid(job_id);
         handler.updateIsProcessed(job_id, "9");
 
-        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
+        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
         Order order = new Order(activity);
         order.ord_id = job_id;
         order.ord_type = orderType;
@@ -745,7 +745,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler processCardPayHandler = new SAXProcessCardPayHandler();
             String xml;
             InputSource inSource;
             SAXParser sp;
@@ -1082,7 +1082,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
             try {
                 String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);
@@ -1161,7 +1161,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap = new HashMap<>();
             try {
                 String xml = httpClient.postData(13, activity, reqChargeLoyaltyReward);

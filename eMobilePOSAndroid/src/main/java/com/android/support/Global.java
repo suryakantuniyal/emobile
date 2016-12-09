@@ -812,7 +812,7 @@ public class Global extends MultiDexApplication {
 
     private static Dialog popDlog;
 
-    public static void showPrompt(Activity activity, int title, String msg) {
+    public static void showPrompt(Context activity, int title, String msg) {
         if (popDlog == null)
             popDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         else {

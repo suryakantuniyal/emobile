@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -64,7 +65,7 @@ public class ProductsHandler {
     private HashMap<String, Integer> attrHash;
     private MyPreferences myPref;
 
-    public ProductsHandler(Activity activity) {
+    public ProductsHandler(Context activity) {
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();

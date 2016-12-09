@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.support.Global;
@@ -31,9 +32,9 @@ public class CategoriesHandler {
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String table_name = "Categories";
 
-	public CategoriesHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		catData = new ArrayList<String[]>();
+	public CategoriesHandler(Context activity) {
+		attrHash = new HashMap<>();
+		catData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);

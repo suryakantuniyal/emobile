@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -39,9 +40,9 @@ public class CustomerInventoryHandler {
 	private List<HashMap<String, Integer>> dictionaryListMap;
 	private final String TABLE_NAME = "CustomerInventory";
 
-	public CustomerInventoryHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		data = new ArrayList<String[]>();
+	public CustomerInventoryHandler(Context activity) {
+		attrHash = new HashMap<>();
+		data = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);

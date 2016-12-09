@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -30,7 +31,7 @@ public class TransferLocations_DB {
     private HashMap<String, Integer> attrHash;
     private MyPreferences myPref;
 
-    public TransferLocations_DB(Activity activity) {
+    public TransferLocations_DB(Context activity) {
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();

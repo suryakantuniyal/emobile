@@ -330,7 +330,7 @@ public class ProcessTupyx_FA extends FragmentActivity implements OnClickListener
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
 

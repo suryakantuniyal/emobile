@@ -75,7 +75,6 @@ import com.android.saxhandler.SAXSyncVoidTransHandler;
 import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
-import com.android.saxhandler.SaxSelectedEmpHandler;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -147,7 +146,7 @@ public class SynchMethods {
         activity = managerInst.getActivity();
         dbManager = managerInst;
         data = new ArrayList<>();
-        if(OAuthManager.isExpired(activity)) {
+        if (OAuthManager.isExpired(activity)) {
             OAuthManager oAuthManager = getOAuthManager(activity);
             try {
                 oAuthManager.requestToken();
@@ -482,7 +481,7 @@ public class SynchMethods {
                 dbManager.updateDB();
             } else if (!proceed) {
                 // failed to synch....
-                if(TextUtils.isEmpty(xml)){
+                if (TextUtils.isEmpty(xml)) {
                     xml = activity.getString(R.string.sync_fail);
                 }
                 Global.showPrompt(activity, R.string.dlog_title_error, xml);
@@ -862,8 +861,7 @@ public class SynchMethods {
     private void sendReverse(Object task) {
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(
-                    activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap;
 
             PaymentsXML_DB _paymentsXML_DB = new PaymentsXML_DB(activity);
@@ -952,7 +950,7 @@ public class SynchMethods {
 
     private void sendVoidTransactions(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXSyncVoidTransHandler voidHandler = new SAXSyncVoidTransHandler();
-        VoidTransactionsHandler voidTrans = new VoidTransactionsHandler(activity);
+        VoidTransactionsHandler voidTrans = new VoidTransactionsHandler();
 
         if (voidTrans.getNumUnsyncVoids() > 0) {
             if (Global.isForceUpload)
@@ -1013,7 +1011,7 @@ public class SynchMethods {
     }
 
     private void sendTimeClock(Object task) throws IOException, SAXException, ParserConfigurationException {
-        SAXPostHandler handler = new SAXPostHandler(activity);
+        SAXPostHandler handler = new SAXPostHandler();
         TimeClockHandler timeClockHandler = new TimeClockHandler(activity);
 
         if (timeClockHandler.getNumUnsyncTimeClock() > 0) {
@@ -1516,7 +1514,7 @@ public class SynchMethods {
         url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
 
-        if(OAuthManager.isExpired(activity)) {
+        if (OAuthManager.isExpired(activity)) {
             getOAuthManager(activity);
         }
         OAuthClient authClient = OAuthManager.getOAuthClient(activity);
@@ -1530,7 +1528,7 @@ public class SynchMethods {
         try {
             oauthclient.HttpClient client = new oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();
-            if(OAuthManager.isExpired(activity)) {
+            if (OAuthManager.isExpired(activity)) {
                 getOAuthManager(activity);
             }
             OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
@@ -1904,7 +1902,7 @@ public class SynchMethods {
     private void synchGetServerTime(resynchAsync task) throws IOException, SAXException {
         task.updateProgress("Getting Server Time");
         xml = post.postData(Global.S_GET_SERVER_TIME, activity, null);
-        SAXPostHandler handler = new SAXPostHandler(activity);
+        SAXPostHandler handler = new SAXPostHandler();
         inSource = new InputSource(new StringReader(xml));
         xr.setContentHandler(handler);
         xr.parse(inSource);

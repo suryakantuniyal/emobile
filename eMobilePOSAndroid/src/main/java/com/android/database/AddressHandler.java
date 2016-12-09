@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.Address;
@@ -52,7 +53,7 @@ public class AddressHandler {
     private MyPreferences myPref;
 
 
-    public AddressHandler(Activity activity) {
+    public AddressHandler(Context activity) {
         attrHash = new HashMap<>();
         addrData = new ArrayList<>();
         sb1 = new StringBuilder();

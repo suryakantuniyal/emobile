@@ -1371,7 +1371,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
                 Post httpClient = new Post();
                 SAXParserFactory spf = SAXParserFactory.newInstance();
-                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
                 _charge_xml = (String) params[0];
 
                 try {
@@ -1452,7 +1452,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
-                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
 
                 try {
                     String reverseXml = "";

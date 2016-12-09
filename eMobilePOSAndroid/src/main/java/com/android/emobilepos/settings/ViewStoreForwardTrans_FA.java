@@ -153,7 +153,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             String xml = httpClient.postData(13, activity, verify_payment_xml);
 
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
@@ -222,7 +222,7 @@ public class ViewStoreForwardTrans_FA extends BaseFragmentActivityActionBar impl
             OrdersHandler dbOrdHandler = new OrdersHandler(activity);
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             String xml = httpClient.postData(13, activity, charge_xml);
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                 //mark StoredPayment for retry
