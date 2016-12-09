@@ -12,7 +12,7 @@ android {
             storePassword '1Enabler1'
         }
     }
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion "23.0.2"
     dexOptions {
         preDexLibraries = false
@@ -26,7 +26,7 @@ android {
     defaultConfig {
         applicationId "com.emobilepos.app"
         minSdkVersion 15
-        targetSdkVersion 15
+        targetSdkVersion 25
         multiDexEnabled = true
     }
 
@@ -50,8 +50,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.78"
-            versionCode 113
+            versionName "1.2.0.83"
+            versionCode 114
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -64,8 +64,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.78"
-            versionCode 113
+            versionName "1.2.0.83"
+            versionCode 114
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -78,8 +78,8 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.78"
-            versionCode 113
+            versionName "1.2.0.83"
+            versionCode 114
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -92,8 +92,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.78"
-            versionCode 113
+            versionName "1.2.0.83"
+            versionCode 114
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -106,8 +106,8 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.78"
-            versionCode 113
+            versionName "1.1.1.83"
+            versionCode 114
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -120,8 +120,8 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.78"
-            versionCode 113
+            versionName "1.1.1.83"
+            versionCode 114
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -241,9 +241,20 @@ dependencies {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.google.firebase:firebase-core:9.2.1'
+    compile 'com.google.android.gms:play-services:9.2.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
     compile files('libs/UniMag_SDK_v5.0.jar')
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude group: 'com.android.support', module: 'design'
+        exclude group: 'com.android.support', module: 'recyclerview-v7'
+    }
 }
 dependencies {
     compile 'com.microsoft.azure:notification-hubs-android-sdk:0.4@aar'

@@ -41,6 +41,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -260,6 +261,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     seatProducts.add((OrderProduct) product.orderProduct.clone());
                 } catch (CloneNotSupportedException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }
@@ -274,6 +276,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     seatProducts.add((OrderProduct) product.orderProduct.clone());
                 } catch (CloneNotSupportedException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }
@@ -288,6 +291,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     seatProducts.add((OrderProduct) product.orderProduct.clone());
                 } catch (CloneNotSupportedException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
             }
         }
@@ -308,9 +312,9 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         Order order = null;
                         try {
                             order = (Order) global.order.clone();
-
                         } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                         SplitedOrder splitedOrder;
                         splitedOrder = new SplitedOrder(this, order);
@@ -360,9 +364,9 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         Order order = null;
                         try {
                             order = (Order) global.order.clone();
-
                         } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
+                            Crashlytics.logException(e);
                         }
                         SplitedOrder splitedOrder = new SplitedOrder(this, order);
                         nextID = generateNewID.getNextID(nextID);
@@ -399,9 +403,9 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 Order order = null;
                 try {
                     order = (Order) global.order.clone();
-
                 } catch (CloneNotSupportedException e) {
                     e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
                 for (int i = 0; i < splitQty; i++) {
                     SplitedOrder splitedOrder = new SplitedOrder(SplittedOrderSummary_FA.this, order);
@@ -455,6 +459,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
             splitedOrder = (SplitedOrder) ((SplitedOrder) getOrderSummaryFR().getGridView().getAdapter().getItem(0)).clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
+            Crashlytics.logException(e);
         }
         getOrderDetailsFR().setReceiptOrder(splitedOrder);
     }

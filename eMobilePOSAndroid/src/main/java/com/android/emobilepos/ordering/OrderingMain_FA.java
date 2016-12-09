@@ -115,7 +115,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     private ProductsHandler handler;
     public static EditText invisibleSearchMain;
     private static TextView headerTitle;
-
+    private static String savedHeaderTitle = "";
+    private static LinearLayout headerContainer;
     // Honeywell Dolphin black
     private DecodeManager mDecodeManager = null;
     private final int SCANTIMEOUT = 500000;
@@ -291,18 +292,18 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     };
 
-    private Handler SearchFieldHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            Bundle theBundle = msg.getData();
-            if (theBundle.getString("message").equals("PerformSearch")) {
-                //call performSearch
-                String text = theBundle.getString("searchfield");
-                if (!text.isEmpty()) {
-                    rightFragment.performSearch(text);
-                }
-            }
-        }
-    };
+//    private Handler SearchFieldHandler = new Handler() {
+//        public void handleMessage(Message msg) {
+//            Bundle theBundle = msg.getData();
+//            if (theBundle.getString("message").equals("PerformSearch")) {
+//                //call performSearch
+//                String text = theBundle.getString("searchfield");
+//                if (!text.isEmpty()) {
+//                    rightFragment.performSearch(text);
+//                }
+//            }
+//        }
+//    };
 
 
     @Override
@@ -396,8 +397,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
     }
 
-    private static String savedHeaderTitle = "";
-    private static LinearLayout headerContainer;
+
 
     public static void switchHeaderTitle(boolean newTitle, String title) {
         if (mTransType == Global.TransactionType.RETURN || newTitle) {
@@ -451,8 +451,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public void onBackPressed() {
         boolean tablet = myPref.getIsTablet();
         orderingAction = OrderingAction.BACK_PRESSED;
-        if (catalogContainer.getVisibility() == View.VISIBLE
-                && (!tablet || (tablet && orientation == Configuration.ORIENTATION_PORTRAIT))) {
+        if (catalogContainer.getVisibility() == View.VISIBLE && (!tablet || orientation == Configuration.ORIENTATION_PORTRAIT)) {
             catalogContainer.setVisibility(View.GONE);
             receiptContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.anim_left_right));
             receiptContainer.setVisibility(View.VISIBLE);
@@ -596,9 +595,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.clearListViewData();
             Global.showCDTDefault(this);
             reloadDefaultTransaction();
-        } else if (resultCode == 9) {
-
-        } else if (resultCode == 2 || resultCode == 0)
+        }  else if (resultCode == 2 || resultCode == 0)
             this.refreshView();
     }
 
@@ -1292,33 +1289,32 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         selectedDinningTableNumber = tableNumber;
     }
 
+//
+//    private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
+//        @Override
+//        protected void onPreExecute() {
+//            myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
+//            myProgressDialog.setMessage("Processing Balance Inquiry...");
+//            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            myProgressDialog.setCancelable(false);
+//            myProgressDialog.show();
+//
+//        }
+//
+//        @Override
+//        protected Void doInBackground(EMSCallBack... params) {
+//            Global.mainPrinterManager.currentDevice.loadScanner(params[0]);
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void result) {
+//            super.onPostExecute(result);
+//            myProgressDialog.dismiss();
+//        }
+//    }
 
-    private class DeviceLoad extends AsyncTask<EMSCallBack, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            myProgressDialog = new ProgressDialog(OrderingMain_FA.this);
-            myProgressDialog.setMessage("Processing Balance Inquiry...");
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(EMSCallBack... params) {
-            Global.mainPrinterManager.currentDevice.loadScanner(params[0]);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            myProgressDialog.dismiss();
-        }
-    }
-
-    private class processAsync extends AsyncTask<String, String, String> {
-        private HashMap<String, String> parsedMap = new HashMap<>();
+    private class processAsync extends AsyncTask<String, String, HashMap<String, String>> {
         private String urlToPost;
         private boolean wasProcessed = false;
         private String errorMsg = "Request could not be processed.";
@@ -1339,11 +1335,12 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected HashMap<String, String> doInBackground(String... params) {
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(OrderingMain_FA.this);
             urlToPost = params[0];
+            HashMap<String, String> parsedMap = new HashMap<>();
 
             try {
                 String xml = httpClient.postData(13, OrderingMain_FA.this, urlToPost);
@@ -1372,14 +1369,15 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                         break;
                 }
 
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                Global.showPrompt(OrderingMain_FA.this, R.string.dlog_title_error, e.getMessage());
             }
 
-            return null;
+            return parsedMap;
         }
 
         @Override
-        protected void onPostExecute(String unused) {
+        protected void onPostExecute(HashMap<String, String> parsedMap) {
             if (Global.isTablet(OrderingMain_FA.this))
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
@@ -1476,18 +1474,18 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             return null;
         }
     }
-
-    private void deleteTransaction() {
-        if (!Global.lastOrdID.isEmpty()) {
-            OrdersHandler dbOrders = new OrdersHandler(this);
-            OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
-            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
-            dbOrders.deleteOrder(Global.lastOrdID);
-            dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
-            for (ProductAttribute val : global.ordProdAttr)
-                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getProductId()));
-        }
-    }
+//
+//    private void deleteTransaction() {
+//        if (!Global.lastOrdID.isEmpty()) {
+//            OrdersHandler dbOrders = new OrdersHandler(this);
+//            OrderProductsHandler dbOrdProd = new OrderProductsHandler(this);
+//            OrderProductsAttr_DB dbOrdAttr = new OrderProductsAttr_DB(this);
+//            dbOrders.deleteOrder(Global.lastOrdID);
+//            dbOrdProd.deleteAllOrdProd(Global.lastOrdID);
+//            for (ProductAttribute val : global.ordProdAttr)
+//                dbOrdAttr.deleteOrderProduct(String.valueOf(val.getProductId()));
+//        }
+//    }
 
     @Override
     public void startSignature() {
@@ -1501,7 +1499,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
     public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
         Orders order = new Orders();
         OrderProduct ord = new OrderProduct();
-        int sum = Double.valueOf(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
+//        int sum = Double.valueOf(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
         if (OrderingMain_FA.returnItem)
             ord.setReturned(true);
         order.setName(product.getProdName());
@@ -1542,13 +1540,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         ord.setOnHand(product.getProdOnHand());
         ord.setImgURL(product.getProdImgName());
         ord.setCat_id(product.getCatId());
-
-        try {
-            ord.setProd_price_points(String.valueOf(product.getProdPricePoints()));
-            ord.setProd_value_points(String.valueOf(product.getProdValuePoints()));
-        } catch (Exception ignored) {
-
-        }
+        ord.setProd_price_points(String.valueOf(product.getProdPricePoints()));
+        ord.setProd_value_points(String.valueOf(product.getProdValuePoints()));
 
         // Still need to do add the appropriate tax/discount value
         ord.setProd_taxValue(new BigDecimal("0.00"));
