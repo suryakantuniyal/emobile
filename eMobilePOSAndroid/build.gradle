@@ -107,7 +107,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.1.1.85"
-            versionCode 114
+            versionCode 115
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
