@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -23,8 +24,8 @@ public class InvoicePaymentsHandler {
 	private HashMap<String, Integer> attrHash;
 	private static final String table_name = "InvoicePayments";
 
-	public InvoicePaymentsHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
+	public InvoicePaymentsHandler(Context activity) {
+		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

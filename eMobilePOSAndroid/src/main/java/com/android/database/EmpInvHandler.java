@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -31,9 +32,9 @@ public class EmpInvHandler {
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String TABLE_NAME = "EmpInv";
 
-	public EmpInvHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		data = new ArrayList<String[]>();
+	public EmpInvHandler(Context activity) {
+		attrHash = new HashMap<>();
+		data = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

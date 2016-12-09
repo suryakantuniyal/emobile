@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -34,8 +35,8 @@ public class VolumePricesHandler {
     private List<HashMap<String, Integer>> dictionaryListMap;
     private MyPreferences myPref;
 
-    public VolumePricesHandler(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
+    public VolumePricesHandler(Context activity) {
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);

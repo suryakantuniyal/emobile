@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -36,7 +37,7 @@ public class ProductsAttrHandler
 	private MyPreferences myPref;
 	private final String TABLE_NAME = "ProductsAttr";
 
-	public ProductsAttrHandler(Activity activity)
+	public ProductsAttrHandler(Context activity)
 	{
 		myPref = new MyPreferences(activity);
 		attrHash = new HashMap<>();

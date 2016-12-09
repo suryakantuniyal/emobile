@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.support.MyPreferences;
 
@@ -34,9 +35,9 @@ public class DeviceDefaultValuesHandler {
 	private List<String[]>addrData;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	
-	public DeviceDefaultValuesHandler(Activity activity)
+	public DeviceDefaultValuesHandler(Context activity)
 	{
-		attrHash = new HashMap<String, Integer>();
+		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);

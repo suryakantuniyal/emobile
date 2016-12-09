@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -29,9 +30,9 @@ public class TermsHandler {
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private static final String table_name = "Terms";
 
-	public TermsHandler(Activity activity) {
-		attrHash = new HashMap<String, Integer>();
-		addrData = new ArrayList<String[]>();
+	public TermsHandler(Context activity) {
+		attrHash = new HashMap<>();
+		addrData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

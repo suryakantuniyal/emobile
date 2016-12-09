@@ -2129,7 +2129,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 
                 @Override
                 public void onClick(View v) {
-                    handleTemplate.insert(myPref.getCustID());
+                    handleTemplate.insert(myPref.getCustID(), global.orderProducts);
                     dlog.dismiss();
                     Global.showPrompt(
                             activity,

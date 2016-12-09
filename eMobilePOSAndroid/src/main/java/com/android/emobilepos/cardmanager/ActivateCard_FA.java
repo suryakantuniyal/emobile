@@ -317,7 +317,7 @@ public class ActivateCard_FA extends BaseFragmentActivityActionBar implements EM
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
 
             try {

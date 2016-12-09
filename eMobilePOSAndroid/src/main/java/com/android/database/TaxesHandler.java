@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.GroupTax;
@@ -40,9 +41,9 @@ public class TaxesHandler {
 
     private static final String table_name = "Taxes";
 
-    public TaxesHandler(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
-        addrData = new ArrayList<String[]>();
+    public TaxesHandler(Context activity) {
+        attrHash = new HashMap<>();
+        addrData = new ArrayList<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);

@@ -679,7 +679,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         handler.updateIsVoid(order_id);
         handler.updateIsProcessed(order_id, "9");
 
-        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
+        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
 
         Order ord = new Order(activity);
         ord.ord_id = order_id;
@@ -749,7 +749,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             String xml;
             InputSource inSource;
             SAXParser sp;

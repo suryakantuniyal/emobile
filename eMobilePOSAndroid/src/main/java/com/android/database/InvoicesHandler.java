@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.support.Global;
@@ -45,14 +46,14 @@ public class InvoicesHandler {
 	private List<String[]> addrData;
 	private List<HashMap<String, Integer>> dictionaryListMap;
 	private MyPreferences myPref;
-	private Activity activity;
+	private Context activity;
 
 	private static final String table_name = "Invoices";
 
-	public InvoicesHandler(Activity activity) {
+	public InvoicesHandler(Context activity) {
 		this.activity = activity;
-		attrHash = new HashMap<String, Integer>();
-		addrData = new ArrayList<String[]>();
+		attrHash = new HashMap<>();
+		addrData = new ArrayList<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		myPref = new MyPreferences(activity);

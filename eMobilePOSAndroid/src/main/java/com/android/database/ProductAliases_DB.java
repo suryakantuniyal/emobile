@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.emobilepos.models.ProductAlias;
 
@@ -23,9 +24,9 @@ public class ProductAliases_DB {
 
     private static final String table_name = "ProductAliases";
 
-    public ProductAliases_DB(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
-        addrData = new ArrayList<String[]>();
+    public ProductAliases_DB(Context activity) {
+        attrHash = new HashMap<>();
+        addrData = new ArrayList<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         new DBManager(activity);

@@ -191,7 +191,7 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
         @Override
         protected void onPostExecute(String xml) {
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(TipAdjustmentFA.this);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             dialog.dismiss();
             if (xml.equals(Global.TIME_OUT) || xml.equals(Global.NOT_VALID_URL) || xml.isEmpty()) {
                 String errorMsg = getString(R.string.dlog_msg_established_connection_failed);
@@ -282,7 +282,7 @@ public class TipAdjustmentFA extends BaseFragmentActivityActionBar implements Vi
                 Post httpClient = new Post();
 
                 SAXParserFactory spf = SAXParserFactory.newInstance();
-                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(TipAdjustmentFA.this);
+                SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
                 String reverseXml = reverseXMLMap.get(PaymentsXML_DB.payment_xml);
                 String chargeXML = reverseXMLMap.get(PaymentsXML_DB.charge_xml);
                 try {

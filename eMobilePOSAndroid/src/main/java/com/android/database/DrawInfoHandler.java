@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.support.DateUtils;
@@ -32,8 +33,8 @@ public class DrawInfoHandler {
     private List<HashMap<String, Integer>> dictionaryListMap;
     private static final String table_name = "DrawDateInfo";
 
-    public DrawInfoHandler(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
+    public DrawInfoHandler(Context activity) {
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         new DBManager(activity);

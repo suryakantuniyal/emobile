@@ -1338,7 +1338,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         protected HashMap<String, String> doInBackground(String... params) {
             Post httpClient = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(OrderingMain_FA.this);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             urlToPost = params[0];
             HashMap<String, String> parsedMap = new HashMap<>();
 

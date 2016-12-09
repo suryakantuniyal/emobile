@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import net.sqlcipher.database.SQLiteDatabase;
@@ -21,9 +22,9 @@ public class PaymentsXML_DB {
 	private StringBuilder mainSB1,mainSB2;
 	private static final String TABLE_NAME = "PaymentsXML";
 
-	public PaymentsXML_DB(Activity activity)
+	public PaymentsXML_DB(Context activity)
 	{
-		attrHash = new HashMap<String,Integer>();
+		attrHash = new HashMap<>();
 		mainSB1 = new StringBuilder();
 		mainSB2 = new StringBuilder();
 		new DBManager(activity);

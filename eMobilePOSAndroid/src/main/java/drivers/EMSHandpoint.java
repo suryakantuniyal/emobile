@@ -115,7 +115,7 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
     private String getWorkingKey(String xml) {
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
         InputSource inSource = new InputSource(new StringReader(xml));
         String workingKey = "";
         SAXParser sp;

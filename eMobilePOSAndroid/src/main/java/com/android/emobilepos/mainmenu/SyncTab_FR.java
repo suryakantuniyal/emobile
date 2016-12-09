@@ -90,7 +90,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         int unsycOrders = (int) ordersHandler.getNumUnsyncOrders();
         sync_salesQty.setText(String.valueOf(unsycOrders));
 
-        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(getActivity());
+        VoidTransactionsHandler voidHandler = new VoidTransactionsHandler();
         int unsyncVoids = (int) voidHandler.getNumUnsyncVoids();
         syncVoidsQty.setText(String.valueOf(unsyncVoids));
 

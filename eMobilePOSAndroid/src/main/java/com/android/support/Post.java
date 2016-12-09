@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.emobilepos.R;
 
@@ -35,7 +36,7 @@ import javax.net.ssl.TrustManagerFactory;
 public class Post {
 
     private String entity = new String();
-    private Activity activity;
+    private Context activity;
     private boolean isShortResponse = false;
     private boolean isPost = false;
     static InputStream keyStoreInputStream;
@@ -73,7 +74,7 @@ public class Post {
 
     }
 
-    public String postData(int type, Activity activity, String varyingVariable) {
+    public String postData(int type, Context activity, String varyingVariable) {
         GenerateXML xml = new GenerateXML(activity);
         this.activity = activity;
         StringBuilder baseURL = new StringBuilder();

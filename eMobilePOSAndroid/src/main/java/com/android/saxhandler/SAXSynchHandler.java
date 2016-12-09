@@ -1,6 +1,7 @@
 package com.android.saxhandler;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.database.AddressHandler;
 import com.android.database.CategoriesHandler;
@@ -42,7 +43,7 @@ import java.util.List;
 
 public class SAXSynchHandler extends DefaultHandler {
 
-	private Activity activity;
+	private Context activity;
 	private boolean isTable;
 	private boolean isAttribute = false;
 	private static List<String> list_data;
@@ -99,7 +100,7 @@ public class SAXSynchHandler extends DefaultHandler {
 	}
 
 
-	public SAXSynchHandler(Activity activity,int syncType) {
+	public SAXSynchHandler(Context activity, int syncType) {
 		this.activity = activity;
 		this.synchType = syncType;
 		temp_data = new HashMap<>();

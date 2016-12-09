@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 
 import net.sqlcipher.database.SQLiteStatement;
 
@@ -22,12 +23,10 @@ public class TermsAndConditionsHandler
 	private List<String[]>data;
 	private List<HashMap<String,Integer>>dictionaryListMap;
 	private final String TABLE_NAME = "TermsAndConditions";
-	private Activity activity;
 
-	public TermsAndConditionsHandler(Activity activity)
+	public TermsAndConditionsHandler(Context activity)
 	{
-		this.activity = activity;
-		attrHash = new HashMap<String,Integer>();
+		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

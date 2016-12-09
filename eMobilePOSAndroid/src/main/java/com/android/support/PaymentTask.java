@@ -25,7 +25,7 @@ public class PaymentTask {
         Post httpClient = new Post();
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
         Response response = new Response();
         try {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, rewardPayment);

@@ -41,7 +41,7 @@ public class BoloroPayment {
     public static HashMap<String, String> executeNFCCheckout(Activity activity, String xml, Payment payment) throws ParserConfigurationException, SAXException, IOException {
         isPolling = true;
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
         Post httpClient = new Post();
         String xmlResponse = httpClient.postData(13, activity, xml);
 
@@ -64,7 +64,7 @@ public class BoloroPayment {
 
     private static HashMap<String, String> executeBoloroPolling(Activity activity, Payment payment, boolean isPolling) {
         SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler(activity);
+        SAXProcessCardPayHandler myParser = new SAXProcessCardPayHandler();
         HashMap<String, String> response = null;
         try {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);

@@ -1463,7 +1463,7 @@ public class GenerateXML {
     }
 
     public void buildVoidTransactions(XmlSerializer serializer) {
-        VoidTransactionsHandler handler = new VoidTransactionsHandler(thisActivity);
+        VoidTransactionsHandler handler = new VoidTransactionsHandler();
         Cursor cursor = handler.getUnsyncVoids();
         cursor.moveToFirst();
         int size = cursor.getCount();

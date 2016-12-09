@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.util.logging.Logger.global;
+
 public class OrderProductsHandler {
 
     private static final String ord_id = "ord_id";
@@ -218,10 +220,10 @@ public class OrderProductsHandler {
 
 
     private void insertAddon(SQLiteStatement insert, String ordprodId) {
-        global.orderProductAddons = Global.orderProductAddonsMap.get(ordprodId);
-        int size = global.orderProductAddons.size();
+        List<OrderProduct> orderProductAddons = Global.orderProductAddonsMap.get(ordprodId);
+        int size = orderProductAddons.size();
         for (int i = 0; i < size; i++) {
-            OrderProduct prod = global.orderProductAddons.get(i);
+            OrderProduct prod = orderProductAddons.get(i);
             insert.bindString(index(addon), TextUtils.isEmpty(prod.getAddon()) ? "0" : prod.getAddon()); // addon
             insert.bindString(index(isAdded), prod.getIsAdded() == null ? "" : prod.getIsAdded()); // isAdded
             insert.bindString(index(isPrinted), TextUtils.isEmpty(prod.getIsPrinted()) ? "0" : prod.getIsPrinted()); // isPrinted

@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.dao.AssignEmployeeDAO;
@@ -35,11 +36,11 @@ public class ProductAddonsHandler {
 
     private static final String table_name = "Product_addons";
 
-    public ProductAddonsHandler(Activity activity) {
+    public ProductAddonsHandler(Context activity) {
         myPref = new MyPreferences(activity);
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-        attrHash = new HashMap<String, Integer>();
-        addrData = new ArrayList<String[]>();
+        attrHash = new HashMap<>();
+        addrData = new ArrayList<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         new DBManager(activity);

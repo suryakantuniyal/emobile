@@ -1,6 +1,7 @@
 package com.android.database;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.support.MyPreferences;
@@ -46,10 +47,10 @@ public class ClerksHandler
 	private MyPreferences myPref;
 	private final String TABLE_NAME = "Clerks";
 
-	public ClerksHandler(Activity activity)
+	public ClerksHandler(Context activity)
 	{
 		myPref = new MyPreferences(activity);
-		attrHash = new HashMap<String,Integer>();
+		attrHash = new HashMap<>();
 		sb1 = new StringBuilder();
 		sb2 = new StringBuilder();
 		new DBManager(activity);

@@ -75,7 +75,6 @@ import com.android.saxhandler.SAXSyncVoidTransHandler;
 import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
-import com.android.saxhandler.SaxSelectedEmpHandler;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -147,7 +146,7 @@ public class SynchMethods {
         activity = managerInst.getActivity();
         dbManager = managerInst;
         data = new ArrayList<>();
-        if(OAuthManager.isExpired(activity)) {
+        if (OAuthManager.isExpired(activity)) {
             OAuthManager oAuthManager = getOAuthManager(activity);
             try {
                 oAuthManager.requestToken();
@@ -164,7 +163,6 @@ public class SynchMethods {
         }
     }
 
-
     private boolean isReceive = false;
 
     public void synchReceive(int type) {
@@ -176,7 +174,6 @@ public class SynchMethods {
     public void getLocationsInventory() {
         new asyncGetLocationsInventory().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 
     private class resynchAsync extends AsyncTask<String, String, String> {
         MyPreferences myPref = new MyPreferences(activity);
@@ -203,88 +200,104 @@ public class SynchMethods {
         @Override
         protected String doInBackground(String... params) {
             try {
-
-                synchGetServerTime(this);
-
-                synchAddresses(this);
-
-                synchCategories(this);
-
-                synchCustomers(this);
-
-                synchEmpInv(this);
-
-                synchProdInv(this);
-
-                synchInvoices(this);
-
-                synchPaymentMethods(this);
-
-                synchPriceLevel(this);
-
-                synchItemsPriceLevel(this);
-
-                synchPrinters(this);
-
-                synchProdCatXref(this);
-
-                synchProdChain(this);
-
-                synchProdAddon(this);
-
-                synchProducts(this);
-
-
-                synchProductAliases(this);
-
-                synchProductImages(this);
-
-                synchDownloadProductsAttr(this);
-
-                synchGetOrdProdAttr(this);
-
-                synchSalesTaxCode(this);
-
-                synchShippingMethods(this);
-
-                synchTaxes(this);
-
-                synchTaxGroup(this);
-
-                synchTerms(this);
-
-                synchMemoText(this);
-
-                synchEmployeeData(this);
-
-                synchAccountLogo(this);
-
-                synchDeviceDefaultValues(this);
-
-                synchDownloadLastPayID(this);
-
-                synchVolumePrices(this);
-
-                synchUoM(this);
-
-                synchGetTemplates(this);
+                updateProgress("Getting Server Time");
+                synchGetServerTime();
+                updateProgress(activity.getString(R.string.sync_dload_address));
+                synchAddresses();
+                updateProgress(activity.getString(R.string.sync_dload_categories));
+                synchCategories();
+                updateProgress(activity.getString(R.string.sync_dload_cust));
+                synchCustomers();
+                updateProgress(activity.getString(R.string.sync_dload_emp_inv));
+                synchEmpInv();
+                updateProgress(activity.getString(R.string.sync_dload_prod_inv));
+                synchProdInv();
+                updateProgress(activity.getString(R.string.sync_dload_invoices));
+                synchInvoices();
+                updateProgress(activity.getString(R.string.sync_dload_pay_methods));
+                synchPaymentMethods();
+                updateProgress(activity.getString(R.string.sync_dload_price_levels));
+                synchPriceLevel();
+                updateProgress(activity.getString(R.string.sync_dload_item_price_levels));
+                synchItemsPriceLevel();
+                updateProgress(activity.getString(R.string.sync_dload_printers));
+                synchPrinters();
+                updateProgress(activity.getString(R.string.sync_dload_prodcatxref));
+                synchProdCatXref();
+                updateProgress(activity.getString(R.string.sync_dload_productchainxref));
+                synchProdChain();
+                updateProgress(activity.getString(R.string.sync_dload_product_addons));
+                synchProdAddon();
+                updateProgress(activity.getString(R.string.sync_dload_products));
+                synchProducts();
+                updateProgress(activity.getString(R.string.sync_dload_product_aliases));
+                synchProductAliases();
+                updateProgress(activity.getString(R.string.sync_dload_products_images));
+                synchProductImages();
+                updateProgress(activity.getString(R.string.sync_dload_products_attributes));
+                synchDownloadProductsAttr();
+                updateProgress(activity.getString(R.string.sync_dload_ordprodattr));
+                synchGetOrdProdAttr();
+                updateProgress(activity.getString(R.string.sync_dload_salestaxcodes));
+                synchSalesTaxCode();
+                updateProgress(activity.getString(R.string.sync_dload_shipmethod));
+                synchShippingMethods();
+                updateProgress(activity.getString(R.string.sync_dload_taxes));
+                synchTaxes();
+                updateProgress(activity.getString(R.string.sync_dload_taxes_group));
+                synchTaxGroup();
+                updateProgress(activity.getString(R.string.sync_dload_terms));
+                synchTerms();
+                updateProgress(activity.getString(R.string.sync_dload_memotext));
+                synchMemoText();
+                updateProgress(activity.getString(R.string.sync_dload_employee_data));
+                synchEmployeeData();
+                updateProgress(activity.getString(R.string.sync_dload_logo));
+                synchAccountLogo();
+                updateProgress(activity.getString(R.string.sync_dload_device_default_values));
+                synchDeviceDefaultValues();
+                updateProgress(activity.getString(R.string.sync_dload_last_pay_id));
+                synchDownloadLastPayID();
+                updateProgress(activity.getString(R.string.sync_dload_volume_prices));
+                synchVolumePrices();
+                updateProgress(activity.getString(R.string.sync_dload_uom));
+                synchUoM();
+                updateProgress(activity.getString(R.string.sync_dload_templates));
+                synchGetTemplates();
 
                 if (Global.isIvuLoto) {
-                    synchIvuLottoDrawDates(this);
+                    updateProgress(activity.getString(R.string.sync_dload_ivudrawdates));
+                    synchIvuLottoDrawDates();
                 }
-                synchDownloadCustomerInventory(this);
-                synchDownloadConsignmentTransaction(this);
-                synchDownloadClerks(this);
-                synchDownloadSalesAssociate(this);
-                synchDownloadDinnerTable(this);
+                updateProgress(activity.getString(R.string.sync_dload_customer_inventory));
+                synchDownloadCustomerInventory();
+                updateProgress(activity.getString(R.string.sync_dload_consignment_transaction));
+                synchDownloadConsignmentTransaction();
+                updateProgress(activity.getString(R.string.sync_dload_clerks));
+                synchDownloadClerks();
+                updateProgress(activity.getString(R.string.sync_dload_salesassociate));
+                synchDownloadSalesAssociate();
+                updateProgress(activity.getString(R.string.sync_dload_dinnertables));
+                synchDownloadDinnerTable();
                 synchSalesAssociateDinnindTablesConfiguration(activity);
-                synchDownloadMixMatch(this);
-                synchDownloadTermsAndConditions(this);
+                updateProgress(activity.getString(R.string.sync_dload_mixmatch));
+                synchDownloadMixMatch();
+                updateProgress(activity.getString(R.string.sync_dload_termsandconditions));
+                synchDownloadTermsAndConditions();
                 if (myPref.getPreferences(MyPreferences.pref_enable_location_inventory)) {
-                    synchLocations(this);
-                    synchLocationsInventory(this);
+                    if (isReceive)
+                        updateProgress(activity.getString(R.string.sync_dload_locations));
+                    else
+                        updateProgress(activity.getString(R.string.sync_dload_locations));
+                    synchLocations();
+                    if (isReceive)
+                        updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
+                    else
+                        updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
+                    synchLocationsInventory();
                 }
-                synchUpdateSyncTime(this);
+                updateProgress("Updating Sync Time");
+                synchUpdateSyncTime();
 
             } catch (Exception ignored) {
 
@@ -319,7 +332,6 @@ public class SynchMethods {
 
     }
 
-
     private boolean isSending = false;
 
     public void synchSend(int type, boolean isFromMainMenu) {
@@ -336,7 +348,6 @@ public class SynchMethods {
         if (!isSending)
             new forceSendAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 
     private class sendAsync extends AsyncTask<String, String, String> {
         boolean proceed = false;
@@ -482,7 +493,7 @@ public class SynchMethods {
                 dbManager.updateDB();
             } else if (!proceed) {
                 // failed to synch....
-                if(TextUtils.isEmpty(xml)){
+                if (TextUtils.isEmpty(xml)) {
                     xml = activity.getString(R.string.sync_fail);
                 }
                 Global.showPrompt(activity, R.string.dlog_title_error, xml);
@@ -492,9 +503,7 @@ public class SynchMethods {
         }
     }
 
-
     private class forceSendAsync extends AsyncTask<Void, String, Void> {
-
 
         @Override
         protected void onPreExecute() {
@@ -513,7 +522,6 @@ public class SynchMethods {
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
-
 
         @Override
         protected void onProgressUpdate(String... params) {
@@ -621,7 +629,6 @@ public class SynchMethods {
         new synchSendOrdersOnHold().execute();
     }
 
-
     private class synchDownloadOnHoldProducts extends AsyncTask<String, String, String> {
         MyPreferences myPref = new MyPreferences(activity);
 
@@ -636,7 +643,6 @@ public class SynchMethods {
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
         }
-
 
         @Override
         protected void onProgressUpdate(String... params) {
@@ -672,7 +678,6 @@ public class SynchMethods {
 
     }
 
-
     private class synchDownloadOnHoldDetails extends AsyncTask<String, String, String> {
         boolean proceedToView = false;
 
@@ -686,7 +691,6 @@ public class SynchMethods {
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
         }
-
 
         @Override
         protected void onProgressUpdate(String... params) {
@@ -735,11 +739,9 @@ public class SynchMethods {
 
     }
 
-
     private class synchSendOrdersOnHold extends AsyncTask<Void, String, String> {
         boolean isError = false;
         String err_msg = "";
-
 
         @Override
         protected void onPreExecute() {
@@ -757,17 +759,14 @@ public class SynchMethods {
 
         }
 
-
         @Override
         protected void onProgressUpdate(String... params) {
             myProgressDialog.setMessage(params[0]);
         }
 
-
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
-
 
         @Override
         protected String doInBackground(Void... params) {
@@ -813,7 +812,6 @@ public class SynchMethods {
 
     }
 
-
     private class asyncGetLocationsInventory extends AsyncTask<Void, String, Void> {
         @Override
         protected void onPreExecute() {
@@ -826,23 +824,28 @@ public class SynchMethods {
             myProgressDialog.show();
         }
 
-
         @Override
         protected void onProgressUpdate(String... params) {
             myProgressDialog.setMessage(params[0]);
         }
 
-
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
 
-
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                synchLocations(this);
-                synchLocationsInventory(this);
+                if (isReceive)
+                    updateProgress(activity.getString(R.string.sync_dload_locations));
+                else
+                    updateProgress(activity.getString(R.string.sync_dload_locations));
+                synchLocations();
+                if (isReceive)
+                    updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
+                else
+                    updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
+                synchLocationsInventory();
             } catch (Exception e) {
             }
             return null;
@@ -862,8 +865,7 @@ public class SynchMethods {
     private void sendReverse(Object task) {
         try {
             SAXParserFactory spf = SAXParserFactory.newInstance();
-            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(
-                    activity);
+            SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler();
             HashMap<String, String> parsedMap;
 
             PaymentsXML_DB _paymentsXML_DB = new PaymentsXML_DB(activity);
@@ -952,7 +954,7 @@ public class SynchMethods {
 
     private void sendVoidTransactions(Object task) throws IOException, SAXException, ParserConfigurationException {
         SAXSyncVoidTransHandler voidHandler = new SAXSyncVoidTransHandler();
-        VoidTransactionsHandler voidTrans = new VoidTransactionsHandler(activity);
+        VoidTransactionsHandler voidTrans = new VoidTransactionsHandler();
 
         if (voidTrans.getNumUnsyncVoids() > 0) {
             if (Global.isForceUpload)
@@ -1013,7 +1015,7 @@ public class SynchMethods {
     }
 
     private void sendTimeClock(Object task) throws IOException, SAXException, ParserConfigurationException {
-        SAXPostHandler handler = new SAXPostHandler(activity);
+        SAXPostHandler handler = new SAXPostHandler();
         TimeClockHandler timeClockHandler = new TimeClockHandler(activity);
 
         if (timeClockHandler.getNumUnsyncTimeClock() > 0) {
@@ -1141,11 +1143,9 @@ public class SynchMethods {
         }
     }
 
-
     /************************************
      * Send On Holds
      ************************************/
-
 
     private String sendOrdersOnHold(synchSendOrdersOnHold task) throws IOException, SAXException, ParserConfigurationException {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
@@ -1205,7 +1205,7 @@ public class SynchMethods {
         }
     }
 
-    public static void synchOrdersOnHoldDetails(Activity activity, String ordID) throws SAXException, IOException {
+    public static void synchOrdersOnHoldDetails(Context activity, String ordID) throws SAXException, IOException {
         try {
             HttpClient client = new HttpClient();
             Gson gson = JsonUtils.getInstance();
@@ -1235,77 +1235,60 @@ public class SynchMethods {
         }
     }
 
-
     /************************************
      * Receive Methods
      ************************************/
 
-
-    private void synchAddresses(resynchAsync task) throws SAXException, IOException {
-
-        task.updateProgress(activity.getString(R.string.sync_dload_address));
+    private void synchAddresses() throws SAXException, IOException {
         post.postData(7, activity, "Address");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_ADDRESS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_address));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchCategories(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_categories));
+    private void synchCategories() throws IOException, SAXException {
         post.postData(7, activity, "Categories");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CATEGORIES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_categories));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchCustomers(resynchAsync task) throws IOException, SAXException {
-
-        task.updateProgress(activity.getString(R.string.sync_dload_cust));
+    private void synchCustomers() throws IOException, SAXException {
         post.postData(7, activity, "Customers");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CUSTOMERS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_customers));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchEmpInv(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_emp_inv));
+    private void synchEmpInv() throws IOException, SAXException {
         post.postData(7, activity, "EmpInv");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_EMPLOYEE_INVOICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_emp_inv));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchProdInv(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_prod_inv));
+    private void synchProdInv() throws IOException, SAXException {
         post.postData(7, activity, "InvProducts");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS_INVOICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_prod_inv));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchInvoices(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_invoices));
+    private void synchInvoices() throws IOException, SAXException {
         post.postData(7, activity, "Invoices");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_INVOICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_invoices));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchPaymentMethods(resynchAsync task) throws IOException, SAXException {
+    private void synchPaymentMethods() throws IOException, SAXException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_pay_methods));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1333,12 +1316,10 @@ public class SynchMethods {
             e.printStackTrace();
         }
 
-
     }
 
-    private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {
+    private void synchPriceLevel() throws IOException, SAXException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_price_levels));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1368,10 +1349,8 @@ public class SynchMethods {
 
     }
 
-
-    private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
+    private void synchItemsPriceLevel() throws IOException, SAXException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_item_price_levels));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1400,8 +1379,7 @@ public class SynchMethods {
         }
     }
 
-    private void synchPrinters(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_printers));
+    private void synchPrinters() throws IOException, SAXException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(activity);
         String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1414,29 +1392,24 @@ public class SynchMethods {
         }
     }
 
-    private void synchProdCatXref(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_prodcatxref));
+    private void synchProdCatXref() throws IOException, SAXException {
         post.postData(7, activity, "ProdCatXref");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODCATXREF);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_prodcatxref));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchProdChain(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_productchainxref));
+    private void synchProdChain() throws IOException, SAXException {
         post.postData(7, activity, "ProductChainXRef");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PROD_CHAIN);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_productchainxref));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchProdAddon(resynchAsync task) throws IOException, SAXException {
+    private void synchProdAddon() throws IOException, SAXException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_product_addons));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1465,10 +1438,9 @@ public class SynchMethods {
         }
     }
 
-    private void synchProducts(resynchAsync task) throws IOException, SAXException {
+    private void synchProducts() throws IOException, SAXException {
         try {
             ProductsHandler productsHandler = new ProductsHandler(activity);
-            task.updateProgress(activity.getString(R.string.sync_dload_products));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1516,7 +1488,7 @@ public class SynchMethods {
         url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
 
-        if(OAuthManager.isExpired(activity)) {
+        if (OAuthManager.isExpired(activity)) {
             getOAuthManager(activity);
         }
         OAuthClient authClient = OAuthManager.getOAuthClient(activity);
@@ -1530,7 +1502,7 @@ public class SynchMethods {
         try {
             oauthclient.HttpClient client = new oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();
-            if(OAuthManager.isExpired(activity)) {
+            if (OAuthManager.isExpired(activity)) {
                 getOAuthManager(activity);
             }
             OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
@@ -1560,10 +1532,9 @@ public class SynchMethods {
         }
     }
 
-    private void synchProductAliases(resynchAsync task) throws IOException, SAXException {
+    private void synchProductAliases() throws IOException, SAXException {
         try {
             ProductAliases_DB productAliasesDB = new ProductAliases_DB(activity);
-            task.updateProgress(activity.getString(R.string.sync_dload_product_aliases));
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
             Log.d("GSon Start", new Date().toString());
@@ -1597,128 +1568,104 @@ public class SynchMethods {
 
     }
 
-    private void synchProductImages(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_products_images));
+    private void synchProductImages() throws IOException, SAXException {
         post.postData(7, activity, "Products_Images");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PROD_IMG);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_products_images));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchSalesTaxCode(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_salestaxcodes));
+    private void synchSalesTaxCode() throws IOException, SAXException {
         post.postData(7, activity, "SalesTaxCodes");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_SALES_TAX_CODE);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_salestaxcodes));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchShippingMethods(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_shipmethod));
+    private void synchShippingMethods() throws IOException, SAXException {
         post.postData(7, activity, "ShipMethod");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_SHIP_METHODS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_shipmethod));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchTaxes(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_taxes));
+    private void synchTaxes() throws IOException, SAXException {
         post.postData(7, activity, "Taxes");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TAXES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_taxes));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchTaxGroup(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_taxes_group));
+    private void synchTaxGroup() throws IOException, SAXException {
         post.postData(7, activity, "Taxes_Group");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TAX_GROUP);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_taxes_group));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchTerms(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_terms));
+    private void synchTerms() throws IOException, SAXException {
         post.postData(7, activity, "Terms");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TERMS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_terms));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchMemoText(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_memotext));
+    private void synchMemoText() throws IOException, SAXException {
         post.postData(7, activity, "memotext");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_MEMO_TXT);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_memotext));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchGetTemplates(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_templates));
+    private void synchGetTemplates() throws IOException, SAXException {
         post.postData(7, activity, "Templates");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TEMPLATES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_templates));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchDownloadCustomerInventory(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_customer_inventory));
+    private void synchDownloadCustomerInventory() throws IOException, SAXException {
         post.postData(7, activity, "GetCustomerInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CUSTOMER_INVENTORY);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_customer_inventory));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchDownloadConsignmentTransaction(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_consignment_transaction));
+    private void synchDownloadConsignmentTransaction() throws IOException, SAXException {
         post.postData(7, activity, "GetConsignmentTransaction");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CONSIGNMENT_TRANSACTION);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_consignment_transaction));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchIvuLottoDrawDates(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_ivudrawdates));
+    private void synchIvuLottoDrawDates() throws IOException, SAXException {
         post.postData(7, activity, "ivudrawdates");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_IVU_LOTTO);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_ivudrawdates));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchAccountLogo(resynchAsync task) {
+    private void synchAccountLogo() {
         GenerateXML generator = new GenerateXML(activity);
         MyPreferences myPref = new MyPreferences(activity);
         URL url;
         InputStream is;
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_logo));
             url = new URL(generator.getAccountLogo());
             is = url.openStream();
             Bitmap bmp = BitmapFactory.decodeStream(is);
 
-            task.updateProgress(activity.getString(R.string.sync_saving_logo));
             int width = bmp.getWidth();
             int height = bmp.getHeight();
             float scale = 0;
@@ -1744,22 +1691,18 @@ public class SynchMethods {
         }
     }
 
-    private void synchDownloadProductsAttr(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(activity.getString(R.string.sync_dload_products_attributes));
+    private void synchDownloadProductsAttr() throws SAXException, IOException {
         post.postData(7, activity, "ProductsAttr");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_PRODUCTS_ATTRIBUTES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_products_attributes));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchDownloadClerks(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(activity.getString(R.string.sync_dload_clerks));
+    private void synchDownloadClerks() throws SAXException, IOException {
         post.postData(7, activity, "Clerks");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_CLERKS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_clerks));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
@@ -1780,9 +1723,7 @@ public class SynchMethods {
         return text.toString();
     }
 
-
-    private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(activity.getString(R.string.sync_dload_dinnertables));
+    private void synchDownloadDinnerTable() throws SAXException, IOException {
         client = new HttpClient();
         GenerateXML xml = new GenerateXML(activity);
         String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
@@ -1795,13 +1736,10 @@ public class SynchMethods {
         }
     }
 
-    private void synchDownloadMixMatch(resynchAsync task) throws SAXException, IOException {
+    private void synchDownloadMixMatch() throws SAXException, IOException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_mixmatch));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
-
-
             InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getMixMatch());
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -1828,15 +1766,12 @@ public class SynchMethods {
         }
     }
 
-
-    private void synchDownloadSalesAssociate(resynchAsync task) throws SAXException, IOException {
+    private void synchDownloadSalesAssociate() throws SAXException, IOException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_salesassociate));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
             String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getSalesAssociate());
-            task.updateProgress(activity.getString(R.string.sync_saving_salesassociate));
             try {
                 SalesAssociateDAO.truncate();
                 SalesAssociateDAO.insert(jsonRequest);
@@ -1848,24 +1783,20 @@ public class SynchMethods {
         }
     }
 
-    private void synchDownloadTermsAndConditions(resynchAsync task) throws SAXException, IOException {
-        task.updateProgress(activity.getString(R.string.sync_dload_termsandconditions));
+    private void synchDownloadTermsAndConditions() throws SAXException, IOException {
         post.postData(7, activity, "TermsAndConditions");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_TERMS_AND_CONDITIONS);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_termsandconditions));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchUoM(resynchAsync task) throws IOException, SAXException {
+    private void synchUoM() throws IOException, SAXException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_uom));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
             String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("UoM"));
-            task.updateProgress(activity.getString(R.string.sync_saving_uom));
             try {
                 UomDAO.truncate();
                 UomDAO.insert(jsonRequest);
@@ -1876,18 +1807,14 @@ public class SynchMethods {
             e.printStackTrace();
         }
 
-
     }
 
-    private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {
-
+    private void synchGetOrdProdAttr() throws IOException, SAXException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_ordprodattr));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
             String jsonRequest = client.httpJsonRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.downloadAll("GetOrderProductsAttr"));
-            task.updateProgress(activity.getString(R.string.sync_saving_uom));
             try {
                 OrderProductAttributeDAO.truncate();
                 OrderProductAttributeDAO.insert(jsonRequest);
@@ -1901,64 +1828,41 @@ public class SynchMethods {
 
     private String _server_time = "";
 
-    private void synchGetServerTime(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress("Getting Server Time");
+    private void synchGetServerTime() throws IOException, SAXException {
         xml = post.postData(Global.S_GET_SERVER_TIME, activity, null);
-        SAXPostHandler handler = new SAXPostHandler(activity);
+        SAXPostHandler handler = new SAXPostHandler();
         inSource = new InputSource(new StringReader(xml));
         xr.setContentHandler(handler);
         xr.parse(inSource);
         _server_time = handler.getData("serverTime", 0);
     }
 
-    private void synchUpdateSyncTime(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress("Updating Sync Time");
+    private void synchUpdateSyncTime() throws IOException, SAXException {
         post.postData(Global.S_UPDATE_SYNC_TIME, activity, _server_time);
     }
 
-    private void synchEmployeeData(resynchAsync task) throws IOException, SAXException {
-
-//        SAXParserFactory spf = SAXParserFactory.newInstance();
-//        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(activity);
-
+    private void synchEmployeeData() throws IOException, SAXException {
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_employee_data));
             String xml = post.postData(4, activity, "");
             Gson gson = JsonUtils.getInstance();
             Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
             }.getType();
             List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
             AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
-//
-//
-//            InputSource inSource = new InputSource(new StringReader(xml));
-//            SAXParser sp = spf.newSAXParser();
-//            XMLReader xr = sp.getXMLReader();
-//            xr.setContentHandler(handler);
-//            task.updateProgress(activity.getString(R.string.sync_saving_employee_data));
-//            xr.parse(inSource);
-//            MyPreferences myPref = new MyPreferences(activity);
-//            data = handler.getEmpData();
-//            myPref.setAllEmpData(data);
-
-
         } catch (Exception e) {
         }
         data.clear();
     }
 
-    private void synchDownloadLastPayID(resynchAsync task) {
+    private void synchDownloadLastPayID() {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
-
         try {
-            task.updateProgress(activity.getString(R.string.sync_dload_last_pay_id));
             String xml = post.postData(6, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
-            task.updateProgress(activity.getString(R.string.sync_saving_last_pay_id));
             xr.parse(inSource);
             if (!handler.getData().isEmpty()) {
                 MyPreferences myPref = new MyPreferences(activity);
@@ -1969,56 +1873,35 @@ public class SynchMethods {
         }
     }
 
-    private void synchDeviceDefaultValues(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_device_default_values));
+    private void synchDeviceDefaultValues() throws IOException, SAXException {
         post.postData(7, activity, "DeviceDefaultValues");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_DEVICE_DEFAULT_VAL);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_device_default_values));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
 
     }
 
-    private void synchVolumePrices(resynchAsync task) throws IOException, SAXException {
-        task.updateProgress(activity.getString(R.string.sync_dload_volume_prices));
+    private void synchVolumePrices() throws IOException, SAXException {
         post.postData(7, activity, "VolumePrices");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_VOLUME_PRICES);
         File tempFile = new File(tempFilePath);
-        task.updateProgress(activity.getString(R.string.sync_saving_volume_prices));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchLocations(Object task) throws IOException, SAXException {
-        if (isReceive)
-            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_dload_locations));
-        else
-            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_dload_locations));
+    private void synchLocations() throws IOException, SAXException {
         post.postData(7, activity, "GetLocations");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_LOCATIONS);
-        //tempGenerateFile(false);
         File tempFile = new File(tempFilePath);
-        if (isReceive)
-            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_saving_locations));
-        else
-            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_saving_locations));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
 
-    private void synchLocationsInventory(Object task) throws IOException, SAXException {
-        if (isReceive)
-            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
-        else
-            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_dload_locations_inventory));
+    private void synchLocationsInventory() throws IOException, SAXException {
         post.postData(7, activity, "GetLocationsInventory");
         SAXSynchHandler synchHandler = new SAXSynchHandler(activity, Global.S_LOCATIONS_INVENTORY);
         File tempFile = new File(tempFilePath);
-        if (isReceive)
-            ((resynchAsync) task).updateProgress(activity.getString(R.string.sync_saving_locations_inventory));
-        else
-            ((asyncGetLocationsInventory) task).updateProgress(activity.getString(R.string.sync_saving_locations_inventory));
         sp.parse(tempFile, synchHandler);
         tempFile.delete();
     }
