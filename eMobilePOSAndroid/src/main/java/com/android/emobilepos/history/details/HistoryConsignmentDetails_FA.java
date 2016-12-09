@@ -119,7 +119,7 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
 
         custName.setText(extras.getString("cust_name"));
 
-        consignDate.setText(Global.formatToDisplayDate(extras.getString("Cons_timecreated"), this, 3));
+        consignDate.setText(Global.formatToDisplayDate(extras.getString("Cons_timecreated"),  3));
 
         lView.addHeaderView(lvHeaderView);
     }

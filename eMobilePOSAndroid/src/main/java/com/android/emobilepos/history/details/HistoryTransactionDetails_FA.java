@@ -242,7 +242,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         String curDate = sdf.format(new Date());
         if (order.isVoid != null && (order.isVoid.equals("1") ||
-                !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated, activity, 0)))) {
+                !curDate.equals(Global.formatToDisplayDate(order.ord_timecreated,  0)))) {
             btnVoid.setEnabled(false);
             btnVoid.setClickable(false);
         } else {

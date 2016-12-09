@@ -85,7 +85,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
         timeClockHandler = new TimeClockHandler(activity);
 
         TextView clockTodayDate = (TextView) findViewById(R.id.topDate);
-        clockTodayDate.setText(Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 0));
+        clockTodayDate.setText(Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss),  0));
         clerkName = (TextView) findViewById(R.id.clockClerkNameID);
         clockType = (TextView) findViewById(R.id.clockType);
         clockDateTime = (TextView) findViewById(R.id.clockDateTime);
@@ -446,7 +446,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
             if (isValid) {
                 if (isOut) {
                     clockType.setText("OUT");
-                    clockDateTime.setText(Global.formatToDisplayDate(outStringDate, activity, 3));
+                    clockDateTime.setText(Global.formatToDisplayDate(outStringDate,  3));
 
                     switchButton(true);
                 } else {
@@ -454,7 +454,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                     hourDifference = secs / 3600;
 
                     clockType.setText("IN");
-                    clockDateTime.setText(Global.formatToDisplayDate(inStringDate, activity, 3));
+                    clockDateTime.setText(Global.formatToDisplayDate(inStringDate,  3));
 
                     switchButton(false);
                 }
@@ -498,7 +498,7 @@ public class ClockInOut_FA extends FragmentActivity implements OnClickListener {
                         tp.getCurrentHour(), tp.getCurrentMinute(), 0);
 
                 listTimeClock.add(createTimeClock(true, formatDate(date)));
-                askForAdminPassDlg(Global.formatToDisplayDate(formatDate(date), activity, 3));
+                askForAdminPassDlg(Global.formatToDisplayDate(formatDate(date),  3));
 
             }
         });

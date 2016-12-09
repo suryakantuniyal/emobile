@@ -91,7 +91,7 @@ public class ConsignmentHistory_FA extends BaseFragmentActivityActionBar
 			
 			holder.prod_id.setText(cursor.getString(holder.i_prod_id));
 			holder.prod_name.setText(cursor.getString(holder.i_prod_name));
-			holder.last_update.setText(Global.formatToDisplayDate(cursor.getString(holder.i_last_update), activity, 0));
+			holder.last_update.setText(Global.formatToDisplayDate(cursor.getString(holder.i_last_update),  0));
 			holder.prod_qty.setText(cursor.getString(holder.i_prod_qty));
 			
 			tempPrice = cursor.getString(holder.i_cust_price);

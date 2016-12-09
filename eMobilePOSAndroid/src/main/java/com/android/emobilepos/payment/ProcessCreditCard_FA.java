@@ -1578,7 +1578,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 dbOrders.updateOrderStoredFwd(payment.getJob_id(), "1");
             } else {
                 PaymentsHandler payHandler = new PaymentsHandler(this);
-                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"), global.encodedImage);
             }
 
             if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
@@ -1669,7 +1669,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     dbOrders.updateOrderStoredFwd(PaymentsHandler.getLastPaymentInserted().getJob_id(), "1");
                 } else {
                     PaymentsHandler payHandler = new PaymentsHandler(this);
-                    Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+                    Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"), global.encodedImage);
                 }
 
                 if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
@@ -1681,7 +1681,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                     finishPaymentTransaction(PaymentsHandler.getLastPaymentInserted());
             } else {
                 PaymentsHandler payHandler = new PaymentsHandler(this);
-                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"));
+                Global.amountPaid = payHandler.updateSignaturePayment(extras.getString("pay_id"), global.encodedImage);
                 walkerReader.submitSignature();
             }
         }

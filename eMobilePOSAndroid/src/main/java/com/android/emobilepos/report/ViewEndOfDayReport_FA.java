@@ -51,11 +51,11 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         Button btnPrint = (Button) findViewById(R.id.btnPrint);
         btnDate.setOnClickListener(this);
         btnPrint.setOnClickListener(this);
-        mDate = Global.formatToDisplayDate(curDate, activity, 0);
+        mDate = Global.formatToDisplayDate(curDate, 0);
         btnDate.setText(mDate);
         StickyListHeadersListView myListview = (StickyListHeadersListView) findViewById(R.id.listView);
         myListview.setAreHeadersSticky(false);
-        adapter = new ReportEndDayAdapter(this, Global.formatToDisplayDate(curDate, activity, 4), null);
+        adapter = new ReportEndDayAdapter(this, Global.formatToDisplayDate(curDate, 4), null);
         myListview.setAdapter(adapter);
     }
 
@@ -219,8 +219,8 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
             cal.set(year, monthOfYear, dayOfMonth);
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
             curDate = sdf2.format(cal.getTime());
-            adapter.setNewDate(Global.formatToDisplayDate(curDate, getActivity(), 4));
-            mDate = Global.formatToDisplayDate(curDate, getActivity(), 0);
+            adapter.setNewDate(Global.formatToDisplayDate(curDate, 4));
+            mDate = Global.formatToDisplayDate(curDate, 0);
             btnDate.setText(mDate);
         }
     }

@@ -1,6 +1,7 @@
 package com.android.dao;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 
@@ -135,8 +136,8 @@ public class StoredPaymentsDAO {
             } else {
                 paymentDetails.setPaymethod_name(payment.getPaymentMethod().getPaymethod_name());
             }
-            paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(), activity, 0));
-            paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(), activity, 2));
+            paymentDetails.setPay_date(Global.formatToDisplayDate(payment.getPay_date(),  0));
+            paymentDetails.setPay_timecreated(Global.formatToDisplayDate(payment.getPay_timecreated(),  2));
             paymentDetails.setCust_name(haveCustomer ? cursor.getString(cursor.getColumnIndex("cust_name")) : "Unknown");
             paymentDetails.setOrd_total(payment.getPay_amount());
             paymentDetails.setPay_amount(payment.getPay_amount());
@@ -260,7 +261,7 @@ public class StoredPaymentsDAO {
         }
     }
 
-    public static String getLastPaymentId(Activity activity, int deviceId, int year) {
+    public static String getLastPaymentId(Context activity, int deviceId, int year) {
         MyPreferences myPref = new MyPreferences(activity);
         String lastPayID = myPref.getLastPayID();
         boolean getIdFromRealm = false;

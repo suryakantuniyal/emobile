@@ -22,8 +22,8 @@ import java.util.Set;
 public class MyPreferences {
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
-    private Activity activity;
-    private Global global;
+    private Context context;
+//    private Global global;
 
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
 
@@ -183,16 +183,16 @@ public class MyPreferences {
     private SharedPreferences sharedPref;
     private String defaultUnitsName;
 
-    public MyPreferences(Activity activity) {
-        this.activity = activity;
+    public MyPreferences(Context context) {
+        this.context = context;
         // prefEditor =
         // PreferenceManager.getDefaultSharedPreferences(context).edit();
         // prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefEditor = activity.getSharedPreferences(this.MY_SHARED_PREF, Context.MODE_PRIVATE).edit();
-        prefs = activity.getSharedPreferences(this.MY_SHARED_PREF, Context.MODE_PRIVATE);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
+        prefEditor = context.getSharedPreferences(this.MY_SHARED_PREF, Context.MODE_PRIVATE).edit();
+        prefs = context.getSharedPreferences(this.MY_SHARED_PREF, Context.MODE_PRIVATE);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        global = (Global) activity.getApplication();
+//        global = (Global) activity.getApplication();
 
         // prefEditor.putString(BundleVersion, appVersion);
         // prefEditor.commit();
@@ -311,7 +311,7 @@ public class MyPreferences {
     public String getBundleVersion() {
         PackageInfo pInfo = null;
         try {
-            pInfo = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
+            pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         } catch (NameNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -361,13 +361,13 @@ public class MyPreferences {
 //        prefEditor.commit();
 //    }
 
-    public String getData(String tag, int record, List<String[]> data) {
-        Integer i = global.dictionary.get(record).get(tag);
-        if (i != null) {
-            return data.get(record)[i];
-        }
-        return "";
-    }
+//    public String getData(String tag, int record, List<String[]> data) {
+//        Integer i = global.dictionary.get(record).get(tag);
+//        if (i != null) {
+//            return data.get(record)[i];
+//        }
+//        return "";
+//    }
 //
 //    public String getEmployeePriceLevel() {
 //        return prefs.getString(pricelevel_id, "");
@@ -615,9 +615,6 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-    public String getXMLAction(String key) {
-        return global.xmlActions.get(key);
-    }
 
     public boolean getPreferences(String key, boolean defaultValue) {
         return sharedPref.getBoolean(key, defaultValue);
@@ -1034,7 +1031,7 @@ public class MyPreferences {
 
     // public void setMainMenuSettings(boolean[] values)
     // {
-    // global.initSalesMenuTab(this.activity);
+    // global.initSalesMenuTab(this.context);
     // String[] mainMenuList = global.getSalesMainMenuList();
     //
     // int size = values.length;

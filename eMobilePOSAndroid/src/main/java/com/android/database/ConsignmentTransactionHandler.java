@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 
@@ -47,8 +48,8 @@ public class ConsignmentTransactionHandler {
 
     private final String TABLE_NAME = "ConsignmentTransaction";
 
-    public ConsignmentTransactionHandler(Activity activity) {
-        attrHash = new HashMap<String, Integer>();
+    public ConsignmentTransactionHandler(Context activity) {
+        attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();
         myPref = new MyPreferences(activity);
@@ -307,7 +308,7 @@ public class ConsignmentTransactionHandler {
         return c;
     }
 
-    public static ConsignmentTransactionHandler getInstance(Activity activity) {
+    public static ConsignmentTransactionHandler getInstance(Context activity) {
         return new ConsignmentTransactionHandler(activity);
     }
 

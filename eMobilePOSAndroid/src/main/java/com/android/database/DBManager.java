@@ -25,7 +25,7 @@ public class DBManager {
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
-    private Activity activity;
+    private Context activity;
 
     private DBManager managerInstance;
     private DatabaseHelper DBHelper;
@@ -70,7 +70,7 @@ public class DBManager {
         }
     }
 
-    public DBManager(Activity activity) {
+    public DBManager(Context activity) {
 
         this.activity = activity;
         myPref = new MyPreferences(activity);
@@ -228,7 +228,7 @@ public class DBManager {
         return false;
     }
 
-    public Activity getActivity() {
+    public Context getActivity() {
         return this.activity;
     }
 

@@ -497,13 +497,13 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
                 txnID.setText(sb.toString());
                 createdDate.setText(Global.formatToDisplayDate(cursor
                                 .getString(cursor.getColumnIndex("inv_timecreated")),
-                        activity, 0));
+                         0));
                 dueDate.setText(Global.formatToDisplayDate(
                         cursor.getString(cursor.getColumnIndex("inv_duedate")),
-                        activity, 0));
+                         0));
                 shipDate.setText(Global.formatToDisplayDate(
                         cursor.getString(cursor.getColumnIndex("inv_shipdate")),
-                        activity, 0));
+                         0));
 
                 double tempVal = Double.parseDouble(cursor.getString(cursor
                         .getColumnIndex("inv_total")));

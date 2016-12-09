@@ -31,7 +31,7 @@ public class MyHandler extends NotificationsHandler {
         NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.valueOf(eventAction);
         sendNotification(eventAction);
 
-//        DBManager dbManager = new DBManager(getActivity());
+        DBManager dbManager = new DBManager(context);
 //        SynchMethods sm = new SynchMethods(dbManager);
     }
 

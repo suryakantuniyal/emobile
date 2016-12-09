@@ -527,7 +527,7 @@ public class EMSDeviceDriver {
             }
 
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(anOrder.ord_timecreated, activity, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(anOrder.ord_timecreated, 3), lineWidth, 0));
 
             if (!myPref.getShiftIsOpen() || myPref.getPreferences(MyPreferences.pref_use_clerks)) {
                 String clerk_id = anOrder.clerk_id;
@@ -1525,7 +1525,7 @@ public class EMSDeviceDriver {
 
                 sb.append(getString(R.string.order)).append(": ").append(ordID).append("\n");
                 sb.append(getString(R.string.receipt_started)).append(" ")
-                        .append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append("\n");
+                        .append(Global.formatToDisplayDate(anOrder.ord_timecreated, -1)).append("\n");
 
                 SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
                 sdf1.setTimeZone(Calendar.getInstance().getTimeZone());
@@ -1535,9 +1535,9 @@ public class EMSDeviceDriver {
                 sb.append(getString(R.string.receipt_sent_by)).append(" ").append(employee.getEmpName()).append(" (");
 
                 if (((float) (sentDate.getTime() - startedDate.getTime()) / 1000) > 60)
-                    sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), activity, -1)).append(")");
+                    sb.append(Global.formatToDisplayDate(sdf1.format(sentDate.getTime()), -1)).append(")");
                 else
-                    sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, activity, -1)).append(")");
+                    sb.append(Global.formatToDisplayDate(anOrder.ord_timecreated, -1)).append(")");
 
                 String ordComment = anOrder.ord_comment;
                 if (ordComment != null && !ordComment.isEmpty()) {
@@ -1746,7 +1746,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     myConsignment.get(0).ConsTrans_ID, lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), 3), lineWidth, 0));
             sb.append(textHandler.newLines(1));
 
             for (int i = 0; i < size; i++) {
@@ -1865,7 +1865,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     map.get("ConsTrans_ID"), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), 3), lineWidth, 0));
             sb.append(textHandler.newLines(1));
 
             for (int i = 0; i < size; i++) {
@@ -1982,7 +1982,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     employee.getEmpName(), lineWidth, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), lineWidth, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), 3), lineWidth, 0));
             sb.append(textHandler.newLines(1));
 
             for (int i = 0; i < size; i++) {
@@ -2032,7 +2032,7 @@ public class EMSDeviceDriver {
 
     protected void printEndOfDayReportReceipt(String curDate, int lineWidth, boolean printDetails) {
 
-        String mDate = Global.formatToDisplayDate(curDate, activity, 4);
+        String mDate = Global.formatToDisplayDate(curDate, 4);
         StringBuilder sb = new StringBuilder();
         EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
         StringBuilder sb_ord_types = new StringBuilder();
@@ -2047,7 +2047,7 @@ public class EMSDeviceDriver {
             showTipField = true;
         }
         sb.append(textHandler.centeredString("End Of Day Report", lineWidth));
-        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Date", Global.formatToDisplayDate(curDate, activity, 1), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText("Date", Global.formatToDisplayDate(curDate, 1), lineWidth, 0));
         sb.append(textHandler.newLines(2));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText("Employee", employee.getEmpName(), lineWidth, 0));
         sb.append(textHandler.newLines(2));
@@ -2088,7 +2088,7 @@ public class EMSDeviceDriver {
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Tax Total", Global.formatDoubleStrToCurrency(ord.ord_taxamount), lineWidth, 3));
             sb_ord_types.append(textHandler.twoColumnLineWithLeftAlignedText("Net Total", Global.formatDoubleStrToCurrency(ord.ord_total), lineWidth, 3));
         }
-        if(listOrderHolds!=null && !listOrderHolds.isEmpty()){
+        if (listOrderHolds != null && !listOrderHolds.isEmpty()) {
             onHoldAmount = new BigDecimal(listOrderHolds.get(0).ord_total);
         }
         listOrder.clear();
@@ -2117,8 +2117,8 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString("Totals By Shift", lineWidth));
             for (ShiftPeriods shift : listShifts) {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Sales Clerk", shift.assignee_name, lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("From", Global.formatToDisplayDate(shift.startTime, activity, 2), lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText("To", Global.formatToDisplayDate(shift.endTime, activity, 2), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("From", Global.formatToDisplayDate(shift.startTime, 2), lineWidth, 0));
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("To", Global.formatToDisplayDate(shift.endTime, 2), lineWidth, 0));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Beginning Petty Cash", Global.formatDoubleStrToCurrency(shift.beginning_petty_cash), lineWidth, 3));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Total Expenses", "(" + Global.formatDoubleStrToCurrency(shift.total_expenses) + ")", lineWidth, 3));
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("Ending Petty Cash", Global.formatDoubleStrToCurrency(shift.ending_petty_cash), lineWidth, 3));
@@ -2319,7 +2319,7 @@ public class EMSDeviceDriver {
             StringBuilder sb_refunds = new StringBuilder();
             print(textHandler.newLines(1), FORMAT);
             sb.append(textHandler.centeredString("REPORT", lineWidth));
-            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), lineWidth));
+            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate,  0), lineWidth));
             sb.append(textHandler.newLines(1));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), lineWidth,
                     0));
@@ -2332,9 +2332,9 @@ public class EMSDeviceDriver {
                     lineWidth, 0));
 
             HashMap<String, String> paymentMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 0);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 0);
             HashMap<String, String> refundMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 1);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, 4), 1);
             List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
             int size = payMethodsNames.size();
             double payGranTotal = 0.00;

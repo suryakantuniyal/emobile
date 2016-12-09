@@ -139,8 +139,8 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
         @Override
         protected String doInBackground(Void... params) {
             curDate = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
-            dates[0] = Global.formatToDisplayDate(curDate, activity, 0);
-            dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
+            dates[0] = Global.formatToDisplayDate(curDate, 0);
+            dates[1] = Global.formatToDisplayDate(curDate, 4);
 
             if (!isShiftReport)
                 mainAdapter = new ReportsMenuAdapter(activity, dates);
@@ -269,8 +269,8 @@ public class ViewReport_FA extends BaseFragmentActivityActionBar {
             cal.set(year, monthOfYear, dayOfMonth);
             SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
             curDate = sdf2.format(cal.getTime());
-            dates[0] = Global.formatToDisplayDate(curDate, activity, 0);
-            dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
+            dates[0] = Global.formatToDisplayDate(curDate, 0);
+            dates[1] = Global.formatToDisplayDate(curDate, 4);
             if (activity != null) {
                 if (!isShiftReport) {
                     mainAdapter = new ReportsMenuAdapter(activity, dates);

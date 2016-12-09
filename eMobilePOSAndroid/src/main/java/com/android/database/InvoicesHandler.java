@@ -290,11 +290,11 @@ public class InvoicesHandler {
 				arrayVal[3] = Global.formatDoubleStrToCurrency(cursor.getString(cursor.getColumnIndex(inv_total)));
 				arrayVal[4] = Global.formatDoubleStrToCurrency(cursor.getString(cursor.getColumnIndex(inv_balance)));
 				arrayVal[5] = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(inv_timecreated)),
-						activity, 0);
-				arrayVal[6] = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(inv_duedate)), activity,
+						 0);
+				arrayVal[6] = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(inv_duedate)),
 						0);
 				arrayVal[7] = Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(inv_shipdate)),
-						activity, 0);
+						 0);
 				if (cursor.getString(cursor.getColumnIndex(inv_ispaid)).equals("0"))
 					arrayVal[8] = "No";
 				else

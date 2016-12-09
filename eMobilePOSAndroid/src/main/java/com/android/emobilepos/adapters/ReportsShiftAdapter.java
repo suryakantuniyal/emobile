@@ -152,8 +152,8 @@ public class ReportsShiftAdapter extends BaseAdapter implements Filterable {
 			myCursor.moveToPosition(position-offset);
 			temp = myCursor.getString(holder.i_end_type);
 			if(!temp.equals("Open"))
-				temp = Global.formatToDisplayDate(temp, activity, 3);
-			holder.top.setText(Global.formatToDisplayDate(myCursor.getString(holder.i_startTime), activity, 3)+" - "+temp);
+				temp = Global.formatToDisplayDate(temp,  3);
+			holder.top.setText(Global.formatToDisplayDate(myCursor.getString(holder.i_startTime),  3)+" - "+temp);
 			holder.bottom.setText(myCursor.getString(holder.i_assignee_name)+" - "+
 			Global.formatDoubleStrToCurrency(myCursor.getString(holder.i_beginning_petty_cash)));
 			break;

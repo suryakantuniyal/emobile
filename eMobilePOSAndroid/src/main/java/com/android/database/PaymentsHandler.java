@@ -1,16 +1,16 @@
 package com.android.database;
 
-import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.EMVContainer;
+import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
@@ -122,14 +122,14 @@ public class PaymentsHandler {
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-    private Global global;
+    //    private Global global;
     private MyPreferences myPref;
     private static final String table_name = "Payments";
     private static final String table_name_declined = "PaymentsDeclined";
-    private Activity activity;
+    private Context activity;
 
-    public PaymentsHandler(Activity activity) {
-        global = (Global) activity.getApplication();
+    public PaymentsHandler(Context activity) {
+//        global = (Global) activity.getApplication();
         myPref = new MyPreferences(activity);
         this.activity = activity;
         attrHash = new HashMap<>();
@@ -353,14 +353,14 @@ public class PaymentsHandler {
         }
     }
 
-    public String updateSignaturePayment(String payID) {
+    public String updateSignaturePayment(String payID, String encodedImage) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(pay_id).append(" = ?");
 
         ContentValues args = new ContentValues();
 
-        args.put(pay_signature, global.encodedImage);
+        args.put(pay_signature, encodedImage);
 
         DBManager.getDatabase().update(table_name, args, sb.toString(), new String[]{payID});
         sb.setLength(0);
@@ -427,8 +427,7 @@ public class PaymentsHandler {
         Cursor cursor = DBManager.getDatabase().rawQuery(sql, new String[]{payID});
         if (cursor.moveToFirst()) {
             do {
-                paymentDetails.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), activity,
-                        0));
+                paymentDetails.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), 0));
                 paymentDetails.setPay_comment(cursor.getString(cursor.getColumnIndex(pay_comment)));
                 paymentDetails.setInv_id(cursor.getString(cursor.getColumnIndex(inv_id)));// is
                 // actually
@@ -882,10 +881,8 @@ public class PaymentsHandler {
 
             do {
                 payDetail.setPaymethod_name(cursor.getString(cursor.getColumnIndex("paymethod_name")));
-                payDetail.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), activity,
-                        0));
-                payDetail.setPay_timecreated(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_timecreated)),
-                        activity, 2));
+                payDetail.setPay_date(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_date)), 0));
+                payDetail.setPay_timecreated(Global.formatToDisplayDate(cursor.getString(cursor.getColumnIndex(pay_timecreated)), 2));
                 payDetail.setCust_name(cursor.getString(cursor.getColumnIndex("cust_name")));
                 payDetail.setOrd_total(cursor.getString(cursor.getColumnIndex("ord_total")));
                 payDetail.setPay_amount(cursor.getString(cursor.getColumnIndex(pay_amount)));
@@ -1114,7 +1111,7 @@ public class PaymentsHandler {
         return lastPayID;
     }
 
-    public static PaymentsHandler getInstance(Activity activity) {
+    public static PaymentsHandler getInstance(Context activity) {
         return new PaymentsHandler(activity);
     }
 

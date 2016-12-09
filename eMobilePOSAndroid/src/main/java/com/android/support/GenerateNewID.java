@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.StoredPaymentsDAO;
@@ -16,7 +17,7 @@ import java.util.Locale;
 
 public class GenerateNewID {
     private MyPreferences myPref;
-    private Activity activity;
+    private Context activity;
 
     public enum IdType {
         ORDER_ID, PAYMENT_ID, CONSIGNMENT_ID, INVENTORY_TRANSFER_ID
@@ -24,7 +25,7 @@ public class GenerateNewID {
 
     private static String delims = "[\\-]";
 
-    public GenerateNewID(Activity activity) {
+    public GenerateNewID(Context activity) {
         this.activity = activity;
         myPref = new MyPreferences(activity);
     }

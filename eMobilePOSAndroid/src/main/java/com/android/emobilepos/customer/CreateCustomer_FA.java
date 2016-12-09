@@ -570,7 +570,7 @@ public class CreateCustomer_FA extends BaseFragmentActivityActionBar implements 
 //				tracker.send(MapBuilder.createException(sb2.toString(), false).build());
                 // throw new RuntimeException(e);
             }
-            field[DOB].setText(Global.formatToDisplayDate(dobDate, activity, 1));
+            field[DOB].setText(Global.formatToDisplayDate(dobDate,  1));
 
         }
     }

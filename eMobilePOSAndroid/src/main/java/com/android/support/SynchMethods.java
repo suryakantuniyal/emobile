@@ -3,6 +3,7 @@ package com.android.support;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
@@ -113,7 +114,7 @@ import util.json.JsonUtils;
 
 public class SynchMethods {
     private Post post;
-    private Activity activity;
+    private Context activity;
     private String xml;
     private InputSource inSource;
     private SAXParser sp;
@@ -133,7 +134,7 @@ public class SynchMethods {
     private HttpClient client;
     private Gson gson = JsonUtils.getInstance();
 
-    private static OAuthManager getOAuthManager(Activity activity) {
+    private static OAuthManager getOAuthManager(Context activity) {
         MyPreferences preferences = new MyPreferences(activity);
         return OAuthManager.getInstance(activity, preferences.getAcctNumber(), preferences.getAcctPassword());
 
@@ -1172,7 +1173,7 @@ public class SynchMethods {
         return xml.split("<" + tagName + ">")[1].split("</" + tagName + ">")[0];
     }
 
-    public static void synchOrdersOnHoldList(Activity activity) throws SAXException, IOException {
+    public static void synchOrdersOnHoldList(Context activity) throws SAXException, IOException {
         try {
             Gson gson = JsonUtils.getInstance();
             GenerateXML xml = new GenerateXML(activity);
@@ -1525,7 +1526,7 @@ public class SynchMethods {
         httpClient.post(url.toString(), json, authClient);
     }
 
-    public static void synchSalesAssociateDinnindTablesConfiguration(Activity activity) throws IOException, SAXException {
+    public static void synchSalesAssociateDinnindTablesConfiguration(Context activity) throws IOException, SAXException {
         try {
             oauthclient.HttpClient client = new oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();

@@ -1,6 +1,7 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.android.dao.AssignEmployeeDAO;
 import com.android.emobilepos.models.realms.AssignEmployee;
@@ -79,7 +80,7 @@ public class Order implements Cloneable {
         ord_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
     }
 
-    public Order(Activity activity) {
+    public Order(Context activity) {
         MyPreferences myPref = new MyPreferences(activity);
         ord_issync = "0";
         isVoid = "0";

@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Xml;
@@ -48,11 +49,11 @@ public class GenerateXML {
     private final AssignEmployee assignEmployee;
     private MyPreferences info;
     private StringBuilder ending = new StringBuilder();
-    private Activity thisActivity;
+    private Context thisActivity;
     private static String empstr = "";
     private MyPreferences myPref;
 
-    public GenerateXML(Activity activity) {
+    public GenerateXML(Context activity) {
         info = new MyPreferences(activity);
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
 
@@ -295,7 +296,7 @@ public class GenerateXML {
 
 
     public String downloadAll(String key) {
-        String value = info.getXMLAction(key);
+        String value = Global.xmlActions.get(key);
         StringBuilder sb = new StringBuilder();
 
         try {

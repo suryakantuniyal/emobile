@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 
 import com.android.emobilepos.models.Address;
@@ -62,7 +63,7 @@ public class CustomersHandler {
             cust_salestaxcode, pricelevel_id, cust_terms, cust_pwd, cust_securityquestion, cust_securityanswer,
             cust_points, custidkey, cust_id_numeric, cust_dob, AccountNumnber);
 
-    public CustomersHandler(Activity activity) {
+    public CustomersHandler(Context activity) {
         attrHash = new HashMap<String, Integer>();
         custData = new ArrayList<String[]>();
         sb1 = new StringBuilder();

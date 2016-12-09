@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
@@ -89,13 +90,13 @@ public class OrdersHandler {
     private MyPreferences myPref;
 
     public static final String table_name = "Orders";
-    private Activity activity;
+    private Context activity;
 
-    public static OrdersHandler getInstance(Activity activity) {
+    public static OrdersHandler getInstance(Context activity) {
         return new OrdersHandler(activity);
     }
 
-    public OrdersHandler(Activity activity) {
+    public OrdersHandler(Context activity) {
         myPref = new MyPreferences(activity);
         attrHash = new HashMap<>();
         this.activity = activity;
@@ -322,7 +323,7 @@ public class OrdersHandler {
         return exists;
     }
 
-    public static Order getOrder(Cursor cursor, Activity activity) {
+    public static Order getOrder(Cursor cursor, Context activity) {
         Order order = new Order(activity);
         try {
             order.numberOfSeats = cursor.getInt(cursor.getColumnIndex("numberOfSeats"));

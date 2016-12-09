@@ -472,7 +472,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     assignEmployee.getEmpName(), LINE_WIDTH, 0)).append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0)).append("\n");
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss),  3), LINE_WIDTH, 0)).append("\n");
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {
@@ -750,7 +750,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             StringBuilder sb_refunds = new StringBuilder();
             device.write(textHandler.newLines(3).getBytes(FORMAT));
             sb.append(textHandler.centeredString("REPORT", LINE_WIDTH));
-            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate, activity, 0), LINE_WIDTH));
+            sb.append(textHandler.centeredString(Global.formatToDisplayDate(curDate,  0), LINE_WIDTH));
             sb.append(textHandler.newLines(2));
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_pay_summary), LINE_WIDTH,
                     0));
@@ -758,9 +758,9 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
                     LINE_WIDTH, 0));
 
             HashMap<String, String> paymentMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 0);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 0);
             HashMap<String, String> refundMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 1);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 1);
             List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
             int size = payMethodsNames.size();
             double payGranTotal = 0.00;

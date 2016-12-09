@@ -2,6 +2,7 @@ package com.android.database;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
@@ -80,14 +81,14 @@ public class OrderProductsHandler {
     public StringBuilder sb1, sb2, sb3;
     public final String empStr = "";
     public HashMap<String, Integer> attrHash;
-    public Global global;
+//    public Global global;
     private List<String[]> data;
     private List<HashMap<String, Integer>> dictionaryListMap;
     public static final String table_name = "OrderProduct";
     private MyPreferences myPref;
 
-    public OrderProductsHandler(Activity activity) {
-        global = (Global) activity.getApplication();
+    public OrderProductsHandler(Context activity) {
+//        global = (Global) activity.getApplication();
         attrHash = new HashMap<>();
         sb1 = new StringBuilder();
         sb2 = new StringBuilder();

@@ -334,8 +334,8 @@ public class ReportEndDayAdapter extends BaseAdapter implements StickyListHeader
                 break;
             case TYPE_SHIFTS:
                 mHolder.tvClerk.setText(listShifts.get(position - i_summary).assignee_name);
-                mHolder.tvFrom.setText(Global.formatToDisplayDate(listShifts.get(position - i_summary).startTime, activity, 2));
-                mHolder.tvTo.setText(Global.formatToDisplayDate(listShifts.get(position - i_summary).endTime, activity, 2));
+                mHolder.tvFrom.setText(Global.formatToDisplayDate(listShifts.get(position - i_summary).startTime,  2));
+                mHolder.tvTo.setText(Global.formatToDisplayDate(listShifts.get(position - i_summary).endTime,  2));
                 mHolder.tvBeginningPetty.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).beginning_petty_cash));
                 mHolder.tvExpenses.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).total_expenses));
                 mHolder.tvEndingPetty.setText(Global.formatDoubleStrToCurrency(listShifts.get(position - i_summary).ending_petty_cash));

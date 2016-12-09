@@ -1,6 +1,7 @@
 package com.android.emobilepos.models.realms;
 
 import android.app.Activity;
+import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
 
@@ -136,7 +137,7 @@ public class Payment extends RealmObject {
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
     }
 
-    public Payment(Activity activity) {
+    public Payment(Context activity) {
 
         setPay_issync("0");
         setIsVoid("0");

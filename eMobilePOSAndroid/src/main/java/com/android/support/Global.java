@@ -428,7 +428,7 @@ public class Global extends MultiDexApplication {
     // ArrayList<Orders>();
     public static HashMap<String, String> cons_return_qtyCounter = new HashMap<String, String>();
 
-    public final Map<String, String> xmlActions = createMap();
+    public static final Map<String, String> xmlActions = createMap();
     // public static final Map<String, String> transactionType =
     // createTransactionsMap();
     public String lastInvID = "";
@@ -587,7 +587,7 @@ public class Global extends MultiDexApplication {
         // this.
     }
 
-    public static Location getCurrLocation(Activity activity, boolean reload) {
+    public static Location getCurrLocation(Context activity, boolean reload) {
 
         if (locationServices == null) {
             locationServices = new com.android.support.LocationServices(activity, new GoogleApiClient.ConnectionCallbacks() {
@@ -862,7 +862,7 @@ public class Global extends MultiDexApplication {
         return Collections.unmodifiableMap(result);
     }
 
-    public static String formatToDisplayDate(String date, Activity activity, int type) {
+    public static String formatToDisplayDate(String date, int type) {
         if (date == null) {
             return "";
         }
@@ -1552,7 +1552,7 @@ public class Global extends MultiDexApplication {
         }
     }
 
-    public static int getScreenOrientation(Activity activity) {
+    public static int getScreenOrientation(Context activity) {
         int orientation = activity.getResources().getConfiguration().orientation;
         int rotation = ((WindowManager) activity.getSystemService(
                 Context.WINDOW_SERVICE)).getDefaultDisplay().getRotation();

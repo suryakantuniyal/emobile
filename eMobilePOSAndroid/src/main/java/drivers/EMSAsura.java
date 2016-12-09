@@ -606,7 +606,7 @@ public class EMSAsura extends EMSDeviceDriver
             EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
 
             Bitmap textBitmap = addLineTextImage(null, "REPORT", PRINT_TXT_SIZE, Align.ALIGN_CENTER);
-            textBitmap = addLineTextImage(textBitmap, Global.formatToDisplayDate(curDate, activity, 0), PRINT_TXT_SIZE,
+            textBitmap = addLineTextImage(textBitmap, Global.formatToDisplayDate(curDate,  0), PRINT_TXT_SIZE,
                     Align.ALIGN_CENTER);
             textBitmap = addLineTextImage(textBitmap, " ", PRINT_TXT_SIZE + (2 * 2), Align.ALIGN_LEFT);
             textBitmap = addLineTextImage(textBitmap, getString(R.string.receipt_pay_summary), PRINT_TXT_SIZE,
@@ -616,9 +616,9 @@ public class EMSAsura extends EMSDeviceDriver
                     Align.ALIGN_LEFT);
 
             HashMap<String, String> paymentMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 0);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 0);
             HashMap<String, String> refundMap = paymentHandler
-                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate, activity, 4), 1);
+                    .getPaymentsRefundsForReportPrinting(Global.formatToDisplayDate(curDate,  4), 1);
             List<String[]> payMethodsNames = payMethodHandler.getPayMethodsName();
             int size = payMethodsNames.size();
             double payGranTotal = 0.00;
@@ -974,7 +974,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     assignEmployee.getEmpName(), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss),  3), LINE_WIDTH, 0));
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {
@@ -1161,7 +1161,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     map.get("ConsTrans_ID"), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss),  3), LINE_WIDTH, 0));
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {

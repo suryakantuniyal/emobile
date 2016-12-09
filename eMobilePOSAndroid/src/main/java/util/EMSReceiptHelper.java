@@ -8,8 +8,8 @@ import com.android.database.PaymentsHandler;
 import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.ShiftPeriods;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.Global;
 
 import java.math.BigDecimal;
@@ -262,7 +262,7 @@ public class EMSReceiptHelper {
 
 
     public String getEndOfDayReportReceipt(String clerk_id, String date) {
-        String mDate = Global.formatToDisplayDate(date, activity, 4);
+        String mDate = Global.formatToDisplayDate(date, 4);
         StringBuilder sb = new StringBuilder();
         StringBuilder sb_ord_types = new StringBuilder();
 
@@ -273,7 +273,7 @@ public class EMSReceiptHelper {
 
         sb.append(centerText("End Of Day Report"));
 
-        sb.append(twoColumn("Date", Global.formatToDisplayDate(date, activity, 1), 0));
+        sb.append(twoColumn("Date", Global.formatToDisplayDate(date, 1), 0));
         sb.append(newLines(2));
 
         sb.append(centerText("Summary"));
@@ -328,8 +328,8 @@ public class EMSReceiptHelper {
             sb.append(centerText("Totals By Shift"));
             for (ShiftPeriods shift : listShifts) {
                 sb.append(twoColumn("Sales Clerk", shift.assignee_name, 0));
-                sb.append(twoColumn("From", Global.formatToDisplayDate(shift.startTime, activity, 2), 0));
-                sb.append(twoColumn("To", Global.formatToDisplayDate(shift.endTime, activity, 2), 0));
+                sb.append(twoColumn("From", Global.formatToDisplayDate(shift.startTime, 2), 0));
+                sb.append(twoColumn("To", Global.formatToDisplayDate(shift.endTime, 2), 0));
                 sb.append(twoColumn("Beginning Petty Cash", Global.formatDoubleStrToCurrency(shift.beginning_petty_cash), 2));
                 sb.append(twoColumn("Total Expenses", Global.formatDoubleStrToCurrency(shift.total_expenses), 2));
                 sb.append(twoColumn("Ending Petty Cash", Global.formatDoubleStrToCurrency(shift.ending_petty_cash), 2));
