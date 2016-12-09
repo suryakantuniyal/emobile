@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import util.StringUtil;
+
 public class OrderProductsHandler {
 
     private static final String ord_id = "ord_id";
@@ -315,7 +317,7 @@ public class OrderProductsHandler {
                     insert.bindString(index(uom_conversion), getData(uom_conversion, i)); // cust_id
                     insert.bindString(index(uom_id), getData(uom_id, i));
                     insert.bindString(index(prod_taxId), getData(prod_taxId, i)); // cust_id
-                    insert.bindDouble(index(prod_taxValue), Double.parseDouble(getData(prod_taxValue, i))); // cust_id
+                    insert.bindDouble(index(prod_taxValue), Double.parseDouble(TextUtils.isEmpty(getData(prod_taxValue, i))?"0":getData(prod_taxValue, i)));
                     insert.bindString(index(discount_id), getData(discount_id, i)); // cust_id
                     insert.bindString(index(discount_value), getData(discount_value, i)); // cust_id
                     insert.bindString(index(prod_istaxable), getData(prod_istaxable, i));
