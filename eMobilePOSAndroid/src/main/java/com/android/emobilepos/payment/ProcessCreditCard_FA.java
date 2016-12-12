@@ -2114,6 +2114,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     @Override
     public void startSignature() {
+        if(myProgressDialog!=null && myProgressDialog.isShowing()) {
+            myProgressDialog.setMessage(activity.getString(R.string.processing_payment_msg));
+        }
         Intent intent = new Intent(activity, DrawReceiptActivity.class);
         intent.putExtra("isFromPayment", true);
         startActivityForResult(intent, requestCode);

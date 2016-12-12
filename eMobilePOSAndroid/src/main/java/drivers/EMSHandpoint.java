@@ -14,16 +14,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.realms.Payment;
-import com.android.payments.EMSPayGate_Default;
-import com.android.saxhandler.SAXProcessCardPayHandler;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.Post;
+import com.android.support.emsutils.EMSUtils;
 import com.handpoint.api.ConnectionMethod;
 import com.handpoint.api.ConnectionStatus;
 import com.handpoint.api.Device;
@@ -36,21 +35,11 @@ import com.handpoint.api.SignatureRequest;
 import com.handpoint.api.StatusInfo;
 import com.handpoint.api.TransactionResult;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-
-import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
@@ -90,12 +79,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         this.edm = edm;
         if (hapi == null) {
 
-            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
-            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
-                    null);
-            Post httpClient = new Post();
-            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
-            sharedSecret = getWorkingKey(xml);
+//            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
+//            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
+//                    null);
+//            Post httpClient = new Post();
+//            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
+            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
+            sharedSecret = loginInfo.getSecret();//getWorkingKey(xml, activity);
             if (TextUtils.isEmpty(sharedSecret)) {
                 return false;
             }
@@ -113,37 +103,37 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
         return connected;
     }
 
-    private String getWorkingKey(String xml) {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-        InputSource inSource = new InputSource(new StringReader(xml));
-        String workingKey = "";
-        SAXParser sp;
-        try {
-            sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-            xr.setContentHandler(handler);
-            xr.parse(inSource);
-            HashMap<String, String> parsedMap = handler.getData();
-
-            String errorMsg;
-            if (parsedMap != null && parsedMap.size() > 0
-                    && parsedMap.get("epayStatusCode").equals("APPROVED")) {
-                workingKey = parsedMap.get("WorkingKey");
-            } else if (parsedMap != null && parsedMap.size() > 0) {
-                errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
-            } else {
-                errorMsg = xml;
-            }
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return workingKey;
-    }
+//    public static String getWorkingKey(String xml, Activity activity) {
+//        SAXParserFactory spf = SAXParserFactory.newInstance();
+//        SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
+//        InputSource inSource = new InputSource(new StringReader(xml));
+//        String workingKey = "";
+//        SAXParser sp;
+//        try {
+//            sp = spf.newSAXParser();
+//            XMLReader xr = sp.getXMLReader();
+//            xr.setContentHandler(handler);
+//            xr.parse(inSource);
+//            HashMap<String, String> parsedMap = handler.getData();
+//
+//            String errorMsg;
+//            if (parsedMap != null && parsedMap.size() > 0
+//                    && parsedMap.get("epayStatusCode").equals("APPROVED")) {
+//                workingKey = parsedMap.get("WorkingKey");
+//            } else if (parsedMap != null && parsedMap.size() > 0) {
+//                errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
+//            } else {
+//                errorMsg = xml;
+//            }
+//        } catch (ParserConfigurationException e) {
+//            e.printStackTrace();
+//        } catch (SAXException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return workingKey;
+//    }
 
     private class WorkingKeyRequest extends AsyncTask<Void, Void, String> {
         @Override
@@ -153,13 +143,13 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
 
         @Override
         protected String doInBackground(Void... params) {
-            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
-            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
-                    null);
-            Post httpClient = new Post();
-            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
-
-            return getWorkingKey(xml);
+//            EMSPayGate_Default payGate = new EMSPayGate_Default(activity, null);
+//            String request = payGate.paymentWithAction(EMSPayGate_Default.EAction.HandpointWorkingKey, false, null,
+//                    null);
+//            Post httpClient = new Post();
+//            String xml = httpClient.postData(Global.S_SUBMIT_WORKINGKEY_REQUEST, activity, request);
+            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
+            return loginInfo.getSecret();//getWorkingKey(xml, activity);
         }
 
         @Override

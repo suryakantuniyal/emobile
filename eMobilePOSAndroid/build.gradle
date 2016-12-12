@@ -16,7 +16,6 @@ android {
     buildToolsVersion '24.0.3'
     dexOptions {
         preDexLibraries = false
-        incremental true
         javaMaxHeapSize "4g"
     }
     packagingOptions {

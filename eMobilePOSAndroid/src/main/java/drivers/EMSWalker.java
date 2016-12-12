@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.realms.Payment;
@@ -20,6 +21,7 @@ import com.android.support.CreditCardInfo;
 import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.emsutils.EMSUtils;
 import com.payments.core.CoreRefund;
 import com.payments.core.CoreRefundResponse;
 import com.payments.core.CoreResponse;
@@ -104,7 +106,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
             return true;
         }
         myPref = new MyPreferences(this.activity);
-        this.edm = edm;
+        EMSWalker.edm = edm;
         terminal = new AndroidTerminal(this);
 
 //        initDevice();
@@ -288,7 +290,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void saleReversal(Payment payment, String originalTransactionId) {
-
+        refund(payment);
     }
 
     @Override
@@ -303,7 +305,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void refundReversal(Payment payment, String originalTransactionId) {
-
+        refund(payment);
     }
 
     @Override
@@ -329,6 +331,9 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
         @Override
         protected Void doInBackground(Void... params) {
+            EMSEpayLoginInfo loginInfo = EMSUtils.getEmsEpayLoginInfo(activity);
+            SECRET = loginInfo.getSecret();
+            TERMINAL_ID = loginInfo.getTerminalId();
             initDevice();
             return null;
         }
