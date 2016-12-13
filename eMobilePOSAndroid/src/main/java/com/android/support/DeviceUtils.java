@@ -1,6 +1,7 @@
 package com.android.support;
 
 import android.app.Activity;
+import android.os.Looper;
 import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
@@ -16,11 +17,11 @@ import main.EMSDeviceManager;
  */
 public class DeviceUtils {
 
-    public static String autoConnect(Activity activity, boolean forceReload) {
-        MyPreferences myPref = new MyPreferences(activity);
-        StringBuilder sb = new StringBuilder();
+    public static String autoConnect(final Activity activity, boolean forceReload) {
+        final MyPreferences myPref = new MyPreferences(activity);
+        final StringBuilder sb = new StringBuilder();
         RealmResults<Device> devices = DeviceTableDAO.getAll();
-        HashMap<String, Integer> tempMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> tempMap = new HashMap<>();
         EMSDeviceManager edm = null;
         if (forceReload) {
             int i = 0;
@@ -53,11 +54,32 @@ public class DeviceUtils {
                 _portName = myPref.getSwiperMACAddress();
                 _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                 Global.btSwiper = edm.getManager();
-                if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
-                        myPref.getSwiperMACAddress(), null))
-                    sb.append(_peripheralName).append(": ").append("Connected\n\r");
-                else
-                    sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
+                if (_peripheralName.equalsIgnoreCase(Global.getPeripheralName(Global.WALKER))) {
+                    final String final_peripheralName = _peripheralName;
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
+                                    myPref.getSwiperMACAddress(), null))
+                                sb.append(final_peripheralName).append(": ").append("Connected\n\r");
+                            else
+                                sb.append(final_peripheralName).append(": ").append("Failed to connect\n\r");
+                        }
+                    });
+                    synchronized (activity) {
+                        try {
+                            activity.wait(30000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }else {
+                    if (Global.btSwiper.loadMultiDriver(activity, myPref.getSwiperType(), 0, false,
+                            myPref.getSwiperMACAddress(), null))
+                        sb.append(_peripheralName).append(": ").append("Connected\n\r");
+                    else
+                        sb.append(_peripheralName).append(": ").append("Failed to connect\n\r");
+                }
             }
         if ((myPref.sledType(true, -2) != -1))
             if (Global.btSled == null || forceReload) {
@@ -87,7 +109,9 @@ public class DeviceUtils {
             String _portNumber = myPref.getStarPort();
             boolean isPOS = myPref.posPrinter(true, false);
             int txtAreaSize = myPref.printerAreaSize(true, -1);
-            if (myPref.getPrinterType() != Global.POWA && myPref.getPrinterType() != Global.PAT215) {
+            if (myPref.getPrinterType() != Global.POWA
+                    && myPref.getPrinterType() != Global.MEPOS
+                    && myPref.getPrinterType() != Global.PAT215) {
                 if (Global.mainPrinterManager == null || forceReload) {
                     if (Global.mainPrinterManager == null) {
                         edm = new EMSDeviceManager();
@@ -112,6 +136,7 @@ public class DeviceUtils {
                 else
                     sb.append(myPref.getStarIPAddress()).append(": ").append("Failed to connect\n\r");
             }
+
         return sb.toString();
     }
 }

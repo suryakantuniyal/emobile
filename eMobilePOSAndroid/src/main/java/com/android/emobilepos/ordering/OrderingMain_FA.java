@@ -50,8 +50,8 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.payments.EMSPayGate_Default;
@@ -194,6 +194,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
             Gson gson = JsonUtils.getInstance();
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
+            Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
+            Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
+
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
@@ -236,10 +239,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
                 || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                Global.mainPrinterManager.currentDevice.loadScanner(callBackMSR);
-            if (Global.btSled != null && Global.btSled.currentDevice != null)
-                Global.btSled.currentDevice.loadScanner(callBackMSR);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(callBackMSR);
+            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
         }
 
         hasBeenCreated = true;
@@ -396,7 +399,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     }
-
 
 
     public static void switchHeaderTitle(boolean newTitle, String title) {
@@ -595,7 +597,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.clearListViewData();
             Global.showCDTDefault(this);
             reloadDefaultTransaction();
-        }  else if (resultCode == 2 || resultCode == 0)
+        } else if (resultCode == 2 || resultCode == 0)
             this.refreshView();
     }
 
@@ -675,13 +677,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 uniMagReader.release();
             else if (magtekReader != null)
                 magtekReader.closeDevice();
-            else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
-                Global.btSwiper.currentDevice.releaseCardReader();
-            else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.releaseCardReader();
-                Global.mainPrinterManager.currentDevice.loadScanner(null);
-            } else if (Global.btSled != null && Global.btSled.currentDevice != null)
-                Global.btSled.currentDevice.releaseCardReader();
+            else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+                Global.btSwiper.getCurrentDevice().releaseCardReader();
+            else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
+            } else if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().releaseCardReader();
         }
     }
 
@@ -882,8 +884,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                        Global.mainPrinterManager.currentDevice.playSound();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                        Global.mainPrinterManager.getCurrentDevice().playSound();
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
@@ -1085,13 +1087,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
                     && !cardReaderConnected) {
-                Global.btSwiper.currentDevice.loadCardReader(callBackMSR, false);
+                Global.btSwiper.getCurrentDevice().loadCardReader(callBackMSR, false);
             } else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
                         && !cardReaderConnected)
-                    Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
+                    Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBackMSR, false);
             } else {
                 swiperLabel.setText(R.string.disconnected);
                 swiperLabel.setTextColor(Color.RED);
@@ -1419,7 +1421,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             uniMagReader.startReading();
         } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                 && Global.mainPrinterManager != null)
-            Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
+            Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBackMSR, false);
     }
 
     @Override

@@ -414,8 +414,8 @@ public class ConsignmentVisit_FR extends Fragment implements OnClickListener {
 
         @Override
         protected String doInBackground(String... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                printSuccessful = Global.mainPrinterManager.currentDevice.printConsignment(consTransactionList, encodedImage);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printConsignment(consTransactionList, encodedImage);
             return null;
         }
 

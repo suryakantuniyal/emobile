@@ -565,15 +565,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     getActivity().startActivity(getActivity().getIntent());
                     break;
                 case R.string.config_toggle_elo_bcr:
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                        Global.mainPrinterManager.currentDevice.toggleBarcodeReader();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                        Global.mainPrinterManager.getCurrentDevice().toggleBarcodeReader();
                     break;
                 case R.string.config_change_password:
                     changePassword(false, null);
                     break;
                 case R.string.config_open_cash_drawer:
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                        Global.mainPrinterManager.currentDevice.openCashDrawer();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
                     break;
                 case R.string.config_configure_cash_drawer:
                     break;
@@ -608,7 +608,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     connectUSBDevice();
                     break;
                 case R.string.config_redetect_peripherals:
-                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    DeviceUtils.autoConnect(getActivity(), true);
+//                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:
                     intent = new Intent(getActivity(), ViewStoreForwardTrans_FA.class);
@@ -666,13 +667,13 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     confirmTroubleshoot(R.string.config_backup_data);
                     break;
                 case R.string.config_send_handpoint_log:
-                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
-                        Global.btSwiper.currentDevice.sendEmailLog();
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.getCurrentDevice() != null) {
+                        Global.btSwiper.getCurrentDevice().sendEmailLog();
                     }
                     break;
                 case R.string.config_handpoint_update:
-                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
-                        Global.btSwiper.currentDevice.updateFirmware();
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.getCurrentDevice() != null) {
+                        Global.btSwiper.getCurrentDevice().updateFirmware();
                     }
                     break;
                 case R.string.config_salesassociate_config:
@@ -1242,6 +1243,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, false);
 
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("WP")) {
+                                myPref.setSwiperType(Global.WALKER);
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(getActivity(), Global.WALKER, false);
+
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     getActivity().getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
                                 myPref.setSwiperType(Global.ICMPEVO);
@@ -1305,6 +1315,10 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.OT310, false);
+            } else if (myPref.isMEPOS()) {
+                myPref.setPrinterType(Global.MEPOS);
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, false);
             } else {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();

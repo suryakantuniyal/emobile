@@ -50,6 +50,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.payments.core.admin.AndroidTerminal;
+import com.payments.core.common.enums.CoreMode;
 
 import org.springframework.util.support.Base64;
 
@@ -70,6 +72,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -77,6 +80,7 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import drivers.EMSWalker;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
@@ -141,6 +145,8 @@ public class Global extends MultiDexApplication {
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
+    public static final int MEPOS = 20;
+
 
 
     public enum BuildModel {
@@ -543,6 +549,12 @@ public class Global extends MultiDexApplication {
                 break;
             case HANDPOINT:
                 _name = "HANDPOINT";
+                break;
+            case WALKER:
+                _name = "WALKER";
+                break;
+            case MEPOS:
+                _name = "MEPOS";
                 break;
             case ICMPEVO:
                 _name = "ICMPEVO";
@@ -1509,6 +1521,7 @@ public class Global extends MultiDexApplication {
             sock.close();
             exists = true;
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return exists;

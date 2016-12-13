@@ -356,13 +356,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
 
     public void registerPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = null;
+        edm.setCurrentDevice( null);
         TurnOffBCR();
     }
 
@@ -500,6 +498,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

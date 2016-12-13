@@ -292,12 +292,12 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
     }
 
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
         this.printingDelegate = edm;
     }
 
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
         this.printingDelegate = null;
     }
 
@@ -727,6 +727,11 @@ public class EMSBlueBambooP25 extends EMSDeviceDriver implements EMSDeviceManage
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

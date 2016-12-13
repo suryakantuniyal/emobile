@@ -625,6 +625,10 @@ public class MyPreferences {
         return sharedPref.getBoolean(key, false);
     }
 
+    public boolean requiresWaiterLogin() {
+        return getPreferences(MyPreferences.pref_require_waiter_signin);
+    }
+
     public String getPreferencesValue(String key) {
         return sharedPref.getString(key, "");
     }
@@ -923,6 +927,18 @@ public class MyPreferences {
     public boolean setIsOT310(boolean value) {
         String device_ot310 = "device_ot310";
         prefEditor.putBoolean(device_ot310, value);
+        prefEditor.commit();
+        return false;
+    }
+
+    public boolean isMEPOS() {
+        String device_mepos = "device_mepos";
+        return prefs.getBoolean(device_mepos, false);
+    }
+
+    public boolean setIsMEPOS(boolean value) {
+        String device_mepos = "device_mepos";
+        prefEditor.putBoolean(device_mepos, value);
         prefEditor.commit();
         return false;
     }

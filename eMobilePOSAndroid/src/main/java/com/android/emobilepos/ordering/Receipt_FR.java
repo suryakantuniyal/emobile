@@ -1838,8 +1838,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                 publishProgress();
                 Global.OrderType type = Global.ord_type;
                 if (Global.mainPrinterManager != null
-                        && Global.mainPrinterManager.currentDevice != null) {
-                    printSuccessful = Global.mainPrinterManager.currentDevice
+                        && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice()
                             .printTransaction(global.order.ord_id, type, false,
                                     false);
                 }
@@ -1862,9 +1862,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         printMap = Global.multiPrinterMap.get(aSArr);
 //                      Global.multiPrinterManager.get(printMap).currentDevice = Global.mainPrinterManager.currentDevice;
                         if (Global.multiPrinterManager.get(printMap) != null
-                                && Global.multiPrinterManager.get(printMap).currentDevice != null) {
+                                && Global.multiPrinterManager.get(printMap).getCurrentDevice() != null) {
                             if (currentPrinterName == null || !currentPrinterName.equalsIgnoreCase(((EMSBluetoothStarPrinter)
-                                    Global.multiPrinterManager.get(printMap).currentDevice).getPortName())) {
+                                    Global.multiPrinterManager.get(printMap).getCurrentDevice()).getPortName())) {
                                 printHeader = true;
                                 if (currentDevice != null) {
                                     currentDevice.print(receipt.toString(), true);
@@ -1872,7 +1872,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                     currentDevice.cutPaper();
                                 }
                             }
-                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).currentDevice;
+                            currentDevice = (EMSBluetoothStarPrinter) Global.multiPrinterManager.get(printMap).getCurrentDevice();
                             receipt.append(currentDevice.printStationPrinter(temp.get(aSArr),
                                     global.order.ord_id, splitByCat, printHeader));
 

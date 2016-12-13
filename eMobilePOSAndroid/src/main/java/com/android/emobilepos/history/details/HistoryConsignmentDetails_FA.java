@@ -155,8 +155,8 @@ public class HistoryConsignmentDetails_FA extends BaseFragmentActivityActionBar 
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
 
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printConsignmentHistory(dataMap, c, extras.getBoolean("isPickup"));
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printConsignmentHistory(dataMap, c, extras.getBoolean("isPickup"));
             }
 
             return null;

@@ -189,10 +189,10 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             uniMagReader.release();
         else if (magtekReader != null)
             magtekReader.closeDevice();
-        else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
-            Global.btSwiper.currentDevice.releaseCardReader();
-        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-            Global.mainPrinterManager.currentDevice.releaseCardReader();
+        else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+            Global.btSwiper.getCurrentDevice().releaseCardReader();
+        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+            Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
         }
@@ -281,31 +281,31 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     EMSRover roverReader = new EMSRover();
                     roverReader.initializeReader(activity, false);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-                    walkerReader = new EMSWalker(activity, true);
+                    walkerReader = new EMSWalker();
                     myPref.setSwiperType(Global.WALKER);
                 }
             }
 
         } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-            walkerReader = new EMSWalker(activity, false);
+            walkerReader = new EMSWalker();
             myPref.setSwiperType(Global.WALKER);
 
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
             int _sled_type = myPref.sledType(true, -2);
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
                     && !cardReaderConnected) {
-                Global.btSwiper.currentDevice.loadCardReader(callBack, false);
+                Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
             }
-            if (_sled_type != -1 && Global.btSled != null && Global.btSled.currentDevice != null
+            if (_sled_type != -1 && Global.btSled != null && Global.btSled.getCurrentDevice() != null
                     && !cardReaderConnected) {
-                Global.btSled.currentDevice.loadCardReader(callBack, false);
+                Global.btSled.getCurrentDevice().loadCardReader(callBack, false);
             }
             if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
                         && !cardReaderConnected)
-                    Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+                    Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
             }
         }
 
@@ -320,15 +320,15 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
         } else if (myPref.isESY13P1()) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
                 cardSwipe.setChecked(true);
             }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
-            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
-                Global.embededMSR.currentDevice.loadCardReader(callBack, false);
+            if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
+                Global.embededMSR.getCurrentDevice().loadCardReader(callBack, false);
                 cardSwipe.setChecked(false);
             }
         }
@@ -643,7 +643,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                 uniMagReader.startReading();
             } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                     && Global.mainPrinterManager != null)
-                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+                Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
         } else {
             Global.showPrompt(activity, R.string.card_card_swipe, getString(R.string.error_reading_card));
         }
