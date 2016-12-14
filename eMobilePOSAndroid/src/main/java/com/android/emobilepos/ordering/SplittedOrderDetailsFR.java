@@ -73,6 +73,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
+        LinearLayout previewContainer = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
+        ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
+        params.width = myPref.getPrintPreviewLayoutWidth();
+        previewContainer.setLayoutParams(params);
         MemoTextHandler handler = new MemoTextHandler(getActivity());
         String[] header = handler.getHeader();
         String[] footer = handler.getFooter();

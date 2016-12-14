@@ -948,6 +948,7 @@
     <string name="config_show_removed_void_items_in_printout">Show Removed/Void Items In Print Out</string>
     <string name="config_default_category">Default Category</string>
     <string name="config_attribute_to_display">Attribute To Display</string>
+    <string name="config_printer_width">Printer Width</string>
     <string name="config_group_in_catalog_by_name">Group In Catalog By Name</string>
     <string name="config_filter_products_by_customer">Filter Products By Customers</string>
     <string name="config_limit_products_on_hand">Limit Products On Hand</string>
