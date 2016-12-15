@@ -986,7 +986,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
                 for (int i = 0; i < tempSize; i++) {
 
-                    if (global.orderProductAddons.get(i).getIsAdded().equals("0"))//Not added
+                    if (!global.orderProductAddons.get(i).isAdded())
                         sb.append("\n[NO ").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
                     else
                         sb.append("\n[").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");

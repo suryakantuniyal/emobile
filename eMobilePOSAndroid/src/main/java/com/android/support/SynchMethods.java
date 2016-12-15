@@ -1218,11 +1218,13 @@ public class SynchMethods {
                 orderProducts.add(product);
                 i++;
                 if (i == 1000) {
+                    OrderProductUtils.assignAddonsOrderProduct(orderProducts);
                     orderProductsHandler.insert(orderProducts);
                     orderProducts.clear();
                     i = 0;
                 }
             }
+            OrderProductUtils.assignAddonsOrderProduct(orderProducts);
             orderProductsHandler.insert(orderProducts);
             reader.endArray();
             reader.close();

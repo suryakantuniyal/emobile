@@ -1599,8 +1599,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 for (int i = 0; i < tempSize; i++) {
 
                     sb.append("<br/>");
-                    if (global.orderProductAddons.get(i).getIsAdded().equals("0")) // Not
-                        // added
+                    if (!global.orderProductAddons.get(i).isAdded()) // Not
                         sb.append("[NO ").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
                     else
                         sb.append("[").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");

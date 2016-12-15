@@ -16,9 +16,9 @@ import java.util.Locale;
 
 
 public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
-    private String addon = "0";
-    private String isAdded = "0";
-    private String isPrinted = "0";
+    private boolean addon;
+    private boolean isAdded;
+    private boolean isPrinted;
     private String price_vat_exclusive = "0";
     private String item_void = "";
     private String ordprod_id = "";
@@ -29,7 +29,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String ordprod_qty = "";
     private BigDecimal overwrite_price;
     private String reason_id = "";
-    @SerializedName(value="ordprod_name", alternate={"prod_name"})
+    @SerializedName(value = "ordprod_name", alternate = {"prod_name"})
     private String ordprod_name = "";
     private String ordprod_desc = "";
     private String ordprod_comment = "";
@@ -88,7 +88,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private BigDecimal mixMatchOriginalPrice;
     private List<MixAndMatchDiscount> mixAndMatchDiscounts;
     private String productPriceLevelTotal;
-    private String parentAddonOrderProductId;
+    @SerializedName("parentAddonOrderProductId")
+    private String addon_ordprod_id;
     private String prod_extradesc;
     private String consignment_qty;
 
@@ -227,30 +228,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_price(prod_price);
         this.setItemTotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
         this.setItemSubtotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
-    }
-
-    public String getAddon() {
-        return addon;
-    }
-
-    public void setAddon(String addon) {
-        this.addon = addon;
-    }
-
-    public String getIsAdded() {
-        return isAdded;
-    }
-
-    public void setIsAdded(String isAdded) {
-        this.isAdded = isAdded;
-    }
-
-    public String getIsPrinted() {
-        return isPrinted;
-    }
-
-    public void setIsPrinted(String isPrinted) {
-        this.isPrinted = isPrinted;
     }
 
     public String getPrice_vat_exclusive() {
@@ -754,10 +731,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setMixMatchQtyApplied(0);
     }
 
-    public boolean isAdded() {
-        return !TextUtils.isEmpty(isAdded) && isAdded.equalsIgnoreCase("1");
-    }
-
     public String getProd_extradesc() {
         return prod_extradesc;
     }
@@ -766,20 +739,40 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.prod_extradesc = prod_extradesc;
     }
 
-    public String getParentAddonOrderProductId() {
-        return parentAddonOrderProductId;
-    }
-
-    public void setParentAddonOrderProductId(String parentAddonOrderProductId) {
-        this.parentAddonOrderProductId = parentAddonOrderProductId;
-    }
-
-    public boolean isAddon() {
-        return !TextUtils.isEmpty(getAddon()) && (getAddon().equals("1") || getAddon().equals("true"));
-    }
-
     @Override
     public String toString() {
         return getProd_id() + "-" + getOrdprod_name();
+    }
+
+    public String getAddon_ordprod_id() {
+        return addon_ordprod_id;
+    }
+
+    public void setAddon_ordprod_id(String addon_ordprod_id) {
+        this.addon_ordprod_id = addon_ordprod_id;
+    }
+
+    public boolean isAddon() {
+        return addon;
+    }
+
+    public void setAddon(boolean addon) {
+        this.addon = addon;
+    }
+
+    public boolean isAdded() {
+        return isAdded;
+    }
+
+    public void setAdded(boolean added) {
+        isAdded = added;
+    }
+
+    public boolean isPrinted() {
+        return isPrinted;
+    }
+
+    public void setPrinted(boolean printed) {
+        isPrinted = printed;
     }
 }

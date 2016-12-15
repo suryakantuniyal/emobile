@@ -297,13 +297,9 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
             ord.setProd_price(tempPrice);
             ord.setProd_type(c.getString(c.getColumnIndex("prod_type")));
 
-            ord.setAddon("1");
-            if (isAdded)
-                ord.setIsAdded("1");
-            else
-                ord.setIsAdded("0");
-
-            if (!isAdded)// Not added
+            ord.setAddon(true);
+            ord.setAdded(isAdded);
+            if (!isAdded)
                 _ord_desc.append("\n[NO ").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
             else
                 _ord_desc.append("\n[").append(c.getString(c.getColumnIndex("prod_name"))).append("]");

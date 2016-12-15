@@ -654,7 +654,7 @@ public class EMSDeviceDriver {
                             if (orderProducts.get(i).hasAddons.equals("1")) {
                                 List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
                                 for (OrderProduct addon : addons) {
-                                    if (addon.getIsAdded().equals("1")) {
+                                    if (addon.isAdded()) {
                                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(
                                                 " >" + addon.getOrdprod_name(),
                                                 Global.getCurrencyFormat(addon.getFinalPrice()), lineWidth, 2));
