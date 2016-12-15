@@ -42,6 +42,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by Guarionex on 2/19/2016.
@@ -72,6 +73,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 container, false);
         this.inflater = inflater;
         myPref = new MyPreferences(getActivity());
+        LinearLayout previewContainer = (LinearLayout) detailView.findViewById(R.id.receiptPreviewContainer);
+        ViewGroup.LayoutParams params = previewContainer.getLayoutParams();
+        params.width = myPref.getPrintPreviewLayoutWidth();
+        previewContainer.setLayoutParams(params);
         MemoTextHandler handler = new MemoTextHandler(getActivity());
         String[] header = handler.getHeader();
         String[] footer = handler.getFooter();
@@ -227,7 +232,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                     .multiply(qty).toString()));
 
             if (product.getOrdprod_desc() != null && !product.getOrdprod_desc().isEmpty()) {
-                ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText(product.getOrdprod_desc().replace("<br/>", "\n\r"));
+                StringTokenizer tokenizer = new StringTokenizer(product.getOrdprod_desc(), "<br/>");
+                ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText(tokenizer.nextToken().toString());
             } else {
                 ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText("");
             }

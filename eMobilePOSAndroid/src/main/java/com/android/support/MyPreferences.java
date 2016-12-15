@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 
 import com.android.database.SalesTaxCodesHandler;
+import com.bxl.printer.Printer;
 
 import java.security.AccessControlException;
 import java.security.Guard;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
 
+import util.json.UIUtils;
+
 public class MyPreferences {
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
@@ -26,6 +29,7 @@ public class MyPreferences {
 
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
 
+    public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
     private final String db_path = "db_path";
     private final String emp_id = "emp_id";
@@ -151,6 +155,7 @@ public class MyPreferences {
     public static final String pref_show_removed_void_items_in_printout = "pref_show_removed_void_items_in_printout";
     public static final String pref_limit_products_on_hand = "pref_limit_products_on_hand";
     public static final String pref_attribute_to_display = "pref_attribute_to_display";
+    public static final String pref_printer_width = "pref_printer_width";
 
     public static final String pref_group_in_catalog_by_name = "pref_group_in_catalog_by_name";
     public static final String pref_filter_products_by_customer = "pref_filter_products_by_customer";
@@ -552,6 +557,21 @@ public class MyPreferences {
 
     public boolean getIsVAT() {
         return prefs.getBoolean(VAT, false);
+    }
+
+    public int getPrintPreviewLayoutWidth() {
+        String width = sharedPref.getString(pref_printer_width, "MEDIUM");
+        PrinterPreviewWidth previewWidth = PrinterPreviewWidth.valueOf(width);
+        switch (previewWidth) {
+            case SMALL:
+                return (int) UIUtils.convertDpToPixel(300, activity);
+            case MEDIUM:
+                return (int) UIUtils.convertDpToPixel(400, activity);
+            case LARGE:
+                return (int) UIUtils.convertDpToPixel(500, activity);
+            default:
+                return (int) UIUtils.convertDpToPixel(400, activity);
+        }
     }
 
     public void setCustPriceLevel(String id) {

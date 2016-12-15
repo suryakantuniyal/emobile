@@ -524,7 +524,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     : null);
             ord.setOnHand(c.getString(c.getColumnIndex("onHand")));
             ord.setImgURL(c.getString(c.getColumnIndex("ordprod_qty")));
-            ord.setIsPrinted(c.getString(c.getColumnIndex("isPrinted")));
+            ord.setPrinted(Boolean.parseBoolean(c.getString(c.getColumnIndex("isPrinted"))));
             ord.setUom_conversion(TextUtils.isEmpty(c.getString(c.getColumnIndex("uom_conversion"))) ? "1" : c.getString(c.getColumnIndex("uom_conversion")));
 
             total = (Double.parseDouble(ord.getOrdprod_qty())) * Double.parseDouble(ord.getFinalPrice());
@@ -576,8 +576,8 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
             ord.setOrdprod_id(c.getString(c.getColumnIndex("ordprod_id")));
 
-            ord.setAddon(c.getString(c.getColumnIndex("addon")));
-            ord.setIsAdded(c.getString(c.getColumnIndex("isAdded")));
+            ord.setAddon(Boolean.parseBoolean(c.getString(c.getColumnIndex("addon"))));
+            ord.setAdded(Boolean.parseBoolean(c.getString(c.getColumnIndex("isAdded"))));
             ord.setItem_void(c.getString(c.getColumnIndex("item_void")));
 
             ord.setAddon_section_name(c.getString(c.getColumnIndex("addon_section_name")));

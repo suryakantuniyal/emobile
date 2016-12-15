@@ -172,6 +172,16 @@
         <item name="prod_desc">prod_desc</item>
         <item name="prod_extradesc">prod_extradesc</item>
     </string-array>
+    <string-array name="printerWidths">
+        <item name="width_small">Small</item>
+        <item name="width_medium">Medium</item>
+        <item name="width_large">Large</item>
+    </string-array>
+    <string-array name="printerWidthsValues">
+        <item name="SMALL">SMALL</item>
+        <item name="MEDIUM">MEDIUM</item>
+        <item name="LARGE">LARGE</item>
+    </string-array>
     <string-array name="defaultTransEntries">
         <item name="default_trans_none">None</item>
         <item name="default_trans_sales_receipt">Sales Receipt</item>

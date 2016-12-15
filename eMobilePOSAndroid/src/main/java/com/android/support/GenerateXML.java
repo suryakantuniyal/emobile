@@ -1015,7 +1015,7 @@ public class GenerateXML {
                     serializer.text(StringUtil.nullStringToEmpty(assignedSeat));
                     serializer.endTag(empstr, "assignedSeat");
 
-                    String parentAddonOrderProductId = product.getParentAddonOrderProductId();
+                    String parentAddonOrderProductId = product.getAddon_ordprod_id();
                     serializer.startTag(empstr, "parentAddonOrderProductId");
                     serializer.text(StringUtil.nullStringToEmpty(parentAddonOrderProductId));
                     serializer.endTag(empstr, "parentAddonOrderProductId");
@@ -1027,17 +1027,17 @@ public class GenerateXML {
 
 
                     serializer.startTag(empstr, "isAddon");
-                    serializer.text(product.getAddon());//cursor.getString(cursor.getColumnIndex("addon")));
+                    serializer.text(String.valueOf(product.isAddon()));//cursor.getString(cursor.getColumnIndex("addon")));
                     serializer.endTag(empstr, "isAddon");
 
                     serializer.startTag(empstr, "isAdded");
-                    serializer.text(product.getIsAdded());//cursor.getString(cursor.getColumnIndex("isAdded")));
+                    serializer.text(String.valueOf(product.isAdded()));//cursor.getString(cursor.getColumnIndex("isAdded")));
                     serializer.endTag(empstr, "isAdded");
 
                     serializer.startTag(empstr, "isPrinted");
 
                     if (!isOnHold)
-                        serializer.text(product.getIsPrinted());//cursor.getString(cursor.getColumnIndex("isPrinted")));
+                        serializer.text(String.valueOf(product.isPrinted()));//cursor.getString(cursor.getColumnIndex("isPrinted")));
                     else
                         serializer.text("1");
 
@@ -2595,7 +2595,7 @@ public class GenerateXML {
         boolean isRestMode = info.getPreferences(MyPreferences.pref_restaurant_mode);
 
         for (int i = 0; i < size; i++) {
-            if (!isRestMode || (isRestMode && ((c.getString(c.getColumnIndex("addon")).equals("0"))))) {
+            if (!isRestMode || (isRestMode && ((c.getString(c.getColumnIndex("addon")).equals("false"))))) {
                 serializer.startTag(empstr, "OrderProduct");
 
                 serializer.startTag(empstr, "isAddon");

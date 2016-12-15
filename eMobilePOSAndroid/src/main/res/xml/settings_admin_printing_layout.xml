@@ -12,6 +12,13 @@
             android:key="pref_automatic_printing"
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_automatic_printing" />
+        <ListPreference
+            android:defaultValue="width_medium"
+            android:entries="@array/printerWidths"
+            android:entryValues="@array/printerWidthsValues"
+            android:key="pref_printer_width"
+            android:layout="@layout/settings_custom_layout"
+            android:title="@string/config_printer_width" />
         <CheckBoxPreference
             android:key="pref_split_stationprint_by_categories"
             android:layout="@layout/settings_custom_layout"
