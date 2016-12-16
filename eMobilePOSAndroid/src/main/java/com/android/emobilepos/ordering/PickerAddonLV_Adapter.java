@@ -24,17 +24,13 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 	LayoutInflater inflater;
 	private ImageLoader imageLoader;
 	private DisplayImageOptions options;
-
 	private Activity activity;
-
-
 	private Global global;
 	private final int SELECT_EMPTY = 0, SELECT_CHECKED = 1, SELECT_CROSS = 2;
 	//private final int COLOR_GREEN = Color.rgb(0, 112, 60),COLOR_RED = Color.RED, COLOR_BLACK = Color.rgb(98, 105, 77);
 	private final int COLOR_GREEN = Color.rgb(0, 112, 60),COLOR_RED = Color.RED, COLOR_BLUE = Color.rgb(24, 136, 161);
 	private boolean itHasAddonProducts = true;
 	private Cursor c;
-	
 
 	public interface ProductClickedCallback {
 		void productClicked(int position);
@@ -45,14 +41,12 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 		activity = context;
 		inflater = LayoutInflater.from(context);
 		imageLoader = _imageLoader;
-		
 		options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true).
 				imageScaleType(ImageScaleType.IN_SAMPLE_INT).showImageOnLoading(R.drawable.loading_image)
 				.showImageForEmptyUri(R.drawable.no_image).build();
 		global = (Global) activity.getApplication();
 		c = _c;
 		c.moveToFirst();
-
 		int cursorSize = c.getCount();
     	if(cursorSize ==1)
     	{
@@ -65,35 +59,22 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 	@Override
 	public void bindView(View view, Context context, final Cursor c) {
 		final int position = c.getPosition();
-		
 		c.moveToPosition(position);
-
 		ViewHolder holder = (ViewHolder) view.getTag();
         if(position == 0)
         	holder.prod_image.requestFocus();
-
-        
         holder.itemPosition = position;
         holder.name.setText(c.getString(holder.i_prod_name));
         holder.price.setText(Global.formatDoubleStrToCurrency(c.getString(holder.i_prod_price)));
-        
-        
-        
         holder.prod_image.setTag(holder);
         holder.prod_image.setOnTouchListener(Global.opaqueImageOnClick());
 		holder.prod_image.setOnClickListener(this);
-		
-		
 		String[] switchCase = new String[]{"0"};
-		
 		if(global.addonSelectionType.containsKey(c.getString(holder.i_prod_id)))
 			switchCase = global.addonSelectionType.get(c.getString(holder.i_prod_id));
 		else
 			global.addonSelectionType.put(c.getString(holder.i_prod_id),new String[]{Integer.toString(SELECT_EMPTY),
 				Integer.toString(position),c.getString(holder.i_cat_id)});
-		
-		
-		
 		switch(Integer.parseInt(switchCase[0]))
 		{
 			case SELECT_EMPTY:
@@ -114,36 +95,29 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 				holder.state_image.setVisibility(View.VISIBLE);
 				break;
 		}
-        
 		if(!itHasAddonProducts)
 		{
 			view.setVisibility(View.GONE);
 		}
-		
 		imageLoader.displayImage(c.getString(holder.i_prod_img_name), holder.prod_image, options);
 	}
 
 	
 	@Override
 	public View newView(Context context, Cursor c, ViewGroup parent) {
-
 		View retView;
 		ViewHolder holder;
-
 		holder = new ViewHolder();
 		holder.i_prod_img_name = c.getColumnIndex("prod_img_name");
 		holder.i_prod_price = c.getColumnIndex("master_price");
 		holder.i_prod_name = c.getColumnIndex("prod_name");
 		holder.i_prod_id = c.getColumnIndex("_id");
 		holder.i_cat_id = c.getColumnIndex("cat_id");
-
 		retView = inflater.inflate(R.layout.addon_picker_item_adapter, parent, false);
-
 		holder.name = (TextView) retView.findViewById(R.id.data_item_text_top);
 		holder.price = (TextView) retView.findViewById(R.id.data_item_text_bottom);
 		holder.state_image = (ImageView) retView.findViewById(R.id.data_item_image_icon);
 		holder.prod_image = (ImageView) retView.findViewById(R.id.data_item_image);
-
 		retView.setTag(holder);
 		return retView;
 	}
@@ -154,26 +128,14 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
         public int itemPosition;
         public int i_prod_name,i_prod_price,i_prod_img_name,i_prod_id,i_cat_id;
 	}
-	
-//	public String getQty(String id) {
-//		Global global = (Global) activity.getApplication();
-//		String value = global.qtyCounter.get(id);
-//
-//		if (value == null) {
-//			return "0";
-//		}
-//		return value;
-//	}
 
 	@Override
 	public void onClick(View view) {
 		ViewHolder holder = (ViewHolder)view.getTag();
 		if(holder!=null)
 		{
-
 			c.moveToPosition(holder.itemPosition);
 			String[] temp = global.addonSelectionType.get(c.getString(holder.i_prod_id));
-
 			switch (Integer.parseInt(temp[0])) {
 			case SELECT_EMPTY:
 				holder.name.setBackgroundColor(COLOR_GREEN);
@@ -199,7 +161,6 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
 						Integer.toString(SELECT_EMPTY),Integer.toString(holder.itemPosition),c.getString(holder.i_cat_id) });
 				break;
 			}
-			//this.notifyDataSetChanged();
 		}
 	}
 }

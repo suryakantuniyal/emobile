@@ -233,70 +233,14 @@ public class ProductAddonsHandler {
     }
 
 
-    public Cursor getChildAddons2(String prodID, List<HashMap<String, String>> addonParentList) {
-//		if(db==null||!db.isOpen())
-//			db = dbManager.openReadableDB();
-
-        StringBuilder sb = new StringBuilder();
-        int size = addonParentList.size();
-
-
-        String priceLevelID;
-
-        if (myPref.isCustSelected())
-            priceLevelID = myPref.getCustPriceLevel();
-        else
-            priceLevelID = myPref.getEmployeePriceLevel();
-
-
-        sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");
-        sb.append("ch.over_price_net as 'chain_price',pl.pricelevel_price,p.prod_name,p.prod_desc,p.prod_onhand as 'master_prod_onhand',");
-        sb.append("ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable',p.prod_taxcode,p.prod_taxtype, p.prod_type, ");
-        sb.append("c.cat_id FROM Product_addons pa LEFT OUTER JOIN Products p ON pa.cat_id = p.cat_id LEFT OUTER JOIN Categories c ON pa.cat_id = c.cat_id ");
-        sb.append("LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' ");
-        sb.append("BETWEEN vp.minQty AND vp.maxQty  AND vp.pricelevel_id = '").append(priceLevelID).append("' LEFT OUTER JOIN PriceLevelItems pl ");
-        sb.append("ON p.prod_id = pl.pricelevel_prod_id AND pl.pricelevel_id = '").append(priceLevelID).append("' LEFT OUTER JOIN Products_Images i ");
-        sb.append("ON p.prod_id = i.prod_id AND i.type = 'I' LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id ");
-        sb.append("LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
-
-        if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
-            sb.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = '").append(myPref.getCustID()).append("' AND pa.prod_id = '").append(prodID);
-        } else {
-            sb.append("AND ch.cust_chain = '").append(myPref.getCustID()).append("' WHERE pa.prod_id = '").append(prodID);
-        }
-
-        sb.append("' AND c.cat_id IN (");
-
-        StringBuilder sb2 = new StringBuilder();
-
-        for (int i = 0; i < size; i++) {
-            sb2.append("'").append(addonParentList.get(i).get(cat_id)).append("'");
-            if (i + 1 < size)
-                sb2.append(",");
-        }
-
-        sb.append(sb2.toString()).append(") ORDER BY pa.rest_addons ASC,p.prod_name");
-
-        //db.close();
-        return DBManager.getDatabase().rawQuery(sb.toString(), null);
-    }
 
     public Cursor getSpecificChildAddons(String prodID, String _parent_cat_id) {
-//		if(db==null||!db.isOpen())
-//			db = dbManager.openReadableDB();
-
         StringBuilder sb = new StringBuilder();
-        //int size = addonParentList.size();
-
-
         String priceLevelID;
-
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
             priceLevelID = myPref.getEmployeePriceLevel();
-
-
         sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");
         sb.append("ch.over_price_net as 'chain_price',pl.pricelevel_price,p.prod_name,p.prod_desc,p.prod_onhand as 'master_prod_onhand',");
         sb.append("ei.prod_onhand as 'local_prod_onhand',i.prod_img_name, IFNULL(s.taxcode_istaxable,'1') as 'prod_istaxable',p.prod_taxcode,p.prod_taxtype, p.prod_type, ");
@@ -306,31 +250,18 @@ public class ProductAddonsHandler {
         sb.append("ON p.prod_id = pl.pricelevel_prod_id AND pl.pricelevel_id = '").append(priceLevelID).append("' LEFT OUTER JOIN Products_Images i ");
         sb.append("ON p.prod_id = i.prod_id AND i.type = 'I' LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id ");
         sb.append("LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
-
         if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
             sb.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = '").append(myPref.getCustID()).append("' AND pa.prod_id = '").append(prodID);
         } else {
             sb.append("AND ch.cust_chain = '").append(myPref.getCustID()).append("' WHERE pa.prod_id = '").append(prodID);
         }
-
         sb.append("' AND c.cat_id IN (");
-
-        //		for(int i = 0 ;i < size;i++)
-//		{
-//			sb2.append("'").append(addonParentList.get(i).get(cat_id)).append("'");
-//			if(i+1<size)
-//				sb2.append(",");
-//		}
-
         sb.append("'" + _parent_cat_id + "'").append(") ORDER BY pa.rest_addons ASC,p.prod_name");
-
-        //db.close();
         return DBManager.getDatabase().rawQuery(sb.toString(), null);
     }
 
 
     public String[] getAddonDetails(String parentProdID, String addonProdID) {
-        //SQLiteDatabase db = dbManager.openReadableDB();
         String[] values = new String[2];
         StringBuilder sb = new StringBuilder();
 

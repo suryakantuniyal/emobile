@@ -194,7 +194,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                             generateAddon(Integer.parseInt(values[1]), values[2], true);
                             break;
                         case SELECT_CROSS:
-                            generateAddon(Integer.parseInt(values[1]), values[2], false);
+w                            generateAddon(Integer.parseInt(values[1]), values[2], false);
                             break;
                     }
                 }
