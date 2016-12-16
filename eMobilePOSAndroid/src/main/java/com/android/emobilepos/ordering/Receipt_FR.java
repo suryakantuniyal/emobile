@@ -124,7 +124,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     private SemiClosedSlidingDrawer slidingDrawer;
     public TextView custName;
     public OrderProductListAdapter mainLVAdapter;
-    private ReceiptRestLV_Adapter restLVAdapter;
     public static ListView receiptListView;
 
 
@@ -563,8 +562,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                             long id) {
         final OrderSeatProduct orderSeatProduct = (OrderSeatProduct) mainLVAdapter.getItem(position);
         final int orderProductIdx = orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProduct.orderProduct) : 0;
-        if (restLVAdapter != null)
-            position = restLVAdapter.dataPosition(orderProductIdx);
+//        if (restLVAdapter != null)
+//            position = restLVAdapter.dataPosition(orderProductIdx);
         if (orderSeatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
             ((OrderingMain_FA) getActivity()).setSelectedSeatNumber(orderSeatProduct.seatNumber);
             mainLVAdapter.notifyDataSetChanged();
@@ -1510,8 +1509,8 @@ public class Receipt_FR extends Fragment implements OnClickListener,
 //        global.qtyCounter = new HashMap<>();
         if (mainLVAdapter != null)
             mainLVAdapter.notifyDataSetChanged();
-        else
-            restLVAdapter.notifyDataSetChanged();
+//        else
+//            restLVAdapter.notifyDataSetChanged();
         callBackUpdateHeaderTitle.updateHeaderTitle(title);
         setupListView();
         reCalculate();
@@ -2083,9 +2082,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         reCalculate();
         Catalog_FR.instance.refreshListView();
         refreshView();
-        if (restLVAdapter != null) {
-            restLVAdapter.updateDivisionPos(removePos);
-        }
+//        if (restLVAdapter != null) {
+//            restLVAdapter.updateDivisionPos(removePos);
+//        }
     }
 
 
@@ -2221,8 +2220,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         if (mainLVAdapter != null) {
             mainLVAdapter.notifyDataSetChanged();
             receiptListView.smoothScrollToPosition(mainLVAdapter.selectedPosition);
-        } else
-            restLVAdapter.notifyDataSetChanged();
+        }
+//        else
+//            restLVAdapter.notifyDataSetChanged();
     }
 
     private void reloadDefaultTransaction() {

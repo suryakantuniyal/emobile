@@ -124,7 +124,6 @@ public class OrderProductsHandler {
     }
 
 
-
     public void insert(List<OrderProduct> orderProducts) {
 
         DBManager.getDatabase().beginTransaction();
@@ -379,7 +378,10 @@ public class OrderProductsHandler {
         String groupId = cursor.getString(cursor.getColumnIndex(seatGroupId));
         product.setProd_price_points(cursor.getString(cursor.getColumnIndex(prodPricePoints)));
         product.setSeatGroupId(groupId == null || groupId.isEmpty() ? 0 : Integer.parseInt(groupId));
-
+        if (product.hasAddons.equalsIgnoreCase("1")) {
+            List<OrderProduct> orderProductAddons = getOrderProductAddons(product.getOrdprod_id());
+            product.addonsProducts = orderProductAddons;
+        }
         return product;
     }
 

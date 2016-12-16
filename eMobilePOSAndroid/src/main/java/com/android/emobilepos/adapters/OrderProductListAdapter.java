@@ -352,8 +352,6 @@ public class OrderProductListAdapter extends BaseAdapter {
 
 
                         ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
-                        Global.productParentAddons = prodAddonsHandler.getParentAddons(product.getProd_id());
-
                         activity.startActivityForResult(intent, 0);
                     }
                 });

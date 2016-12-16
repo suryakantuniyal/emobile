@@ -368,7 +368,7 @@ public class Global extends MultiDexApplication {
 
     public static boolean isConsignment = false;
     public static boolean isInventoryTransfer = false;
-    public static List<HashMap<String, String>> productParentAddons;
+//    public static List<HashMap<String, String>> productParentAddons;
     public static HashMap<String, Integer> productParentAddonsDictionary;
     public HashMap<String, String[]> addonSelectionType;
     public static Map<String, HashMap<String, String[]>> addonSelectionMap;
@@ -496,8 +496,8 @@ public class Global extends MultiDexApplication {
         cons_issue_order = null;
         cons_return_order = null;
         cons_fillup_order = null;
-        if (productParentAddons != null)
-            productParentAddons.clear();
+//        if (productParentAddons != null)
+//            productParentAddons.clear();
         if (productParentAddonsDictionary != null)
             productParentAddonsDictionary.clear();
         if (addonSelectionMap != null)

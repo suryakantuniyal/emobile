@@ -199,8 +199,8 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 			
 			int i = Global.productParentAddonsDictionary.get(sectionID);
 			
-			tv.setText(Global.productParentAddons.get(i).get("cat_name"));
-			imageLoaderTest.DisplayImage(Global.productParentAddons.get(i).get("url"), sectionImg,true);
+//			tv.setText(Global.productParentAddons.get(i).get("cat_name"));
+//			imageLoaderTest.DisplayImage(Global.productParentAddons.get(i).get("url"), sectionImg,true);
 		} 
 		else 
 		{

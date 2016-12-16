@@ -19,10 +19,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.database.OrderProductsHandler;
 import com.android.database.ProductAddonsHandler;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;
@@ -70,40 +72,35 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private ProductAddonsHandler prodAddonsHandler;
     public static PickerAddon_FA instance;
     private String selectedSeatNumber;
+    private OrderProduct product;
+    private List<ParentAddon> parentAddons;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         myPref = new MyPreferences(this);
         instance = this;
-
         if (!myPref.getIsTablet())                        //reset to default layout (not as dialog)
             super.setTheme(R.style.AppTheme);
-
-
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.addon_picker_layout);
-
         activity = this;
         global = (Global) getApplication();
-
         if (myPref.getIsTablet()) {
             DisplayMetrics metrics = getResources().getDisplayMetrics();
             int screenWidth = (int) (metrics.widthPixels * 0.80);
             int screenHeight = (int) (metrics.heightPixels * 0.80);
             getWindow().setLayout(screenWidth, screenHeight);
         }
-
-
         Global.addonTotalAmount = 0;
         extras = activity.getIntent().getExtras();
         global = (Global) activity.getApplication();
         prodAddonsHandler = new ProductAddonsHandler(activity);
         _prod_id = extras.getString("prod_id");
-        Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, Global.productParentAddons.get(0).get("cat_id"));
+        OrderProductsHandler productsHandler = new OrderProductsHandler(activity);
+        product = productsHandler.getOrderProducts(_prod_id).get(0);
+        parentAddons = prodAddonsHandler.getParentAddons(product.getProd_id());
+        Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, parentAddons.get(0).getCategoryId());
         myGridView = (GridView) findViewById(R.id.asset_grid);
         isEditAddon = extras.getBoolean("isEditAddon", false);
         item_position = extras.getInt("item_position");
@@ -194,7 +191,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
                             generateAddon(Integer.parseInt(values[1]), values[2], true);
                             break;
                         case SELECT_CROSS:
-w                            generateAddon(Integer.parseInt(values[1]), values[2], false);
+                            generateAddon(Integer.parseInt(values[1]), values[2], false);
                             break;
                     }
                 }

@@ -46,6 +46,7 @@ import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
 import com.android.support.Global;
 import com.android.support.MyEditText;
@@ -709,9 +710,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             getCategoryCursor(i_id, i_cat_name, i_num_subcategories, showAllProducts);
         } else {
             ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
-            List<HashMap<String, String>> tempListMap = prodAddonsHandler.getParentAddons(
+            List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
                     myCursor.getString(myCursor.getColumnIndex("_id")));
-            if (tempListMap != null && tempListMap.size() > 0) {
+            if (parentAddons != null && parentAddons.size() > 0) {
                 Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
 
                 Product product = populateDataForIntent(myCursor);
@@ -732,7 +733,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
 
-                Global.productParentAddons = tempListMap;
+//                Global.productParentAddons = tempListMap;
 
                 global.addonSelectionType = new HashMap<>();
                 startActivityForResult(intent, 0);
@@ -759,9 +760,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 getCategoryCursor(i_id, i_cat_name, i_num_subcategories, false);
             } else {
                 ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
-                List<HashMap<String, String>> tempListMap = prodAddonsHandler.getParentAddons(
+                List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
                         myCursor.getString(myCursor.getColumnIndex("_id")));
-                if (tempListMap != null && tempListMap.size() > 0) {
+                if (parentAddons != null && parentAddons.size() > 0) {
                     Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
@@ -783,7 +784,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     intent.putExtra("prod_price_points", product.getProdPricePoints());
                     intent.putExtra("prod_value_points", product.getProdValuePoints());
 
-                    Global.productParentAddons = tempListMap;
+//                    Global.productParentAddons = tempListMap;
 
                     global.addonSelectionType = new HashMap<>();
                     startActivityForResult(intent, 0);

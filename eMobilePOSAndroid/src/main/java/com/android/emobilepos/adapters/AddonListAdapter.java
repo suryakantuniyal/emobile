@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.database.OrderProductsHandler;
 import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -25,8 +26,7 @@ public class AddonListAdapter extends BaseAdapter implements StickyGridHeadersSi
     
     private ImageLoader imageLoader;
 	private DisplayImageOptions options;
-    
-    
+    OrderProductsHandler orderProductsHandler;
     private Cursor c;
    
     private Global global;
@@ -44,23 +44,7 @@ public class AddonListAdapter extends BaseAdapter implements StickyGridHeadersSi
     public AddonListAdapter(Activity activity,Cursor cursor,ImageLoader _image_loader,DisplayImageOptions _options)
     {
     	mInflater = LayoutInflater.from(activity);
-    	
-//    	MyPreferences myPref = new MyPreferences(activity);
-//		File cacheDir = new File(myPref.getCacheDir());
-//		if(!cacheDir.exists())
-//			cacheDir.mkdirs();
-		
-		//ImageLoader.getInstance().destroy();
-		
-//		imageLoader = ImageLoader.getInstance();
-//		ImageLoaderConfiguration config = new ImageLoaderConfiguration
-//				.Builder(activity).memoryCacheExtraOptions(100, 100).discCacheExtraOptions(1000, 1000, CompressFormat.JPEG, 100, null).discCache(new UnlimitedDiscCache(cacheDir))
-//				.build();
-//		imageLoader.init(config);
-//		imageLoader.handleSlowNetwork(true);
-//		options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loading_image).showImageForEmptyUri(R.drawable.no_image).resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true).
-//				imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
-		
+
 		imageLoader = _image_loader;
 		options = _options;
 		
@@ -210,7 +194,8 @@ public class AddonListAdapter extends BaseAdapter implements StickyGridHeadersSi
         if(cat_id!=null&&Global.productParentAddonsDictionary.get(cat_id)!=null)
         {
         	String test = (String)headerHolder.name.getTag();
-        	mapTemp = Global.productParentAddons.get(Global.productParentAddonsDictionary.get(cat_id));
+
+//        	mapTemp = Global.productParentAddons.get(Global.productParentAddonsDictionary.get(cat_id));
         	if(test==null||!test.equals(mapTemp.get("cat_name")))
         	{
         		headerHolder.name.setText(mapTemp.get("cat_name"));
