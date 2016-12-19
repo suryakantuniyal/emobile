@@ -1498,124 +1498,51 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     }
 
-    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
-        Orders order = new Orders();
-        OrderProduct ord = new OrderProduct();
-//        int sum = Double.valueOf(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
+    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, OrderProduct orderProduct, String selectedSeatNumber) {
         if (OrderingMain_FA.returnItem)
-            ord.setReturned(true);
-        order.setName(product.getProdName());
-        order.setValue(product.getProdPrice());
-        order.setProdID(product.getId());
-        order.setDiscount("0.00");
-        order.setTax("0.00");
-        order.setDistQty("0");
-        order.setTaxQty("0");
-
-        String val = product.getProdPrice();
+            orderProduct.setReturned(true);
+        String val = orderProduct.getFinalPrice();
         if (val == null || val.isEmpty())
             val = "0.00";
-
         BigDecimal total = Global.getBigDecimalNum(Global.formatNumToLocale(Double.parseDouble(val)));
         if (isFromAddon) {
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
-        ord.addonsProducts = new ArrayList<>(global.orderProductAddons);
-        ord.setPricesXGroupid(product.getPricesXGroupid());
-        ord.setProd_price(total.toString());
-        ord.setAssignedSeat(selectedSeatNumber);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
-
         DecimalFormat frmt = new DecimalFormat("0.00");
-        order.setTotal(frmt.format(total));
-
-        ord.setProd_istaxable(product.getProdIstaxable());
-        ord.setProd_taxtype(product.getProdTaxType());
-        ord.setProd_taxcode(product.getProdTaxCode());
-
-        // add order to db
-        ord.setOrdprod_qty(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? "-1" : "1");
-        ord.setOrdprod_name(product.getProdName());
-        ord.setOrdprod_desc(product.getProdDesc());
-        ord.setProd_id(product.getId());
-
-        ord.setOnHand(product.getProdOnHand());
-        ord.setImgURL(product.getProdImgName());
-        ord.setCat_id(product.getCatId());
-        ord.setProd_price_points(String.valueOf(product.getProdPricePoints()));
-        ord.setProd_value_points(String.valueOf(product.getProdValuePoints()));
-
-        // Still need to do add the appropriate tax/discount value
-        ord.setProd_taxValue(new BigDecimal("0.00"));
-        ord.setDiscount_value("0.00");
-
-        ord.setTaxAmount("0");
-        ord.setTaxTotal("0.00");
-        ord.setDisAmount("0");
-        ord.setDisTotal("0.00");
-        ord.setItemTotal(total.toString());
-        ord.setItemSubtotal(total.toString());
-
-        ord.setTax_position("0");
-        ord.setDiscount_position("0");
-        ord.setPricelevel_position("0");
-        ord.setUom_position("0");
-
-        ord.setProd_price_updated("0");
+        orderProduct.setItemTotal(total.toString());
+        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
-
         MyPreferences myPref = new MyPreferences(activity);
-
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
         }
-
-        ord.setOrd_id(Global.lastOrdID);
-
+        orderProduct.setOrd_id(Global.lastOrdID);
         if (global.orderProducts == null) {
             global.orderProducts = new ArrayList<>();
         }
-
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
-
-        ord.setOrdprod_id(randomUUIDString);
-
+        orderProduct.setOrdprod_id(randomUUIDString);
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
-
-            if (Global.addonSelectionMap == null)
-                Global.addonSelectionMap = new HashMap<>();
-            if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<>();
-
-            if (global.addonSelectionType.size() > 0) {
-                StringBuilder sb = new StringBuilder();
-                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
-
-                sb.append(ord.getOrdprod_desc());
-                int tempSize = global.orderProductAddons.size();
-                for (int i = 0; i < tempSize; i++) {
-
-                    sb.append("<br/>");
-                    if (!global.orderProductAddons.get(i).isAdded()) // Not
-                        sb.append("[NO ").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
-                    else
-                        sb.append("[").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
-
-                }
-                ord.setOrdprod_desc(sb.toString());
-                ord.setHasAddons("1");
-
-                global.orderProductAddons = new ArrayList<>();
-
+            StringBuilder sb = new StringBuilder();
+            sb.append(orderProduct.getOrdprod_desc());
+            int tempSize = orderProduct.addonsProducts.size();
+            for (int i = 0; i < tempSize; i++) {
+                sb.append("<br/>");
+                if (!orderProduct.addonsProducts.get(i).isAdded()) // Not
+                    sb.append("[NO ").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
+                else
+                    sb.append("[").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
             }
+            orderProduct.setOrdprod_desc(sb.toString());
+//            global.orderProductAddons = new ArrayList<>();
         }
-        String row1 = ord.getOrdprod_name();
-        String row2 = Global.formatDoubleStrToCurrency(product.getProdPrice());
+        String row1 = orderProduct.getOrdprod_name();
+        String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        global.orderProducts.add(ord);
+        global.orderProducts.add(orderProduct);
     }
 
     public String getAssociateId() {
@@ -1636,6 +1563,5 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         return true;
-
     }
 }

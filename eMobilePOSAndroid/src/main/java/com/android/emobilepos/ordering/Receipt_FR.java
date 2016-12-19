@@ -1129,17 +1129,17 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         for (OrderProduct orderProduct : global.orderProducts) {
             order.ord_lineItemDiscount += orderProduct.getDiscount_value();
         }
-        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
-                && Global.orderProductAddonsMap != null
-                && Global.orderProductAddonsMap.size() > 0) {
-            String[] keys = Global.orderProductAddonsMap.keySet().toArray(
-                    new String[Global.orderProductAddonsMap.size()]);
-            for (String key : keys) {
-
-                totalLines += Global.orderProductAddonsMap.get(key).size();
-
-            }
-        }
+//        if (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+//                && global.orderProductAddons != null
+//                && global.orderProductAddons.size() > 0) {
+////            String[] keys = Global.orderProductAddonsMap.keySet().toArray(
+////                    new String[Global.orderProductAddonsMap.size()]);
+////            for (String key : keys) {
+////
+////                totalLines += Global.orderProductAddonsMap.get(key).size();
+////
+////            }
+//        }
 
         if (!myPref.getShiftIsOpen())
             order.clerk_id = myPref.getShiftClerkID();
@@ -2063,18 +2063,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             OrderProductsHandler ordProdDB = new OrderProductsHandler(activity);
             ordProdDB.deleteOrderProduct(product.getOrdprod_id());
 
-            if (Global.addonSelectionMap != null)
-                Global.addonSelectionMap.remove(product.getOrdprod_id());
-            if (Global.orderProductAddonsMap != null
-                    && !Global.orderProductAddonsMap.isEmpty()) {
-                if (Global.orderProductAddonsMap.get(product.getOrdprod_id()) != null)
-                    for (OrderProduct op : Global.orderProductAddonsMap
-                            .get(product.getOrdprod_id())) {
-                        ordProdDB.deleteOrderProduct(op.getOrdprod_id());
-                    }
-
-                Global.orderProductAddonsMap.remove(product.getOrdprod_id());
-            }
+//            if (Global.addonSelectionMap != null)
+//                Global.addonSelectionMap.remove(product.getOrdprod_id());
+//            if (Global.orderProductAddonsMap != null
+//                    && !Global.orderProductAddonsMap.isEmpty()) {
+//                if (Global.orderProductAddonsMap.get(product.getOrdprod_id()) != null)
+//                    for (OrderProduct op : Global.orderProductAddonsMap
+//                            .get(product.getOrdprod_id())) {
+//                        ordProdDB.deleteOrderProduct(op.getOrdprod_id());
+//                    }
+//
+//                Global.orderProductAddonsMap.remove(product.getOrdprod_id());
+//            }
             global.orderProducts.remove(product);
         }
 

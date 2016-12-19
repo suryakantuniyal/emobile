@@ -1,6 +1,9 @@
 package com.android.emobilepos.models;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+
+import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 12/22/2015.
@@ -427,5 +430,10 @@ public class Product {
 
     public void setProd_disc_type_points(String prod_disc_type_points) {
         this.prod_disc_type_points = prod_disc_type_points;
+    }
+
+    public String toJson() {
+        Gson gson = JsonUtils.getInstance();
+        return gson.toJson(this);
     }
 }

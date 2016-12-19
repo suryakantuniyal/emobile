@@ -60,7 +60,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
@@ -313,9 +312,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             imgURL = global.orderProducts.get(modifyOrderPosition).getImgURL();
             prodID = global.orderProducts.get(modifyOrderPosition).getProd_id();
             headerOnHand.setText(global.orderProducts.get(modifyOrderPosition).getOnHand());
-            basePrice = global.orderProducts.get(modifyOrderPosition).getProd_price();
+            basePrice = global.orderProducts.get(modifyOrderPosition).getFinalPrice();
             prod_type = global.orderProducts.get(modifyOrderPosition).getProd_type();
-
+            if (basePrice == null || basePrice.isEmpty())
+                basePrice = "0.0";
+            prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));
             updateSavedDetails();
 
             _ordprod_comment = global.orderProducts.get(modifyOrderPosition).getOrdprod_comment();
@@ -624,8 +625,9 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             } else {
                 if (!isModify)
                     preValidateSettings();
-                else
+                else {
                     setProductInfo(OrderProductUtils.getOrderProducts(global.orderProducts, orderProduct.getProd_id()).get(0));
+                }
 
                 activity.setResult(2);
                 activity.finish();
@@ -866,6 +868,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
 
     private void setProductInfo(OrderProduct orderProduct) {
         BigDecimal num = new BigDecimal(qty_picked);
+
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         if (OrderingMain_FA.returnItem)
             orderProduct.setReturned(true);
@@ -971,32 +974,30 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
 
-            if (Global.addonSelectionMap == null)
-                Global.addonSelectionMap = new HashMap<>();
-            if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<>();
+//            if (Global.addonSelectionMap == null)
+//                Global.addonSelectionMap = new HashMap<>();
+//            if (Global.orderProductAddonsMap == null)
+//                Global.orderProductAddonsMap = new HashMap<>();
 
-            if (global.addonSelectionType.size() > 0) {
-                StringBuilder sb = new StringBuilder();
-                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
-                sb.append(orderProduct.getOrdprod_desc());
-                int tempSize = global.orderProductAddons.size();
-                orderProduct.addonsProducts = new ArrayList<>(global.orderProductAddons);
+//            if (global.addonSelectionType.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+//                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
+//                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
+            sb.append(orderProduct.getOrdprod_desc());
+            int tempSize = orderProduct.addonsProducts.size();
+//            orderProduct.addonsProducts = new ArrayList<>(global.orderProductAddons);
 
-                for (int i = 0; i < tempSize; i++) {
+            for (int i = 0; i < tempSize; i++) {
 
-                    if (!global.orderProductAddons.get(i).isAdded())
-                        sb.append("\n[NO ").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
-                    else
-                        sb.append("\n[").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
+                if (!orderProduct.isAdded())
+                    sb.append("\n[NO ").append(orderProduct.getOrdprod_name()).append("]");
+                else
+                    sb.append("\n[").append(orderProduct.getOrdprod_name()).append("]");
 
-                }
-                orderProduct.setOrdprod_desc(sb.toString());
-                orderProduct.setHasAddons("1");
-
-                global.orderProductAddons = new ArrayList<>();
             }
+            orderProduct.setOrdprod_desc(sb.toString());
+//            global.orderProductAddons = new ArrayList<>();
+//            }
         }
 //        global.orderProducts.add(orderProduct);
         String row1 = orderProduct.getOrdprod_name();
@@ -1124,56 +1125,56 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             }
         }
     }
-
-    private void updateSKUProduct(OrderProduct orderProduct) {
-        String newPickedOrders = orderProduct.getOrdprod_qty();
-        BigDecimal sum;
-        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-            sum = Global.getBigDecimalNum(newPickedOrders);
-        else
-            sum = Global.getBigDecimalNum(newPickedOrders);
-
-        if (orderProduct.isReturned())
-            sum = sum.negate();
-
-        BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal)).setScale(2, RoundingMode.HALF_UP);
-        calculateTaxDiscount(total);
-
-        orderProduct.setProd_price(prLevTotal);
-        orderProduct.setProd_taxValue(new BigDecimal(taxTotal));
-        orderProduct.setDiscount_value(disTotal);
-
-
-        // for calculating taxes and discount at receipt
-        orderProduct.setTaxAmount(taxAmount);
-        orderProduct.setTaxTotal(taxTotal);
-        orderProduct.setDisAmount(disAmount);
-        orderProduct.setDisTotal(disTotal);
-
-        BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
-
-
-        if (discountIsTaxable) {
-            orderProduct.setDiscount_is_taxable("1");
-        } else
-            orderProduct.setDiscount_is_taxable("0");
-
-
-        if (isFixed)
-            orderProduct.setDiscount_is_fixed("1");
-        else
-            orderProduct.setDiscount_is_fixed("0");
-
-        orderProduct.setProd_price_updated("0");
-
-        orderProduct.setItemTotal(itemTotal.toString());
-        orderProduct.setItemSubtotal(total.toString());
-
-        if (OrderingMain_FA.returnItem) {
-            OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-            OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
-        }
-    }
+//
+//    private void updateSKUProduct(OrderProduct orderProduct) {
+//        String newPickedOrders = orderProduct.getOrdprod_qty();
+//        BigDecimal sum;
+//        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
+//            sum = Global.getBigDecimalNum(newPickedOrders);
+//        else
+//            sum = Global.getBigDecimalNum(newPickedOrders);
+//
+//        if (orderProduct.isReturned())
+//            sum = sum.negate();
+//
+//        BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal)).setScale(2, RoundingMode.HALF_UP);
+//        calculateTaxDiscount(total);
+//
+//        orderProduct.setProd_price(prLevTotal);
+//        orderProduct.setProd_taxValue(new BigDecimal(taxTotal));
+//        orderProduct.setDiscount_value(disTotal);
+//
+//
+//        // for calculating taxes and discount at receipt
+//        orderProduct.setTaxAmount(taxAmount);
+//        orderProduct.setTaxTotal(taxTotal);
+//        orderProduct.setDisAmount(disAmount);
+//        orderProduct.setDisTotal(disTotal);
+//
+//        BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
+//
+//
+//        if (discountIsTaxable) {
+//            orderProduct.setDiscount_is_taxable("1");
+//        } else
+//            orderProduct.setDiscount_is_taxable("0");
+//
+//
+//        if (isFixed)
+//            orderProduct.setDiscount_is_fixed("1");
+//        else
+//            orderProduct.setDiscount_is_fixed("0");
+//
+//        orderProduct.setProd_price_updated("0");
+//
+//        orderProduct.setItemTotal(itemTotal.toString());
+//        orderProduct.setItemSubtotal(total.toString());
+//
+//        if (OrderingMain_FA.returnItem) {
+//            OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
+//            OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
+//        }
+//    }
 
     //------------------------Custom adapter for Dialog and ListView------------------------
     private class DialogLVAdapter extends BaseAdapter {

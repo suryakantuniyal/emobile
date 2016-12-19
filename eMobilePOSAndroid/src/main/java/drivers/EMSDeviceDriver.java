@@ -651,7 +651,7 @@ public class EMSDeviceDriver {
                                     orderProducts.get(i).getOrdprod_qty() + "x " + orderProducts.get(i).getOrdprod_name()
                                             + " "
                                             + uomDescription, lineWidth, 1));
-                            if (orderProducts.get(i).hasAddons.equals("1")) {
+                            if (orderProducts.get(i).getHasAddons()) {
                                 List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
                                 for (OrderProduct addon : addons) {
                                     if (addon.isAdded()) {

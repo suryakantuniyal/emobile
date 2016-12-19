@@ -304,7 +304,9 @@ public class OrderProductListAdapter extends BaseAdapter {
         final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.getOrdprod_id();
 
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                || (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                && !product.getHasAddons())) {
             if (holder.addonButton != null) {
                 holder.addonButton.setVisibility(View.INVISIBLE);
                 holder.addonsTextView.setVisibility(View.GONE);
@@ -315,7 +317,6 @@ public class OrderProductListAdapter extends BaseAdapter {
                 StringBuffer addonSb = new StringBuffer();
                 StringBuffer addonNoSb = new StringBuffer();
 
-                int i = 0;
                 for (OrderProduct orderProduct : product.addonsProducts) {
                     if (orderProduct.isAdded()) {
                         addonSb.append(" <font color='black'>").append(orderProduct.getOrdprod_name()).append("</font>");
@@ -324,7 +325,6 @@ public class OrderProductListAdapter extends BaseAdapter {
                         addonNoSb.append(" <font color='red'>").append(activity.getString(R.string.button_no)).append(" ").append(orderProduct.getOrdprod_name()).append("</font>");
                         addonNoSb.append(", ");
                     }
-                    i++;
                 }
                 if (!TextUtils.isEmpty(addonSb.toString())) {
                     addonSb = addonSb.delete(addonSb.length() - 2, addonSb.length() - 1);
@@ -343,15 +343,13 @@ public class OrderProductListAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(activity, PickerAddon_FA.class);
-                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
+//                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
                         intent.putExtra("selectedSeatNumber", product.getAssignedSeat());
                         intent.putExtra("addon_map_key", tempId);
+                        intent.putExtra("orderProduct", product.toJson());
                         intent.putExtra("isEditAddon", true);
                         intent.putExtra("prod_id", product.getProd_id());
                         intent.putExtra("item_position", orderProductIdx);
-
-
-                        ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
                         activity.startActivityForResult(intent, 0);
                     }
                 });

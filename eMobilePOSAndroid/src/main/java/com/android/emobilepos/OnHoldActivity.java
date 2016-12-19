@@ -532,24 +532,24 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             ord.setItemTotal(Double.toString(total - discAmount));
             ord.setItemSubtotal(Double.toString(total));
             if (ord.isAddon()) {
-                if (global.addonSelectionType == null)
-                    global.addonSelectionType = new HashMap<>();
+//                if (global.addonSelectionType == null)
+//                    global.addonSelectionType = new HashMap<>();
                 int pos = global.orderProducts.size();
                 if (pos > 0) {
                     String[] tempVal = prodAddonHandler.getAddonDetails(ord.getAddon_ordprod_id(), ord.getProd_id());
-                    global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{(ord.isAdded() ? "1" : "2"), tempVal[1], tempVal[0]});
+//                    global.addonSelectionType.put(c.getString(c.getColumnIndex("prod_id")), new String[]{(ord.isAdded() ? "1" : "2"), tempVal[1], tempVal[0]});
                 }
-                global.orderProductAddons.add(ord);
-                if (Global.addonSelectionMap == null)
-                    Global.addonSelectionMap = new HashMap<>();
-                if (Global.orderProductAddonsMap == null)
-                    Global.orderProductAddonsMap = new HashMap<>();
-                if (global.addonSelectionType.size() > 0) {
-                    Global.addonSelectionMap.put(ord.getAddon_ordprod_id(), global.addonSelectionType);
-                    Global.orderProductAddonsMap.put(ord.getAddon_ordprod_id(), global.orderProductAddons);
-                    global.orderProductAddons = new ArrayList<>();
-                    global.addonSelectionType = new HashMap<>();
-                }
+//                global.orderProductAddons.add(ord);
+//                if (Global.addonSelectionMap == null)
+//                    Global.addonSelectionMap = new HashMap<>();
+//                if (Global.orderProductAddonsMap == null)
+//                    Global.orderProductAddonsMap = new HashMap<>();
+//                if (global.addonSelectionType.size() > 0) {
+//                    Global.addonSelectionMap.put(ord.getAddon_ordprod_id(), global.addonSelectionType);
+////                    Global.orderProductAddonsMap.put(ord.getAddon_ordprod_id(), global.orderProductAddons);
+//                    global.orderProductAddons = new ArrayList<>();
+//                    global.addonSelectionType = new HashMap<>();
+//                }
             } else {
                 global.orderProducts.add(ord);
             }

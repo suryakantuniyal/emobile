@@ -144,9 +144,8 @@ public class ProductAddonsHandler {
         Cursor cursor = DBManager.getDatabase().rawQuery(sb, null);
         List<HashMap<String, String>> listHashMap = new ArrayList<HashMap<String, String>>();
         HashMap<String, String> hashMap = new HashMap<String, String>();
-        Global.productParentAddonsDictionary = new HashMap<String, Integer>();
+//        Global.productParentAddonsDictionary = new HashMap<String, Integer>();
         List<ParentAddon> parentAddons = new ArrayList<>();
-        ParentAddon parentAddon = new ParentAddon();
         if (cursor.moveToFirst()) {
             int i_cat_id = cursor.getColumnIndex(cat_id);
             int i_cat_name = cursor.getColumnIndex("cat_name");
@@ -155,19 +154,21 @@ public class ProductAddonsHandler {
             int i = 0;
             int count = 0;
             do {
+                ParentAddon parentAddon = new ParentAddon();
                 parentAddon.setCategoryName(cursor.getString(i_cat_id));
                 parentAddon.setUrl(cursor.getString(i_url));
                 parentAddon.setQty(cursor.getString(i_qty));
-                parentAddons.add(parentAddon);
                 parentAddon.setCategoryId(cursor.getString(i_cat_id));
+
+                parentAddons.add(parentAddon);
                 hashMap.put(cat_id, cursor.getString(i_cat_id));
                 hashMap.put("cat_name", cursor.getString(i_cat_name));
                 hashMap.put("url", cursor.getString(i_url));
                 hashMap.put("qty", cursor.getString(i_qty));
                 hashMap.put("pos", Integer.toString(count));
                 listHashMap.add(hashMap);
-                Global.productParentAddonsDictionary.put(cursor.getString(i_cat_id), i);
-                hashMap = new HashMap<String, String>();
+//                Global.productParentAddonsDictionary.put(cursor.getString(i_cat_id), i);
+                hashMap = new HashMap<>();
                 try {
                     count += Integer.parseInt(cursor.getString(i_qty));
                 } catch (Exception e) {
@@ -248,7 +249,9 @@ public class ProductAddonsHandler {
         sb.append("ON p.prod_id = i.prod_id AND i.type = 'I' LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id ");
         sb.append("LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
         if (myPref.isCustSelected() && myPref.getPreferences(MyPreferences.pref_filter_products_by_customer)) {
-            sb.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = '").append(myPref.getCustID()).append("' AND pa.prod_id = '").append(prodID);
+            sb.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = '")
+                    .append(myPref.getCustID()).append("' AND pa.prod_id = '")
+                    .append(prodID);
         } else {
             sb.append("AND ch.cust_chain = '").append(myPref.getCustID()).append("' WHERE pa.prod_id = '").append(prodID);
         }

@@ -581,7 +581,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void automaticAddOrder(Product product) {
-        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, product, ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -589,18 +589,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public Product populateDataForIntent(Cursor c) {
         Product product = new Product();
         product.setId(c.getString(myCursor.getColumnIndex("_id")));
-
         String val = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
-
-//        if (val.equals("prod_desc"))
-            product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
-//        else if (val.equals("prod_name"))
+         product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
             product.setProdName(c.getString(c.getColumnIndex("prod_name")));
-//        else
             product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
-
         product.setPricesXGroupid(c.getString(c.getColumnIndex(ProductsHandler.prod_prices_group_id)));
-
         String tempPrice = c.getString(c.getColumnIndex("volume_price"));
         if (tempPrice == null || tempPrice.isEmpty()) {
             tempPrice = c.getString(c.getColumnIndex("pricelevel_price"));
@@ -617,10 +610,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             if (temp[1] != null && !temp[1].isEmpty())
                 tempPrice = temp[1];
         }
-
         product.setProdPrice(tempPrice);
         product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
-
         tempPrice = c.getString(c.getColumnIndex("local_prod_onhand"));
         if (tempPrice == null || tempPrice.isEmpty())
             tempPrice = c.getString(c.getColumnIndex("master_prod_onhand"));
@@ -633,7 +624,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 tempPrice = "0";
             product.setProdOnHand(tempPrice);
         }
-
         product.setProdImgName(c.getString(c.getColumnIndex("prod_img_name")));
         product.setProdIstaxable(c.getString(c.getColumnIndex("prod_istaxable")));
         product.setProdType(c.getString(c.getColumnIndex("prod_type")));
@@ -645,7 +635,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         product.setProd_sku(c.getString(c.getColumnIndex("prod_sku")));
         product.setProd_upc(c.getString(c.getColumnIndex("prod_upc")));
         return product;
-
     }
 
     private void performClickEvent() {
@@ -718,6 +707,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 Product product = populateDataForIntent(myCursor);
                 intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                 intent.putExtra("prod_id", product.getId());
+                intent.putExtra("orderProduct", new OrderProduct(product).toJson());
                 intent.putExtra("prod_name", product.getProdName());
                 intent.putExtra("prod_on_hand", product.getProdOnHand());
                 intent.putExtra("prod_price", product.getProdPrice());
@@ -735,7 +725,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
 //                Global.productParentAddons = tempListMap;
 
-                global.addonSelectionType = new HashMap<>();
+//                global.addonSelectionType = new HashMap<>();
                 startActivityForResult(intent, 0);
             } else
                 performClickEvent();
@@ -767,6 +757,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
                     Product product = populateDataForIntent(myCursor);
+                    intent.putExtra("orderProduct",new OrderProduct(product).toJson());
                     intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                     intent.putExtra("prod_id", product.getId());
                     intent.putExtra("prod_name", product.getProdName());
@@ -786,7 +777,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
 
 //                    Global.productParentAddons = tempListMap;
 
-                    global.addonSelectionType = new HashMap<>();
+//                    global.addonSelectionType = new HashMap<>();
                     startActivityForResult(intent, 0);
                 } else
                     performClickEvent();

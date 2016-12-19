@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * Created by guarionex on 07-07-16.
@@ -54,6 +53,16 @@ public class OrderProductUtils {
         return list;
     }
 
+    public static List<OrderProduct> getOrderProductsByOrderProductId(List<OrderProduct> orderProducts, String orderProductId) {
+        List<OrderProduct> list = new ArrayList<>();
+        for (OrderProduct orderProduct : orderProducts) {
+            if (orderProduct.getOrdprod_id().equalsIgnoreCase(orderProductId)) {
+                list.add(orderProduct);
+            }
+        }
+        return list;
+    }
+
     public static List<OrderProduct> getOrderProductsGroupBySKU(List<OrderProduct> orderProducts) {
         HashMap<String, OrderProduct> hashMap = new HashMap<>();
         List<OrderProduct> list = new ArrayList<>();
@@ -74,20 +83,22 @@ public class OrderProductUtils {
     }
 
     public static void assignAddonsOrderProduct(List<OrderProduct> orderProducts) {
-        HashMap<String, OrderProduct> parents=new HashMap<>();
+        HashMap<String, OrderProduct> parents = new HashMap<>();
         for (OrderProduct product : orderProducts) {
-            if(TextUtils.isEmpty(product.getAddon_ordprod_id())){
+            if (TextUtils.isEmpty(product.getAddon_ordprod_id())) {
                 parents.put(product.getOrdprod_id(), product);
             }
         }
         for (OrderProduct product : orderProducts) {
-            if(!TextUtils.isEmpty(product.getAddon_ordprod_id())){
+            if (!TextUtils.isEmpty(product.getAddon_ordprod_id())) {
                 OrderProduct parentProd = parents.get(product.getAddon_ordprod_id());
-                if(parentProd!=null) {
-                    parentProd.setHasAddons("1");
-                    continue;
+                if (parentProd != null) {
+                    parentProd.addonsProducts.add(product);
                 }
             }
         }
+        orderProducts.clear();
+        orderProducts.addAll(parents.values());
+
     }
 }

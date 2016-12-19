@@ -345,11 +345,11 @@ public class TaxesCalculator {
             Tax tax = taxesHandler.getTax(taxID, orderProduct.getProd_taxtype(),
                     Double.parseDouble(orderProduct.getFinalPrice()));
             if (listMapTaxes == null) {
-                listMapTaxes = new ArrayList<HashMap<String, String>>();
+                listMapTaxes = new ArrayList<>();
             } else {
                 listMapTaxes.clear();
             }
-            HashMap<String, String> mapTax = new HashMap<String, String>();
+            HashMap<String, String> mapTax = new HashMap<>();
             mapTax.put("tax_id", taxID);
             mapTax.put("tax_name", tax.getTaxName());
             mapTax.put("tax_rate", tax.getTaxRate());
