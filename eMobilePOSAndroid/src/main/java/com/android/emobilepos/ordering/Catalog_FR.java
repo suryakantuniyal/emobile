@@ -60,7 +60,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import util.json.JsonUtils;
@@ -589,10 +588,11 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public Product populateDataForIntent(Cursor c) {
         Product product = new Product();
         product.setId(c.getString(myCursor.getColumnIndex("_id")));
+        product.setAssignedSeat(((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         String val = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
-         product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
-            product.setProdName(c.getString(c.getColumnIndex("prod_name")));
-            product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
+        product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
+        product.setProdName(c.getString(c.getColumnIndex("prod_name")));
+        product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
         product.setPricesXGroupid(c.getString(c.getColumnIndex(ProductsHandler.prod_prices_group_id)));
         String tempPrice = c.getString(c.getColumnIndex("volume_price"));
         if (tempPrice == null || tempPrice.isEmpty()) {
@@ -757,7 +757,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
                     Product product = populateDataForIntent(myCursor);
-                    intent.putExtra("orderProduct",new OrderProduct(product).toJson());
+                    intent.putExtra("orderProduct", new OrderProduct(product).toJson());
                     intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                     intent.putExtra("prod_id", product.getId());
                     intent.putExtra("prod_name", product.getProdName());

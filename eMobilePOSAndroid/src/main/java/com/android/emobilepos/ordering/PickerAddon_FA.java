@@ -173,22 +173,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.addonDoneButton:
-//                String[] keys = global.addonSelectionType.keySet().toArray(new String[global.addonSelectionType.size()]);
-                String[] values;
-//                for (String key : keys) {
-//                    values = global.addonSelectionType.get(key);
-//                    switch (Integer.parseInt(values[0])) {
-//                        case SELECT_EMPTY:
-//                            break;
-//                        case SELECT_CHECKED:
-//                            generateAddon(Integer.parseInt(values[1]), values[2], true);
-//                            break;
-//                        case SELECT_CROSS:
-//                            generateAddon(Integer.parseInt(values[1]), values[2], false);
-//                            break;
-//                    }
-//                }
-
                 terminateAdditionProcess();
                 break;
         }
@@ -239,70 +223,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
             }
         }
     }
-//
-//    private void generateAddon(int pos, String _cat_id, boolean isAdded) {
-//        Cursor c = prodAddonsHandler.getSpecificChildAddons(_prod_id, _cat_id);
-//        if (c != null && c.moveToPosition(pos)) {
-//            OrderProduct ord = new OrderProduct();
-//            ord.setAssignedSeat(selectedSeatNumber);
-//            ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
-//            ord.setOrdprod_qty("1");
-//            ord.setOrdprod_name(c.getString(c.getColumnIndex("prod_name")));
-//            ord.setOrdprod_desc(c.getString(c.getColumnIndex("prod_desc")));
-//            ord.setProd_id(c.getString(c.getColumnIndex("_id")));
-//
-//            String tempPrice = c.getString(c.getColumnIndex("volume_price"));
-//            if (tempPrice == null || tempPrice.isEmpty()) {
-//                tempPrice = c.getString(c.getColumnIndex("pricelevel_price"));
-//                if (tempPrice == null || tempPrice.isEmpty()) {
-//                    tempPrice = c.getString(c.getColumnIndex("chain_price"));
-//                    if (tempPrice == null || tempPrice.isEmpty())
-//                        tempPrice = c.getString(c.getColumnIndex("master_price"));
-//                }
-//            }
-//            if (tempPrice == null || tempPrice.isEmpty() || (!isEditAddon && !isAdded))
-//                tempPrice = "0";
-//            if (isAdded) {
-//                Global.addonTotalAmount += Double.parseDouble(tempPrice);
-//                addedAddon = addedAddon.add(Global.getBigDecimalNum(tempPrice));
-//            } else {
-//                Global.addonTotalAmount -= Double.parseDouble(tempPrice);
-//                removedAddon = removedAddon.add(Global.getBigDecimalNum(tempPrice));
-//            }
-//            ord.setOverwrite_price(new BigDecimal(tempPrice));
-//            ord.setOnHand(c.getString(c.getColumnIndex("master_prod_onhand")));
-//            ord.setImgURL(c.getString(c.getColumnIndex("prod_img_name")));
-//            if (ord.getProd_istaxable().equals("1")) {
-//                BigDecimal temp1 = Global.taxAmount.divide(new BigDecimal("100"));
-//                BigDecimal temp2 = temp1.multiply(Global.getBigDecimalNum(tempPrice)).setScale(2, RoundingMode.HALF_UP);
-//                ord.setProd_taxValue(temp2);
-//                ord.setProd_taxId(Global.taxID);
-//            }
-//            ord.setTaxAmount("");
-//            ord.setTaxTotal("");
-//            ord.setProd_price(tempPrice);
-//            ord.setProd_type(c.getString(c.getColumnIndex("prod_type")));
-//            ord.setAddon(true);
-//            ord.setAdded(isAdded);
-//            if (!isAdded)
-//                _ord_desc.append("\n[NO ").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
-//            else
-//                _ord_desc.append("\n[").append(c.getString(c.getColumnIndex("prod_name"))).append("]");
-//            ord.setItemTotal(tempPrice);
-//            ord.setItemSubtotal(tempPrice);
-//            if (!Global.isFromOnHold) {
-//                GenerateNewID generator = new GenerateNewID(activity);
-//                Global.lastOrdID = generator.getNextID(IdType.ORDER_ID);
-//            }
-//            ord.setOrd_id(Global.lastOrdID);
-//            if (global.orderProductAddons == null) {
-//                global.orderProductAddons = new ArrayList<>();
-//            }
-//            UUID uuid = UUID.randomUUID();
-//            ord.setOrdprod_id(uuid.toString());
-//            global.orderProductAddons.add(ord);
-//        }
-//    }
 
     private void updateLineItem() {
         ProductsHandler prodHandler = new ProductsHandler(activity);
@@ -322,9 +242,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
             global.orderProducts.remove(idx);
             global.orderProducts.add(orderProduct);
         }
-//        ordProd.addonsProducts.clear();
-//        ordProd.addonsProducts = new ArrayList<>(global.orderProductAddons);
-//        global.orderProducts.set(position, ordProd);
     }
 
     private void terminateAdditionProcess() {
@@ -342,8 +259,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
         } else {
             updateLineItem();
-//            global.orderProductAddons = new ArrayList<>();
-
             if (Receipt_FR.fragInstance != null)
                 Receipt_FR.fragInstance.reCalculate();
         }

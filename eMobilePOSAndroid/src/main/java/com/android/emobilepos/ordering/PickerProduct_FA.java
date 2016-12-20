@@ -861,14 +861,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
     }
 
     private void generateNewProduct() {
-        OrderProduct product = new OrderProduct();
-        global.orderProducts.add(product);
-        setProductInfo(product);
+        global.orderProducts.add(this.orderProduct);
+        setProductInfo(this.orderProduct);
     }
 
     private void setProductInfo(OrderProduct orderProduct) {
         BigDecimal num = new BigDecimal(qty_picked);
-
         BigDecimal productPriceLevelTotal = Global.getBigDecimalNum(prLevTotal);
         if (OrderingMain_FA.returnItem)
             orderProduct.setReturned(true);
@@ -877,44 +875,23 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         }
         BigDecimal total = num.multiply(productPriceLevelTotal.multiply(uomMultiplier)).setScale(2, RoundingMode.HALF_UP);
         calculateTaxDiscount(total);                    // calculate taxes and discount
-        orderProduct.setProd_istaxable(this.orderProduct.getProd_istaxable());
         if (!myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities)) {
             qty_picked = Integer.toString((int) Double.parseDouble(qty_picked));
         }
-        // add order to db
         orderProduct.setOrdprod_qty(qty_picked);
-        orderProduct.setOrdprod_name(this.orderProduct.getOrdprod_name());
-        orderProduct.setOrdprod_desc(this.orderProduct.getOrdprod_desc());
         orderProduct.setProd_id(prodID);
         orderProduct.setProductPriceLevelTotal(Global.getRoundBigDecimal(productPriceLevelTotal));
-        orderProduct.setOnHand(this.orderProduct.getOnHand());
-        orderProduct.setImgURL(this.orderProduct.getImgURL());
-        orderProduct.setCat_id(this.orderProduct.getCat_id());
-        orderProduct.setAssignedSeat(this.orderProduct.getAssignedSeat());
-        orderProduct.setProd_sku(this.orderProduct.getProd_sku());
-        orderProduct.setProd_upc(this.orderProduct.getProd_upc());
-        orderProduct.setPricesXGroupid(this.orderProduct.getPricesXGroupid());
-        BigDecimal pricePoints = new BigDecimal(this.orderProduct.getProd_price_points());
-        BigDecimal valuePoints = new BigDecimal(this.orderProduct.getProd_value_points());
-        pricePoints = pricePoints.multiply(num);
-        valuePoints = valuePoints.multiply(num);
-        orderProduct.setProd_price_points(pricePoints.toString());
-        orderProduct.setProd_value_points(valuePoints.toString());
         orderProduct.setProd_price(productPriceLevelTotal.toString());
         orderProduct.setMixMatchOriginalPrice(productPriceLevelTotal);
-
         if (uomMultiplier.compareTo(new BigDecimal(1)) > 0)
             orderProduct.setOverwrite_price(productPriceLevelTotal.multiply(uomMultiplier));
-        // Still need to do add the appropriate tax/discount value
         orderProduct.setProd_taxValue(new BigDecimal(taxTotal));
-        BigDecimal finalPrice = new BigDecimal(this.orderProduct.getFinalPrice()).multiply(new BigDecimal(qty_picked));
-        if (Double.parseDouble(this.orderProduct.getFinalPrice()) >= 0
+        BigDecimal finalPrice = new BigDecimal(orderProduct.getFinalPrice()).multiply(new BigDecimal(qty_picked));
+        if (Double.parseDouble(orderProduct.getFinalPrice()) >= 0
                 && finalPrice.doubleValue() <= Double.parseDouble(disTotal)) {
             disTotal = orderProduct.getFinalPrice();
         }
         orderProduct.setDiscount_value(disTotal);
-        orderProduct.setProd_taxtype(this.orderProduct.getTax_type());
-        // for calculating taxes and discount at receipt
         orderProduct.setProd_taxId(prod_taxId);
         orderProduct.setDiscount_id(discount_id);
         orderProduct.setTaxAmount(taxAmount);
@@ -929,8 +906,6 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         orderProduct.setUom_position(Integer.toString(uom_position));
         orderProduct.setOrdprod_comment(_ordprod_comment);
         orderProduct.setProd_type(prod_type);
-
-        //Add UOM attributes to the order
         orderProduct.setUom_name(uomName);
         orderProduct.setUom_id(uomID);
         orderProduct.setUom_conversion(uomMultiplier.toString());
@@ -970,36 +945,19 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
                 orderProduct.requiredProductAttributes.add(global.ordProdAttr.get(i));
             }
         }
-
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
-
-//            if (Global.addonSelectionMap == null)
-//                Global.addonSelectionMap = new HashMap<>();
-//            if (Global.orderProductAddonsMap == null)
-//                Global.orderProductAddonsMap = new HashMap<>();
-
-//            if (global.addonSelectionType.size() > 0) {
             StringBuilder sb = new StringBuilder();
-//                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-//                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
             sb.append(orderProduct.getOrdprod_desc());
             int tempSize = orderProduct.addonsProducts.size();
-//            orderProduct.addonsProducts = new ArrayList<>(global.orderProductAddons);
-
             for (int i = 0; i < tempSize; i++) {
-
                 if (!orderProduct.isAdded())
                     sb.append("\n[NO ").append(orderProduct.getOrdprod_name()).append("]");
                 else
                     sb.append("\n[").append(orderProduct.getOrdprod_name()).append("]");
-
             }
             orderProduct.setOrdprod_desc(sb.toString());
-//            global.orderProductAddons = new ArrayList<>();
-//            }
         }
-//        global.orderProducts.add(orderProduct);
         String row1 = orderProduct.getOrdprod_name();
         String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
@@ -1125,58 +1083,7 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
             }
         }
     }
-//
-//    private void updateSKUProduct(OrderProduct orderProduct) {
-//        String newPickedOrders = orderProduct.getOrdprod_qty();
-//        BigDecimal sum;
-//        if (myPref.getPreferences(MyPreferences.pref_allow_decimal_quantities))
-//            sum = Global.getBigDecimalNum(newPickedOrders);
-//        else
-//            sum = Global.getBigDecimalNum(newPickedOrders);
-//
-//        if (orderProduct.isReturned())
-//            sum = sum.negate();
-//
-//        BigDecimal total = sum.multiply(Global.getBigDecimalNum(prLevTotal)).setScale(2, RoundingMode.HALF_UP);
-//        calculateTaxDiscount(total);
-//
-//        orderProduct.setProd_price(prLevTotal);
-//        orderProduct.setProd_taxValue(new BigDecimal(taxTotal));
-//        orderProduct.setDiscount_value(disTotal);
-//
-//
-//        // for calculating taxes and discount at receipt
-//        orderProduct.setTaxAmount(taxAmount);
-//        orderProduct.setTaxTotal(taxTotal);
-//        orderProduct.setDisAmount(disAmount);
-//        orderProduct.setDisTotal(disTotal);
-//
-//        BigDecimal itemTotal = total.subtract(Global.getBigDecimalNum(disTotal));
-//
-//
-//        if (discountIsTaxable) {
-//            orderProduct.setDiscount_is_taxable("1");
-//        } else
-//            orderProduct.setDiscount_is_taxable("0");
-//
-//
-//        if (isFixed)
-//            orderProduct.setDiscount_is_fixed("1");
-//        else
-//            orderProduct.setDiscount_is_fixed("0");
-//
-//        orderProduct.setProd_price_updated("0");
-//
-//        orderProduct.setItemTotal(itemTotal.toString());
-//        orderProduct.setItemSubtotal(total.toString());
-//
-//        if (OrderingMain_FA.returnItem) {
-//            OrderingMain_FA.returnItem = !OrderingMain_FA.returnItem;
-//            OrderingMain_FA.switchHeaderTitle(OrderingMain_FA.returnItem, "Return");
-//        }
-//    }
 
-    //------------------------Custom adapter for Dialog and ListView------------------------
     private class DialogLVAdapter extends BaseAdapter {
 
         private LayoutInflater myInflater;
@@ -1208,16 +1115,12 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         public View getView(int position, View convertView, ViewGroup parent) {
             final ViewHolder holder;
             int type = getItemViewType(position);
-
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = myInflater.inflate(R.layout.dialog_listview_adapter, null);
-
                 holder.leftText = (TextView) convertView.findViewById(R.id.leftText);
                 holder.rightText = (TextView) convertView.findViewById(R.id.rightText);
-
                 setValues(holder, position, type);
-
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
