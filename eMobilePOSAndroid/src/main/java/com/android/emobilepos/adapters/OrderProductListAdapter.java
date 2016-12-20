@@ -100,8 +100,8 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     private void initSeats(int seatsAmount) {
-        orderSeatProductFullList = new ArrayList<OrderSeatProduct>();
-        orderSeatProductList = new ArrayList<OrderSeatProduct>();
+        orderSeatProductFullList = new ArrayList<>();
+        orderSeatProductList = new ArrayList<>();
         if (seatsAmount > 0) {
             for (int i = 0; i < seatsAmount; i++) {
                 OrderSeatProduct seatProduct = new OrderSeatProduct(String.valueOf(i + 1), getNextGroupId());
@@ -113,7 +113,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public List<OrderProduct> getOrderProducts(String seatNumber) {
-        List<OrderProduct> l = new ArrayList<OrderProduct>();
+        List<OrderProduct> l = new ArrayList<>();
         for (OrderProduct product : orderProducts) {
             if (product.getAssignedSeat().equalsIgnoreCase(seatNumber)) {
                 l.add(product);
