@@ -47,10 +47,8 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     private GridView myGridView;
     private Activity activity;
-    //    private Cursor c;
     private PickerAddonLV_Adapter adapter;
 
-    private final int SELECT_EMPTY = 0, SELECT_CHECKED = 1, SELECT_CROSS = 2;
     private Bundle extras;
     private Global global;
     private boolean isEditAddon = false;
@@ -58,7 +56,7 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
     private int item_position = 0;
     private String _prod_id = "";
     private StringBuilder _ord_desc = new StringBuilder();
-    private BigDecimal addedAddon = new BigDecimal("0"), removedAddon = new BigDecimal("0");
+    private BigDecimal addedAddon = new BigDecimal("0");
 
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
@@ -113,16 +111,10 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
         adapter = new PickerAddonLV_Adapter(this, c, CursorAdapter.NO_SELECTION, imageLoader, orderProduct);
         myGridView.setAdapter(adapter);
-
-
         Button btnDone = (Button) findViewById(R.id.addonDoneButton);
         btnDone.setOnClickListener(this);
-
         createParentAddons();
-
         hasBeenCreated = true;
-
-
     }
 
 
@@ -161,10 +153,6 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     @Override
     public void onDestroy() {
-//        if (!c.isClosed())
-//            c.close();
-//		if (db.isOpen())
-//			db.close();
         instance = null;
         super.onDestroy();
     }

@@ -36,9 +36,7 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
     private OrderProduct orderProduct;
     private DisplayImageOptions options;
     private Activity activity;
-    private Global global;
     private final int SELECT_EMPTY = 0, SELECT_CHECKED = 1, SELECT_CROSS = 2;
-    //private final int COLOR_GREEN = Color.rgb(0, 112, 60),COLOR_RED = Color.RED, COLOR_BLACK = Color.rgb(98, 105, 77);
     private final int COLOR_GREEN = Color.rgb(0, 112, 60), COLOR_RED = Color.RED, COLOR_BLUE = Color.rgb(24, 136, 161);
     private boolean itHasAddonProducts = true;
     private Cursor c;
@@ -58,7 +56,6 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
         options = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(800)).cacheOnDisc(true).
                 imageScaleType(ImageScaleType.IN_SAMPLE_INT).showImageOnLoading(R.drawable.loading_image)
                 .showImageForEmptyUri(R.drawable.no_image).build();
-        global = (Global) activity.getApplication();
         c = _c;
         c.moveToFirst();
         int cursorSize = c.getCount();
@@ -204,7 +201,6 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
     private OrderProduct generateAddon(int cursorPos, boolean isAdded) {
         if (c != null && c.moveToPosition(cursorPos)) {
             OrderProduct ord = new OrderProduct();
-//            ord.setAssignedSeat(orderProduct);
             ord.setProd_istaxable(c.getString(c.getColumnIndex("prod_istaxable")));
             ord.setOrdprod_qty("1");
             ord.setAddon_ordprod_id(orderProduct.getOrdprod_id());
@@ -257,12 +253,9 @@ public class PickerAddonLV_Adapter extends CursorAdapter implements OnClickListe
                 Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
             }
             ord.setOrd_id(Global.lastOrdID);
-//            if (global.orderProductAddons == null) {
-//                global.orderProductAddons = new ArrayList<OrderProduct>();
-//            }
+
             UUID uuid = UUID.randomUUID();
             ord.setOrdprod_id(uuid.toString());
-//            global.orderProductAddons.add(ord);
             return ord;
         }
         return null;

@@ -48,23 +48,18 @@ import java.util.StringTokenizer;
  * Created by Guarionex on 2/19/2016.
  */
 public class SplittedOrderDetailsFR extends Fragment implements View.OnClickListener {
-
-
     private TextView orderId;
     private TextView subtotal;
     private MyPreferences myPref;
     private TextView globalDiscountTextView;
     private TextView lineItemDiscountTotal;
-
     private TextView taxTotal;
     private TextView granTotal;
     private LinearLayout productAddonsSection;
     private LinearLayout orderProductSection;
     private LayoutInflater inflater;
-
     public SplitedOrder restaurantSplitedOrder;
     private LinearLayout receiptPreview;
-
 
     @Nullable
     @Override
@@ -101,7 +96,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         subtotal = (TextView) detailView.findViewById(R.id.subtotaltextView);
         lineItemDiscountTotal = (TextView) detailView.findViewById(R.id.lineitem_discounttextView);
         globalDiscountTextView = (TextView) detailView.findViewById(R.id.globaldiscounttextView);
-
         taxTotal = (TextView) detailView.findViewById(R.id.taxtotaltextView14a);
         granTotal = (TextView) detailView.findViewById(R.id.granTotaltextView16);
         TextView footer1 = (TextView) detailView.findViewById(R.id.footerLine1textView);
@@ -153,7 +147,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     }
 
     private void addProductLine(String leftString, String rightString, int indentedTabs) {
-
         LinearLayout itemLL;
         switch (indentedTabs) {
             default:
@@ -166,32 +159,26 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 itemLL = (LinearLayout) inflater.inflate(R.layout.twocols_leftweight_margin2_layout_item, null, false);
                 break;
         }
-
         TextView leftText = (TextView) itemLL.findViewById(R.id.lefttextView);
         TextView rightText = (TextView) itemLL.findViewById(R.id.righttextView);
-
         if (rightString == null) {
             rightText.setVisibility(View.GONE);
         } else {
             rightText.setVisibility(View.VISIBLE);
             rightText.setText(rightString);
         }
-
         if (leftString == null) {
             leftText.setVisibility(View.GONE);
         } else {
             leftText.setVisibility(View.VISIBLE);
             leftText.setText(leftString);
         }
-
         productAddonsSection.addView(itemLL);
     }
-
 
     public void setReceiptOrder(SplitedOrder splitedOrder) {
         restaurantSplitedOrder = splitedOrder;
         SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
-
         List<OrderProduct> products = splitedOrder.getOrderProducts();
         if (orderProductSection.getChildCount() > 0) {
             orderProductSection.removeAllViewsInLayout();
@@ -205,32 +192,22 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         for (OrderProduct product : products) {
             getView();
             LinearLayout productSectionLL = (LinearLayout) View.inflate(getActivity(), R.layout.receipt_product_layout_item, null);
-
             List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.getOrdprod_id());
-
             BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
             orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
             globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)
                     .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
-//            orderTaxes = orderTaxes.add(Global.getBigDecimalNum(product.prod_taxValue));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
-//            orderGranTotal = orderGranTotal.add((Global.getBigDecimalNum(product.itemTotal))
-//                    .add(Global.getBigDecimalNum(product.prod_taxValue)));
             ((TextView) productSectionLL.findViewById(R.id.productNametextView)).setText(String.format("%sx %s", product.getOrdprod_qty(), product.getOrdprod_name()));
-
             productAddonsSection = (LinearLayout) productSectionLL.findViewById(R.id.productAddonSectionLinearLayout);
-
             for (OrderProduct addon : addons) {
                 addProductLine("- " + addon.getOrdprod_name(),
                         Global.getCurrencyFormat(addon.getFinalPrice()), 3);
             }
             ((TextView) productSectionLL.findViewById(R.id.productPricetextView)).setText(Global.getCurrencyFormat(product.getFinalPrice()));
-
             ((TextView) productSectionLL.findViewById(R.id.productDiscounttextView)).setText(Global.getCurrencyFormat(product.getDiscount_value()));
-
             ((TextView) productSectionLL.findViewById(R.id.productTotaltextView)).setText(Global.getCurrencyFormat(Global.getBigDecimalNum(product.getItemTotal())
                     .multiply(qty).toString()));
-
             if (product.getOrdprod_desc() != null && !product.getOrdprod_desc().isEmpty()) {
                 StringTokenizer tokenizer = new StringTokenizer(product.getOrdprod_desc(), "<br/>");
                 ((TextView) productSectionLL.findViewById(R.id.productDescriptiontextView)).setText(tokenizer.nextToken().toString());
@@ -245,8 +222,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             }
             orderProductSection.addView(productSectionLL);
         }
-
-//        globalDiscountTotal = orderSubtotal.multiply(orderSummaryFa.getGlobalDiscountPercentge()).setScale(4, RoundingMode.HALF_UP);
         orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
                 .subtract(globalDiscountTotal).setScale(6, RoundingMode.HALF_UP).add(orderTaxes)
                 .setScale(6, RoundingMode.HALF_UP);
@@ -295,10 +270,8 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                             } else {
                                 receiptPreview.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                             }
-
                         }
                     });
-
                     setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
                 }
             }
@@ -359,7 +332,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 global.order.ord_HoldName = "Table " + global.order.assignedTable + " " + DateUtils.getDateAsString(new Date(), "MMM/dd/yy hh:mm");
             }
             global.order.processed = "10";
-
         }
 
         if (splitedOrder.getOrderProducts().size() > 0) {
@@ -372,7 +344,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 splitedOrder.ord_id = global.order.ord_id;
 
                 if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
-//                    splitedOrder.getOrderProducts().clear();
                     for (OrderSeatProduct seatProduct : summaryFa.orderSeatProducts) {
                         if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && seatProduct.orderProduct != null) {
                             splitedOrder.getOrderProducts().add(seatProduct.orderProduct);
@@ -391,20 +362,13 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 if (global.listOrderTaxes != null && global.listOrderTaxes.size() > 0) {
                     ordTaxesDB.insert(global.listOrderTaxes, global.order.ord_id);
                 }
-
-
-//                DBManager dbManager = new DBManager(getActivity());
-//                dbManager.synchSendOrdersOnHold(false, true);
-
                 DBManager dbManager = new DBManager(getActivity());
                 SynchMethods sm = new SynchMethods(dbManager);
                 sm.synchSendOnHold(false, true);
-
             } else if (summaryFa.splitType == SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                 splitedOrder.ord_id = global.order.ord_id;
                 splitedOrder.syncOrderProductIds();
             } else {
-
                 nextOrderID = idGen.getNextID(GenerateNewID.IdType.ORDER_ID);
                 splitedOrder.ord_id = nextOrderID;
                 splitedOrder.processed = "10";
@@ -414,7 +378,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
                 productsHandler.insert(splitedOrder.getOrderProducts());
                 ordTaxesDB.insert(global.listOrderTaxes, splitedOrder.ord_id);
             }
-
             Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
             if (Global.getBigDecimalNum(splitedOrder.gran_total).compareTo(new BigDecimal(0)) != -1) {
                 Receipt_FR.updateLocalInventory(getActivity(), splitedOrder.getOrderProducts(), false);
@@ -422,7 +385,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             }
         }
     }
-
 
     private void isSalesReceipt(SplitedOrder order) {
         Intent intent = new Intent(getActivity(), SelectPayMethod_FA.class);
@@ -438,7 +400,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         intent.putExtra("ord_taxID", order.tax_id);
         intent.putExtra("ord_type", Global.OrderType.SALES_RECEIPT);
         intent.putExtra("ord_email", "");
-
         if (myPref.isCustSelected()) {
             intent.putExtra("cust_id", myPref.getCustID());
             intent.putExtra("custidkey", myPref.getCustIDKey());
@@ -512,7 +473,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
     private void removeTicket(SplitedOrder splitedOrder) {
         SplittedOrderSummary_FA summaryFa = (SplittedOrderSummary_FA) getActivity();
         List<OrderSeatProduct> seatProducts = new ArrayList<OrderSeatProduct>(summaryFa.orderSeatProducts);
-
         List<OrderProduct> products = splitedOrder.getOrderProducts();
         for (OrderProduct product : products) {
             for (OrderSeatProduct seatProduct : seatProducts) {
