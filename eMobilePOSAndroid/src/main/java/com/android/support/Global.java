@@ -98,8 +98,9 @@ public class Global extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        Realm.init(this);
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
-        RealmConfiguration config = new RealmConfiguration.Builder(this)
+        RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(config);
