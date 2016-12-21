@@ -563,6 +563,14 @@ public class MyPreferences {
         return getPreferences(pref_mix_match);
     }
 
+    public boolean isInvoiceRequirePayment() {
+        return getPreferences(pref_invoice_require_payment);
+    }
+
+    public boolean isRequireFullPayment() {
+        return getPreferences(pref_require_full_payment);
+    }
+
     public String getCustPriceLevel() {
         return prefs.getString(cust_pricelevel_id, "");
     }
