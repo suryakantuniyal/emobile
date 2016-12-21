@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Product;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -83,6 +85,7 @@ public class OrderProductsHandler {
     private List<HashMap<String, Integer>> dictionaryListMap;
     public static final String table_name = "OrderProduct";
     private MyPreferences myPref;
+    ProductsHandler productsHandler;
 
     public OrderProductsHandler(Activity activity) {
         global = (Global) activity.getApplication();
@@ -92,6 +95,7 @@ public class OrderProductsHandler {
         sb3 = new StringBuilder();
         new DBManager(activity);
         myPref = new MyPreferences(activity);
+        productsHandler = new ProductsHandler(activity);
         initDictionary();
     }
 
@@ -308,7 +312,7 @@ public class OrderProductsHandler {
         return DBManager.getDatabase().rawQuery(sb.toString(), new String[]{orderId});
     }
 
-    public static List<OrderProduct> getOrderProductAddons(String ordprod_id) {
+    public List<OrderProduct> getOrderProductAddons(String ordprod_id) {
         List<OrderProduct> orderProducts = new ArrayList<>();
         String[] cols = new String[attr.size()];
         attr.toArray(cols);
@@ -321,7 +325,7 @@ public class OrderProductsHandler {
         return orderProducts;
     }
 
-    public static OrderProduct getOrderProduct(Cursor cursor) {
+    public OrderProduct getOrderProduct(Cursor cursor) {
         OrderProduct product = new OrderProduct();
         product.setAddon(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(addon))));
         product.setAddon_ordprod_id(cursor.getString(cursor.getColumnIndex(addon_ordprod_id)));
@@ -367,8 +371,11 @@ public class OrderProductsHandler {
         product.setProd_price_points(cursor.getString(cursor.getColumnIndex(prodPricePoints)));
         product.setSeatGroupId(groupId == null || groupId.isEmpty() ? 0 : Integer.parseInt(groupId));
 //        if (product.getHasAddons()) {
-            List<OrderProduct> orderProductAddons = getOrderProductAddons(product.getOrdprod_id());
-            product.addonsProducts = orderProductAddons;
+        List<OrderProduct> orderProductAddons = getOrderProductAddons(product.getOrdprod_id());
+
+        Discount discount = productsHandler.getDiscounts(product.getDiscount_id());
+        product.setDisAmount(discount.getProductPrice());
+        product.addonsProducts = orderProductAddons;
 //        }
         return product;
     }
@@ -622,5 +629,15 @@ public class OrderProductsHandler {
 
         c.close();
         return listOrdProd;
+    }
+
+    public void completeProductFields(List<OrderProduct> orderProducts, Activity activity) {
+        ProductsHandler productsHandler = new ProductsHandler(activity);
+        for (OrderProduct orderProduct : orderProducts) {
+            Product product = productsHandler.getProductDetails(orderProduct.getProd_id());
+            orderProduct.setProd_istaxable(product.getProdIstaxable());
+            Discount discount = productsHandler.getDiscounts(orderProduct.getDiscount_id());
+            orderProduct.setDisAmount(discount.getProductPrice());
+        }
     }
 }

@@ -24,6 +24,7 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.ParentAddon;
+import com.android.emobilepos.models.Product;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -214,17 +215,17 @@ public class PickerAddon_FA extends BaseFragmentActivityActionBar implements OnC
 
     private void updateLineItem() {
         ProductsHandler prodHandler = new ProductsHandler(activity);
-        String[] itemData = prodHandler.getProductDetails(_prod_id);
-        BigDecimal temp = new BigDecimal(itemData[2]);
+        Product product = prodHandler.getProductDetails(_prod_id);
+        BigDecimal temp = new BigDecimal(product.getFinalPrice());
         temp = temp.add(addedAddon);
         if (temp.compareTo(new BigDecimal("0")) == -1)
             temp = new BigDecimal("0");
         orderProduct.setOverwrite_price(temp);
         orderProduct.setItemSubtotal(Global.getRoundBigDecimal(temp));
         orderProduct.setItemTotal(Global.getRoundBigDecimal(temp));
-        orderProduct.setOrdprod_desc(itemData[3] + _ord_desc.toString());
-        orderProduct.setProd_sku(itemData[13]);
-        orderProduct.setProd_upc(itemData[14]);
+        orderProduct.setOrdprod_desc(product.getProdDesc() + _ord_desc.toString());
+        orderProduct.setProd_sku(product.getProd_sku());
+        orderProduct.setProd_upc(product.getProd_upc());
         int idx = global.orderProducts.indexOf(orderProduct);
         if (idx > -1) {
             global.orderProducts.remove(idx);

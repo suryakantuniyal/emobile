@@ -512,7 +512,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
                     ord.setDiscount_value(discountInfo[4]);
                 }
             }
-            ord.setDisAmount(ord.getDiscount_value());
+            ord.setDisAmount(ord.getDisAmount());
             if (itemTotal < 0)
                 itemTotal = 0;
             ord.setItemTotal(Double.toString(total - discAmount));

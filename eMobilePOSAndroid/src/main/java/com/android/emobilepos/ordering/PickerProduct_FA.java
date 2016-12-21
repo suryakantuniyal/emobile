@@ -309,11 +309,11 @@ public class PickerProduct_FA extends FragmentActivity implements OnClickListene
         if (isModify) {
             headerAddButton.setText(R.string.modify);
             modifyOrderPosition = extras.getInt("modify_position");
-            imgURL = global.orderProducts.get(modifyOrderPosition).getImgURL();
-            prodID = global.orderProducts.get(modifyOrderPosition).getProd_id();
-            headerOnHand.setText(global.orderProducts.get(modifyOrderPosition).getOnHand());
-            basePrice = global.orderProducts.get(modifyOrderPosition).getFinalPrice();
-            prod_type = global.orderProducts.get(modifyOrderPosition).getProd_type();
+            imgURL = orderProduct.getImgURL();
+            prodID = orderProduct.getProd_id();
+            headerOnHand.setText(orderProduct.getOnHand());
+            basePrice = orderProduct.getFinalPrice();
+            prod_type = orderProduct.getProd_type();
             if (basePrice == null || basePrice.isEmpty())
                 basePrice = "0.0";
             prLevTotal = Global.formatNumToLocale(Double.parseDouble(basePrice));

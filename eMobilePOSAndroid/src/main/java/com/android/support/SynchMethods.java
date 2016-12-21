@@ -1225,6 +1225,7 @@ public class SynchMethods {
                 }
             }
             OrderProductUtils.assignAddonsOrderProduct(orderProducts);
+            orderProductsHandler.completeProductFields(orderProducts, activity);
             orderProductsHandler.insert(orderProducts);
             reader.endArray();
             reader.close();

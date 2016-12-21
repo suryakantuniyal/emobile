@@ -1,5 +1,7 @@
 package com.android.emobilepos.models;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -435,5 +437,19 @@ public class Product {
     public String toJson() {
         Gson gson = JsonUtils.getInstance();
         return gson.toJson(this);
+    }
+
+    public String getFinalPrice() {
+        if (!TextUtils.isEmpty(volumePrice)) {
+            return volumePrice;
+        } else if (!TextUtils.isEmpty(priceLevelPrice)) {
+            return priceLevelPrice;
+        } else if (!TextUtils.isEmpty(chainPrice)) {
+            return chainPrice;
+        } else if (!TextUtils.isEmpty(masterPrice)) {
+            return masterPrice;
+        } else {
+            return "0";
+        }
     }
 }

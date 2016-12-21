@@ -550,11 +550,11 @@ public class EMSDeviceDriver {
             startReceipt();
             setPaperWidth(lineWidth);
             printPref = myPref.getPrintingPreferences();
-            OrderProductsHandler handler = new OrderProductsHandler(activity);
+            OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
             OrderTaxes_DB ordTaxesDB = new OrderTaxes_DB();
 
             List<DataTaxes> listOrdTaxes = ordTaxesDB.getOrderTaxes(ordID);
-            List<OrderProduct> orderProducts = handler.getOrderProducts(ordID); //handler.getPrintOrderedProducts(ordID);
+            List<OrderProduct> orderProducts = orderProductsHandler.getOrderProducts(ordID); //handler.getPrintOrderedProducts(ordID);
 
             OrdersHandler orderHandler = new OrdersHandler(activity);
             Order anOrder = orderHandler.getPrintedOrder(ordID);
@@ -652,7 +652,7 @@ public class EMSDeviceDriver {
                                             + " "
                                             + uomDescription, lineWidth, 1));
                             if (orderProducts.get(i).getHasAddons()) {
-                                List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
+                                List<OrderProduct> addons = orderProductsHandler.getOrderProductAddons(orderProducts.get(i).getOrdprod_id());
                                 for (OrderProduct addon : addons) {
                                     if (addon.isAdded()) {
                                         sb.append(textHandler.twoColumnLineWithLeftAlignedText(

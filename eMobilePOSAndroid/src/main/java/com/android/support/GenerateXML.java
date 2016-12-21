@@ -998,14 +998,14 @@ public class GenerateXML {
     }
 
     public void buildOrderProducts(XmlSerializer serializer, String limiter, boolean isRestMode, boolean isOnHold) {
-        OrderProductsHandler handler = new OrderProductsHandler(thisActivity);
-        Cursor cursor = handler.getCursorData(limiter);
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(thisActivity);
+        Cursor cursor = orderProductsHandler.getCursorData(limiter);
         cursor.moveToFirst();
         int size = cursor.getCount();
 
         for (int i = 0; i < size; i++) {
             try {
-                OrderProduct product = OrderProductsHandler.getOrderProduct(cursor);
+                OrderProduct product = orderProductsHandler.getOrderProduct(cursor);
                 if (!isRestMode || (isRestMode && ((!product.isAddon())
                         || (product.isAddon() && isOnHold)))) {
                     serializer.startTag(empstr, "OrderProduct");

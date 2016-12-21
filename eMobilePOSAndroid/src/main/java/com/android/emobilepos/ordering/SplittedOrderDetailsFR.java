@@ -178,6 +178,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
 
     public void setReceiptOrder(SplitedOrder splitedOrder) {
         restaurantSplitedOrder = splitedOrder;
+        OrderProductsHandler orderProductsHandler = new OrderProductsHandler(getActivity());
         SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
         List<OrderProduct> products = splitedOrder.getOrderProducts();
         if (orderProductSection.getChildCount() > 0) {
@@ -192,7 +193,7 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         for (OrderProduct product : products) {
             getView();
             LinearLayout productSectionLL = (LinearLayout) View.inflate(getActivity(), R.layout.receipt_product_layout_item, null);
-            List<OrderProduct> addons = OrderProductsHandler.getOrderProductAddons(product.getOrdprod_id());
+            List<OrderProduct> addons = orderProductsHandler.getOrderProductAddons(product.getOrdprod_id());
             BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
             orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
             globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)

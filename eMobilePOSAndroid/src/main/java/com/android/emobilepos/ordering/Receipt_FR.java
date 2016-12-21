@@ -65,6 +65,7 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.Product;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
 import com.android.support.GenerateNewID;
@@ -574,11 +575,18 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 Intent intent = new Intent(getActivity(),
                                         PickerProduct_FA.class);
                                 Gson gson = JsonUtils.getInstance();
+                                if(onHoldOrder!=null){
+
+                                }
+                                Product product = prodHandler.getProductDetails(orderSeatProduct.orderProduct.getProd_id());
+                                if(onHoldOrder!=null){
+                                    orderSeatProduct.orderProduct.setProd_price(product.getFinalPrice());
+                                }
                                 intent.putExtra("orderProduct", gson.toJson(orderSeatProduct.orderProduct));
                                 intent.putExtra("isModify", true);
+                                intent.putExtra("isFromAddon", onHoldOrder!=null);
                                 intent.putExtra("modify_position", orderProductIdx);
                                 startActivityForResult(intent, 0);
-
                                 break;
                             case R.id.removeProduct:
                                 if (myPref
