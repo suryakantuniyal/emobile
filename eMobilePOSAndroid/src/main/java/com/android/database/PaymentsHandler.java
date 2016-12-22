@@ -536,58 +536,45 @@ public class PaymentsHandler {
         return payment;
     }
 
-    public List<HashMap<String, String>> getPaymentDetailsForTransactions(String jobID) {
-
-        List<HashMap<String, String>> mapList = new ArrayList<>();
-        HashMap<String, String> map = new HashMap<>();
-
-        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "pm.paymentmethod_type AS 'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p," + "PayMethods pm " +
-                "WHERE p.paymethod_id = pm.paymethod_id AND p.job_id = '" + jobID + "' " +
-                "UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name', amount_tender," +
-                "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Wallet' " +
+    public List<Payment> getPaymentDetailsForTransactions(String jobID) {
+        List<Payment> payments = new ArrayList<>();
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.isVoid as 'isVoid', p.paymethod_id as 'paymethod_id', p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "pm.paymentmethod_type AS 'paymethod_name', amount_tender,p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p," + "PayMethods pm " +
+                "WHERE p.paymethod_id = pm.paymethod_id  AND pay_type != '1' AND p.job_id = '" + jobID + "' " +
+                "UNION " + "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Wallet' AS  'paymethod_name', amount_tender," +
+                "p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p WHERE p.paymethod_id = 'Wallet' AND pay_type != '1' " +
                 "AND p.job_id = '" + jobID + "' UNION " +
-                "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name', amount_tender," +
-                "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' " + "AND p.job_id = '" +
-                jobID + "' UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "'Reward' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Reward' " +
-                "AND p.job_id = '" + jobID + "' UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "'GiftCard' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id' FROM Payments p " +
-                "WHERE p.paymethod_id = 'GiftCard' " + "AND p.job_id = '" + jobID + "' UNION " +
-                "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name', amount_tender," +
-                "p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = 'Genius' " + "AND p.job_id = '" +
-                jobID + "' UNION " + "SELECT p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
-                "'Genius' AS  'paymethod_name', amount_tender, p.pay_id AS 'pay_id' FROM Payments p WHERE p.paymethod_id = '' " +
-                "AND p.job_id = '" + jobID + "'", null);
+                "SELECT p.isVoid as 'isVoid', p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','LoyaltyCard' AS  'paymethod_name', amount_tender," +
+                "p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p WHERE p.paymethod_id = 'LoyaltyCard' " + "  AND pay_type != '1' AND p.job_id = '" +
+                jobID + "' UNION " + "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "'Reward' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p WHERE p.paymethod_id = 'Reward' " +
+                " AND pay_type != '1' AND p.job_id = '" + jobID + "' UNION " + "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "'GiftCard' AS  'paymethod_name', amount_tender,p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p " +
+                "WHERE p.paymethod_id = 'GiftCard' " + " AND pay_type != '1' AND p.job_id = '" + jobID + "' UNION " +
+                "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip','Genius' AS  'paymethod_name', amount_tender," +
+                "p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p WHERE p.paymethod_id = 'Genius' " + " AND pay_type != '1' AND p.job_id = '" +
+                jobID + "' UNION " + "SELECT p.isVoid as 'isVoid',p.paymethod_id as 'paymethod_id',p.pay_transid as 'pay_transid', p.pay_amount AS 'pay_amount',p.pay_tip AS 'pay_tip'," +
+                "'Genius' AS  'paymethod_name', amount_tender, p.pay_id AS 'pay_id', p.pay_type as 'pay_type' FROM Payments p WHERE p.paymethod_id = '' " +
+                " AND pay_type != '1' AND p.job_id = '" + jobID + "'", null);
         if (cursor.moveToFirst()) {
             do {
-                String data = cursor.getString(cursor.getColumnIndex(pay_amount));
-                map.put(pay_amount, data);
-
-                data = cursor.getString(cursor.getColumnIndex(pay_tip));
-                map.put(pay_tip, data);
-
-                data = cursor.getString(cursor.getColumnIndex("paymethod_name"));
-                map.put("paymethod_name", data);
-
-                data = cursor.getString(cursor.getColumnIndex("pay_transid"));
-                map.put("pay_transid", data);
-
-                data = cursor.getString(cursor.getColumnIndex(pay_id));
-                map.put(pay_id, data);
-
-                mapList.add(map);
-                map = new HashMap<>();
+                Payment p = new Payment();
+                p.setPay_amount(cursor.getString(cursor.getColumnIndex(pay_amount)));
+                p.setPay_tip(cursor.getString(cursor.getColumnIndex(pay_tip)));
+                p.setPaymethod_id(cursor.getString(cursor.getColumnIndex(paymethod_id)));
+                p.setPay_transid(cursor.getString(cursor.getColumnIndex(pay_transid)));
+                p.setPay_id(cursor.getString(cursor.getColumnIndex(pay_id)));
+                p.setIsVoid(cursor.getString(cursor.getColumnIndex(isVoid)));
+                p.setPay_type(cursor.getString(cursor.getColumnIndex(pay_type)));
+                payments.add(p);
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return mapList;
+        return payments;
     }
 
     public Cursor getCashCheckGiftPayment(String type, boolean isRefund) {
-
         StringBuilder sb = new StringBuilder();
-
         sb.append("SELECT p.pay_id as _id,p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM ")
                 .append(table_name)
                 .append(" p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id "
@@ -597,18 +584,14 @@ public class PaymentsHandler {
             sb.append("1' ORDER BY p.pay_id DESC");
         else
             sb.append("0' ORDER BY p.pay_id DESC");
-
         return DBManager.getDatabase().rawQuery(sb.toString(), null);
     }
 
     public Cursor searchCashCheckGift(String type, String search) {
-
         String subquery1 = "SELECT p.pay_id as _id, p.pay_amount,c.cust_name,p.job_id,p.isVoid,p.pay_issync,p.pay_tip FROM Payments p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id WHERE p.paymethod_id = m.paymethod_id AND m.paymentmethod_type = '";// cust_name
         String subquery2 = "' AND pay_type !='1' AND c.cust_name LIKE ? ORDER BY p.pay_id DESC";
-
         Cursor cursor = DBManager.getDatabase().rawQuery(subquery1 + type + subquery2, new String[]{"%" + search + "%"});
         cursor.moveToFirst();
-
         return cursor;
     }
 
@@ -616,8 +599,7 @@ public class PaymentsHandler {
         String is_refund = "0";
         if (isRefund)
             is_refund = "1";
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
+        String sb = ("SELECT 'FALSE' as DECLINED,p.pay_id as _id,p.pay_amount as pay_amount,c.cust_name as cust_name," +
                 "p.job_id as job_id,p.isVoid as isVoid,p.pay_issync as pay_issync,p.pay_tip as pay_tip " +
                 "FROM " + table_name +
                 " p, PayMethods m LEFT OUTER JOIN Customers c ON p.cust_id = c.cust_id " +
@@ -634,7 +616,7 @@ public class PaymentsHandler {
                 "m.paymentmethod_type = 'MasterCard' OR m.paymentmethod_type = 'Visa') " +
                 "AND pay_type !='1'  AND is_refund='" + is_refund + "' ");
 
-        return DBManager.getDatabase().rawQuery(sb.toString(), null);
+        return DBManager.getDatabase().rawQuery(sb, null);
     }
 
     public Cursor searchCards(String search) {

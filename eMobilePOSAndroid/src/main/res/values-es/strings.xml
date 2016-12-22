@@ -1286,8 +1286,6 @@
     <string name="invalid_payment_type">Invalid Payment Type</string>
     <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string>
     <string name="sync_fail">Synchronization has fail.</string>
-    <string name="sales_receipts_must_be_payed_in_total">Sales Receipts must be payed in total.</string>
-    <string name="void_the_current_transaction">Void the current sales receipt?</string>
     <string name="yes_void">Yes, void it.</string>
     <string name="void_confirmation_message1">%s must be payed in total.</string>
     <string name="void_confirmation_message2">Void the current %s?</string>
