@@ -134,7 +134,7 @@ public class MyPreferences {
     public static final String pref_return_require_refund = "pref_return_require_refund";
     public static final String pref_convert_to_reward = "pref_convert_to_reward";
     public static final String pref_invoice_require_payment = "pref_invoice_require_payment";
-    public static final String pref_require_full_payment = "pref_require_full_payment";
+    public static final String pref_invoice_require_full_payment = "pref_invoice_require_full_payment";
     public static final String pref_printek_info = "pref_printek_info";
     public static final String pref_automatic_printing = "pref_automatic_printing";
     public static final String pref_split_stationprint_by_categories = "pref_split_stationprint_by_categories";
@@ -561,6 +561,14 @@ public class MyPreferences {
 
     public boolean isMixAnMatch() {
         return getPreferences(pref_mix_match);
+    }
+
+    public boolean isInvoiceRequirePayment() {
+        return getPreferences(pref_invoice_require_payment);
+    }
+
+    public boolean isRequireFullPayment() {
+        return getPreferences(pref_invoice_require_full_payment);
     }
 
     public String getCustPriceLevel() {

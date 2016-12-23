@@ -1034,7 +1034,11 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                         ordersHandler.updateIsProcessed(Global.lastOrdID, "1");
                         updateLocalInventory(getActivity(), global.orderProducts, false);
                         typeOfProcedure = Global.TransactionType.RETURN;
-                        showPaymentDlg();
+                        if (myPref.isInvoiceRequirePayment()) {
+                            openInvoicePaymentSelection();
+                        } else {
+                            showPaymentDlg();
+                        }
                     }
                     break;
                 }
@@ -1980,6 +1984,24 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         dlog.show();
     }
 
+    private void openInvoicePaymentSelection() {
+        Intent intent = new Intent(activity, SelectPayMethod_FA.class);
+        intent.putExtra("typeOfProcedure", typeOfProcedure);
+        intent.putExtra("salesinvoice", true);
+        intent.putExtra("ord_subtotal", global.order.ord_subtotal);
+        intent.putExtra("ord_taxID", OrderTotalDetails_FR.taxID);
+        intent.putExtra("amount", global.order.ord_total);
+        intent.putExtra("paid", "0.00");
+        intent.putExtra("job_id", global.order.ord_id);
+        intent.putExtra("ord_type", Global.ord_type);
+        intent.putExtra("ord_email", order_email);
+        if (myPref.isCustSelected()) {
+            intent.putExtra("cust_id", myPref.getCustID());
+            intent.putExtra("custidkey", myPref.getCustIDKey());
+        }
+        startActivityForResult(intent, 0);
+    }
+
     private void showPaymentDlg() {
 
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -2002,24 +2024,22 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                Intent intent = new Intent(activity, SelectPayMethod_FA.class);
-                intent.putExtra("typeOfProcedure", typeOfProcedure);
-                intent.putExtra("salesinvoice", true);
-                intent.putExtra("ord_subtotal", global.order.ord_subtotal);
-                intent.putExtra("ord_taxID", OrderTotalDetails_FR.taxID);
-                intent.putExtra("amount", global.order.ord_total);
-                intent.putExtra("paid", "0.00");
-                intent.putExtra("job_id", global.order.ord_id);
-                intent.putExtra("ord_type", Global.ord_type);
-                intent.putExtra("ord_email", order_email);
-
-                if (myPref.isCustSelected()) {
-                    intent.putExtra("cust_id", myPref.getCustID());
-                    intent.putExtra("custidkey", myPref.getCustIDKey());
-                }
-
-                startActivityForResult(intent, 0);
-
+                openInvoicePaymentSelection();
+//                Intent intent = new Intent(activity, SelectPayMethod_FA.class);
+//                intent.putExtra("typeOfProcedure", typeOfProcedure);
+//                intent.putExtra("salesinvoice", true);
+//                intent.putExtra("ord_subtotal", global.order.ord_subtotal);
+//                intent.putExtra("ord_taxID", OrderTotalDetails_FR.taxID);
+//                intent.putExtra("amount", global.order.ord_total);
+//                intent.putExtra("paid", "0.00");
+//                intent.putExtra("job_id", global.order.ord_id);
+//                intent.putExtra("ord_type", Global.ord_type);
+//                intent.putExtra("ord_email", order_email);
+//                if (myPref.isCustSelected()) {
+//                    intent.putExtra("cust_id", myPref.getCustID());
+//                    intent.putExtra("custidkey", myPref.getCustIDKey());
+//                }
+//                startActivityForResult(intent, 0);
             }
         });
         btnNo.setOnClickListener(new View.OnClickListener() {

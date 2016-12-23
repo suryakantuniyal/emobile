@@ -139,6 +139,20 @@ public class SynchMethods {
         }
     }
 
+    private void showProgressDialog() {
+        if (myProgressDialog == null) {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+        }
+        myProgressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        if (myProgressDialog != null && myProgressDialog.isShowing()) {
+            myProgressDialog.dismiss();
+        }
+    }
 
     private String getString(int id) {
         return activity.getResources().getString(id);
@@ -163,10 +177,7 @@ public class SynchMethods {
         protected void onPreExecute() {
             int orientation = activity.getResources().getConfiguration().orientation;
             activity.setRequestedOrientation(Global.getScreenOrientation(activity));
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            myProgressDialog.show();
+            showProgressDialog();
         }
 
         @Override
@@ -275,8 +286,8 @@ public class SynchMethods {
 
             myPref.setLastReceiveSync(date);
 
-            if (myProgressDialog != null && myProgressDialog.isShowing()) {
-                myProgressDialog.dismiss();
+            if (!activity.isFinishing() && !activity.isDestroyed()) {
+                dismissProgressDialog();
             }
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             if (type == Global.FROM_LOGIN_ACTIVITTY) {

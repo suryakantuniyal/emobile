@@ -56,6 +56,7 @@ import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
+import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -261,11 +262,17 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             setResult(SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode());
             finish();
         } else {
-            if (orderType == Global.OrderType.SALES_RECEIPT) {
+            if (orderType == Global.OrderType.SALES_RECEIPT || (orderType == Global.OrderType.INVOICE && myPref.isRequireFullPayment())) {
                 final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setContentView(R.layout.void_dialog_layout);
+                TextView msg1 = (TextView) dialog.findViewById(R.id.message1textView);
+                TextView msg2 = (TextView) dialog.findViewById(R.id.message2textView2);
+                String to = orderType.toTitleCase();
+                msg1.setText(String.format(getString(R.string.void_confirmation_message1), to));
+                msg2.setText(String.format(getString(R.string.void_confirmation_message2), to));
+
                 Button voidBut = (Button) dialog.findViewById(R.id.voidBut);
                 Button notVoid = (Button) dialog.findViewById(R.id.notVoidBut);
 
@@ -279,7 +286,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                             promptManagerPassword();
                         } else {
                             dialog.dismiss();
-                            voidTransaction(activity, job_id, extras.getString("ord_type"));
+                            voidTransaction(activity, job_id, orderType.name());
                         }
                     }
                 });
@@ -1155,7 +1162,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
 
         @Override
-        protected  HashMap<String, String> doInBackground(Void... params) {
+        protected HashMap<String, String> doInBackground(Void... params) {
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();
