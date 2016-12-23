@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 
 import com.android.database.SalesTaxCodesHandler;
-import com.bxl.printer.Printer;
 
 import java.security.AccessControlException;
 import java.security.Guard;

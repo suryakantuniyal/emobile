@@ -50,8 +50,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.payments.core.admin.AndroidTerminal;
-import com.payments.core.common.enums.CoreMode;
 
 import org.springframework.util.support.Base64;
 
@@ -72,7 +70,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -80,12 +77,10 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import drivers.EMSWalker;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import main.EMSDeviceManager;
-import util.StringUtil;
 
 public class Global extends MultiDexApplication {
     public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";

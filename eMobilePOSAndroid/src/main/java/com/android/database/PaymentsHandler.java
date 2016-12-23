@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.emobilepos.models.EMVContainer;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.DateUtils;
 import com.android.support.GenerateNewID;
 import com.android.support.GenerateNewID.IdType;

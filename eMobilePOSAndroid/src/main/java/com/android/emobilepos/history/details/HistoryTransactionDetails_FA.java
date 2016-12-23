@@ -373,10 +373,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             Bundle extras = activity.getIntent().getExtras();
             String trans_type = extras.getString("trans_type");
             int type = Integer.parseInt(trans_type);
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_FILLUP
                         && Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_PICKUP) {
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
                 }
             }
             return null;

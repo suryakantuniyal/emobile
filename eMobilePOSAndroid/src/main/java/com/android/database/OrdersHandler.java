@@ -70,6 +70,7 @@ public class OrdersHandler {
     private final static String associateID = "associateID";
     private final static String is_stored_fwd = "is_stored_fwd";
     private final static String VAT = "VAT";
+    private static String ord_timeStarted = "ord_timeStarted";
     private final static List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
