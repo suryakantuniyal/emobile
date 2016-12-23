@@ -1600,22 +1600,21 @@ public class EMSDeviceDriver {
 
             int m;
             for (int i = 0; i < size; i++) {
-
-                if (orders.get(i).getHasAddon().equals("1")) {
+                if (orders.get(i).hasAddon()) {
                     m = i;
                     ordProdHandler.updateIsPrinted(orders.get(m).getOrdprodID());
                     sb.append(orders.get(m).getQty()).append("x ").append(orders.get(m).getName()).append("\n");
                     if (!orders.get(m).getAttrDesc().isEmpty())
                         sb.append("  [").append(orders.get(m).getAttrDesc()).append("]\n");
-                    if ((m + 1) < size && orders.get(m + 1).getAddon().equals("1")) {
+                    if ((m + 1) < size && orders.get(m + 1).isAddon()) {
                         for (int j = i + 1; j < size; j++) {
                             ordProdHandler.updateIsPrinted(orders.get(j).getOrdprodID());
-                            if (orders.get(j).getIsAdded().equals("1"))
+                            if (orders.get(j).isAdded())
                                 sb.append("  >").append(orders.get(j).getName()).append("\n");
                             else
                                 sb.append("  >NO ").append(orders.get(j).getName()).append("\n");
 
-                            if ((j + 1 < size && orders.get(j + 1).getAddon().equals("0")) || (j + 1 >= size)) {
+                            if ((j + 1 < size && !orders.get(j + 1).isAddon()) || (j + 1 >= size)) {
                                 i = j;
                                 break;
                             }

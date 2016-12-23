@@ -479,7 +479,11 @@ public class OrderProductsHandler {
 
     public HashMap<String, List<Orders>> getStationPrinterProducts(String ordID) {
         List<Orders> list;
-        Cursor c = DBManager.getDatabase().rawQuery("SELECT op.ordprod_id,op.ordprod_name,op.ordprod_desc,op.overwrite_price,(op.overwrite_price*op.ordprod_qty) AS 'total', " + "op.ordprod_qty,op.ordprod_comment,op.addon,op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' FROM " + table_name + " op " + "LEFT OUTER JOIN ProductsAttr pa ON op.prod_id = pa.prod_id WHERE ord_id = '" + ordID + "' AND isPrinted = 'false'", null);
+        Cursor c = DBManager.getDatabase().rawQuery("SELECT op.ordprod_id,op.ordprod_name,op.ordprod_desc,op.overwrite_price," +
+                "(op.overwrite_price*op.ordprod_qty) AS 'total', " + "op.ordprod_qty,op.ordprod_comment,op.addon," +
+                "op.isAdded,op.hasAddons,op.cat_id,IFNULL(pa.attr_desc,'') as 'attr_desc' " +
+                "FROM " + table_name + " op " + "LEFT OUTER JOIN ProductsAttr pa ON op.prod_id = pa.prod_id " +
+                "WHERE ord_id = '" + ordID + "' AND isPrinted = 'false'", null);
         Orders[] orders = new Orders[c.getCount()];
         HashMap<String, List<Orders>> tempMap = new HashMap<String, List<Orders>>();
         if (c.moveToFirst()) {
@@ -518,37 +522,29 @@ public class OrderProductsHandler {
                 orders[i].setOrdProdComment(c.getString(i_ordprod_comment));
 
                 if (tempMap.containsKey(c.getString(i_cat_id)) || (itHasAddons && inAddons)) {
-
                     if (itHasAddons && inAddons)
                         tempCatID = parentCatID;
-
                     else
                         tempCatID = c.getString(i_cat_id);
-
                     list = tempMap.get(tempCatID);
                     list.add(orders[i]);
-
                     tempMap.put(tempCatID, list);
                 } else {
-                    list = new ArrayList<Orders>();
+                    list = new ArrayList<>();
                     list.add(orders[i]);
                     tempMap.put(c.getString(i_cat_id), list);
                 }
-
-                if (c.getString(i_hasAddons).equals("1") && !inAddons) {
+                if (orders[i].hasAddon() && !inAddons) {
                     parentCatID = c.getString(i_cat_id);
                     itHasAddons = true;
                     inAddons = true;
-                } else if (c.getString(i_hasAddons).equals("0") && !inAddons) {
+                } else if (!orders[i].hasAddon() && !inAddons) {
                     itHasAddons = false;
                 }
-
                 i++;
             } while (c.moveToNext());
         }
         c.close();
-        // db.close();
-
         return tempMap;
     }
 

@@ -85,7 +85,6 @@ import interfaces.EMSCallBack;
 public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, OnItemClickListener {
     private boolean hasBeenCreated = false;
     private Global global;
-    private ListViewAdapter myAdapter;
     private final int CASE_TOTAL = 0;
     private final int CASE_OVERALL_PAID_AMOUNT = 1;
     private final int CASE_TIP_AMOUNT = 2;
@@ -122,43 +121,30 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         setContentView(R.layout.order_detailslv_layout);
         global = (Global) getApplication();
         activity = this;
-
-
         myPref = new MyPreferences(activity);
         ListView myListView = (ListView) findViewById(R.id.orderDetailsLV);
         btnPrint = (Button) findViewById(R.id.printButton);
         btnVoid = (Button) findViewById(R.id.btnVoid);
         btnVoid.setOnClickListener(this);
-
         TextView headerTitle = (TextView) findViewById(R.id.ordDetailsHeaderTitle);
         headerTitle.setText(getString(R.string.trans_details_title));
-
-
         View headerView = getLayoutInflater().inflate(R.layout.orddetails_lvheader_adapter, (ViewGroup) findViewById(R.id.order_header_root));
         custNameView = (TextView) headerView.findViewById(R.id.ordLVHeaderTitle);
         TextView date = (TextView) headerView.findViewById(R.id.ordLVHeaderSubtitle);
         ImageView receipt = (ImageView) headerView.findViewById(R.id.ordTicketImg);
-
-
         allInfoLeft = Arrays.asList(getString(R.string.trans_details_total), getString(R.string.trans_details_amount_paid),
                 getString(R.string.trans_details_tip), getString(R.string.trans_details_clerk_id), getString(R.string.trans_details_comment),
                 getString(R.string.trans_details_ship_via), getString(R.string.trans_details_terms), getString(R.string.trans_details_delivery),
                 getString(R.string.trans_details_email), getString(R.string.trans_details_po));
-
-
         final Bundle extras = activity.getIntent().getExtras();
         OrdersHandler ordersHandler = new OrdersHandler(activity);
-
         order_id = extras.getString("ord_id");
         order = ordersHandler.getOrder(order_id);
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
         orderedProd = orderProductsHandler.getOrderProducts(order_id);
-
         CustomersHandler customersHandler = new CustomersHandler(activity);
-
         PaymentsHandler paymentHandler = new PaymentsHandler(activity);
         paymentMapList = paymentHandler.getPaymentDetailsForTransactions(order_id);
-
         String encodedImg = order.ord_signature;
         if (!encodedImg.isEmpty()) {
             Resources resources = activity.getResources();
@@ -170,20 +156,14 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             layered.setLayerInset(1, 100, 30, 50, 60);
             receipt.setImageDrawable(layered);
         }
-
         custNameView.setText(customersHandler.getSpecificValue("cust_name", order.cust_id));
         date.setText(getCaseData(CASE_TOTAL, 0) + " on " + order.ord_timecreated);
-
         myListView.addHeaderView(headerView);
-
         View footerView = getLayoutInflater().inflate(R.layout.orddetails_lvfooter_adapter, (ViewGroup) findViewById(R.id.order_footer_root));
         final ImageView mapImg = (ImageView) footerView.findViewById(R.id.ordDetailsMapImg);
-
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int width = displayMetrics.widthPixels;
-
-
         final Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -198,10 +178,8 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             public void run() {
                 Message msg = new Message();
                 StringBuilder sb = new StringBuilder();
-
                 String latitude = order.ord_latitude;//orderHashMap.get("ord_latitude");
                 String longitude = order.ord_longitude;//orderHashMap.get("ord_longitude");
-
                 if (!latitude.isEmpty() && !longitude.isEmpty()) {
                     sb.append("https://maps.googleapis.com/maps/api/staticmap?center=");
                     sb.append(latitude).append(",").append(longitude);
@@ -209,7 +187,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     sb.append(latitude).append(",").append(longitude);
                     sb.append("&zoom=16&size=").append(width).append("x").append(width).append("&sensor=false");
                     mapDrawable = createDrawableFromURL(sb.toString());
-
                     mHandler.sendMessage(msg);
                 } else
                     mHandler.sendMessage(msg);
@@ -217,15 +194,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             }
         }).start();
         myListView.addFooterView(footerView);
-
-
         //Handle the click even and begin the process for Printing the transaction
         btnPrint.setEnabled(myPref.getPreferences(MyPreferences.pref_enable_printing));
         if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
             btnPrint.setOnClickListener(this);
         }
-
-
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         String curDate = sdf.format(new Date());
         if (order.isVoid != null && (order.isVoid.equals("1") ||
@@ -236,28 +209,22 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             btnVoid.setEnabled(true);
             btnVoid.setClickable(true);
         }
-
-
         myPref = new MyPreferences(activity);
-        myAdapter = new ListViewAdapter(activity);
-
+        ListViewAdapter myAdapter = new ListViewAdapter(activity);
         imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(activity));
         options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.emobile_icon).cacheInMemory(true).cacheOnDisc(true)
                 .showImageForEmptyUri(R.drawable.ic_launcher).build();
         myListView.setAdapter(myAdapter);
         myListView.setOnItemClickListener(this);
-
         hasBeenCreated = true;
     }
 
     @Override
     public void onResume() {
-
         if (global.isApplicationSentToBackground(activity))
             global.loggedIn = false;
         global.stopActivityTransitionTimer();
-
         if (hasBeenCreated && !global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
@@ -293,7 +260,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 break;
         }
     }
-
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
@@ -352,7 +318,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     }
 
-
     private class printAsync extends AsyncTask<String, String, String> {
         private boolean printSuccessful = true;
 
@@ -365,7 +330,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             myProgressDialog.show();
-
         }
 
         @Override
@@ -394,19 +358,15 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(R.string.dlog_msg_failed_print);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
-
         Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
-
         btnYes.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -425,7 +385,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         });
         dlog.show();
     }
-
 
     private String getCaseData(int type, int position) {
         String data = "";
@@ -536,7 +495,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         return image;
     }
 
-
     private void promptManagerPassword() {
         final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -609,7 +567,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     }
 
-
     private void startVoidingTransaction() {
         btnVoid.setEnabled(false);
         btnVoid.setClickable(false);
@@ -633,7 +590,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             voidTransaction();
         }
     }
-
 
     private List<Payment> listVoidPayments;
     private PaymentsHandler payHandler;
@@ -666,13 +622,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             if (myPref.getSwiperType() == Global.HANDPOINT) {
                 paymentsToVoid = new ArrayList<>();
                 paymentsToVoid.addAll(listVoidPayments);
-//                for (Payment p : listVoidPayments) {
                 String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
-                BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
                 Global.mainPrinterManager.getCurrentDevice().saleReversal(paymentsToVoid.get(0), paymentsToVoid.get(0).getPay_transid());
                 payHandler.createVoidPayment(paymentsToVoid.get(0), false, null);
                 paymentsToVoid.remove(0);
-//                }
             } else {
                 new voidPaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
@@ -680,7 +633,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
         activity.setResult(100);
     }
-
 
     public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
         HashMap<String, String> parsedMap = new HashMap<String, String>();
@@ -754,7 +706,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
         }
     }
-
 
     public class ListViewAdapter extends BaseAdapter implements Filterable {
         private LayoutInflater myInflater;

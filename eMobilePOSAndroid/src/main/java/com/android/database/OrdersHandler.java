@@ -363,7 +363,6 @@ public class OrdersHandler {
         order.ord_HoldName = cursor.getString(cursor.getColumnIndex(ord_HoldName));
         order.is_stored_fwd = cursor.getString(cursor.getColumnIndex(is_stored_fwd));
         order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
-
         CustomersHandler custHandler = new CustomersHandler(activity);
         order.customer = custHandler.getCustomer(order.cust_id);
         return order;
