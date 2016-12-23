@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -34,8 +35,8 @@ import android.widget.TextView;
 import com.android.database.InvoicePaymentsHandler;
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.payments.EMSPayGate_Default.EAction;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -115,12 +116,10 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 getString(R.string.pay_details_group_id), getString(R.string.pay_details_cc_num), getString(R.string.pay_details_auth_id),
                 getString(R.string.pay_details_trans_id), getString(R.string.pay_details_clerk_id));
 
-
         payHandler = new PaymentsHandler(activity);
-
         PaymentDetails paymentDetails = payHandler.getPaymentDetails(pay_id, isDeclined);
+        voidButton.setEnabled(!paymentDetails.isVoid() && TextUtils.isEmpty(paymentDetails.getJob_id()));
         if (extras.getBoolean("histpay")) {
-
             if (paymentDetails.getJob_id() != null && paymentDetails.getJob_id().isEmpty()) {
                 if (paymentDetails.getInv_id().isEmpty()) {
                     InvoicePaymentsHandler invPayHandler = new InvoicePaymentsHandler(activity);
@@ -128,7 +127,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 }
             } else
                 paymentDetails.setInv_id(paymentDetails.getJob_id());
-
             allInfoRight = Arrays.asList(pay_id, paymentDetails.getPay_date(), paymethod_name, paymentDetails.getPay_comment(),
                     paymentDetails.getInv_id(), paymentDetails.getGroup_pay_id(), "*" + paymentDetails.getCcnum_last4(),
                     paymentDetails.getAuthcode(), paymentDetails.getPay_transid(), paymentDetails.getClerk_id());
@@ -140,15 +138,12 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         ListView myListView = (ListView) findViewById(R.id.payDetailsLV);
         TextView headerTitle = (TextView) findViewById(R.id.HeaderTitle);
         headerTitle.setText(getString(R.string.pay_details_title));
-
         View headerView = getLayoutInflater().inflate(R.layout.orddetails_lvheader_adapter, (ViewGroup) findViewById(R.id.order_header_root));
         TextView name = (TextView) headerView.findViewById(R.id.ordLVHeaderTitle);
         TextView paid_amount = (TextView) headerView.findViewById(R.id.ordLVHeaderSubtitle);
         ImageView receipt = (ImageView) headerView.findViewById(R.id.ordTicketImg);
         name.setText(cust_name);
         paid_amount.setText(Global.formatDoubleStrToCurrency(pay_amount));
-
-
         String encodedImg = paymentDetails.getPay_signature();
         if (encodedImg != null && !encodedImg.isEmpty()) {
             Resources resources = activity.getResources();
@@ -161,45 +156,35 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             receipt.setImageDrawable(layered);
         }
         myListView.addHeaderView(headerView);
-
         View footerView = getLayoutInflater().inflate(R.layout.orddetails_lvfooter_adapter, (ViewGroup) findViewById(R.id.order_footer_root));
         final ImageView mapImg = (ImageView) footerView.findViewById(R.id.ordDetailsMapImg);
-
-
         loadMapImage(mapImg, paymentDetails.getPay_latitude(), paymentDetails.getPay_longitude());
         myListView.addFooterView(footerView);
         ListViewAdapter myAdapter = new ListViewAdapter(activity);
         myListView.setAdapter(myAdapter);
 
-
-        //----------------------------------- Handle void button -------------------------------------------//
+        //----------------------------------- Handle void_payment button -------------------------------------------//
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         String curDate = sdf.format(new Date());
         if (curDate.equals(paymentDetails.getPay_date()) && paymentDetails.getIsVoid().equals("0"))                //It was a payment done on the current date
         {
             voidButton.setOnClickListener(this);
         }
-
-
         //Handle the click event and begin the process for Printing the transaction
         MyPreferences myPref = new MyPreferences(activity);
         printButton.setEnabled(myPref.getPreferences(MyPreferences.pref_enable_printing));
         if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
             printButton.setOnClickListener(this);
         }
-
-
         hasBeenCreated = true;
     }
 
 
     @Override
     public void onResume() {
-
         if (global.isApplicationSentToBackground(activity))
             global.loggedIn = false;
         global.stopActivityTransitionTimer();
-
         if (hasBeenCreated && !global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
@@ -229,14 +214,11 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 break;
             case R.id.histpayVoidBut:
                 voidButton.setEnabled(false);
-
                 if (myPref.getPreferences(MyPreferences.pref_require_manager_pass_to_void_trans))
                     promptManagerPassword();
                 else
                     voidTransaction();
-//                voidButton.setEnabled(false);
                 break;
-
         }
     }
 
@@ -244,7 +226,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         DisplayMetrics displayMetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int width = displayMetrics.widthPixels;
-
         final Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -259,8 +240,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             public void run() {
                 // your logic
                 StringBuilder sb = new StringBuilder();
-
-
                 if (latitude != null && longitude != null && !latitude.isEmpty() && !longitude.isEmpty()) {
                     sb.append("https://maps.googleapis.com/maps/api/staticmap?center=");
                     sb.append(latitude).append(",").append(longitude);
@@ -283,14 +262,9 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         }
         if (read) {
             payHandler.createVoidPayment(paymentToBeRefunded, false, null);
-
-//            voidButton.setEnabled(false);
-//            voidButton.setClickable(false);
         } else {
             String errorMsg = getString(R.string.void_fail);
             Global.showPrompt(activity, R.string.payment, errorMsg);
-//            voidButton.setEnabled(true);
-//            voidButton.setClickable(true);
         }
     }
 
@@ -327,7 +301,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             if (myProgressDialog.isShowing())
                 myProgressDialog.dismiss();
             myProgressDialog.show();
-
         }
 
         @Override
@@ -352,10 +325,8 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlog.setCancelable(false);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
-
         viewTitle.setText(R.string.dlog_title_error);
         viewMsg.setText(R.string.dlog_msg_failed_print);
         dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
@@ -363,7 +334,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
         btnYes.setText(R.string.button_yes);
         btnNo.setText(R.string.button_no);
-
         btnYes.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -416,20 +386,16 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                 new processCardVoidAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, payGate.paymentWithAction(EAction.VoidCheckAction, false, paymentToBeRefunded.getCard_type(), null));
             }
         } else {
-            //payHandler.updateIsVoid(pay_id);
             payHandler.createVoidPayment(paymentToBeRefunded, false, null);
             Global.showPrompt(activity, R.string.payment_void_title, getString(R.string.payment_void_completed));
-
         }
     }
 
     private void promptManagerPassword() {
-
         final Dialog globalDlog = new Dialog(activity, R.style.Theme_TransparentTest);
         globalDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         globalDlog.setCancelable(true);
         globalDlog.setContentView(R.layout.dlog_field_single_layout);
-
         final EditText viewField = (EditText) globalDlog.findViewById(R.id.dlogFieldSingle);
         viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
@@ -466,12 +432,9 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
 
     public class processCardVoidAsync extends AsyncTask<String, String, String> {
-
-        //private String[]returnedPost;
         boolean wasProcessed = false;
-        HashMap<String, String> parsedMap = new HashMap<String, String>();
+        HashMap<String, String> parsedMap = new HashMap<>();
         private String errorMsg = getString(R.string.coundnot_proceess_payment);
-
 
         @Override
         protected void onPreExecute() {
@@ -480,36 +443,28 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
         protected String doInBackground(String... params) {
-
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
-
             try {
                 String xml = post.postData(13, activity, params[0]);
                 InputSource inSource = new InputSource(new StringReader(xml));
-
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
                 xr.setContentHandler(handler);
                 xr.parse(inSource);
                 parsedMap = handler.getData();
-
                 if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                     wasProcessed = true;
                 else if (parsedMap != null && parsedMap.size() > 0) {
                     errorMsg = "statusCode = " + parsedMap.get("statusCode") + "\n" + parsedMap.get("statusMessage");
                 } else
                     errorMsg = xml;
-
-
             } catch (Exception e) {
-
             }
             return null;
         }
@@ -529,7 +484,7 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
 
 
     private Drawable createDrawableFromURL(String urlString) {
-        Drawable image = null;
+        Drawable image;
         try {
             URL url = new URL(urlString);
             InputStream is = (InputStream) url.getContent();
@@ -554,7 +509,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         @Override
         public int getCount() {
             return (allInfoLeft.size() + 2); // the +2 is to include the
-            // dividers
         }
 
         @Override
@@ -571,17 +525,14 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             int type = getItemViewType(position);
-
             if (convertView == null) {
                 holder = new ViewHolder();
-
                 switch (type) {
                     case 0: // divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvdivider_adapter, null);
                         holder.textLine1 = (TextView) convertView.findViewById(R.id.orderDivLeft);
                         holder.textLine2 = (TextView) convertView.findViewById(R.id.orderDivRight);
-
                         if (position == 0) {
                             holder.textLine1.setText(getString(R.string.pay_details_infomation));
                         } else // if(position == allInfoLeft.size()+1)
@@ -593,13 +544,10 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
                     case 1: // content in divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvinfo_adapter, null);
-
                         holder.textLine1 = (TextView) convertView.findViewById(R.id.ordInfoLeft);
                         holder.textLine2 = (TextView) convertView.findViewById(R.id.ordInfoRight);
-
                         holder.textLine1.setText(allInfoLeft.get(position - 1));
                         holder.textLine2.setText(allInfoRight.get(position - 1));
-
                         break;
                     }
                 }
@@ -641,7 +589,6 @@ public class HistoryPaymentDetails_FA extends BaseFragmentActivityActionBar impl
             if (position == 0 || (position == (allInfoLeft.size() + 1))) {
                 return 0;
             }
-
             return 1;
 
         }

@@ -579,10 +579,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (resultCode == Global.FROM_DRAW_RECEIPT_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else if (resultCode == 1) {
-
             Bundle extras = data.getExtras();
             String newName = extras.getString("customer_name");
-
             Global.taxID = "";
             leftFragment.custName.setText(newName);
             OrderTotalDetails_FR.getFrag().initSpinners();

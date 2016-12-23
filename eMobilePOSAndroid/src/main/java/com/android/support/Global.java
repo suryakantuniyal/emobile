@@ -50,8 +50,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.payments.core.admin.AndroidTerminal;
-import com.payments.core.common.enums.CoreMode;
 
 import org.springframework.util.support.Base64;
 
@@ -72,7 +70,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -80,7 +77,6 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import drivers.EMSWalker;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
@@ -234,6 +230,31 @@ public class Global extends MultiDexApplication {
 
         public String getCodeString() {
             return String.valueOf(code);
+        }
+
+        public String toTitleCase(){
+            switch (this.code) {
+                case 0:
+                    return StringUtils.toTitleCase(ORDER.toString());
+                case 1:
+                    return StringUtils.toTitleCase(RETURN.toString());
+                case 2:
+                    return StringUtils.toTitleCase(INVOICE.toString());
+                case 3:
+                    return StringUtils.toTitleCase(ESTIMATE.toString());
+                case 4:
+                    return StringUtils.toTitleCase(CONSIGNMENT_FILLUP.toString());
+                case 5:
+                    return StringUtils.toTitleCase(SALES_RECEIPT.toString());
+                case 6:
+                    return StringUtils.toTitleCase(CONSIGNMENT_PICKUP.toString());
+                case 7:
+                    return StringUtils.toTitleCase(CONSIGNMENT_INVOICE.toString());
+                case 8:
+                    return StringUtils.toTitleCase(CONSIGNMENT_RETURN.toString());
+                default:
+                    return StringUtils.toTitleCase(ORDER.toString());
+            }
         }
 
         public static OrderType getByCode(int code) {
