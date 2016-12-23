@@ -49,19 +49,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     private static MyPreferences myPref;
     private TextView synchTextView, tvStoreForward;
     private AdapterTabs tabsAdapter;
-    private static ProgressDialog myProgressDialog;
-//    public static Handler handler = new Handler(new Handler.Callback() {
-//        @Override
-//        public boolean handleMessage(Message msg) {
-////            if (myProgressDialog != null && myProgressDialog.isShowing()) {
-////                myProgressDialog.dismiss();
-////            }
-//            synchronized (activity){
-//                activity.notifyAll();
-//            }
-//            return true;
-//        }
-//    });
+    private ProgressDialog driversProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -173,6 +161,22 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         return super.onKeyDown(keyCode, event);
     }
 
+    private void showProgressDialog() {
+        if (driversProgressDialog == null) {
+            driversProgressDialog = new ProgressDialog(MainMenu_FA.this);
+            driversProgressDialog.setMessage(getString(R.string.connecting_devices));
+            driversProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            driversProgressDialog.setCancelable(false);
+        }
+        driversProgressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
+            driversProgressDialog.dismiss();
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -190,6 +194,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         this.finish();
     }
 
+    @Override
+    protected void onDestroy() {
+        dismissProgressDialog();
+        super.onDestroy();
+    }
+
     public AdapterTabs getTabsAdapter() {
         return tabsAdapter;
     }
@@ -201,7 +211,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
-        private Boolean loadMultiPrinter;
+        private boolean loadMultiPrinter;
 
         @Override
         protected void onPreExecute() {
@@ -211,14 +221,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                     && (Global.mainPrinterManager == null
                     || Global.mainPrinterManager.getCurrentDevice() == null);
 
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.connecting_devices));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            if (myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
             if (loadMultiPrinter) {
-                myProgressDialog.show();
+                showProgressDialog();
             }
         }
 
@@ -262,8 +266,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
-            if (myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+            if (!activity.isFinishing()) {
+                dismissProgressDialog();
+            }
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }

@@ -510,7 +510,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s(true, false) || myPref.isPAT100()) {
+        } else if (myPref.isSam4s(true, false) || myPref.isPAT100() || EMSIDTechUSB.isUSBConnected(this)) {
             cardSwipe.setChecked(true);
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())

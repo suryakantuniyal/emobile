@@ -57,29 +57,19 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.history_transactions_layout);
-
         global = (Global) getApplication();
         activity = this;
-
-
         tabHost = (TabHost) findViewById(android.R.id.tabhost);
-
         TextView headTitle = (TextView) findViewById(R.id.transHeaderTitle);
-
         headTitle.setText(getString(R.string.hist_transac));
-
         lView = (ListView) findViewById(R.id.listView);
         ordersHandler = new OrdersHandler(this);
-
         final Bundle extras = getIntent().getExtras();
         if (extras != null)
             isFromCustomers = extras.getBoolean("is_from_customers", false);
-
         if (isFromCustomers) {
             receivedCustID = extras.getString("cust_id");
         }
-
-
         lView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -92,8 +82,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
                 startActivityForResult(intent, 0);
             }
         });
-
-
         EditText field = (EditText) findViewById(R.id.searchField);
         field.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
@@ -108,66 +96,48 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
                 return false;
             }
         });
-
-
         field.addTextChangedListener(new TextWatcher() {
-
             @Override
             public void afterTextChanged(Editable arg0) {
 
             }
-
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence s, int arg1, int arg2, int arg3) {
                 String test = s.toString().trim();
                 if (test.isEmpty()) {
                     if (myCursor != null)
                         myCursor.close();
-
                     ordersHandler = new OrdersHandler(activity);
-
                     if (isFromCustomers)
                         myCursor = ordersHandler.getReceipts1CustData(orderTypes, receivedCustID);
                     else
                         myCursor = ordersHandler.getReceipts1Data(orderTypes);
-
-
                     myAdapter = new CustomCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
                     lView.setAdapter(myAdapter);
                 }
             }
         });
 
-
         TABS_TAG = new String[]{getString(R.string.trans_tab_orders), getString(R.string.trans_tab_returns),
                 getString(R.string.trans_tab_invoices), getString(R.string.trans_tab_estimates),
                 getString(R.string.trans_tab_receipts)};
-
-
         initTabs();
-
-
         tabHost.setOnTabChangedListener(this);
         tabHost.setCurrentTab(0);
-
         updateMyTabs(TABS[0], TABS_ID[0]);
-
         hasBeenCreated = true;
     }
 
 
     @Override
     public void onResume() {
-
         if (global.isApplicationSentToBackground(this))
             global.loggedIn = false;
         global.stopActivityTransitionTimer();
-
         if (hasBeenCreated && !global.loggedIn) {
             if (global.getGlobalDlog() != null)
                 global.getGlobalDlog().dismiss();
@@ -189,7 +159,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == 100)
             finish();
     }
@@ -205,18 +174,12 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
 
     private TabSpec newTab(String tag, String label, int tabView) {
-
         View indicator = LayoutInflater.from(activity).inflate(R.layout.tabs_layout, (ViewGroup) findViewById(android.R.id.tabs), false);
-
         TextView tabLabel = (TextView) indicator.findViewById(R.id.tabTitle);
-
         tabLabel.setText(label);
-
         TabSpec tabSpec = tabHost.newTabSpec(tag);
         tabSpec.setIndicator(indicator);
-
         tabSpec.setContent(tabView);
-
         return tabSpec;
     }
 
@@ -258,10 +221,8 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         getCursorData(placeHolder);
     }
 
-
     public enum Limiters {
         orders, returns, invoices, estimates, receipts;
-
         public static Limiters toLimit(String str) {
             try {
                 return valueOf(str);
@@ -274,10 +235,7 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
     @Override
     public void onTabChanged(String tabID) {
-
         Limiters value = Limiters.toLimit(tabID);
-
-
         if (value != null) {
             switch (value) {
                 case orders:
@@ -307,7 +265,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
             myCursor = ordersHandler.getSearchOrder(orderTypes, text, receivedCustID);
         else
             myCursor = ordersHandler.getSearchOrder(orderTypes, text, null);
-
         myAdapter = new CustomCursorAdapter(this, myCursor, CursorAdapter.NO_SELECTION);
         lView.setAdapter(myAdapter);
 
@@ -319,7 +276,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         CustomersHandler custHandler = new CustomersHandler(activity);
         ViewHolder myHolder;
         String temp = "";
-
         public CustomCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
             inflater = LayoutInflater.from(context);
@@ -327,30 +283,23 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-
             myHolder = (ViewHolder) view.getTag();
-
             myHolder.title.setText(cursor.getString(myHolder.i_ord_id));
             temp = cursor.getString(myHolder.i_cust_id);
             myHolder.clientName.setText(custHandler.getSpecificValue("cust_name", temp));
             temp = Global.formatDoubleStrToCurrency(cursor.getString(myHolder.i_ord_total));
             myHolder.amount.setText(temp);
-
             if (cursor.getString(myHolder.i_ord_issync).equals("1")) //it is synched
                 myHolder.syncIcon.setImageResource(R.drawable.is_sync);
             else
                 myHolder.syncIcon.setImageResource(R.drawable.is_not_sync);
-
-            if (cursor.getString(myHolder.i_isVoid).equals("0"))//it is not void
+            if (cursor.getString(myHolder.i_isVoid).equals("0"))//it is not void_payment
                 myHolder.voidText.setVisibility(View.GONE);
             else
                 myHolder.voidText.setVisibility(View.VISIBLE);
-
-
         }
 
         public String format(String text) {
-
             if (TextUtils.isEmpty(text))
                 return Global.formatDoubleToCurrency(0.00);
             return Global.getCurrencyFormat(Global.formatNumToLocale(Double.parseDouble(text)));
@@ -358,17 +307,13 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-
             View retView = inflater.inflate(R.layout.trans_lvadapter, parent, false);
-
             ViewHolder holder = new ViewHolder();
-
             holder.title = (TextView) retView.findViewById(R.id.transLVtitle);
             holder.clientName = (TextView) retView.findViewById(R.id.transLVid);
             holder.amount = (TextView) retView.findViewById(R.id.transLVamount);
             holder.voidText = (TextView) retView.findViewById(R.id.transVoidText);
             holder.syncIcon = (ImageView) retView.findViewById(R.id.transIcon);
-
             holder.i_ord_id = cursor.getColumnIndex("_id");
             holder.i_cust_id = cursor.getColumnIndex("cust_id");
             holder.i_ord_total = cursor.getColumnIndex("ord_total");
@@ -381,7 +326,6 @@ public class HistoryTransactions_FA extends BaseFragmentActivityActionBar implem
         private class ViewHolder {
             TextView title, clientName, amount, voidText;
             ImageView syncIcon;
-
             int i_ord_id, i_cust_id, i_ord_total, i_isVoid, i_ord_issync;
         }
     }

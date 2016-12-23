@@ -85,6 +85,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import main.EMSDeviceManager;
+import util.StringUtil;
 
 public class Global extends MultiDexApplication {
     public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
@@ -234,6 +235,31 @@ public class Global extends MultiDexApplication {
 
         public String getCodeString() {
             return String.valueOf(code);
+        }
+
+        public String toTitleCase(){
+            switch (this.code) {
+                case 0:
+                    return StringUtils.toTitleCase(ORDER.toString());
+                case 1:
+                    return StringUtils.toTitleCase(RETURN.toString());
+                case 2:
+                    return StringUtils.toTitleCase(INVOICE.toString());
+                case 3:
+                    return StringUtils.toTitleCase(ESTIMATE.toString());
+                case 4:
+                    return StringUtils.toTitleCase(CONSIGNMENT_FILLUP.toString());
+                case 5:
+                    return StringUtils.toTitleCase(SALES_RECEIPT.toString());
+                case 6:
+                    return StringUtils.toTitleCase(CONSIGNMENT_PICKUP.toString());
+                case 7:
+                    return StringUtils.toTitleCase(CONSIGNMENT_INVOICE.toString());
+                case 8:
+                    return StringUtils.toTitleCase(CONSIGNMENT_RETURN.toString());
+                default:
+                    return StringUtils.toTitleCase(ORDER.toString());
+            }
         }
 
         public static OrderType getByCode(int code) {

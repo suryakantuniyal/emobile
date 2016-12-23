@@ -83,12 +83,9 @@ import javax.xml.parsers.SAXParserFactory;
 import interfaces.EMSCallBack;
 
 public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener, OnItemClickListener {
-
     private boolean hasBeenCreated = false;
     private Global global;
-
     private ListViewAdapter myAdapter;
-
     private final int CASE_TOTAL = 0;
     private final int CASE_OVERALL_PAID_AMOUNT = 1;
     private final int CASE_TIP_AMOUNT = 2;
@@ -99,30 +96,20 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
     private final int CASE_ORD_DELIVERY = 7;
     private final int CASE_CUST_EMAIL = 8;
     private final int CASE_PO = 9;
-
     private final int CASE_PAYMETHOD_NAME = 10;
     private final int CASE_PAY_ID = 11;
     private final int CASE_PAID_AMOUNT = 12;
     private final int CASE_PAID_AMOUNT_NO_CURRENCY = 13;
-
-
     private static List<String> allInfoLeft;
     private String order_id;
     private List<OrderProduct> orderedProd;
     private Drawable mapDrawable;
     private ProgressDialog myProgressDialog;
-
-
-    //    private HashMap<String, String> orderHashMap = new HashMap<String, String>();
-    private List<HashMap<String, String>> paymentMapList = new ArrayList<HashMap<String, String>>();
-    private String empstr = "";
-
+    private List<Payment> paymentMapList = new ArrayList<>();
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
-
     private int offsetForPayment = 0;
     private TextView custNameView;
-    //private Button btnPrint;
     private Button btnPrint, btnVoid;
     private Activity activity;
     private MyPreferences myPref;
@@ -386,13 +373,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             Bundle extras = activity.getIntent().getExtras();
             String trans_type = extras.getString("trans_type");
             int type = Integer.parseInt(trans_type);
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
-                if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) == Global.OrderType.CONSIGNMENT_FILLUP) {
-
-                } else if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) == Global.OrderType.CONSIGNMENT_PICKUP) {
-
-                } else
-                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+                if (Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_FILLUP
+                        && Global.OrderType.getByCode(Integer.parseInt(trans_type)) != Global.OrderType.CONSIGNMENT_PICKUP) {
+                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(order_id, Global.OrderType.getByCode(Integer.parseInt(trans_type)), true, false);
+                }
             }
             return null;
         }
@@ -427,7 +412,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
                 new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -437,29 +421,15 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlog.dismiss();
             }
         });
         dlog.show();
     }
 
-//    private String getOrderData(String key) {
-//        String text = orderHashMap.get(key);
-//        if (text == null)
-//            return empstr;
-//        return text;
-//    }
-
-    private String getPaymentData(int pos, String key) {
-        String text = paymentMapList.get(pos).get(key);
-        if (text == null)
-            return empstr;
-        return text;
-    }
 
     private String getCaseData(int type, int position) {
-        String data = empstr;
+        String data = "";
 
         switch (type) {
             case CASE_TOTAL:                //total
@@ -471,16 +441,16 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 String otherAmount = "0";
                 if (size > 0) {
 
-                    if (paymentMapList.get(0).get("paymethod_name").equals("LoyaltyCard"))
-                        otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).get("pay_amount"))));
+                    if (paymentMapList.get(0).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
+                        otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).getPay_amount())));
                     else
-                        temp = Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).get("pay_amount")));
+                        temp = Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(0).getPay_amount()));
 
                     for (int i = 1; i < size; i++) {
-                        if (paymentMapList.get(i).get("paymethod_name").equals("LoyaltyCard"))
-                            otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(i).get("pay_amount"))));
+                        if (paymentMapList.get(i).getPaymentMethod().getPaymethod_name().equalsIgnoreCase("LoyaltyCard"))
+                            otherAmount = Global.addSubsStrings(true, otherAmount, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(i).getPay_amount())));
                         else
-                            temp = Global.addSubsStrings(true, temp, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(i).get("pay_amount"))));
+                            temp = Global.addSubsStrings(true, temp, Global.formatNumToLocale(Double.parseDouble(paymentMapList.get(i).getPay_amount())));
                     }
                 }
                 temp = Double.toString(Global.formatNumFromLocale(temp));
@@ -494,11 +464,11 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 String temp1 = "0.00";
                 String storedVal;
                 if (size1 > 0) {
-                    temp1 = paymentMapList.get(0).get("pay_tip");
+                    temp1 = paymentMapList.get(0).getPay_tip();
                     if (temp1 == null || temp1.isEmpty())
                         temp1 = "0.00";
                     for (int i = 1; i < size1; i++) {
-                        storedVal = paymentMapList.get(i).get("pay_tip");
+                        storedVal = paymentMapList.get(i).getPay_tip();
                         if (storedVal == null || storedVal.isEmpty())
                             storedVal = "0.00";
                         temp1 = Global.addSubsStrings(true, temp1, Global.formatNumToLocale(Double.parseDouble(storedVal)));
@@ -507,45 +477,46 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 temp1 = Double.toString(Global.formatNumFromLocale(temp1));
                 data = Global.formatDoubleStrToCurrency(temp1);
                 break;
-            case CASE_CLERK_ID:                //clerk id
+            case CASE_CLERK_ID:
                 data = order.clerk_id;
                 break;
-            case CASE_ORD_COMMENT:                //comment
+            case CASE_ORD_COMMENT:
                 data = order.ord_comment;
                 break;
-            case CASE_SHIPVIA:                //ship via
+            case CASE_SHIPVIA:
                 data = order.ord_shipvia;
                 break;
-            case CASE_ORD_TERMS:                //terms
+            case CASE_ORD_TERMS:
                 data = order.ord_terms;
                 break;
-            case CASE_ORD_DELIVERY:                //delivery
+            case CASE_ORD_DELIVERY:
                 data = order.ord_delivery;
                 break;
-            case CASE_CUST_EMAIL:                //e-mail
+            case CASE_CUST_EMAIL:
                 data = order.c_email;
                 break;
             case CASE_PAYMETHOD_NAME:
-                data = getPaymentData(position, "paymethod_name");
+                data = paymentMapList.get(position).getPaymentMethod().getPaymethod_name();
                 break;
             case CASE_PAY_ID:
-                data = getPaymentData(position, "pay_id");
+                data = paymentMapList.get(position).getPay_id();
                 break;
             case CASE_PAID_AMOUNT:
-                data = Global.formatDoubleStrToCurrency(getPaymentData(position, "pay_amount"));
+                data = Global.formatDoubleStrToCurrency(paymentMapList.get(position).getPay_amount());
                 break;
             case CASE_PO:
                 data = order.ord_po;
                 break;
             case CASE_PAID_AMOUNT_NO_CURRENCY:
-                data = getPaymentData(position, "pay_amount");
+                data = paymentMapList.get(position).getPay_amount();
+                ;
                 break;
         }
         return data;
     }
 
     private Drawable createDrawableFromURL(String urlString) {
-        Drawable image = null;
+        Drawable image;
         try {
             URL url = new URL(urlString);
 
@@ -586,7 +557,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
                 if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
@@ -648,7 +618,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(activity);
             if (dbStoredPayments.getRetryTransCount(order_id) > 0) {
-                //There are pending stored&forward cannot void
+                //There are pending stored&forward cannot void_payment
                 Global.showPrompt(activity, R.string.dlog_title_error, getString(R.string.dlog_msg_pending_stored_forward));
                 btnVoid.setEnabled(true);
                 btnVoid.setClickable(true);
@@ -659,9 +629,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             if (Global.mainPrinterManager.getCurrentDevice() != null) {
                 Global.mainPrinterManager.getCurrentDevice().loadCardReader(this, false);
                 voidTransaction();
-//                String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(order.ord_total);
-//                BigInteger voidAmountInt = new BigInteger(voidAmount.replace(".", ""));
-//                Global.mainPrinterManager.currentDevice.saleReversal(voidAmountInt, order.tr);
             }
         } else {
             voidTransaction();
@@ -674,40 +641,31 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
 
     private void voidTransaction() {
         double amountToBeSubstracted;
-
         OrdersHandler handler = new OrdersHandler(activity);
         handler.updateIsVoid(order_id);
         handler.updateIsProcessed(order_id, "9");
-
         VoidTransactionsHandler voidHandler = new VoidTransactionsHandler(activity);
-
         Order ord = new Order(activity);
         ord.ord_id = order_id;
         ord.ord_type = order.ord_type;
         voidHandler.insert(ord);
-
         //Section to update the local ShiftPeriods database to reflect the VOID
         ShiftPeriodsDBHandler handlerSP = new ShiftPeriodsDBHandler(activity);
-
         amountToBeSubstracted = Double.parseDouble(NumberUtils.cleanCurrencyFormatedNumber(order.ord_total)); //find total to be credited
-
         //update ShiftPeriods (isReturn set to true)
         handlerSP.updateShiftAmounts(myPref.getShiftID(), amountToBeSubstracted, true);
-
-
         //Check if Stored&Forward active and delete from record if any payment were made
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
             handler.updateOrderStoredFwd(order_id, "0");
             StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
             dbStoredPayments.deletePaymentFromJob(order_id);
         }
-
         payHandler = new PaymentsHandler(activity);
         listVoidPayments = payHandler.getOrderPayments(order_id);
         int size = listVoidPayments.size();
         if (size > 0) {
             if (myPref.getSwiperType() == Global.HANDPOINT) {
-                paymentsToVoid = new ArrayList<Payment>();
+                paymentsToVoid = new ArrayList<>();
                 paymentsToVoid.addAll(listVoidPayments);
 //                for (Payment p : listVoidPayments) {
                 String voidAmount = NumberUtils.cleanCurrencyFormatedNumber(paymentsToVoid.get(0).getPay_amount());
@@ -721,15 +679,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             }
         } else
             Global.showPrompt(activity, R.string.dlog_title_success, getString(R.string.dlog_msg_transaction_voided));
-
         activity.setResult(100);
     }
 
 
     public class voidPaymentAsync extends AsyncTask<Void, Void, Void> {
-
         HashMap<String, String> parsedMap = new HashMap<String, String>();
-
 
         @Override
         protected void onPreExecute() {
@@ -738,15 +693,12 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-
             int size = listVoidPayments.size();
             EMSPayGate_Default payGate;
-
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SAXProcessCardPayHandler handler = new SAXProcessCardPayHandler(activity);
@@ -754,7 +706,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             InputSource inSource;
             SAXParser sp;
             XMLReader xr;
-
             try {
                 sp = spf.newSAXParser();
                 xr = sp.getXMLReader();
@@ -765,40 +716,34 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
                         xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidGiftCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
-
                         xr.setContentHandler(handler);
                         xr.parse(inSource);
                         parsedMap = handler.getData();
-
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                             payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
 
-                        parsedMap.clear();
+                        if (parsedMap != null) {
+                            parsedMap.clear();
+                        }
                     } else if (paymentType.equals("CASH")) {
-
-                        //payHandler.updateIsVoid(pay_id);
                         payHandler.createVoidPayment(listVoidPayments.get(i), false, null);
                     } else if (!paymentType.equals("CHECK") && !paymentType.equals("WALLET")) {
                         payGate = new EMSPayGate_Default(activity, listVoidPayments.get(i));
                         xml = post.postData(13, activity, payGate.paymentWithAction(EMSPayGate_Default.EAction.VoidCreditCardAction, false, listVoidPayments.get(i).getCard_type(), null));
                         inSource = new InputSource(new StringReader(xml));
-
                         xr.setContentHandler(handler);
                         xr.parse(inSource);
                         parsedMap = handler.getData();
-
                         if (parsedMap != null && parsedMap.size() > 0 && parsedMap.get("epayStatusCode").equals("APPROVED"))
                             payHandler.createVoidPayment(listVoidPayments.get(i), true, parsedMap);
-
-
-                        parsedMap.clear();
+                        if (parsedMap != null) {
+                            parsedMap.clear();
+                        }
                     }
                 }
             } catch (Exception e) {
 
             }
-
-
             return null;
         }
 
@@ -817,7 +762,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         private ProductsImagesHandler imgHandler;
         private Context context;
 
-        public ListViewAdapter(Context context) {
+        ListViewAdapter(Context context) {
             this.context = context;
             imgHandler = new ProductsImagesHandler(activity);
             myInflater = LayoutInflater.from(context);
@@ -843,18 +788,15 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             int type = getItemViewType(position);
-            int iconId = 0;
-
+            int iconId;
             if (convertView == null) {
                 holder = new ViewHolder();
-
                 switch (type) {
                     case 0: // divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvdivider_adapter, null);
                         holder.textLine1 = (TextView) convertView.findViewById(R.id.orderDivLeft);
                         holder.textLine2 = (TextView) convertView.findViewById(R.id.orderDivRight);
-
                         if (position == 0)
                             holder.textLine1.setText(R.string.info);
                         else if (position == allInfoLeft.size() + 1)
@@ -868,66 +810,56 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                     case 1: // content in info divider
                     {
                         convertView = myInflater.inflate(R.layout.orddetails_lvinfo_adapter, null);
-
                         holder.textLine1 = (TextView) convertView.findViewById(R.id.ordInfoLeft);
                         holder.textLine2 = (TextView) convertView.findViewById(R.id.ordInfoRight);
-
                         holder.textLine1.setText(allInfoLeft.get(position - 1));
-
                         String temp = getCaseData((position - 1), 0);
                         if (temp != null && !temp.isEmpty())
                             holder.textLine2.setText(getCaseData((position - 1), 0));
-
                         break;
                     }
                     case 2: {
                         convertView = myInflater.inflate(R.layout.orddetails_lvproducts_adapter, null);
-
                         holder.textLine1 = (TextView) convertView.findViewById(R.id.ordProdTitle);
                         holder.textLine2 = (TextView) convertView.findViewById(R.id.ordProdSubtitle);
                         holder.ordProdPrice = (TextView) convertView.findViewById(R.id.ordProdPrice);
                         holder.ordProdQty = (TextView) convertView.findViewById(R.id.ordProdQty);
                         holder.iconImage = (ImageView) convertView.findViewById(R.id.prodIcon);
                         int ind = position - allInfoLeft.size() - 2;
-
-
                         holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
                         holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
-
-                        holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
+                        holder.ordProdQty.setText(String.format("%s x", orderedProd.get(ind).getOrdprod_qty()));
                         holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
-
-
                         break;
                     }
                     case 3: {
-
                         convertView = myInflater.inflate(R.layout.orddetails_lvpayment_adapter, null);
-
                         holder.textLine1 = (TextView) convertView.findViewById(R.id.paidAmount);
                         holder.moreDetails = (ImageView) convertView.findViewById(R.id.paymentMoreDetailsIcon);
                         int listIndex = position - offsetForPayment;
                         String paymethodName = getCaseData(CASE_PAYMETHOD_NAME, listIndex);
                         if (paymethodName != null && !paymethodName.isEmpty()) {
                             holder.textLine1.setText(getCaseData(CASE_PAID_AMOUNT, listIndex));
-
                             String iconName = Global.paymentIconsMap.get(paymethodName);
+                            Drawable voidDrawable = null;
+                            if (paymentMapList.get(listIndex).getIsVoid().equalsIgnoreCase("1")) {
+                                voidDrawable = context.getResources().getDrawable(R.drawable.void_payment);
+                            }
                             if (iconName == null)
                                 iconId = R.drawable.debitcard;// context.getResources().getIdentifier("debitcard", "drawable", context.getString(R.string.pkg_name));
                             else
                                 iconId = context.getResources().getIdentifier(iconName, "drawable", context.getPackageName());
 
-
-                            holder.textLine1.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(iconId), null, null, null);
+                            holder.textLine1.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(iconId), null, voidDrawable, null);
                             holder.textLine1.setCompoundDrawablePadding(5);
                             holder.textLine1.setGravity(Gravity.CENTER_VERTICAL);
-
                         }
-
                         break;
                     }
                 }
-                convertView.setTag(holder);
+                if (convertView != null) {
+                    convertView.setTag(holder);
+                }
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
@@ -946,14 +878,10 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 holder.textLine2.setText(getCaseData((position - 1), 0));
             } else if (type == 2) {
                 int ind = position - allInfoLeft.size() - 2;
-
                 holder.textLine1.setText(orderedProd.get(ind).getOrdprod_name());
                 holder.textLine2.setText(orderedProd.get(ind).getOrdprod_desc());
-
-                holder.ordProdQty.setText(orderedProd.get(ind).getOrdprod_qty() + " x");
+                holder.ordProdQty.setText(String.format("%s x", orderedProd.get(ind).getOrdprod_qty()));
                 holder.ordProdPrice.setText(Global.formatDoubleStrToCurrency(orderedProd.get(ind).getFinalPrice()));
-
-
                 imageLoader.displayImage(imgHandler.getSpecificLink("I", orderedProd.get(ind).getProd_id()), holder.iconImage, options);
             }
 
@@ -972,7 +900,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             TextView ordProdPrice;
             ImageView iconImage;
             ImageView moreDetails;
-
         }
 
         @Override
@@ -989,7 +916,6 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
                 return 2;
             }
             return 3;                    //PAYMENTS
-
         }
 
         @Override
@@ -997,5 +923,4 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             return 4;
         }
     }
-
 }

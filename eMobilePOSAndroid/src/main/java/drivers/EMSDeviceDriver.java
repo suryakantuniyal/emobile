@@ -721,7 +721,7 @@ public class EMSDeviceDriver {
                         payWithLoyalty = true;
                     }
                     totalItemstQty += TextUtils.isEmpty(orderProducts.get(i).getOrdprod_qty()) ? 0
-                            : Integer.parseInt(orderProducts.get(i).getOrdprod_qty());
+                            : Double.parseDouble(orderProducts.get(i).getOrdprod_qty());
                     sb.append(orderProducts.get(i).getOrdprod_name()).append("-").append(orderProducts.get(i).getOrdprod_desc())
                             .append("\n");
 
