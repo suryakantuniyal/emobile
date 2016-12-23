@@ -23,6 +23,8 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -62,6 +64,12 @@ public class OrderProductListAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         myPref = new MyPreferences(activity);
         this.activity = activity;
+        Collections.sort(orderProducts, new Comparator<OrderProduct>() {
+            @Override
+            public int compare(OrderProduct lhs, OrderProduct rhs) {
+                return lhs.getAssignedSeat().compareTo(rhs.getAssignedSeat());
+            }
+        });
         this.orderProducts = orderProducts;
         global = (Global) activity.getApplication();
         initSeats(orderingMainFa.getSelectedSeatsAmount());

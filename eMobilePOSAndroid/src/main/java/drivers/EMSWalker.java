@@ -67,7 +67,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     private static ProgressDialog myProgressDialog;
     private boolean isAutoConnect = false;
 
-
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
@@ -121,6 +120,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 //        if (activity instanceof SettingListActivity) {
 //            Looper.myLooper().quit();
 //        }
+        this.edm.driverDidConnectToDevice(this, false);
         return true;
     }
 
@@ -215,7 +215,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
 
     }
-
 
     @Override
     public void unregisterPrinter() {
@@ -396,6 +395,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         }
         if (!isAutoConnect) {
             dismissDialog();
+            this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), true);
         } else {
             dismissDialog();
 //            MainMenu_FA.handler.sendEmptyMessage(0);

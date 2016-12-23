@@ -96,7 +96,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         hasBeenCreated = true;
     }
 
-
     @Override
     public void onResume() {
         if (global.isApplicationSentToBackground(activity)) {
@@ -201,7 +200,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         this.tabsAdapter = tabsAdapter;
     }
 
-
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
         private boolean loadMultiPrinter;
@@ -212,7 +210,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             loadMultiPrinter = (Global.multiPrinterManager == null
                     || Global.multiPrinterManager.size() == 0)
                     && (Global.mainPrinterManager == null
-                    || Global.mainPrinterManager.getCurrentDevice() == null);
+                    || Global.mainPrinterManager.getCurrentDevice() == null)
+                    && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
 
             if (loadMultiPrinter) {
                 showProgressDialog();
@@ -236,7 +235,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //                    e.printStackTrace();
 //                }
 //            }
-            String connect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
+            DeviceUtils.autoConnect(activity, loadMultiPrinter);
             if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS) {
                 isUSB = true;
             }
@@ -265,7 +264,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
-
 
     public TextView getSynchTextView() {
         return synchTextView;

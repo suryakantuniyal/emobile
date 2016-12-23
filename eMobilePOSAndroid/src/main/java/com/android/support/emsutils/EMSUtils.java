@@ -1,6 +1,7 @@
 package com.android.support.emsutils;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.payments.EMSPayGate_Default;
@@ -46,7 +47,11 @@ public class EMSUtils {
             xr.setContentHandler(handler);
             xr.parse(inSource);
             HashMap<String, String> parsedMap = handler.getData();
-            loginInfo.setEpayStatusCode(EPayStatusCode.valueOf(parsedMap.get("epayStatusCode").toUpperCase()));
+            if(TextUtils.isEmpty(parsedMap.get("epayStatusCode"))){
+                loginInfo.setEpayStatusCode(EPayStatusCode.DECLINE);
+            }else {
+                loginInfo.setEpayStatusCode(EPayStatusCode.valueOf(parsedMap.get("epayStatusCode").toUpperCase()));
+            }
             if (parsedMap != null && parsedMap.size() > 0
                     && parsedMap.get("epayStatusCode").equals("APPROVED")) {
                 if (parsedMap.containsKey("WorkingKey")) {
