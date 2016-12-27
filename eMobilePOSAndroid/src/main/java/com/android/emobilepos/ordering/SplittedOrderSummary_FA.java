@@ -102,7 +102,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
         this.discount = discount;
     }
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -122,7 +121,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 });
                 popup.show();
 
-
                 break;
             }
         }
@@ -135,7 +133,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 //    public void setListMapTaxes(List<HashMap<String, String>> listMapTaxes) {
 //        this.listMapTaxes = listMapTaxes;
 //    }
-
 
     public enum NavigationResult {
         PAYMENT_COMPLETED(-1), PAYMENT_SELECTION_VOID(3), BACK_SELECT_PAYMENT(1901), PARTIAL_PAYMENT(1902), VOID_HOLD_TRANSACTION(1903),
@@ -166,7 +163,6 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     public void setOrderSummaryFR(SplittedOrderSummaryFR orderSummaryFR) {
         this.orderSummaryFR = orderSummaryFR;
     }
-
 
     public enum SalesReceiptSplitTypes {
         SPLIT_BY_SEATS(0), SPLIT_EQUALLY(1), SPLIT_SINGLE(2); //, SPLIT_BY_SEAT_GROUP(2);
@@ -264,7 +260,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     }
 
     private List<OrderProduct> getProductsBySeatsGroup(int groupId) {
-        List<OrderProduct> seatProducts = new ArrayList<OrderProduct>();
+        List<OrderProduct> seatProducts = new ArrayList<>();
         for (OrderSeatProduct product : orderSeatProducts) {
             if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && product.getSeatGroupId() == groupId) {
                 try {
@@ -279,7 +275,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     }
 
     private List<OrderProduct> getProductsSingleReceipt() {
-        List<OrderProduct> seatProducts = new ArrayList<OrderProduct>();
+        List<OrderProduct> seatProducts = new ArrayList<>();
         for (OrderSeatProduct product : orderSeatProducts) {
             if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM) {
                 try {
@@ -392,7 +388,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
     private void setSplitEquallyReceipt(int splitQty) {
         String nextID = preferences.getLastOrdID();
-        final List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
+        final List<SplitedOrder> splitedOrders = new ArrayList<>();
         for (OrderSeatProduct seatProduct : orderSeatProducts) {
             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                 Order order = null;
@@ -409,16 +405,20 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                     List<OrderProduct> orderProducts = getProductsSingleReceipt();
                     BigDecimal orderSubTotal = new BigDecimal(0);
                     for (OrderProduct product : orderProducts) {
-                        BigDecimal itemSubtotal = new BigDecimal(product.getItemSubtotal());
+                        BigDecimal itemSubtotal = new BigDecimal(product.getFinalPrice()).add(product.getAddonsTotalPrice());
                         itemSubtotal = itemSubtotal.divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP);
-
                         product.setItemSubtotal(itemSubtotal.toString());
+                        for (OrderProduct addon : product.addonsProducts) {
+                            addon.setProd_price(new BigDecimal(addon.getProd_price()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
+                            addon.setOverwrite_price(new BigDecimal(addon.getProd_price()));
+                            addon.setItemTotal(Global.getBigDecimalNum(addon.getItemTotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
+                            addon.setItemSubtotal(Global.getBigDecimalNum(addon.getItemSubtotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
+                        }
                         product.setProd_price(new BigDecimal(product.getFinalPrice()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                         product.setOverwrite_price(new BigDecimal(product.getProd_price()));
                         product.setProd_taxValue(product.getProd_taxValue().divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP));
                         product.setDiscount_value(Global.getBigDecimalNum(product.getDiscount_value()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
                         product.setItemTotal(Global.getBigDecimalNum(product.getItemTotal()).divide(new BigDecimal(splitQty), 4, RoundingMode.HALF_UP).toString());
-
                         orderSubTotal = orderSubTotal.add(itemSubtotal).setScale(4, RoundingMode.HALF_UP);
                     }
                     splitedOrder.ord_subtotal = orderSubTotal.toString();

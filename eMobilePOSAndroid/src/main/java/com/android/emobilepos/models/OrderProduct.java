@@ -1,6 +1,7 @@
 package com.android.emobilepos.models;
 
 import android.app.Activity;
+import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.models.realms.ProductAttribute;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Locale;
 
 import util.json.JsonUtils;
-
 
 public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private boolean addon;
@@ -122,10 +122,15 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     }
 
-
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Object clone = super.clone();
+        List<OrderProduct> cloneAddons = new ArrayList<>();
+        for (OrderProduct addon : addonsProducts) {
+            cloneAddons.add((OrderProduct) addon.clone());
+        }
+        ((OrderProduct) clone).addonsProducts = cloneAddons;
+        return clone;
     }
 
     public boolean isVoid() {
@@ -208,7 +213,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         setProd_price_updated("0");
     }
 
-
     public String getPricesXGroupid() {
         return pricesXGroupid;
     }
@@ -223,7 +227,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (getOverwrite_price() != null) {
             return getOverwrite_price().toString();
         } else {
-            return getProd_price();
+            if (!TextUtils.isEmpty(getProd_price())) {
+                return getProd_price();
+            } else {
+                return "0";
+            }
         }
     }
 
@@ -783,5 +791,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String toJson() {
         Gson gson = JsonUtils.getInstance();
         return gson.toJson(this);
+    }
+
+    public BigDecimal getAddonsTotalPrice() {
+        BigDecimal price = new BigDecimal(0);
+        for (OrderProduct addon : addonsProducts) {
+            price = price.add(new BigDecimal(addon.getFinalPrice()));
+        }
+        return price;
     }
 }

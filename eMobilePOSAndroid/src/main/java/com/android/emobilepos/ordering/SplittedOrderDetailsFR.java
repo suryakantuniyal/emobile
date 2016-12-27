@@ -106,7 +106,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         deviceName.setText(String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()));
         orderDate.setText(DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"));
 
-
         if (header[0] != null && !header[0].isEmpty()) {
             header1.setText(header[0]);
         } else {
@@ -189,13 +188,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         BigDecimal orderGranTotal = new BigDecimal(0);
         BigDecimal itemDiscountTotal = new BigDecimal(0);
         BigDecimal globalDiscountTotal = new BigDecimal(0);
-        BigDecimal tempTaxableAmount = new BigDecimal(0);
         for (OrderProduct product : products) {
             getView();
             LinearLayout productSectionLL = (LinearLayout) View.inflate(getActivity(), R.layout.receipt_product_layout_item, null);
-            List<OrderProduct> addons = orderProductsHandler.getOrderProductAddons(product.getOrdprod_id());
+            List<OrderProduct> addons = product.addonsProducts;
             BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
-            orderSubtotal = orderSubtotal.add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
+            orderSubtotal = orderSubtotal.add(product.getAddonsTotalPrice()).add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
             globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)
                     .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
             itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
@@ -278,7 +276,6 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             }
         }
     }
-
 
     public class PrintPreview extends AsyncTask<LinearLayout, Void, Void> {
         private ProgressDialog myProgressDialog;
