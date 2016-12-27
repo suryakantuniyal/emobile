@@ -715,6 +715,9 @@ public class OrderProductsHandler {
             orderProduct.setProd_istaxable(product.getProdIstaxable());
             Discount discount = productsHandler.getDiscounts(orderProduct.getDiscount_id());
             orderProduct.setDisAmount(discount.getProductPrice());
+            orderProduct.setPrices(orderProduct.getFinalPrice(), orderProduct.getOrdprod_qty());
+            orderProduct.setItemSubtotal(String.valueOf(orderProduct.getItemSubtotalCalculated()));
+            completeProductFields(orderProduct.addonsProducts, activity);
         }
     }
 }

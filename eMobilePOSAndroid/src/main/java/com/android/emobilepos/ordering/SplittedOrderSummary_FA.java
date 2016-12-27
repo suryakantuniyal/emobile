@@ -314,7 +314,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         List<OrderProduct> orderProducts = getProductsSingleReceipt();
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
-                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal())).setScale(4, RoundingMode.HALF_UP);
+                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal()).add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.ord_total = orderSubTotal.subtract(globalDiscountAmount).toString();
@@ -365,7 +365,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                         List<OrderProduct> orderProducts = getProductsBySeatsGroup(seatProduct.getSeatGroupId());
                         BigDecimal orderSubTotal = new BigDecimal(0);
                         for (OrderProduct product : orderProducts) {
-                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal())).setScale(4, RoundingMode.HALF_UP);
+                            orderSubTotal = orderSubTotal.add(new BigDecimal(product.getItemSubtotal()).add(product.getAddonsTotalPrice())).setScale(4, RoundingMode.HALF_UP);
                         }
                         splitedOrder.ord_subtotal = orderSubTotal.toString();
                         splitedOrder.ord_total = orderSubTotal.subtract(orderSubTotal.multiply(globalDiscountPercentge)).toString();

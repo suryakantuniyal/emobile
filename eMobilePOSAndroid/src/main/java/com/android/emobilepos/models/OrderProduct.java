@@ -800,4 +800,23 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         }
         return price;
     }
+
+    public BigDecimal getItemSubtotalCalculated() {
+        BigDecimal subtotal;
+        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
+        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxAmount());
+        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
+        subtotal = finalPrice.add(addonsTotalPrice).add(taxAmount).subtract(discount);
+        return subtotal;
+    }
+
+    public BigDecimal getItemTotalCalculated() {
+        BigDecimal subtotal;
+        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
+        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
+        subtotal = finalPrice.add(addonsTotalPrice).subtract(discount);
+        return subtotal;
+    }
 }

@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -22,6 +21,7 @@ import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,7 +31,6 @@ import java.util.List;
  * Created by Guarionex on 1/20/2016.
  */
 public class OrderProductListAdapter extends BaseAdapter {
-
 
     private OrderingMain_FA orderingMainFa;
     Global global;
@@ -306,7 +305,6 @@ public class OrderProductListAdapter extends BaseAdapter {
         return convertView;
     }
 
-
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
         final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
@@ -376,12 +374,11 @@ public class OrderProductListAdapter extends BaseAdapter {
         String temp = Global.formatNumToLocale(Double.parseDouble(product.getFinalPrice()));
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
-
         holder.distQty.setText(product.getDisAmount());
         temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
-
-        temp = Global.formatNumToLocale(Double.parseDouble(product.getItemTotal()));
+        BigDecimal itemTotal = product.getItemTotalCalculated();
+        temp = Global.formatNumToLocale(itemTotal.doubleValue());
         holder.granTotal.setText(Global.getCurrencyFormat(temp));
 
     }
@@ -396,7 +393,6 @@ public class OrderProductListAdapter extends BaseAdapter {
         Button addonButton;
         TextView addonsTextView;
     }
-
 
 }
 
