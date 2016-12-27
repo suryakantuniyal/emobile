@@ -1514,7 +1514,7 @@ public class SynchMethods {
         for (Map.Entry<String, List<SalesAssociate>> location : locations.entrySet()) {
             DinningLocationConfiguration configuration = new DinningLocationConfiguration();
             configuration.setLocationId(location.getKey());
-            configuration.setSalesAssociates(location.getValue());
+            configuration.setSalesAssociates(salesAssociates);
             configurations.add(configuration);
         }
 

@@ -211,9 +211,9 @@
         <item name="printingSettings">Printing Settings</item>
     </string-array>
     <string-array name="printerWidths">
-        <item name="width_small">Small</item>
-        <item name="width_medium">Medium</item>
-        <item name="width_large">Large</item>
+        <item name="SMALL">Small</item>
+        <item name="MEDIUM">Medium</item>
+        <item name="LARGE">Large</item>
     </string-array>
     <string-array name="printerWidthsValues">
         <item name="SMALL">SMALL</item>

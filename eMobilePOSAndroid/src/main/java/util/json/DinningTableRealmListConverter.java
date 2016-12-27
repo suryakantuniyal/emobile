@@ -45,7 +45,7 @@ public class DinningTableRealmListConverter implements JsonSerializer<RealmList<
     public JsonElement serialize(RealmList<DinningTable> dinningTables, Type type, JsonSerializationContext jsonSerializationContext) {
         JsonArray ja = new JsonArray();
         for (DinningTable table : dinningTables) {
-            if (table.isValid()) {
+            if (table.isValid() && table.isManaged()) {
                 ja.add(gson.toJsonTree(realm.copyFromRealm(table), DinningTable.class));
             } else {
                 ja.add(gson.toJsonTree(table, DinningTable.class));
