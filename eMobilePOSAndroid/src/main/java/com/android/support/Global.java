@@ -347,6 +347,7 @@ public class Global extends MultiDexApplication {
     public final static int S_SUBMIT_LOCATIONS_INVENTORY = 59;
     public final static int S_GET_XML_DINNER_TABLES = 60;
     public final static int S_GET_XML_SALES_ASSOCIATE = 61;
+    public final static int S_GET_ASSIGN_EMPLOYEE = 4;
     public final static int S_SUBMIT_TIP_ADJUSTMENT = 62;
     public final static int S_SUBMIT_WORKINGKEY_REQUEST = 63;
 

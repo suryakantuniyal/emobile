@@ -19,12 +19,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.AssignEmployee;
 import com.android.saxhandler.SaxAllEmployeesHandler;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
+import com.google.gson.Gson;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -36,6 +39,8 @@ import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import util.json.JsonUtils;
 
 public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     private ListView myListView;
@@ -224,22 +229,26 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
     public boolean AssignEmployees() {
         Post post = new Post();
-
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(this);
+//
+//        SAXParserFactory spf = SAXParserFactory.newInstance();
+//        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(this);
 
         try {
-            String xml = post.postData(4, activity, "");
-            InputSource inSource = new InputSource(new StringReader(xml));
+//            String xml = post.postData(4, activity, "");
+//            InputSource inSource = new InputSource(new StringReader(xml));
+//
+//            SAXParser sp = spf.newSAXParser();
+//            XMLReader xr = sp.getXMLReader();
+//            xr.setContentHandler(handler);
+//            xr.parse(inSource);
 
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-            xr.setContentHandler(handler);
-            xr.parse(inSource);
-
+//            task.updateProgress(activity.getString(R.string.sync_dload_employee_data));
+            String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEE, activity, "");
+            Gson gson = JsonUtils.getInstance();
+            AssignEmployee assignEmployee = gson.fromJson(xml, AssignEmployee.class);
             MyPreferences myPref = new MyPreferences(activity);
-            List<String[]> data = handler.getEmpData();
-            myPref.setAllEmpData(data);
+//            List<String[]> data = handler.getEmpData();
+            myPref.setAllEmpData(assignEmployee);
 
             return true;
 
@@ -249,7 +258,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         }
         return false;
     }
-
 
     private boolean getFirstAvailLicense() {
         Post post = new Post();
@@ -265,7 +273,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
             xr.parse(inSource);
-
 
             inSource = new InputSource(new StringReader(xml));
             xr.parse(inSource);
@@ -415,7 +422,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         });
         dialog.create().show();
     }
-
 
     private void handleGoogleAnalytic(String stack) {
 //		Tracker tracker = EasyTracker.getInstance(activity);

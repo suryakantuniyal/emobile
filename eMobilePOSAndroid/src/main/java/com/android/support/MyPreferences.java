@@ -8,7 +8,9 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.models.AssignEmployee;
 
 import java.security.AccessControlException;
 import java.security.Guard;
@@ -92,7 +94,6 @@ public class MyPreferences {
     public static final String pref_enable_table_selection = "pref_enable_table_selection";
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
-
 
     public static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
@@ -341,27 +342,26 @@ public class MyPreferences {
         return (prefs.getString(LoginPass, ""));
     }
 
-    public void setAllEmpData(List<String[]> emp_data) {
+    public void setAllEmpData(AssignEmployee employee) {
 
-        prefEditor.putString(emp_id, getData(emp_id, 0, emp_data));
-        prefEditor.putString(zone_id, getData(zone_id, 0, emp_data));
-        prefEditor.putString(emp_name, getData(emp_name, 0, emp_data));
-        prefEditor.putString(emp_lastlogin, getData(emp_lastlogin, 0, emp_data));
-
-        prefEditor.putString(emp_pos, getData(emp_pos, 0, emp_data));
-        prefEditor.putString(MSOrderEntry, getData(MSOrderEntry, 0, emp_data));
-        prefEditor.putString(MSCardProcessor, getData(MSCardProcessor, 0, emp_data));
-        prefEditor.putString(GatewayURL, getData(GatewayURL, 0, emp_data));
-        prefEditor.putString(approveCode, getData(approveCode, 0, emp_data));
-        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), getData(MSLastOrderID, 0, emp_data)));
-        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), getData(MSLastTransferID, 0, emp_data)));
-
-        prefEditor.putString(tax_default, getData(tax_default, 0, emp_data));
-        prefEditor.putString(pricelevel_id, getData(pricelevel_id, 0, emp_data));
-        String val = getData(VAT, 0, emp_data);
-        prefEditor.putBoolean(VAT, Boolean.parseBoolean(val));
-
+        prefEditor.putString(emp_id, String.valueOf(employee.getEmpId()));
+        prefEditor.putString(zone_id, employee.getZoneId());
+        prefEditor.putString(emp_name, employee.getEmpName());
+        prefEditor.putString(emp_lastlogin, employee.getEmpLastlogin());
+        prefEditor.putString(emp_pos, String.valueOf(employee.getEmpPos()));
+        prefEditor.putString(MSOrderEntry, employee.getMSOrderEntry());
+        prefEditor.putString(MSCardProcessor, employee.getMSCardProcessor());
+        prefEditor.putString(GatewayURL, employee.getGatewayURL());
+        prefEditor.putString(approveCode, employee.getApproveCode());
+        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), employee.getMSLastOrderID()));
+        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), employee.getMSLastTransferID()));
+        prefEditor.putString(tax_default, employee.getTaxDefault());
+        prefEditor.putString(pricelevel_id, employee.getPricelevelId());
+        prefEditor.putString(pricelevel_id, employee.getDefaultLocation());
+//        String val = getData(VAT, 0, employee.isVAT());
+        prefEditor.putBoolean(VAT, employee.isVAT());
         prefEditor.commit();
+        AssignEmployeeDAO.insert(employee);
     }
 
     public String getData(String tag, int record, List<String[]> data) {
@@ -433,6 +433,9 @@ public class MyPreferences {
     }
 
     private String getValidID(String curr_id, String new_id) {
+        if (new_id == null) {
+            new_id = "";
+        }
         if (new_id.length() > 4) {
             String delims = "[\\-]";
             String[] tokens = new_id.split(delims);
@@ -920,7 +923,6 @@ public class MyPreferences {
         return false;
     }
 
-
     public boolean isICMPEVO() {
         String device_icmpevo = "device_icmpevo";
         return prefs.getBoolean(device_icmpevo, false);
@@ -932,7 +934,6 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
-
 
     public boolean isEM70() {
         String device_em70 = "device_em70";
@@ -1165,7 +1166,6 @@ public class MyPreferences {
         String is_store_forward = "is_store_forward";
         return prefs.getBoolean(is_store_forward, false);
     }
-
 
     public void setGeniusIP(String ip) {
         prefEditor.putString("genius_ip", ip);

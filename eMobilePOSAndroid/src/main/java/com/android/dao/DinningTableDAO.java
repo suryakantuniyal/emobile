@@ -41,11 +41,28 @@ public class DinningTableDAO {
             realm.copyToRealm(dinningTables);
         } finally {
             realm.commitTransaction();
+            removeInvalidLocations();
+        }
+    }
+
+    private static void removeInvalidLocations() {
+        Realm r = Realm.getDefaultInstance();
+        try {
+            String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
+            r.beginTransaction();
+            r.where(DinningTable.class)
+                    .notEqualTo("locationId", defaultLocation)
+                    .findAll().deleteAllFromRealm();
+        } finally {
+            r.commitTransaction();
         }
     }
 
     public static RealmResults<DinningTable> getAll() {
-        return Realm.getDefaultInstance().where(DinningTable.class).findAll();
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
+        return Realm.getDefaultInstance().where(DinningTable.class)
+                .equalTo("locationId", defaultLocation)
+                .findAll();
     }
 
     public static void truncate() {
