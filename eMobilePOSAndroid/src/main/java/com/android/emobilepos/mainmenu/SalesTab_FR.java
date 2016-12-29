@@ -373,8 +373,6 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD:            //On Hold
                 {
                     DBManager dbManager = new DBManager(activity);
-//                    dbManager.synchSendOrdersOnHold(true, false);
-
                     SynchMethods sm = new SynchMethods(dbManager);
                     sm.synchSendOnHold(true, false);
                     break;

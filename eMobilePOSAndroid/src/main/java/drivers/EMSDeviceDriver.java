@@ -59,6 +59,7 @@ import com.uniquesecure.meposconnect.MePOSException;
 import com.uniquesecure.meposconnect.MePOSPrinterCallback;
 import com.uniquesecure.meposconnect.MePOSReceipt;
 import com.uniquesecure.meposconnect.MePOSReceiptImageLine;
+import com.uniquesecure.meposconnect.MePOSReceiptLine;
 import com.uniquesecure.meposconnect.MePOSReceiptTextLine;
 
 import java.io.File;
@@ -94,7 +95,6 @@ import main.EMSDeviceManager;
 import plaintext.EMSPlainTextHelper;
 import util.StringUtil;
 
-
 public class EMSDeviceDriver {
     private static final boolean PRINT_TO_LOG = BuildConfig.PRINT_TO_LOG;
     protected EMSPlainTextHelper textHandler = new EMSPlainTextHelper();
@@ -116,7 +116,6 @@ public class EMSDeviceDriver {
     PrinterAPI eloPrinterApi;
     POSPrinter bixolonPrinter;
     MePOSReceipt mePOSReceipt;
-
 
     private final int ALIGN_LEFT = 0, ALIGN_CENTER = 1;
 
@@ -379,7 +378,23 @@ public class EMSDeviceDriver {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            mePOS.print(mePOSReceipt, new MePOSPrinterCallback() {
+
+            MePOSReceipt receipt = new MePOSReceipt();
+            receipt.setCutType(0);
+
+            for (MePOSReceiptLine line : mePOSReceipt.getLines()) {
+                if(line instanceof  MePOSReceiptTextLine) {
+                    String[] split = ((MePOSReceiptTextLine)line).text.split(("\n"));
+                    for (String str : split) {
+                        MePOSReceiptTextLine textLine = new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT);
+                        receipt.addLine(textLine);
+                    }
+                }else{
+                    receipt.addLine(line);
+                }
+            }
+
+            mePOS.print(receipt, new MePOSPrinterCallback() {
                 @Override
                 public void onPrinterStarted(MePOSConnectionType mePOSConnectionType, String s) {
                 }
@@ -667,17 +682,16 @@ public class EMSDeviceDriver {
                             }
 
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
-                                    Global.getCurrencyFormat(orderProducts.get(i).getItemSubtotal()), lineWidth, 3))
-                                    .append("\n");
+                                    Global.getCurrencyFormat(orderProducts.get(i).getItemSubtotal()), lineWidth, 3));
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
-                                    Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3)).append("\n");
+                                    Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()), lineWidth, 3));
 
                             if (printPref.contains(MyPreferences.print_descriptions)) {
                                 StringTokenizer tokenizer = new StringTokenizer("orderProducts.get(i).getOrdprod_desc()", "<br/>");
                                 if (tokenizer.countTokens() > 0) {
                                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(
-                                            getString(R.string.receipt_description), "", lineWidth, 3)).append("\n");
-                                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextElement().toString(), lineWidth, 5)).append("\n");
+                                            getString(R.string.receipt_description), "", lineWidth, 3));
+                                    sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextElement().toString(), lineWidth, 5));
                                 }
                             }
                         }
@@ -714,7 +728,7 @@ public class EMSDeviceDriver {
                 tempSB.append("%").append(tempor).append("s").append("%").append(tempor).append("s").append("%")
                         .append(tempor).append("s").append("%").append(tempor).append("s");
 
-                sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price", "Total")).append("\n\n");
+                sb.append(String.format(tempSB.toString(), "Item", "Qty", "Price", "Total")).append("\n");
 
                 for (int i = 0; i < size; i++) {
                     if (!TextUtils.isEmpty(orderProducts.get(i).getProd_price_points()) && Integer.parseInt(orderProducts.get(i).getProd_price_points()) > 0) {
@@ -727,7 +741,7 @@ public class EMSDeviceDriver {
 
                     sb.append(String.format(tempSB.toString(), "   ", orderProducts.get(i).getOrdprod_qty(),
                             Global.getCurrencyFormat(orderProducts.get(i).getFinalPrice()),
-                            Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()))).append("\n\n");
+                            Global.getCurrencyFormat(orderProducts.get(i).getItemTotal()))).append("\n");
                     print(sb.toString(), FORMAT);
                     sb.setLength(0);
 
@@ -741,7 +755,7 @@ public class EMSDeviceDriver {
 
             addTaxesLine(listOrdTaxes, anOrder.ord_taxamount, lineWidth, sb);
 
-            sb.append("\n\n");
+            sb.append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_itemsQtyTotal),
                     String.valueOf(totalItemstQty), lineWidth, 0));
             sb.append("\n");
@@ -819,10 +833,10 @@ public class EMSDeviceDriver {
                     if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                             myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                         if (tempTipAmount == 0) {
-                            sb.append("\n\n");
+                            sb.append("\n");
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
                                     textHandler.lines(lineWidth / 2), lineWidth, 0));
-                            sb.append("\n\n");
+                            sb.append("\n");
                             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
                                     textHandler.lines(lineWidth / 2), lineWidth, 0));
                         } else {
@@ -848,7 +862,7 @@ public class EMSDeviceDriver {
                     }
                     sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
                             Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
-                            .append("\n\n");
+                            .append("\n");
                 }
 
             }
@@ -896,7 +910,6 @@ public class EMSDeviceDriver {
 
             }
 
-
             if (isFromHistory) {
                 sb.setLength(0);
                 sb.append(textHandler.centeredString("*** Copy ***", lineWidth));
@@ -921,7 +934,7 @@ public class EMSDeviceDriver {
         if (myPref.isPrintWebSiteFooterEnabled()) {
             StringBuilder sb = new StringBuilder();
             sb.setLength(0);
-            sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n\n", lineWidth));
+            sb.append(textHandler.centeredString(getString(R.string.enabler_website) + "\n\n", lineWidth));
             print(sb.toString());
         }
     }
@@ -1370,7 +1383,6 @@ public class EMSDeviceDriver {
         return true;
     }
 
-
     void printPaymentDetailsReceipt(String payID, int type, boolean isReprint, int lineWidth, EMVContainer emvContainer) {
         try {
             startReceipt();
@@ -1718,7 +1730,6 @@ public class EMSDeviceDriver {
             e.printStackTrace();
         }
     }
-
 
     protected void printConsignmentReceipt(List<ConsignmentTransaction> myConsignment, String encodedSig, int lineWidth) {
         try {
@@ -2311,6 +2322,5 @@ public class EMSDeviceDriver {
         } catch (StarIOPortException ignored) {
         }
     }
-
 
 }
