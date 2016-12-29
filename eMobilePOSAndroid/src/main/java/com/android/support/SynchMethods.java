@@ -1909,8 +1909,9 @@ public class SynchMethods {
             }.getType();
             List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
             MyPreferences myPref = new MyPreferences(activity);
-            if (assignEmployees != null && !assignEmployees.isEmpty())
+            if (assignEmployees != null && !assignEmployees.isEmpty()) {
                 myPref.setAllEmpData(assignEmployees.get(0));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
