@@ -24,7 +24,7 @@ android {
     }
     defaultConfig {
         applicationId "com.emobilepos.app"
-        minSdkVersion 17
+        minSdkVersion 15
         targetSdkVersion 25
         multiDexEnabled = true
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
@@ -47,7 +47,7 @@ android {
     }
     productFlavors {
         ems {
-            minSdkVersion 17
+            minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.2.0.93"
             versionCode 116
@@ -75,7 +75,7 @@ android {
             }
         }
         emsblue {
-            minSdkVersion 17
+            minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.2.0.93"
             versionCode 116
@@ -89,7 +89,7 @@ android {
             }
         }
         ivupos {
-            minSdkVersion 17
+            minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
             versionName "1.2.0.93"
             versionCode 116
@@ -103,7 +103,7 @@ android {
             }
         }
         restoff {
-            minSdkVersion 17
+            minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.1.1.93"
             versionCode 116
@@ -117,7 +117,7 @@ android {
             }
         }
         restoffivupos {
-            minSdkVersion 17
+            minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
             versionName "1.1.1.93"
             versionCode 116
