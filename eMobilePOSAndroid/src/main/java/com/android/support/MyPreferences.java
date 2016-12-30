@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
 
+import util.json.UIUtils;
+
 public class MyPreferences {
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
@@ -27,6 +29,7 @@ public class MyPreferences {
 
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
 
+    public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
     private final String db_path = "db_path";
 //    private final String emp_id = "emp_id";
@@ -91,7 +94,6 @@ public class MyPreferences {
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
 
-
     public static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
@@ -135,7 +137,7 @@ public class MyPreferences {
     public static final String pref_return_require_refund = "pref_return_require_refund";
     public static final String pref_convert_to_reward = "pref_convert_to_reward";
     public static final String pref_invoice_require_payment = "pref_invoice_require_payment";
-    public static final String pref_require_full_payment = "pref_require_full_payment";
+    public static final String pref_invoice_require_full_payment = "pref_invoice_require_full_payment";
     public static final String pref_printek_info = "pref_printek_info";
     public static final String pref_automatic_printing = "pref_automatic_printing";
     public static final String pref_split_stationprint_by_categories = "pref_split_stationprint_by_categories";
@@ -152,6 +154,7 @@ public class MyPreferences {
     public static final String pref_show_removed_void_items_in_printout = "pref_show_removed_void_items_in_printout";
     public static final String pref_limit_products_on_hand = "pref_limit_products_on_hand";
     public static final String pref_attribute_to_display = "pref_attribute_to_display";
+    public static final String pref_printer_width = "pref_printer_width";
 
     public static final String pref_group_in_catalog_by_name = "pref_group_in_catalog_by_name";
     public static final String pref_filter_products_by_customer = "pref_filter_products_by_customer";
@@ -430,7 +433,9 @@ public class MyPreferences {
 //    }
 
     private String getValidID(String curr_id, String new_id) {
-
+        if (new_id == null) {
+            new_id = "";
+        }
         if (new_id.length() > 4) {
             String delims = "[\\-]";
             String[] tokens = new_id.split(delims);
@@ -556,6 +561,21 @@ public class MyPreferences {
 //        return prefs.getBoolean(VAT, false);
 //    }
 
+    public int getPrintPreviewLayoutWidth() {
+        String width = sharedPref.getString(pref_printer_width, "MEDIUM");
+        PrinterPreviewWidth previewWidth = PrinterPreviewWidth.valueOf(width);
+        switch (previewWidth) {
+            case SMALL:
+                return (int) UIUtils.convertDpToPixel(300, context);
+            case MEDIUM:
+                return (int) UIUtils.convertDpToPixel(400, context);
+            case LARGE:
+                return (int) UIUtils.convertDpToPixel(500, context);
+            default:
+                return (int) UIUtils.convertDpToPixel(400, context);
+        }
+    }
+
     public void setCustPriceLevel(String id) {
         prefEditor.putString(cust_pricelevel_id, id);
         prefEditor.commit();
@@ -563,6 +583,14 @@ public class MyPreferences {
 
     public boolean isMixAnMatch() {
         return getPreferences(pref_mix_match);
+    }
+
+    public boolean isInvoiceRequirePayment() {
+        return getPreferences(pref_invoice_require_payment);
+    }
+
+    public boolean isRequireFullPayment() {
+        return getPreferences(pref_invoice_require_full_payment);
     }
 
     public String getCustPriceLevel() {
@@ -622,6 +650,10 @@ public class MyPreferences {
 
     public boolean getPreferences(String key) {
         return sharedPref.getBoolean(key, false);
+    }
+
+    public boolean requiresWaiterLogin() {
+        return getPreferences(MyPreferences.pref_require_waiter_signin);
     }
 
     public String getPreferencesValue(String key) {
@@ -888,7 +920,6 @@ public class MyPreferences {
         return false;
     }
 
-
     public boolean isICMPEVO() {
         String device_icmpevo = "device_icmpevo";
         return prefs.getBoolean(device_icmpevo, false);
@@ -900,7 +931,6 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
-
 
     public boolean isEM70() {
         String device_em70 = "device_em70";
@@ -922,6 +952,18 @@ public class MyPreferences {
     public boolean setIsOT310(boolean value) {
         String device_ot310 = "device_ot310";
         prefEditor.putBoolean(device_ot310, value);
+        prefEditor.commit();
+        return false;
+    }
+
+    public boolean isMEPOS() {
+        String device_mepos = "device_mepos";
+        return prefs.getBoolean(device_mepos, false);
+    }
+
+    public boolean setIsMEPOS(boolean value) {
+        String device_mepos = "device_mepos";
+        prefEditor.putBoolean(device_mepos, value);
         prefEditor.commit();
         return false;
     }
@@ -1121,7 +1163,6 @@ public class MyPreferences {
         String is_store_forward = "is_store_forward";
         return prefs.getBoolean(is_store_forward, false);
     }
-
 
     public void setGeniusIP(String ip) {
         prefEditor.putString("genius_ip", ip);

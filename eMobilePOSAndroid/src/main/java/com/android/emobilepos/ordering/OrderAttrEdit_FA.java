@@ -202,11 +202,11 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             uniMagReader.release();
         else if (magtekReader != null)
             magtekReader.closeDevice();
-        else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
-            Global.btSwiper.currentDevice.releaseCardReader();
-        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-            Global.mainPrinterManager.currentDevice.releaseCardReader();
-            Global.mainPrinterManager.currentDevice.loadScanner(OrderingMain_FA.instance.callBackMSR);
+        else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+            Global.btSwiper.getCurrentDevice().releaseCardReader();
+        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+            Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
+            Global.mainPrinterManager.getCurrentDevice().loadScanner(OrderingMain_FA.instance.callBackMSR);
         }
         if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen()) {
             _msrUsbSams.CloseTheDevice();
@@ -256,22 +256,22 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
                     && !cardReaderConnected) {
-                Global.btSwiper.currentDevice.loadCardReader(callBack, false);
+                Global.btSwiper.getCurrentDevice().loadCardReader(callBack, false);
             } else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
                         && !cardReaderConnected)
-                    Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+                    Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
             }
         }
 
         if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
                 || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                Global.mainPrinterManager.currentDevice.loadScanner(callBack);
-            else if (Global.btSled != null && Global.btSled.currentDevice != null)
-                Global.btSled.currentDevice.loadScanner(callBack);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(callBack);
+            else if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().loadScanner(callBack);
         }
 
         if (myPref.isET1(true, false) || myPref.isMC40(true, false)) // swiper
@@ -286,8 +286,8 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             if (_msrUsbSams.OpenDevice())
                 _msrUsbSams.StartReadingThread();
         } else if (myPref.isESY13P1()) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
                 checkBox.setChecked(true);
             }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000() || myPref.isHandpoint()) {
@@ -405,7 +405,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             uniMagReader.startReading();
         } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                 && Global.mainPrinterManager != null)
-            Global.mainPrinterManager.currentDevice.loadCardReader(callBack, false);
+            Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBack, false);
     }
 
     @Override

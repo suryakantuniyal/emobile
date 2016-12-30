@@ -457,12 +457,12 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -538,6 +538,11 @@ public class EMSPAT100 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
     //

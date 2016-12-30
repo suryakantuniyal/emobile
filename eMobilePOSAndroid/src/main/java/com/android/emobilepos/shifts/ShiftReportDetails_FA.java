@@ -140,8 +140,8 @@ public class ShiftReportDetails_FA extends BaseFragmentActivityActionBar impleme
 		protected Void doInBackground(Void... params) {
 			// TODO Auto-generated method stub
 
-			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
-				Global.mainPrinterManager.currentDevice.printShiftDetailsReport(shiftID);
+			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.getCurrentDevice()!=null)
+				Global.mainPrinterManager.getCurrentDevice().printShiftDetailsReport(shiftID);
 			return null;
 		}
 

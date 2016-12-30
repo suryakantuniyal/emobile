@@ -129,10 +129,10 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
             uniMagReader.release();
         else if (magtekReader != null)
             magtekReader.closeDevice();
-        else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
-            Global.btSwiper.currentDevice.releaseCardReader();
-        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-            Global.mainPrinterManager.currentDevice.releaseCardReader();
+        else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+            Global.btSwiper.getCurrentDevice().releaseCardReader();
+        else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+            Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
 
         super.onDestroy();
     }
@@ -162,12 +162,12 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null && !cardReaderConnected) {
-                Global.btSwiper.currentDevice.loadCardReader(msrCallBack, false);
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null && !cardReaderConnected) {
+                Global.btSwiper.getCurrentDevice().loadCardReader(msrCallBack, false);
             } else if (_printer_type != -1
                     && (_printer_type == Global.STAR || _printer_type == Global.BAMBOO || _printer_type == Global.ZEBRA)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null && !cardReaderConnected)
-                    Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null && !cardReaderConnected)
+                    Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
             }
         }
         // }
@@ -179,15 +179,15 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
         } else if (myPref.isSam4s(true, false) || myPref.isPAT100()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isESY13P1()) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(true);
             }
         } else if (myPref.isEM100() || myPref.isEM70() || myPref.isOT310() || myPref.isKDC5000()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isPAT215() && Global.btSwiper == null) {
-            if (Global.embededMSR != null && Global.embededMSR.currentDevice != null) {
-                Global.embededMSR.currentDevice.loadCardReader(msrCallBack, false);
+            if (Global.embededMSR != null && Global.embededMSR.getCurrentDevice() != null) {
+                Global.embededMSR.getCurrentDevice().loadCardReader(msrCallBack, false);
                 cardSwipe.setChecked(false);
             }
         }
@@ -389,7 +389,7 @@ public class BalanceInquiry_FA extends BaseFragmentActivityActionBar implements 
         if (uniMagReader != null && uniMagReader.readerIsConnected()) {
             uniMagReader.startReading();
         } else if (magtekReader == null && Global.btSwiper == null && Global.mainPrinterManager != null)
-            Global.mainPrinterManager.currentDevice.loadCardReader(msrCallBack, false);
+            Global.mainPrinterManager.getCurrentDevice().loadCardReader(msrCallBack, false);
     }
 
     @Override

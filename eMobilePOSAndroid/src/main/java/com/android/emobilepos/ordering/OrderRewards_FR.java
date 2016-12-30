@@ -109,11 +109,11 @@ public class OrderRewards_FR extends Fragment implements OnClickListener {
                 global.order = order;
                 new ProcessRewardPaymentTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new BigDecimal(subtotal));
 
-//                Global global = (Global) getActivity().getApplication();
+//                Global global = (Global) getContext().getApplication();
 //                BigDecimal bdBalance = new BigDecimal(balance);
-//                OrderingMain_FA mainFa = (OrderingMain_FA) getActivity();
+//                OrderingMain_FA mainFa = (OrderingMain_FA) getContext();
 //                BigDecimal rewardDiscount = mainFa.getLeftFragment().applyRewardDiscount(bdBalance, global.orderProducts);
-//                PaymentTask.processRewardPayment(getActivity(), rewardDiscount);
+//                PaymentTask.processRewardPayment(getContext(), rewardDiscount);
 
 
                 break;

@@ -13,7 +13,6 @@ import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.models.firebase.NotificationEvent;
-import com.android.support.SynchMethods;
 import com.microsoft.windowsazure.notifications.NotificationsHandler;
 
 /**
@@ -27,12 +26,13 @@ public class MyHandler extends NotificationsHandler {
     @Override
     public void onReceive(Context context, Bundle bundle) {
         ctx = context;
-        String eventAction = bundle.getString("gcm.notification.notificationEventAction");
-        NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.valueOf(eventAction);
-        sendNotification(eventAction);
-
-        DBManager dbManager = new DBManager(context);
+        String eventAction = bundle.getString("message");
+        if (eventAction != null) {
+            NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.valueOf(eventAction);
+            sendNotification(eventAction);
+            DBManager dbManager = new DBManager(context);
 //        SynchMethods sm = new SynchMethods(dbManager);
+        }
     }
 
     private void sendNotification(String msg) {

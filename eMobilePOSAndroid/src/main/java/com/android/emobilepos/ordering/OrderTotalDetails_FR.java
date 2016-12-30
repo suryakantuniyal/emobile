@@ -32,6 +32,7 @@ import com.android.emobilepos.models.MixMatchProductGroup;
 import com.android.emobilepos.models.MixMatchXYZProduct;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Tax;
+import com.android.emobilepos.models.realms.MixMatch;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.TaxesCalculator;
@@ -135,7 +136,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
             if (custTaxCode == null) {
                 custTaxCode = assignEmployee.getTaxDefault();
             }
-        } else if (Global.isFromOnHold)
+        } else if (Global.isFromOnHold && !TextUtils.isEmpty(Global.taxID))
             custTaxCode = Global.taxID;
         else {
             custTaxCode = assignEmployee.getTaxDefault();

@@ -262,11 +262,17 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             setResult(SplittedOrderSummary_FA.NavigationResult.BACK_SELECT_PAYMENT.getCode());
             finish();
         } else {
-            if (orderType == Global.OrderType.SALES_RECEIPT) {
+            if (orderType == Global.OrderType.SALES_RECEIPT || (orderType == Global.OrderType.INVOICE && myPref.isRequireFullPayment())) {
                 final Dialog dialog = new Dialog(activity, R.style.Theme_TransparentTest);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setContentView(R.layout.void_dialog_layout);
+                TextView msg1 = (TextView) dialog.findViewById(R.id.message1textView);
+                TextView msg2 = (TextView) dialog.findViewById(R.id.message2textView2);
+                String to = orderType.toTitleCase();
+                msg1.setText(String.format(getString(R.string.void_confirmation_message1), to));
+                msg2.setText(String.format(getString(R.string.void_confirmation_message2), to));
+
                 Button voidBut = (Button) dialog.findViewById(R.id.voidBut);
                 Button notVoid = (Button) dialog.findViewById(R.id.notVoidBut);
 
@@ -280,7 +286,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
                             promptManagerPassword();
                         } else {
                             dialog.dismiss();
-                            voidTransaction(activity, job_id, extras.getString("ord_type"));
+                            voidTransaction(activity, job_id, orderType.name());
                         }
                     }
                 });
@@ -629,8 +635,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPreExecute() {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadScanner(null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage("Printing...");
@@ -643,17 +649,16 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected String doInBackground(Object... params) {
             wasReprint = (Boolean) params[0];
-
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices") ||
                         (emvContainer != null && emvContainer.getGeniusResponse() != null &&
                                 emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, orderType,
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
                             wasReprint, false, emvContainer);
             }
             return null;
@@ -1157,7 +1162,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         }
 
         @Override
-        protected  HashMap<String, String> doInBackground(Void... params) {
+        protected HashMap<String, String> doInBackground(Void... params) {
             Post httpClient = new Post();
 
             SAXParserFactory spf = SAXParserFactory.newInstance();

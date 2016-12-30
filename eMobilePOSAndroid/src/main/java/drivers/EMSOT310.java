@@ -196,12 +196,12 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
 
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     public void unregisterPrinter() {
         closeUSBPort();
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
 
     }
 
@@ -313,6 +313,11 @@ public class EMSOT310 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

@@ -398,8 +398,8 @@ public class HistoryOpenInvoices_FA extends BaseFragmentActivityActionBar implem
         @Override
         protected String doInBackground(String... params) {
             _inv_id = params[0];
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                printSuccessful = Global.mainPrinterManager.currentDevice.printOpenInvoices(_inv_id);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printOpenInvoices(_inv_id);
 
             return null;
         }

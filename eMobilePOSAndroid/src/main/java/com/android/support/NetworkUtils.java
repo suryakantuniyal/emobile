@@ -53,8 +53,10 @@ public class NetworkUtils {
                                 socket = new Socket();
                                 SocketAddress socketAddress = new InetSocketAddress(inetAddress, 443);
                                 socket.connect(socketAddress, 5000);// try for 3 seconds
+                                retVal[0] = true;
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                retVal[0] = false;
                             } finally {
                                 if (socket != null && socket.isConnected()) {
                                     try {
@@ -64,7 +66,7 @@ public class NetworkUtils {
                                     }
                                 }
                             }
-                            retVal[0] = true;
+
                             synchronized (connManager) {
                                 connManager.notify();
                             }

@@ -148,12 +148,14 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
     }
 
 
+    @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
+    @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -253,6 +255,11 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

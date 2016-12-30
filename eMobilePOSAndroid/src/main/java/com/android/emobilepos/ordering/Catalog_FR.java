@@ -46,6 +46,7 @@ import com.android.database.ProductsHandler;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.ParentAddon;
 import com.android.emobilepos.models.Product;
 import com.android.support.Global;
 import com.android.support.MyEditText;
@@ -59,7 +60,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import util.json.JsonUtils;
@@ -580,7 +580,7 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     }
 
     public void automaticAddOrder(Product product) {
-        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, product, ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
+        ((OrderingMain_FA) getActivity()).automaticAddOrder(getActivity(), false, global, new OrderProduct(product), ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         refreshListView();
         callBackRefreshView.refreshView();
     }
@@ -588,18 +588,12 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
     public Product populateDataForIntent(Cursor c) {
         Product product = new Product();
         product.setId(c.getString(myCursor.getColumnIndex("_id")));
-
+        product.setAssignedSeat(((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
         String val = myPref.getPreferencesValue(MyPreferences.pref_attribute_to_display);
-
-//        if (val.equals("prod_desc"))
-            product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
-//        else if (val.equals("prod_name"))
-            product.setProdName(c.getString(c.getColumnIndex("prod_name")));
-//        else
-            product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
-
+        product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
+        product.setProdName(c.getString(c.getColumnIndex("prod_name")));
+        product.setProdExtraDesc(c.getString(c.getColumnIndex("prod_extradesc")));
         product.setPricesXGroupid(c.getString(c.getColumnIndex(ProductsHandler.prod_prices_group_id)));
-
         String tempPrice = c.getString(c.getColumnIndex("volume_price"));
         if (tempPrice == null || tempPrice.isEmpty()) {
             tempPrice = c.getString(c.getColumnIndex("pricelevel_price"));
@@ -616,10 +610,8 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             if (temp[1] != null && !temp[1].isEmpty())
                 tempPrice = temp[1];
         }
-
         product.setProdPrice(tempPrice);
         product.setProdDesc(c.getString(c.getColumnIndex("prod_desc")));
-
         tempPrice = c.getString(c.getColumnIndex("local_prod_onhand"));
         if (tempPrice == null || tempPrice.isEmpty())
             tempPrice = c.getString(c.getColumnIndex("master_prod_onhand"));
@@ -632,7 +624,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 tempPrice = "0";
             product.setProdOnHand(tempPrice);
         }
-
         product.setProdImgName(c.getString(c.getColumnIndex("prod_img_name")));
         product.setProdIstaxable(c.getString(c.getColumnIndex("prod_istaxable")));
         product.setProdType(c.getString(c.getColumnIndex("prod_type")));
@@ -644,7 +635,6 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
         product.setProd_sku(c.getString(c.getColumnIndex("prod_sku")));
         product.setProd_upc(c.getString(c.getColumnIndex("prod_upc")));
         return product;
-
     }
 
     private void performClickEvent() {
@@ -709,14 +699,15 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
             getCategoryCursor(i_id, i_cat_name, i_num_subcategories, showAllProducts);
         } else {
             ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
-            List<HashMap<String, String>> tempListMap = prodAddonsHandler.getParentAddons(
+            List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
                     myCursor.getString(myCursor.getColumnIndex("_id")));
-            if (tempListMap != null && tempListMap.size() > 0) {
+            if (parentAddons != null && parentAddons.size() > 0) {
                 Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
 
                 Product product = populateDataForIntent(myCursor);
                 intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                 intent.putExtra("prod_id", product.getId());
+                intent.putExtra("orderProduct", new OrderProduct(product).toJson());
                 intent.putExtra("prod_name", product.getProdName());
                 intent.putExtra("prod_on_hand", product.getProdOnHand());
                 intent.putExtra("prod_price", product.getProdPrice());
@@ -732,9 +723,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 intent.putExtra("prod_price_points", product.getProdPricePoints());
                 intent.putExtra("prod_value_points", product.getProdValuePoints());
 
-                Global.productParentAddons = tempListMap;
+//                Global.productParentAddons = tempListMap;
 
-                global.addonSelectionType = new HashMap<>();
+//                global.addonSelectionType = new HashMap<>();
                 startActivityForResult(intent, 0);
             } else
                 performClickEvent();
@@ -759,13 +750,14 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                 getCategoryCursor(i_id, i_cat_name, i_num_subcategories, false);
             } else {
                 ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(getActivity());
-                List<HashMap<String, String>> tempListMap = prodAddonsHandler.getParentAddons(
+                List<ParentAddon> parentAddons = prodAddonsHandler.getParentAddons(
                         myCursor.getString(myCursor.getColumnIndex("_id")));
-                if (tempListMap != null && tempListMap.size() > 0) {
+                if (parentAddons != null && parentAddons.size() > 0) {
                     Intent intent = new Intent(getActivity(), PickerAddon_FA.class);
                     // intent.putExtra("prod_id",
                     // myCursor.getString(myCursor.getColumnIndex("_id")));
                     Product product = populateDataForIntent(myCursor);
+                    intent.putExtra("orderProduct", new OrderProduct(product).toJson());
                     intent.putExtra("selectedSeatNumber", ((OrderingMain_FA) getActivity()).getSelectedSeatNumber());
                     intent.putExtra("prod_id", product.getId());
                     intent.putExtra("prod_name", product.getProdName());
@@ -783,9 +775,9 @@ public class Catalog_FR extends Fragment implements OnItemClickListener, OnClick
                     intent.putExtra("prod_price_points", product.getProdPricePoints());
                     intent.putExtra("prod_value_points", product.getProdValuePoints());
 
-                    Global.productParentAddons = tempListMap;
+//                    Global.productParentAddons = tempListMap;
 
-                    global.addonSelectionType = new HashMap<>();
+//                    global.addonSelectionType = new HashMap<>();
                     startActivityForResult(intent, 0);
                 } else
                     performClickEvent();

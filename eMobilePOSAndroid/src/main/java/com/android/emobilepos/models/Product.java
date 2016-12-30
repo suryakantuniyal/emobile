@@ -1,6 +1,11 @@
 package com.android.emobilepos.models;
 
+import android.text.TextUtils;
+
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+
+import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 12/22/2015.
@@ -427,5 +432,24 @@ public class Product {
 
     public void setProd_disc_type_points(String prod_disc_type_points) {
         this.prod_disc_type_points = prod_disc_type_points;
+    }
+
+    public String toJson() {
+        Gson gson = JsonUtils.getInstance();
+        return gson.toJson(this);
+    }
+
+    public String getFinalPrice() {
+        if (!TextUtils.isEmpty(volumePrice)) {
+            return volumePrice;
+        } else if (!TextUtils.isEmpty(priceLevelPrice)) {
+            return priceLevelPrice;
+        } else if (!TextUtils.isEmpty(chainPrice)) {
+            return chainPrice;
+        } else if (!TextUtils.isEmpty(masterPrice)) {
+            return masterPrice;
+        } else {
+            return "0";
+        }
     }
 }

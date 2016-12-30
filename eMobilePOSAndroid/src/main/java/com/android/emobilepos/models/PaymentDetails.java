@@ -294,4 +294,8 @@ public class PaymentDetails {
     public void setAmountTender(double amountTender) {
         this.amountTender = amountTender;
     }
+
+    public boolean isVoid() {
+        return getIsVoid().equals("1");
+    }
 }

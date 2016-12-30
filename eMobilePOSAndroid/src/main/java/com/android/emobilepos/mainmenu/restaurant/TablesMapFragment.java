@@ -21,12 +21,13 @@ import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.realms.DinningTable;
 import com.android.emobilepos.models.realms.DinningTableOrder;
-import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
 
     private List<DinningTable> dinningTables;
     private SalesAssociate associate;
+    MyPreferences preferences;
 
     public TablesMapFragment() {
     }
@@ -51,10 +53,11 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
+        preferences = new MyPreferences(getActivity());
         if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
             associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
         }
-        dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getActivity());
+        dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getContext());
 
         return rootView;
     }
@@ -105,7 +108,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                         ImageView isSelectedCheckBox = (ImageView) tableItem.findViewById(R.id.selectedCheckboximageView);
                         TextView guestsTxt = (TextView) tableItem.findViewById(R.id.gueststextView16);
                         TextView amountxt = (TextView) tableItem.findViewById(R.id.amounttextView23);
-                        if (associate != null && associate.getAssignedDinningTables().contains(table)) {
+                        if (!preferences.requiresWaiterLogin() || (associate != null && associate.getAssignedDinningTables().contains(table))) {
                             isSelectedCheckBox.setVisibility(View.VISIBLE);
                         } else {
                             isSelectedCheckBox.setVisibility(View.GONE);
@@ -175,7 +178,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 DinningTable table = (DinningTable) v.getTag();
-                if (associate != null && associate.getAssignedDinningTables().contains(table)) {
+                if (!preferences.requiresWaiterLogin() || (associate != null && associate.getAssignedDinningTables().contains(table))) {
                     DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
                     if (tableOrder != null) {
                         Realm realm = Realm.getDefaultInstance();
@@ -200,7 +203,7 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 final DinningTable table = (DinningTable) v.getTag();
-                if (associate.getAssignedDinningTables().contains(table)) {
+                if (!preferences.requiresWaiterLogin() || associate.getAssignedDinningTables().contains(table)) {
                     PopupMenu popup = new PopupMenu(getActivity(), v);
                     popup.getMenuInflater().inflate(R.menu.dinning_table_map_menu, popup.getMenu());
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

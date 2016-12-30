@@ -241,8 +241,8 @@ public class ConsignmentPickup_FR extends Fragment implements OnClickListener {
         protected String doInBackground(String... params) {
             // TODO Auto-generated method stub
 
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printConsignmentPickup(consTransactionList, global.encodedImage);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printConsignmentPickup(consTransactionList, global.encodedImage);
             }
 
             global.encodedImage = new String();

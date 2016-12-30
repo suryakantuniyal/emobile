@@ -10,7 +10,8 @@
         android:layout_height="match_parent"
         android:name="com.android.emobilepos.settings.SalesAssociateListFragment"
         android:id="@+id/associateListfragment"
-        android:layout_weight="0.4" />
+        android:layout_weight="0.4"
+        tools:layout="@layout/fragment_sales_associate_configuration" />
 
     <fragment
         android:layout_width="0dp"
@@ -18,5 +19,6 @@
         android:name="com.android.emobilepos.settings.DinningTablesGridFragment"
         android:id="@+id/dinningTablesGridfragment"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        tools:layout="@layout/salesassociates_dinningtable_selection_grid_layout" />
 </LinearLayout>

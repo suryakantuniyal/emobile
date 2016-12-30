@@ -437,12 +437,12 @@ public class SAXSynchHandler extends DefaultHandler {
 //				ordersHandler.emptyTableOnHold();
 //			}
 //			break;
-		case Global.S_ORDERS_ON_HOLD_DETAILS:
-			if(isInsert)
-				orderProdHandler.insertOnHold(dataList, dictionaryListMap);
-			else
-				orderProdHandler = new OrderProductsHandler(activity);
-			break;
+//		case Global.S_ORDERS_ON_HOLD_DETAILS:
+//			if(isInsert)
+//				orderProdHandler.insertOnHold(dataList, dictionaryListMap);
+//			else
+//				orderProdHandler = new OrderProductsHandler(activity);
+//			break;
 
 		case Global.S_LOCATIONS:
 			if(isInsert)

@@ -35,6 +35,7 @@ import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NetworkUtils;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -59,6 +60,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     private TextView synchTextView, tvStoreForward;
     private AdapterTabs tabsAdapter;
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private ProgressDialog driversProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -202,7 +204,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         if (hasBeenCreated && !global.loggedIn
                 && (myPref.getPrinterType() != Global.POWA || (myPref.getPrinterType() == Global.POWA
-                && (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)))) {
+                && (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)))) {
             if (global.getGlobalDlog() != null && global.getGlobalDlog().isShowing()) {
                 global.getGlobalDlog().dismiss();
             }
@@ -211,7 +213,9 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
         if (myPref.getPreferences(MyPreferences.pref_automatic_sync) && hasBeenCreated && NetworkUtils.isConnectedToInternet(activity)) {
             DBManager dbManager = new DBManager(activity, Global.FROM_SYNCH_ACTIVITY);
-            dbManager.synchSend(false, true);
+//            dbManager.synchSend(false, true, activity);
+            SynchMethods sm = new SynchMethods(dbManager);
+            sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, activity);
         }
 
         if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
@@ -250,6 +254,22 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         return super.onKeyDown(keyCode, event);
     }
 
+    private void showProgressDialog() {
+        if (driversProgressDialog == null) {
+            driversProgressDialog = new ProgressDialog(MainMenu_FA.this);
+            driversProgressDialog.setMessage(getString(R.string.connecting_devices));
+            driversProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            driversProgressDialog.setCancelable(false);
+        }
+        driversProgressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        if (driversProgressDialog != null && driversProgressDialog.isShowing()) {
+            driversProgressDialog.dismiss();
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -267,6 +287,12 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         this.finish();
     }
 
+    @Override
+    protected void onDestroy() {
+        dismissProgressDialog();
+        super.onDestroy();
+    }
+
     public AdapterTabs getTabsAdapter() {
         return tabsAdapter;
     }
@@ -278,7 +304,6 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
     private class autoConnectPrinter extends AsyncTask<String, String, String> {
         boolean isUSB = false;
         private boolean loadMultiPrinter;
-        private ProgressDialog myProgressDialog;
 
         @Override
         protected void onPreExecute() {
@@ -286,28 +311,38 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             loadMultiPrinter = (Global.multiPrinterManager == null
                     || Global.multiPrinterManager.size() == 0)
                     && (Global.mainPrinterManager == null
-                    || Global.mainPrinterManager.currentDevice == null);
+                    || Global.mainPrinterManager.getCurrentDevice() == null)
+                    && (Global.btSwiper == null || Global.btSwiper.getCurrentDevice() == null);
 
-            myProgressDialog = new ProgressDialog(activity);
-            myProgressDialog.setMessage(getString(R.string.connecting_devices));
-            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            myProgressDialog.setCancelable(false);
-            if (myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
             if (loadMultiPrinter) {
-                myProgressDialog.show();
+                showProgressDialog();
             }
         }
 
         @Override
         protected String doInBackground(String... params) {
-            String autoConnect = DeviceUtils.autoConnect(activity, loadMultiPrinter);
-            if (myPref.getPrinterType() == Global.POWA) {
+            final String autoConnect = "";
+
+//            activity.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    DeviceUtils.autoConnect(activity, loadMultiPrinter);
+//                }
+//            });
+//            synchronized (activity) {
+//                try {
+//                    activity.wait(30000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+            DeviceUtils.autoConnect(activity, loadMultiPrinter);
+            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS) {
                 isUSB = true;
             }
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null &&
-                    Global.mainPrinterManager.currentDevice instanceof EMSsnbc) {
-                ((EMSsnbc) Global.mainPrinterManager.currentDevice).closeUsbInterface();
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&
+                    Global.mainPrinterManager.getCurrentDevice() instanceof EMSsnbc) {
+                ((EMSsnbc) Global.mainPrinterManager.getCurrentDevice()).closeUsbInterface();
             }
             return autoConnect;
         }
@@ -316,19 +351,20 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String result) {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
-            else if (isUSB && (Global.mainPrinterManager == null || Global.mainPrinterManager.currentDevice == null)) {
+            else if (isUSB && (Global.mainPrinterManager == null ||
+                    Global.mainPrinterManager.getCurrentDevice() == null)) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadMultiDriver(activity, myPref.getPrinterType(), 0, true, "", "");
             }
-            if (myProgressDialog != null && myProgressDialog.isShowing())
-                myProgressDialog.dismiss();
+            if (!activity.isFinishing()) {
+                dismissProgressDialog();
+            }
             activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
-
 
     public TextView getSynchTextView() {
         return synchTextView;

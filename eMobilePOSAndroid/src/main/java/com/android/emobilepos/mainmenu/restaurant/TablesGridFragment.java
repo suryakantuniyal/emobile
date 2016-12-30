@@ -83,8 +83,8 @@ public class TablesGridFragment extends Fragment implements AdapterView.OnItemLo
 //                    if (tableOrder == null) {
 //                        Intent result = new Intent();
 //                        result.putExtra("tableId", table.getId());
-//                        getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
-//                        getActivity().finish();
+//                        getContext().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+//                        getContext().finish();
 //                    }
                 } else {
                     Global.showPrompt(getActivity(), R.string.title_activity_dinning_tables, getActivity().getString(R.string.dinningtablenotassigned));

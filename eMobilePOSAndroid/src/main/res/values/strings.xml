@@ -96,7 +96,7 @@
     <string name="dlog_msg_error_failed_disable_employee">Failed to disable employee, Please try again\u002E\u002E\u002E</string>
     <string name="dlog_msg_error_shift_needs_to_be_open">Open shift before performing this action</string>
     <string name="dlog_title_claimed_hold">Transaction Claimed</string>
-    <string name="dlog_msg_claimed_hold">Admin Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
+    <string name="dlog_msg_claimed_hold">Manager Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
     <string name="dlog_title_enter_clerk_password">Enter Clerk Password</string>
     <string name="dlog_msg_swiper_loading">Swiper is:</string>
     <string name="connected">CONNECTED</string>
@@ -948,6 +948,7 @@
     <string name="config_show_removed_void_items_in_printout">Show Removed/Void Items In Print Out</string>
     <string name="config_default_category">Default Category</string>
     <string name="config_attribute_to_display">Attribute To Display</string>
+    <string name="config_printer_width">Printer Width</string>
     <string name="config_group_in_catalog_by_name">Group In Catalog By Name</string>
     <string name="config_filter_products_by_customer">Filter Products By Customers</string>
     <string name="config_limit_products_on_hand">Limit Products On Hand</string>
@@ -1136,7 +1137,7 @@
     <string name="amount_added">Amount Added</string>
     <string name="manualEntry">Manual entry</string>
     <string name="handpoint_payment_error">Error processing handpoint payment.</string>
-    <string name="connecting_handpoint">Connecting Handpoint device...</string>
+    <string name="connecting_handpoint">Connecting device...</string>
     <string name="void_fail">Error processing void</string>
     <string name="select_number_guests">Select number of guests</string>
     <string name="fail_to_connect">Failed to connect</string>
@@ -1223,6 +1224,9 @@
     <string name="invalid_payment_type">Invalid Payment Type</string>
     <string name="invalid_storeforward_payment_type"><![CDATA[The selected payment type is not valid along with store & forward.]]></string>
     <string name="sync_fail">Synchronization has fail.</string>
+    <string name="void_confirmation_message1">%s must be payed in total.</string>
+    <string name="void_confirmation_message2">Void the current %s?</string>
+    <string name="yes_void">Yes, void it.</string>
     <string name="dlog_msg_cant_open_claimed_hold">Claimed orders can not be opened.</string>
     <string name="loading_orders">Loading orders. Please wait.</string>
     <string name="sync_dload_settings">Loading settings...</string>

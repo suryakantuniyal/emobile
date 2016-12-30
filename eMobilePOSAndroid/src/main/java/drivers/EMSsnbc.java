@@ -255,18 +255,18 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return true;
     }
 
-
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
-
 
     @Override
     public void unregisterPrinter() {
         interface_usb.CloseDevice();
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
+
+
 
     public boolean openUsbInterface() {
         boolean didConnect = false;
@@ -457,6 +457,11 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 }

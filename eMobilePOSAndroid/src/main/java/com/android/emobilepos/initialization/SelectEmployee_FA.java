@@ -24,7 +24,7 @@ import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Device;
 import com.android.saxhandler.SaxAllEmployeesHandler;
 import com.android.saxhandler.SaxLoginHandler;
-import com.android.saxhandler.SaxSelectedEmpHandler;
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
@@ -47,15 +47,11 @@ import javax.xml.parsers.SAXParserFactory;
 import util.json.JsonUtils;
 
 public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
-    private ListView myListView;
-    private ListViewAdapter myAdapter;
-    private List<String> empName = new ArrayList<String>();
-    private List<String> empID = new ArrayList<String>();
+    private List<String> empName = new ArrayList<>();
+    private List<String> empID = new ArrayList<>();
     private Context thisContext;
     private Activity activity;
-
     private ProgressDialog myProgressDialog;
-    private AlertDialog.Builder dialog;
 
     private int error_msg_id = 0;
 
@@ -66,7 +62,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         setContentView(R.layout.initialization_select_employee);
         thisContext = this;
         activity = this;
-
         new validateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
     }
 
@@ -85,8 +80,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
-
             Post post = new Post();
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
@@ -100,36 +93,19 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                 xr.parse(inSource);
                 boolean deviceID = Boolean.parseBoolean(handler.getData().toLowerCase(Locale.getDefault()));
                 if (!deviceID) {
-//					xml = post.postData(2, activity, "");
-//					inSource = new InputSource(new StringReader(xml));
-//					xr.parse(inSource);
-//					if (!handler.getData().isEmpty()&&!handler.getData().equals("0")) {
-//						MyPreferences myPref = new MyPreferences(activity);
-//						myPref.setActivKey(handler.getData());
-
                     xml = post.postData(3, activity, "");
                     SaxAllEmployeesHandler hdl = new SaxAllEmployeesHandler();
                     inSource = new InputSource(new StringReader(xml));
                     xr.setContentHandler(hdl);
                     xr.parse(inSource);
-
                     empName = hdl.getEmpName();
                     empID = hdl.getEmpId();
-
                     succeeded = true;
-//					}
-//					else
-//					{
-//						errorMsg = "There were no license available, please contact support.";
-//					}
                 } else
                     errorMsg = "The provided information could not be validated. Please try again.";
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                StringBuilder sb = new StringBuilder();
-                sb.append(e.getMessage()).append(" [com.android.emobilepos.SelectEmployeeActiv (at Class.validateEmployeeAsync)]");
-                handleGoogleAnalytic(sb.toString());
+
             }
             return null;
         }
@@ -138,14 +114,12 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
         protected void onPostExecute(String unused) {
             myProgressDialog.dismiss();
             if (succeeded) {
-
-                myListView = (ListView) findViewById(R.id.employeeListView);
-                myAdapter = new ListViewAdapter(thisContext);
+                ListView myListView = (ListView) findViewById(R.id.employeeListView);
+                ListViewAdapter myAdapter = new ListViewAdapter(thisContext);
                 myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                     @Override
                     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                        // TODO Auto-generated method stub
                         promptValidate(position);
 
                     }
@@ -156,7 +130,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
                     @Override
                     public void onClick(View v) {
-                        // TODO Auto-generated method stub
                         new validateEmployeesAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                     }
                 });
@@ -170,16 +143,13 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub
                         dialog.cancel();
                         finish();
                     }
                 });
                 dialog.create().show();
             }
-
         }
-
     }
 
     public class selectEmployeesAsync extends AsyncTask<String, String, String> {
@@ -197,7 +167,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
         @Override
         protected String doInBackground(String... params) {
-            // TODO Auto-generated method stub
             if (AssignEmployees() && getFirstAvailLicense() && DisableEmployee() && DownloadPayID()) {
                 succeeded = true;
             }
@@ -218,15 +187,12 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO Auto-generated method stub
                         dialog.cancel();
                     }
                 });
                 dialog.create().show();
             }
-
         }
-
     }
 
     String _license = "";
@@ -257,30 +223,23 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 //            myPref.setAllEmpData(data);
 
             return true;
-
         } catch (Exception e) {
             error_msg_id = R.string.dlog_msg_error_downloading_employee_data;
         }
         return false;
     }
 
-
     private boolean getFirstAvailLicense() {
         Post post = new Post();
-
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
-
         try {
             String xml = post.postData(2, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
-
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
             xr.parse(inSource);
-
-
             inSource = new InputSource(new StringReader(xml));
             xr.parse(inSource);
             if (!handler.getData().isEmpty() && !handler.getData().equals("0")) {
@@ -292,9 +251,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
                 error_msg_id = R.string.dlog_msg_error_no_avail_license;
                 return false;
             }
-
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             error_msg_id = R.string.dlog_msg_error_no_avail_license;
         }
         return false;
@@ -302,39 +259,29 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
     public boolean DisableEmployee() {
         Post post = new Post();
-
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
-
         try {
             String xml = post.postData(5, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
-
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
             xr.parse(inSource);
-
             return Boolean.parseBoolean(handler.getData());
-
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             error_msg_id = R.string.dlog_msg_error_failed_disable_employee;
-
         }
         return false;
     }
 
     public boolean DownloadPayID() {
         Post post = new Post();
-
         SAXParserFactory spf = SAXParserFactory.newInstance();
         SaxLoginHandler handler = new SaxLoginHandler();
-
         try {
             String xml = post.postData(6, activity, "");
             InputSource inSource = new InputSource(new StringReader(xml));
-
             SAXParser sp = spf.newSAXParser();
             XMLReader xr = sp.getXMLReader();
             xr.setContentHandler(handler);
@@ -347,7 +294,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             }
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             error_msg_id = R.string.dlog_msg_error_failed_download_pay_id;
         }
         return false;
@@ -356,33 +302,28 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     public class ListViewAdapter extends BaseAdapter {
         private LayoutInflater myInflater;
 
-        public ListViewAdapter(Context context) {
+        ListViewAdapter(Context context) {
             myInflater = LayoutInflater.from(context);
         }
 
         @Override
         public int getCount() {
-            // TODO Auto-generated method stub
             return empName.size();
         }
 
         @Override
         public Object getItem(int position) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public long getItemId(int position) {
-            // TODO Auto-generated method stub
             return 0;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // TODO Auto-generated method stub
             ViewHolder holder;
-
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = myInflater.inflate(R.layout.select_customer_adapter, null);
@@ -404,7 +345,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
     }
 
     private void promptValidate(final int position) {
-        dialog = new AlertDialog.Builder(activity);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
         dialog.setTitle(getString(R.string.login_select_this_employee));
         dialog.setMessage(empName.get(position));
         dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -435,12 +376,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             }
         });
         dialog.create().show();
-    }
-
-
-    private void handleGoogleAnalytic(String stack) {
-//		Tracker tracker = EasyTracker.getInstance(activity);
-//		tracker.send(MapBuilder.createException(stack, false).build());
     }
 
     @Override

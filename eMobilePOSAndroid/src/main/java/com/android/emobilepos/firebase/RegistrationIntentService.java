@@ -43,7 +43,7 @@ public class RegistrationIntentService extends IntentService {
                 NotificationHub hub = new NotificationHub(new NotificationSettings().getHubName(),
                         new NotificationSettings().getHubListenConnectionString(), this);
                 Log.d(TAG, "Attempting a new registration with NH using FCM token : " + FCM_token);
-                regID = hub.register(FCM_token, "holds_sync").getRegistrationId();
+//                regID = hub.register(FCM_token, "holds_sync").getRegistrationId();
 
                 // If you want to use tags...
                 // Refer to : https://azure.microsoft.com/en-us/documentation/articles/notification-hubs-routing-tag-expressions/

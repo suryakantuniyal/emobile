@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmObject;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -65,6 +66,7 @@ public class AssignEmployee extends RealmObject {
     private boolean vAT;
     @SerializedName("DefaultLocation")
     @Expose
+    @Index
     private String defaultLocation;
     private String MSLastTransferID;
 

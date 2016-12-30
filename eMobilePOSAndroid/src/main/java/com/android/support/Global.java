@@ -141,6 +141,8 @@ public class Global extends MultiDexApplication {
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
+    public static final int MEPOS = 20;
+
 
 
     public enum BuildModel {
@@ -228,6 +230,31 @@ public class Global extends MultiDexApplication {
 
         public String getCodeString() {
             return String.valueOf(code);
+        }
+
+        public String toTitleCase(){
+            switch (this.code) {
+                case 0:
+                    return StringUtils.toTitleCase(ORDER.toString());
+                case 1:
+                    return StringUtils.toTitleCase(RETURN.toString());
+                case 2:
+                    return StringUtils.toTitleCase(INVOICE.toString());
+                case 3:
+                    return StringUtils.toTitleCase(ESTIMATE.toString());
+                case 4:
+                    return StringUtils.toTitleCase(CONSIGNMENT_FILLUP.toString());
+                case 5:
+                    return StringUtils.toTitleCase(SALES_RECEIPT.toString());
+                case 6:
+                    return StringUtils.toTitleCase(CONSIGNMENT_PICKUP.toString());
+                case 7:
+                    return StringUtils.toTitleCase(CONSIGNMENT_INVOICE.toString());
+                case 8:
+                    return StringUtils.toTitleCase(CONSIGNMENT_RETURN.toString());
+                default:
+                    return StringUtils.toTitleCase(ORDER.toString());
+            }
         }
 
         public static OrderType getByCode(int code) {
@@ -321,6 +348,7 @@ public class Global extends MultiDexApplication {
     public final static int S_SUBMIT_LOCATIONS_INVENTORY = 59;
     public final static int S_GET_XML_DINNER_TABLES = 60;
     public final static int S_GET_XML_SALES_ASSOCIATE = 61;
+    public final static int S_GET_ASSIGN_EMPLOYEE = 4;
     public final static int S_SUBMIT_TIP_ADJUSTMENT = 62;
     public final static int S_SUBMIT_WORKINGKEY_REQUEST = 63;
 
@@ -363,11 +391,11 @@ public class Global extends MultiDexApplication {
 
     public static boolean isConsignment = false;
     public static boolean isInventoryTransfer = false;
-    public static List<HashMap<String, String>> productParentAddons;
-    public static HashMap<String, Integer> productParentAddonsDictionary;
-    public HashMap<String, String[]> addonSelectionType;
-    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
-    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
+//    public static List<HashMap<String, String>> productParentAddons;
+//    public static HashMap<String, Integer> productParentAddonsDictionary;
+//    public HashMap<String, String[]> addonSelectionType;
+//    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
+//    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
 
     public static Locations_Holder locationFrom, locationTo;
     public static TransferLocations_Holder transferLocation;
@@ -391,7 +419,7 @@ public class Global extends MultiDexApplication {
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
-    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
+//    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
     // public List<Orders> cur_orders = new ArrayList<Orders>();
@@ -491,14 +519,14 @@ public class Global extends MultiDexApplication {
         cons_issue_order = null;
         cons_return_order = null;
         cons_fillup_order = null;
-        if (productParentAddons != null)
-            productParentAddons.clear();
-        if (productParentAddonsDictionary != null)
-            productParentAddonsDictionary.clear();
-        if (addonSelectionMap != null)
-            addonSelectionMap.clear();
-        if (orderProductAddonsMap != null)
-            orderProductAddonsMap.clear();
+//        if (productParentAddons != null)
+//            productParentAddons.clear();
+//        if (productParentAddonsDictionary != null)
+//            productParentAddonsDictionary.clear();
+//        if (addonSelectionMap != null)
+//            addonSelectionMap.clear();
+//        if (orderProductAddonsMap != null)
+//            orderProductAddonsMap.clear();
         loyaltyCardInfo = new CreditCardInfo();
         loyaltyAddAmount = "";
         loyaltyCharge = "";
@@ -545,6 +573,12 @@ public class Global extends MultiDexApplication {
             case HANDPOINT:
                 _name = "HANDPOINT";
                 break;
+            case WALKER:
+                _name = "WALKER";
+                break;
+            case MEPOS:
+                _name = "MEPOS";
+                break;
             case ICMPEVO:
                 _name = "ICMPEVO";
                 break;
@@ -578,8 +612,8 @@ public class Global extends MultiDexApplication {
 //        if (ordProdAttrPending != null)
 //            ordProdAttrPending.clear();
 
-        if (this.orderProductAddons != null)
-            this.orderProductAddons.clear();
+//        if (this.orderProductAddons != null)
+//            this.orderProductAddons.clear();
 
         if (this.listOrderTaxes != null)
             this.listOrderTaxes.clear();
@@ -1510,6 +1544,7 @@ public class Global extends MultiDexApplication {
             sock.close();
             exists = true;
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return exists;

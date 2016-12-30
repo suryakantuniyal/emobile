@@ -27,9 +27,12 @@ import com.android.database.VoidTransactionsHandler;
 import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.NetworkUtils;
+import com.android.support.SynchMethods;
 
 public class SyncTab_FR extends Fragment implements View.OnClickListener {
     public static Handler syncTabHandler;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.synchronization_layout, container, false);
@@ -51,7 +54,7 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         syncTabHandler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
-               setViewData(getView());
+                setViewData(getView());
                 return false;
             }
         });
@@ -116,7 +119,6 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         synchReceiveDate.setText(preferences.getLastReceiveSync());
     }
 
-
     private String getWifiConnectivityName() {
         String wifiName = getString(R.string.sync_no_connectivity);
         StringBuilder sb = new StringBuilder();
@@ -136,20 +138,29 @@ public class SyncTab_FR extends Fragment implements View.OnClickListener {
         return wifiName;
     }
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.syncSendButton:
                 DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
-                dbManager.synchSend(false, false);
+                SynchMethods sm = new SynchMethods(dbManager);
+                if (NetworkUtils.isConnectedToInternet(getActivity())) {
+//                    dbManager.synchSend(false, true, activity);
+                    sm.synchSend(Global.FROM_SYNCH_ACTIVITY, true, getActivity());
+                }
+//                DBManager dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
+////                dbManager.synchSend(false, false, getActivity());
+//                SynchMethods sm = new SynchMethods(dbManager);
+//                sm.synchSend(Global.FROM_SYNCH_ACTIVITY, false, getActivity());
                 break;
             case R.id.syncReceiveButton:
                 dbManager = new DBManager(getActivity(), Global.FROM_SYNCH_ACTIVITY);
                 if (dbManager.unsynchItemsLeft()) {
                     Global.showPrompt(getActivity(), R.string.dlog_title_error, getActivity().getString(R.string.send_unsync_items_first));
                 } else {
-                    dbManager.synchReceive();
+                    sm = new SynchMethods(dbManager);
+                    sm.synchReceive(Global.FROM_SYNCH_ACTIVITY, getActivity());
+//                    dbManager.synchReceive(getActivity());
                 }
                 break;
         }

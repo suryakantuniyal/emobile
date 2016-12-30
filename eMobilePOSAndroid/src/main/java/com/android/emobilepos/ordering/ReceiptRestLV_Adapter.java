@@ -11,7 +11,6 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.support.Global;
@@ -23,12 +22,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListView.DropListener {
-    
+
     private final static int SECTION_DIV = 0;
     private final static int SECTION_ITEMS = 1;
 
-  
-    public List<Integer>divIndexList = new ArrayList<Integer>();
+
+    public List<Integer> divIndexList = new ArrayList<Integer>();
 
     private LayoutInflater mInflater;
     private Global global;
@@ -39,27 +38,27 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
         super();
         this.activity = activity;
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        divIndexList = Arrays.asList(0,1);
-        global = (Global)activity.getApplication();
+        divIndexList = Arrays.asList(0, 1);
+        global = (Global) activity.getApplication();
         myPref = new MyPreferences(activity);
     }
 
     @Override
     public void drop(int from, int to) {
         if (from != to) {
-        	
+
             OrderProduct data = global.orderProducts.remove(dataPosition(from));
-            shiftDivision(from,to);
+            shiftDivision(from, to);
             global.orderProducts.add(dataPosition(to), data);
-            
+
             notifyDataSetChanged();
         }
     }
 
     @Override
     public int getCount() {
-    	if(global.orderProducts!=null)
-    		return global.orderProducts.size()+divIndexList.size();
+        if (global.orderProducts != null)
+            return global.orderProducts.size() + divIndexList.size();
         return divIndexList.size();
     }
 
@@ -80,7 +79,7 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
 
     @Override
     public String getItem(int position) {
-    	return "";
+        return "";
     }
 
     @Override
@@ -92,52 +91,44 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
     public int getItemViewType(int position) {
         if (divIndexList.contains(position)) {
             return SECTION_DIV;
-        } 
-        else {
+        } else {
             return SECTION_ITEMS;
         }
     }
 
     public int dataPosition(int position) {
-    	int size = divIndexList.size();
-    	for(int i = size-1 ; i>=0;i--)
-    	{
-    		if(position>divIndexList.get(i))
-    		{
-    			return position-(i+1);
-    		}
-    	}
-    	return position;
-    }
-    
-    private void shiftDivision(int from,int to)
-    {
-    	int size = divIndexList.size();
-    	int tempIndex = 0;
-    	for(int i = size-1;i>=0;i--)
-    	{
-    		tempIndex = divIndexList.get(i);
-    		if(from<tempIndex&&to>=tempIndex)
-    			divIndexList.set(i,tempIndex-1);
-    		else if(from>tempIndex&&to<=tempIndex)
-    			divIndexList.set(i,tempIndex+1);
-    	}
-    }
-    
-    public void updateDivisionPos(int deletedPos)
-    {
-    	int size = divIndexList.size();
-    	int tempIndex = 0;
-    	for(int i = size-1;i>=0;i--)
-    	{
-    		tempIndex = divIndexList.get(i);
-    		if(deletedPos<tempIndex)
-    			divIndexList.set(i,tempIndex-1);
-    	}
+        int size = divIndexList.size();
+        for (int i = size - 1; i >= 0; i--) {
+            if (position > divIndexList.get(i)) {
+                return position - (i + 1);
+            }
+        }
+        return position;
     }
 
-    
-    
+    private void shiftDivision(int from, int to) {
+        int size = divIndexList.size();
+        int tempIndex = 0;
+        for (int i = size - 1; i >= 0; i--) {
+            tempIndex = divIndexList.get(i);
+            if (from < tempIndex && to >= tempIndex)
+                divIndexList.set(i, tempIndex - 1);
+            else if (from > tempIndex && to <= tempIndex)
+                divIndexList.set(i, tempIndex + 1);
+        }
+    }
+
+    public void updateDivisionPos(int deletedPos) {
+        int size = divIndexList.size();
+        int tempIndex = 0;
+        for (int i = size - 1; i >= 0; i--) {
+            tempIndex = divIndexList.get(i);
+            if (deletedPos < tempIndex)
+                divIndexList.set(i, tempIndex - 1);
+        }
+    }
+
+
     public Drawable getBGDrawable(int type) {
         Drawable d;
         d = activity.getResources().getDrawable(R.drawable.bg_drag_drop_selector);
@@ -145,110 +136,107 @@ public class ReceiptRestLV_Adapter extends BaseAdapter implements DragSortListVi
         return d;
     }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		final int type = getItemViewType(position);
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final int type = getItemViewType(position);
 
-		ViewHolder holder;
-		if (convertView == null) {
-			holder = new ViewHolder();
-			switch (type) {
-			case SECTION_DIV:
-				convertView = mInflater.inflate(R.layout.hist_invoices_lvdivider, parent, false);
-				break;
-			case SECTION_ITEMS:
-				convertView = mInflater.inflate(R.layout.product_receipt_drag_drop, parent, false);
-				holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
-				holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
-				holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
-				holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
-				holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
-				holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
+        ViewHolder holder;
+        if (convertView == null) {
+            holder = new ViewHolder();
+            switch (type) {
+                case SECTION_DIV:
+                    convertView = mInflater.inflate(R.layout.hist_invoices_lvdivider, parent, false);
+                    break;
+                case SECTION_ITEMS:
+                    convertView = mInflater.inflate(R.layout.product_receipt_drag_drop, parent, false);
+                    holder.itemQty = (TextView) convertView.findViewById(R.id.itemQty);
+                    holder.itemName = (TextView) convertView.findViewById(R.id.itemName);
+                    holder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
+                    holder.distQty = (TextView) convertView.findViewById(R.id.distQty);
+                    holder.distAmount = (TextView) convertView.findViewById(R.id.distAmount);
+                    holder.granTotal = (TextView) convertView.findViewById(R.id.granTotal);
 
-				holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
-				if (holder.addonButton != null)
-					holder.addonButton.setFocusable(false);
-				setHolderValues(holder, dataPosition(position));
-				break;
-			}
-			convertView.setTag(holder);
-		}
-		if (type != SECTION_DIV) {
-			// bind data
-			holder = (ViewHolder) convertView.getTag();
-			setHolderValues(holder, dataPosition(position));
-		}
+                    holder.addonButton = (Button) convertView.findViewById(R.id.addonButton);
+                    if (holder.addonButton != null)
+                        holder.addonButton.setFocusable(false);
+                    setHolderValues(holder, dataPosition(position));
+                    break;
+            }
+            convertView.setTag(holder);
+        }
+        if (type != SECTION_DIV) {
+            // bind data
+            holder = (ViewHolder) convertView.getTag();
+            setHolderValues(holder, dataPosition(position));
+        }
 
-		return convertView;
-	}
-    
-    
+        return convertView;
+    }
+
+
     public void setHolderValues(ViewHolder holder, int position) {
 
-		final int pos = position;
-		final String tempId = global.orderProducts.get(pos).getOrdprod_id();
-		
-		if(!myPref.getPreferences(MyPreferences.pref_restaurant_mode)||(myPref.getPreferences(MyPreferences.pref_restaurant_mode)&&(Global.addonSelectionMap==null||(Global.addonSelectionMap!=null&&!Global.addonSelectionMap.containsKey(tempId)))))
-		{
-			if(holder.addonButton!=null)
-				holder.addonButton.setVisibility(View.INVISIBLE);
-		}
-		else
-		{
-			if(holder.addonButton!=null)
-			{
-				holder.addonButton.setVisibility(View.VISIBLE);
-				holder.addonButton.setOnClickListener(new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						Intent intent = new Intent(activity, PickerAddon_FA.class);
-						String prodID = global.orderProducts.get(pos).getProd_id();
-						global.addonSelectionType = Global.addonSelectionMap.get(tempId);
-						
-						intent.putExtra("addon_map_key", tempId);
-						intent.putExtra("isEditAddon", true);						
-						intent.putExtra("prod_id",prodID);
-						
-						
-						ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
-						Global.productParentAddons  = prodAddonsHandler.getParentAddons(prodID);
-						
-						activity.startActivityForResult(intent, 0);
-					}
-				});
-			}
-		}
-		
-		holder.itemQty.setText(global.orderProducts.get(position).getOrdprod_qty());
-		holder.itemName.setText(global.orderProducts.get(position).getOrdprod_name());
-		
-		String temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getFinalPrice()));
-		holder.itemAmount.setText(Global.getCurrencyFormat(temp));
-		
-		
-		holder.distQty.setText(global.orderProducts.get(position).getDisAmount());
-		temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getDisTotal()));
-		holder.distAmount.setText(Global.getCurrencyFormat(temp));
+        final int pos = position;
+        OrderProduct orderProduct = global.orderProducts.get(pos);
+        final String tempId = global.orderProducts.get(pos).getOrdprod_id();
 
-		// to-do calculate tax
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                || (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                && (!orderProduct.getHasAddons()))) {
+            if (holder.addonButton != null)
+                holder.addonButton.setVisibility(View.INVISIBLE);
+        } else {
+            if (holder.addonButton != null) {
+                holder.addonButton.setVisibility(View.VISIBLE);
+                holder.addonButton.setOnClickListener(new View.OnClickListener() {
 
-		temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getItemTotal()));
-		holder.granTotal.setText(Global.getCurrencyFormat(temp));
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(activity, PickerAddon_FA.class);
+                        String prodID = global.orderProducts.get(pos).getProd_id();
+//						global.addonSelectionType = Global.addonSelectionMap.get(tempId);
 
-	}
+                        intent.putExtra("addon_map_key", tempId);
+                        intent.putExtra("isEditAddon", true);
+                        intent.putExtra("prod_id", prodID);
 
-	
-	public class ViewHolder 
-	{
-		TextView itemQty;
-		TextView itemName;
-		TextView itemAmount;
-		TextView distQty;
-		TextView distAmount;
-		TextView granTotal;
-		
-		Button addonButton;
-	}
+
+//						ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
+//						Global.productParentAddons  = prodAddonsHandler.getParentAddons(prodID);
+
+                        activity.startActivityForResult(intent, 0);
+                    }
+                });
+            }
+        }
+
+        holder.itemQty.setText(global.orderProducts.get(position).getOrdprod_qty());
+        holder.itemName.setText(global.orderProducts.get(position).getOrdprod_name());
+
+        String temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getFinalPrice()));
+        holder.itemAmount.setText(Global.getCurrencyFormat(temp));
+
+
+        holder.distQty.setText(global.orderProducts.get(position).getDisAmount());
+        temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getDisTotal()));
+        holder.distAmount.setText(Global.getCurrencyFormat(temp));
+
+        // to-do calculate tax
+
+        temp = Global.formatNumToLocale(Double.parseDouble(global.orderProducts.get(position).getItemTotal()));
+        holder.granTotal.setText(Global.getCurrencyFormat(temp));
+
+    }
+
+
+    public class ViewHolder {
+        TextView itemQty;
+        TextView itemName;
+        TextView itemAmount;
+        TextView distQty;
+        TextView distAmount;
+        TextView granTotal;
+
+        Button addonButton;
+    }
 }

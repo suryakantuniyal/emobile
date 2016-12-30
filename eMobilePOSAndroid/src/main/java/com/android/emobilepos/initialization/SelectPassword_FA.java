@@ -14,6 +14,7 @@ import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 public class SelectPassword_FA extends BaseFragmentActivityActionBar {
@@ -25,7 +26,6 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.initialization_register_password);
-
 
         final EditText password1 = (EditText) findViewById(R.id.regPassword1);
         password1.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -46,6 +46,8 @@ public class SelectPassword_FA extends BaseFragmentActivityActionBar {
                     myPref.setApplicationPassword(pass1);
                     DBManager dbManager = new DBManager(activity, Global.FROM_REGISTRATION_ACTIVITY);
                     dbManager.updateDB();
+                    SynchMethods sm = new SynchMethods(dbManager);
+                    sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
                     myPref.setCacheDir(activity.getApplicationContext().getCacheDir().getAbsolutePath());
                 } else {
                     Toast.makeText(activity, R.string.wrong_password, Toast.LENGTH_LONG).show();

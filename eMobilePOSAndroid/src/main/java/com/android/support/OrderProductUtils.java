@@ -53,6 +53,16 @@ public class OrderProductUtils {
         return list;
     }
 
+    public static List<OrderProduct> getOrderProductsByOrderProductId(List<OrderProduct> orderProducts, String orderProductId) {
+        List<OrderProduct> list = new ArrayList<>();
+        for (OrderProduct orderProduct : orderProducts) {
+            if (orderProduct.getOrdprod_id().equalsIgnoreCase(orderProductId)) {
+                list.add(orderProduct);
+            }
+        }
+        return list;
+    }
+
     public static List<OrderProduct> getOrderProductsGroupBySKU(List<OrderProduct> orderProducts) {
         HashMap<String, OrderProduct> hashMap = new HashMap<>();
         List<OrderProduct> list = new ArrayList<>();
@@ -70,5 +80,25 @@ public class OrderProductUtils {
             list.add(orderProduct);
         }
         return list;
+    }
+
+    public static void assignAddonsOrderProduct(List<OrderProduct> orderProducts) {
+        HashMap<String, OrderProduct> parents = new HashMap<>();
+        for (OrderProduct product : orderProducts) {
+            if (TextUtils.isEmpty(product.getAddon_ordprod_id())) {
+                parents.put(product.getOrdprod_id(), product);
+            }
+        }
+        for (OrderProduct product : orderProducts) {
+            if (!TextUtils.isEmpty(product.getAddon_ordprod_id())) {
+                OrderProduct parentProd = parents.get(product.getAddon_ordprod_id());
+                if (parentProd != null) {
+                    parentProd.addonsProducts.add(product);
+                }
+            }
+        }
+        orderProducts.clear();
+        orderProducts.addAll(parents.values());
+
     }
 }

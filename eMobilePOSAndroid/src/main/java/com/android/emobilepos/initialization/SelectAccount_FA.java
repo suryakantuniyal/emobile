@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Settings.Secure;
 import android.view.View;
 import android.view.Window;
@@ -24,8 +23,6 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -54,18 +51,14 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             if (dbManager.isNewDBVersion()) {
                 if (dbManager.unsynchItemsLeft()) {
                     //there are unsynch item left...
-
                     Intent intent = new Intent(this, MainMenu_FA.class);
                     Bundle extras = new Bundle();
                     extras.putBoolean("unsynched_items", true);
-
                     intent.putExtras(extras);
                     startActivity(intent);
                     finish();
                 } else {
-
                     AlertDialog.Builder alertDlogBuilder = new AlertDialog.Builder(activity);
-
                     promptDialog = alertDlogBuilder.setTitle("Urgent").setCancelable(false)
                             .setMessage("A new Database version must be installed...").
                                     setPositiveButton("Install", new DialogInterface.OnClickListener() {
@@ -76,7 +69,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                                             promptDialog.dismiss();
                                         }
                                     }).create();
-
                     promptDialog.show();
                 }
 
@@ -86,14 +78,11 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                 finish();
             }
         } else {
-
             setContentView(R.layout.initialization_layout);
             final EditText acctNumber = (EditText) findViewById(R.id.initAccountNumber);
             final EditText acctPassword = (EditText) findViewById(R.id.initPassword);
             Button login = (Button) findViewById(R.id.loginButton);
             thisContext = this;
-
-
             login.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -103,7 +92,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                         myPref.setAcctPassword(acctPassword.getText().toString());
                         String android_id = Secure.getString(thisContext.getContentResolver(), Secure.ANDROID_ID);
                         myPref.setDeviceID(android_id);
-
                         new validateLoginAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, "");
                     }
                 }
@@ -120,7 +108,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
-
         }
 
         @Override
@@ -129,11 +116,9 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             SaxLoginHandler handler = new SaxLoginHandler();
             boolean proceed = false;
-
             try {
                 String xml = post.postData(0, activity, "");
                 InputSource inSource = new InputSource(new StringReader(xml));
-
                 SAXParser sp = spf.newSAXParser();
                 XMLReader xr = sp.getXMLReader();
                 xr.setContentHandler(handler);
@@ -149,7 +134,6 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             myProgressDialog.dismiss();
             MyPreferences myPref = new MyPreferences(activity);
             if (proceed) {
-
                 Intent intent = new Intent(thisContext, SelectEmployee_FA.class);
                 startActivityForResult(intent, 0);
 
