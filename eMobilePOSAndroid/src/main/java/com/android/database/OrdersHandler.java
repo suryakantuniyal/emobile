@@ -13,6 +13,7 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.DateUtils;
+import com.android.support.GenerateNewID;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -120,18 +121,18 @@ public class OrdersHandler {
         return attrHash.get(tag);
     }
 
-
     public void insert(List<Order> orders) {
 
         DBManager.getDatabase().beginTransaction();
         try {
+            GenerateNewID generateNewID = new GenerateNewID(activity);
             for (Order order : orders) {
 //                Order o = getOrder(order.ord_id);
                 SQLiteStatement insert;
                 String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
                         "VALUES (" + sb2.toString() + ")";
                 insert = DBManager.getDatabase().compileStatement(sb);
-
+                order.ord_id = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
                 insert.bindString(index(ord_id), order.ord_id == null ? "" : order.ord_id); // cust_id
                 insert.bindString(index(qbord_id), order.qbord_id == null ? "" : order.qbord_id); // cust_id
                 insert.bindString(index(emp_id), order.emp_id == null ? "" : order.emp_id); // cust_id

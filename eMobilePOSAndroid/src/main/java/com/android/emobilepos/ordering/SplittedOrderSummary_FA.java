@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -250,7 +251,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     }
 
     private List<OrderProduct> getProductsBySeats(String seatNumber) {
-        List<OrderProduct> seatProducts = new ArrayList<OrderProduct>();
+        List<OrderProduct> seatProducts = new ArrayList<>();
         for (OrderSeatProduct product : orderSeatProducts) {
             if (product.rowType == OrderProductListAdapter.RowType.TYPE_ITEM && product.orderProduct.getAssignedSeat().equalsIgnoreCase(seatNumber)) {
                 try {
@@ -297,7 +298,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         int code = Long.valueOf(position).intValue();
-        final List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
+        final List<SplitedOrder> splitedOrders = new ArrayList<>();
         splitType = SalesReceiptSplitTypes.getByCode(code);
         splitEquallyQtyBtn.setVisibility(View.GONE);
         switch (splitType) {
@@ -351,9 +352,18 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 popup.show();
                 break;
             case SPLIT_BY_SEATS: {
-                HashSet<Integer> joinedGroupIds = new HashSet<Integer>();
+//                HashSet<Integer> joinedGroupIds = new HashSet<>();
+//                String nextID = preferences.getLastOrdID();
+//                if (TextUtils.isEmpty(nextID)) {
+//                    GenerateNewID generateNewID = new GenerateNewID(this);
+//                    nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
+//                }
+                HashSet<Integer> joinedGroupIds = new HashSet<>();
                 String nextID = assignEmployee.getMSLastOrderID();
-
+                if (TextUtils.isEmpty(nextID)) {
+                    GenerateNewID generateNewID = new GenerateNewID(this);
+                    nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
+                }
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER &&
                             !joinedGroupIds.contains(seatProduct.getSeatGroupId())) {
@@ -393,7 +403,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
 
     private void setSplitEquallyReceipt(int splitQty) {
         String nextID = assignEmployee.getMSLastOrderID();
-        final List<SplitedOrder> splitedOrders = new ArrayList<SplitedOrder>();
+        final List<SplitedOrder> splitedOrders = new ArrayList<>();
         for (OrderSeatProduct seatProduct : orderSeatProducts) {
             if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER) {
                 Order order = null;

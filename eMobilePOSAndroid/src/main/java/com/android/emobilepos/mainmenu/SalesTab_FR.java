@@ -822,7 +822,7 @@ public class SalesTab_FR extends Fragment {
             myPref.setIsMEPOS(true);
             return true;
         } else if (model.equals("M2MX60P") || model.equals("M2MX6OP")) {
-            myPref.isSam4s(false, true);
+            myPref.setSams4s(true);
             return true;
         } else if (model.equals("JE971")) {
             return true;

@@ -280,7 +280,7 @@ public class OrderAttrEdit_FA extends BaseFragmentActivityActionBar
             Intent i = getIntent();
             handleDecodeData(i);
             checkBox.setChecked(true);
-        } else if (myPref.isSam4s(true, false)) {
+        } else if (myPref.isSam4s()) {
             checkBox.setChecked(true);
             _msrUsbSams = new EMSIDTechUSB(activity, callBack);
             if (_msrUsbSams.OpenDevice())

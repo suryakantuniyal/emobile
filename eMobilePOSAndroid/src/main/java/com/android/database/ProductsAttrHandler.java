@@ -16,9 +16,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import util.StringUtil;
 
-
-public class ProductsAttrHandler 
+public class ProductsAttrHandler
 {
 	private final String prodAttrKey = "prodAttrKey";
 	private final String prod_id = "prod_id";
@@ -204,7 +204,7 @@ public class ProductsAttrHandler
 				priceLevelID = myPref.getCustPriceLevel();
 			else {
 				AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-				priceLevelID = assignEmployee.getPricelevelId();
+				priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
 			}
 
 			

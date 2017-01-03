@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import util.StringUtil;
+
 public class ProductAddonsHandler {
 
     private final String rest_addons = "rest_addons";
@@ -199,7 +201,7 @@ public class ProductAddonsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
 
 
         sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");
@@ -250,7 +252,7 @@ public class ProductAddonsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
 
 
         sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");
@@ -291,7 +293,7 @@ public class ProductAddonsHandler {
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
 
 
         sb.append("SELECT p.prod_id as '_id',c.cat_name,p.prod_price as 'master_price',vp.price as 'volume_price', ");

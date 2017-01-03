@@ -1015,15 +1015,15 @@ public class MyPreferences {
         return false;
     }
 
-    public boolean isSam4s(boolean isGet, boolean value) {
+    public boolean isSam4s() {
         String key = "device_sam4s";
-        if (isGet)
-            return prefs.getBoolean(key, false);
-        else {
-            prefEditor.putBoolean(key, value);
-            prefEditor.commit();
-        }
-        return false;
+        return prefs.getBoolean(key, false);
+    }
+
+    public void setSams4s(boolean value) {
+        String key = "device_sam4s";
+        prefEditor.putBoolean(key, value);
+        prefEditor.commit();
     }
 
     public void setStarIPAddress(String val) {

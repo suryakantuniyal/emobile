@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import util.StringUtil;
+
 public class VolumePricesHandler {
 
     private final String id_key = "id_key";
@@ -115,7 +117,7 @@ public class VolumePricesHandler {
             priceLevelID = myPref.getCustPriceLevel();
         else {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
         sb.append("SELECT * From VolumePrices WHERE prod_id = '");
         sb.append(prod_id).append("' and pricelevel_id = '");

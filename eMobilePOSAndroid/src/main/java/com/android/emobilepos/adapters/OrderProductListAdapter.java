@@ -66,7 +66,8 @@ public class OrderProductListAdapter extends BaseAdapter {
         Collections.sort(orderProducts, new Comparator<OrderProduct>() {
             @Override
             public int compare(OrderProduct lhs, OrderProduct rhs) {
-                return lhs.getAssignedSeat().compareTo(rhs.getAssignedSeat());
+                return Integer.valueOf(lhs.getAssignedSeat()).compareTo(Integer.valueOf(rhs.getAssignedSeat()));
+//                return Integer.parseInt(lhs.getAssignedSeat()) == (Integer.parseInt(rhs.getAssignedSeat());
             }
         });
         this.orderProducts = orderProducts;

@@ -153,7 +153,7 @@ public class ProductsHandler {
             priceLevelID = myPref.getCustPriceLevel();
         else {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
         if (Global.cat_id.equals("0")) {
@@ -193,13 +193,7 @@ public class ProductsHandler {
                     sb2.append("LEFT JOIN LocationsInventory li ON li.prod_id = p.prod_id WHERE li.loc_id = ? ");
                 } else
                     sb2.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? ");// .append("'
-                // ORDER
-                // BY
-                // p.prod_name");
             } else {
-                // sb.append("AND ch.cust_chain = ? WHERE p.prod_type !=
-                // 'Discount' ");
-
                 sb2.append("AND ch.cust_chain = ? ");
                 if (Global.isConsignment) {
                     sb.append(",ci.qty AS 'consignment_qty' ");
@@ -236,8 +230,6 @@ public class ProductsHandler {
                                 "LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                                 "BETWEEN vp.minQty AND vp.maxQty  AND ");
             }
-
-
             sb.append(
                     "vp.pricelevel_id = ?  " +
                             "LEFT OUTER JOIN PriceLevelItems pli ON p.prod_id = pli.pricelevel_prod_id ");
@@ -291,12 +283,7 @@ public class ProductsHandler {
                     sb2.append("LEFT JOIN LocationsInventory li ON li.prod_id = p.prod_id WHERE li.loc_id = ? ");
                 } else
                     sb.append("WHERE p.prod_type != 'Discount' AND ch.cust_chain = ? ");// .append("'
-                // ORDER
-                // BY
-                // p.prod_name");
             } else {
-                // sb.append("AND ch.cust_chain = ? WHERE p.prod_type !=
-                // 'Discount' ");
                 sb2.append("AND ch.cust_chain = ? ");
                 if (Global.isConsignment) {
                     sb.append(",ci.qty AS 'consignment_qty' ");
@@ -315,8 +302,6 @@ public class ProductsHandler {
                     sb2.append("LEFT JOIN LocationsInventory li ON li.prod_id = p.prod_id WHERE li.loc_id = ? ");
                 } else
                     sb2.append("WHERE p.prod_type != 'Discount' ");// ORDER BY
-                // p.prod_name");
-
             }
             if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
                 sb.append("FROM Products p " + "LEFT OUTER JOIN EmpInv ei ON ei.prod_id = p.prod_id " +
@@ -330,8 +315,6 @@ public class ProductsHandler {
                         "p.cat_id = '").append(Global.cat_id).append("'");
             }
 
-
-//            sb.append("OR xr.cat_id = c.cat_id ");
             sb.append(" LEFT OUTER JOIN VolumePrices vp ON p.prod_id = vp.prod_id AND '1' " +
                     "BETWEEN vp.minQty AND ");
             sb.append(
@@ -346,17 +329,7 @@ public class ProductsHandler {
                             "LEFT OUTER JOIN ProductChainXRef ch ON ch.prod_id = p.prod_id ");
 
             sb.append(sb2);
-
-//            if (myPref.getPreferences(MyPreferences.pref_enable_multi_category)) {
-//
-//                sb.append("AND (c.cat_id= '").append(Global.cat_id).append("' OR c.parentID = '").append(Global.cat_id)
-//                        .append("' ");
-//                sb.append(" OR xr.cat_id = '").append(Global.cat_id).append("') ");
-//
-//            } else
-//                sb.append("AND c.cat_id = '").append(Global.cat_id).append("'");
-
-            if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
+        if (myPref.getPreferences(MyPreferences.pref_group_in_catalog_by_name)) {
                 sb.append(" GROUP BY p.prod_name ORDER BY p.prod_name");
             } else {
                 sb.append(" GROUP BY p.prod_id ORDER BY p.prod_name");
@@ -407,7 +380,7 @@ public class ProductsHandler {
             priceLevelID = myPref.getCustPriceLevel();
         else {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
         sb.append(
@@ -545,7 +518,7 @@ public class ProductsHandler {
             priceLevelID = myPref.getCustPriceLevel();
         else {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
         sb.append(
@@ -824,7 +797,7 @@ public class ProductsHandler {
             priceLevelID = myPref.getCustPriceLevel();
         else {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
         sb.append(
@@ -928,7 +901,7 @@ public class ProductsHandler {
             priceLevelID = myPref.getCustPriceLevel();
         else {
             AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            priceLevelID = assignEmployee.getPricelevelId();
+            priceLevelID = StringUtil.nullStringToEmpty(assignEmployee.getPricelevelId());
         }
 
         sb.append(
