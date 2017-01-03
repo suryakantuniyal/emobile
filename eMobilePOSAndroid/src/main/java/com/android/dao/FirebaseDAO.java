@@ -9,15 +9,32 @@ import io.realm.Realm;
  */
 
 public class FirebaseDAO {
-    public static NotificationSettings getFirebaseSettings() {
+    public static NotificationSettings getNotificationSettings() {
         Realm r = Realm.getDefaultInstance();
         return r.where(NotificationSettings.class).findFirst();
     }
 
     public static void saveFirebaseSettings(NotificationSettings settings) {
         Realm r = Realm.getDefaultInstance();
-        r.beginTransaction();
-        r.copyToRealmOrUpdate(settings);
-        r.commitTransaction();
+        try {
+            r.beginTransaction();
+            r.copyToRealmOrUpdate(settings);
+            r.commitTransaction();
+        } finally {
+            r.commitTransaction();
+        }
+    }
+
+    public static void saveToken(String regID, String fcm_token) {
+        Realm r = Realm.getDefaultInstance();
+        try {
+            r.beginTransaction();
+            NotificationSettings settings = getNotificationSettings();
+            settings.setRegistrationToken(fcm_token);
+            settings.setHubRegistrationId(regID);
+            r.copyToRealmOrUpdate(settings);
+        } finally {
+            r.commitTransaction();
+        }
     }
 }

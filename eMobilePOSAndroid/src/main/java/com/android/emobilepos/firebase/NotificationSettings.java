@@ -9,36 +9,35 @@ import io.realm.annotations.PrimaryKey;
 
 public class NotificationSettings extends RealmObject {
     @PrimaryKey
-    private  String SenderId = "555089729868";
-    private  String HubName = "eMobilePOSNotification";
-    private  String HubListenConnectionString = "Endpoint=sb://emobileposnotification.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=UvYALhl8TJM71bt9OjK/WMmvwtexf1nsRztV6mMsW1c=";
+    private String SenderId = "555089729868";
+    private String HubName = "eMobilePOSNotification";
+    private String HubListenConnectionString = "Endpoint=sb://emobileposnotification.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=UvYALhl8TJM71bt9OjK/WMmvwtexf1nsRztV6mMsW1c=";
     private String registrationToken;
     private String topicId;
+    private String hubRegistrationId;
     private String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
 
-
-
-    public  String getSenderId() {
+    public String getSenderId() {
         return SenderId;
     }
 
-    public  void setSenderId(String senderId) {
+    public void setSenderId(String senderId) {
         SenderId = senderId;
     }
 
-    public  String getHubName() {
+    public String getHubName() {
         return HubName;
     }
 
-    public  void setHubName(String hubName) {
+    public void setHubName(String hubName) {
         HubName = hubName;
     }
 
-    public  String getHubListenConnectionString() {
+    public String getHubListenConnectionString() {
         return HubListenConnectionString;
     }
 
-    public  void setHubListenConnectionString(String hubListenConnectionString) {
+    public void setHubListenConnectionString(String hubListenConnectionString) {
         HubListenConnectionString = hubListenConnectionString;
     }
 
@@ -64,5 +63,13 @@ public class NotificationSettings extends RealmObject {
 
     public void setAuthorizationKey(String authorizationKey) {
         this.authorizationKey = authorizationKey;
+    }
+
+    public String getHubRegistrationId() {
+        return hubRegistrationId;
+    }
+
+    public void setHubRegistrationId(String hubRegistrationId) {
+        this.hubRegistrationId = hubRegistrationId;
     }
 }

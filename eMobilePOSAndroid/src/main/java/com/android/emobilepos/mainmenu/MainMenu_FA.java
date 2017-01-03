@@ -131,72 +131,72 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
                         .show();
             } else {
                 Log.i("checkPlayServices", "This device is not supported by Google Play Services.");
-                ToastNotify("This device is not supported by Google Play Services.");
-                finish();
+//                ToastNotify("This device is not supported by Google Play Services.");
+//                finish();
             }
             return false;
         }
         return true;
     }
 
-    public void ToastNotify(final String notificationMessage) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
-//                TextView helloText = (TextView) findViewById(R.id.);
-//                helloText.setText(notificationMessage);
-            }
-        });
-    }
+//    public void ToastNotify(final String notificationMessage) {
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(MainMenu_FA.this, notificationMessage, Toast.LENGTH_LONG).show();
+////                TextView helloText = (TextView) findViewById(R.id.);
+////                helloText.setText(notificationMessage);
+//            }
+//        });
+//    }
 
     public void registerWithNotificationHubs() {
         if (checkPlayServices()) {
-            String accountNumber = myPref.getAcctNumber();
-            FirebaseMessaging.getInstance().subscribeToTopic(accountNumber);
+//            String accountNumber = myPref.getAcctNumber();
+//            FirebaseMessaging.getInstance().subscribeToTopic(accountNumber);
             // Start IntentService to register this application with FCM.
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         }
     }
 
-    private void sendFirebaseMessage() {
-        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
-        messaging.send(new RemoteMessage.Builder(new NotificationSettings().getSenderId() + "@gcm.googleapis.com")
-                .setMessageId(String.valueOf(SystemClock.currentThreadTimeMillis()))
-                .addData("my_message", "Hello world")
-                .addData("my_action", "SAY_HELLO")
-                .build()
-        );
-
-        oauthclient.HttpClient client = new oauthclient.HttpClient();
-        String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
-        String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
-        try {
-            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
-            NotificationEvent event = new NotificationEvent();
-            event.setTo("/topics/" + myPref.getAcctNumber());
-            event.getNotification().setMerchantAccount(myPref.getAcctNumber());
-            event.getNotification().setDeviceId(myPref.getDeviceID());
-            event.getNotification().setEmployeeId(String.valueOf(assignEmployee.getEmpId()));
-            event.getNotification().setNotificationEventAction(NotificationEvent.NotificationEventAction.SYNC_HOLDS);
-            Gson gson = JsonUtils.getInstance();
-            json = gson.toJson(event);
-            client.postAuthorizationHeader("https://fcm.googleapis.com/fcm/send", json, authorizationKey);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }
-    }
+//    private void sendFirebaseMessage() {
+//        FirebaseMessaging messaging = FirebaseMessaging.getInstance();
+//        messaging.send(new RemoteMessage.Builder(new NotificationSettings().getSenderId() + "@gcm.googleapis.com")
+//                .setMessageId(String.valueOf(SystemClock.currentThreadTimeMillis()))
+//                .addData("my_message", "Hello world")
+//                .addData("my_action", "SAY_HELLO")
+//                .build()
+//        );
+//
+//        oauthclient.HttpClient client = new oauthclient.HttpClient();
+//        String json = "{\"to\":\"/topics/holds_sync\",\"notification\":{\"body\":\"Yellow\",\"title\":\"my title\"},\"priority\":10}";
+//        String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
+//        try {
+//            AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+//            NotificationEvent event = new NotificationEvent();
+//            event.setTo("/topics/" + myPref.getAcctNumber());
+//            event.getNotification().setMerchantAccount(myPref.getAcctNumber());
+//            event.getNotification().setDeviceId(myPref.getDeviceID());
+//            event.getNotification().setEmployeeId(String.valueOf(assignEmployee.getEmpId()));
+//            event.getNotification().setNotificationEventAction(NotificationEvent.NotificationEventAction.SYNC_HOLDS);
+//            Gson gson = JsonUtils.getInstance();
+//            json = gson.toJson(event);
+//            client.postAuthorizationHeader("https://fcm.googleapis.com/fcm/send", json, authorizationKey);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//
+//        }
+//    }
 
     @Override
     public void onResume() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sendFirebaseMessage();
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                sendFirebaseMessage();
+//            }
+//        }).start();
         if (global.isApplicationSentToBackground(activity)) {
             global.loggedIn = false;
         }
