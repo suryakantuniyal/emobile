@@ -1034,12 +1034,12 @@ public class GenerateXML {
                     serializer.text(String.valueOf(product.isAdded()));//cursor.getString(cursor.getColumnIndex("isAdded")));
                     serializer.endTag(empstr, "isAdded");
 
-                    serializer.startTag(empstr, "isPrinted");
+                    serializer.startTag(empstr, "15ed");
 
                     if (!isOnHold)
                         serializer.text(String.valueOf(product.isPrinted()));//cursor.getString(cursor.getColumnIndex("isPrinted")));
                     else
-                        serializer.text("1");
+                        serializer.text("true");
 
                     serializer.endTag(empstr, "isPrinted");
 

@@ -1102,7 +1102,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             swiperLabel.setText(R.string.connected);
             swiperLabel.setTextColor(Color.BLUE);
             msrWasLoaded = true;
-        } else if (myPref.isSam4s(true, false)) {
+        } else if (myPref.isSam4s()) {
             _msrUsbSams = new EMSIDTechUSB(this, callBackMSR);
             _msrUsbSams.OpenDevice();
             if (_msrUsbSams.isDeviceOpen() && !_msrUsbSams.isDeviceReading())

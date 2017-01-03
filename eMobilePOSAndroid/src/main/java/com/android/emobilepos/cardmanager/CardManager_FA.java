@@ -394,7 +394,7 @@ public class CardManager_FA extends BaseFragmentActivityActionBar implements EMS
             Intent i = getIntent();
             handleDecodeData(i);
             cardSwipe.setChecked(true);
-        } else if (myPref.isSam4s(true, false) || myPref.isPAT100()) {
+        } else if (myPref.isSam4s() || myPref.isPAT100()) {
             cardSwipe.setChecked(true);
         } else if (myPref.isESY13P1()) {
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {

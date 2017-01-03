@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -346,9 +347,12 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 popup.show();
                 break;
             case SPLIT_BY_SEATS: {
-                HashSet<Integer> joinedGroupIds = new HashSet<Integer>();
+                HashSet<Integer> joinedGroupIds = new HashSet<>();
                 String nextID = preferences.getLastOrdID();
-
+                if (TextUtils.isEmpty(nextID)) {
+                    GenerateNewID generateNewID = new GenerateNewID(this);
+                    nextID = generateNewID.getNextID(GenerateNewID.IdType.ORDER_ID);
+                }
                 for (OrderSeatProduct seatProduct : orderSeatProducts) {
                     if (seatProduct.rowType == OrderProductListAdapter.RowType.TYPE_HEADER &&
                             !joinedGroupIds.contains(seatProduct.getSeatGroupId())) {
