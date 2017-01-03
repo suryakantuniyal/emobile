@@ -101,7 +101,10 @@ public class SalesAssociateDAO {
 
     public static HashMap<String, List<SalesAssociate>> getSalesAssociatesByLocation() {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<DinningTable> tables = realm.where(DinningTable.class).findAll();
+        String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
+        RealmResults<DinningTable> tables = realm.where(DinningTable.class)
+                .equalTo("locationId", defaultLocation)
+                .findAll();
         Set<String> locations = new HashSet<>();
         HashMap<String, List<SalesAssociate>> locationHashMap = new HashMap<>();
         for (DinningTable table : tables) {

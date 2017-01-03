@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.android.database.ProductsHandler;
 import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Global;
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import util.json.JsonUtils;
 
 public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private boolean addon;
@@ -75,7 +77,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String priceLevelName = "";
     public List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
     public List<OrderProduct> addonsProducts = new ArrayList<OrderProduct>();
-    public String hasAddons = "0"; //0 no addons, 1 it has addons
+    private Boolean hasAddons; //0 no addons, 1 it has addons
     public String addon_section_name = "";
     public String addon_position = "";
 
@@ -113,16 +115,22 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setPricesXGroupid(product.getPricesXGroupid());
         this.setOrdprod_name(product.getProdName());
         this.setProd_extradesc(product.getProdExtraDesc());
+        this.setOrdprod_qty("1");
     }
 
     public OrderProduct() {
 
     }
 
-
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Object clone = super.clone();
+        List<OrderProduct> cloneAddons = new ArrayList<>();
+        for (OrderProduct addon : addonsProducts) {
+            cloneAddons.add((OrderProduct) addon.clone());
+        }
+        ((OrderProduct) clone).addonsProducts = cloneAddons;
+        return clone;
     }
 
     public boolean isVoid() {
@@ -205,7 +213,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         setProd_price_updated("0");
     }
 
-
     public String getPricesXGroupid() {
         return pricesXGroupid;
     }
@@ -220,7 +227,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (getOverwrite_price() != null) {
             return getOverwrite_price().toString();
         } else {
-            return getProd_price();
+            if (!TextUtils.isEmpty(getProd_price())) {
+                return getProd_price();
+            } else {
+                return "0";
+            }
         }
     }
 
@@ -252,6 +263,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setOrdprod_id(String ordprod_id) {
         this.ordprod_id = ordprod_id;
+        if (addonsProducts != null && !addonsProducts.isEmpty()) {
+            for (OrderProduct addon : addonsProducts) {
+                addon.setAddon_ordprod_id(ordprod_id);
+            }
+        }
     }
 
     public String getOrd_id() {
@@ -630,12 +646,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.requiredProductAttributes = requiredProductAttributes;
     }
 
-    public String getHasAddons() {
-        return hasAddons;
-    }
-
-    public void setHasAddons(String hasAddons) {
-        this.hasAddons = hasAddons;
+    public boolean getHasAddons() {
+        return addonsProducts != null && !addonsProducts.isEmpty();
     }
 
     public String getAddon_section_name() {
@@ -774,5 +786,37 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setPrinted(boolean printed) {
         isPrinted = printed;
+    }
+
+    public String toJson() {
+        Gson gson = JsonUtils.getInstance();
+        return gson.toJson(this);
+    }
+
+    public BigDecimal getAddonsTotalPrice() {
+        BigDecimal price = new BigDecimal(0);
+        for (OrderProduct addon : addonsProducts) {
+            price = price.add(new BigDecimal(addon.getFinalPrice()));
+        }
+        return price;
+    }
+
+    public BigDecimal getItemSubtotalCalculated() {
+        BigDecimal subtotal;
+        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
+        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxAmount());
+        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
+        subtotal = finalPrice.add(addonsTotalPrice).add(taxAmount).subtract(discount);
+        return subtotal;
+    }
+
+    public BigDecimal getItemTotalCalculated() {
+        BigDecimal subtotal;
+        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
+        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
+        subtotal = finalPrice.add(addonsTotalPrice).subtract(discount);
+        return subtotal;
     }
 }

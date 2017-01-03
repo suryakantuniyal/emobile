@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,7 +71,6 @@ public class SalesTab_FR extends Fragment {
     private int selectedSeatsAmount;
     private String associateId;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -91,7 +91,6 @@ public class SalesTab_FR extends Fragment {
             myPref.setIsTablet(true);
         else
             myPref.setIsTablet(false);
-
 
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
@@ -122,7 +121,6 @@ public class SalesTab_FR extends Fragment {
                 salesInvoices.setVisibility(View.GONE);
                 myPref.resetCustInfo(getString(R.string.no_customer));
 
-
                 isCustomerSelected = false;
                 selectedCust.setText(getString(R.string.no_customer));
                 myAdapter = new SalesMenuAdapter(getActivity(), false);
@@ -131,7 +129,6 @@ public class SalesTab_FR extends Fragment {
 
             }
         });
-
 
         salesInvoices.setOnClickListener(new View.OnClickListener() {
 
@@ -149,10 +146,8 @@ public class SalesTab_FR extends Fragment {
 
     }
 
-
     @Override
     public void onResume() {
-
 
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
@@ -172,7 +167,6 @@ public class SalesTab_FR extends Fragment {
         super.onResume();
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -182,7 +176,6 @@ public class SalesTab_FR extends Fragment {
             salesInvoices.setVisibility(View.VISIBLE);
             Bundle extras = data.getExtras();
             selectedCust.setText(extras.getString("customer_name"));
-
 
             myPref.setCustName(extras.getString("customer_name"));
             myPref.setCustSelected(true);
@@ -212,7 +205,6 @@ public class SalesTab_FR extends Fragment {
             }
         }
     }
-
 
     public class MyListener implements AdapterView.OnItemClickListener {
 
@@ -259,7 +251,6 @@ public class SalesTab_FR extends Fragment {
         }
 
     }
-
 
     private void performListViewClick(final int pos) {
         Global global = (Global) activity.getApplication();
@@ -382,8 +373,6 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD:            //On Hold
                 {
                     DBManager dbManager = new DBManager(activity);
-//                    dbManager.synchSendOrdersOnHold(true, false);
-
                     SynchMethods sm = new SynchMethods(dbManager);
                     sm.synchSendOnHold(true, false);
                     break;
@@ -559,6 +548,7 @@ public class SalesTab_FR extends Fragment {
                 popDlog.dismiss();
                 MyPreferences myPref = new MyPreferences(activity);
                 String enteredPass = viewField.getText().toString().trim();
+                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
                 SalesAssociate salesAssociates = SalesAssociateDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
                 if (salesAssociates != null) {
                     validPassword = true;
@@ -667,7 +657,6 @@ public class SalesTab_FR extends Fragment {
         globalDlog.setCancelable(true);
         globalDlog.setCanceledOnTouchOutside(false);
         globalDlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
 
         TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
@@ -829,11 +818,11 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("MC40N0")) {
             myPref.isMC40(false, true);
             return false;
-        }  else if (model.startsWith("Lenovo")) {
+        } else if (model.startsWith("Lenovo")) {
             myPref.setIsMEPOS(true);
             return true;
-        }else if (model.equals("M2MX60P") || model.equals("M2MX6OP")) {
-            myPref.isSam4s(false, true);
+        } else if (model.equals("M2MX60P") || model.equals("M2MX6OP")) {
+            myPref.setSams4s(true);
             return true;
         } else if (model.equals("JE971")) {
             return true;
@@ -901,7 +890,6 @@ public class SalesTab_FR extends Fragment {
                         myPref.setCustPriceLevel(map.get("pricelevel_id"));
 
                         myPref.setCustEmail(map.get("cust_email"));
-
 
                         selectedCust.setText(map.get("cust_name"));
 

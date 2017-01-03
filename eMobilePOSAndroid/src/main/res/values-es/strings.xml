@@ -1301,6 +1301,7 @@
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
     <string name="split_single">Single Receipt</string>
+    <string name="config_printer_width">Printer Width</string>
 
 
 </resources>

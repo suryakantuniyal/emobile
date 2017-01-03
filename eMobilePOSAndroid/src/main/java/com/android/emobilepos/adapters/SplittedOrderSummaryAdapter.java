@@ -47,8 +47,8 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
 
         SplitedOrder order = splitedOrders.get(position);
         holder.tableNumber.setText(order.getTableNumber());
-        HashSet<String> seats = new HashSet<String>();
-        HashSet<String> items = new HashSet<String>();
+        HashSet<String> seats = new HashSet<>();
+        HashSet<String> items = new HashSet<>();
 
         for (OrderProduct product : order.getOrderProducts()) {
             seats.add(product.getAssignedSeat());

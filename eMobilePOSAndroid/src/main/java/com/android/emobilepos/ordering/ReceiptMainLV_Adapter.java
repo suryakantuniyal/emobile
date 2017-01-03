@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
+import com.android.emobilepos.models.OrderProduct;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -104,9 +105,12 @@ public class ReceiptMainLV_Adapter extends BaseAdapter {
     public void setHolderValues(ViewHolder holder, int position) {
 
         final int pos = position;
+        OrderProduct orderProduct = global.orderProducts.get(pos);
         final String tempId = global.orderProducts.get(pos).getOrdprod_id();
 
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                || (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                && (!orderProduct.getHasAddons()))) {
             if (holder.addonButton != null)
                 holder.addonButton.setVisibility(View.INVISIBLE);
         } else {
@@ -118,7 +122,7 @@ public class ReceiptMainLV_Adapter extends BaseAdapter {
                     public void onClick(View v) {
                         Intent intent = new Intent(activity, PickerAddon_FA.class);
                         String prodID = global.orderProducts.get(pos).getProd_id();
-                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
+//                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
 
                         intent.putExtra("addon_map_key", tempId);
                         intent.putExtra("isEditAddon", true);
@@ -126,8 +130,8 @@ public class ReceiptMainLV_Adapter extends BaseAdapter {
                         intent.putExtra("item_position", pos);
 
 
-                        ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
-                        Global.productParentAddons = prodAddonsHandler.getParentAddons(prodID);
+//                        ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
+//                        Global.productParentAddons = prodAddonsHandler.getParentAddons(prodID);
 
                         activity.startActivityForResult(intent, 0);
                     }

@@ -13,7 +13,7 @@
             android:layout="@layout/settings_custom_layout"
             android:title="@string/config_automatic_printing" />
         <ListPreference
-            android:defaultValue="width_medium"
+            android:defaultValue="MEDIUM"
             android:entries="@array/printerWidths"
             android:entryValues="@array/printerWidthsValues"
             android:key="pref_printer_width"

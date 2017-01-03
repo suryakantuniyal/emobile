@@ -49,8 +49,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.89"
-            versionCode 117
+            versionName "1.2.0.94"
+            versionCode 116
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -63,8 +63,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.89"
-            versionCode 117
+            versionName "1.2.0.94"
+            versionCode 116
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -77,8 +77,8 @@ android {
         emsblue {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.89"
-            versionCode 117
+            versionName "1.2.0.94"
+            versionCode 116
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -91,8 +91,8 @@ android {
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.89"
-            versionCode 117
+            versionName "1.2.0.94"
+            versionCode 116
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -105,8 +105,8 @@ android {
         restoff {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.1.1.89"
-            versionCode 117
+            versionName "1.1.1.94"
+            versionCode 116
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -119,8 +119,8 @@ android {
         restoffivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.89"
-            versionCode 117
+            versionName "1.1.1.94"
+            versionCode 116
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -134,7 +134,7 @@ android {
     buildTypes {
         debug {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "false"
-            buildConfigField "boolean", "PRINT_TO_LOG", "false"
+            buildConfigField "boolean", "PRINT_TO_LOG", "true"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false

@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.dao.DeviceTableDAO;
 import com.android.dao.DinningTableDAO;
 import com.android.dao.MixMatchDAO;
@@ -46,6 +47,7 @@ import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
 import com.android.emobilepos.mainmenu.SyncTab_FR;
+import com.android.emobilepos.models.AssignEmployee;
 import com.android.emobilepos.models.ItemPriceLevel;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
@@ -72,7 +74,6 @@ import com.android.saxhandler.SAXSyncVoidTransHandler;
 import com.android.saxhandler.SAXSynchHandler;
 import com.android.saxhandler.SAXSynchOrdPostHandler;
 import com.android.saxhandler.SaxLoginHandler;
-import com.android.saxhandler.SaxSelectedEmpHandler;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
@@ -89,6 +90,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -143,7 +145,7 @@ public class SynchMethods {
         activity = managerInst.getActivity();
         dbManager = managerInst;
         data = new ArrayList<>();
-        if(OAuthManager.isExpired(activity) && NetworkUtils.isConnectedToInternet(activity)) {
+        if (OAuthManager.isExpired(activity) && NetworkUtils.isConnectedToInternet(activity)) {
             OAuthManager oAuthManager = getOAuthManager(activity);
             try {
                 oAuthManager.requestToken();
@@ -186,7 +188,6 @@ public class SynchMethods {
     public void getLocationsInventory() {
         new asyncGetLocationsInventory().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 
     private class resynchAsync extends AsyncTask<String, String, String> {
         MyPreferences myPref = new MyPreferences(activity);
@@ -240,7 +241,6 @@ public class SynchMethods {
                 synchProdAddon(this);
 
                 synchProducts(this);
-
 
                 synchProductAliases(this);
 
@@ -326,7 +326,6 @@ public class SynchMethods {
 
     }
 
-
     private boolean isSending = false;
 
     public void synchSend(int type, boolean isFromMainMenu) {
@@ -343,7 +342,6 @@ public class SynchMethods {
         if (!isSending)
             new forceSendAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 
     private class sendAsync extends AsyncTask<String, String, String> {
         boolean proceed = false;
@@ -489,7 +487,7 @@ public class SynchMethods {
                 dbManager.updateDB();
             } else if (!proceed) {
                 // failed to synch....
-                if(TextUtils.isEmpty(xml)){
+                if (TextUtils.isEmpty(xml)) {
                     xml = activity.getString(R.string.sync_fail);
                 }
                 Global.showPrompt(activity, R.string.dlog_title_error, xml);
@@ -499,9 +497,7 @@ public class SynchMethods {
         }
     }
 
-
     private class forceSendAsync extends AsyncTask<Void, String, Void> {
-
 
         @Override
         protected void onPreExecute() {
@@ -520,7 +516,6 @@ public class SynchMethods {
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
-
 
         @Override
         protected void onProgressUpdate(String... params) {
@@ -628,7 +623,6 @@ public class SynchMethods {
         new synchSendOrdersOnHold().execute();
     }
 
-
     private class synchDownloadOnHoldProducts extends AsyncTask<String, String, String> {
         MyPreferences myPref = new MyPreferences(activity);
 
@@ -643,7 +637,6 @@ public class SynchMethods {
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
         }
-
 
         @Override
         protected void onProgressUpdate(String... params) {
@@ -679,7 +672,6 @@ public class SynchMethods {
 
     }
 
-
     private class synchDownloadOnHoldDetails extends AsyncTask<String, String, String> {
         boolean proceedToView = false;
 
@@ -693,7 +685,6 @@ public class SynchMethods {
             myProgressDialog.setCancelable(false);
             myProgressDialog.show();
         }
-
 
         @Override
         protected void onProgressUpdate(String... params) {
@@ -742,11 +733,9 @@ public class SynchMethods {
 
     }
 
-
     private class synchSendOrdersOnHold extends AsyncTask<Void, String, String> {
         boolean isError = false;
         String err_msg = "";
-
 
         @Override
         protected void onPreExecute() {
@@ -764,17 +753,14 @@ public class SynchMethods {
 
         }
 
-
         @Override
         protected void onProgressUpdate(String... params) {
             myProgressDialog.setMessage(params[0]);
         }
 
-
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
-
 
         @Override
         protected String doInBackground(Void... params) {
@@ -820,7 +806,6 @@ public class SynchMethods {
 
     }
 
-
     private class asyncGetLocationsInventory extends AsyncTask<Void, String, Void> {
         @Override
         protected void onPreExecute() {
@@ -833,17 +818,14 @@ public class SynchMethods {
             myProgressDialog.show();
         }
 
-
         @Override
         protected void onProgressUpdate(String... params) {
             myProgressDialog.setMessage(params[0]);
         }
 
-
         public void updateProgress(String msg) {
             publishProgress(msg);
         }
-
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -1148,11 +1130,9 @@ public class SynchMethods {
         }
     }
 
-
     /************************************
      * Send On Holds
      ************************************/
-
 
     private String sendOrdersOnHold(synchSendOrdersOnHold task) throws IOException, SAXException, ParserConfigurationException {
         SAXSynchOrdPostHandler handler = new SAXSynchOrdPostHandler();
@@ -1236,6 +1216,7 @@ public class SynchMethods {
                 }
             }
             OrderProductUtils.assignAddonsOrderProduct(orderProducts);
+            orderProductsHandler.completeProductFields(orderProducts, activity);
             orderProductsHandler.insert(orderProducts);
             reader.endArray();
             reader.close();
@@ -1244,11 +1225,9 @@ public class SynchMethods {
         }
     }
 
-
     /************************************
      * Receive Methods
      ************************************/
-
 
     private void synchAddresses(resynchAsync task) throws SAXException, IOException {
 
@@ -1342,7 +1321,6 @@ public class SynchMethods {
             e.printStackTrace();
         }
 
-
     }
 
     private void synchPriceLevel(resynchAsync task) throws IOException, SAXException {
@@ -1376,7 +1354,6 @@ public class SynchMethods {
         }
 
     }
-
 
     private void synchItemsPriceLevel(resynchAsync task) throws IOException, SAXException {
         try {
@@ -1524,7 +1501,7 @@ public class SynchMethods {
         url.append("/").append(URLEncoder.encode(preferences.getActivKey(), GenerateXML.UTF_8));
         url.append("/").append(URLEncoder.encode(preferences.getBundleVersion(), GenerateXML.UTF_8));
 
-        if(OAuthManager.isExpired(activity)) {
+        if (OAuthManager.isExpired(activity)) {
             getOAuthManager(activity);
         }
         OAuthClient authClient = OAuthManager.getOAuthClient(activity);
@@ -1538,7 +1515,7 @@ public class SynchMethods {
         try {
             oauthclient.HttpClient client = new oauthclient.HttpClient();
             Gson gson = JsonUtils.getInstance();
-            if(OAuthManager.isExpired(activity)) {
+            if (OAuthManager.isExpired(activity)) {
                 getOAuthManager(activity);
             }
             OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
@@ -1547,9 +1524,12 @@ public class SynchMethods {
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<DinningLocationConfiguration> configurations = new ArrayList<>();
             reader.beginArray();
+            String defaultLocation = AssignEmployeeDAO.getAssignEmployee().getDefaultLocation();
             while (reader.hasNext()) {
                 DinningLocationConfiguration configuration = gson.fromJson(reader, DinningLocationConfiguration.class);
-                configurations.add(configuration);
+                if (configuration.getLocationId().equalsIgnoreCase(defaultLocation)) {
+                    configurations.add(configuration);
+                }
             }
 
             reader.endArray();
@@ -1788,7 +1768,6 @@ public class SynchMethods {
         return text.toString();
     }
 
-
     private void synchDownloadDinnerTable(resynchAsync task) throws SAXException, IOException {
         task.updateProgress(activity.getString(R.string.sync_dload_dinnertables));
         client = new HttpClient();
@@ -1808,7 +1787,6 @@ public class SynchMethods {
             task.updateProgress(activity.getString(R.string.sync_dload_mixmatch));
             client = new HttpClient();
             GenerateXML xml = new GenerateXML(activity);
-
 
             InputStream inputStream = client.httpInputStreamRequest(activity.getString(R.string.sync_enablermobile_deviceasxmltrans) +
                     xml.getMixMatch());
@@ -1835,7 +1813,6 @@ public class SynchMethods {
             e.printStackTrace();
         }
     }
-
 
     private void synchDownloadSalesAssociate(resynchAsync task) throws SAXException, IOException {
         try {
@@ -1884,7 +1861,6 @@ public class SynchMethods {
             e.printStackTrace();
         }
 
-
     }
 
     private void synchGetOrdProdAttr(resynchAsync task) throws IOException, SAXException {
@@ -1925,27 +1901,20 @@ public class SynchMethods {
     }
 
     private void synchEmployeeData(resynchAsync task) throws IOException, SAXException {
-
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(activity);
-
         try {
             task.updateProgress(activity.getString(R.string.sync_dload_employee_data));
-            String xml = post.postData(4, activity, "");
-            InputSource inSource = new InputSource(new StringReader(xml));
-            SAXParser sp = spf.newSAXParser();
-            XMLReader xr = sp.getXMLReader();
-            xr.setContentHandler(handler);
-            task.updateProgress(activity.getString(R.string.sync_saving_employee_data));
-            xr.parse(inSource);
+            String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEE, activity, "");
+            Gson gson = JsonUtils.getInstance();
+            Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
+            }.getType();
+            List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
             MyPreferences myPref = new MyPreferences(activity);
-            data = handler.getEmpData();
-            myPref.setAllEmpData(data);
-
-
+            if (assignEmployees != null && !assignEmployees.isEmpty()) {
+                myPref.setAllEmpData(assignEmployees.get(0));
+            }
         } catch (Exception e) {
+            e.printStackTrace();
         }
-        data.clear();
     }
 
     private void synchDownloadLastPayID(resynchAsync task) {

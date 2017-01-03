@@ -347,6 +347,7 @@ public class Global extends MultiDexApplication {
     public final static int S_SUBMIT_LOCATIONS_INVENTORY = 59;
     public final static int S_GET_XML_DINNER_TABLES = 60;
     public final static int S_GET_XML_SALES_ASSOCIATE = 61;
+    public final static int S_GET_ASSIGN_EMPLOYEE = 4;
     public final static int S_SUBMIT_TIP_ADJUSTMENT = 62;
     public final static int S_SUBMIT_WORKINGKEY_REQUEST = 63;
 
@@ -389,11 +390,11 @@ public class Global extends MultiDexApplication {
 
     public static boolean isConsignment = false;
     public static boolean isInventoryTransfer = false;
-    public static List<HashMap<String, String>> productParentAddons;
-    public static HashMap<String, Integer> productParentAddonsDictionary;
-    public HashMap<String, String[]> addonSelectionType;
-    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
-    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
+//    public static List<HashMap<String, String>> productParentAddons;
+//    public static HashMap<String, Integer> productParentAddonsDictionary;
+//    public HashMap<String, String[]> addonSelectionType;
+//    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
+//    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
 
     public static Locations_Holder locationFrom, locationTo;
     public static TransferLocations_Holder transferLocation;
@@ -417,7 +418,7 @@ public class Global extends MultiDexApplication {
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
-    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
+//    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
     // public List<Orders> cur_orders = new ArrayList<Orders>();
@@ -517,14 +518,14 @@ public class Global extends MultiDexApplication {
         cons_issue_order = null;
         cons_return_order = null;
         cons_fillup_order = null;
-        if (productParentAddons != null)
-            productParentAddons.clear();
-        if (productParentAddonsDictionary != null)
-            productParentAddonsDictionary.clear();
-        if (addonSelectionMap != null)
-            addonSelectionMap.clear();
-        if (orderProductAddonsMap != null)
-            orderProductAddonsMap.clear();
+//        if (productParentAddons != null)
+//            productParentAddons.clear();
+//        if (productParentAddonsDictionary != null)
+//            productParentAddonsDictionary.clear();
+//        if (addonSelectionMap != null)
+//            addonSelectionMap.clear();
+//        if (orderProductAddonsMap != null)
+//            orderProductAddonsMap.clear();
         loyaltyCardInfo = new CreditCardInfo();
         loyaltyAddAmount = "";
         loyaltyCharge = "";
@@ -610,8 +611,8 @@ public class Global extends MultiDexApplication {
 //        if (ordProdAttrPending != null)
 //            ordProdAttrPending.clear();
 
-        if (this.orderProductAddons != null)
-            this.orderProductAddons.clear();
+//        if (this.orderProductAddons != null)
+//            this.orderProductAddons.clear();
 
         if (this.listOrderTaxes != null)
             this.listOrderTaxes.clear();
