@@ -815,7 +815,7 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         @Override
         protected Payment doInBackground(Boolean... params) {
-            Payment payment = null;
+            Payment payment;
             boolean isMultiPayment = params[0];
             if (isMultiPayment)
                 payment = processMultiInvoicePayment();
