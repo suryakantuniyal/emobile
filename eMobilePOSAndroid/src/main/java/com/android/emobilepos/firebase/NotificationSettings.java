@@ -1,6 +1,8 @@
 package com.android.emobilepos.firebase;
 
+import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -16,6 +18,9 @@ public class NotificationSettings extends RealmObject {
     private String topicId;
     private String hubRegistrationId;
     private String authorizationKey = "key=AAAAgT3tGUw:APA91bHti3tuO7EJvsqWiFF-YJil6fhDff67AorKTJzJ6ihWud7g-1roBfDuP21zAYTdgTdvlkEQQdp8mFPU9AT1LS_mIGg7y63SyZTaBFZZ8HnD0xea7vdg7Yr3VrGt0zK_WP6_ajGuSCJ71oI_lvQu67T8Yrs7qg";
+    private String registrationStatus = HUBRegistrationStatus.UNKNOWN.name();
+    @Ignore
+    private HUBRegistrationStatus registrationStatusEnum = HUBRegistrationStatus.UNKNOWN;
 
     public String getSenderId() {
         return SenderId;
@@ -71,5 +76,21 @@ public class NotificationSettings extends RealmObject {
 
     public void setHubRegistrationId(String hubRegistrationId) {
         this.hubRegistrationId = hubRegistrationId;
+    }
+
+    public HUBRegistrationStatus getRegistrationStatusEnum() {
+        registrationStatusEnum = HUBRegistrationStatus.valueOf(registrationStatus);
+        return registrationStatusEnum;
+    }
+
+    public void setRegistrationStatusEnum(HUBRegistrationStatus registrationStatusEnum) {
+        registrationStatus = registrationStatusEnum.name();
+        this.registrationStatusEnum = registrationStatusEnum;
+    }
+
+    public enum HUBRegistrationStatus {SUCCEED, UNKNOWN}
+
+    public NotificationSettings getUnmanagedObject() {
+        return Realm.getDefaultInstance().copyFromRealm(this);
     }
 }

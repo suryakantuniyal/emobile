@@ -542,7 +542,7 @@ public class GenerateXML {
     public void buildOrder(XmlSerializer serializer, boolean isOnHold) {
         OrdersHandler ordersHandler = new OrdersHandler(thisActivity);
         CustomersHandler custHandler = new CustomersHandler(thisActivity);
-        HashMap<String, String> custInfo = new HashMap<String, String>();
+        HashMap<String, String> custInfo;
         List<Order> orders;
         if (!isOnHold) {
             orders = ordersHandler.getUnsyncOrders();
@@ -1040,7 +1040,7 @@ public class GenerateXML {
                     serializer.text(String.valueOf(product.isAdded()));//cursor.getString(cursor.getColumnIndex("isAdded")));
                     serializer.endTag(empstr, "isAdded");
 
-                    serializer.startTag(empstr, "15ed");
+                    serializer.startTag(empstr, "isPrinted");
 
                     if (!isOnHold)
                         serializer.text(String.valueOf(product.isPrinted()));//cursor.getString(cursor.getColumnIndex("isPrinted")));

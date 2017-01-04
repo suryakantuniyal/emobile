@@ -18,8 +18,7 @@ public class FirebaseDAO {
         Realm r = Realm.getDefaultInstance();
         try {
             r.beginTransaction();
-            r.copyToRealmOrUpdate(settings);
-            r.commitTransaction();
+            r.insertOrUpdate(settings);
         } finally {
             r.commitTransaction();
         }
@@ -32,7 +31,19 @@ public class FirebaseDAO {
             NotificationSettings settings = getNotificationSettings();
             settings.setRegistrationToken(fcm_token);
             settings.setHubRegistrationId(regID);
-            r.copyToRealmOrUpdate(settings);
+            r.insertOrUpdate(settings);
+        } finally {
+            r.commitTransaction();
+        }
+    }
+
+    public static void saveHUBRegistrationStatus(NotificationSettings.HUBRegistrationStatus status) {
+        Realm r = Realm.getDefaultInstance();
+        try {
+            r.beginTransaction();
+            NotificationSettings settings = getNotificationSettings();
+            settings.setRegistrationStatusEnum(status);
+            r.insertOrUpdate(settings);
         } finally {
             r.commitTransaction();
         }

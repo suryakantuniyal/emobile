@@ -1,7 +1,5 @@
 package com.android.emobilepos.models.firebase;
 
-import android.os.Bundle;
-
 /**
  * Created by guarionex on 11/27/16.
  */
@@ -31,9 +29,20 @@ public class NotificationEvent {
     }
 
     public enum NotificationEventAction {
-        SYNC_HOLDS(0), SYNC_PRODUCTS(1);
+        SYNC_HOLDS(3), SYNC_MESAS_CONFIG(6), NONE(99);
 
         private int code;
+
+        public static NotificationEventAction getNotificationEventByCode(int code) {
+            switch (code) {
+                case 3:
+                    return SYNC_HOLDS;
+                case 6:
+                    return SYNC_MESAS_CONFIG;
+                default:
+                    return NONE;
+            }
+        }
 
         NotificationEventAction(int code) {
             this.code = code;

@@ -136,7 +136,6 @@ public class SynchMethods {
     private static OAuthManager getOAuthManager(Context activity) {
         MyPreferences preferences = new MyPreferences(activity);
         return OAuthManager.getInstance(activity, preferences.getAcctNumber(), preferences.getAcctPassword());
-
     }
 
     public SynchMethods(DBManager managerInst) {
@@ -219,6 +218,8 @@ public class SynchMethods {
             try {
                 updateProgress("Getting Server Time");
                 synchGetServerTime();
+                updateProgress(context.getString(R.string.sync_dload_employee_data));
+                synchEmployeeData();
                 updateProgress(context.getString(R.string.sync_dload_address));
                 synchAddresses();
                 updateProgress(context.getString(R.string.sync_dload_categories));
@@ -267,8 +268,6 @@ public class SynchMethods {
                 synchTerms();
                 updateProgress(context.getString(R.string.sync_dload_memotext));
                 synchMemoText();
-                updateProgress(context.getString(R.string.sync_dload_employee_data));
-                synchEmployeeData();
                 updateProgress(context.getString(R.string.sync_dload_logo));
                 synchAccountLogo();
                 updateProgress(context.getString(R.string.sync_dload_device_default_values));
@@ -1555,7 +1554,7 @@ public class SynchMethods {
                 getOAuthManager(activity);
             }
             OAuthClient oauthClient = OAuthManager.getOAuthClient(activity);
-            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
+//            String s = client.getString(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
             InputStream inputStream = client.get(activity.getString(R.string.sync_enablermobile_mesasconfig), oauthClient);
             JsonReader reader = new JsonReader(new InputStreamReader(inputStream, "UTF-8"));
             List<DinningLocationConfiguration> configurations = new ArrayList<>();

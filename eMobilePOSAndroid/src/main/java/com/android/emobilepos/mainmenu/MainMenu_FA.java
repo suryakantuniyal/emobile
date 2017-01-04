@@ -12,7 +12,6 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -23,14 +22,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
-import com.android.emobilepos.firebase.MyHandler;
+import com.android.emobilepos.firebase.NotificationHandler;
 import com.android.emobilepos.firebase.NotificationSettings;
 import com.android.emobilepos.firebase.RegistrationIntentService;
-import com.android.emobilepos.models.firebase.NotificationEvent;
-import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -39,9 +35,6 @@ import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
-import com.google.gson.Gson;
 import com.microsoft.windowsazure.notifications.NotificationsManager;
 
 import java.lang.reflect.Method;
@@ -49,7 +42,6 @@ import java.util.ArrayList;
 
 import drivers.EMSsnbc;
 import main.EMSDeviceManager;
-import util.json.JsonUtils;
 
 public class MainMenu_FA extends BaseFragmentActivityActionBar {
 
@@ -71,7 +63,7 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
         synchTextView = (TextView) findViewById(R.id.synch_title);
         synchTextView.setVisibility(View.GONE);
         tvStoreForward = (TextView) findViewById(R.id.label_cc_offline);
-        NotificationsManager.handleNotifications(this, new NotificationSettings().getSenderId(), MyHandler.class);
+        NotificationsManager.handleNotifications(this, new NotificationSettings().getSenderId(), NotificationHandler.class);
         myPref = new MyPreferences(this);
         registerWithNotificationHubs();
 
