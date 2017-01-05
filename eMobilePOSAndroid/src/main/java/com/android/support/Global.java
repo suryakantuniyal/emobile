@@ -134,7 +134,7 @@ public class Global extends MultiDexApplication {
     public static final int EM100 = 10;
     public static final int EM70 = 11;
     public static final int OT310 = 12;
-    public static final int ESY13P1 = 13;
+    public static final int ELOPAYPOINT = 13;
     public static final int KDC500 = 14;
     public static final int HANDPOINT = 15;
     public static final int ICMPEVO = 16;
@@ -1493,13 +1493,13 @@ public class Global extends MultiDexApplication {
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
-                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 || _printer_type == Global.PAT215);
+                _printer_type == Global.OT310 || _printer_type == Global.ELOPAYPOINT || _printer_type == Global.PAT215);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ESY13P1);
+                || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
     }
 
     // Handle application transition for background
