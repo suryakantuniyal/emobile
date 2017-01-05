@@ -435,13 +435,12 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             Global global = (Global) getActivity().getApplication();
             for (OrderProduct product : restaurantSplitedOrder.getOrderProducts()) {
                 product.setOrd_id(global.order.ord_id);
+                global.orderProducts.add(product);
                 if (summaryFa.splitType != SplittedOrderSummary_FA.SalesReceiptSplitTypes.SPLIT_EQUALLY) {
                     global.order.ord_subtotal = Global.getBigDecimalNum(global.order.ord_subtotal)
                             .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_subtotal)).toString();
-
                     global.order.ord_total = Global.getBigDecimalNum(global.order.ord_total)
                             .add(Global.getBigDecimalNum(restaurantSplitedOrder.ord_total)).toString();
-
                     global.order.gran_total = Global.getBigDecimalNum(global.order.gran_total)
                             .add(Global.getBigDecimalNum(restaurantSplitedOrder.gran_total)).toString();
                 }

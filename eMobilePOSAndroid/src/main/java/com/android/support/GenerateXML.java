@@ -530,7 +530,6 @@ public class GenerateXML {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
     }
 
     public void buildOrder(XmlSerializer serializer, boolean isOnHold) {
@@ -1034,7 +1033,7 @@ public class GenerateXML {
                     serializer.text(String.valueOf(product.isAdded()));//cursor.getString(cursor.getColumnIndex("isAdded")));
                     serializer.endTag(empstr, "isAdded");
 
-                    serializer.startTag(empstr, "15ed");
+                    serializer.startTag(empstr, "isPrinted");
 
                     if (!isOnHold)
                         serializer.text(String.valueOf(product.isPrinted()));//cursor.getString(cursor.getColumnIndex("isPrinted")));
