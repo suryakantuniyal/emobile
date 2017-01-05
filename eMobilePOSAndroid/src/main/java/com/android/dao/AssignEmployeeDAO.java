@@ -14,7 +14,10 @@ public class AssignEmployeeDAO {
 
     public static AssignEmployee getAssignEmployee() {
         Realm r = Realm.getDefaultInstance();
-        return r.where(AssignEmployee.class).findFirst();
+        r.beginTransaction();
+        AssignEmployee employee = r.where(AssignEmployee.class).findFirst();
+        r.commitTransaction();
+        return employee;
     }
 
     public static void insertAssignEmployee(List<AssignEmployee> assignEmployees) throws Exception {
@@ -23,6 +26,7 @@ public class AssignEmployeeDAO {
         }
         Realm r = Realm.getDefaultInstance();
         r.beginTransaction();
+        r.where(AssignEmployee.class).findAll().deleteAllFromRealm();
         r.copyToRealmOrUpdate(assignEmployees);
         r.commitTransaction();
     }

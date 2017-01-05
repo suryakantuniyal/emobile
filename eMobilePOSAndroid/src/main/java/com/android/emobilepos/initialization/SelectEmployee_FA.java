@@ -204,7 +204,7 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 //        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(this);
 
         try {
-            String xml = post.postData(4, activity, "");
+            String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEES, activity, "");
             Gson gson = JsonUtils.getInstance();
             Type listType = new com.google.gson.reflect.TypeToken<List<AssignEmployee>>() {
             }.getType();
