@@ -134,7 +134,7 @@ android {
     buildTypes {
         debug {
             buildConfigField "boolean", "REPORT_CRASHLITYCS", "false"
-            buildConfigField "boolean", "PRINT_TO_LOG", "true"
+            buildConfigField "boolean", "PRINT_TO_LOG", "false"
             buildConfigField "boolean", "DEBUG_NOMAD", "true"
             buildConfigField "boolean", "DELETE_INVALID_HOLDS", "true"
             minifyEnabled false
@@ -194,6 +194,7 @@ dependencies {
 //        compile files('libs/IDTuniMagSDKAndroid.jar')
     compile files('libs/JAsura_Android.jar')
     compile files('libs/libuart.jar')
+    compile files('libs/mtscra.jar')
     compile files('libs/magtek-scra.jar')
     compile files('libs/MobilePrinter.jar')
     compile files('libs/pat100Cashdrawer1.1.jar')
