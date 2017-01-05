@@ -1,6 +1,5 @@
 package com.android.emobilepos.mainmenu.restaurant;
 
-
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -60,7 +59,6 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
         mViewPager.setCurrentItem(page);
     }
 
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -76,7 +74,6 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
     public void setmSectionsPagerAdapter(SectionsPagerAdapter mSectionsPagerAdapter) {
         this.mSectionsPagerAdapter = mSectionsPagerAdapter;
     }
-
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter implements IconPagerAdapter {
 
@@ -187,7 +184,6 @@ public class DinningTablesActivity extends BaseFragmentActivityActionBar {
 
         private DinningTable table;
         DinningTableOrder tableOrder;
-
 
         @Override
         protected Boolean doInBackground(Object... params) {

@@ -536,7 +536,6 @@ public class GenerateXML {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
     }
 
     public void buildOrder(XmlSerializer serializer, boolean isOnHold) {
