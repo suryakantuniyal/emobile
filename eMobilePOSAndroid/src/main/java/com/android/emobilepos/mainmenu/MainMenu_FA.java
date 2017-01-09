@@ -236,7 +236,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
 //                }
 //            }
             DeviceUtils.autoConnect(activity, loadMultiPrinter);
-            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS) {
+            if (myPref.getPrinterType() == Global.POWA || myPref.getPrinterType() == Global.MEPOS
+                    || myPref.getPrinterType() == Global.ELOPAYPOINT) {
                 isUSB = true;
             }
             if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null &&

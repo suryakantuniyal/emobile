@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.android.emobilepos">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.android.emobilepos">
 
-    <uses-sdk tools:overrideLibrary="android.support.test.uiautomator.v18" />
+    <uses-sdk tools:overrideLibrary="android.support.test.uiautomator.v18"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.NFC" />
-    <uses-permission android:name="android.permission.USB_PERMISSION" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.USB_PERMISSION"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
 
     <permission
         android:name="android.permission.MSR_OPERATION"
-        android:protectionLevel="normal" />
+        android:protectionLevel="normal"/>
 
-    <uses-permission android:name="android.permission.MSR_OPERATION" />
+    <uses-permission android:name="android.permission.MSR_OPERATION"/>
 
     <uses-feature
         android:name="android.hardware.camera.autofocus"
-        android:required="false" />
+        android:required="false"/>
     <uses-feature
         android:name="android.hardware.camera.front"
-        android:required="false" />
+        android:required="false"/>
     <uses-feature
         android:name="android.hardware.camera.front.autofocus"
-        android:required="false" />
+        android:required="false"/>
 
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
 
     <uses-feature
         android:name="android.hardware.usb.accessory"
-        android:required="true" />
-    <uses-feature android:name="android.hardware.usb.host" />
+        android:required="true"/>
+    <uses-feature android:name="android.hardware.usb.host"/>
 
     <application
         android:name="com.android.support.Global"
@@ -57,10 +57,14 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="android.nfc.disable_beam_default"
-            android:value="true" />
+            android:value="true"/>
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="6fd88ec526ef9dd434f31ce165d5e68db177897c" />
+            android:value="6fd88ec526ef9dd434f31ce165d5e68db177897c"/>
+
+        <service
+            android:name="com.magtek.mobile.android.mtlib.MTUSBService"
+            android:enabled="true"/>
 
         <activity
             android:name=".initialization.SelectAccount_FA"
@@ -68,9 +72,9 @@
             android:label="@string/title_activity_main_menu"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
@@ -78,93 +82,93 @@
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-                android:resource="@xml/accessory_filter" />
+                android:resource="@xml/accessory_filter"/>
 
             <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
+                android:resource="@xml/device_filter"/>
         </activity>
         <activity
             android:name=".initialization.SelectEmployee_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".initialization.SelectPassword_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".history.HistoryTransactions_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".history.HistoryPayments_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".history.HistoryOpenInvoices_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".history.HistoryConsignment_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".history.HistoryGiftRewardLoyalty_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".history.HistoryInventoryTransfer_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".history.details.HistoryTransactionDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".history.details.HistoryOpenInvoicesDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".history.details.HistoryConsignmentDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".history.details.HistoryPaymentDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".history.details.HistoryInventoryTransferDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".ordering.SplittedOrderSummary_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".OrderDetailsActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".payment.SelectPayMethod_FA"
             android:exported="false"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"/>
         <activity
             android:name=".payment.ProcessCreditCard_FA"
             android:configChanges="orientation|screenSize"
@@ -172,19 +176,19 @@
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
-                <action android:name="com.android.emobilepos.RECVR3" />
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <action android:name="com.android.emobilepos.RECVR3"/>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/ot310_device_filter" />
+                android:resource="@xml/ot310_device_filter"/>
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
-                android:resource="@xml/ot310_device_filter" />
+                android:resource="@xml/ot310_device_filter"/>
         </activity>
         <activity
             android:name=".payment.ProcessGiftCard_FA"
@@ -193,9 +197,9 @@
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
-                <action android:name="com.android.emobilepos.RECVR2" />
+                <action android:name="com.android.emobilepos.RECVR2"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
@@ -203,28 +207,28 @@
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".payment.ProcessCheck_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".payment.CaptureCheck_FA"
             android:configChanges="orientation|screenSize"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".payment.ProcessGenius_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".payment.TupyxCamera_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".payment.ProcessTupyx_FA"
             android:configChanges="orientation|screenSize"
@@ -232,16 +236,16 @@
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="application/com.tupyx.wallet.checkout.nfc" />
+                <data android:mimeType="application/com.tupyx.wallet.checkout.nfc"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.nfc.disable_beam_default"
-                android:value="true" />
+                android:value="true"/>
         </activity>
         <activity
             android:name=".payment.ProcessBoloro_FA"
@@ -250,64 +254,64 @@
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.nfc.disable_beam_default"
-                android:value="true" />
+                android:value="true"/>
         </activity>
         <activity
             android:name=".OnHoldActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".customer.ViewCustomers_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".customer.CreateCustomer_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name=".customer.ViewCustomerDetails_FA"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".ShowProductImageActivity"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".DrawReceiptActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="sensorLandscape"/>
         <activity
             android:name=".ordering.ViewProductDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".ordering.PickerProduct_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:theme="@style/Theme.TransparentTest" />
+            android:theme="@style/Theme.TransparentTest"/>
         <activity
             android:name=".ordering.PickerAddon_FA"
             android:exported="false"
-            android:theme="@style/Theme.TransparentTest" />
+            android:theme="@style/Theme.TransparentTest"/>
         <activity
             android:name=".ordering.OrderingMain_FA"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="com.android.emobilepos.RECVR" />
+                <action android:name="com.android.emobilepos.RECVR"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <!-- <activity -->
@@ -318,12 +322,12 @@
         <activity
             android:name=".ordering.OrderAttributes_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".mainmenu.restaurant.DinningTablesActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="sensorLandscape"/>
         <activity
             android:name=".ordering.OrderAttrEdit_FA"
             android:configChanges="orientation|screenSize"
@@ -331,57 +335,57 @@
             android:theme="@style/Theme.TransparentTest"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
-                <action android:name="com.android.emobilepos.RECVR4" />
+                <action android:name="com.android.emobilepos.RECVR4"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".consignment.ConsignmentMain_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".consignment.ConsignmentCheckout_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".consignment.ConsignmentHistory_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".report.ViewReport_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".report.ViewEndOfDayReport_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".shifts.ClockInOut_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".shifts.ShiftExpensesList_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name=".shifts.ShiftExpense_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name=".shifts.OpenShift_FA"
             android:configChanges="orientation|screenSize"
             android:exported="false"
             android:theme="@style/Theme.TransparentTest"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".shifts.ShiftReportDetails_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <!-- <activity -->
         <!-- android:name="com.android.logo.settings.SettingsCategory_FA" -->
         <!-- android:exported="false" > -->
@@ -392,35 +396,35 @@
             android:exported="false"
             android:theme="@style/LightTheme">
             <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
-                android:resource="@xml/accessory_filter" />
+                android:resource="@xml/accessory_filter"/>
 
             <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
             </intent-filter>
 
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
+                android:resource="@xml/device_filter"/>
         </activity>
         <activity
             android:name=".settings.ViewStoreForwardTrans_FA"
             android:configChanges="orientation|screenSize"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".cardmanager.GiftCard_FA"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".cardmanager.LoyaltyCard_FA"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".cardmanager.RewardCard_FA"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".cardmanager.CardManager_FA"
             android:configChanges="orientation|screenSize"
@@ -428,9 +432,9 @@
             android:theme="@style/LightTheme"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
-                <action android:name="com.android.emobilepos.RECVR5" />
+                <action android:name="com.android.emobilepos.RECVR5"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
@@ -438,25 +442,25 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".cardmanager.AddBalance_FA"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".cardmanager.BalanceInquiry_FA"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".cardmanager.ManualAddBalance_FA"
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/LightTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <!-- <activity -->
         <!-- android:name="com.iparse.checkcapture.CheckCaptureActivity" -->
         <!-- android:configChanges="keyboardHidden|screenSize" -->
@@ -467,20 +471,20 @@
 
 
         <!-- Crash Activity that will appears when app crashes -->
-        <activity android:name="com.android.crashreport.CrashActivity" />
+        <activity android:name="com.android.crashreport.CrashActivity"/>
 
         <service
             android:name="com.mpowa.android.sdk.powapos.common.communication.usbsocket.PowaUsbService"
-            android:enabled="true" />
+            android:enabled="true"/>
 
         <receiver android:name="drivers.em70.utils.BCRReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.bcr.newdata" />
-                <action android:name="android.intent.action.scanner.data" />
+                <action android:name="android.intent.action.bcr.newdata"/>
+                <action android:name="android.intent.action.scanner.data"/>
             </intent-filter>
         </receiver>
 
-        <activity android:name=".payment.TipAdjustmentFA" />
+        <activity android:name=".payment.TipAdjustmentFA"/>
 
         <activity
             android:name=".settings.SettingListActivity"
@@ -491,11 +495,11 @@
             android:parentActivityName=".settings.SettingListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.android.emobilepos.settings.SettingListActivity" />
+                android:value="com.android.emobilepos.settings.SettingListActivity"/>
         </activity>
         <!--<activity-->
-            <!--android:name=".settings.SalesAssociateDinningTables"-->
-            <!--android:label="@string/title_activity_sales_associate_dinning_tables" />-->
+        <!--android:name=".settings.SalesAssociateDinningTables"-->
+        <!--android:label="@string/title_activity_sales_associate_dinning_tables" />-->
         <activity
             android:name=".settings.SalesAssociateConfigurationActivity"
             android:label="@string/title_activity_sales_associate_configuration"></activity>
