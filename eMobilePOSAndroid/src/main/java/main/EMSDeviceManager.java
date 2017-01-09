@@ -154,7 +154,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSmePOS();
                 aDevice.connect(activity, -1, false, instance);
                 break;
-            case Global.ESY13P1:
+            case Global.ELOPAYPOINT:
                 aDevice = new EMSELO();
                 aDevice.connect(activity, -1, true, instance);
                 break;
@@ -230,7 +230,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.WALKER:
                 aDevice = new EMSWalker();
                 break;
-            case Global.ESY13P1:
+            case Global.ELOPAYPOINT:
                 aDevice = new EMSELO();
                 break;
             case Global.ICMPEVO:

@@ -4,4 +4,5 @@
     <usb-device vendor-id="1240" product-id="516"/>
     <usb-device vendor-id="1155" product-id="22321"/>
     <usb-device vendor-id="11406" product-id="9220" />
+    <usb-device vendor-id="2049" product-id="17" />
 </resources>

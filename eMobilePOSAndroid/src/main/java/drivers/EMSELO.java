@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -15,7 +16,7 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.realms.Payment;
-import com.android.support.CardParser;
+import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -25,7 +26,10 @@ import com.elotouch.paypoint.register.barcodereader.BarcodeReader;
 import com.elotouch.paypoint.register.cd.CashDrawer;
 import com.elotouch.paypoint.register.cfd.CFD;
 import com.elotouch.paypoint.register.printer.SerialPort;
-import com.magtek.mobile.android.libDynamag.MagTeklibDynamag;
+import com.magtek.mobile.android.mtlib.MTConnectionType;
+import com.magtek.mobile.android.mtlib.MTEMVEvent;
+import com.magtek.mobile.android.mtlib.MTSCRA;
+import com.magtek.mobile.android.mtlib.MTSCRAEvent;
 import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
@@ -35,7 +39,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-import drivers.elo.utils.MagStripDriver;
 import drivers.elo.utils.PrinterAPI;
 import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
@@ -58,9 +61,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     }
 
     private EMSCallBack scannerCallBack;
-    MagStripDriver eloCardSwiper;
     private Encrypt encrypt;
-    private CreditCardInfo cardManager;
     private EMSDeviceManager edm;
     private EMSELO thisInstance;
     private Handler handler;
@@ -69,6 +70,83 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
     private BarcodeReader barcodereader = new BarcodeReader();
     private boolean didConnect;
     private static CFD customerFacingDisplay;
+    private static MTSCRA m_scra;
+    private Handler m_scraHandler;
+    public static final String CONNECTION_TYPE_VALUE_USB = "USB";
+
+    private class SCRAHandlerCallback implements Handler.Callback {
+        private static final String TAG = "Magtek";
+
+        public boolean handleMessage(Message msg) {
+            try {
+                Log.i(TAG, "*** Callback " + msg.what);
+                switch (msg.what) {
+                    case MTSCRAEvent.OnDeviceConnectionStateChanged:
+//                        OnDeviceStateChanged((MTConnectionState) msg.obj);
+                        break;
+                    case MTSCRAEvent.OnCardDataStateChanged:
+//                        OnCardDataStateChanged((MTCardDataState) msg.obj);
+                        break;
+                    case MTSCRAEvent.OnDataReceived:
+                        if (m_scra.getResponseData() != null) {
+                            CreditCardInfo cardInfo = new CreditCardInfo();
+                            cardInfo.setCardOwnerName(m_scra.getCardName());
+                            if (m_scra.getCardExpDate() != null && !m_scra.getCardExpDate().isEmpty()) {
+                                String year = m_scra.getCardExpDate().substring(0, 2);
+                                String month = m_scra.getCardExpDate().substring(2, 4);
+                                cardInfo.setCardExpYear(year);
+                                cardInfo.setCardExpMonth(month);
+                            }
+                            cardInfo.setCardType(ProcessCreditCard_FA.getCardType(m_scra.getCardIIN()));
+                            cardInfo.setCardLast4(m_scra.getCardLast4());
+                            cardInfo.setEncryptedTrack1(m_scra.getTrack1());
+                            cardInfo.setEncryptedTrack2(m_scra.getTrack2());
+                            cardInfo.setCardNumAESEncrypted(encrypt.encryptWithAES(m_scra.getCardPAN()));
+                            if (m_scra.getTrack1Masked() != null && !m_scra.getTrack1Masked().isEmpty())
+                                cardInfo.setEncryptedAESTrack1(encrypt.encryptWithAES(m_scra.getTrack1Masked()));
+                            if (m_scra.getTrack2Masked() != null && !m_scra.getTrack2Masked().isEmpty())
+                                cardInfo.setEncryptedAESTrack2(encrypt.encryptWithAES(m_scra.getTrack2Masked()));
+                            cardInfo.setDeviceSerialNumber(m_scra.getDeviceSerial());
+                            cardInfo.setMagnePrint(m_scra.getMagnePrint());
+                            cardInfo.setMagnePrintStatus(m_scra.getMagnePrintStatus());
+                            cardInfo.setTrackDataKSN(m_scra.getKSN());
+                            scannerCallBack.cardWasReadSuccessfully(true, cardInfo);
+                        }
+                        break;
+                    case MTSCRAEvent.OnDeviceResponse:
+//                        OnDeviceResponse((String) msg.obj);
+                        break;
+                    case MTEMVEvent.OnTransactionStatus:
+//                        OnTransactionStatus((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnDisplayMessageRequest:
+//                        OnDisplayMessageRequest((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnUserSelectionRequest:
+//                        OnUserSelectionRequest((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnARQCReceived:
+//                        OnARQCReceived((byte[]) msg.obj);
+                        break;
+                    case MTEMVEvent.OnTransactionResult:
+//                        OnTransactionResult((byte[]) msg.obj);
+                        break;
+
+                    case MTEMVEvent.OnEMVCommandResult:
+//                        OnEMVCommandResult((byte[]) msg.obj);
+                        break;
+
+                    case MTEMVEvent.OnDeviceExtendedResponse:
+//                        OnDeviceExtendedResponse((String) msg.obj);
+                        break;
+                }
+            } catch (Exception ex) {
+
+            }
+
+            return true;
+        }
+    }
 
     public static CFD getTerminalDisp() {
         if (customerFacingDisplay == null) {
@@ -90,12 +168,10 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         getTerminalDisp().setLine2(Line2);
     }
 
-
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, EMSDeviceManager edm) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-        cardManager = new CreditCardInfo();
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
@@ -103,13 +179,11 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, true);
     }
 
-
     @Override
     public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
-        cardManager = new CreditCardInfo();
         encrypt = new Encrypt(activity);
         this.edm = edm;
         thisInstance = this;
@@ -117,7 +191,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         new processConnectionAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false);
         return true;
     }
-
 
     public class processConnectionAsync extends AsyncTask<Boolean, String, Boolean> {
 
@@ -174,7 +247,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
     }
 
-
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         try {
@@ -199,7 +271,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         return true;
     }
 
-
     @Override
     public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
         try {
@@ -214,16 +285,13 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             return false;
         }
 
-
         return true;
     }
-
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return printBalanceInquiry(values, LINE_WIDTH);
     }
-
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
@@ -354,40 +422,48 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         this.registerPrinter();
     }
 
-
     public void registerPrinter() {
         edm.setCurrentDevice(this);
     }
 
     public void unregisterPrinter() {
-        edm.setCurrentDevice( null);
+        edm.setCurrentDevice(null);
         TurnOffBCR();
     }
 
     @Override
     public void loadCardReader(final EMSCallBack callBack, boolean isDebitCard) {
-        eloCardSwiper = new MagStripDriver(activity);
-        eloCardSwiper.startDevice();
-        eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
-
-            @Override
-            public void OnDeviceDisconnected() { //Fired when the Device has been Disconnected.
-                Toast.makeText(activity, "Magnetic-Stripe Device Disconnected !", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void OnDeviceConnected() { //Fired when the Device has been Connected.
-                Toast.makeText(activity, "Magnetic-Stripe Device Connected !", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
-                Log.d("Card Data", cardData.toString());
-                CreditCardInfo creditCardInfo = new CreditCardInfo();
-                boolean parsed = CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
-                callBack.cardWasReadSuccessfully(parsed, creditCardInfo);
-            }
-        });
+        this.scannerCallBack = callBack;
+        if (m_scra == null) {
+            m_scraHandler = new Handler(new SCRAHandlerCallback());
+            m_scra = new MTSCRA(activity, m_scraHandler);
+            m_scra.setConnectionType(MTConnectionType.USB);
+            m_scra.setAddress(null);
+            m_scra.setConnectionRetry(true);
+            m_scra.openDevice();
+        }
+//        eloCardSwiper = new MagStripDriver(activity);
+//        eloCardSwiper.startDevice();
+//        eloCardSwiper.registerMagStripeListener(new MagStripDriver.MagStripeListener() { //MageStripe Reader's Listener for notifying various events.
+//
+//            @Override
+//            public void OnDeviceDisconnected() { //Fired when the Device has been Disconnected.
+//                Toast.makeText(activity, "Magnetic-Stripe Device Disconnected !", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void OnDeviceConnected() { //Fired when the Device has been Connected.
+//                Toast.makeText(activity, "Magnetic-Stripe Device Connected !", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void OnCardSwiped(MagTeklibDynamag cardData) { //Fired when a card has been swiped on the device.
+//                Log.d("Card Data", cardData.toString());
+//                CreditCardInfo creditCardInfo = new CreditCardInfo();
+//                boolean parsed = CardParser.parseCreditCard(activity, cardData.getCardData(), creditCardInfo);
+//                callBack.cardWasReadSuccessfully(parsed, creditCardInfo);
+//            }
+//        });
     }
 
     @Override
@@ -402,7 +478,6 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
             TurnOffBCR();
         }
     }
-
 
     @Override
     public void releaseCardReader() {
