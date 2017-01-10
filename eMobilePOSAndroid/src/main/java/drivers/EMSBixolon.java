@@ -7,12 +7,12 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -377,20 +377,32 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+////        setPaperWidth(LINE_WIDTH);
+//        Bitmap bitmap = loadBitmapFromView(view);
+//        try {
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
-//        setPaperWidth(LINE_WIDTH);
-        Bitmap bitmap = loadBitmapFromView(view);
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
-
     }
-
     @Override
     public void salePayment(Payment payment) {
 

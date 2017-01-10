@@ -10,13 +10,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMSEpayLoginInfo;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -323,12 +323,16 @@ public class EMSHandpoint extends EMSDeviceDriver implements EMSDeviceManagerPri
     public void toggleBarcodeReader() {
 
     }
+//
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
 
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
 
     }
-
 
     public void discoverDevices(String deviceName, String macAddress) {
         device = new Device(deviceName, macAddress, "", ConnectionMethod.BLUETOOTH);

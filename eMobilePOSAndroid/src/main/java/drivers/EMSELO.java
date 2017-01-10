@@ -8,13 +8,13 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
 import com.android.support.ConsignmentTransaction;
@@ -520,15 +520,34 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         }
     }
 
-    @Override
-    public void printReceiptPreview(View view) {
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//        try {
+//            SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
+//            eloPrinterApi = new PrinterAPI(eloPrinterPort);
+//            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//            eloPrinterPort.getInputStream().close();
+//            eloPrinterPort.getOutputStream().close();
+//            eloPrinterPort.close();
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
+    @Override
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
             SerialPort eloPrinterPort = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
             eloPrinterApi = new PrinterAPI(eloPrinterPort);
             setPaperWidth(LINE_WIDTH);
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
             eloPrinterPort.getInputStream().close();
             eloPrinterPort.getOutputStream().close();
             eloPrinterPort.close();

@@ -433,7 +433,7 @@ public class EMSPlainTextHelper {
         StringBuilder sb = new StringBuilder();
         if (numNewLines > 0)
             for (int i = 0; i < numNewLines; i++)
-                sb.append("\n");
+                sb.append(" \n");
         return sb.toString();
     }
 

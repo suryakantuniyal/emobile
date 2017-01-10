@@ -27,7 +27,6 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         this.splitedOrders = splitedOrders;
     }
 
-
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
@@ -75,7 +74,6 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         this.selectedIndex = selectedIndex;
     }
 
-
     public class ViewHolder {
         TextView tableNumber;
         TextView seatNumber;
@@ -83,7 +81,6 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         TextView ticketPrice;
         TextView itemsList;
     }
-
 
     @Override
     public Filter getFilter() {
@@ -105,7 +102,13 @@ public class SplittedOrderSummaryAdapter extends BaseAdapter implements Filterab
         return splitedOrders.get(position);
     }
 
-    public void removeOrder(SplitedOrder order){
+    public SplitedOrder[] getItems() {
+        SplitedOrder[] arr = new SplitedOrder[0];
+        arr = splitedOrders.toArray(arr);
+        return arr;
+    }
+
+    public void removeOrder(SplitedOrder order) {
         this.splitedOrders.remove(order);
         notifyDataSetChanged();
     }
