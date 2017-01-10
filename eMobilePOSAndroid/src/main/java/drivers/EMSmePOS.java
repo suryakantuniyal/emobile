@@ -7,12 +7,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.view.View;
 import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -107,6 +107,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
         verifyPrinterStatus();
+        setPaperWidth(LINE_WIDTH);
         printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
         return true;
     }
@@ -114,6 +115,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
         verifyPrinterStatus();
+        setPaperWidth(LINE_WIDTH);
         printTransaction(ordID, type, isFromHistory, fromOnHold, null);
         return true;
     }
@@ -122,29 +124,34 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
         verifyPrinterStatus();
+        setPaperWidth(LINE_WIDTH);
         printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
         return true;
     }
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
+        setPaperWidth(LINE_WIDTH);
         return printBalanceInquiry(values, LINE_WIDTH);
     }
 
     @Override
     public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        setPaperWidth(LINE_WIDTH);
         printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
         return true;
     }
 
     @Override
     public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        setPaperWidth(LINE_WIDTH);
         printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
         return true;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
+        setPaperWidth(LINE_WIDTH);
         printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
         return true;
     }
@@ -156,6 +163,7 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printOpenInvoices(String invID) {
+        setPaperWidth(LINE_WIDTH);
         printOpenInvoicesReceipt(invID, LINE_WIDTH);
         return true;
     }
@@ -177,17 +185,20 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printReport(String curDate) {
+        setPaperWidth(LINE_WIDTH);
         printReportReceipt(curDate, LINE_WIDTH);
         return true;
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
+        setPaperWidth(LINE_WIDTH);
         printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
     public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        setPaperWidth(LINE_WIDTH);
         printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
@@ -258,12 +269,17 @@ public class EMSmePOS extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {

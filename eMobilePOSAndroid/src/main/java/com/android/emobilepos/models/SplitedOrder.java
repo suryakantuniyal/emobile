@@ -11,10 +11,11 @@ public class SplitedOrder extends Order implements Cloneable, Comparable<Splited
     private List<OrderProduct> orderProducts;
     private String tableNumber;
     public long splittedOrderId = System.currentTimeMillis();
-
+    private Activity activity;
 
     public SplitedOrder(Activity activity, Order order) {
         super(activity);
+        this.activity = activity;
         init(order);
         splittedOrderId = System.currentTimeMillis();
         try {

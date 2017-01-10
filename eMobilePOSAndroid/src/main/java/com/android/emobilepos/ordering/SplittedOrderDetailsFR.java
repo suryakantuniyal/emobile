@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -175,6 +174,38 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         productAddonsSection.addView(itemLL);
     }
 
+    private void applyPreviewCalculations(SplitedOrder splitedOrder) {
+        SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
+        BigDecimal orderSubtotal = new BigDecimal(0);
+        BigDecimal orderTaxes = new BigDecimal(0);
+        BigDecimal orderGranTotal = new BigDecimal(0);
+        BigDecimal itemDiscountTotal = new BigDecimal(0);
+        BigDecimal globalDiscountTotal = new BigDecimal(0);
+        List<OrderProduct> products = splitedOrder.getOrderProducts();
+        for (OrderProduct product : products) {
+            BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
+            orderSubtotal = orderSubtotal.add(product.getAddonsTotalPrice()).add(Global.getBigDecimalNum(product.getFinalPrice()).multiply(qty));
+            globalDiscountTotal = globalDiscountTotal.add(Global.getBigDecimalNum(product.getFinalPrice()).setScale(4, RoundingMode.HALF_UP)
+                    .multiply(orderSummaryFa.getGlobalDiscountPercentge().setScale(6, RoundingMode.HALF_UP)));
+            itemDiscountTotal = itemDiscountTotal.add(Global.getBigDecimalNum(product.getDiscount_value()));
+            if (orderSummaryFa.getTax() != null) {
+                TaxesCalculator taxesCalculator = new TaxesCalculator(getActivity(), product, splitedOrder.tax_id,
+                        orderSummaryFa.getTax(), orderSummaryFa.getDiscount(), Global.getBigDecimalNum(splitedOrder.ord_subtotal),
+                        Global.getBigDecimalNum(splitedOrder.ord_discount));
+                orderTaxes = orderTaxes.add(taxesCalculator.getTaxableAmount());
+            }
+        }
+        orderGranTotal = orderSubtotal.subtract(itemDiscountTotal).setScale(6, RoundingMode.HALF_UP)
+                .subtract(globalDiscountTotal).setScale(6, RoundingMode.HALF_UP).add(orderTaxes)
+                .setScale(6, RoundingMode.HALF_UP);
+        splitedOrder.ord_total = orderGranTotal.toString();
+        splitedOrder.gran_total = orderGranTotal.toString();
+        splitedOrder.ord_subtotal = orderSubtotal.toString();
+        splitedOrder.ord_taxamount = orderTaxes.toString();
+        splitedOrder.ord_discount = globalDiscountTotal.toString();
+        splitedOrder.ord_lineItemDiscount = itemDiscountTotal.toString();
+    }
+
     public void setReceiptOrder(SplitedOrder splitedOrder) {
         restaurantSplitedOrder = splitedOrder;
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(getActivity());
@@ -248,36 +279,39 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
             case R.id.printReceiptbutton2: {
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.getCurrentDevice() != null) {
-                    new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, receiptPreview);
+                    new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, restaurantSplitedOrder);
                 }
                 break;
             }
             case R.id.printAllReceiptbutton3: {
                 if (Global.mainPrinterManager != null
                         && Global.mainPrinterManager.getCurrentDevice() != null) {
-                    final int[] count = {0};
+//                    final int[] count = {0};
                     SplittedOrderSummary_FA orderSummaryFa = (SplittedOrderSummary_FA) getActivity();
                     final SplittedOrderSummaryAdapter adapter = (SplittedOrderSummaryAdapter) orderSummaryFa.getOrderSummaryFR().getGridView().getAdapter();
-                    ViewTreeObserver vto = receiptPreview.getViewTreeObserver();
-                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            count[0]++;
-                            Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(receiptPreview);
-                            if (count[0] < adapter.getCount()) {
-                                setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
-                            } else {
-                                receiptPreview.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                            }
-                        }
-                    });
-                    setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
+//                    ViewTreeObserver vto = receiptPreview.getViewTreeObserver();
+//                    vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//                        @Override
+//                        public void onGlobalLayout() {
+//                            Global.mainPrinterManager.getCurrentDevice().printReceiptPreview((SplitedOrder) adapter.getItem(count[0]));
+//                            count[0]++;
+//                            if (count[0] < adapter.getCount()) {
+//                                setReceiptOrder((SplitedOrder) adapter.getItem(count[0]));
+//                            } else {
+//                                receiptPreview.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                            }
+//                        }
+//                    });
+                    for (int i = 0; i < adapter.getCount(); i++) {
+                        applyPreviewCalculations((SplitedOrder) adapter.getItem(i));
+                    }
+                    new PrintPreview().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, adapter.getItems());
                 }
             }
         }
     }
 
-    public class PrintPreview extends AsyncTask<LinearLayout, Void, Void> {
+    public class PrintPreview extends AsyncTask<SplitedOrder, Void, Void> {
         private ProgressDialog myProgressDialog;
 
         @Override
@@ -290,8 +324,10 @@ public class SplittedOrderDetailsFR extends Fragment implements View.OnClickList
         }
 
         @Override
-        protected Void doInBackground(LinearLayout... params) {
-            Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(params[0]);
+        protected Void doInBackground(SplitedOrder... params) {
+            for (SplitedOrder order : params) {
+                Global.mainPrinterManager.getCurrentDevice().printReceiptPreview(order);
+            }
             return null;
         }
 
