@@ -8,10 +8,10 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -218,8 +218,13 @@ public class EMSEM70 extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
 
     }
 

@@ -42,6 +42,7 @@ import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Orders;
 import com.android.emobilepos.models.PaymentDetails;
 import com.android.emobilepos.models.ShiftPeriods;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.payment.ProcessGenius_FA;
 import com.android.support.ConsignmentTransaction;
@@ -383,13 +384,13 @@ public class EMSDeviceDriver {
             receipt.setCutType(0);
 
             for (MePOSReceiptLine line : mePOSReceipt.getLines()) {
-                if(line instanceof  MePOSReceiptTextLine) {
-                    String[] split = ((MePOSReceiptTextLine)line).text.split(("\n"));
+                if (line instanceof MePOSReceiptTextLine) {
+                    String[] split = ((MePOSReceiptTextLine) line).text.split(("\n"));
                     for (String str : split) {
                         MePOSReceiptTextLine textLine = new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT);
                         receipt.addLine(textLine);
                     }
-                }else{
+                } else {
                     receipt.addLine(line);
                 }
             }
@@ -557,6 +558,65 @@ public class EMSDeviceDriver {
         setPaperWidth(lineWidth);
         printPref = myPref.getPrintingPreferences();
         printImage(bitmap);
+        cutPaper();
+    }
+
+    public void printReceiptPreview(SplitedOrder splitedOrder, int lineWidth) throws JAException, StarIOPortException {
+        startReceipt();
+        setPaperWidth(lineWidth);
+        printPref = myPref.getPrintingPreferences();
+        printImage(0);
+        printHeader(lineWidth);
+        StringBuilder sb = new StringBuilder();
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.sales_receipt) + ":", splitedOrder.ord_id,
+                lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
+                DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
+                String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()), lineWidth, 0));
+        for (OrderProduct product : splitedOrder.getOrderProducts()) {
+            BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
+            sb.append(textHandler.oneColumnLineWithLeftAlignedText(String.format("%sx %s", product.getOrdprod_qty(), product.getOrdprod_name()), lineWidth, 1));
+            for (OrderProduct addon : product.addonsProducts) {
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText("- " + addon.getOrdprod_name(),
+                        Global.getCurrencyFormat(addon.getFinalPrice())
+                        , lineWidth, 3));
+
+            }
+
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
+                    Global.getCurrencyFormat(product.getFinalPrice()), lineWidth, 3));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
+                    Global.getCurrencyFormat(product.getDiscount_value()), lineWidth, 3));
+            sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total),
+                    Global.getCurrencyFormat(Global.getBigDecimalNum(product.getItemTotal())
+                            .multiply(qty).toString()), lineWidth, 3));
+            sb.append(textHandler.oneColumnLineWithLeftAlignedText(getString(R.string.receipt_description), lineWidth, 3));
+            if (product.getOrdprod_desc() != null && !product.getOrdprod_desc().isEmpty()) {
+                StringTokenizer tokenizer = new StringTokenizer(product.getOrdprod_desc(), "<br/>");
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText(tokenizer.nextToken().toString(), lineWidth, 3));
+            } else {
+                sb.append(textHandler.oneColumnLineWithLeftAlignedText("", lineWidth, 3));
+            }
+        }
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.subtotal_receipt),
+                Global.getCurrencyFormat(Global.getBigDecimalNum(splitedOrder.ord_subtotal).toString()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount_line_item),
+                Global.getCurrencyFormat(Global.getBigDecimalNum(splitedOrder.ord_lineItemDiscount).toString()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_global_discount),
+                Global.getCurrencyFormat(Global.getBigDecimalNum(splitedOrder.ord_discount).toString()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tax),
+                Global.getCurrencyFormat(Global.getBigDecimalNum(splitedOrder.ord_taxamount).toString()), lineWidth, 0));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_grandtotal),
+                Global.getCurrencyFormat(Global.getBigDecimalNum(splitedOrder.gran_total).toString()), lineWidth, 0));
+        sb.append(textHandler.newLines(2));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_tip), textHandler.newDivider('_', lineWidth / 2), lineWidth, 0));
+        sb.append(textHandler.newLines(2));
+        sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total), textHandler.newDivider('_', lineWidth / 2), lineWidth, 0));
+        sb.append(textHandler.newLines(2));
+        print(sb.toString());
+        printFooter(lineWidth);
+
         cutPaper();
     }
 
@@ -952,14 +1012,13 @@ public class EMSDeviceDriver {
         } else if (isPOSPrinter) {
             print(new byte[]{0x1b, 0x64, 0x02}); // Cut
         } else if (this instanceof EMSmePOS) {
-            try {
-                printImage(0);
-            } catch (StarIOPortException e) {
-                e.printStackTrace();
-            } catch (JAException e) {
-                e.printStackTrace();
-            }
-
+//            try {
+//                printImage(0);
+//            } catch (StarIOPortException e) {
+//                e.printStackTrace();
+//            } catch (JAException e) {
+//                e.printStackTrace();
+//            }
             finishReceipt();
         }
     }
@@ -1078,7 +1137,10 @@ public class EMSDeviceDriver {
             } else if (this instanceof EMSPowaPOS) {
                 powaPOS.printImage(myBitmap);
             } else if (this instanceof EMSmePOS) {
-                Bitmap bmpMonochrome = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                float ratio = Integer.valueOf(PAPER_WIDTH).floatValue() / Integer.valueOf(myBitmap.getWidth()).floatValue();
+                int width = Math.round(ratio * myBitmap.getWidth());
+                int height = Math.round(ratio * myBitmap.getHeight());
+                Bitmap bmpMonochrome = Bitmap.createBitmap(width / 2, height / 2, Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bmpMonochrome);
                 ColorMatrix ma = new ColorMatrix();
                 ma.setSaturation(0);
@@ -1276,11 +1338,10 @@ public class EMSDeviceDriver {
         if (header[2] != null && !header[2].isEmpty())
             sb.append(textHandler.centeredString(header[2], lineWidth));
 
-//        if (!sb.toString().isEmpty()) {
-//            sb.append(textHandler.newLines(1));
-//            print(sb.toString());
-
-//    }
+        if (!sb.toString().isEmpty()) {
+            sb.append(textHandler.newLines(1));
+            print(sb.toString());
+        }
 
     }
 
@@ -1316,7 +1377,7 @@ public class EMSDeviceDriver {
             sb.append(textHandler.centeredString(footer[2], lineWidth));
 
         if (!sb.toString().isEmpty()) {
-            sb.append(textHandler.newLines(2));
+            sb.append(textHandler.newLines(1));
             print(sb.toString());
 
         }
