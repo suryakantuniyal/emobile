@@ -403,7 +403,8 @@
                             android:singleLine="true"
                             android:textAppearance="@style/black_text_appearance_unbold"
                             android:textColor="#000000"
-                            android:textSize="@dimen/field_general_txt_size"></com.android.support.MyEditText>
+                            android:textSize="@dimen/field_general_txt_size"
+                            android:enabled="false"></com.android.support.MyEditText>
                     </TableRow>
 
                 </TableLayout>
