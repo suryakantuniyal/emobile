@@ -847,7 +847,7 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("OT-310")) {
             myPref.setIsOT310(true);
             return true;
-        } else if (model.equals("PayPoint ELOPAYPOINT")) {
+        } else if (model.toUpperCase().contains("PAYPOINT")) {
             myPref.setIsESY13P1(true);
             return true;
         } else {

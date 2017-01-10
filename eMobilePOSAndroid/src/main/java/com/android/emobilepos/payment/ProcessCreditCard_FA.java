@@ -354,9 +354,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         year.setVisibility(View.GONE);
         authIDField.setVisibility(View.GONE);
         transIDField.setVisibility(View.GONE);
-        tipAmount.setVisibility(View.GONE);
+//        tipAmount.setVisibility(View.GONE);
         findViewById(R.id.accountInformationTextView).setVisibility(View.GONE);
-        findViewById(R.id.tipAmountBut).setVisibility(View.GONE);
+//        findViewById(R.id.tipAmountBut).setVisibility(View.GONE);
         findViewById(R.id.expirationDateTextView).setVisibility(View.GONE);
 
     }
