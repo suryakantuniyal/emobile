@@ -2,10 +2,10 @@ package interfaces;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
@@ -41,7 +41,6 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void cutPaper();
 
-
     boolean printReport(String curDate);
 
     public void printShiftDetailsReport(String shiftID);
@@ -68,7 +67,9 @@ public interface EMSDeviceManagerPrinterDelegate {
 
     void toggleBarcodeReader();
 
-    void printReceiptPreview(View view);
+//    void printReceiptPreview(View view);
+
+    void printReceiptPreview(SplitedOrder splitedOrder);
 
     void salePayment(Payment payment);
 

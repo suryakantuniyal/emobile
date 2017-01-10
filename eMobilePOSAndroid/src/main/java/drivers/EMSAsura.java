@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextPaint;
 import android.util.Base64;
-import android.view.View;
 
 import com.StarMicronics.jasura.IBarcodeListener;
 import com.StarMicronics.jasura.IMSRListener;
@@ -36,9 +35,10 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.realms.Payment;
-import com.android.emobilepos.models.PaymentDetails;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.DateUtils;
@@ -1292,11 +1292,24 @@ public class EMSAsura extends EMSDeviceDriver
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//        try {
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {

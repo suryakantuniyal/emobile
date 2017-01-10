@@ -7,11 +7,11 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
@@ -370,8 +370,13 @@ public class EMSIngenico extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
 
     }
 

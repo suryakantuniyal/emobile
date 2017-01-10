@@ -7,11 +7,11 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
+import com.android.emobilepos.models.SplitedOrder;
 import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -217,8 +217,13 @@ public class EMSRP600 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
 
     }
 
