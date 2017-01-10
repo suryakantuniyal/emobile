@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 
@@ -70,6 +71,9 @@ public class DBManager {
         }
     }
 
+    public boolean resetDatabase() {
+        return context.deleteDatabase(CIPHER_DB_NAME);
+    }
     public DBManager(Context context) {
 
         this.context = context;
@@ -88,6 +92,10 @@ public class DBManager {
         this.context = context;
         managerInstance = this;
         this.type = type;
+        if (type == Global.FROM_REGISTRATION_ACTIVITY) {
+            resetDatabase();
+        }
+
         myPref = new MyPreferences(context);
         SQLiteDatabase.loadLibs(context);
 //		exportDBFile();

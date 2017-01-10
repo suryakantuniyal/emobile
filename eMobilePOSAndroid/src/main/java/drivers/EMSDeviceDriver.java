@@ -576,7 +576,7 @@ public class EMSDeviceDriver {
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
                 DateUtils.getDateAsString(new Date(), "MMM/dd/yyyy"), lineWidth, 0));
         sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
-                String.format("%s(%s)", myPref.getEmpName(), myPref.getEmpID()), lineWidth, 0));
+                String.format("%s(%s)", employee.getEmpName(), employee.getEmpId()), lineWidth, 0));
         for (OrderProduct product : splitedOrder.getOrderProducts()) {
             BigDecimal qty = Global.getBigDecimalNum(product.getOrdprod_qty());
             sb.append(textHandler.oneColumnLineWithLeftAlignedText(String.format("%sx %s", product.getOrdprod_qty(), product.getOrdprod_name()), lineWidth, 1));
@@ -584,9 +584,7 @@ public class EMSDeviceDriver {
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText("- " + addon.getOrdprod_name(),
                         Global.getCurrencyFormat(addon.getFinalPrice())
                         , lineWidth, 3));
-
             }
-
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_price),
                     Global.getCurrencyFormat(product.getFinalPrice()), lineWidth, 3));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_discount),
@@ -619,7 +617,6 @@ public class EMSDeviceDriver {
         sb.append(textHandler.newLines(2));
         print(sb.toString());
         printFooter(lineWidth);
-
         cutPaper();
     }
 
