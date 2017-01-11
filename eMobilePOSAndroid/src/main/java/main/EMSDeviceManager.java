@@ -1,6 +1,5 @@
 package main;
 
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -19,23 +18,23 @@ import drivers.EMSBixolon;
 import drivers.EMSBlueBambooP25;
 import drivers.EMSBluetoothStarPrinter;
 import drivers.EMSDeviceDriver;
+import drivers.EMSELO;
 import drivers.EMSEM100;
+import drivers.EMSEM70;
 import drivers.EMSHandpoint;
 import drivers.EMSIngenico;
 import drivers.EMSIngenicoEVO;
 import drivers.EMSKDC500;
 import drivers.EMSMagtekAudioCardReader;
+import drivers.EMSNomad;
 import drivers.EMSOT310;
 import drivers.EMSOneil4te;
 import drivers.EMSPAT100;
 import drivers.EMSPAT215;
 import drivers.EMSPowaPOS;
-import drivers.EMSWalker;
 import drivers.EMSZebraEM220ii;
 import drivers.EMSmePOS;
 import drivers.EMSsnbc;
-import drivers.EMSEM70;
-import drivers.EMSELO;
 import interfaces.EMSConnectionDelegate;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import interfaces.EMSPrintingDelegate;
@@ -147,7 +146,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.WALKER:
-                aDevice = new EMSWalker();
+                aDevice = new EMSNomad();
                 aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.MEPOS:
@@ -228,7 +227,7 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 aDevice = new EMSmePOS();
                 break;
             case Global.WALKER:
-                aDevice = new EMSWalker();
+                aDevice = new EMSNomad();
                 break;
             case Global.ELOPAYPOINT:
                 aDevice = new EMSELO();
