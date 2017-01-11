@@ -64,9 +64,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import drivers.EMSIDTechUSB;
 import drivers.EMSMagtekAudioCardReader;
+import drivers.EMSNomad;
 import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
-import drivers.EMSWalker;
 import interfaces.EMSCallBack;
 
 public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements EMSCallBack, OnClickListener {
@@ -269,7 +269,7 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
     private void setUpCardReader() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         String _audio_reader_type = myPref.getPreferencesValue(MyPreferences.pref_audio_card_reader);
-        EMSWalker walkerReader;
+        EMSNomad walkerReader;
         if (audioManager.isWiredHeadsetOn()) {
             if (_audio_reader_type != null && !_audio_reader_type.isEmpty() && !_audio_reader_type.equals("-1")) {
                 if (_audio_reader_type.equals(Global.AUDIO_MSR_UNIMAG)) {
@@ -286,13 +286,13 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     EMSRover roverReader = new EMSRover();
                     roverReader.initializeReader(activity, false);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-                    walkerReader = new EMSWalker();
+                    walkerReader = new EMSNomad();
                     myPref.setSwiperType(Global.WALKER);
                 }
             }
 
         } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
-            walkerReader = new EMSWalker();
+            walkerReader = new EMSNomad();
             myPref.setSwiperType(Global.WALKER);
 
         } else {
