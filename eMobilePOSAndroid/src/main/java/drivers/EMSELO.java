@@ -211,7 +211,7 @@ public class EMSELO extends EMSDeviceDriver implements EMSDeviceManagerPrinterDe
         protected Boolean doInBackground(Boolean... params) {
 //            Looper.prepare();
             String Text = "\n\n\nYour Elo Touch Solutions\nPayPoint receipt printer is\nworking properly.";
-            SerialPort port = null;
+            SerialPort port;
             try {
                 port = new SerialPort(new File("/dev/ttymxc1"), 9600, 0);
                 OutputStream stream = port.getOutputStream();

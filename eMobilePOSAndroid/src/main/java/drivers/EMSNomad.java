@@ -49,20 +49,17 @@ import interfaces.EMSCallBack;
 import interfaces.EMSDeviceManagerPrinterDelegate;
 import main.EMSDeviceManager;
 
-public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDeviceManagerPrinterDelegate {
+public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDeviceManagerPrinterDelegate {
 
     private Activity activity;
     private static AndroidTerminal terminal;
     private static String TERMINAL_ID = "2993001";
     private static String SECRET = "password";
-    private CreditCardInfo cardManager;
     public static CoreSignature signature;
-    public boolean isReadingCard = false;
+    private boolean isReadingCard = false;
     private Handler handler;
     private static EMSCallBack msrCallBack;
 
-    public boolean failedProcessing = false;
-    private ProgressDialog dialog;
     private static EMSDeviceManager edm;
     private static ProgressDialog myProgressDialog;
     private boolean isAutoConnect = false;
@@ -76,9 +73,9 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         }
         terminal = new AndroidTerminal(this);
         myPref = new MyPreferences(this.activity);
-        this.edm = edm;
+        EMSNomad.edm = edm;
 //        synchronized (terminal) {
-        new connectWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new ConnectNomadAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 //            try {
 //                terminal.wait(10000);
@@ -105,12 +102,12 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
             return true;
         }
         myPref = new MyPreferences(this.activity);
-        EMSWalker.edm = edm;
+        EMSNomad.edm = edm;
         terminal = new AndroidTerminal(this);
 
 //        initDevice();
 //        synchronized (myPref) {
-        new connectWalkerAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new ConnectNomadAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 //            try {
 //                myPref.wait(30000);
 //            } catch (InterruptedException e) {
@@ -120,7 +117,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 //        if (activity instanceof SettingListActivity) {
 //            Looper.myLooper().quit();
 //        }
-        this.edm.driverDidConnectToDevice(this, false);
+        EMSNomad.edm.driverDidConnectToDevice(this, false);
         return true;
     }
 
@@ -327,7 +324,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     }
 
-    private class connectWalkerAsync extends AsyncTask<Void, Void, Void> {
+    private class ConnectNomadAsync extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             showDialog(R.string.connecting_handpoint);
@@ -349,7 +346,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     public void startReading(CreditCardInfo cardInfo, ProgressDialog dialog) {
         isReadingCard = true;
-        this.dialog = dialog;
         if (terminal.getDevice().equals(DeviceEnum.NODEVICE)) {
             CoreSaleKeyed sale = new CoreSaleKeyed(cardInfo.dueAmount);
             sale.setCardHolderName(cardInfo.getCardOwnerName());
@@ -373,11 +369,8 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         }
     }
 
-    public boolean deviceConnected() {
-        if (terminal == null || terminal.getDevice() == null) {
-            return false;
-        }
-        return terminal.getDevice().equals(DeviceEnum.NOMAD);
+    private boolean deviceConnected() {
+        return !(terminal == null || terminal.getDevice() == null) && terminal.getDevice().equals(DeviceEnum.NOMAD);
     }
 
     public void submitSignature() {
@@ -392,15 +385,14 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void onError(CoreError coreError, String s) {
-        System.out.print(s.toString());
-        failedProcessing = true;
+        System.out.print(s);
         isReadingCard = false;
         if (msrCallBack != null) {
             msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
         }
         if (!isAutoConnect) {
             dismissDialog();
-            this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), true);
+            edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), true);
         } else {
             dismissDialog();
 //            MainMenu_FA.handler.sendEmptyMessage(0);
@@ -418,7 +410,6 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
         Log.d("NOMAD onMessage:", msg.toString());
         if (isReadingCard) {
             if (msg.equals(CoreMessage.DEVICE_NOT_CONNECTED)) {
-                failedProcessing = true;
                 isReadingCard = false;
             } else if (msg.equals(CoreMessage.CARD_ERROR))
                 isReadingCard = false;
@@ -435,7 +426,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void onSaleResponse(CoreSaleResponse response) {
         isReadingCard = false;
         try {
-            cardManager = new CreditCardInfo();
+            CreditCardInfo cardManager = new CreditCardInfo();
             cardManager.setCardOwnerName(response.getCardHolderName());
             cardManager.setCardType(response.getCardType());
             cardManager.authcode = response.getApprovalCode();
@@ -472,7 +463,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     public void onSignatureRequired(CoreSignature _signature) {
         signature = _signature;
         try {
-            EMSCallBack callBack = (EMSCallBack) msrCallBack;
+            EMSCallBack callBack = msrCallBack;
             callBack.startSignature();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -496,7 +487,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 //        }
 //        synchronized (terminal) {
 //        terminal.notifyAll();
-        this.edm.driverDidConnectToDevice(this, !isAutoConnect);
+        edm.driverDidConnectToDevice(this, !isAutoConnect);
 //        }
         if (!isAutoConnect) {
             dismissDialog();
@@ -510,7 +501,7 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
     @Override
     public void onDeviceDisconnected(DeviceEnum deviceEnum) {
         Toast.makeText(this.activity, deviceEnum.name() + " disconnected", Toast.LENGTH_SHORT).show();
-        this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
+        edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
         if (!isAutoConnect) {
 //            dismissDialog();
         } else {
@@ -524,18 +515,19 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void onDeviceError(CoreDeviceError arg0, String arg1) {
-        this.edm.driverDidNotConnectToDevice(this, arg1, !isAutoConnect);
+        edm.driverDidNotConnectToDevice(this, arg1, !isAutoConnect);
         if (msrCallBack != null) {
             msrCallBack.cardWasReadSuccessfully(false, new CreditCardInfo());
         }
         if (!isAutoConnect) {
             dismissDialog();
-        } else {
+        }
+//        else {
 //            synchronized (activity) {
 //                activity.notifyAll();
 //            }
 //            MainMenu_FA.handler.sendEmptyMessage(0);
-        }
+//        }
     }
 
     @Override
@@ -566,15 +558,16 @@ public class EMSWalker extends EMSDeviceDriver implements CoreAPIListener, EMSDe
 
     @Override
     public void onDeviceConnectionError() {
-        this.edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
+        edm.driverDidNotConnectToDevice(this, activity.getString(R.string.fail_to_connect), false);
         if (!isAutoConnect) {
             dismissDialog();
-        } else {
+        }
+//        else {
 //            synchronized (activity) {
 //                activity.notifyAll();
 //            }
 //            MainMenu_FA.handler.sendEmptyMessage(0);
-        }
+//        }
     }
 
     @Override
