@@ -287,13 +287,13 @@ public class ProcessGiftCard_FA extends BaseFragmentActivityActionBar implements
                     roverReader.initializeReader(activity, false);
                 } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
                     walkerReader = new EMSNomad();
-                    myPref.setSwiperType(Global.WALKER);
+                    myPref.setSwiperType(Global.NOMAD);
                 }
             }
 
         } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
             walkerReader = new EMSNomad();
-            myPref.setSwiperType(Global.WALKER);
+            myPref.setSwiperType(Global.NOMAD);
 
         } else {
             int _swiper_type = myPref.getSwiperType();

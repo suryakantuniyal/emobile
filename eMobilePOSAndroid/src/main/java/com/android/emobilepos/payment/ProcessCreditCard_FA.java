@@ -340,7 +340,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         hiddenField.addTextChangedListener(new CreditCardTextWatcher(activity, hiddenField, cardNum, cardInfoManager, Global.isEncryptSwipe, this));
 
         setUpCardReader();
-        if (myPref.getSwiperType() == Global.WALKER || myPref.getSwiperType() == Global.HANDPOINT || myPref.getSwiperType() == Global.ICMPEVO) {
+        if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT || myPref.getSwiperType() == Global.ICMPEVO) {
             setHandopintUIFields();
         }
     }
@@ -477,13 +477,13 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 }
 //                else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
 //                    walkerReader = new EMSWalker();
-//                    myPref.setSwiperType(Global.WALKER);
+//                    myPref.setSwiperType(Global.NOMAD);
 //                }
             }
 
 //        } else if (_audio_reader_type.equals(Global.AUDIO_MSR_WALKER)) {
 //            walkerReader = new EMSWalker();
-//            myPref.setSwiperType(Global.WALKER);
+//            myPref.setSwiperType(Global.NOMAD);
 
         } else {
             int _swiper_type = myPref.getSwiperType();
@@ -549,7 +549,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
     private void processPayment() {
 
-        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO)
+        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO)
             populateCardInfo();
         if (Global.isIvuLoto) {
             Global.subtotalAmount = Global.formatNumFromLocale(NumberUtils.cleanCurrencyFormatedNumber(subtotal));
@@ -615,7 +615,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         }
 
         payment.setEmvContainer(cardInfoManager.getEmvContainer());
-        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
+        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             EMSPayGate_Default payGate = new EMSPayGate_Default(activity, payment);
             String generatedURL;
 
@@ -646,10 +646,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                             creditCardType, cardInfoManager);
 
             }
-            if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward))
+            if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
                 processStoreForward(generatedURL, payment);
-            else
+            } else {
                 new processLivePaymentAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, generatedURL, payment);
+            }
         } else {
             if (!isRefund) {
                 payment.setPay_type("0");
@@ -1351,8 +1352,9 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
 
         @Override
         protected Payment doInBackground(Object... params) {
-
-            if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
+            if (true) {
+                openEverpayApp((Payment) params[1]);
+            } else if (NetworkUtils.isConnectedToInternet(activity) && !livePaymentRunning) {
                 livePaymentRunning = true;
 
                 Post httpClient = new Post();
@@ -1411,6 +1413,16 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 showErrorDlog(false, connectionFailed, errorMsg, payment);
             }
         }
+    }
+
+    private void openEverpayApp(Payment payment) {
+        Intent intent = new Intent("com.evertec.base.action.PERFORM_TRANSACTION");
+        intent.putExtra("transactionType", 1);
+        intent.putExtra("invoiceNumber", "invoice");
+        intent.putExtra("clerkNumber", "clerk");
+        intent.putExtra("customerNumber", "customer");
+        intent.putExtra("saleAmount", payment.getPay_amount());
+        startActivityForResult(intent, 202);
     }
 
     private class processReverseAsync extends AsyncTask<Payment, Void, Payment> {
@@ -1514,7 +1526,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     private void saveApprovedPayment(HashMap<String, String> parsedMap, Payment payment) {
-        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT
+        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT
                 && myPref.getSwiperType() != Global.ICMPEVO) {
             payment.setPay_resultcode(parsedMap.get("pay_resultcode"));
             payment.setPay_resultmessage(parsedMap.get("pay_resultmessage"));
@@ -1543,7 +1555,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             }
         }
         payHandler.insert(payment);
-        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT
+        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT
                 && myPref.getSwiperType() != Global.ICMPEVO) {
             if (myPref.getPreferences(MyPreferences.pref_handwritten_signature)) {
                 new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, false, payment);
@@ -1645,9 +1657,51 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
+        if (requestCode == 202) {
+            final String cardNumber = data == null ? "" : data.getStringExtra("cardNumber");
+            final String cardHolderName = data == null ? "" : data.getStringExtra("cardHolderName");
+            final String responseCode = data == null ? "" : data.getStringExtra("responseCode");
+            final String processorResponseCode = data == null ? "" : data.getStringExtra("processorResponseCode");
+            final String responseText = data == null ? "" : data.getStringExtra("responseText");
+            final String avsResult = data == null ? "" : data.getStringExtra("avsResult");
+            final String cvvResult = data == null ? "" : data.getStringExtra("cvvResult");
+            final String approvalCode = data == null ? "" : data.getStringExtra("approvalCode");
+            final String transactionId = data == null ? "" : data.getStringExtra("transactionId");
+            final String gatewayReferenceNumber = data == null ? "" : data.getStringExtra("gatewayReferenceNumber");
+            final String processorReferenceNumber = data == null ? "" : data.getStringExtra("processorReferenceNumber");
+            final String authorizedAmount = data == null ? "" : data.getStringExtra("authorizedAmount");
+            final String tipAmount = data == null ? "" : data.getStringExtra("tipAmount");
+            final String cashBackAmount = data == null ? "" : data.getStringExtra("cashBackAmount");
+            String result = "cardNumber: " + cardNumber + "\r\n" +
+                    "cardHolderName: " + cardHolderName + "\r\n" +
+                    "responseCode: " + responseCode + "\r\n" +
+                    "processorResponseCode: " + processorResponseCode + "\r\n" +
+                    "responseText: " + responseText + "\r\n" +
+                    "avsResult: " + avsResult + "\r\n" +
+                    "cvvResult: " + cvvResult + "\r\n" +
+                    "transactionId: " + transactionId + "\r\n" +
+                    "approvalCode: " + approvalCode + "\r\n" +
+                    "gatewayReferenceNumber: " + gatewayReferenceNumber + "\r\n" +
+                    "processorReferenceNumber: " + processorReferenceNumber + "\r\n" +
+                    "authorizedAmount: " + authorizedAmount + "\r\n" +
+                    "tipAmount: " + tipAmount + "\r\n" +
+                    "cashBackAmount: " + cashBackAmount;
 
-        if (resultCode == -1) {
-            if (myPref.getSwiperType() != Global.WALKER) {
+            if (resultCode == RESULT_OK) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Transaction Response")
+                        .setMessage(result)
+                        .setPositiveButton("OK", null)
+                        .show();
+            } else if (resultCode == RESULT_CANCELED) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Transaction Response")
+                        .setMessage("Transaction Cancelled")
+                        .setPositiveButton("OK", null)
+                        .show();
+            }
+        } else if (resultCode == -1) {
+            if (myPref.getSwiperType() != Global.NOMAD) {
                 if (myPref.getPreferences(MyPreferences.pref_use_store_and_forward)) {
                     StoredPaymentsDAO dbStoredPayments = new StoredPaymentsDAO(this);
                     Global.amountPaid = dbStoredPayments.updateSignaturePayment(PaymentsHandler.getLastPaymentInserted().getPay_uuid());
@@ -1817,11 +1871,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
             cardManager.setCardType("DebitCard");
         }
         this.cardInfoManager = cardManager;
-        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
+        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             updateViewAfterSwipe(cardManager);
             if (uniMagReader != null && uniMagReader.readerIsConnected()) {
                 uniMagReader.startReading();
-//            } else if (myPref.getSwiperType() == Global.WALKER) {
+//            } else if (myPref.getSwiperType() == Global.NOMAD) {
 //                processPayment();
             } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                     && Global.mainPrinterManager != null)
@@ -1904,7 +1958,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                 amountPaidField.setText(amountDueField.getText().toString());
                 break;
             case R.id.processButton:
-                if (myPref.getSwiperType() == Global.WALKER || myPref.getSwiperType() == Global.HANDPOINT
+                if (myPref.getSwiperType() == Global.NOMAD || myPref.getSwiperType() == Global.HANDPOINT
                         || myPref.getSwiperType() == Global.ICMPEVO) {
                     boolean valid = validateProcessPayment();
                     if (!valid) {
@@ -1928,7 +1982,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                             }
                         }
                     }
-                } else if (myPref.getSwiperType() != Global.WALKER) {
+                } else {
                     boolean valid = validateProcessPayment();
                     if (!valid) {
                         String errorMsg = getString(R.string.card_validation_error);
@@ -1962,7 +2016,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
         month.setBackgroundResource(android.R.drawable.edit_text);
         amountPaidField.setBackgroundResource(android.R.drawable.edit_text);
         boolean error = false;
-        if (myPref.getSwiperType() != Global.WALKER && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
+        if (myPref.getSwiperType() != Global.NOMAD && myPref.getSwiperType() != Global.HANDPOINT && myPref.getSwiperType() != Global.ICMPEVO) {
             if (cardNum.getText().toString().isEmpty() || cardNum.getText().toString().length() < 14
                     || (!wasReadFromReader && !cardIsValid(cardNum.getText().toString()))) {
                 cardNum.setBackgroundResource(R.drawable.edittext_wrong_input);

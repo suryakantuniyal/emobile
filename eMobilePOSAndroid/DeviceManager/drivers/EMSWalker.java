@@ -52,8 +52,8 @@ public class EMSWalker implements CoreAPIListener {
 		new connectWalkerAsync().execute();
 		// terminal.init(activity, TERMINAL_ID, SECRET, Currency.EUR);
 		//
-		// terminal.initDevice(DeviceEnum.WALKER);
-		// if(terminal.getDevice().equals(DeviceEnum.WALKER))
+		// terminal.initDevice(DeviceEnum.NOMAD);
+		// if(terminal.getDevice().equals(DeviceEnum.NOMAD))
 		// {
 		// activity.runOnUiThread(new Runnable() {
 		// public void run() {

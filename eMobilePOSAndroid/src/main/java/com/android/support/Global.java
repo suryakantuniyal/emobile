@@ -138,7 +138,7 @@ public class Global extends MultiDexApplication {
     public static final int KDC500 = 14;
     public static final int HANDPOINT = 15;
     public static final int ICMPEVO = 16;
-    public static final int WALKER = 17;
+    public static final int NOMAD = 17;
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
     public static final int MEPOS = 20;
@@ -573,8 +573,8 @@ public class Global extends MultiDexApplication {
             case HANDPOINT:
                 _name = "HANDPOINT";
                 break;
-            case WALKER:
-                _name = "WALKER";
+            case NOMAD:
+                _name = "NOMAD";
                 break;
             case MEPOS:
                 _name = "MEPOS";

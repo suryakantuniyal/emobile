@@ -22,6 +22,7 @@ import com.android.saxhandler.SaxLoginHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.Post;
+import com.android.support.SynchMethods;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import org.xml.sax.InputSource;
@@ -45,6 +46,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         activity = this;
+        new DBManager(activity);
         final MyPreferences myPref = new MyPreferences(this);
         if (myPref.getLogIn()) {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
@@ -66,6 +68,8 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                                         @Override
                                         public void onClick(DialogInterface thisDialog, int which) {
                                             dbManager.updateDB();
+                                            SynchMethods sm = new SynchMethods(dbManager);
+                                            sm.synchReceive(Global.FROM_REGISTRATION_ACTIVITY, activity);
                                             promptDialog.dismiss();
                                         }
                                     }).create();

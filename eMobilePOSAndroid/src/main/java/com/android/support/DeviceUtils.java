@@ -1,7 +1,6 @@
 package com.android.support;
 
 import android.app.Activity;
-import android.os.Looper;
 import android.text.TextUtils;
 
 import com.android.dao.DeviceTableDAO;
@@ -54,7 +53,7 @@ public class DeviceUtils {
                 _portName = myPref.getSwiperMACAddress();
                 _peripheralName = Global.getPeripheralName(myPref.getSwiperType());
                 Global.btSwiper = edm.getManager();
-                if (_peripheralName.equalsIgnoreCase(Global.getPeripheralName(Global.WALKER))) {
+                if (_peripheralName.equalsIgnoreCase(Global.getPeripheralName(Global.NOMAD))) {
                     final String final_peripheralName = _peripheralName;
                     activity.runOnUiThread(new Runnable() {
                         @Override

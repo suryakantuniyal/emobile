@@ -22,7 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 45;
+    public static final int VERSION = 51;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
