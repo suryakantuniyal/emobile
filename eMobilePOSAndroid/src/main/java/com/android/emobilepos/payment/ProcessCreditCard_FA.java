@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -1416,7 +1417,11 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
     }
 
     private void openEverpayApp(Payment payment) {
-        Intent intent = new Intent("com.evertec.base.action.PERFORM_TRANSACTION");
+//        evertec.mobileapp
+//        Intent intent = getPackageManager().getLaunchIntentForPackage("evertec.mobileapp");
+        Intent intent = new Intent("evertec.mobileapp.action.PERFORM_TRANSACTION");
+//        Intent intent = new Intent();
+//        intent.setComponent(new ComponentName("evertec.mobileapp", "com.evertec.base.action.PERFORM_TRANSACTION"));
         intent.putExtra("transactionType", 1);
         intent.putExtra("invoiceNumber", "invoice");
         intent.putExtra("clerkNumber", "clerk");
