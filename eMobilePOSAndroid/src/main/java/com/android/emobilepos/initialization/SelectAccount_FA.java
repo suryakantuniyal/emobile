@@ -1,5 +1,6 @@
 package com.android.emobilepos.initialization;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,7 +8,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.view.View;
@@ -41,6 +44,38 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
     private Dialog promptDialog;
     private DBManager dbManager;
 
+    public enum PermissionType {
+        ACCESS_FINE_LOCATION(0), ACCESS_COARSE_LOCATION(1), WRITE_EXTERNAL_STORAGE(2), CAMERA(3), READ_PHONE_STATE(4), ACCESS_MICROPHONE(5), NONE(99);
+
+        private int code;
+
+        public int getCode() {
+            return this.code;
+        }
+
+        PermissionType(int code) {
+            this.code = code;
+        }
+
+        public static PermissionType getByCode(int code) {
+            switch (code) {
+                case 0:
+                    return ACCESS_FINE_LOCATION;
+                case 1:
+                    return ACCESS_COARSE_LOCATION;
+                case 2:
+                    return WRITE_EXTERNAL_STORAGE;
+                case 3:
+                    return CAMERA;
+                case 4:
+                    return READ_PHONE_STATE;
+                case 5:
+                    return ACCESS_MICROPHONE;
+                default:
+                    return NONE;
+            }
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -100,6 +135,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                     }
                 }
             });
+            checkLocationPermissions();
         }
     }
 
@@ -165,4 +201,92 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             finish();
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (PermissionType.getByCode(requestCode)) {
+            case ACCESS_COARSE_LOCATION:
+            case ACCESS_FINE_LOCATION:
+                checkWritePermissions();
+                break;
+            case CAMERA:
+                checkPhoneStatePermissions();
+                break;
+            case WRITE_EXTERNAL_STORAGE:
+                checkCameraPermissions();
+                break;
+            case READ_PHONE_STATE:
+                checkMicrophonePermissions();
+                break;
+        }
+    }
+
+    public void checkLocationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            PermissionType.ACCESS_FINE_LOCATION.ordinal());
+                }
+
+                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            PermissionType.ACCESS_COARSE_LOCATION.ordinal());
+                }
+            }
+        }
+    }
+
+    public void checkWritePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            PermissionType.WRITE_EXTERNAL_STORAGE.ordinal());
+                }
+            }
+        }
+    }
+
+    public void checkCameraPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA},
+                            PermissionType.CAMERA.ordinal());
+                }
+            }
+        }
+    }
+
+    public void checkPhoneStatePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE},
+                            PermissionType.READ_PHONE_STATE.ordinal());
+                }
+            }
+        }
+    }
+
+    public void checkMicrophonePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.MODIFY_AUDIO_SETTINGS)) {
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},
+                            PermissionType.ACCESS_MICROPHONE.ordinal());
+                }
+            }
+        }
+    }
+
 }

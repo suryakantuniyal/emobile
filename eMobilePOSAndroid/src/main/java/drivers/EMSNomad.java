@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -286,6 +287,9 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     @Override
     public void salePayment(Payment payment) {
         CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
+        if (!TextUtils.isEmpty(payment.getTipAmount())) {
+            sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
+        }
         terminal.processSale(sale);
     }
 

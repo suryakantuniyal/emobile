@@ -1982,6 +1982,7 @@ public class ProcessCreditCard_FA extends BaseFragmentActivityActionBar implemen
                         } else {
                             Payment p = new Payment(activity);
                             p.setPay_amount(NumberUtils.cleanCurrencyFormatedNumber(amountPaidField));
+                            p.setTipAmount(NumberUtils.cleanCurrencyFormatedNumber(tipAmount));
                             if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null) {
                                 Global.btSwiper.getCurrentDevice().salePayment(p);
                             }
