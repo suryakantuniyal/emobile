@@ -163,6 +163,7 @@ dependencies {
     icmpevoCompile(name: 'evoSnapSdk-icmp-release', ext: 'aar')
     icmpevoCompile files('libs_icmpevo/Android_Platform_Adapter.jar')
     icmpevoCompile files('libs/RBA_SDK.jar')
+    compile(name: 'Lib-Miura-SDK', ext: 'aar')
     compile(name: 'MePOSConnect', ext: 'aar')
     compile(name: 'dragSortLibrary-release', ext: 'aar')
 //        compile(name: 'mDOpenCV-release', ext: 'aar')
