@@ -26,6 +26,7 @@ import drivers.EMSIngenico;
 import drivers.EMSIngenicoEVO;
 import drivers.EMSKDC500;
 import drivers.EMSMagtekAudioCardReader;
+import drivers.EMSMiura;
 import drivers.EMSNomad;
 import drivers.EMSOT310;
 import drivers.EMSOneil4te;
@@ -94,6 +95,10 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
                 break;
             case Global.BIXOLON:
                 aDevice = new EMSBixolon();
+                aDevice.connect(activity, -1, false, instance);
+                break;
+            case Global.MIURA:
+                aDevice = new EMSMiura();
                 aDevice.connect(activity, -1, false, instance);
                 break;
             case Global.ZEBRA:
@@ -235,6 +240,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.ICMPEVO:
                 aDevice = new EMSIngenicoEVO();
                 break;
+            case Global.MIURA:
+                aDevice = new EMSMiura();
+                break;
         }
         if (aDevice != null)
             return aDevice.autoConnect(activity, instance, paperSize, isPOSPrinter, portName, portNumber);
@@ -312,7 +320,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
 
     /* Printer */
-    public EMSPrintingDelegate printingDelegate;
     private EMSDeviceManagerPrinterDelegate currentDevice;
 
     public EMSDeviceManagerPrinterDelegate getCurrentDevice() {

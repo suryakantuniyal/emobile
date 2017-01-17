@@ -18,6 +18,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
+import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.dao.AssignEmployeeDAO;
@@ -51,6 +52,8 @@ import com.android.support.ConsignmentTransaction;
 import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.miurasystems.miuralibrary.api.executor.MiuraManager;
+import com.miurasystems.miuralibrary.api.listener.MiuraDefaultListener;
 import com.mpowa.android.sdk.powapos.PowaPOS;
 import com.partner.pt100.printer.PrinterApiContext;
 import com.starmicronics.stario.StarIOPort;
@@ -237,6 +240,27 @@ public class EMSDeviceDriver {
         }
         if (this instanceof EMSELO) {
             eloPrinterApi.print(str);
+        } else if (this instanceof EMSMiura) {
+            String[] split = str.split(("\n"));
+            for (String line : split) {
+                String format = String.format("\u0002reset\u0003%s\u0002regular\u0003", line);
+                MiuraManager.getInstance().spoolText(format, new MiuraDefaultListener() {
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onError() {
+                        Toast.makeText(activity, "Miura printing error.", Toast.LENGTH_LONG);
+                    }
+                });
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
         } else if (this instanceof EMSmePOS) {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
         } else if (this instanceof EMSBluetoothStarPrinter) {
@@ -299,6 +323,8 @@ public class EMSDeviceDriver {
 
         if (this instanceof EMSELO) {
             eloPrinterApi.print(new String(byteArray));
+        } else if (this instanceof EMSMiura) {
+            print(new String(byteArray));
         } else if (this instanceof EMSmePOS) {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(new String(byteArray), MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
         } else if (this instanceof EMSBluetoothStarPrinter) {
@@ -478,9 +504,10 @@ public class EMSDeviceDriver {
         }
         if (this instanceof EMSELO) {
             eloPrinterApi.print(str);
+        } else if (this instanceof EMSMiura) {
+            print(str);
         } else if (this instanceof EMSmePOS) {
             mePOSReceipt.addLine(new MePOSReceiptTextLine(str, MePOS.TEXT_STYLE_NONE, MePOS.TEXT_SIZE_NORMAL, MePOS.TEXT_POSITION_LEFT));
-
         } else if (this instanceof EMSBluetoothStarPrinter) {
             try {
                 printStar(str, isLargeFont);
@@ -1008,16 +1035,23 @@ public class EMSDeviceDriver {
             // *****************************************************************************************
             // clear buffer in page mode
             pos_sdk.pageModeClearBuffer();
+        } else if (this instanceof EMSMiura) {
+            print(textHandler.newLines(4));
+            MiuraManager.getInstance().setConnectionDelegate((EMSMiura) this);
+            MiuraManager.getInstance().spoolPrint(new MiuraDefaultListener() {
+                @Override
+                public void onSuccess() {
+                    Log.d("Print Receipt", "Printed");
+                }
+
+                @Override
+                public void onError() {
+                    Log.d("Print Receipt", "Fail");
+                }
+            });
         } else if (isPOSPrinter) {
             print(new byte[]{0x1b, 0x64, 0x02}); // Cut
         } else if (this instanceof EMSmePOS) {
-//            try {
-//                printImage(0);
-//            } catch (StarIOPortException e) {
-//                e.printStackTrace();
-//            } catch (JAException e) {
-//                e.printStackTrace();
-//            }
             finishReceipt();
         }
     }
@@ -1149,8 +1183,6 @@ public class EMSDeviceDriver {
                 mePOSReceipt.addLine(new MePOSReceiptImageLine(bmpMonochrome));
             } else if (this instanceof EMSsnbc) {
                 int PrinterWidth = 640;
-
-                // download bitmap
                 pos_sdk.textStandardModeAlignment(ALIGN_CENTER);
                 pos_sdk.imageStandardModeRasterPrint(myBitmap, PrinterWidth);
                 pos_sdk.textStandardModeAlignment(ALIGN_LEFT);
@@ -1160,6 +1192,54 @@ public class EMSDeviceDriver {
                 matrix.preScale(1.0f, -1.0f);
                 Bitmap rotatedBmp = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true);
                 eloPrinterApi.print_image(activity, rotatedBmp);
+            } else if (this instanceof EMSMiura) {
+//                try {
+//                    InputStream inputStream = activity.getAssets().open("image.bmp");
+//
+//                    int size = inputStream.available();
+//                    byte[] buffer = new byte[size];
+//                    inputStream.read(buffer);
+//                    inputStream.close();
+//                    MiuraManager.getInstance().uploadBinary(buffer, "image.bmp", new MiuraDefaultListener() {
+//                        @Override
+//                        public void onSuccess() {
+//                            MiuraManager.getInstance().hardReset(new MiuraDefaultListener() {
+//                                @Override
+//                                public void onSuccess() {
+//                                    MiuraManager.getInstance().spoolImage("image.bmp", new MiuraDefaultListener() {
+//                                        @Override
+//                                        public void onSuccess() {
+////                                            MiuraManager.getInstance().spoolPrint(new MiuraDefaultListener() {
+////                                                @Override
+////                                                public void onSuccess() {
+////                                                    Log.d("Print Image", "Success");
+////                                                }
+////
+////                                                @Override
+////                                                public void onError() {
+////                                                }
+////                                            });
+//                                        }
+//
+//                                        @Override
+//                                        public void onError() {
+//                                        }
+//                                    });
+//                                }
+//
+//                                @Override
+//                                public void onError() {
+//                                }
+//                            });
+//                        }
+//
+//                        @Override
+//                        public void onError() {
+//                        }
+//                    });
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             } else if (this instanceof EMSBixolon) {
                 ByteBuffer buffer = ByteBuffer.allocate(4);
                 buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
@@ -1187,6 +1267,7 @@ public class EMSDeviceDriver {
             } catch (InterruptedException ignored) {
             }
         }
+
     }
 
     public static Bitmap loadBitmapFromView(View v) {
