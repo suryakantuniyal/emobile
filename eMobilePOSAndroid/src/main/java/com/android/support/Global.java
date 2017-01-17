@@ -142,8 +142,7 @@ public class Global extends MultiDexApplication {
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
     public static final int MEPOS = 20;
-
-
+    public static final int MIURA = 21;
 
     public enum BuildModel {
         ET1, MC40N0, M2MX60P, M2MX6OP, JE971, Asura, Dolphin_Black_70e, PAT215, PAT100, EM100, EM70, OT_310, PayPoint_ESY13P1;
@@ -592,6 +591,9 @@ public class Global extends MultiDexApplication {
                 break;
             case BIXOLON:
                 _name = "BIXOLON";
+                break;
+            case MIURA:
+                _name = "MIURA";
                 break;
         }
         return _name;

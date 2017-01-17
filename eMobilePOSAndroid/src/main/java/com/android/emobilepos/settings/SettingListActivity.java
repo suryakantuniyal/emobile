@@ -1162,7 +1162,16 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.MAGTEK, false);
 
-                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).contains("MIURA")) {
+                                myPref.setPrinterType(Global.MIURA);
+                                myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
+                                myPref.setPrinterName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.mainPrinterManager = edm.getManager();
+                                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MIURA, false);
+
+                            }else if (val[pos].toUpperCase(Locale.getDefault()).contains("STAR")) {
                                 myPref.setPrinterType(Global.STAR);
                                 myPref.setPrinterMACAddress("BT:" + macAddressList.get(pos));
                                 myPref.setPrinterName(strDeviceName);
