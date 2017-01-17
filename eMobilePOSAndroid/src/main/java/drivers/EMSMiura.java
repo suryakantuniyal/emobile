@@ -1,11 +1,11 @@
 package drivers;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.os.Handler;
-import android.util.Log;
 
+import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
@@ -14,13 +14,17 @@ import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.miurasystems.miuralibrary.BaseBluetooth;
 import com.miurasystems.miuralibrary.MPIConnectionDelegate;
 import com.miurasystems.miuralibrary.api.executor.MiuraManager;
 import com.miurasystems.miuralibrary.enums.BatteryData;
 import com.miurasystems.miuralibrary.enums.DeviceStatus;
 import com.miurasystems.miuralibrary.enums.M012Printer;
 import com.miurasystems.miuralibrary.tlv.CardData;
+import com.starmicronics.stario.StarIOPortException;
+import com.uniquesecure.meposconnect.MePOSException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,10 +41,8 @@ import main.EMSDeviceManager;
 public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate, MPIConnectionDelegate {
 
     private int LINE_WIDTH = 32;
-    private int PAPER_WIDTH;
-    private EMSCallBack callBack;
-    private Handler handler;
     private EMSDeviceManager edm;
+    BluetoothModule miuraPrinter = BluetoothModule.getInstance();
 
     @Override
     public void connect(Activity activity, int paperSize, boolean isPOSPrinter, final EMSDeviceManager edm) {
@@ -48,19 +50,11 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         myPref = new MyPreferences(this.activity);
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;
-        LINE_WIDTH = paperSize;
-        switch (LINE_WIDTH) {
-            case 32:
-                PAPER_WIDTH = 408;
-                break;
-            case 48:
-                PAPER_WIDTH = 576;
-                break;
-            case 69:
-                PAPER_WIDTH = 832;// 5400
-                break;
-        }
-        BluetoothModule.getInstance().openSession(myPref.getPrinterMACAddress(), new BluetoothConnectionListener() {
+        miuraPrinter.setDefaultDevice(activity, getMiuraDevice());
+        miuraPrinter.setSelectedBluetoothDevice(getMiuraDevice());
+        MiuraManager.getInstance().setDeviceType(MiuraManager.DeviceType.POS);
+        miuraPrinter.setTimeoutEnable(true);
+        miuraPrinter.openSessionDefaultDevice(new BluetoothConnectionListener() {
             @Override
             public void onConnected() {
                 edm.driverDidConnectToDevice(EMSMiura.this, true);
@@ -71,38 +65,46 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
                 edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), true);
             }
         });
-        MiuraManager.getInstance().setConnectionDelegate(this);
+    }
+
+    private BluetoothDevice getMiuraDevice() {
+        ArrayList<BluetoothDevice> devices = BaseBluetooth.getInstance().getDevice();
+        for (BluetoothDevice btd : devices) {
+            if (btd.getAddress().equalsIgnoreCase(myPref.getPrinterMACAddress().substring(3))) {
+                return btd;
+            }
+        }
+        return null;
     }
 
     @Override
-    public boolean autoConnect(Activity activity, EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
+    public boolean autoConnect(Activity activity, final EMSDeviceManager edm, int paperSize, boolean isPOSPrinter,
                                String _portName, String _portNumber) {
-        boolean didConnect = false;
+        final boolean[] didConnect = {false};
         this.activity = activity;
         myPref = new MyPreferences(this.activity);
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;
-        LINE_WIDTH = paperSize;
 
-        switch (LINE_WIDTH) {
-            case 32:
-                PAPER_WIDTH = 420;
-                break;
-            case 48:
-                PAPER_WIDTH = 1600;
-                break;
-            case 69:
-                PAPER_WIDTH = 300;// 5400
-                break;
-        }
+        miuraPrinter.setDefaultDevice(activity, getMiuraDevice());
+        miuraPrinter.setSelectedBluetoothDevice(getMiuraDevice());
+        MiuraManager.getInstance().setDeviceType(MiuraManager.DeviceType.POS);
+        miuraPrinter.setTimeoutEnable(true);
 
-        if (didConnect) {
-            this.edm.driverDidConnectToDevice(this, false);
-        } else {
-            this.edm.driverDidNotConnectToDevice(this, null, false);
-        }
+        miuraPrinter.openSessionDefaultDevice(new BluetoothConnectionListener() {
+            @Override
+            public void onConnected() {
+                didConnect[0] = true;
+                edm.driverDidConnectToDevice(EMSMiura.this, false);
+            }
 
-        return didConnect;
+            @Override
+            public void onDisconnected() {
+                didConnect[0] = false;
+                edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false);
+            }
+        });
+        return didConnect[0];
     }
 
     @Override
@@ -112,47 +114,62 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold, EMVContainer emvContainer) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printReceipt(ordID, LINE_WIDTH, fromOnHold, saleTypes, isFromHistory, emvContainer);
+        return true;
     }
 
     @Override
-    public boolean printTransaction(String ordID, Global.OrderType saleTypes, boolean isFromHistory, boolean fromOnHold) {
-        return false;
+    public boolean printTransaction(String ordID, Global.OrderType type, boolean isFromHistory, boolean fromOnHold) {
+        setPaperWidth(LINE_WIDTH);
+        printTransaction(ordID, type, isFromHistory, fromOnHold, null);
+        return true;
     }
 
     @Override
-    public boolean printPaymentDetails(String payID, int isFromMainMenu, boolean isReprint, EMVContainer emvContainer) {
-        return false;
+    public boolean printPaymentDetails(String payID, int type, boolean isReprint, EMVContainer emvContainer) {
+        setPaperWidth(LINE_WIDTH);
+        printPaymentDetailsReceipt(payID, type, isReprint, LINE_WIDTH, emvContainer);
+        return true;
     }
 
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        return printBalanceInquiry(values, LINE_WIDTH);
     }
 
     @Override
-    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+    public boolean printConsignment(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        setPaperWidth(LINE_WIDTH);
+        printConsignmentReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        return true;
     }
 
     @Override
-    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSignature) {
-        return false;
+    public boolean printConsignmentPickup(List<ConsignmentTransaction> myConsignment, String encodedSig) {
+        setPaperWidth(LINE_WIDTH);
+        printConsignmentPickupReceipt(myConsignment, encodedSig, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public boolean printConsignmentHistory(HashMap<String, String> map, Cursor c, boolean isPickup) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printConsignmentHistoryReceipt(map, c, isPickup, LINE_WIDTH);
+        return true;
     }
 
     @Override
-    public String printStationPrinter(List<Orders> orderProducts, String ordID, boolean cutPaper, boolean printHeader) {
-        return null;
+    public String printStationPrinter(List<Orders> orders, String ordID, boolean cutPaper, boolean printHeader) {
+        return printStationPrinterReceipt(orders, ordID, LINE_WIDTH, cutPaper, printHeader);
     }
 
     @Override
     public boolean printOpenInvoices(String invID) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printOpenInvoicesReceipt(invID, LINE_WIDTH);
+        return true;
     }
 
     @Override
@@ -172,27 +189,31 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public boolean printReport(String curDate) {
-        return false;
+        setPaperWidth(LINE_WIDTH);
+        printReportReceipt(curDate, LINE_WIDTH);
+        return true;
     }
 
     @Override
     public void printShiftDetailsReport(String shiftID) {
-
+        setPaperWidth(LINE_WIDTH);
+        printShiftDetailsReceipt(LINE_WIDTH, shiftID);
     }
 
     @Override
-    public void printEndOfDayReport(String date, String clerk_id, boolean printDetails) {
-
+    public void printEndOfDayReport(String curDate, String clerk_id, boolean printDetails) {
+        setPaperWidth(LINE_WIDTH);
+        printEndOfDayReportReceipt(curDate, LINE_WIDTH, printDetails);
     }
 
     @Override
     public void registerPrinter() {
-
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -213,6 +234,17 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     @Override
     public void openCashDrawer() {
 
+        new Thread(new Runnable() {
+            public void run() {
+                if (mePOS != null) {
+                    try {
+                        mePOS.openCashDrawer();
+                    } catch (MePOSException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -237,7 +269,14 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void printReceiptPreview(SplitedOrder splitedOrder) {
-
+        try {
+            setPaperWidth(LINE_WIDTH);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
+        } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -282,12 +321,12 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void connected() {
-        Log.d("Miura ", "connected");
+
     }
 
     @Override
     public void disconnected() {
-        Log.d("Miura ", "disconnected");
+
     }
 
     @Override

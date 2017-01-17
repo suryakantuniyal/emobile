@@ -240,6 +240,9 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
             case Global.ICMPEVO:
                 aDevice = new EMSIngenicoEVO();
                 break;
+            case Global.MIURA:
+                aDevice = new EMSMiura();
+                break;
         }
         if (aDevice != null)
             return aDevice.autoConnect(activity, instance, paperSize, isPOSPrinter, portName, portNumber);
@@ -317,7 +320,6 @@ public class EMSDeviceManager implements EMSPrintingDelegate, EMSConnectionDeleg
 
 
     /* Printer */
-    public EMSPrintingDelegate printingDelegate;
     private EMSDeviceManagerPrinterDelegate currentDevice;
 
     public EMSDeviceManagerPrinterDelegate getCurrentDevice() {

@@ -252,7 +252,8 @@ public class MainMenu_FA extends BaseFragmentActivityActionBar {
             if (!isUSB && result.toString().length() > 0)
                 Toast.makeText(activity, result.toString(), Toast.LENGTH_LONG).show();
             else if (isUSB && (Global.mainPrinterManager == null ||
-                    Global.mainPrinterManager.getCurrentDevice() == null)) {
+                    Global.mainPrinterManager.getCurrentDevice() == null)
+                    || myPref.getPrinterType() == Global.MIURA) {
                 if (global.getGlobalDlog() != null)
                     global.getGlobalDlog().dismiss();
                 EMSDeviceManager edm = new EMSDeviceManager();
