@@ -14,9 +14,13 @@ public class AssignEmployeeDAO {
 
     public static AssignEmployee getAssignEmployee() {
         Realm r = Realm.getDefaultInstance();
-        r.beginTransaction();
-        AssignEmployee employee = r.where(AssignEmployee.class).findFirst();
-        r.commitTransaction();
+        AssignEmployee employee;
+        try {
+//            r.beginTransaction();
+            employee = r.where(AssignEmployee.class).findFirst();
+        }finally {
+//            r.commitTransaction();
+        }
         return employee;
     }
 
@@ -25,25 +29,34 @@ public class AssignEmployeeDAO {
             throw new Exception("Invalid Assign Employee realm object");
         }
         Realm r = Realm.getDefaultInstance();
-        r.beginTransaction();
-        r.where(AssignEmployee.class).findAll().deleteAllFromRealm();
-        r.copyToRealmOrUpdate(assignEmployees);
-        r.commitTransaction();
+        try {
+            r.beginTransaction();
+            r.where(AssignEmployee.class).findAll().deleteAllFromRealm();
+            r.copyToRealmOrUpdate(assignEmployees);
+        }finally {
+            r.commitTransaction();
+        }
     }
 
     public static void updateLastOrderId(String ord_id) {
         Realm r = Realm.getDefaultInstance();
-        r.beginTransaction();
-        AssignEmployee assignEmployee = getAssignEmployee();
-        assignEmployee.setMSLastOrderID(ord_id);
-        r.commitTransaction();
+        try {
+            r.beginTransaction();
+            AssignEmployee assignEmployee = getAssignEmployee();
+            assignEmployee.setMSLastOrderID(ord_id);
+        }finally {
+            r.commitTransaction();
+        }
     }
 
     public static void updateLastTransferId(String transferId) {
         Realm r = Realm.getDefaultInstance();
-        r.beginTransaction();
-        AssignEmployee assignEmployee = getAssignEmployee();
-        assignEmployee.setMSLastTransferID(transferId);
-        r.commitTransaction();
+        try {
+            r.beginTransaction();
+            AssignEmployee assignEmployee = getAssignEmployee();
+            assignEmployee.setMSLastTransferID(transferId);
+        }finally {
+            r.commitTransaction();
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.android.dao;
 
-
 import com.android.emobilepos.models.realms.PaymentMethod;
 
 import java.util.List;
@@ -12,27 +11,32 @@ import io.realm.Sort;
  * Created by guarionex on 10/24/16.
  */
 
-
 public class PayMethodsDAO {
     public static void insert(PaymentMethod paymentMethod) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        if (paymentMethod != null) {
-            realm.copyToRealm(paymentMethod);
+        try {
+            realm.beginTransaction();
+            if (paymentMethod != null) {
+                realm.copyToRealm(paymentMethod);
+            }
+        } finally {
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
     }
 
     public static void delete(String payId) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        if (!android.text.TextUtils.isEmpty(payId)) {
-            PaymentMethod method = realm.where(PaymentMethod.class).equalTo("paymethod_id", payId).findFirst();
-            if (method != null && method.isValid()) {
-                method.deleteFromRealm();
+        try {
+            realm.beginTransaction();
+            if (!android.text.TextUtils.isEmpty(payId)) {
+                PaymentMethod method = realm.where(PaymentMethod.class).equalTo("paymethod_id", payId).findFirst();
+                if (method != null && method.isValid()) {
+                    method.deleteFromRealm();
+                }
             }
+        }finally {
+            realm.commitTransaction();
         }
-        realm.commitTransaction();
     }
 
     public static List<PaymentMethod> getAllSortByName() {
@@ -42,8 +46,11 @@ public class PayMethodsDAO {
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(PaymentMethod.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(PaymentMethod.class);
+        }finally {
+            realm.commitTransaction();
+        }
     }
 }

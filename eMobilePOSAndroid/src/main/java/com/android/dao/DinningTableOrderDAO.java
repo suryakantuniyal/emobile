@@ -40,11 +40,14 @@ public class DinningTableOrderDAO {
 
     public static void deleteByNumber(String number) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<DinningTableOrder> where = realm.where(DinningTableOrder.class);
-        RealmResults<DinningTableOrder> results = where.equalTo("dinningTable.number", number).findAll();
-        realm.beginTransaction();
-        results.deleteAllFromRealm();
-        realm.commitTransaction();
+        try {
+            RealmQuery<DinningTableOrder> where = realm.where(DinningTableOrder.class);
+            RealmResults<DinningTableOrder> results = where.equalTo("dinningTable.number", number).findAll();
+            realm.beginTransaction();
+            results.deleteAllFromRealm();
+        }finally {
+            realm.commitTransaction();
+        }
     }
 
     public static DinningTableOrder getByNumber(String number) {
@@ -68,10 +71,13 @@ public class DinningTableOrderDAO {
 
     public static void deleteByOrderId(String ord_id) {
         Realm realm = Realm.getDefaultInstance();
-        RealmQuery<DinningTableOrder> where = realm.where(DinningTableOrder.class);
-        RealmResults<DinningTableOrder> results = where.equalTo("currentOrderId", ord_id).findAll();
-        realm.beginTransaction();
-        results.deleteAllFromRealm();
-        realm.commitTransaction();
+        try {
+            RealmQuery<DinningTableOrder> where = realm.where(DinningTableOrder.class);
+            RealmResults<DinningTableOrder> results = where.equalTo("currentOrderId", ord_id).findAll();
+            realm.beginTransaction();
+            results.deleteAllFromRealm();
+        }finally {
+            realm.commitTransaction();
+        }
     }
 }
