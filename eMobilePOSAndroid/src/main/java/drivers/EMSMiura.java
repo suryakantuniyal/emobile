@@ -85,25 +85,29 @@ public class EMSMiura extends EMSDeviceDriver implements EMSDeviceManagerPrinter
         myPref = new MyPreferences(this.activity);
         this.isPOSPrinter = isPOSPrinter;
         this.edm = edm;
+        if (getMiuraDevice() == null) {
+            didConnect[0] = false;
+            edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false);
+        } else {
+            miuraPrinter.setDefaultDevice(activity, getMiuraDevice());
+            miuraPrinter.setSelectedBluetoothDevice(getMiuraDevice());
+            MiuraManager.getInstance().setDeviceType(MiuraManager.DeviceType.POS);
+            miuraPrinter.setTimeoutEnable(true);
 
-        miuraPrinter.setDefaultDevice(activity, getMiuraDevice());
-        miuraPrinter.setSelectedBluetoothDevice(getMiuraDevice());
-        MiuraManager.getInstance().setDeviceType(MiuraManager.DeviceType.POS);
-        miuraPrinter.setTimeoutEnable(true);
+            miuraPrinter.openSessionDefaultDevice(new BluetoothConnectionListener() {
+                @Override
+                public void onConnected() {
+                    didConnect[0] = true;
+                    edm.driverDidConnectToDevice(EMSMiura.this, false);
+                }
 
-        miuraPrinter.openSessionDefaultDevice(new BluetoothConnectionListener() {
-            @Override
-            public void onConnected() {
-                didConnect[0] = true;
-                edm.driverDidConnectToDevice(EMSMiura.this, false);
-            }
-
-            @Override
-            public void onDisconnected() {
-                didConnect[0] = false;
-                edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false);
-            }
-        });
+                @Override
+                public void onDisconnected() {
+                    didConnect[0] = false;
+                    edm.driverDidNotConnectToDevice(EMSMiura.this, getString(R.string.fail_to_connect), false);
+                }
+            });
+        }
         return didConnect[0];
     }
 
