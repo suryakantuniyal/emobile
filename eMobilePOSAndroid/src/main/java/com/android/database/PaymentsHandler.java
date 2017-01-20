@@ -583,9 +583,9 @@ public class PaymentsHandler {
                         + "AND m.paymentmethod_type = '")
                 .append(type).append("' AND pay_type !='1' AND is_refund ='");
         if (isRefund)
-            sb.append("1' ORDER BY p.pay_id DESC");
+            sb.append("1' ORDER BY substr(p.pay_id,10,4) desc, p.pay_id DESC");
         else
-            sb.append("0' ORDER BY p.pay_id DESC");
+            sb.append("0' ORDER BY substr(p.pay_id,10,4) desc, p.pay_id DESC");
         return DBManager.getDatabase().rawQuery(sb.toString(), null);
     }
 
