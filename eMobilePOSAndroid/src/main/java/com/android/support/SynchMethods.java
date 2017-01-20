@@ -124,7 +124,6 @@ public class SynchMethods {
 
     private ProgressDialog myProgressDialog;
     private int type;
-    private DBManager dbManager;
 
     private boolean didSendData = true;
     private boolean isFromMainMenu = false;
@@ -143,7 +142,6 @@ public class SynchMethods {
         client = new HttpClient();
         SAXParserFactory spf = SAXParserFactory.newInstance();
         context = managerInst.getContext();
-        dbManager = managerInst;
         data = new ArrayList<>();
         if (OAuthManager.isExpired(context) && NetworkUtils.isConnectedToInternet(context)) {
             OAuthManager oAuthManager = getOAuthManager(context);
@@ -1363,7 +1361,6 @@ public class SynchMethods {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void synchPriceLevel() throws IOException, SAXException {
