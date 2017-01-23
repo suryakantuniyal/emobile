@@ -18,9 +18,11 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.DBManager;
 import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.MainMenu_FA;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.saxhandler.SaxLoginHandler;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -32,6 +34,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.xml.parsers.SAXParser;
@@ -76,6 +80,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
             }
         }
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -86,6 +91,18 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         if (myPref.getLogIn()) {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
+                AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
+                if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
+                    assignEmployee = new AssignEmployee();
+                    assignEmployee.setEmpId(Integer.parseInt(myPref.getEmpIdFromPreferences()));
+                    List<AssignEmployee> assignEmployees = new ArrayList<>();
+                    assignEmployees.add(assignEmployee);
+                    try {
+                        AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 if (dbManager.unsynchItemsLeft()) {
                     //there are unsynch item left...
                     Intent intent = new Intent(this, MainMenu_FA.class);

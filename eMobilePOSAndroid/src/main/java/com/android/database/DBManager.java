@@ -22,7 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 51;
+    private static final int VERSION = 52;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -30,9 +30,8 @@ public class DBManager {
 
     private DBManager managerInstance;
     private DatabaseHelper DBHelper;
-    private int type;
     private MyPreferences myPref;
-//    private boolean sendAndReceive = false;
+    //    private boolean sendAndReceive = false;
     private static SQLiteDatabase database;
 
     private static final String PASSWORD = "em0b1l3p05";
@@ -74,6 +73,7 @@ public class DBManager {
     public boolean resetDatabase() {
         return context.deleteDatabase(CIPHER_DB_NAME);
     }
+
     public DBManager(Context context) {
 
         this.context = context;
@@ -91,7 +91,6 @@ public class DBManager {
     public DBManager(Context context, int type) {
         this.context = context;
         managerInstance = this;
-        this.type = type;
         if (type == Global.FROM_REGISTRATION_ACTIVITY) {
             resetDatabase();
         }

@@ -199,10 +199,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
 
     public boolean AssignEmployees() {
         Post post = new Post();
-//
-//        SAXParserFactory spf = SAXParserFactory.newInstance();
-//        SaxSelectedEmpHandler handler = new SaxSelectedEmpHandler(this);
-
         try {
             String xml = post.postData(Global.S_GET_ASSIGN_EMPLOYEES, activity, "");
             Gson gson = JsonUtils.getInstance();
@@ -210,18 +206,6 @@ public class SelectEmployee_FA extends BaseFragmentActivityActionBar {
             }.getType();
             List<AssignEmployee> assignEmployees = gson.fromJson(xml, listType);
             AssignEmployeeDAO.insertAssignEmployee(assignEmployees);
-//
-//            InputSource inSource = new InputSource(new StringReader(xml));
-//
-//            SAXParser sp = spf.newSAXParser();
-//            XMLReader xr = sp.getXMLReader();
-//            xr.setContentHandler(handler);
-//            xr.parse(inSource);
-//
-//            MyPreferences myPref = new MyPreferences(activity);
-//            List<String[]> data = handler.getEmpData();
-//            myPref.setAllEmpData(data);
-
             return true;
         } catch (Exception e) {
             error_msg_id = R.string.dlog_msg_error_downloading_employee_data;

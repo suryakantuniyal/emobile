@@ -1,6 +1,5 @@
 package com.android.support;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -32,7 +31,7 @@ public class MyPreferences {
     public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
     private final String db_path = "db_path";
-//    private final String emp_id = "emp_id";
+    //    private final String emp_id = "emp_id";
     private final String ActivationKey = "ActivationKey";
     private final String DeviceID = "DeviceID";
     private final String BundleVersion = "BundleVersion";
@@ -43,7 +42,7 @@ public class MyPreferences {
 //    private final String zone_id = "zone_id";
 //    private final String VAT = "VAT";
 
-//    private final String emp_name = "emp_name";
+    //    private final String emp_name = "emp_name";
 //    private final String emp_lastlogin = "emp_lastlogin";
 //    private final String emp_pos = "emp_pos";
 //    private final String MSOrderEntry = "MSOrderEntry";
@@ -643,7 +642,6 @@ public class MyPreferences {
         prefEditor.commit();
     }
 
-
     public boolean getPreferences(String key, boolean defaultValue) {
         return sharedPref.getBoolean(key, defaultValue);
     }
@@ -658,6 +656,10 @@ public class MyPreferences {
 
     public String getPreferencesValue(String key) {
         return sharedPref.getString(key, "");
+    }
+
+    public String getEmpIdFromPreferences() {
+        return prefs.getString("emp_id", "");
     }
 
     public boolean posPrinter(boolean isGet, boolean value) {
