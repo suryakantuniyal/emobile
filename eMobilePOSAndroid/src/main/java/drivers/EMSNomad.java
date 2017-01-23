@@ -287,7 +287,8 @@ public class EMSNomad extends EMSDeviceDriver implements CoreAPIListener, EMSDev
     @Override
     public void salePayment(Payment payment) {
         CoreSale sale = new CoreSale(new BigDecimal(payment.getPay_amount()));
-        if (!TextUtils.isEmpty(payment.getTipAmount())) {
+        if (!TextUtils.isEmpty(payment.getTipAmount())
+                && new BigDecimal(payment.getTipAmount()).compareTo(new BigDecimal(0)) > 0) {
             sale.addTipWithAmount(new BigDecimal(payment.getTipAmount()));
         }
         terminal.processSale(sale);
