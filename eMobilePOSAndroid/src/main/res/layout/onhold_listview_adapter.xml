@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="15dp">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:padding="15dp"
+              android:gravity="center_vertical">
     
 
         <TextView
@@ -39,5 +41,21 @@
         android:text="TextView"
         android:textAppearance="@style/black_text_appearance_unbold"
         android:textSize="@dimen/listview_text_size" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/restaurantTabletextView"
+            android:gravity="center"
+            android:drawableLeft="@drawable/table_round_sm"
+            android:layout_marginLeft="10dp"/>
+
+    </FrameLayout>
 
 </LinearLayout>

@@ -516,7 +516,7 @@ public class HistoryTransactionDetails_FA extends BaseFragmentActivityActionBar 
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
                     //Void transaction
                     globalDlog.dismiss();
                     startVoidingTransaction();

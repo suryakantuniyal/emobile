@@ -1,6 +1,5 @@
 package com.android.emobilepos;
 
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -12,6 +11,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.widget.CursorAdapter;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.dao.SalesAssociateDAO;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
 import com.android.database.OrderProductsHandler;
@@ -32,6 +33,7 @@ import com.android.database.ProductsHandler;
 import com.android.database.SalesTaxCodesHandler;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -43,18 +45,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 public class OnHoldActivity extends BaseFragmentActivityActionBar {
     private Activity activity;
     private Cursor myCursor;
     private Global global;
     private Global.OrderType orderType = Global.OrderType.SALES_RECEIPT;
-    boolean validPassword = true;
     private boolean isUpdateOnHold = false;
     private boolean hasBeenCreated = false;
     private MyPreferences myPref;
     private int selectedPos = 0;
-
+    boolean validPassword = true;
+    private HoldsCursorAdapter myAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,12 +67,12 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         ListView listView = (ListView) findViewById(R.id.onHoldListView);
         OrdersHandler ordersHandler = new OrdersHandler(activity);
         myCursor = ordersHandler.getOrderOnHold();
-        ListViewCursorAdapter myAdapter = new ListViewCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
+        myAdapter = new HoldsCursorAdapter(activity, myCursor, CursorAdapter.NO_SELECTION);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
-                                    long arg3) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos,
+                                    long count) {
                 selectedPos = pos;
                 openPrintOnHold();
             }
@@ -81,13 +82,71 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
+    private void askWaiterSignin() {
+        final Dialog popDlog = new Dialog(this, R.style.TransparentDialogFullScreen);
+        popDlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        popDlog.setCancelable(true);
+        popDlog.setCanceledOnTouchOutside(false);
+        popDlog.setContentView(R.layout.dlog_field_single_layout);
+        final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_waiter_manager_signin);
+        if (!validPassword)
+            viewMsg.setText(R.string.invalid_password);
+        else
+            viewMsg.setText(R.string.enter_password);
+        Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
+        Button btnCancel = (Button) popDlog.findViewById(R.id.btnCancelDlogSingle);
+
+        btnOk.setText(R.string.button_ok);
+        btnOk.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                popDlog.dismiss();
+                myCursor.moveToPosition(selectedPos);
+                String enteredPass = viewField.getText().toString().trim();
+                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                boolean isDigits = org.apache.commons.lang3.math.NumberUtils.isDigits(enteredPass);
+                SalesAssociate salesAssociates = null;
+                if (isDigits) {
+                    salesAssociates = SalesAssociateDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                }
+                long count = salesAssociates == null ? 0 : salesAssociates.getAssignedDinningTables().where().equalTo("number", myCursor.getString(myCursor.getColumnIndex("assignedTable"))).count();
+                if (salesAssociates != null && count > 0) {
+                    validPassword = true;
+                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    if (enteredPass.equals(myPref.getPosManagerPass())) // validate manager password
+                    {
+                        validPassword = true;
+                        isUpdateOnHold = true;
+                        new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    } else {
+                        validPassword = false;
+                        askWaiterSignin();
+                    }
+                }
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popDlog.dismiss();
+            }
+        });
+        popDlog.show();
+
+    }
 
     @Override
     public void onDestroy() {
         myCursor.close();
         super.onDestroy();
     }
-
 
     @Override
     public void onResume() {
@@ -111,7 +170,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             global.loggedIn = false;
         global.startActivityTransitionTimer();
     }
-
 
     public class checkHoldStatus extends AsyncTask<Void, String, String> {
         boolean wasProcessed = false;
@@ -165,7 +223,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             }
         }
     }
-
 
     private class executeOnHoldAsync extends AsyncTask<Boolean, Void, Intent> {
         private boolean proceed = false;
@@ -261,7 +318,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-
     public void printOnHoldTransaction() {
         new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -337,7 +393,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.show();
     }
 
-
     private void claimedTransactionPrompt() {
 
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -375,7 +430,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
-
     private void askForManagerPassDlg()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
 
@@ -410,7 +464,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String value = viewField.getText().toString();
-                if (value.equals(myPref.posManagerPass(true, null))) // validate manager password
+                if (value.equals(myPref.getPosManagerPass())) // validate manager password
                 {
                     validPassword = true;
                     isUpdateOnHold = true;
@@ -425,7 +479,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
 
     }
 
-
     private void openPrintOnHold()        //type 0 = Change Password, type 1 = Configure Home Menu
     {
 
@@ -434,7 +487,7 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.setCancelable(true);
         dlog.setCanceledOnTouchOutside(true);
         dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
+        myCursor.moveToPosition(selectedPos);
         TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_choose_action);
@@ -456,9 +509,11 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
+                if (myAdapter.isRestaurantHold(selectedPos)) {
+                    askWaiterSignin();
+                } else {
+                    new checkHoldStatus().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
             }
         });
         btnPrint.setOnClickListener(new View.OnClickListener() {
@@ -466,7 +521,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             @Override
             public void onClick(View v) {
                 dlog.dismiss();
-                myCursor.moveToPosition(selectedPos);
                 if (myCursor.getString(myCursor.getColumnIndex("ord_issync")).equals("0")) {
                     Global.lastOrdID = myCursor.getString(myCursor.getColumnIndex("ord_id"));
                     new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -478,7 +532,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         dlog.show();
 
     }
-
 
     public static void addOrderProducts(Activity activity, Cursor c) {
         OrderProductsHandler orderProductsHandler = new OrderProductsHandler(activity);
@@ -528,7 +581,6 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-
     private void selectCustomer(String custID) {
         if (custID != null && !custID.isEmpty()) {
             CustomersHandler ch = new CustomersHandler(activity);
@@ -545,12 +597,17 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
         }
     }
 
-    public class ListViewCursorAdapter extends CursorAdapter {
+    public class HoldsCursorAdapter extends CursorAdapter {
         private LayoutInflater inflater;
 
-        ListViewCursorAdapter(Context context, Cursor c, int flags) {
+        HoldsCursorAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
             inflater = LayoutInflater.from(context);
+        }
+
+        public boolean isRestaurantHold(int position) {
+            getCursor().moveToPosition(position);
+            return !TextUtils.isEmpty(getCursor().getString(getCursor().getColumnIndex("assignedTable")));
         }
 
         @Override
@@ -558,11 +615,17 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             final ViewHolder myHolder = (ViewHolder) view.getTag();
             myHolder.holdID.setText(cursor.getString(myHolder.i_holdID));
             myHolder.holdName.setText(cursor.getString(myHolder.i_holdName));
-            if (cursor.getString(myHolder.i_issync).equals("1"))//it is synched
-            {
+            if (cursor.getString(myHolder.i_issync).equals("1")) {
                 myHolder.offlineFlag.setVisibility(View.GONE);
             } else {
                 myHolder.offlineFlag.setVisibility(View.VISIBLE);
+            }
+            String table = cursor.getString(myHolder.i_assignedTable);
+            if (TextUtils.isEmpty(table)) {
+                myHolder.tableTextView.setVisibility(View.INVISIBLE);
+            } else {
+                myHolder.tableTextView.setText(table);
+                myHolder.tableTextView.setVisibility(View.VISIBLE);
             }
         }
 
@@ -572,18 +635,21 @@ public class OnHoldActivity extends BaseFragmentActivityActionBar {
             retView = inflater.inflate(R.layout.onhold_listview_adapter, parent, false);
             ViewHolder holder = new ViewHolder();
             holder.holdID = (TextView) retView.findViewById(R.id.onHoldID);
+            holder.tableTextView = (TextView) retView.findViewById(R.id.restaurantTabletextView);
             holder.holdName = (TextView) retView.findViewById(R.id.onHoldName);
             holder.offlineFlag = (TextView) retView.findViewById(R.id.onHoldOfflineFlag);
             holder.i_holdID = cursor.getColumnIndex("_id");
             holder.i_holdName = cursor.getColumnIndex("ord_HoldName");
             holder.i_issync = cursor.getColumnIndex("ord_issync");
+            holder.i_assignedTable = cursor.getColumnIndex("assignedTable");
             retView.setTag(holder);
             return retView;
         }
 
         private class ViewHolder {
             TextView holdID, holdName, offlineFlag;
-            int i_issync, i_holdID, i_holdName;
+            TextView tableTextView;
+            int i_issync, i_holdID, i_holdName, i_assignedTable;
         }
     }
 }

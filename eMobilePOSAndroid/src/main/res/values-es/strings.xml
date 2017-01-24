@@ -1302,6 +1302,8 @@
     <string name="unknown">Unknown</string>
     <string name="split_single">Single Receipt</string>
     <string name="config_printer_width">Printer Width</string>
+    <string name="restaurant_table">Restaurant Table:</string>
+    <string name="dlog_title_waiter_manager_signin">Waiter/Manager Signin</string>
 
 
 </resources>

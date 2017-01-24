@@ -29,8 +29,8 @@ import com.android.dao.DinningTableDAO;
 import com.android.dao.SalesAssociateDAO;
 import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
-import com.android.database.DBManager;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.OnHoldActivity;
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.DinningTableSeatsAdapter;
 import com.android.emobilepos.adapters.SalesMenuAdapter;
@@ -53,7 +53,6 @@ import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
-import com.android.support.SynchMethods;
 
 import java.util.HashMap;
 
@@ -70,6 +69,7 @@ public class SalesTab_FR extends Fragment {
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
     private String associateId;
+    boolean validPassword = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -372,9 +372,11 @@ public class SalesTab_FR extends Fragment {
                 }
                 case ON_HOLD:            //On Hold
                 {
-                    DBManager dbManager = new DBManager(activity);
-                    SynchMethods sm = new SynchMethods(dbManager);
-                    sm.synchSendOnHold(true, false, activity);
+                    intent = new Intent(getActivity(), OnHoldActivity.class);
+                    getActivity().startActivity(intent);
+//                    DBManager dbManager = new DBManager(activity);
+//                    SynchMethods sm = new SynchMethods(dbManager);
+//                    sm.synchSendOnHold(true, false, activity);
                     break;
                 }
                 case CONSIGNMENT:                //Consignment
@@ -465,10 +467,11 @@ public class SalesTab_FR extends Fragment {
 //                    DBManager dbManager = new DBManager(activity);
 //                    dbManager.synchSendOrdersOnHold(true, false);
 
-                    DBManager dbManager = new DBManager(activity);
-                    SynchMethods sm = new SynchMethods(dbManager);
-                    sm.synchSendOnHold(true, false, activity);
-
+//                    DBManager dbManager = new DBManager(activity);
+//                    SynchMethods sm = new SynchMethods(dbManager);
+//                    sm.synchSendOnHold(true, false, activity);
+                    intent = new Intent(getActivity(), OnHoldActivity.class);
+                    getActivity().startActivity(intent);
                     break;
                 case LOCATION:
                     pickLocations(true);
@@ -520,7 +523,6 @@ public class SalesTab_FR extends Fragment {
         popDlog.show();
     }
 
-    boolean validPassword = true;
 
     private void showWaiterSignin() {
         final Dialog popDlog = new Dialog(getActivity(), R.style.TransparentDialogFullScreen);

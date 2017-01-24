@@ -66,8 +66,8 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.models.Product;
+import com.android.emobilepos.models.realms.AssignEmployee;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.support.CustomerInventory;
 import com.android.support.GenerateNewID;
@@ -125,7 +125,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public OrderProductListAdapter mainLVAdapter;
     public static ListView receiptListView;
 
-
     private Global.TransactionType caseSelected = Global.TransactionType.SALE_RECEIPT;
     private boolean custSelected;
     private Global.OrderType consignmentType;
@@ -157,7 +156,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
     public static Receipt_FR fragInstance;
 
     private String order_email = "";
-
 
     public interface RecalculateCallback {
         void recalculateTotal();
@@ -368,7 +366,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         return view;
     }
 
-
     private class MyPagerAdapter extends FragmentPagerAdapter {
         public MyPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -577,16 +574,16 @@ public class Receipt_FR extends Fragment implements OnClickListener,
                                 Intent intent = new Intent(getActivity(),
                                         PickerProduct_FA.class);
                                 Gson gson = JsonUtils.getInstance();
-                                if(onHoldOrder!=null){
+                                if (onHoldOrder != null) {
 
                                 }
                                 Product product = prodHandler.getProductDetails(orderSeatProduct.orderProduct.getProd_id());
-                                if(onHoldOrder!=null){
+                                if (onHoldOrder != null) {
                                     orderSeatProduct.orderProduct.setProd_price(product.getFinalPrice());
                                 }
                                 intent.putExtra("orderProduct", gson.toJson(orderSeatProduct.orderProduct));
                                 intent.putExtra("isModify", true);
-                                intent.putExtra("isFromAddon", onHoldOrder!=null);
+                                intent.putExtra("isFromAddon", onHoldOrder != null);
                                 intent.putExtra("modify_position", orderProductIdx);
                                 startActivityForResult(intent, 0);
                                 break;
@@ -779,7 +776,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         });
         dialog.show();
     }
-
 
     private void showAddMoreProductsDlg() {
         final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
@@ -1505,7 +1501,7 @@ public class Receipt_FR extends Fragment implements OnClickListener,
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String value = viewField.getText().toString().trim();
-                if (value.equals(myPref.posManagerPass(true, null))) // validate
+                if (value.equals(myPref.getPosManagerPass())) // validate
                 // admin
                 // password
                 {
@@ -1543,6 +1539,9 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_confirm);
         viewMsg.setText(R.string.enter_name);
+        if (!isToGo && getOrderingMainFa().getSelectedDinningTableNumber() != null) {
+            viewField.setText(String.format("%s %s", getString(R.string.restaurant_table), getOrderingMainFa().getSelectedDinningTableNumber()));
+        }
         Button btnCancel = (Button) globalDlog.findViewById(R.id.btnCancelDlogSingle);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1952,7 +1951,6 @@ public class Receipt_FR extends Fragment implements OnClickListener,
         Catalog_FR.instance.refreshListView();
         refreshView();
     }
-
 
     public void reCalculate() {
         pagerAdapter.getItem(0);

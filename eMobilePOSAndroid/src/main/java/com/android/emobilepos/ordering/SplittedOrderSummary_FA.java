@@ -572,7 +572,7 @@ public class SplittedOrderSummary_FA extends BaseFragmentActivityActionBar imple
                 globalDlog.dismiss();
                 MyPreferences myPref = new MyPreferences(SplittedOrderSummary_FA.this);
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
                     voidTransaction(voidPayments);
                 } else {
                     promptManagerPassword(voidPayments);

@@ -1233,6 +1233,8 @@
     <string name="sync_saving_settings">Saving settings...</string>
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
+    <string name="restaurant_table">Restaurant Table:</string>
+    <string name="dlog_title_waiter_manager_signin">Waiter/Manager Signin</string>
 
 
 </resources>

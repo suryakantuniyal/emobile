@@ -705,7 +705,7 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
             public void onClick(View v) {
                 globalDlog.dismiss();
                 String pass = viewField.getText().toString();
-                if (!pass.isEmpty() && myPref.posManagerPass(true, null).equals(pass.trim())) {
+                if (!pass.isEmpty() && myPref.getPosManagerPass().equals(pass.trim())) {
                     voidTransaction(activity, job_id, extras.getString("ord_type"));
                 } else {
                     promptManagerPassword();

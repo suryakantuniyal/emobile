@@ -35,7 +35,7 @@ public class NotificationHandler extends NotificationsHandler {
         if (eventAction != null) {
             if (NetworkUtils.isConnectedToInternet(context)) {
                 NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
-                sendNotification(eventAction);
+//                sendNotification(eventAction);
                 switch (action) {
                     case SYNC_HOLDS:
                         new Thread(new Runnable() {

@@ -1139,16 +1139,15 @@ public class MyPreferences {
         return (prefs.getString("posAdminPassword", ""));
     }
 
-    public String posManagerPass(boolean get, String value) {
+    public void setPosManagerPass(String value) {
         String posManagerPassword = "posManagerPassword";
-        if (get)
-            return prefs.getString(posManagerPassword, "");
-        else {
-            prefEditor.putString(posManagerPassword, value);
-            prefEditor.commit();
-        }
-        return "";
+        prefEditor.putString(posManagerPassword, value);
+        prefEditor.commit();
+    }
 
+    public String getPosManagerPass() {
+        String posManagerPassword = "posManagerPassword";
+        return prefs.getString(posManagerPassword, "");
     }
 
     public void setStoredAndForward(boolean storeAndForward) {

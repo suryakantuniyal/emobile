@@ -92,7 +92,7 @@ public class SettingsTab_FR extends Fragment implements OnClickListener{
 						intent.putExtra("settings_type", CASE_ADMIN);
 						startActivity(intent);
 
-					} else if (type == CASE_MANAGER && myPref.posManagerPass(true, null).equals(pass.trim())) {
+					} else if (type == CASE_MANAGER && myPref.getPosManagerPass().equals(pass.trim())) {
 						intent.putExtra("settings_type", CASE_MANAGER);
 						startActivity(intent);
 					} else {
