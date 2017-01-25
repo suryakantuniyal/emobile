@@ -29,7 +29,10 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 import jpos.JposConst;
 import jpos.JposException;
 import jpos.POSPrinter;
+import jpos.POSPrinterConst;
 import jpos.config.JposEntry;
+import jpos.events.DirectIOEvent;
+import jpos.events.DirectIOListener;
 import jpos.events.ErrorEvent;
 import jpos.events.ErrorListener;
 import jpos.events.OutputCompleteEvent;
@@ -42,7 +45,7 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 5/3/2016.
  */
 public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
-        ErrorListener, OutputCompleteListener, StatusUpdateListener {
+        ErrorListener, OutputCompleteListener, StatusUpdateListener,DirectIOListener {
 
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
@@ -63,7 +66,6 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         thisInstance = this;
         LINE_WIDTH = paperSize;
 
-
         portName = myPref.getPrinterMACAddress();
         portNumber = myPref.getStarPort();
         bxlConfigLoader = new BXLConfigLoader(activity);
@@ -74,7 +76,10 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             bxlConfigLoader.newFile();
         }
         bixolonPrinter = new POSPrinter(activity);
-
+        bixolonPrinter.addErrorListener(this);
+        bixolonPrinter.addOutputCompleteListener(this);
+        bixolonPrinter.addStatusUpdateListener(this);
+        bixolonPrinter.addDirectIOListener(this);
         if (myPref.getPrinterName().contains("SPP-R2")) {
             LINE_WIDTH = 32;
         } else {
@@ -156,6 +161,10 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         return true;
     }
 
+    @Override
+    public void directIOOccurred(DirectIOEvent directIOEvent) {
+
+    }
 
     public class processConnectionAsync extends AsyncTask<Integer, String, Boolean> {
         String msg = "";
@@ -231,6 +240,8 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             productName = BXLConst.SPP_R300;
         } else if ((logicalName.indexOf("SPP-R400") >= 0)) {
             productName = BXLConst.SPP_R400;
+        } else if ((logicalName.indexOf("SPP-R200") >= 0)) {
+            productName = BXLConst.SPP_R300;
         }
 
         return productName;
@@ -403,6 +414,7 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             e.printStackTrace();
         }
     }
+
     @Override
     public void salePayment(Payment payment) {
 

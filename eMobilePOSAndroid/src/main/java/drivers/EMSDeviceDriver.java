@@ -1245,7 +1245,7 @@ public class EMSDeviceDriver {
                 ByteBuffer buffer = ByteBuffer.allocate(4);
                 buffer.put((byte) POSPrinterConst.PTR_S_RECEIPT);
                 buffer.put((byte) 50);
-                buffer.put((byte) 1);
+                buffer.put((byte) 0x00);
                 buffer.put((byte) 0x00);
                 try {
                     bixolonPrinter.open(myPref.getPrinterName());
