@@ -50,7 +50,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.2.0.100"
-            versionCode 116
+            versionCode 118
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -64,7 +64,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
             versionName "1.2.0.100"
-            versionCode 116
+            versionCode 118
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -78,7 +78,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.2.0.100"
-            versionCode 116
+            versionCode 118
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -92,7 +92,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
             versionName "1.2.0.100"
-            versionCode 116
+            versionCode 118
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -106,7 +106,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
             versionName "1.1.1.100"
-            versionCode 116
+            versionCode 118
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -120,7 +120,7 @@ android {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
             versionName "1.1.1.100"
-            versionCode 116
+            versionCode 118
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
