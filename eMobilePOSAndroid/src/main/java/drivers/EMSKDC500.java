@@ -9,11 +9,11 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -241,13 +241,13 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     public void registerPrinter() {
 
-        edm.currentDevice = thisInstance;
+        edm.setCurrentDevice(thisInstance);
     }
 
     public void unregisterPrinter() {
         kdcReader.DisableNFC_POS();
 
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -312,9 +312,14 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
     public void toggleBarcodeReader() {
 
     }
+//
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
 
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
 
     }
 
@@ -350,6 +355,11 @@ public class EMSKDC500 extends EMSDeviceDriver implements EMSDeviceManagerPrinte
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

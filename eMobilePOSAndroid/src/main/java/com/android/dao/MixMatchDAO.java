@@ -1,39 +1,24 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.MixMatch;
+import com.android.emobilepos.models.realms.MixMatch;
 import com.android.emobilepos.models.MixMatchProductGroup;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 4/12/2016.
  */
 public class MixMatchDAO {
     public static void insert(String json) {
-        Gson gson = new GsonBuilder()
-                .setExclusionStrategies(new ExclusionStrategy() {
-                    @Override
-                    public boolean shouldSkipField(FieldAttributes f) {
-                        return f.getDeclaringClass().equals(RealmObject.class);
-                    }
-
-                    @Override
-                    public boolean shouldSkipClass(Class<?> clazz) {
-                        return false;
-                    }
-                })
-                .create();
+        Gson gson = JsonUtils.getInstance();
 
         Type listType = new com.google.gson.reflect.TypeToken<List<MixMatch>>() {
         }.getType();
@@ -47,10 +32,13 @@ public class MixMatchDAO {
 
     public static void insert(List<MixMatch> mixMatches) {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(MixMatch.class);
-        realm.copyToRealm(mixMatches);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(MixMatch.class);
+            realm.copyToRealm(mixMatches);
+        }finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<MixMatch> getAll() {
@@ -59,9 +47,12 @@ public class MixMatchDAO {
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(MixMatch.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(MixMatch.class);
+        }finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<MixMatch> getDiscountsBygroupId(MixMatchProductGroup group) {

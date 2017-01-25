@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.android.database.ProductAddonsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
@@ -22,14 +21,16 @@ import com.android.emobilepos.ordering.PickerAddon_FA;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by Guarionex on 1/20/2016.
  */
 public class OrderProductListAdapter extends BaseAdapter {
-
 
     private OrderingMain_FA orderingMainFa;
     Global global;
@@ -62,6 +63,13 @@ public class OrderProductListAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         myPref = new MyPreferences(activity);
         this.activity = activity;
+        Collections.sort(orderProducts, new Comparator<OrderProduct>() {
+            @Override
+            public int compare(OrderProduct lhs, OrderProduct rhs) {
+                return Integer.valueOf(lhs.getAssignedSeat()).compareTo(Integer.valueOf(rhs.getAssignedSeat()));
+//                return Integer.parseInt(lhs.getAssignedSeat()) == (Integer.parseInt(rhs.getAssignedSeat());
+            }
+        });
         this.orderProducts = orderProducts;
         global = (Global) activity.getApplication();
         initSeats(orderingMainFa.getSelectedSeatsAmount());
@@ -100,8 +108,8 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     private void initSeats(int seatsAmount) {
-        orderSeatProductFullList = new ArrayList<OrderSeatProduct>();
-        orderSeatProductList = new ArrayList<OrderSeatProduct>();
+        orderSeatProductFullList = new ArrayList<>();
+        orderSeatProductList = new ArrayList<>();
         if (seatsAmount > 0) {
             for (int i = 0; i < seatsAmount; i++) {
                 OrderSeatProduct seatProduct = new OrderSeatProduct(String.valueOf(i + 1), getNextGroupId());
@@ -113,7 +121,7 @@ public class OrderProductListAdapter extends BaseAdapter {
     }
 
     public List<OrderProduct> getOrderProducts(String seatNumber) {
-        List<OrderProduct> l = new ArrayList<OrderProduct>();
+        List<OrderProduct> l = new ArrayList<>();
         for (OrderProduct product : orderProducts) {
             if (product.getAssignedSeat().equalsIgnoreCase(seatNumber)) {
                 l.add(product);
@@ -298,13 +306,14 @@ public class OrderProductListAdapter extends BaseAdapter {
         return convertView;
     }
 
-
     public void setHolderValues(ViewHolder holder, final int pos) {
         final OrderProduct product = orderSeatProductList.get(pos).orderProduct;
         final int orderProductIdx = orderSeatProductList.get(pos).rowType == OrderProductListAdapter.RowType.TYPE_ITEM ? global.orderProducts.indexOf(orderSeatProductList.get(pos).orderProduct) : 0;
         final String tempId = product.getOrdprod_id();
 
-        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode) || (myPref.getPreferences(MyPreferences.pref_restaurant_mode) && (Global.addonSelectionMap == null || (Global.addonSelectionMap != null && !Global.addonSelectionMap.containsKey(tempId))))) {
+        if (!myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                || (myPref.getPreferences(MyPreferences.pref_restaurant_mode)
+                && !product.getHasAddons())) {
             if (holder.addonButton != null) {
                 holder.addonButton.setVisibility(View.INVISIBLE);
                 holder.addonsTextView.setVisibility(View.GONE);
@@ -315,7 +324,6 @@ public class OrderProductListAdapter extends BaseAdapter {
                 StringBuffer addonSb = new StringBuffer();
                 StringBuffer addonNoSb = new StringBuffer();
 
-                int i = 0;
                 for (OrderProduct orderProduct : product.addonsProducts) {
                     if (orderProduct.isAdded()) {
                         addonSb.append(" <font color='black'>").append(orderProduct.getOrdprod_name()).append("</font>");
@@ -324,7 +332,6 @@ public class OrderProductListAdapter extends BaseAdapter {
                         addonNoSb.append(" <font color='red'>").append(activity.getString(R.string.button_no)).append(" ").append(orderProduct.getOrdprod_name()).append("</font>");
                         addonNoSb.append(", ");
                     }
-                    i++;
                 }
                 if (!TextUtils.isEmpty(addonSb.toString())) {
                     addonSb = addonSb.delete(addonSb.length() - 2, addonSb.length() - 1);
@@ -343,17 +350,13 @@ public class OrderProductListAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(activity, PickerAddon_FA.class);
-                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
+//                        global.addonSelectionType = Global.addonSelectionMap.get(tempId);
                         intent.putExtra("selectedSeatNumber", product.getAssignedSeat());
                         intent.putExtra("addon_map_key", tempId);
+                        intent.putExtra("orderProduct", product.toJson());
                         intent.putExtra("isEditAddon", true);
                         intent.putExtra("prod_id", product.getProd_id());
                         intent.putExtra("item_position", orderProductIdx);
-
-
-                        ProductAddonsHandler prodAddonsHandler = new ProductAddonsHandler(activity);
-                        Global.productParentAddons = prodAddonsHandler.getParentAddons(product.getProd_id());
-
                         activity.startActivityForResult(intent, 0);
                     }
                 });
@@ -367,17 +370,16 @@ public class OrderProductListAdapter extends BaseAdapter {
         } else if (attDisplay.equalsIgnoreCase("prod_name")) {
             holder.itemName.setText(product.getOrdprod_name());
         } else if (attDisplay.equalsIgnoreCase("prod_extradesc")) {
-            holder.itemName.setText(product.prod_extradesc);
+            holder.itemName.setText(product.getProd_extradesc());
         }
         String temp = Global.formatNumToLocale(Double.parseDouble(product.getFinalPrice()));
         holder.itemAmount.setText(Global.getCurrencyFormat(temp));
 
-
         holder.distQty.setText(product.getDisAmount());
         temp = Global.formatNumToLocale(Double.parseDouble(product.getDisTotal()));
         holder.distAmount.setText(Global.getCurrencyFormat(temp));
-
-        temp = Global.formatNumToLocale(Double.parseDouble(product.getItemTotal()));
+        BigDecimal itemTotal = product.getItemTotalCalculated();
+        temp = Global.formatNumToLocale(itemTotal.doubleValue());
         holder.granTotal.setText(Global.getCurrencyFormat(temp));
 
     }
@@ -392,7 +394,6 @@ public class OrderProductListAdapter extends BaseAdapter {
         Button addonButton;
         TextView addonsTextView;
     }
-
 
 }
 

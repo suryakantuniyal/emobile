@@ -1,6 +1,6 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -9,7 +9,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 /**
  * Created by Guarionex on 4/12/2016.
@@ -31,10 +31,13 @@ public class OrderProductAttributeDAO {
     public static void insert(List<ProductAttribute> attributes) {
         setPKId(attributes);
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(ProductAttribute.class);
-        realm.copyToRealm(attributes);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(ProductAttribute.class);
+            realm.copyToRealm(attributes);
+        }finally {
+            realm.commitTransaction();
+        }
     }
 
     private static void setPKId(List<ProductAttribute> attributes) {
@@ -51,9 +54,12 @@ public class OrderProductAttributeDAO {
 
     public static void truncate() {
         Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        realm.delete(ProductAttribute.class);
-        realm.commitTransaction();
+        try {
+            realm.beginTransaction();
+            realm.delete(ProductAttribute.class);
+        }finally {
+            realm.commitTransaction();
+        }
     }
 
     public static RealmResults<ProductAttribute> getByProdId(String prodId) {

@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import com.android.database.PaymentsHandler;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXBoloroManual;
@@ -117,8 +117,8 @@ public class ProcessBoloro_FA extends BaseFragmentActivityActionBar implements O
 
         if (!isManual) {
             if (myPreferences.getPrinterType() == Global.KDC500) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                    Global.mainPrinterManager.currentDevice.loadScanner(this);
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                    Global.mainPrinterManager.getCurrentDevice().loadScanner(this);
                 }
             } else {
                 mNfcAdapter = NfcAdapter.getDefaultAdapter(this);

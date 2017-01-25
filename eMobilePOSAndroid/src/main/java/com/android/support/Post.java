@@ -1,7 +1,6 @@
 package com.android.support;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.android.emobilepos.R;
 
@@ -106,7 +105,7 @@ public class Post {
                 isShortResponse = true;
                 break;
             }
-            case 4: {
+            case Global.S_GET_ASSIGN_EMPLOYEE: {
                 url = baseURL.append(xml.assignEmployees());
                 isShortResponse = true;
                 break;
@@ -275,7 +274,8 @@ public class Post {
         if (!isPost) {
             try {
                 if (type != 11)
-                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_XML_DINNER_TABLES) {
+                    if (type == Global.S_GET_XML_SALES_ASSOCIATE || type == Global.S_GET_ASSIGN_EMPLOYEE
+                            || type == Global.S_GET_XML_DINNER_TABLES) {
                         response = this.getRequest(new URL(url.toString()), true);
                     } else {
                         response = this.getRequest(new URL(url.toString()), false);

@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import com.android.database.ProductsHandler;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.support.Global;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,11 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import util.json.JsonUtils;
 
 public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
-    private String addon = "0";
-    private String isAdded = "0";
-    private String isPrinted = "0";
+    private boolean addon;
+    private boolean isAdded;
+    private boolean isPrinted;
     private String price_vat_exclusive = "0";
     private String item_void = "";
     private String ordprod_id = "";
@@ -27,6 +31,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String ordprod_qty = "";
     private BigDecimal overwrite_price;
     private String reason_id = "";
+    @SerializedName(value = "ordprod_name", alternate = {"prod_name"})
     private String ordprod_name = "";
     private String ordprod_desc = "";
     private String ordprod_comment = "";
@@ -72,7 +77,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public String priceLevelName = "";
     public List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
     public List<OrderProduct> addonsProducts = new ArrayList<OrderProduct>();
-    public String hasAddons = "0"; //0 no addons, 1 it has addons
+    private Boolean hasAddons; //0 no addons, 1 it has addons
     public String addon_section_name = "";
     public String addon_position = "";
 
@@ -85,7 +90,10 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private BigDecimal mixMatchOriginalPrice;
     private List<MixAndMatchDiscount> mixAndMatchDiscounts;
     private String productPriceLevelTotal;
-    private String parentAddonOrderProductId;
+    @SerializedName("parentAddonOrderProductId")
+    private String addon_ordprod_id;
+    private String prod_extradesc;
+    private String consignment_qty;
 
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
@@ -105,19 +113,24 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_price_points(String.valueOf(product.getProdPricePoints()));
         this.setProd_value_points(String.valueOf(product.getProdValuePoints()));
         this.setPricesXGroupid(product.getPricesXGroupid());
+        this.setOrdprod_name(product.getProdName());
+        this.setProd_extradesc(product.getProdExtraDesc());
+        this.setOrdprod_qty("1");
     }
-
-    public String consignment_qty;
-    public String prod_extradesc;
 
     public OrderProduct() {
 
     }
 
-
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Object clone = super.clone();
+        List<OrderProduct> cloneAddons = new ArrayList<>();
+        for (OrderProduct addon : addonsProducts) {
+            cloneAddons.add((OrderProduct) addon.clone());
+        }
+        ((OrderProduct) clone).addonsProducts = cloneAddons;
+        return clone;
     }
 
     public boolean isVoid() {
@@ -200,7 +213,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         setProd_price_updated("0");
     }
 
-
     public String getPricesXGroupid() {
         return pricesXGroupid;
     }
@@ -215,7 +227,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         if (getOverwrite_price() != null) {
             return getOverwrite_price().toString();
         } else {
-            return getProd_price();
+            if (!TextUtils.isEmpty(getProd_price())) {
+                return getProd_price();
+            } else {
+                return "0";
+            }
         }
     }
 
@@ -223,30 +239,6 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setProd_price(prod_price);
         this.setItemTotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
         this.setItemSubtotal(Global.getBigDecimalNum(prod_price).multiply(new BigDecimal(ordprod_qty)).toString());
-    }
-
-    public String getAddon() {
-        return addon;
-    }
-
-    public void setAddon(String addon) {
-        this.addon = addon;
-    }
-
-    public String getIsAdded() {
-        return isAdded;
-    }
-
-    public void setIsAdded(String isAdded) {
-        this.isAdded = isAdded;
-    }
-
-    public String getIsPrinted() {
-        return isPrinted;
-    }
-
-    public void setIsPrinted(String isPrinted) {
-        this.isPrinted = isPrinted;
     }
 
     public String getPrice_vat_exclusive() {
@@ -271,6 +263,11 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
 
     public void setOrdprod_id(String ordprod_id) {
         this.ordprod_id = ordprod_id;
+        if (addonsProducts != null && !addonsProducts.isEmpty()) {
+            for (OrderProduct addon : addonsProducts) {
+                addon.setAddon_ordprod_id(ordprod_id);
+            }
+        }
     }
 
     public String getOrd_id() {
@@ -649,12 +646,8 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.requiredProductAttributes = requiredProductAttributes;
     }
 
-    public String getHasAddons() {
-        return hasAddons;
-    }
-
-    public void setHasAddons(String hasAddons) {
-        this.hasAddons = hasAddons;
+    public boolean getHasAddons() {
+        return addonsProducts != null && !addonsProducts.isEmpty();
     }
 
     public String getAddon_section_name() {
@@ -750,24 +743,80 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.setMixMatchQtyApplied(0);
     }
 
-    public boolean isAdded() {
-        return !TextUtils.isEmpty(isAdded) && isAdded.equalsIgnoreCase("1");
+    public String getProd_extradesc() {
+        return prod_extradesc;
     }
 
-    public String getParentAddonOrderProductId() {
-        return parentAddonOrderProductId;
-    }
-
-    public void setParentAddonOrderProductId(String parentAddonOrderProductId) {
-        this.parentAddonOrderProductId = parentAddonOrderProductId;
-    }
-
-    public boolean isAddon() {
-        return !TextUtils.isEmpty(getAddon()) && getAddon().equals("1");
+    public void setProd_extradesc(String prod_extradesc) {
+        this.prod_extradesc = prod_extradesc;
     }
 
     @Override
     public String toString() {
         return getProd_id() + "-" + getOrdprod_name();
+    }
+
+    public String getAddon_ordprod_id() {
+        return addon_ordprod_id;
+    }
+
+    public void setAddon_ordprod_id(String addon_ordprod_id) {
+        this.addon_ordprod_id = addon_ordprod_id;
+    }
+
+    public boolean isAddon() {
+        return addon;
+    }
+
+    public void setAddon(boolean addon) {
+        this.addon = addon;
+    }
+
+    public boolean isAdded() {
+        return isAdded;
+    }
+
+    public void setAdded(boolean added) {
+        isAdded = added;
+    }
+
+    public boolean isPrinted() {
+        return isPrinted;
+    }
+
+    public void setPrinted(boolean printed) {
+        isPrinted = printed;
+    }
+
+    public String toJson() {
+        Gson gson = JsonUtils.getInstance();
+        return gson.toJson(this);
+    }
+
+    public BigDecimal getAddonsTotalPrice() {
+        BigDecimal price = new BigDecimal(0);
+        for (OrderProduct addon : addonsProducts) {
+            price = price.add(new BigDecimal(addon.getFinalPrice()));
+        }
+        return price;
+    }
+
+    public BigDecimal getItemSubtotalCalculated() {
+        BigDecimal subtotal;
+        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
+        BigDecimal taxAmount = Global.getBigDecimalNum(getTaxAmount());
+        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
+        subtotal = finalPrice.add(addonsTotalPrice).add(taxAmount).subtract(discount);
+        return subtotal;
+    }
+
+    public BigDecimal getItemTotalCalculated() {
+        BigDecimal subtotal;
+        BigDecimal addonsTotalPrice = getAddonsTotalPrice();
+        BigDecimal finalPrice = new BigDecimal(getFinalPrice());
+        BigDecimal discount = Global.getBigDecimalNum(getDisAmount());
+        subtotal = finalPrice.add(addonsTotalPrice).subtract(discount);
+        return subtotal;
     }
 }

@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import drivers.EMSWalker;
+import drivers.EMSNomad;
 
 public class DrawView extends View implements OnTouchListener {
 	private Canvas mCanvas;
@@ -79,8 +79,8 @@ public class DrawView extends View implements OnTouchListener {
 	private static final float TOUCH_TOLERANCE = 4;
 
 	private void touch_start(float x, float y) {
-		if (EMSWalker.signature != null)
-			EMSWalker.signature.startTouch(x, y);
+		if (EMSNomad.signature != null)
+			EMSNomad.signature.startTouch(x, y);
 		mPath.reset();
 		mPath.moveTo(x, y);
 		mX = x;
@@ -88,8 +88,8 @@ public class DrawView extends View implements OnTouchListener {
 	}
 
 	private void touch_move(float x, float y) {
-		if (EMSWalker.signature != null)
-			EMSWalker.signature.moveTouch(x, y);
+		if (EMSNomad.signature != null)
+			EMSNomad.signature.moveTouch(x, y);
 		float dx = Math.abs(x - mX);
 		float dy = Math.abs(y - mY);
 		if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
@@ -104,8 +104,8 @@ public class DrawView extends View implements OnTouchListener {
 		// commit the path to our offscreen
 
 		// moved = false;
-		if (EMSWalker.signature != null)
-			EMSWalker.signature.upTouch();
+		if (EMSNomad.signature != null)
+			EMSNomad.signature.upTouch();
 		if (moved) {
 			mPath.lineTo(mX, mY);
 			mCanvas.drawPath(mPath, mPaint);

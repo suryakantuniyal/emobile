@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.StarMicronics.jasura.JAException;
@@ -19,7 +18,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.mainmenu.SalesTab_FR;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -238,11 +238,23 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     public void toggleBarcodeReader() {
     }
 
+    //    @Override
+//    public void printReceiptPreview(View view) {
+//        try {
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            setPaperWidth(LINE_WIDTH);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
@@ -286,6 +298,11 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
     }
 
     @Override
+    public void submitSignature() {
+
+    }
+
+    @Override
     public void registerAll() {
         this.registerPrinter();
     }
@@ -308,12 +325,10 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
         return true;
     }
 
-
     @Override
     public boolean printBalanceInquiry(HashMap<String, String> values) {
         return printBalanceInquiry(values, LINE_WIDTH);
     }
-
 
     @Override
     public boolean printOnHold(Object onHold) {
@@ -346,12 +361,12 @@ public class EMSPowaPOS extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override

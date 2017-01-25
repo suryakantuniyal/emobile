@@ -71,17 +71,15 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
         clear.setOnClickListener(this);
         accept.setOnClickListener(this);
         if (!TextUtils.isEmpty(payAmount)) {
-            ((TextView) findViewById(R.id.amountSignReceipttextView)).setText(getString(R.string.receipt_amount) + Global.getCurrencyFormat(payAmount));
+            ((TextView) findViewById(R.id.amountSignReceipttextView)).setText(String.format("%s%s", getString(R.string.receipt_amount), Global.getCurrencyFormat(payAmount)));
             if (!TextUtils.isEmpty(cardType)) {
                 ((ImageView) findViewById(R.id.cardLogoSignReceiptimageView3)).setImageResource(ProcessCreditCard_FA.getCreditLogo(cardType));
             }
         } else {
-            ((TextView) findViewById(R.id.amountSignReceipttextView)).setVisibility(View.GONE);
-            ((ImageView) findViewById(R.id.cardLogoSignReceiptimageView3)).setVisibility(View.GONE);
+            findViewById(R.id.amountSignReceipttextView).setVisibility(View.GONE);
+            findViewById(R.id.cardLogoSignReceiptimageView3).setVisibility(View.GONE);
         }
 
-
-        //drawView.requestFocus();
         hasBeenCreated = true;
     }
 
@@ -141,7 +139,6 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.cancelBut:
                 if (isFromPayment)
@@ -163,7 +160,7 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
                 break;
             case R.id.acceptBut:
                 Bitmap t = drawView.getCanvasBitmap();
-                OutputStream outStream = null;
+                OutputStream outStream;
                 MyPreferences myPref = new MyPreferences(activity);
 
                 File file = new File(myPref.getCacheDir(), "test.jpeg");
@@ -199,13 +196,8 @@ public class DrawReceiptActivity extends Activity implements OnClickListener {
                     }
 
                 } catch (FileNotFoundException e) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.onClick)]");
 
                 } catch (IOException e) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(e.getMessage()).append(" [com.android.emobilepos.DrawReceiptActivity (at Class.onClick)]");
-
                 }
                 finish();
                 break;

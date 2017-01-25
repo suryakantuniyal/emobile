@@ -1,7 +1,8 @@
 package com.android.emobilepos.models;
 
-import com.android.support.Global;
+import com.android.support.DateUtils;
 
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -32,14 +33,14 @@ public class ShiftPeriods
 		shift_id = UUID.randomUUID().toString();
 		if(isOpen)
 		{
-			startTime = Global.getCurrentDate();
+			startTime = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
 			startTimeLocal = startTime;
 			creationDate = startTime;
 			creationDateLocal = startTime;
 		}
 		else
 		{
-			endTime = Global.getCurrentDate();
+			endTime = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
 			endTimeLocal = endTime;
 		}
 	}

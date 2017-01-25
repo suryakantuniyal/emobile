@@ -5,7 +5,7 @@ import android.app.Activity;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.OrdersHandler;
 import com.android.database.PaymentsHandler;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.emobilepos.models.realms.StoreAndForward;
 import com.android.emobilepos.payment.ProcessBoloro_FA;
 import com.android.payments.EMSPayGate_Default;

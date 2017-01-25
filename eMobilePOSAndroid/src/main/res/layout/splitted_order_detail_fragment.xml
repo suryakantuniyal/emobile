@@ -39,17 +39,16 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/linearLayout2"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        android:layout_marginRight="20dp"
+        android:layout_width="wrap_content">
 
         <LinearLayout
             android:id="@+id/receiptPreviewContainer"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
@@ -59,7 +58,8 @@
             android:paddingRight="20dp"
             android:paddingLeft="10dp"
             android:paddingTop="5dp"
-            android:paddingBottom="5dp">
+            android:paddingBottom="5dp"
+            android:layout_width="400dp">
 
             <ImageView
                 android:id="@+id/logoimageView"

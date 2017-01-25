@@ -8,7 +8,8 @@ import android.util.Log;
 
 import com.android.dao.DinningTableOrderDAO;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 
@@ -16,6 +17,7 @@ import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -68,19 +70,19 @@ public class OrdersHandler {
     private final static String associateID = "associateID";
     private final static String is_stored_fwd = "is_stored_fwd";
     private final static String VAT = "VAT";
+    private static String ord_timeStarted = "ord_timeStarted";
     private final static List<String> attr = Arrays.asList(ord_id, qbord_id, emp_id, cust_id, clerk_id, c_email,
             ord_signature, ord_po, total_lines, total_lines_pay, ord_total, ord_comment, ord_delivery, ord_timecreated,
             ord_timesync, qb_synctime, emailed, processed, ord_type, ord_claimnumber, ord_rganumber, ord_returns_pu,
             ord_inventory, ord_issync, tax_id, ord_shipvia, ord_shipto, ord_terms, ord_custmsg, ord_class, ord_subtotal,
             ord_taxamount, ord_discount, ord_discount_id, ord_latitude, ord_longitude, tipAmount, isVoid, custidkey,
-            isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID);
+            isOnHold, ord_HoldName, is_stored_fwd, VAT, assignedTable, numberOfSeats, associateID, ord_timeStarted);
 
     private StringBuilder sb1, sb2;
     private HashMap<String, Integer> attrHash;
-    private List<String[]> data;
-    private List<HashMap<String, Integer>> dictionaryListMap;
     private MyPreferences myPref;
-    private static final String table_name = "Orders";
+
+    public static final String table_name = "Orders";
     private Activity activity;
 
     public static OrdersHandler getInstance(Activity activity) {
@@ -115,150 +117,164 @@ public class OrdersHandler {
         return attrHash.get(tag);
     }
 
-    private String getData(String tag, int record) {
-        Integer i = dictionaryListMap.get(record).get(tag);
-        if (i != null) {
-            return data.get(record)[i];
-        }
-        return "";
-    }
 
-    public void insert(Order order) {
+    public void insert(List<Order> orders) {
+
         DBManager.getDatabase().beginTransaction();
         try {
-            SQLiteStatement insert;
-            String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
-                    "VALUES (" + sb2.toString() + ")";
-            insert = DBManager.getDatabase().compileStatement(sb);
-            insert.bindString(index(ord_id), order.ord_id == null ? "" : order.ord_id); // cust_id
-            insert.bindString(index(qbord_id), order.qbord_id == null ? "" : order.qbord_id); // cust_id
-            insert.bindString(index(emp_id), order.emp_id == null ? "" : order.emp_id); // cust_id
-            insert.bindString(index(cust_id), order.cust_id == null ? "" : order.cust_id); // cust_id
-            insert.bindString(index(clerk_id), order.clerk_id == null ? "" : order.clerk_id); // cust_id
-            insert.bindString(index(c_email), order.c_email == null ? "" : order.c_email); // cust_id
-            insert.bindString(index(ord_signature), order.ord_signature == null ? "" : order.ord_signature); // cust_id
-            insert.bindString(index(ord_po), order.ord_po == null ? "" : order.ord_po); // cust_id
-            insert.bindString(index(total_lines), TextUtils.isEmpty(order.total_lines) ? "0" : order.total_lines); // cust_id
-            insert.bindString(index(total_lines_pay),
-                    TextUtils.isEmpty(order.total_lines_pay) ? "0" : order.total_lines_pay); // cust_id
-            insert.bindString(index(ord_total), TextUtils.isEmpty(order.ord_total) ? "0" : order.ord_total); // cust_id
-            insert.bindString(index(ord_comment), order.ord_comment == null ? "" : order.ord_comment); // cust_id
-            insert.bindString(index(ord_delivery), order.ord_delivery == null ? "" : order.ord_delivery); // cust_id
-            insert.bindString(index(ord_timecreated), order.ord_timecreated == null ? "" : order.ord_timecreated); // cust_id
-            insert.bindString(index(ord_timesync), order.ord_timesync == null ? "" : order.ord_timesync); // cust_id
-            insert.bindString(index(qb_synctime), order.qb_synctime == null ? "" : order.qb_synctime); // cust_id
-            insert.bindString(index(emailed), TextUtils.isEmpty(order.emailed) ? "0" : order.emailed); // cust_id
-            insert.bindString(index(processed), TextUtils.isEmpty(order.processed) ? "1" : order.processed); // cust_id
-            insert.bindString(index(ord_type), order.ord_type == null ? "" : order.ord_type); // cust_id
-            insert.bindString(index(ord_claimnumber), order.ord_claimnumber == null ? "" : order.ord_claimnumber); // cust_id
-            insert.bindString(index(ord_rganumber), order.ord_rganumber == null ? "" : order.ord_rganumber); // cust_id
-            insert.bindString(index(ord_returns_pu), order.ord_returns_pu == null ? "" : order.ord_returns_pu); // cust_id
-            insert.bindString(index(ord_inventory), order.ord_inventory == null ? "" : order.ord_inventory); // cust_id
-            insert.bindString(index(ord_issync), TextUtils.isEmpty(order.ord_issync) ? "0" : order.ord_issync); // cust_id
-            insert.bindString(index(tax_id), order.tax_id == null ? "" : order.tax_id); // cust_id
-            insert.bindString(index(ord_shipvia), order.ord_shipvia == null ? "" : order.ord_shipvia); // cust_id
-            insert.bindString(index(ord_shipto), order.ord_shipto == null ? "" : order.ord_shipto); // cust_id
-            insert.bindString(index(ord_terms), order.ord_terms == null ? "" : order.ord_terms); // cust_id
-            insert.bindString(index(ord_custmsg), order.ord_custmsg == null ? "" : order.ord_custmsg); // cust_id
-            insert.bindString(index(ord_class), order.ord_class == null ? "" : order.ord_class); // cust_id
-            insert.bindString(index(ord_subtotal), TextUtils.isEmpty(order.ord_subtotal) ? "0" : order.ord_subtotal); // cust_id
-            insert.bindString(index(ord_taxamount), TextUtils.isEmpty(order.ord_taxamount) ? "0" : order.ord_taxamount); // cust_id
-            insert.bindString(index(ord_discount), TextUtils.isEmpty(order.ord_discount) ? "0" : order.ord_discount); // cust_id
-            insert.bindString(index(ord_discount_id), order.ord_discount_id == null ? "" : order.ord_discount_id); // cust_id
-            insert.bindString(index(ord_latitude), order.ord_latitude == null ? "" : order.ord_latitude); // cust_id
-            insert.bindString(index(ord_longitude), order.ord_longitude == null ? "" : order.ord_longitude); // cust_id
-            insert.bindString(index(tipAmount), TextUtils.isEmpty(order.tipAmount) ? "0" : order.tipAmount); // cust_id
-            insert.bindString(index(custidkey), order.custidkey == null ? "" : order.custidkey);
-            insert.bindString(index(isOnHold), TextUtils.isEmpty(order.isOnHold) ? "0" : order.isOnHold);
-            insert.bindString(index(ord_HoldName), order.ord_HoldName == null ? "" : order.ord_HoldName);
-            insert.bindString(index(is_stored_fwd), TextUtils.isEmpty(order.is_stored_fwd) ? "0" : order.is_stored_fwd);
-            insert.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable);
-            insert.bindString(index(associateID), order.associateID == null ? "" : order.associateID);
-            insert.bindLong(index(numberOfSeats), order.numberOfSeats);
-            insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
-            insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
-            insert.execute();
-            insert.clearBindings();
-            insert.close();
-            DBManager.getDatabase().setTransactionSuccessful();
-            Log.d("Order Insert:", order.toString());
-        } finally {
-            myPref.setLastOrdID(order.ord_id);
-            DBManager.getDatabase().endTransaction();
-        }
-    }
+            for (Order order : orders) {
+//                Order o = getOrder(order.ord_id);
+                SQLiteStatement insert;
+                String sb = "INSERT OR REPLACE INTO " + table_name + " (" + sb1.toString() + ") " +
+                        "VALUES (" + sb2.toString() + ")";
+                insert = DBManager.getDatabase().compileStatement(sb);
 
-    public void insertOnHold(List<String[]> data, List<HashMap<String, Integer>> dictionary) {
-        DBManager.getDatabase().beginTransaction();
-        try {
-            this.data = data;
-            dictionaryListMap = dictionary;
-            SQLiteStatement insert;
-            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
-                    "VALUES (" + sb2.toString() + ")";
-            insert = DBManager.getDatabase().compileStatement(sb);
-            int size = this.data.size();
-            for (int i = 0; i < size; i++) {
-                if (checkIfExist(getData(ord_id, i))) {
-                    updateOnHoldSync(getData(ord_id, i));
-                } else {
-                    insert.bindString(index(ord_id), getData(ord_id, i)); // ord_id
-                    insert.bindString(index(qbord_id), getData(qbord_id, i)); // qbord_id
-                    insert.bindString(index(emp_id), getData(emp_id, i)); // emp_id
-                    insert.bindString(index(cust_id), getData(cust_id, i)); // cust_id
-                    insert.bindString(index(clerk_id), getData(clerk_id, i)); // clerk_id
-                    insert.bindString(index(c_email), getData(c_email, i)); // c_email
-                    insert.bindString(index(ord_signature), getData(ord_signature, i)); // ord_signature
-                    insert.bindString(index(ord_po), getData(ord_po, i)); // ord_po
-                    insert.bindString(index(total_lines), getData(total_lines, i)); // total_lines
-                    insert.bindString(index(total_lines_pay), getData(total_lines_pay, i)); // total_lines_pay
-                    insert.bindString(index(ord_total), getData(ord_total, i)); // ord_total
-                    insert.bindString(index(ord_comment), getData(ord_comment, i)); // ord_comment
-                    insert.bindString(index(ord_delivery), getData(ord_delivery, i)); // ord_delivery
-                    insert.bindString(index(ord_timecreated), getData(ord_timecreated, i)); // ord_timecreated
-                    insert.bindString(index(ord_timesync), getData(ord_timesync, i)); // ord_timesync
-                    insert.bindString(index(qb_synctime), getData(qb_synctime, i)); // qb_synctime
-                    insert.bindString(index(emailed), getData(emailed, i)); // emailed
-                    insert.bindString(index(processed), getData(processed, i)); // processed
-                    insert.bindString(index(ord_type), getData(ord_type, i)); // ord_type
-                    insert.bindString(index(ord_claimnumber), getData(ord_claimnumber, i)); // ord_claimnumber
-                    insert.bindString(index(ord_rganumber), getData(ord_rganumber, i)); // ord_rganumber
-                    insert.bindString(index(ord_returns_pu), getData(ord_returns_pu, i)); // ord_returns_pu
-                    insert.bindString(index(ord_inventory), getData(ord_inventory, i)); // ord_inventory
-                    insert.bindString(index(ord_issync), "1"); // ord_issync
-                    insert.bindString(index(tax_id), getData(tax_id, i)); // tax_id
-                    insert.bindString(index(ord_shipvia), getData(ord_shipvia, i)); // ord_shipvia
-                    insert.bindString(index(ord_shipto), getData(ord_shipto, i)); // ord_shipto
-                    insert.bindString(index(ord_terms), getData(ord_terms, i)); // ord_terms
-                    insert.bindString(index(ord_custmsg), getData(ord_custmsg, i)); // ord_custmsg
-                    insert.bindString(index(ord_class), getData(ord_class, i)); // ord_class
-                    insert.bindString(index(ord_subtotal), getData(ord_subtotal, i)); // ord_subtotal
-                    insert.bindString(index(ord_taxamount), getData(ord_taxamount, i)); // ord_taxamount
-                    insert.bindString(index(ord_discount), getData(ord_discount, i)); // ord_discount
-                    insert.bindString(index(ord_discount_id), getData(ord_discount_id, i)); // ord_discount_id
-                    insert.bindString(index(ord_latitude), getData(ord_latitude, i)); // ord_latitude
-                    insert.bindString(index(ord_longitude), getData(ord_longitude, i)); // ord_longitude
-                    insert.bindString(index(tipAmount), getData(tipAmount, i)); // tipAmount
-                    insert.bindString(index(custidkey), getData(custidkey, i)); // custidkey
-                    insert.bindString(index(isOnHold), "1"); // isOnHold
-                    insert.bindString(index(ord_HoldName), getData(ord_HoldName, i)); // ord_HoldName
-                    insert.bindString(index(assignedTable), getData(assignedTable, i)); // ord_HoldName
-                    insert.bindString(index(numberOfSeats), getData(numberOfSeats, i)); // ord_HoldName
-                    insert.bindString(index(associateID), getData(associateID, i)); // ord_HoldName
-                    insert.bindString(index(VAT), getData(VAT, i));
-                    insert.execute();
-                    insert.clearBindings();
+                insert.bindString(index(ord_id), order.ord_id == null ? "" : order.ord_id); // cust_id
+                insert.bindString(index(qbord_id), order.qbord_id == null ? "" : order.qbord_id); // cust_id
+                insert.bindString(index(emp_id), order.emp_id == null ? "" : order.emp_id); // cust_id
+                insert.bindString(index(cust_id), order.cust_id == null ? "" : order.cust_id); // cust_id
+                insert.bindString(index(clerk_id), order.clerk_id == null ? "" : order.clerk_id); // cust_id
+                insert.bindString(index(c_email), order.c_email == null ? "" : order.c_email); // cust_id
+                insert.bindString(index(ord_signature), order.ord_signature == null ? "" : order.ord_signature); // cust_id
+                insert.bindString(index(ord_po), order.ord_po == null ? "" : order.ord_po); // cust_id
+                insert.bindString(index(total_lines), TextUtils.isEmpty(order.total_lines) ? "0" : order.total_lines); // cust_id
+                insert.bindString(index(total_lines_pay),
+                        TextUtils.isEmpty(order.total_lines_pay) ? "0" : order.total_lines_pay); // cust_id
+                insert.bindString(index(ord_total), TextUtils.isEmpty(order.ord_total) ? "0" : order.ord_total); // cust_id
+                insert.bindString(index(ord_comment), order.ord_comment == null ? "" : order.ord_comment); // cust_id
+                insert.bindString(index(ord_delivery), order.ord_delivery == null ? "" : order.ord_delivery); // cust_id
+                insert.bindString(index(ord_timecreated), order.ord_timecreated == null ? "" : order.ord_timecreated); // cust_id
+                insert.bindString(index(ord_timesync), order.ord_timesync == null ? "" : order.ord_timesync); // cust_id
+                insert.bindString(index(qb_synctime), order.qb_synctime == null ? "" : order.qb_synctime); // cust_id
+                insert.bindString(index(emailed), TextUtils.isEmpty(order.emailed) ? "0" : order.emailed); // cust_id
+                insert.bindString(index(processed), TextUtils.isEmpty(order.processed) ? "1" : order.processed); // cust_id
+                insert.bindString(index(ord_type), order.ord_type == null ? "" : order.ord_type); // cust_id
+                insert.bindString(index(ord_claimnumber), order.ord_claimnumber == null ? "" : order.ord_claimnumber); // cust_id
+                insert.bindString(index(ord_rganumber), order.ord_rganumber == null ? "" : order.ord_rganumber); // cust_id
+                insert.bindString(index(ord_returns_pu), order.ord_returns_pu == null ? "" : order.ord_returns_pu); // cust_id
+                insert.bindString(index(ord_inventory), order.ord_inventory == null ? "" : order.ord_inventory); // cust_id
+                insert.bindString(index(ord_issync), TextUtils.isEmpty(order.ord_issync) ? "0" : order.ord_issync); // cust_id
+                insert.bindString(index(tax_id), order.tax_id == null ? "" : order.tax_id); // cust_id
+                insert.bindString(index(ord_shipvia), order.ord_shipvia == null ? "" : order.ord_shipvia); // cust_id
+                insert.bindString(index(ord_shipto), order.ord_shipto == null ? "" : order.ord_shipto); // cust_id
+                insert.bindString(index(ord_terms), order.ord_terms == null ? "" : order.ord_terms); // cust_id
+                insert.bindString(index(ord_custmsg), order.ord_custmsg == null ? "" : order.ord_custmsg); // cust_id
+                insert.bindString(index(ord_class), order.ord_class == null ? "" : order.ord_class); // cust_id
+                insert.bindString(index(ord_subtotal), TextUtils.isEmpty(order.ord_subtotal) ? "0" : order.ord_subtotal); // cust_id
+                insert.bindString(index(ord_taxamount), TextUtils.isEmpty(order.ord_taxamount) ? "0" : order.ord_taxamount); // cust_id
+                insert.bindString(index(ord_discount), TextUtils.isEmpty(order.ord_discount) ? "0" : order.ord_discount); // cust_id
+                insert.bindString(index(ord_discount_id), order.ord_discount_id == null ? "" : order.ord_discount_id); // cust_id
+                insert.bindString(index(ord_latitude), order.ord_latitude == null ? "" : order.ord_latitude); // cust_id
+                insert.bindString(index(ord_longitude), order.ord_longitude == null ? "" : order.ord_longitude); // cust_id
+                insert.bindString(index(tipAmount), TextUtils.isEmpty(order.tipAmount) ? "0" : order.tipAmount); // cust_id
+                insert.bindString(index(custidkey), order.custidkey == null ? "" : order.custidkey);
+                insert.bindString(index(isOnHold), TextUtils.isEmpty(order.isOnHold) ? "0" : order.isOnHold);
+                insert.bindString(index(ord_HoldName), order.ord_HoldName == null ? "" : order.ord_HoldName);
+                insert.bindString(index(is_stored_fwd), TextUtils.isEmpty(order.is_stored_fwd) ? "0" : order.is_stored_fwd);
+                insert.bindString(index(assignedTable), order.assignedTable == null ? "" : order.assignedTable);
+                insert.bindString(index(associateID), order.associateID == null ? "" : order.associateID);
+                insert.bindLong(index(numberOfSeats), order.numberOfSeats);
+                if (TextUtils.isEmpty(order.ord_timeStarted)) {
+                    order.ord_timeStarted = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
                 }
+                insert.bindString(index(ord_timeStarted), order.ord_timeStarted);
+                insert.bindString(index(isVoid), TextUtils.isEmpty(order.isVoid) ? "0" : order.isVoid);
+                insert.bindString(index(VAT), TextUtils.isEmpty(order.VAT) ? "0" : order.VAT);
+
+                insert.execute();
+                insert.clearBindings();
+                insert.close();
+                Log.d("Order Insert:", order.toString());
+                DinningTableOrderDAO.createDinningTableOrder(order);
+                myPref.setLastOrdID(order.ord_id);
             }
-            insert.close();
-        } finally {
             DBManager.getDatabase().setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             DBManager.getDatabase().endTransaction();
         }
     }
+
+//    public void insertOnHold(List<Order> orders) {
+//        for (Order order : orders) {
+//            order.ord_issync = "1";
+//            order.isOnHold = "1";
+//        }
+//        insert(orders);
+
+//        DBManager._db.beginTransaction();
+//        try {
+//            SQLiteStatement insert;
+//            String sb = "INSERT INTO " + table_name + " (" + sb1.toString() + ") " +
+//                    "VALUES (" + sb2.toString() + ")";
+//            insert = DBManager._db.compileStatement(sb);
+//            for (Order order : orders) {
+//                if (checkIfExist(order.ord_id)) {
+//                    updateOnHoldSync(order.ord_id);
+//                } else {
+//                    insert.bindString(index(ord_id), order.ord_id); // ord_id
+//                    insert.bindString(index(qbord_id), order.qbord_id); // qbord_id
+//                    insert.bindString(index(emp_id), order.emp_id); // emp_id
+//                    insert.bindString(index(cust_id), order.cust_id); // cust_id
+//                    insert.bindString(index(clerk_id), order.clerk_id); // clerk_id
+//                    insert.bindString(index(c_email), order.c_email); // c_email
+//                    insert.bindString(index(ord_signature), order.ord_signature); // ord_signature
+//                    insert.bindString(index(ord_po), order.ord_po); // ord_po
+//                    insert.bindString(index(total_lines), order.total_lines); // total_lines
+//                    insert.bindString(index(total_lines_pay), order.total_lines_pay); // total_lines_pay
+//                    insert.bindString(index(ord_total), order.ord_total); // ord_total
+//                    insert.bindString(index(ord_comment), order.ord_comment); // ord_comment
+//                    insert.bindString(index(ord_delivery), order.ord_delivery); // ord_delivery
+//                    insert.bindString(index(ord_timecreated), order.ord_timecreated); // ord_timecreated
+//                    insert.bindString(index(ord_timesync), order.ord_timesync); // ord_timesync
+//                    insert.bindString(index(qb_synctime), order.qb_synctime); // qb_synctime
+//                    insert.bindString(index(emailed), order.emailed); // emailed
+//                    insert.bindString(index(processed), order.processed); // processed
+//                    insert.bindString(index(ord_type), order.ord_type); // ord_type
+//                    insert.bindString(index(ord_claimnumber), order.ord_claimnumber); // ord_claimnumber
+//                    insert.bindString(index(ord_rganumber), order.ord_rganumber); // ord_rganumber
+//                    insert.bindString(index(ord_returns_pu), order.ord_returns_pu); // ord_returns_pu
+//                    insert.bindString(index(ord_inventory), order.ord_inventory); // ord_inventory
+//                    insert.bindString(index(ord_issync), "1"); // ord_issync
+//                    insert.bindString(index(tax_id), order.tax_id); // tax_id
+//                    insert.bindString(index(ord_shipvia), order.ord_shipvia); // ord_shipvia
+//                    insert.bindString(index(ord_shipto), order.ord_shipto); // ord_shipto
+//                    insert.bindString(index(ord_terms), order.ord_terms); // ord_terms
+//                    insert.bindString(index(ord_custmsg), order.ord_custmsg); // ord_custmsg
+//                    insert.bindString(index(ord_class), order.ord_class); // ord_class
+//                    insert.bindString(index(ord_subtotal), order.ord_subtotal); // ord_subtotal
+//                    insert.bindString(index(ord_taxamount), order.ord_taxamount); // ord_taxamount
+//                    insert.bindString(index(ord_discount), order.ord_discount); // ord_discount
+//                    insert.bindString(index(ord_discount_id), order.ord_discount_id); // ord_discount_id
+//                    insert.bindString(index(ord_latitude), order.ord_latitude); // ord_latitude
+//                    insert.bindString(index(ord_longitude), order.ord_longitude); // ord_longitude
+//                    insert.bindString(index(tipAmount), order.tipAmount); // tipAmount
+//                    insert.bindString(index(custidkey), order.custidkey); // custidkey
+//                    insert.bindString(index(isOnHold), "1"); // isOnHold
+//                    insert.bindString(index(ord_HoldName), order.ord_HoldName); // ord_HoldName
+//                    insert.bindString(index(assignedTable), order.assignedTable); // ord_HoldName
+//                    insert.bindString(index(numberOfSeats), String.valueOf(order.numberOfSeats)); // ord_HoldName
+//                    insert.bindString(index(associateID), order.associateID); // ord_HoldName
+//                    insert.bindString(index(VAT), order.VAT);
+//                    insert.bindString(index(ord_timeStarted), o == null || o.ord_timeStarted == null ? Global.getCurrentDate() : o.ord_timeStarted);
+//                    insert.execute();
+//                    insert.clearBindings();
+//                }
+//            }
+//            insert.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//
+//            DBManager._db.setTransactionSuccessful();
+//            DBManager._db.endTransaction();
+//        }
+//    }
 
     public void emptyTable() {
         DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
+        DinningTableOrderDAO.truncate();
     }
 
     public static void deleteTransaction(Activity activity, String orderId) {
@@ -271,12 +287,14 @@ public class OrdersHandler {
             dbOrdProd.deleteAllOrdProd(orderId);
             for (ProductAttribute val : global.ordProdAttr)
                 dbOrdAttr.deleteOrderProduct(String.valueOf(val.getId()));
+            DinningTableOrderDAO.deleteByOrderId(orderId);
         }
     }
 
-    public void deleteOrder(String _ord_id) {
-        DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{_ord_id});
-        Log.d("Delete order:", _ord_id);
+    public void deleteOrder(String ord_id) {
+        DBManager.getDatabase().delete(table_name, "ord_id = ?", new String[]{ord_id});
+        Log.d("Delete order:", ord_id);
+        DinningTableOrderDAO.deleteByOrderId(ord_id);
     }
 
     public void emptyTableOnHold() {
@@ -284,6 +302,7 @@ public class OrdersHandler {
                 "OrderProduct.ord_id IN (SELECT op.ord_id FROM OrderProduct op LEFT JOIN Orders o ON op.ord_id=o.ord_id WHERE o.isOnHold = '1' AND o.emp_id != ?)",
                 new String[]{myPref.getEmpID()});
         DBManager.getDatabase().delete(table_name, "isOnHold = '1' AND emp_id != ?", new String[]{myPref.getEmpID()});
+        DinningTableOrderDAO.truncate();
     }
 
     private boolean checkIfExist(String ordID) {
@@ -344,7 +363,6 @@ public class OrdersHandler {
         order.ord_HoldName = cursor.getString(cursor.getColumnIndex(ord_HoldName));
         order.is_stored_fwd = cursor.getString(cursor.getColumnIndex(is_stored_fwd));
         order.custidkey = cursor.getString(cursor.getColumnIndex(custidkey));
-
         CustomersHandler custHandler = new CustomersHandler(activity);
         order.customer = custHandler.getCustomer(order.cust_id);
         return order;
@@ -366,7 +384,17 @@ public class OrdersHandler {
         return order;
     }
 
-    public Cursor getUnsyncOrders() // Will populate all unsynchronized orders
+    private List<Order> getOrders(Cursor cursor) {
+        List<Order> orders = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                orders.add(getOrder(cursor, activity));
+            } while (cursor.moveToNext());
+        }
+        return orders;
+    }
+
+    public List<Order> getUnsyncOrders() // Will populate all unsynchronized orders
     // for XML post
     {
         StringBuilder sb = new StringBuilder();
@@ -375,7 +403,11 @@ public class OrdersHandler {
         else
             sb.append("SELECT ").append(sb1.toString()).append(" FROM ").append(table_name)
                     .append(" WHERE ord_issync = '0' AND processed != '0' AND is_stored_fwd = '0' LIMIT 5");
-        return DBManager.getDatabase().rawQuery(sb.toString(), null);
+
+        net.sqlcipher.Cursor cursor = DBManager.getDatabase().rawQuery(sb.toString(), null);
+        List<Order> orders = getOrders(cursor);
+        cursor.close();
+        return orders;
     }
 
     public Cursor getTupyxOrders() {
@@ -389,8 +421,11 @@ public class OrdersHandler {
         return count;
     }
 
-    public Cursor getUnsyncOrdersOnHold() {
-        return DBManager.getDatabase().rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1' LIMIT 5", null);
+    public List<Order> getUnsyncOrdersOnHold() {
+        net.sqlcipher.Cursor cursor = DBManager.getDatabase().rawQuery("SELECT * FROM " + table_name + " WHERE ord_issync = '0' AND isOnHold = '1'  LIMIT 5", null);
+        List<Order> orders = getOrders(cursor);
+        cursor.close();
+        return orders;
     }
 
     public long getNumUnsyncOrdersOnHold() {
@@ -510,7 +545,7 @@ public class OrdersHandler {
 
         String subqueries[] = new String[4];
         StringBuilder sb = new StringBuilder();
-        String[] params = null;
+        String[] params;
         if (customerID == null) {
             subqueries[0] = "SELECT Orders.ord_id as _id,Orders.ord_total,Orders.ord_issync,Customers.cust_id,Orders.isVoid,Orders.ord_type FROM Orders JOIN Customers WHERE Orders.ord_type IN(";
             subqueries[1] = ") AND Orders.cust_id = Customers.cust_id AND Orders.ord_id LIKE ? ORDER BY Orders.rowid DESC";
@@ -555,10 +590,12 @@ public class OrdersHandler {
     }
 
     public String updateFinishOnHold(String ordID) {
+//        StringBuilder sb2 = new StringBuilder();
 //        StringBuilder sb = new StringBuilder();
+
         Cursor c = DBManager.getDatabase().rawQuery("SELECT ord_timecreated FROM Orders WHERE ord_id = ?",
                 new String[]{ordID});
-        String dateCreated = Global.getCurrentDate();
+        String dateCreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
 
         if (c.moveToFirst())
             dateCreated = c.getString(c.getColumnIndex(ord_timecreated));
@@ -766,4 +803,7 @@ public class OrdersHandler {
         return listOrder;
     }
 
+    public void insert(Order order) {
+        insert(Arrays.asList(order));
+    }
 }

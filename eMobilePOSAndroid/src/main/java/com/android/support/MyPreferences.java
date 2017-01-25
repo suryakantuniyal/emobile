@@ -8,7 +8,9 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
+import com.android.dao.AssignEmployeeDAO;
 import com.android.database.SalesTaxCodesHandler;
+import com.android.emobilepos.models.AssignEmployee;
 
 import java.security.AccessControlException;
 import java.security.Guard;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.PropertyPermission;
 import java.util.Set;
 
+import util.json.UIUtils;
+
 public class MyPreferences {
     private SharedPreferences.Editor prefEditor;
     private SharedPreferences prefs;
@@ -26,6 +30,7 @@ public class MyPreferences {
 
     private final String MY_SHARED_PREF = "MY_SHARED_PREF";
 
+    public enum PrinterPreviewWidth {SMALL, MEDIUM, LARGE}
 
     private final String db_path = "db_path";
     private final String emp_id = "emp_id";
@@ -90,7 +95,6 @@ public class MyPreferences {
     public static final String pref_ask_seats = "pref_ask_seats";
     public static final String pref_use_navigationbar = "pref_use_navigationbar";
 
-
     public static final String pref_automatic_sync = "pref_automatic_sync";
     public static final String pref_fast_scanning_mode = "pref_fast_scanning_mode";
     public static final String pref_signature_required_mode = "pref_signature_required_mode";
@@ -151,6 +155,7 @@ public class MyPreferences {
     public static final String pref_show_removed_void_items_in_printout = "pref_show_removed_void_items_in_printout";
     public static final String pref_limit_products_on_hand = "pref_limit_products_on_hand";
     public static final String pref_attribute_to_display = "pref_attribute_to_display";
+    public static final String pref_printer_width = "pref_printer_width";
 
     public static final String pref_group_in_catalog_by_name = "pref_group_in_catalog_by_name";
     public static final String pref_filter_products_by_customer = "pref_filter_products_by_customer";
@@ -337,27 +342,26 @@ public class MyPreferences {
         return (prefs.getString(LoginPass, ""));
     }
 
-    public void setAllEmpData(List<String[]> emp_data) {
+    public void setAllEmpData(AssignEmployee employee) {
 
-        prefEditor.putString(emp_id, getData(emp_id, 0, emp_data));
-        prefEditor.putString(zone_id, getData(zone_id, 0, emp_data));
-        prefEditor.putString(emp_name, getData(emp_name, 0, emp_data));
-        prefEditor.putString(emp_lastlogin, getData(emp_lastlogin, 0, emp_data));
-
-        prefEditor.putString(emp_pos, getData(emp_pos, 0, emp_data));
-        prefEditor.putString(MSOrderEntry, getData(MSOrderEntry, 0, emp_data));
-        prefEditor.putString(MSCardProcessor, getData(MSCardProcessor, 0, emp_data));
-        prefEditor.putString(GatewayURL, getData(GatewayURL, 0, emp_data));
-        prefEditor.putString(approveCode, getData(approveCode, 0, emp_data));
-        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), getData(MSLastOrderID, 0, emp_data)));
-        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), getData(MSLastTransferID, 0, emp_data)));
-
-        prefEditor.putString(tax_default, getData(tax_default, 0, emp_data));
-        prefEditor.putString(pricelevel_id, getData(pricelevel_id, 0, emp_data));
-        String val = getData(VAT, 0, emp_data);
-        prefEditor.putBoolean(VAT, Boolean.parseBoolean(val));
-
+        prefEditor.putString(emp_id, String.valueOf(employee.getEmpId()));
+        prefEditor.putString(zone_id, employee.getZoneId());
+        prefEditor.putString(emp_name, employee.getEmpName());
+        prefEditor.putString(emp_lastlogin, employee.getEmpLastlogin());
+        prefEditor.putString(emp_pos, String.valueOf(employee.getEmpPos()));
+        prefEditor.putString(MSOrderEntry, employee.getMSOrderEntry());
+        prefEditor.putString(MSCardProcessor, employee.getMSCardProcessor());
+        prefEditor.putString(GatewayURL, employee.getGatewayURL());
+        prefEditor.putString(approveCode, employee.getApproveCode());
+        prefEditor.putString(MSLastOrderID, getValidID(getLastOrdID(), employee.getMSLastOrderID()));
+        prefEditor.putString(MSLastTransferID, getValidID(getLastTransferID(), employee.getMSLastTransferID()));
+        prefEditor.putString(tax_default, employee.getTaxDefault());
+        prefEditor.putString(pricelevel_id, employee.getPricelevelId());
+        prefEditor.putString(pricelevel_id, employee.getDefaultLocation());
+//        String val = getData(VAT, 0, employee.isVAT());
+        prefEditor.putBoolean(VAT, employee.isVAT());
         prefEditor.commit();
+        AssignEmployeeDAO.insert(employee);
     }
 
     public String getData(String tag, int record, List<String[]> data) {
@@ -429,6 +433,9 @@ public class MyPreferences {
     }
 
     private String getValidID(String curr_id, String new_id) {
+        if (new_id == null) {
+            new_id = "";
+        }
         if (new_id.length() > 4) {
             String delims = "[\\-]";
             String[] tokens = new_id.split(delims);
@@ -554,6 +561,21 @@ public class MyPreferences {
         return prefs.getBoolean(VAT, false);
     }
 
+    public int getPrintPreviewLayoutWidth() {
+        String width = sharedPref.getString(pref_printer_width, "MEDIUM");
+        PrinterPreviewWidth previewWidth = PrinterPreviewWidth.valueOf(width);
+        switch (previewWidth) {
+            case SMALL:
+                return (int) UIUtils.convertDpToPixel(300, activity);
+            case MEDIUM:
+                return (int) UIUtils.convertDpToPixel(400, activity);
+            case LARGE:
+                return (int) UIUtils.convertDpToPixel(500, activity);
+            default:
+                return (int) UIUtils.convertDpToPixel(400, activity);
+        }
+    }
+
     public void setCustPriceLevel(String id) {
         prefEditor.putString(cust_pricelevel_id, id);
         prefEditor.commit();
@@ -631,6 +653,10 @@ public class MyPreferences {
 
     public boolean getPreferences(String key) {
         return sharedPref.getBoolean(key, false);
+    }
+
+    public boolean requiresWaiterLogin() {
+        return getPreferences(MyPreferences.pref_require_waiter_signin);
     }
 
     public String getPreferencesValue(String key) {
@@ -897,7 +923,6 @@ public class MyPreferences {
         return false;
     }
 
-
     public boolean isICMPEVO() {
         String device_icmpevo = "device_icmpevo";
         return prefs.getBoolean(device_icmpevo, false);
@@ -909,7 +934,6 @@ public class MyPreferences {
         prefEditor.commit();
         return false;
     }
-
 
     public boolean isEM70() {
         String device_em70 = "device_em70";
@@ -931,6 +955,18 @@ public class MyPreferences {
     public boolean setIsOT310(boolean value) {
         String device_ot310 = "device_ot310";
         prefEditor.putBoolean(device_ot310, value);
+        prefEditor.commit();
+        return false;
+    }
+
+    public boolean isMEPOS() {
+        String device_mepos = "device_mepos";
+        return prefs.getBoolean(device_mepos, false);
+    }
+
+    public boolean setIsMEPOS(boolean value) {
+        String device_mepos = "device_mepos";
+        prefEditor.putBoolean(device_mepos, value);
         prefEditor.commit();
         return false;
     }
@@ -982,15 +1018,15 @@ public class MyPreferences {
         return false;
     }
 
-    public boolean isSam4s(boolean isGet, boolean value) {
+    public boolean isSam4s() {
         String key = "device_sam4s";
-        if (isGet)
-            return prefs.getBoolean(key, false);
-        else {
-            prefEditor.putBoolean(key, value);
-            prefEditor.commit();
-        }
-        return false;
+        return prefs.getBoolean(key, false);
+    }
+
+    public void setSams4s(boolean value) {
+        String key = "device_sam4s";
+        prefEditor.putBoolean(key, value);
+        prefEditor.commit();
     }
 
     public void setStarIPAddress(String val) {
@@ -1130,7 +1166,6 @@ public class MyPreferences {
         String is_store_forward = "is_store_forward";
         return prefs.getBoolean(is_store_forward, false);
     }
-
 
     public void setGeniusIP(String ip) {
         prefEditor.putString("genius_ip", ip);

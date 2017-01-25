@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.view.View;
 
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
@@ -138,14 +138,14 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
     }
 
 
+    @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
+    @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -189,8 +189,13 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
 
     }
 
@@ -226,6 +231,11 @@ public class EMSEM100 extends EMSDeviceDriver implements EMSDeviceManagerPrinter
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

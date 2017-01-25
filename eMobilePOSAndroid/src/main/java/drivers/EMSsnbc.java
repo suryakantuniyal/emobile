@@ -8,13 +8,13 @@ import android.graphics.Bitmap;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
-import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -255,18 +255,18 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
         return true;
     }
 
-
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
-
 
     @Override
     public void unregisterPrinter() {
         interface_usb.CloseDevice();
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
+
+
 
     public boolean openUsbInterface() {
         boolean didConnect = false;
@@ -411,20 +411,32 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//        openUsbInterface();
+//        try {
+//            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
-        openUsbInterface();
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
     }
-
     @Override
     public void salePayment(Payment payment) {
 
@@ -457,6 +469,11 @@ public class EMSsnbc extends EMSDeviceDriver implements EMSDeviceManagerPrinterD
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 }

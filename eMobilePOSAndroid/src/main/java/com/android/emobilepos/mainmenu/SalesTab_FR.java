@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
-import com.android.dao.SalesAssociateTableDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.database.ClerksHandler;
 import com.android.database.CustomersHandler;
 import com.android.database.DBManager;
@@ -43,8 +44,8 @@ import com.android.emobilepos.holders.Locations_Holder;
 import com.android.emobilepos.locations.LocationsPickerDlog_FR;
 import com.android.emobilepos.locations.LocationsPicker_Listener;
 import com.android.emobilepos.mainmenu.restaurant.DinningTablesActivity;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.SalesAssociate;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
@@ -52,6 +53,7 @@ import com.android.emobilepos.payment.TipAdjustmentFA;
 import com.android.emobilepos.settings.SettingListActivity;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
+import com.android.support.SynchMethods;
 
 import java.util.HashMap;
 
@@ -68,7 +70,6 @@ public class SalesTab_FR extends Fragment {
     private DinningTable selectedDinningTable;
     private int selectedSeatsAmount;
     private String associateId;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,7 +91,6 @@ public class SalesTab_FR extends Fragment {
             myPref.setIsTablet(true);
         else
             myPref.setIsTablet(false);
-
 
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
@@ -121,7 +121,6 @@ public class SalesTab_FR extends Fragment {
                 salesInvoices.setVisibility(View.GONE);
                 myPref.resetCustInfo(getString(R.string.no_customer));
 
-
                 isCustomerSelected = false;
                 selectedCust.setText(getString(R.string.no_customer));
                 myAdapter = new SalesMenuAdapter(getActivity(), false);
@@ -130,7 +129,6 @@ public class SalesTab_FR extends Fragment {
 
             }
         });
-
 
         salesInvoices.setOnClickListener(new View.OnClickListener() {
 
@@ -148,10 +146,8 @@ public class SalesTab_FR extends Fragment {
 
     }
 
-
     @Override
     public void onResume() {
-
 
         if (myPref.isCustSelected()) {
             isCustomerSelected = true;
@@ -171,7 +167,6 @@ public class SalesTab_FR extends Fragment {
         super.onResume();
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -181,7 +176,6 @@ public class SalesTab_FR extends Fragment {
             salesInvoices.setVisibility(View.VISIBLE);
             Bundle extras = data.getExtras();
             selectedCust.setText(extras.getString("customer_name"));
-
 
             myPref.setCustName(extras.getString("customer_name"));
             myPref.setCustSelected(true);
@@ -211,7 +205,6 @@ public class SalesTab_FR extends Fragment {
             }
         }
     }
-
 
     public class MyListener implements AdapterView.OnItemClickListener {
 
@@ -258,7 +251,6 @@ public class SalesTab_FR extends Fragment {
         }
 
     }
-
 
     private void performListViewClick(final int pos) {
         Global global = (Global) activity.getApplication();
@@ -381,7 +373,8 @@ public class SalesTab_FR extends Fragment {
                 case ON_HOLD:            //On Hold
                 {
                     DBManager dbManager = new DBManager(activity);
-                    dbManager.synchSendOrdersOnHold(true, false);
+                    SynchMethods sm = new SynchMethods(dbManager);
+                    sm.synchSendOnHold(true, false);
                     break;
                 }
                 case CONSIGNMENT:                //Consignment
@@ -469,8 +462,13 @@ public class SalesTab_FR extends Fragment {
                     break;
                 }
                 case ON_HOLD://on Hold
+//                    DBManager dbManager = new DBManager(activity);
+//                    dbManager.synchSendOrdersOnHold(true, false);
+
                     DBManager dbManager = new DBManager(activity);
-                    dbManager.synchSendOrdersOnHold(true, false);
+                    SynchMethods sm = new SynchMethods(dbManager);
+                    sm.synchSendOnHold(true, false);
+
                     break;
                 case LOCATION:
                     pickLocations(true);
@@ -531,7 +529,7 @@ public class SalesTab_FR extends Fragment {
         popDlog.setCanceledOnTouchOutside(false);
         popDlog.setContentView(R.layout.dlog_field_single_layout);
         final EditText viewField = (EditText) popDlog.findViewById(R.id.dlogFieldSingle);
-        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        viewField.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_NUMBER);
         TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(R.string.dlog_title_waiter_signin);
@@ -550,7 +548,8 @@ public class SalesTab_FR extends Fragment {
                 popDlog.dismiss();
                 MyPreferences myPref = new MyPreferences(activity);
                 String enteredPass = viewField.getText().toString().trim();
-                SalesAssociate salesAssociates = SalesAssociateTableDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
+                enteredPass = TextUtils.isEmpty(enteredPass) ? "0" : enteredPass;
+                SalesAssociate salesAssociates = SalesAssociateDAO.getByEmpId(Integer.parseInt(enteredPass)); //SalesAssociateHandler.getSalesAssociate(enteredPass);
                 if (salesAssociates != null) {
                     validPassword = true;
                     associateId = enteredPass;
@@ -605,6 +604,7 @@ public class SalesTab_FR extends Fragment {
 
     public void selectDinnerTable() {
         Intent intent = new Intent(getActivity(), DinningTablesActivity.class);
+        intent.putExtra("associateId", associateId);
         startActivityForResult(intent, 0);
 
     }
@@ -646,7 +646,7 @@ public class SalesTab_FR extends Fragment {
             }
 
 //            if (myPref.isSam4s(true, true) || myPref.isPAT100() || myPref.isPAT215()) {
-                Global.showCDTDefault(activity);
+            Global.showCDTDefault(activity);
 //            }
         }
     }
@@ -657,7 +657,6 @@ public class SalesTab_FR extends Fragment {
         globalDlog.setCancelable(true);
         globalDlog.setCanceledOnTouchOutside(false);
         globalDlog.setContentView(R.layout.dlog_btn_left_right_layout);
-
 
         TextView viewTitle = (TextView) globalDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) globalDlog.findViewById(R.id.dlogMessage);
@@ -768,7 +767,7 @@ public class SalesTab_FR extends Fragment {
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                     askEatInToGo();
-                }else{
+                } else {
                     Intent intent = new Intent(activity, OrderingMain_FA.class);
                     intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
                     intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
@@ -787,7 +786,7 @@ public class SalesTab_FR extends Fragment {
                 if (myPref.getPreferences(MyPreferences.pref_restaurant_mode) &&
                         myPref.getPreferences(MyPreferences.pref_enable_togo_eatin)) {
                     askEatInToGo();
-                }else{
+                } else {
                     Intent intent = new Intent(activity, OrderingMain_FA.class);
                     intent.putExtra("RestaurantSaleType", Global.RestaurantSaleType.TO_GO);
                     intent.putExtra("option_number", Global.TransactionType.SALE_RECEIPT);
@@ -819,8 +818,11 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("MC40N0")) {
             myPref.isMC40(false, true);
             return false;
+        } else if (model.startsWith("Lenovo")) {
+            myPref.setIsMEPOS(true);
+            return true;
         } else if (model.equals("M2MX60P") || model.equals("M2MX6OP")) {
-            myPref.isSam4s(false, true);
+            myPref.setSams4s(true);
             return true;
         } else if (model.equals("JE971")) {
             return true;
@@ -845,7 +847,7 @@ public class SalesTab_FR extends Fragment {
         } else if (model.equals("OT-310")) {
             myPref.setIsOT310(true);
             return true;
-        } else if (model.equals("PayPoint ESY13P1")) {
+        } else if (model.toUpperCase().contains("PAYPOINT")) {
             myPref.setIsESY13P1(true);
             return true;
         } else {
@@ -888,7 +890,6 @@ public class SalesTab_FR extends Fragment {
                         myPref.setCustPriceLevel(map.get("pricelevel_id"));
 
                         myPref.setCustEmail(map.get("cust_email"));
-
 
                         selectedCust.setText(map.get("cust_name"));
 

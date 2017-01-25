@@ -50,9 +50,9 @@ import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.OrderSeatProduct;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.Product;
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.payment.SelectPayMethod_FA;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCardPayHandler;
@@ -96,7 +96,7 @@ import drivers.EMSRover;
 import drivers.EMSUniMagDriver;
 import interfaces.EMSCallBack;
 import io.realm.RealmResults;
-import util.JsonUtils;
+import util.json.JsonUtils;
 
 public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Receipt_FR.AddProductBtnCallback,
         Receipt_FR.UpdateHeaderTitleCallback, OnClickListener, Catalog_FR.RefreshReceiptViewCallback,
@@ -194,6 +194,9 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         if (onHoldOrderJson != null && !onHoldOrderJson.isEmpty()) {
             Gson gson = JsonUtils.getInstance();
             onHoldOrder = gson.fromJson(onHoldOrderJson, Order.class);
+            Global.lastOrdID = onHoldOrder.ord_id;// myCursor.getString(myCursor.getColumnIndex("ord_id"));
+            Global.taxID = onHoldOrder.tax_id;//myCursor.getString(myCursor.getColumnIndex("tax_id"));
+
         }
         isToGo = getRestaurantSaleType() == Global.RestaurantSaleType.TO_GO;
 
@@ -236,10 +239,10 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
         if (Global.deviceHasBarcodeScanner(myPref.getPrinterType())
                 || Global.deviceHasBarcodeScanner(myPref.sledType(true, -2))) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                Global.mainPrinterManager.currentDevice.loadScanner(callBackMSR);
-            if (Global.btSled != null && Global.btSled.currentDevice != null)
-                Global.btSled.currentDevice.loadScanner(callBackMSR);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(callBackMSR);
+            if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().loadScanner(callBackMSR);
         }
 
         hasBeenCreated = true;
@@ -396,7 +399,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
     }
-
 
 
     public static void switchHeaderTitle(boolean newTitle, String title) {
@@ -593,7 +595,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             global.clearListViewData();
             Global.showCDTDefault(this);
             reloadDefaultTransaction();
-        }  else if (resultCode == 2 || resultCode == 0)
+        } else if (resultCode == 2 || resultCode == 0)
             this.refreshView();
     }
 
@@ -673,13 +675,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
                 uniMagReader.release();
             else if (magtekReader != null)
                 magtekReader.closeDevice();
-            else if (Global.btSwiper != null && Global.btSwiper.currentDevice != null)
-                Global.btSwiper.currentDevice.releaseCardReader();
-            else if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.releaseCardReader();
-                Global.mainPrinterManager.currentDevice.loadScanner(null);
-            } else if (Global.btSled != null && Global.btSled.currentDevice != null)
-                Global.btSled.currentDevice.releaseCardReader();
+            else if (Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null)
+                Global.btSwiper.getCurrentDevice().releaseCardReader();
+            else if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().releaseCardReader();
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
+            } else if (Global.btSled != null && Global.btSled.getCurrentDevice() != null)
+                Global.btSled.getCurrentDevice().releaseCardReader();
         }
     }
 
@@ -880,8 +882,8 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             public void afterTextChanged(Editable s) {
                 if (doneScanning) {
                     doneScanning = false;
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                        Global.mainPrinterManager.currentDevice.playSound();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                        Global.mainPrinterManager.getCurrentDevice().playSound();
                     }
                     String upc = invisibleSearchMain.getText().toString().trim().replace("\n", "").replace("\r", "");
 //                    upc = invisibleSearchMain.getText().toString().trim().replace("\r", "");
@@ -1083,13 +1085,13 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
         } else {
             int _swiper_type = myPref.getSwiperType();
             int _printer_type = myPref.getPrinterType();
-            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.currentDevice != null
+            if (_swiper_type != -1 && Global.btSwiper != null && Global.btSwiper.getCurrentDevice() != null
                     && !cardReaderConnected) {
-                Global.btSwiper.currentDevice.loadCardReader(callBackMSR, false);
+                Global.btSwiper.getCurrentDevice().loadCardReader(callBackMSR, false);
             } else if (_printer_type != -1 && Global.deviceHasMSR(_printer_type)) {
-                if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null
+                if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null
                         && !cardReaderConnected)
-                    Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
+                    Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBackMSR, false);
             } else {
                 swiperLabel.setText(R.string.disconnected);
                 swiperLabel.setTextColor(Color.RED);
@@ -1100,7 +1102,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             swiperLabel.setText(R.string.connected);
             swiperLabel.setTextColor(Color.BLUE);
             msrWasLoaded = true;
-        } else if (myPref.isSam4s(true, false)) {
+        } else if (myPref.isSam4s()) {
             _msrUsbSams = new EMSIDTechUSB(this, callBackMSR);
             _msrUsbSams.OpenDevice();
             if (_msrUsbSams.isDeviceOpen() && !_msrUsbSams.isDeviceReading())
@@ -1135,7 +1137,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlogMSR.dismiss();
 
                 String temp = swiperField.getText().toString().trim();
@@ -1148,7 +1149,6 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 dlogMSR.dismiss();
                 if (_msrUsbSams != null && _msrUsbSams.isDeviceOpen() && _msrUsbSams.isDeviceReading())
                     _msrUsbSams.StopReadingThread();
@@ -1419,7 +1419,7 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             uniMagReader.startReading();
         } else if (magtekReader == null && Global.btSwiper == null && _msrUsbSams == null
                 && Global.mainPrinterManager != null)
-            Global.mainPrinterManager.currentDevice.loadCardReader(callBackMSR, false);
+            Global.mainPrinterManager.getCurrentDevice().loadCardReader(callBackMSR, false);
     }
 
     @Override
@@ -1496,125 +1496,51 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
 
     }
 
-    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, Product product, String selectedSeatNumber) {
-        Orders order = new Orders();
-        OrderProduct ord = new OrderProduct();
-//        int sum = Double.valueOf(OrderProductUtils.getOrderProductQty(global.orderProducts, product.getId())).intValue();//Integer.parseInt(global.qtyCounter.get(product.getId()));
+    public static void automaticAddOrder(Activity activity, boolean isFromAddon, Global global, OrderProduct orderProduct, String selectedSeatNumber) {
         if (OrderingMain_FA.returnItem)
-            ord.setReturned(true);
-        order.setName(product.getProdName());
-        order.setValue(product.getProdPrice());
-        order.setProdID(product.getId());
-        order.setDiscount("0.00");
-        order.setTax("0.00");
-        order.setDistQty("0");
-        order.setTaxQty("0");
-
-        String val = product.getProdPrice();
+            orderProduct.setReturned(true);
+        String val = orderProduct.getFinalPrice();
         if (val == null || val.isEmpty())
             val = "0.00";
-
         BigDecimal total = Global.getBigDecimalNum(Global.formatNumToLocale(Double.parseDouble(val)));
         if (isFromAddon) {
             total = total.add(Global.getBigDecimalNum(Global.formatNumToLocale(Global.addonTotalAmount)));
         }
-        ord.addonsProducts = new ArrayList<>(global.orderProductAddons);
-        ord.setPricesXGroupid(product.getPricesXGroupid());
-        ord.setProd_price(total.toString());
-        ord.setAssignedSeat(selectedSeatNumber);
         total = total.multiply(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? new BigDecimal(-1) : new BigDecimal(1));
-
         DecimalFormat frmt = new DecimalFormat("0.00");
-        order.setTotal(frmt.format(total));
-
-        ord.setProd_istaxable(product.getProdIstaxable());
-        ord.setProd_taxtype(product.getProdTaxType());
-        ord.setProd_taxcode(product.getProdTaxCode());
-
-        // add order to db
-        ord.setOrdprod_qty(OrderingMain_FA.returnItem && OrderingMain_FA.mTransType != Global.TransactionType.RETURN ? "-1" : "1");
-        ord.setOrdprod_name(product.getProdName());
-        ord.setOrdprod_desc(product.getProdDesc());
-        ord.setProd_id(product.getId());
-
-        ord.setOnHand(product.getProdOnHand());
-        ord.setImgURL(product.getProdImgName());
-        ord.setCat_id(product.getCatId());
-        ord.setProd_price_points(String.valueOf(product.getProdPricePoints()));
-        ord.setProd_value_points(String.valueOf(product.getProdValuePoints()));
-
-        // Still need to do add the appropriate tax/discount value
-        ord.setProd_taxValue(new BigDecimal("0.00"));
-        ord.setDiscount_value("0.00");
-
-        ord.setTaxAmount("0");
-        ord.setTaxTotal("0.00");
-        ord.setDisAmount("0");
-        ord.setDisTotal("0.00");
-        ord.setItemTotal(total.toString());
-        ord.setItemSubtotal(total.toString());
-
-        ord.setTax_position("0");
-        ord.setDiscount_position("0");
-        ord.setPricelevel_position("0");
-        ord.setUom_position("0");
-
-        ord.setProd_price_updated("0");
+        orderProduct.setItemTotal(total.toString());
+        orderProduct.setItemSubtotal(total.toString());
         GenerateNewID generator = new GenerateNewID(activity);
-
         MyPreferences myPref = new MyPreferences(activity);
-
         if (!Global.isFromOnHold && Global.lastOrdID.isEmpty()) {
             Global.lastOrdID = generator.getNextID(GenerateNewID.IdType.ORDER_ID);
         }
-
-        ord.setOrd_id(Global.lastOrdID);
-
+        orderProduct.setOrd_id(Global.lastOrdID);
         if (global.orderProducts == null) {
             global.orderProducts = new ArrayList<>();
         }
-
         UUID uuid = UUID.randomUUID();
         String randomUUIDString = uuid.toString();
-
-        ord.setOrdprod_id(randomUUIDString);
-
+        orderProduct.setOrdprod_id(randomUUIDString);
         if (isFromAddon) {
             Global.addonTotalAmount = 0;
-
-            if (Global.addonSelectionMap == null)
-                Global.addonSelectionMap = new HashMap<>();
-            if (Global.orderProductAddonsMap == null)
-                Global.orderProductAddonsMap = new HashMap<>();
-
-            if (global.addonSelectionType.size() > 0) {
-                StringBuilder sb = new StringBuilder();
-                Global.addonSelectionMap.put(randomUUIDString, global.addonSelectionType);
-                Global.orderProductAddonsMap.put(randomUUIDString, global.orderProductAddons);
-
-                sb.append(ord.getOrdprod_desc());
-                int tempSize = global.orderProductAddons.size();
-                for (int i = 0; i < tempSize; i++) {
-
-                    sb.append("<br/>");
-                    if (global.orderProductAddons.get(i).getIsAdded().equals("0")) // Not
-                        // added
-                        sb.append("[NO ").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
-                    else
-                        sb.append("[").append(global.orderProductAddons.get(i).getOrdprod_name()).append("]");
-
-                }
-                ord.setOrdprod_desc(sb.toString());
-                ord.setHasAddons("1");
-
-                global.orderProductAddons = new ArrayList<>();
-
+            StringBuilder sb = new StringBuilder();
+            sb.append(orderProduct.getOrdprod_desc());
+            int tempSize = orderProduct.addonsProducts.size();
+            for (int i = 0; i < tempSize; i++) {
+                sb.append("<br/>");
+                if (!orderProduct.addonsProducts.get(i).isAdded()) // Not
+                    sb.append("[NO ").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
+                else
+                    sb.append("[").append(orderProduct.addonsProducts.get(i).getOrdprod_name()).append("]");
             }
+            orderProduct.setOrdprod_desc(sb.toString());
+//            global.orderProductAddons = new ArrayList<>();
         }
-        String row1 = ord.getOrdprod_name();
-        String row2 = Global.formatDoubleStrToCurrency(product.getProdPrice());
+        String row1 = orderProduct.getOrdprod_name();
+        String row2 = Global.formatDoubleStrToCurrency(orderProduct.getFinalPrice());
         TerminalDisplay.setTerminalDisplay(myPref, row1, row2);
-        global.orderProducts.add(ord);
+        global.orderProducts.add(orderProduct);
     }
 
     public String getAssociateId() {
@@ -1635,6 +1561,5 @@ public class OrderingMain_FA extends BaseFragmentActivityActionBar implements Re
             }
         }
         return true;
-
     }
 }

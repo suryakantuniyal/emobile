@@ -3,6 +3,7 @@ package com.android.database;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 import com.android.emobilepos.models.Discount;
 import com.android.emobilepos.models.Product;
@@ -153,7 +154,8 @@ public class ProductsHandler {
         if (Global.cat_id.equals("0")) {
 
             sb.append(
-                    "SELECT  p.prod_id as '_id',p.prod_price as 'master_price',p.prod_prices_group_id as 'prod_prices_group_id'," +
+                    "SELECT  p.prod_id as '_id',  p.prod_prices_group_id as 'prod_prices_group_id'," +
+                            " p.prod_price as 'master_price'," +
                             "vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
             sb.append(
                     "CASE WHEN pl.pricelevel_type = 'FixedPercentage' " +
@@ -527,18 +529,15 @@ public class ProductsHandler {
         return product;
     }
 
-    public String[] getProductDetails(String _prod_id) {
+    public Product getProductDetails(String _prod_id) {
         StringBuilder sb = new StringBuilder();
         StringBuilder sb2 = new StringBuilder();
         String query;
-        String[] data = new String[15];
-
         String priceLevelID;
         if (myPref.isCustSelected())
             priceLevelID = myPref.getCustPriceLevel();
         else
             priceLevelID = myPref.getEmployeePriceLevel();
-
         sb.append(
                 "SELECT  p.prod_id as '_id', p.prod_sku as 'prod_sku', p.prod_upc as 'prod_upc',p.prod_price as 'master_price',vp.price as 'volume_price', ch.over_price_net as 'chain_price',");
         sb.append(
@@ -604,57 +603,64 @@ public class ProductsHandler {
         query = sb.toString();
 
         Cursor cursor = DBManager.getDatabase().rawQuery(query, parameters);
+        Product product = new Product();
 
         if (cursor.moveToFirst()) {
-
-            data[0] = cursor.getString(cursor.getColumnIndex("_id"));
-            data[1] = cursor.getString(cursor.getColumnIndex("prod_name"));
-
+            product.setId(cursor.getString(cursor.getColumnIndex("_id")));
+            product.setProdName(cursor.getString(cursor.getColumnIndex("prod_name")));
             String temp = cursor.getString(cursor.getColumnIndex("volume_price"));
+            product.setVolumePrice(temp);
             if (temp == null || temp.isEmpty()) {
                 temp = cursor.getString(cursor.getColumnIndex("pricelevel_price"));
+                product.setPriceLevelPrice(temp);
                 if (temp == null || temp.isEmpty()) {
                     temp = cursor.getString(cursor.getColumnIndex("chain_price"));
+                    product.setChainPrice(temp);
                     if (temp == null || temp.isEmpty()) {
                         temp = cursor.getString(cursor.getColumnIndex("master_price"));
-                        if (temp == null || temp.isEmpty())
-                            temp = "0";
+                        product.setMasterPrice(temp);
                     }
                 }
             }
-            data[2] = temp;
-
-            data[3] = cursor.getString(cursor.getColumnIndex("prod_desc"));
-
+//            data[2] = temp;
+            product.setProdDesc(cursor.getString(cursor.getColumnIndex("prod_desc")));
             temp = cursor.getString(cursor.getColumnIndex("local_prod_onhand"));
+            product.setLocalProdOnhand(temp);
             if (temp == null || temp.isEmpty()) {
                 temp = cursor.getString(cursor.getColumnIndex("master_prod_onhand"));
-                if (temp == null || temp.isEmpty())
+                product.setMasterProdOnhand(temp);
+                if (temp == null || temp.isEmpty()) {
                     temp = "0";
+                    product.setLocalProdOnhand(temp);
+                    product.setMasterProdOnhand(temp);
+                }
             }
-            data[4] = temp;
-            data[5] = cursor.getString(cursor.getColumnIndex("prod_img_name"));
-            data[6] = cursor.getString(cursor.getColumnIndex("prod_istaxable"));
-            data[7] = cursor.getString(cursor.getColumnIndex("prod_type"));
-            data[8] = cursor.getString(cursor.getColumnIndex("cat_id"));
+//            data[4] = temp;
 
-            data[9] = cursor.getString(cursor.getColumnIndex("prod_price_points"));
-            if (data[9] == null || data[9].isEmpty())
-                data[9] = "0";
+            product.setProdImgName(cursor.getString(cursor.getColumnIndex("prod_img_name")));
+            product.setProdIstaxable(cursor.getString(cursor.getColumnIndex("prod_istaxable")));
+            product.setProdType(cursor.getString(cursor.getColumnIndex("prod_type")));
+            product.setCatId(cursor.getString(cursor.getColumnIndex("cat_id")));
+            String prod_price_points = cursor.getString(cursor.getColumnIndex("prod_price_points"));
+            if (TextUtils.isEmpty(prod_price_points)) {
+                product.setProdPricePoints(0);
+            } else {
+                product.setProdPricePoints(Integer.parseInt(prod_price_points));
+            }
 
-            data[10] = cursor.getString(cursor.getColumnIndex("prod_value_points"));
-            if (data[10] == null || data[10].isEmpty())
-                data[10] = "0";
-
-            data[11] = cursor.getString(cursor.getColumnIndex("prod_taxtype"));
-            data[12] = cursor.getString(cursor.getColumnIndex("prod_taxcode"));
-            data[13] = cursor.getString(cursor.getColumnIndex("prod_sku"));
-            data[14] = cursor.getString(cursor.getColumnIndex("prod_upc"));
-
+            String prod_value_points = cursor.getString(cursor.getColumnIndex("prod_value_points"));
+            if (TextUtils.isEmpty(prod_value_points)) {
+                product.setProdValuePoints(0);
+            } else {
+                product.setProdValuePoints(Integer.parseInt(prod_value_points));
+            }
+            product.setProdTaxType(cursor.getString(cursor.getColumnIndex("prod_taxtype")));
+            product.setProdTaxCode(cursor.getString(cursor.getColumnIndex("prod_taxcode")));
+            product.setProd_sku(cursor.getString(cursor.getColumnIndex("prod_sku")));
+            product.setProd_upc(cursor.getString(cursor.getColumnIndex("prod_upc")));
         }
-
         cursor.close();
-        return data;
+        return product;
     }
 
     public List<String> getProdInformation(String id) {
@@ -762,6 +768,23 @@ public class ProductsHandler {
 
         cursor.close();
         return list;
+    }
+
+    public Discount getDiscounts(String discount_id) {
+        Discount data = new Discount();
+        Cursor cursor = DBManager.getDatabase().rawQuery("SELECT p.prod_name,p.prod_disc_type,p.prod_price," +
+                "IFNULL(s.taxcode_istaxable,1) as 'taxcode_istaxable'" + ",p.prod_id " +
+                "FROM Products p LEFT OUTER JOIN SalesTaxCodes s ON p.prod_taxcode = s.taxcode_id " +
+                "WHERE p.prod_type = 'Discount' AND prod_id LIKE ? ORDER BY p.prod_name ASC", new String[]{discount_id});
+        if (cursor.moveToFirst()) {
+                data.setProductName(cursor.getString(cursor.getColumnIndex(prod_name)));
+                data.setProductDiscountType(cursor.getString(cursor.getColumnIndex(prod_disc_type)));
+                data.setProductPrice(cursor.getString(cursor.getColumnIndex(prod_price)));
+                data.setTaxCodeIsTaxable(cursor.getString(cursor.getColumnIndex("taxcode_istaxable")));
+                data.setProductId(cursor.getString(cursor.getColumnIndex(prod_id)));
+        }
+        cursor.close();
+        return data;
     }
 
     public HashMap<String, String> getDiscountDetail(String discount_id) {

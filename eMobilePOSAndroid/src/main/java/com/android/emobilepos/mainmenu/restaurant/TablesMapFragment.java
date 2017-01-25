@@ -3,10 +3,10 @@ package com.android.emobilepos.mainmenu.restaurant;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +19,19 @@ import android.widget.TextView;
 
 import com.android.dao.DinningTableDAO;
 import com.android.dao.DinningTableOrderDAO;
+import com.android.dao.SalesAssociateDAO;
 import com.android.emobilepos.R;
-import com.android.emobilepos.models.DinningTable;
-import com.android.emobilepos.models.DinningTableOrder;
 import com.android.emobilepos.models.Order;
+import com.android.emobilepos.models.realms.DinningTable;
+import com.android.emobilepos.models.realms.DinningTableOrder;
+import com.android.emobilepos.models.realms.SalesAssociate;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.support.Global;
+import com.android.support.MyPreferences;
 
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -34,16 +39,26 @@ import java.util.List;
 public class TablesMapFragment extends Fragment implements View.OnClickListener, View.OnLongClickListener {
 
     private List<DinningTable> dinningTables;
+    private SalesAssociate associate;
+    MyPreferences preferences;
 
     public TablesMapFragment() {
     }
 
+    private DinningTablesActivity getDinningTablesActivity() {
+        return (DinningTablesActivity) getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dlog_ask_table_map_layout, container, false);
+        preferences = new MyPreferences(getActivity());
+        if (!TextUtils.isEmpty(getDinningTablesActivity().associateId)) {
+            associate = SalesAssociateDAO.getByEmpId(Integer.parseInt(getDinningTablesActivity().associateId));
+        }
         dinningTables = DinningTableDAO.getAll();//DinningTablesProxy.getDinningTables(getActivity());
+
         return rootView;
     }
 
@@ -90,8 +105,14 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                         tableItem.findViewById(R.id.table_map_container).setOnClickListener(TablesMapFragment.this);
                         tableItem.findViewById(R.id.table_map_container).setTag(table);
                         TextView timeTxt = (TextView) tableItem.findViewById(R.id.timetextView21);
+                        ImageView isSelectedCheckBox = (ImageView) tableItem.findViewById(R.id.selectedCheckboximageView);
                         TextView guestsTxt = (TextView) tableItem.findViewById(R.id.gueststextView16);
                         TextView amountxt = (TextView) tableItem.findViewById(R.id.amounttextView23);
+                        if (!preferences.requiresWaiterLogin() || (associate != null && associate.getAssignedDinningTables().contains(table))) {
+                            isSelectedCheckBox.setVisibility(View.VISIBLE);
+                        } else {
+                            isSelectedCheckBox.setVisibility(View.GONE);
+                        }
                         if (dinningTableOrder != null) {
                             timeTxt.setBackgroundResource(R.color.seat7);
                             guestsTxt.setBackgroundResource(R.color.seat7);
@@ -106,6 +127,8 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
                             tableItem.findViewById(R.id.table_map_container).setOnLongClickListener(TablesMapFragment.this);
                         } else {
                             timeTxt.setBackgroundResource(R.color.seat12);
+                            guestsTxt.setBackgroundResource(R.color.seat12);
+                            amountxt.setBackgroundResource(R.color.seat12);
                             timeTxt.setVisibility(View.GONE);
                             guestsTxt.setText(String.format("%d/%d", 0, table.getSeats()));
                             amountxt.setVisibility(View.GONE);
@@ -155,12 +178,20 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 DinningTable table = (DinningTable) v.getTag();
-                DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
-                if (tableOrder == null) {
-                    Intent result = new Intent();
-                    result.putExtra("tableId", table.getId());
-                    getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
-                    getActivity().finish();
+                if (!preferences.requiresWaiterLogin() || (associate != null && associate.getAssignedDinningTables().contains(table))) {
+                    DinningTableOrder tableOrder = DinningTableOrderDAO.getByNumber(table.getNumber());
+                    if (tableOrder != null) {
+                        Realm realm = Realm.getDefaultInstance();
+                        getDinningTablesActivity().new OpenOnHoldOrderTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR
+                                , realm.copyFromRealm(tableOrder), realm.copyFromRealm(table));
+                    } else {
+                        Intent result = new Intent();
+                        result.putExtra("tableId", table.getId());
+                        getActivity().setResult(SplittedOrderSummary_FA.NavigationResult.TABLE_SELECTION.getCode(), result);
+                        getActivity().finish();
+                    }
+                } else {
+                    Global.showPrompt(getActivity(), R.string.title_activity_dinning_tables, getActivity().getString(R.string.dinningtablenotassigned));
                 }
                 break;
             }
@@ -172,21 +203,25 @@ public class TablesMapFragment extends Fragment implements View.OnClickListener,
         switch (v.getId()) {
             case R.id.table_map_container: {
                 final DinningTable table = (DinningTable) v.getTag();
-                PopupMenu popup = new PopupMenu(getActivity(), v);
-                popup.getMenuInflater().inflate(R.menu.dinning_table_map_menu, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        DinningTableOrderDAO.deleteByNumber(table.getNumber());
-                        DinningTablesActivity activity = (DinningTablesActivity) getActivity();
-                        activity.refresh();
-                        return true;
-                    }
-                });
-                popup.show();
+                if (!preferences.requiresWaiterLogin() || associate.getAssignedDinningTables().contains(table)) {
+                    PopupMenu popup = new PopupMenu(getActivity(), v);
+                    popup.getMenuInflater().inflate(R.menu.dinning_table_map_menu, popup.getMenu());
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            DinningTableOrderDAO.deleteByNumber(table.getNumber());
+                            DinningTablesActivity activity = (DinningTablesActivity) getActivity();
+                            activity.refresh(0);
+                            return true;
+                        }
+                    });
+                    popup.show();
+                }
                 break;
             }
         }
         return false;
     }
+
+
 }

@@ -10,8 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.emobilepos.R;
 import com.android.database.DBManager;
+import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;

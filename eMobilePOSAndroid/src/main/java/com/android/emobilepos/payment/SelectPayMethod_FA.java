@@ -29,6 +29,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.dao.PaymentMethodDAO;
 import com.android.dao.StoredPaymentsDAO;
 import com.android.database.DrawInfoHandler;
 import com.android.database.OrdersHandler;
@@ -40,8 +41,8 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.GroupTax;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Payment;
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.realms.Payment;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.ordering.SplittedOrderSummary_FA;
 import com.android.ivu.MersenneTwisterFast;
 import com.android.payments.EMSPayGate_Default;
@@ -56,7 +57,6 @@ import com.android.support.Post;
 import com.android.support.TerminalDisplay;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import com.crashlytics.android.Crashlytics;
-import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -80,8 +80,6 @@ import java.util.Locale;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import io.realm.Realm;
 
 public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements OnClickListener, OnItemClickListener {
 
@@ -635,8 +633,8 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
         @Override
         protected void onPreExecute() {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                Global.mainPrinterManager.currentDevice.loadScanner(null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                Global.mainPrinterManager.getCurrentDevice().loadScanner(null);
             }
             myProgressDialog = new ProgressDialog(activity);
             myProgressDialog.setMessage("Printing...");
@@ -649,17 +647,16 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
         @Override
         protected String doInBackground(Object... params) {
             wasReprint = (Boolean) params[0];
-
             EMVContainer emvContainer = params.length > 1 ? (EMVContainer) params[1] : null;
 
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
                 if (isFromMainMenu || extras.getBoolean("histinvoices") ||
                         (emvContainer != null && emvContainer.getGeniusResponse() != null &&
                                 emvContainer.getGeniusResponse().getStatus().equalsIgnoreCase("DECLINED")))
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(previous_pay_id, 1,
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(previous_pay_id, 1,
                             wasReprint, emvContainer);
                 else
-                    printSuccessful = Global.mainPrinterManager.currentDevice.printTransaction(job_id, orderType,
+                    printSuccessful = Global.mainPrinterManager.getCurrentDevice().printTransaction(job_id, orderType,
                             wasReprint, false, emvContainer);
             }
             return null;
@@ -1283,10 +1280,11 @@ public class SelectPayMethod_FA extends BaseFragmentActivityActionBar implements
 
     private void selectPayment(int position) {
         selectedPosition = position;
-        Realm realm = Realm.getDefaultInstance();
-        realm.beginTransaction();
-        payTypeList.get(position).incrementPriority();
-        realm.commitTransaction();
+//        Realm realm = Realm.getDefaultInstance();
+//        realm.beginTransaction();
+//        payTypeList.get(position).incrementPriority();
+//        realm.commitTransaction();
+        PaymentMethodDAO.incrementPriority(payTypeList.get(position));
         if (payTypeList.get(position).getPaymentmethod_type().equals("Cash")) {
             Intent intent = new Intent(this, ProcessCash_FA.class);
             intent.putExtra("paymethod_id", payTypeList.get(position).getPaymethod_id());

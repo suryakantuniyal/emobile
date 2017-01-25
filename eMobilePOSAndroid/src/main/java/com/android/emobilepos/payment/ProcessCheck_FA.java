@@ -27,7 +27,7 @@ import com.android.database.PaymentsHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.payments.EMSPayGate_Default;
 import com.android.saxhandler.SAXProcessCheckHandler;
 import com.android.support.Encrypt;
@@ -964,8 +964,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
         @Override
         protected Void doInBackground(Void... params) {
 
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(payment.getPay_id(), 1, false, null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(payment.getPay_id(), 1, false, null);
             }
             return null;
         }
@@ -1036,8 +1036,8 @@ public class ProcessCheck_FA extends AbstractPaymentFA implements OnCheckedChang
                 if (!validInput()) {
                     Global.showPrompt(activity, R.string.validation_failed, activity.getString(R.string.card_validation_error));
                 } else {
-                    if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                        Global.mainPrinterManager.currentDevice.openCashDrawer();
+                    if (!isLivePayment && Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
                     }
                     if (!isOpenInvoice || (isOpenInvoice && !isMultiInvoice))
                         processPayment();

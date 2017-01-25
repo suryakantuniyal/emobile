@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 
+import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 
@@ -70,6 +71,9 @@ public class DBManager {
         }
     }
 
+    public boolean resetDatabase() {
+        return activity.deleteDatabase(CIPHER_DB_NAME);
+    }
     public DBManager(Activity activity) {
 
         this.activity = activity;
@@ -88,6 +92,9 @@ public class DBManager {
         this.activity = activ;
         managerInstance = this;
         this.type = type;
+        if (type == Global.FROM_REGISTRATION_ACTIVITY) {
+            resetDatabase();
+        }
         myPref = new MyPreferences(activity);
         SQLiteDatabase.loadLibs(activity);
 //		exportDBFile();
@@ -316,10 +323,10 @@ public class DBManager {
         sm.synchGetOnHoldDetails(type, intent, ordID);
     }
 
-    public void synchSendOrdersOnHold(boolean downloadHoldList, boolean checkOutOnHold) {
-        SynchMethods sm = new SynchMethods(managerInstance);
-        sm.synchSendOnHold(downloadHoldList, checkOutOnHold);
-    }
+//    public void synchSendOrdersOnHold(boolean downloadHoldList, boolean checkOutOnHold) {
+//        SynchMethods sm = new SynchMethods(managerInstance);
+//        sm.synchSendOnHold(downloadHoldList, checkOutOnHold);
+//    }
 
     public boolean isSendAndReceive() {
         return this.sendAndReceive;
@@ -427,7 +434,7 @@ public class DBManager {
             + "[addr_s_country] [varchar](31) NULL, [addr_s_zipcode] [varchar](13) NULL, [c_email] [varchar](100) NULL, [loc_id] [varchar](50) NULL, "
             + "[ord_HoldName] [varchar](50) NULL,[isOnHold] [tinyint] NULL, [clerk_id][varchar](50) NULL, [ord_discount_id][varchar](50) NULL, [ord_latitude][varchar](50) NULL, "
             + "[ord_longitude][varchar](50) NULL, [tipAmount][varchar](50) NULL , isVoid tinyint, [is_stored_fwd] BOOL DEFAULT (0), VAT tinyint," +
-            " [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL)";
+            " [assignedTable] [varchar](10) NULL, [numberOfSeats] [int] NULL, associateID [varchar](10) NULL, [ord_timeStarted] [datetime] NULL)";
 
     private final String CREATE_PAYMETHODS = "CREATE TABLE [PayMethods]( [paymethod_id] [varchar](50) PRIMARY KEY NOT NULL, "
             + "[paymethod_name] [varchar](255) NOT NULL, [paymentmethod_type] [varchar](50) NULL, [paymethod_update] [datetime] NOT NULL, "

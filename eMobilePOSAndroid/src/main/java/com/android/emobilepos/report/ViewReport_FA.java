@@ -22,279 +22,266 @@ import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportsMenuAdapter;
 import com.android.emobilepos.adapters.ReportsShiftAdapter;
 import com.android.emobilepos.shifts.ShiftReportDetails_FA;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class ViewReport_FA extends BaseFragmentActivityActionBar {
-	
-	private static ReportsMenuAdapter mainAdapter;
-	private static ReportsShiftAdapter shiftAdapter;
-	private ProgressDialog myProgressDialog;
-	private static ListView myListview;
-	private static String curDate;
-	private static Activity activity;
-	private static String [] dates = new String[2];
-	private Button dateBut,printBut;
-	private static boolean isShiftReport = false;
-	private Global global;
-	private boolean hasBeenCreated = false;
-	
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) 
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.report_layout);
-		activity = this;
-		
-		global = (Global)activity.getApplication();
-		final Bundle extras =activity.getIntent().getExtras();
-		
-		isShiftReport = extras.getBoolean("isShiftReport",false);
-		
-		dateBut = (Button)findViewById(R.id.changeDateButton);
-		printBut = (Button)findViewById(R.id.reportPrintButton);
-		myListview = (ListView) findViewById(R.id.reportListView);
-		TextView headerTitle = (TextView) findViewById(R.id.headerTitle);
-		
-		dateBut.setOnClickListener(new View.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				DialogFragment newFrag = new DateDialog();
-				FragmentManager fm = getSupportFragmentManager();
-				newFrag.show(fm, "dialog");
+    private static ReportsMenuAdapter mainAdapter;
+    private static ReportsShiftAdapter shiftAdapter;
+    private ProgressDialog myProgressDialog;
+    private static ListView myListview;
+    private static String curDate;
+    private static Activity activity;
+    private static String[] dates = new String[2];
+    private Button dateBut, printBut;
+    private static boolean isShiftReport = false;
+    private Global global;
+    private boolean hasBeenCreated = false;
 
-			}
-		});
-		
-		
-		if(isShiftReport)
-		{
-			headerTitle.setText(R.string.report_per_shift);
-			myListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
-						long arg3) {
-					if(pos>=2)
-					{
-					Intent intent = new Intent(activity,ShiftReportDetails_FA.class);
-					intent.putExtra("shift_id", shiftAdapter.getShiftID(pos));
-					startActivity(intent);
-					}
-				}
-			});
-		}
-		else
-		{
-			headerTitle.setText(R.string.report_title);
-		}
-		
-		hasBeenCreated = true;
-		new initViewAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	}
 
-	
-	@Override
-	public void onResume() {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.report_layout);
+        activity = this;
 
-		if(global.isApplicationSentToBackground(this))
-			global.loggedIn = false;
-		global.stopActivityTransitionTimer();
-		
-		if(hasBeenCreated&&!global.loggedIn)
-		{
-			if(global.getGlobalDlog()!=null)
-				global.getGlobalDlog().dismiss();
-			global.promptForMandatoryLogin(this);
-		}
-		super.onResume();
-	}
-	
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		PowerManager powerManager = (PowerManager)getSystemService(POWER_SERVICE);
-		boolean isScreenOn = powerManager.isScreenOn();
-		if(!isScreenOn)
-			global.loggedIn = false;
-		global.startActivityTransitionTimer();
-	}
-	
-	
-	private class initViewAsync extends AsyncTask<Void, String, String> 
-	{
-		@Override
-		protected void onPreExecute() {
-			
-			myProgressDialog = new ProgressDialog(activity);
-			myProgressDialog.setMessage("Creating Report...");
-			myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			myProgressDialog.setCancelable(false);
-			myProgressDialog.show();
+        global = (Global) activity.getApplication();
+        final Bundle extras = activity.getIntent().getExtras();
 
-		}
+        isShiftReport = extras.getBoolean("isShiftReport", false);
 
-		@Override
-		protected String doInBackground(Void... params) {
-			curDate = Global.getCurrentDate();
-			dates[0]=Global.formatToDisplayDate(curDate, activity, 0);
-			dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
-			
-			if(!isShiftReport)
-				mainAdapter = new ReportsMenuAdapter(activity, dates);
-			else
-				shiftAdapter = new ReportsShiftAdapter(activity,dates);
-			return null;
-		}
+        dateBut = (Button) findViewById(R.id.changeDateButton);
+        printBut = (Button) findViewById(R.id.reportPrintButton);
+        myListview = (ListView) findViewById(R.id.reportListView);
+        TextView headerTitle = (TextView) findViewById(R.id.headerTitle);
 
-		@Override
-		protected void onPostExecute(String unused) {
-			myProgressDialog.dismiss();
-			if(!isShiftReport)
-				myListview.setAdapter(mainAdapter);
-			else
-				myListview.setAdapter(shiftAdapter);
-			
-			MyPreferences myPref = new MyPreferences(activity);
-			if(myPref.getPreferences(MyPreferences.pref_enable_printing))
-			{
-				printBut.setBackgroundResource(R.drawable.tab_button_selector);
-				printBut.setOnClickListener(new View.OnClickListener() {
-		
-					@Override
-					public void onClick(View v) {
-						if(!isShiftReport)
-							new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-					}
-				});
-			}
-			else
-			{
-				printBut.setBackgroundResource(R.drawable.tab_disabled_button_selector);
-			}
-		}
-	}
-	
-	private void showPrintDlg() {
-		final Dialog dlog = new Dialog(activity,R.style.Theme_TransparentTest);
-		dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		dlog.setCancelable(false);
-		dlog.setContentView(R.layout.dlog_btn_left_right_layout);
-		
-		TextView viewTitle = (TextView)dlog.findViewById(R.id.dlogTitle);
-		TextView viewMsg = (TextView)dlog.findViewById(R.id.dlogMessage);
-		viewTitle.setText(R.string.dlog_title_confirm);
+        dateBut.setOnClickListener(new View.OnClickListener() {
 
-		viewTitle.setText(R.string.dlog_title_error);
-		viewMsg.setText(R.string.dlog_msg_failed_print);
+            @Override
+            public void onClick(View v) {
+                DialogFragment newFrag = new DateDialog();
+                FragmentManager fm = getSupportFragmentManager();
+                newFrag.show(fm, "dialog");
 
-		dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+            }
+        });
 
-		Button btnYes = (Button)dlog.findViewById(R.id.btnDlogLeft);
-		Button btnNo = (Button)dlog.findViewById(R.id.btnDlogRight);
-		btnYes.setText(R.string.button_yes);
-		btnNo.setText(R.string.button_no);
-		
-		btnYes.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dlog.dismiss();
-				new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			}
-		});
-		btnNo.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dlog.dismiss();
-			}
-		});
-		dlog.show();
-	}
-	
-	private class printAsync extends AsyncTask<Void, Void, Void> 
-	{
-		private boolean printSuccessful = true;
-		@Override
-		protected void onPreExecute() {
-			myProgressDialog = new ProgressDialog(activity);
-			myProgressDialog.setMessage("Printing...");
-			myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			myProgressDialog.setCancelable(false);
-			myProgressDialog.show();
 
-		}
+        if (isShiftReport) {
+            headerTitle.setText(R.string.report_per_shift);
+            myListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
+                                        long arg3) {
+                    if (pos >= 2) {
+                        Intent intent = new Intent(activity, ShiftReportDetails_FA.class);
+                        intent.putExtra("shift_id", shiftAdapter.getShiftID(pos));
+                        startActivity(intent);
+                    }
+                }
+            });
+        } else {
+            headerTitle.setText(R.string.report_title);
+        }
+
+        hasBeenCreated = true;
+        new initViewAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+
+    @Override
+    public void onResume() {
+
+        if (global.isApplicationSentToBackground(this))
+            global.loggedIn = false;
+        global.stopActivityTransitionTimer();
+
+        if (hasBeenCreated && !global.loggedIn) {
+            if (global.getGlobalDlog() != null)
+                global.getGlobalDlog().dismiss();
+            global.promptForMandatoryLogin(this);
+        }
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        boolean isScreenOn = powerManager.isScreenOn();
+        if (!isScreenOn)
+            global.loggedIn = false;
+        global.startActivityTransitionTimer();
+    }
+
+
+    private class initViewAsync extends AsyncTask<Void, String, String> {
+        @Override
+        protected void onPreExecute() {
+
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Creating Report...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            curDate = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
+            dates[0] = Global.formatToDisplayDate(curDate, activity, 0);
+            dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
+
+            if (!isShiftReport)
+                mainAdapter = new ReportsMenuAdapter(activity, dates);
+            else
+                shiftAdapter = new ReportsShiftAdapter(activity, dates);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String unused) {
+            myProgressDialog.dismiss();
+            if (!isShiftReport)
+                myListview.setAdapter(mainAdapter);
+            else
+                myListview.setAdapter(shiftAdapter);
+
+            MyPreferences myPref = new MyPreferences(activity);
+            if (myPref.getPreferences(MyPreferences.pref_enable_printing)) {
+                printBut.setBackgroundResource(R.drawable.tab_button_selector);
+                printBut.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if (!isShiftReport)
+                            new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
+                });
+            } else {
+                printBut.setBackgroundResource(R.drawable.tab_disabled_button_selector);
+            }
+        }
+    }
+
+    private void showPrintDlg() {
+        final Dialog dlog = new Dialog(activity, R.style.Theme_TransparentTest);
+        dlog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlog.setCancelable(false);
+        dlog.setContentView(R.layout.dlog_btn_left_right_layout);
+
+        TextView viewTitle = (TextView) dlog.findViewById(R.id.dlogTitle);
+        TextView viewMsg = (TextView) dlog.findViewById(R.id.dlogMessage);
+        viewTitle.setText(R.string.dlog_title_confirm);
+
+        viewTitle.setText(R.string.dlog_title_error);
+        viewMsg.setText(R.string.dlog_msg_failed_print);
+
+        dlog.findViewById(R.id.btnDlogCancel).setVisibility(View.GONE);
+
+        Button btnYes = (Button) dlog.findViewById(R.id.btnDlogLeft);
+        Button btnNo = (Button) dlog.findViewById(R.id.btnDlogRight);
+        btnYes.setText(R.string.button_yes);
+        btnNo.setText(R.string.button_no);
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+                new printAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        });
+        btnNo.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dlog.dismiss();
+            }
+        });
+        dlog.show();
+    }
+
+    private class printAsync extends AsyncTask<Void, Void, Void> {
+        private boolean printSuccessful = true;
+
+        @Override
+        protected void onPreExecute() {
+            myProgressDialog = new ProgressDialog(activity);
+            myProgressDialog.setMessage("Printing...");
+            myProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            myProgressDialog.setCancelable(false);
+            myProgressDialog.show();
+
+        }
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.currentDevice!=null)
-				printSuccessful = Global.mainPrinterManager.currentDevice.printReport(curDate);
+			if(Global.mainPrinterManager!=null&&Global.mainPrinterManager.getCurrentDevice()!=null)
+				printSuccessful = Global.mainPrinterManager.getCurrentDevice().printReport(curDate);
 			return null;
 		}
 
-		@Override
-		protected void onPostExecute(Void unused) {
-			myProgressDialog.dismiss();
-			if(!printSuccessful)
-				showPrintDlg();
-			
-		}
-	}
-	
-	
-	public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
+        @Override
+        protected void onPostExecute(Void unused) {
+            myProgressDialog.dismiss();
+            if (!printSuccessful)
+                showPrintDlg();
 
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-		}
+        }
+    }
 
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			final Calendar c = Calendar.getInstance();
-			int year = c.get(Calendar.YEAR);
-			int month = c.get(Calendar.MONTH);
-			int day = c.get(Calendar.DAY_OF_MONTH);
 
-			return new DatePickerDialog(activity, this, year, month, day);
+    public static class DateDialog extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
-		}
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
 
-		@Override
-		public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-			// Do something after user selects the date...
-			StringBuilder sb = new StringBuilder();
-			sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear+1)).append(Integer.toString(dayOfMonth));
-			Calendar cal = Calendar.getInstance();
-			cal.set(year, monthOfYear, dayOfMonth);
-			SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",Locale.getDefault());
-			curDate = sdf2.format(cal.getTime());
-			dates[0]=Global.formatToDisplayDate(curDate, activity, 0);
-			dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
-			if(activity!=null)
-			{
-				if(!isShiftReport)
-				{
-					mainAdapter = new ReportsMenuAdapter(activity, dates);
-					myListview.setAdapter(mainAdapter);
-				}
-				else
-				{
-					shiftAdapter = new ReportsShiftAdapter(activity, dates);
-					myListview.setAdapter(shiftAdapter);
-				}
-			}
-			
-		}
-	}
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            int day = c.get(Calendar.DAY_OF_MONTH);
+
+            return new DatePickerDialog(activity, this, year, month, day);
+
+        }
+
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            // Do something after user selects the date...
+            StringBuilder sb = new StringBuilder();
+            sb.append(Integer.toString(year)).append(Integer.toString(monthOfYear + 1)).append(Integer.toString(dayOfMonth));
+            Calendar cal = Calendar.getInstance();
+            cal.set(year, monthOfYear, dayOfMonth);
+            SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            curDate = sdf2.format(cal.getTime());
+            dates[0] = Global.formatToDisplayDate(curDate, activity, 0);
+            dates[1] = Global.formatToDisplayDate(curDate, activity, 4);
+            if (activity != null) {
+                if (!isShiftReport) {
+                    mainAdapter = new ReportsMenuAdapter(activity, dates);
+                    myListview.setAdapter(mainAdapter);
+                } else {
+                    shiftAdapter = new ReportsShiftAdapter(activity, dates);
+                    myListview.setAdapter(shiftAdapter);
+                }
+            }
+
+        }
+    }
 
 }

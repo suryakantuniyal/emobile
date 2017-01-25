@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.database.InvProdHandler;
@@ -17,9 +16,11 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.starmicronics.stario.StarIOPortException;
@@ -27,6 +28,7 @@ import com.starmicronics.stario.StarIOPortException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -467,7 +469,7 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     myPref.getEmpName(), LINE_WIDTH, 0)).append("\n");
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0)).append("\n");
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0)).append("\n");
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {
@@ -817,21 +819,18 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = this;
+        edm.setCurrentDevice( this);
         this.printingDelegate = edm;
     }
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
         this.printingDelegate = null;
     }
 
     @Override
     public void loadCardReader(EMSCallBack _callBack, boolean isDebitCard) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -996,11 +995,24 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//        try {
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
@@ -1040,6 +1052,11 @@ public class EMSOneil4te extends EMSDeviceDriver implements EMSDeviceManagerPrin
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

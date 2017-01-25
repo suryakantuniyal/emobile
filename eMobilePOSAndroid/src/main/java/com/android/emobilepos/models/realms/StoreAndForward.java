@@ -1,7 +1,5 @@
 package com.android.emobilepos.models.realms;
 
-import com.android.emobilepos.models.Payment;
-
 import java.util.Date;
 
 import io.realm.RealmObject;

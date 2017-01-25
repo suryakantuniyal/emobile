@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.android.support.CardParser;
 import com.android.support.CreditCardInfo;
+import com.android.support.MyPreferences;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -269,7 +270,12 @@ public class EMSIDTechUSB {
                             public void run() {
                                 CreditCardInfo creditCardInfo;
                                 if (arrayOfByte.length > 3 && checkLRCAndChecksum(arrayOfByte)) {
-                                    creditCardInfo = CardParser.parseIDTechOriginal(_activity, arrayOfByte);
+                                    MyPreferences preferences = new MyPreferences(_activity);
+                                    if(preferences.isSam4s()) {
+                                        creditCardInfo = EMSUniMagDriver.parseCardData(_activity, arrayOfByte);
+                                    }else {
+                                        creditCardInfo = CardParser.parseIDTechOriginal(_activity, arrayOfByte);
+                                    }
                                     _callBack.cardWasReadSuccessfully(true, creditCardInfo);
                                 } else
                                     Toast.makeText(_activity, "Card data error, bad swipe", Toast.LENGTH_LONG).show();

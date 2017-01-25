@@ -197,25 +197,19 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 			TextView tv = (TextView) v.findViewById(R.id.section_header_title);
 			ImageView sectionImg = (ImageView) v.findViewById(R.id.section_header_image);
 			
-			int i = Global.productParentAddonsDictionary.get(sectionID);
+//			int i = Global.productParentAddonsDictionary.get(sectionID);
 			
-			tv.setText(Global.productParentAddons.get(i).get("cat_name"));
-			imageLoaderTest.DisplayImage(Global.productParentAddons.get(i).get("url"), sectionImg,true);
+//			tv.setText(Global.productParentAddons.get(i).get("cat_name"));
+//			imageLoaderTest.DisplayImage(Global.productParentAddons.get(i).get("url"), sectionImg,true);
 		} 
 		else 
 		{
 			LinearLayout ll = (LinearLayout) v;
 			ll = (LinearLayout) ll.findViewById(R.id.row_item);
-			//View divider = ll.findViewById(R.id.row_item_divider);
-			//divider.setVisibility(View.VISIBLE);
-
 			// check if this position corresponds to last row
 			boolean isLastRowInSection = isLastRowInSection(position);
 			int positionInSection = positionInSection(position);
-
 			Cursor c = sectionCursors.get(sectionID);
-
-			// --
 			int cursorStartAt = numberOfChildrenInRow * positionInSection;
 			int i_prod_name = c.getColumnIndex("prod_name");
 			int i_prod_img_name = c.getColumnIndex("prod_img_name"); 
@@ -236,13 +230,8 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 						TextView productPriceView = (TextView)child.findViewById(R.id.data_item_text_bottom);
 						ImageView itemImage = (ImageView) child.findViewById(R.id.data_item_image);
 						ImageView itemIconImage = (ImageView)child.findViewById(R.id.data_item_image_icon);
-						
-						
 						productNameView.setText(c.getString(i_prod_name));
 						productPriceView.setText(Global.formatDoubleStrToCurrency(c.getString(i_master_price)));
-						
-						
-
 						imageLoaderTest.DisplayImage(c.getString(i_prod_img_name), itemImage,true);
 						ButtonViewHolder holder = new ButtonViewHolder();
 						holder.sectionName = sectionID;
@@ -251,17 +240,11 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 						holder.prod_id = c.getString(c.getColumnIndex("_id"));
 						itemImage.setTag(holder);
 						itemImage.setOnClickListener(this);
-						
-						
 						String[] switchCase = new String[]{"0"};
-						
-						if(global.addonSelectionType.containsKey(holder.prod_id))
-							switchCase = global.addonSelectionType.get(holder.prod_id);
-						else
-							global.addonSelectionType.put(holder.prod_id,new String[]{Integer.toString(SELECT_EMPTY),holder.sectionName,Integer.toString(holder.positionInSection)});
-						
-						
-						
+//						if(global.addonSelectionType.containsKey(holder.prod_id))
+//							switchCase = global.addonSelectionType.get(holder.prod_id);
+//						else
+//							global.addonSelectionType.put(holder.prod_id,new String[]{Integer.toString(SELECT_EMPTY),holder.sectionName,Integer.toString(holder.positionInSection)});
 						switch(Integer.parseInt(switchCase[0]))
 						{
 							case SELECT_EMPTY:
@@ -282,14 +265,9 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 								itemIconImage.setVisibility(View.VISIBLE);
 								break;
 						}
-						
-						
 					}
-
 					// set listener on image button
-
 					cursorStartAt++;
-
 				}
 			}
 
@@ -420,7 +398,6 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		ButtonViewHolder holder = (ButtonViewHolder) v.getTag();
 		if (this.listener != null) 
 		{
@@ -428,7 +405,7 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 			TextView productPriceView = (TextView)holder.parent.findViewById(R.id.data_item_text_bottom);
 			ImageView itemIconImage = (ImageView) holder.parent.findViewById(R.id.data_item_image_icon);
 			
-			String[] temp = global.addonSelectionType.get(holder.prod_id);
+			String[] temp = {"0"};//global.addonSelectionType.get(holder.prod_id);
 			
 			switch(Integer.parseInt(temp[0]))
 			{
@@ -437,20 +414,20 @@ public class SectionedGridViewAdapter extends BaseAdapter implements
 				productPriceView.setBackgroundColor(COLOR_GREEN);
 				itemIconImage.setImageResource(R.drawable.check_button_green);
 				itemIconImage.setVisibility(View.VISIBLE);
-				global.addonSelectionType.put(holder.prod_id, new String[]{Integer.toString(SELECT_CHECKED),holder.sectionName,Integer.toString(holder.positionInSection)});
+//				global.addonSelectionType.put(holder.prod_id, new String[]{Integer.toString(SELECT_CHECKED),holder.sectionName,Integer.toString(holder.positionInSection)});
 				break;
 			case SELECT_CHECKED:
 				productNameView.setBackgroundColor(COLOR_RED);
 				productPriceView.setBackgroundColor(COLOR_RED);
 				itemIconImage.setImageResource(R.drawable.cross_button_red);
 				itemIconImage.setVisibility(View.VISIBLE);
-				global.addonSelectionType.put(holder.prod_id, new String[]{Integer.toString(SELECT_CROSS),holder.sectionName,Integer.toString(holder.positionInSection)});
+//				global.addonSelectionType.put(holder.prod_id, new String[]{Integer.toString(SELECT_CROSS),holder.sectionName,Integer.toString(holder.positionInSection)});
 				break;
 			case SELECT_CROSS:
 				productNameView.setBackgroundColor(COLOR_BLACK);
 				productPriceView.setBackgroundColor(COLOR_BLACK);
 				itemIconImage.setVisibility(View.INVISIBLE);
-				global.addonSelectionType.put(holder.prod_id, new String[]{Integer.toString(SELECT_EMPTY),holder.sectionName,Integer.toString(holder.positionInSection)});
+//				global.addonSelectionType.put(holder.prod_id, new String[]{Integer.toString(SELECT_EMPTY),holder.sectionName,Integer.toString(holder.positionInSection)});
 				break;
 			}
 			this.notifyDataSetChanged();

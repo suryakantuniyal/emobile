@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.crashreport.ExceptionHandler;
+import com.android.dao.RealmModule;
 import com.android.database.VolumePricesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.holders.Locations_Holder;
@@ -39,7 +40,7 @@ import com.android.emobilepos.models.DataTaxes;
 import com.android.emobilepos.models.Order;
 import com.android.emobilepos.models.OrderProduct;
 import com.android.emobilepos.models.Product;
-import com.android.emobilepos.models.ProductAttribute;
+import com.android.emobilepos.models.realms.ProductAttribute;
 import com.android.emobilepos.ordering.Catalog_FR;
 import com.android.emobilepos.ordering.OrderingMain_FA;
 import com.android.emobilepos.payment.ProcessCreditCard_FA;
@@ -68,7 +69,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -81,7 +81,6 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import main.EMSDeviceManager;
-import util.StringUtil;
 
 public class Global extends MultiDexApplication {
     public static final String EVOSNAP_PACKAGE_NAME = "com.emobilepos.icmpevo.app";
@@ -103,6 +102,7 @@ public class Global extends MultiDexApplication {
         isIvuLoto = getPackageName().contains(getString(R.string.ivupos_packageid));
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .deleteRealmIfMigrationNeeded()
+                .modules(Realm.getDefaultModule(), new RealmModule())
                 .build();
         Realm.setDefaultConfiguration(config);
     }
@@ -134,13 +134,15 @@ public class Global extends MultiDexApplication {
     public static final int EM100 = 10;
     public static final int EM70 = 11;
     public static final int OT310 = 12;
-    public static final int ESY13P1 = 13;
+    public static final int ELOPAYPOINT = 13;
     public static final int KDC500 = 14;
     public static final int HANDPOINT = 15;
     public static final int ICMPEVO = 16;
     public static final int WALKER = 17;
     public static final int BIXOLON = 18;
     public static final int PAT215 = 19;
+    public static final int MEPOS = 20;
+
 
 
     public enum BuildModel {
@@ -345,6 +347,7 @@ public class Global extends MultiDexApplication {
     public final static int S_SUBMIT_LOCATIONS_INVENTORY = 59;
     public final static int S_GET_XML_DINNER_TABLES = 60;
     public final static int S_GET_XML_SALES_ASSOCIATE = 61;
+    public final static int S_GET_ASSIGN_EMPLOYEE = 4;
     public final static int S_SUBMIT_TIP_ADJUSTMENT = 62;
     public final static int S_SUBMIT_WORKINGKEY_REQUEST = 63;
 
@@ -387,11 +390,11 @@ public class Global extends MultiDexApplication {
 
     public static boolean isConsignment = false;
     public static boolean isInventoryTransfer = false;
-    public static List<HashMap<String, String>> productParentAddons;
-    public static HashMap<String, Integer> productParentAddonsDictionary;
-    public HashMap<String, String[]> addonSelectionType;
-    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
-    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
+//    public static List<HashMap<String, String>> productParentAddons;
+//    public static HashMap<String, Integer> productParentAddonsDictionary;
+//    public HashMap<String, String[]> addonSelectionType;
+//    public static Map<String, HashMap<String, String[]>> addonSelectionMap;
+//    public static HashMap<String, List<OrderProduct>> orderProductAddonsMap;
 
     public static Locations_Holder locationFrom, locationTo;
     public static TransferLocations_Holder transferLocation;
@@ -415,7 +418,7 @@ public class Global extends MultiDexApplication {
     public List<ProductAttribute> ordProdAttrPending;
     public RealmList<ProductAttribute> ordProdAttr = new RealmList<>();
     public List<OrderProduct> orderProducts = new ArrayList<OrderProduct>();
-    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
+//    public List<OrderProduct> orderProductAddons = new ArrayList<OrderProduct>();
     // public static HashMap<String,List<OrderProduct>>orderProductsAddonsMap;
     public Order order;
     // public List<Orders> cur_orders = new ArrayList<Orders>();
@@ -515,14 +518,14 @@ public class Global extends MultiDexApplication {
         cons_issue_order = null;
         cons_return_order = null;
         cons_fillup_order = null;
-        if (productParentAddons != null)
-            productParentAddons.clear();
-        if (productParentAddonsDictionary != null)
-            productParentAddonsDictionary.clear();
-        if (addonSelectionMap != null)
-            addonSelectionMap.clear();
-        if (orderProductAddonsMap != null)
-            orderProductAddonsMap.clear();
+//        if (productParentAddons != null)
+//            productParentAddons.clear();
+//        if (productParentAddonsDictionary != null)
+//            productParentAddonsDictionary.clear();
+//        if (addonSelectionMap != null)
+//            addonSelectionMap.clear();
+//        if (orderProductAddonsMap != null)
+//            orderProductAddonsMap.clear();
         loyaltyCardInfo = new CreditCardInfo();
         loyaltyAddAmount = "";
         loyaltyCharge = "";
@@ -569,6 +572,12 @@ public class Global extends MultiDexApplication {
             case HANDPOINT:
                 _name = "HANDPOINT";
                 break;
+            case WALKER:
+                _name = "WALKER";
+                break;
+            case MEPOS:
+                _name = "MEPOS";
+                break;
             case ICMPEVO:
                 _name = "ICMPEVO";
                 break;
@@ -602,8 +611,8 @@ public class Global extends MultiDexApplication {
 //        if (ordProdAttrPending != null)
 //            ordProdAttrPending.clear();
 
-        if (this.orderProductAddons != null)
-            this.orderProductAddons.clear();
+//        if (this.orderProductAddons != null)
+//            this.orderProductAddons.clear();
 
         if (this.listOrderTaxes != null)
             this.listOrderTaxes.clear();
@@ -851,7 +860,7 @@ public class Global extends MultiDexApplication {
         TextView viewTitle = (TextView) popDlog.findViewById(R.id.dlogTitle);
         TextView viewMsg = (TextView) popDlog.findViewById(R.id.dlogMessage);
         viewTitle.setText(title);
-        viewMsg.setText(Html.fromHtml(msg));
+        viewMsg.setText(Html.fromHtml(msg == null ? "" : msg));
         Button btnOk = (Button) popDlog.findViewById(R.id.btnDlogSingle);
         btnOk.setText(R.string.button_ok);
         btnOk.setOnClickListener(new View.OnClickListener() {
@@ -918,21 +927,6 @@ public class Global extends MultiDexApplication {
         return formatedDate;
     }
 
-    public static String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-        SimpleDateFormat sdfTZ = new SimpleDateFormat("Z", Locale.getDefault());
-        Calendar cal = Calendar.getInstance();
-        TimeZone tz = cal.getTimeZone();
-        sdfTZ.setTimeZone(tz);
-        Date date = new Date();
-        String cur_date = sdf.format(date);
-        String TimeZone = sdfTZ.format(date);
-
-        String ending = TimeZone.substring(TimeZone.length() - 2, TimeZone.length());
-        String begining = TimeZone.substring(0, TimeZone.length() - 2);
-
-        return cur_date + begining + ":" + ending;
-    }
 
     public boolean isApplicationSentToBackground(final Context context) {
 
@@ -1349,7 +1343,6 @@ public class Global extends MultiDexApplication {
     }
 
 
-
     public List<HashMap<String, Integer>> dictionary;
 
     public static OnTouchListener opaqueImageOnClick() {
@@ -1500,13 +1493,13 @@ public class Global extends MultiDexApplication {
                 || _printer_type == Global.ZEBRA || _printer_type == Global.ASURA || _printer_type == Global.EM100
                 || _printer_type == Global.KDC500 || _printer_type == Global.ICMPEVO ||
                 _printer_type == Global.HANDPOINT || _printer_type == Global.EM70 ||
-                _printer_type == Global.OT310 || _printer_type == Global.ESY13P1 || _printer_type == Global.PAT215);
+                _printer_type == Global.OT310 || _printer_type == Global.ELOPAYPOINT || _printer_type == Global.PAT215);
     }
 
     public static boolean deviceHasBarcodeScanner(int _device_type) {
         return (_device_type == Global.ISMP || _device_type == Global.POWA || _device_type == Global.ASURA
                 || _device_type == Global.STAR || _device_type == Global.EM100 || _device_type == Global.EM70
-                || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ESY13P1);
+                || _device_type == Global.KDC500 || _device_type == Global.OT310 || _device_type == Global.ELOPAYPOINT);
     }
 
     // Handle application transition for background
@@ -1550,6 +1543,7 @@ public class Global extends MultiDexApplication {
             sock.close();
             exists = true;
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return exists;

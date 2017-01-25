@@ -8,13 +8,13 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CardParser;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
@@ -122,7 +122,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                 enableCenter = new byte[]{0x1b, 0x61, 0x01};
                 disableCenter = new byte[]{0x1b, 0x61, 0x00};
             } else {
-                if (getPortName().contains("TCP") && portNumber != null && !portNumber.equals("9100"))
+                if (getPortName().contains("TCP") && portNumber != null && portNumber.equals("9100"))
                     portSettings = portNumber;
                 else
                     portSettings = "";
@@ -184,7 +184,7 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
                     enableCenter = new byte[]{0x1b, 0x61, 0x01};
                     disableCenter = new byte[]{0x1b, 0x61, 0x00};
                 } else {
-                    if (getPortName().contains("TCP") && !portNumber.equals("9100"))
+                    if (getPortName().contains("TCP") && portNumber.equals("9100"))
                         portSettings = portNumber;
                     else
                         portSettings = "";
@@ -411,13 +411,12 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
-
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -792,29 +791,42 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//        try {
+//            setPaperWidth(LINE_WIDTH);
+//
+////            verifyConnectivity();
+//
+//            Thread.sleep(1000);
+//
+//            if (!isPOSPrinter) {
+//                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
+//                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
+//                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
+//                // windows-1252
+//            }
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
             setPaperWidth(LINE_WIDTH);
-
-//            verifyConnectivity();
-
-            Thread.sleep(1000);
-
-            if (!isPOSPrinter) {
-                port.writePort(new byte[]{0x1d, 0x57, (byte) 0x80, 0x31}, 0, 4);
-                port.writePort(new byte[]{0x1d, 0x21, 0x00}, 0, 3);
-                port.writePort(new byte[]{0x1b, 0x74, 0x11}, 0, 3); // set to
-                // windows-1252
-            }
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
-
-        } catch (StarIOPortException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
+            e.printStackTrace();
+        } catch (StarIOPortException e) {
             e.printStackTrace();
         }
     }
@@ -851,6 +863,11 @@ public class EMSBluetoothStarPrinter extends EMSDeviceDriver implements EMSDevic
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

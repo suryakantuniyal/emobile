@@ -29,7 +29,7 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.database.TaxesHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.GroupTax;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.NumberUtils;
@@ -210,8 +210,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
                 } else {
                     paid.setBackgroundResource(R.drawable.edittext_border);
 
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                        Global.mainPrinterManager.currentDevice.openCashDrawer();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
                     }
 
                     if (!isInvoice || (isInvoice && !isMultiInvoice))
@@ -862,8 +862,8 @@ public class ProcessCash_FA extends AbstractPaymentFA implements OnClickListener
 
         @Override
         protected Payment doInBackground(Payment... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null) {
-                printSuccessful = Global.mainPrinterManager.currentDevice.printPaymentDetails(params[0].getPay_id(), 1, false, null);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null) {
+                printSuccessful = Global.mainPrinterManager.getCurrentDevice().printPaymentDetails(params[0].getPay_id(), 1, false, null);
             }
             return params[0];
         }

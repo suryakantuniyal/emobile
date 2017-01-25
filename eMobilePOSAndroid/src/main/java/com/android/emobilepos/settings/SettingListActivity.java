@@ -50,9 +50,10 @@ import com.android.database.ShiftPeriodsDBHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.country.CountryPicker;
 import com.android.emobilepos.country.CountryPickerListener;
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.emobilepos.shifts.OpenShift_FA;
 import com.android.emobilepos.shifts.ShiftExpensesList_FA;
+import com.android.support.DateUtils;
 import com.android.support.DeviceUtils;
 import com.android.support.Global;
 import com.android.support.HttpClient;
@@ -63,6 +64,7 @@ import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -367,6 +369,9 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     prefManager.findPreference("pref_transaction_num_prefix").setOnPreferenceClickListener(this);
                     break;
                 case RESTAURANT:
+                    if (prefManager.findPreference("pref_salesassociate_config") != null) {
+                        prefManager.findPreference("pref_salesassociate_config").setOnPreferenceClickListener(this);
+                    }
                     break;
                 case GIFTCARD:
                     prefManager.findPreference("pref_units_name").setOnPreferenceClickListener(this);
@@ -545,15 +550,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     getActivity().startActivity(getActivity().getIntent());
                     break;
                 case R.string.config_toggle_elo_bcr:
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                        Global.mainPrinterManager.currentDevice.toggleBarcodeReader();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                        Global.mainPrinterManager.getCurrentDevice().toggleBarcodeReader();
                     break;
                 case R.string.config_change_password:
                     changePassword(false, null);
                     break;
                 case R.string.config_open_cash_drawer:
-                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                        Global.mainPrinterManager.currentDevice.openCashDrawer();
+                    if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                        Global.mainPrinterManager.getCurrentDevice().openCashDrawer();
                     break;
                 case R.string.config_configure_cash_drawer:
                     break;
@@ -588,7 +593,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     connectUSBDevice();
                     break;
                 case R.string.config_redetect_peripherals:
-                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    DeviceUtils.autoConnect(getActivity(), true);
+//                    new autoConnectPrinter().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     break;
                 case R.string.config_store_and_forward_transactions:
                     intent = new Intent(getActivity(), ViewStoreForwardTrans_FA.class);
@@ -646,14 +652,18 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                     confirmTroubleshoot(R.string.config_backup_data);
                     break;
                 case R.string.config_send_handpoint_log:
-                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
-                        Global.btSwiper.currentDevice.sendEmailLog();
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.getCurrentDevice() != null) {
+                        Global.btSwiper.getCurrentDevice().sendEmailLog();
                     }
                     break;
                 case R.string.config_handpoint_update:
-                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.currentDevice != null) {
-                        Global.btSwiper.currentDevice.updateFirmware();
+                    if (myPref.getSwiperType() == Global.HANDPOINT && Global.btSwiper.getCurrentDevice() != null) {
+                        Global.btSwiper.getCurrentDevice().updateFirmware();
                     }
+                    break;
+                case R.string.config_salesassociate_config:
+                    intent = new Intent(getActivity(), SalesAssociateConfigurationActivity.class);
+                    startActivity(intent);
                     break;
             }
             return false;
@@ -1098,8 +1108,8 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
 
                         ShiftPeriodsDBHandler handler = new ShiftPeriodsDBHandler(getActivity());
                         handler.updateShift(myPref.getShiftID(), "entered_close_amount", Double.toString(amount));
-                        handler.updateShift(myPref.getShiftID(), "endTime", Global.getCurrentDate());
-                        handler.updateShift(myPref.getShiftID(), "endTimeLocal", Global.getCurrentDate());
+                        handler.updateShift(myPref.getShiftID(), "endTime", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
+                        handler.updateShift(myPref.getShiftID(), "endTimeLocal", DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss));
 
                         myPref.setShiftIsOpen(true);
                         myPref.setShiftID(""); //erase the shift ID
@@ -1218,6 +1228,15 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                                 Global.btSwiper = edm.getManager();
                                 Global.btSwiper.loadDrivers(getActivity(), Global.HANDPOINT, false);
 
+                            } else if (val[pos].toUpperCase(Locale.getDefault()).startsWith("WP")) {
+                                myPref.setSwiperType(Global.WALKER);
+                                myPref.setSwiperMACAddress(macAddressList.get(pos));
+                                myPref.setSwiperName(strDeviceName);
+
+                                EMSDeviceManager edm = new EMSDeviceManager();
+                                Global.btSwiper = edm.getManager();
+                                Global.btSwiper.loadDrivers(getActivity(), Global.WALKER, false);
+
                             } else if (val[pos].toUpperCase(Locale.getDefault()).contains("ICM") &&
                                     getActivity().getPackageName().equalsIgnoreCase(Global.EVOSNAP_PACKAGE_NAME)) {
                                 myPref.setSwiperType(Global.ICMPEVO);
@@ -1274,13 +1293,17 @@ public class SettingListActivity extends BaseFragmentActivityActionBar {
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.EM70, false);
             } else if (myPref.isESY13P1()) {
-                myPref.setPrinterType(Global.ESY13P1);
+                myPref.setPrinterType(Global.ELOPAYPOINT);
                 Global.mainPrinterManager = edm.getManager();
-                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ESY13P1, false);
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.ELOPAYPOINT, false);
             } else if (myPref.isOT310()) {
                 myPref.setPrinterType(Global.OT310);
                 Global.mainPrinterManager = edm.getManager();
                 Global.mainPrinterManager.loadDrivers(getActivity(), Global.OT310, false);
+            } else if (myPref.isMEPOS()) {
+                myPref.setPrinterType(Global.MEPOS);
+                Global.mainPrinterManager = edm.getManager();
+                Global.mainPrinterManager.loadDrivers(getActivity(), Global.MEPOS, false);
             } else {
                 myPref.setPrinterType(Global.POWA);
                 Global.mainPrinterManager = edm.getManager();

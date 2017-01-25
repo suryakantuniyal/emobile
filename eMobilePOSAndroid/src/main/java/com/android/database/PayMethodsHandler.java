@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.database.Cursor;
 
 import com.android.dao.PayMethodsDAO;
-import com.android.emobilepos.models.PaymentMethod;
+import com.android.dao.PaymentMethodDAO;
+import com.android.emobilepos.models.realms.PaymentMethod;
 import com.android.support.MyPreferences;
 
 import net.sqlcipher.database.SQLiteStatement;
@@ -14,7 +15,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.Realm;
 import util.StringUtil;
 
 public class PayMethodsHandler {
@@ -91,10 +91,7 @@ public class PayMethodsHandler {
             if (myPref.getPreferences(MyPreferences.pref_pay_with_tupyx)) {
                 paymentMethods.add(PaymentMethod.getTupyxPaymentMethod());
             }
-            Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            realm.insert(paymentMethods);
-            realm.commitTransaction();
+            PaymentMethodDAO.insert(paymentMethods);
             insert.close();
             DBManager.getDatabase().setTransactionSuccessful();
         } catch (Exception e) {
@@ -107,7 +104,7 @@ public class PayMethodsHandler {
 
     public void emptyTable() {
         DBManager.getDatabase().execSQL("DELETE FROM " + table_name);
-        PayMethodsDAO.truncate();
+        PaymentMethodDAO.truncate();
     }
 
     public List<PaymentMethod> getPayMethod() {

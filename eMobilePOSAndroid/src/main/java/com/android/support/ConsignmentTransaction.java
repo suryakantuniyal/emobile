@@ -1,6 +1,8 @@
 package com.android.support;
 
 
+import java.util.Date;
+
 public class ConsignmentTransaction {
 
     public String Cons_ID = "";
@@ -25,7 +27,7 @@ public class ConsignmentTransaction {
     public String invoice_total = "0";
 
     public ConsignmentTransaction() {
-        Cons_timecreated = Global.getCurrentDate();
+        Cons_timecreated = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
     }
 
 }

@@ -18,11 +18,13 @@ import android.widget.TextView;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.ReportEndDayAdapter;
+import com.android.support.DateUtils;
 import com.android.support.Global;
 import com.android.support.fragmentactivity.BaseFragmentActivityActionBar;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -44,7 +46,7 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
         setContentView(R.layout.report_end_day_layout);
         activity = this;
         global = (Global) activity.getApplication();
-        curDate = Global.getCurrentDate();
+        curDate = DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss);
         btnDate = (Button) findViewById(R.id.btnDate);
         Button btnPrint = (Button) findViewById(R.id.btnPrint);
         btnDate.setOnClickListener(this);
@@ -178,8 +180,8 @@ public class ViewEndOfDayReport_FA extends BaseFragmentActivityActionBar impleme
 
         @Override
         protected Void doInBackground(Boolean... params) {
-            if (Global.mainPrinterManager != null && Global.mainPrinterManager.currentDevice != null)
-                Global.mainPrinterManager.currentDevice.printEndOfDayReport(curDate, null, params[0]);
+            if (Global.mainPrinterManager != null && Global.mainPrinterManager.getCurrentDevice() != null)
+                Global.mainPrinterManager.getCurrentDevice().printEndOfDayReport(curDate, null, params[0]);
             return null;
         }
 

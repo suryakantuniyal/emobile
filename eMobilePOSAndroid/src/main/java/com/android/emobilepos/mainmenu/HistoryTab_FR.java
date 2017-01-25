@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.android.emobilepos.R;
 import com.android.emobilepos.adapters.HistoryMenuAdapter;

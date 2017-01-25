@@ -7,7 +7,7 @@ import android.util.Xml;
 import com.android.database.CustomersHandler;
 import com.android.database.OrdersHandler;
 import com.android.emobilepos.models.Order;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.CreditCardInfo;
 import com.android.support.Encrypt;
 import com.android.support.GenerateXML;
@@ -204,7 +204,6 @@ public class EMSPayGate_Default {
                     generateAmountBlock();
                     generateOrderBlock(payment.getJob_id());
 
-
                     break;
                 case ChargeGeniusAction:
                 case ReturnGeniusAction:
@@ -239,7 +238,6 @@ public class EMSPayGate_Default {
 
 //				if (Global.isIvuLoto )
 //					generateEvertec();
-
 
                     break;
                 case CreditCardAdjustTipAmountAction:
@@ -307,7 +305,6 @@ public class EMSPayGate_Default {
                     if (Global.isIvuLoto)
                         generateEvertec();
 
-
                     break;
                 case BalanceGiftCardAction:
                 case BalanceLoyaltyCardAction:
@@ -350,7 +347,6 @@ public class EMSPayGate_Default {
 
                     generateOrderBlock(payment.getJob_id());
 
-
                     break;
                 }
                 case VoidGiftCardAction:
@@ -383,13 +379,11 @@ public class EMSPayGate_Default {
                 case GetMarketTelcos:
                     generateERP();
 
-
                     break;
                 case CancelBoloroTransaction:
                 case BoloroPolling:
                     generateERP();
                     generateVoidBlock();
-
 
                     break;
                 case GetTelcoInfoByTag:
@@ -617,11 +611,11 @@ public class EMSPayGate_Default {
     private void generateEncryptedBlock() throws IllegalArgumentException, IllegalStateException, IOException {
         if (!cardManager.getTrackDataKSN().isEmpty()) {
             serializer.startTag(empstr, "encryptedHW");
-
-            serializer.startTag(empstr, "encryptedBlock");
-            serializer.text(cardManager.getEncryptedBlock());
-            serializer.endTag(empstr, "encryptedBlock");
-
+            if (!TextUtils.isEmpty(cardManager.getEncryptedBlock())) {
+                serializer.startTag(empstr, "encryptedBlock");
+                serializer.text(cardManager.getEncryptedBlock());
+                serializer.endTag(empstr, "encryptedBlock");
+            }
             serializer.startTag(empstr, "ksn");
             serializer.text(cardManager.getTrackDataKSN());
             serializer.endTag(empstr, "ksn");

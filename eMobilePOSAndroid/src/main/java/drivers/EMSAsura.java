@@ -15,7 +15,6 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextPaint;
 import android.util.Base64;
-import android.view.View;
 
 import com.StarMicronics.jasura.IBarcodeListener;
 import com.StarMicronics.jasura.IMSRListener;
@@ -35,10 +34,12 @@ import com.android.database.ProductsHandler;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
 import com.android.emobilepos.models.PaymentDetails;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.CreditCardInfo;
+import com.android.support.DateUtils;
 import com.android.support.Encrypt;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -46,6 +47,7 @@ import com.starmicronics.stario.StarIOPortException;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -690,14 +692,12 @@ public class EMSAsura extends EMSDeviceDriver
 
     @Override
     public void registerPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = this;
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        // TODO Auto-generated method stub
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     public void printHeader() {
@@ -970,7 +970,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_employee),
                     myPref.getEmpName(), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0));
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {
@@ -1157,7 +1157,7 @@ public class EMSAsura extends EMSDeviceDriver
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cons_trans_id),
                     map.get("ConsTrans_ID"), LINE_WIDTH, 0));
             sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_date),
-                    Global.formatToDisplayDate(Global.getCurrentDate(), activity, 3), LINE_WIDTH, 0));
+                    Global.formatToDisplayDate(DateUtils.getDateAsString(new Date(), DateUtils.DATE_yyyy_MM_ddTHH_mm_ss), activity, 3), LINE_WIDTH, 0));
             sb.append(textHandler.newLines(3));
 
             for (int i = 0; i < size; i++) {
@@ -1290,11 +1290,24 @@ public class EMSAsura extends EMSDeviceDriver
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+//        try {
+//            Bitmap bitmap = loadBitmapFromView(view);
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
-            Bitmap bitmap = loadBitmapFromView(view);
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
@@ -1334,6 +1347,11 @@ public class EMSAsura extends EMSDeviceDriver
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

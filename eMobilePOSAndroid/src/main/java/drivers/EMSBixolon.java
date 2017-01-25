@@ -7,13 +7,13 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
 import com.android.emobilepos.R;
 import com.android.emobilepos.models.EMVContainer;
 import com.android.emobilepos.models.Orders;
-import com.android.emobilepos.models.Payment;
+import com.android.emobilepos.models.SplitedOrder;
+import com.android.emobilepos.models.realms.Payment;
 import com.android.support.ConsignmentTransaction;
 import com.android.support.Global;
 import com.android.support.MyPreferences;
@@ -29,7 +29,10 @@ import interfaces.EMSDeviceManagerPrinterDelegate;
 import jpos.JposConst;
 import jpos.JposException;
 import jpos.POSPrinter;
+import jpos.POSPrinterConst;
 import jpos.config.JposEntry;
+import jpos.events.DirectIOEvent;
+import jpos.events.DirectIOListener;
 import jpos.events.ErrorEvent;
 import jpos.events.ErrorListener;
 import jpos.events.OutputCompleteEvent;
@@ -42,7 +45,7 @@ import main.EMSDeviceManager;
  * Created by Guarionex on 5/3/2016.
  */
 public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrinterDelegate,
-        ErrorListener, OutputCompleteListener, StatusUpdateListener {
+        ErrorListener, OutputCompleteListener, StatusUpdateListener,DirectIOListener {
 
     private int LINE_WIDTH = 32;
     private int PAPER_WIDTH;
@@ -63,7 +66,6 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         thisInstance = this;
         LINE_WIDTH = paperSize;
 
-
         portName = myPref.getPrinterMACAddress();
         portNumber = myPref.getStarPort();
         bxlConfigLoader = new BXLConfigLoader(activity);
@@ -74,7 +76,10 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             bxlConfigLoader.newFile();
         }
         bixolonPrinter = new POSPrinter(activity);
-
+        bixolonPrinter.addErrorListener(this);
+        bixolonPrinter.addOutputCompleteListener(this);
+        bixolonPrinter.addStatusUpdateListener(this);
+        bixolonPrinter.addDirectIOListener(this);
         if (myPref.getPrinterName().contains("SPP-R2")) {
             LINE_WIDTH = 32;
         } else {
@@ -156,6 +161,10 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
         return true;
     }
 
+    @Override
+    public void directIOOccurred(DirectIOEvent directIOEvent) {
+
+    }
 
     public class processConnectionAsync extends AsyncTask<Integer, String, Boolean> {
         String msg = "";
@@ -231,6 +240,8 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
             productName = BXLConst.SPP_R300;
         } else if ((logicalName.indexOf("SPP-R400") >= 0)) {
             productName = BXLConst.SPP_R400;
+        } else if ((logicalName.indexOf("SPP-R200") >= 0)) {
+            productName = BXLConst.SPP_R300;
         }
 
         return productName;
@@ -323,13 +334,12 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void registerPrinter() {
-        edm.currentDevice = this;
-
+        edm.setCurrentDevice(this);
     }
 
     @Override
     public void unregisterPrinter() {
-        edm.currentDevice = null;
+        edm.setCurrentDevice(null);
     }
 
     @Override
@@ -378,18 +388,31 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     }
 
+//    @Override
+//    public void printReceiptPreview(View view) {
+////        setPaperWidth(LINE_WIDTH);
+//        Bitmap bitmap = loadBitmapFromView(view);
+//        try {
+//            super.printReceiptPreview(bitmap, LINE_WIDTH);
+//        } catch (JAException e) {
+//            e.printStackTrace();
+//        } catch (StarIOPortException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
     @Override
-    public void printReceiptPreview(View view) {
-//        setPaperWidth(LINE_WIDTH);
-        Bitmap bitmap = loadBitmapFromView(view);
+    public void printReceiptPreview(SplitedOrder splitedOrder) {
         try {
-            super.printReceiptPreview(bitmap, LINE_WIDTH);
+            setPaperWidth(LINE_WIDTH);
+//            Bitmap bitmap = loadBitmapFromView(view);
+            super.printReceiptPreview(splitedOrder, LINE_WIDTH);
         } catch (JAException e) {
             e.printStackTrace();
         } catch (StarIOPortException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -424,6 +447,11 @@ public class EMSBixolon extends EMSDeviceDriver implements EMSDeviceManagerPrint
 
     @Override
     public void updateFirmware() {
+
+    }
+
+    @Override
+    public void submitSignature() {
 
     }
 

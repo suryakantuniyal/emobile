@@ -563,7 +563,7 @@
     <string name="dlog_msg_error_failed_disable_employee">Failed to disable employee, Please try again\u002E\u002E\u002E</string>
     <string name="dlog_msg_error_shift_needs_to_be_open">Open shift before performing this action</string>
     <string name="dlog_title_claimed_hold">Transaction Claimed</string>
-    <string name="dlog_msg_claimed_hold">Admin Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
+    <string name="dlog_msg_claimed_hold">Manager Password Required In Order To Open Transaction\u002E\u002E\u002E</string>
     <string name="dlog_title_enter_clerk_password">Enter Clerk Password</string>
     <string name="dlog_msg_swiper_loading">Swiper is:</string>
     <string name="connected">CONNECTED</string>
@@ -1205,7 +1205,7 @@
     <string name="amount_added">Amount Added</string>
     <string name="manualEntry">Manual entry</string>
     <string name="handpoint_payment_error">Error processing handpoint payment.</string>
-    <string name="connecting_handpoint">Connecting Handpoint device…</string>
+    <string name="connecting_handpoint">Connecting device...</string>
     <string name="void_fail">Error processing void</string>
     <string name="select_number_guests">Select number of guests</string>
     <string name="fail_to_connect">Failed to connect</string>
@@ -1233,6 +1233,7 @@
     <string name="payment_void_title">Payment Void</string>
     <string name="payment_void_completed">Payment void completed.</string>
     <string name="reset_dinning_table">Reset dinning table</string>
+    <string name="sales_associates">Sales Associates</string>
     <string name="config_handpoint_utils">Handopint Tools</string>
     <string name="connecting_device">Connecting Device…</string>
     <string name="wrong_password">Password not acceptable, try again…</string>
@@ -1271,6 +1272,7 @@
     <string name="eod_report_consignment_pickup">Consignment Pickup</string>
     <string name="eod_report_consignment_invoice">Consignment Invoice</string>
     <string name="eod_report_consignment_return">Consignment Return</string>
+    <string name="dinningtablenotassigned">The selected dinning table needs to be assigned.</string>
     <string name="receipt_itemsQtyTotal">Total Items:</string>
     <string name="void_label">VOID</string>
     <string name="config_payments_settings">Payment Settings</string>
@@ -1289,6 +1291,17 @@
     <string name="yes_void">Yes, void it.</string>
     <string name="void_confirmation_message1">%s must be payed in total.</string>
     <string name="void_confirmation_message2">Void the current %s?</string>
+    <string name="dlog_msg_cant_open_claimed_hold">Claimed orders can not be opened.</string>
+    <string name="loading_orders">Loading orders. Please wait.</string>
+    <string name="sync_dload_settings">Downloading settings...</string>
+    <string name="sync_saving_settings">Saving settings...</string><string name="title_activity_sales_associate_dinning_tables">SalesAssociateDinningTables
+    </string>
+    <string name="title_activity_sales_associate_configuration">SalesAssociateConfiguration</string>
+    <string name="config_salesassociate_config">Sales Associate Configuration</string>
+    <string name="device_name">Device Name</string>
+    <string name="unknown">Unknown</string>
+    <string name="split_single">Single Receipt</string>
+    <string name="config_printer_width">Printer Width</string>
 
 
 </resources>

@@ -1,6 +1,7 @@
 package com.android.dao;
 
-import com.android.emobilepos.models.PaymentMethod;
+
+import com.android.emobilepos.models.realms.PaymentMethod;
 
 import java.util.List;
 
