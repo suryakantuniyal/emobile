@@ -214,6 +214,8 @@ public class SynchMethods {
 
                 synchGetServerTime(this);
 
+                synchEmployeeData(this);
+
                 synchAddresses(this);
 
                 synchCategories(this);
@@ -261,8 +263,6 @@ public class SynchMethods {
                 synchTerms(this);
 
                 synchMemoText(this);
-
-                synchEmployeeData(this);
 
                 synchAccountLogo(this);
 
@@ -458,7 +458,7 @@ public class SynchMethods {
                         proceed = true;
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             } else
                 xml = activity.getString(R.string.dlog_msg_no_internet_access);

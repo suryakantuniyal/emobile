@@ -49,8 +49,8 @@ android {
         ems {
             minSdkVersion 15
             applicationId 'com.emobilepos.app'
-            versionName "1.2.0.100"
-            versionCode 118
+            versionName "1.2.1.0"
+            versionCode 119
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -63,8 +63,8 @@ android {
         icmpevo {
             minSdkVersion 15
             applicationId 'com.emobilepos.icmpevo.app'
-            versionName "1.2.0.100"
-            versionCode 118
+            versionName "1.2.1.0"
+            versionCode 119
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -74,25 +74,25 @@ android {
                 }
             }
         }
-        emsblue {
-            minSdkVersion 15
-            applicationId 'com.emobilepos.app'
-            versionName "1.2.0.100"
-            versionCode 118
-            targetSdkVersion 23
-            multiDexEnabled = true
-            repositories {
-                maven { url 'https://maven.fabric.io/public' }
-                flatDir {
-                    dirs 'libs'
-                }
-            }
-        }
+//        emsblue {
+//            minSdkVersion 15
+//            applicationId 'com.emobilepos.app'
+//            versionName "1.2.1.0"
+//            versionCode 118
+//            targetSdkVersion 23
+//            multiDexEnabled = true
+//            repositories {
+//                maven { url 'https://maven.fabric.io/public' }
+//                flatDir {
+//                    dirs 'libs'
+//                }
+//            }
+//        }
         ivupos {
             minSdkVersion 15
             applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.2.0.100"
-            versionCode 118
+            versionName "1.2.1.0"
+            versionCode 119
             targetSdkVersion 23
             multiDexEnabled = true
             repositories {
@@ -102,34 +102,34 @@ android {
                 }
             }
         }
-        restoff {
-            minSdkVersion 15
-            applicationId 'com.emobilepos.app'
-            versionName "1.1.1.100"
-            versionCode 118
-            targetSdkVersion 23
-            multiDexEnabled = true
-            repositories {
-                maven { url 'https://maven.fabric.io/public' }
-                flatDir {
-                    dirs 'libs'
-                }
-            }
-        }
-        restoffivupos {
-            minSdkVersion 15
-            applicationId 'com.emobilepos.ivupos.app'
-            versionName "1.1.1.100"
-            versionCode 118
-            targetSdkVersion 23
-            multiDexEnabled = true
-            repositories {
-                maven { url 'https://maven.fabric.io/public' }
-                flatDir {
-                    dirs 'libs'
-                }
-            }
-        }
+//        restoff {
+//            minSdkVersion 15
+//            applicationId 'com.emobilepos.app'
+//            versionName "1.1.1.100"
+//            versionCode 118
+//            targetSdkVersion 23
+//            multiDexEnabled = true
+//            repositories {
+//                maven { url 'https://maven.fabric.io/public' }
+//                flatDir {
+//                    dirs 'libs'
+//                }
+//            }
+//        }
+//        restoffivupos {
+//            minSdkVersion 15
+//            applicationId 'com.emobilepos.ivupos.app'
+//            versionName "1.1.1.100"
+//            versionCode 118
+//            targetSdkVersion 23
+//            multiDexEnabled = true
+//            repositories {
+//                maven { url 'https://maven.fabric.io/public' }
+//                flatDir {
+//                    dirs 'libs'
+//                }
+//            }
+//        }
     }
     buildTypes {
         debug {
@@ -174,18 +174,18 @@ dependencies {
     ivuposCompile files('libs/Android_Platform_Adapter.jar')
     ivuposCompile files('libs/RBA_SDK.jar')
     ivuposCompile files('libs/evoSnapSDK.jar')
-    restoffivuposCompile files('libs/Android_Platform_Adapter.jar')
-    restoffivuposCompile files('libs/RBA_SDK.jar')
-    restoffivuposCompile files('libs/evoSnapSDK.jar')
+//    restoffivuposCompile files('libs/Android_Platform_Adapter.jar')
+//    restoffivuposCompile files('libs/RBA_SDK.jar')
+//    restoffivuposCompile files('libs/evoSnapSDK.jar')
     emsCompile files('libs/Android_Platform_Adapter.jar')
     emsCompile files('libs/RBA_SDK.jar')
     emsCompile files('libs/evoSnapSDK.jar')
-    restoffCompile files('libs/Android_Platform_Adapter.jar')
-    restoffCompile files('libs/RBA_SDK.jar')
-    restoffCompile files('libs/evoSnapSDK.jar')
-    emsblueCompile files('libs/Android_Platform_Adapter.jar')
-    emsblueCompile files('libs/RBA_SDK.jar')
-    emsblueCompile files('libs/evoSnapSDK.jar')
+//    restoffCompile files('libs/Android_Platform_Adapter.jar')
+//    restoffCompile files('libs/RBA_SDK.jar')
+//    restoffCompile files('libs/evoSnapSDK.jar')
+//    emsblueCompile files('libs/Android_Platform_Adapter.jar')
+//    emsblueCompile files('libs/RBA_SDK.jar')
+//    emsblueCompile files('libs/evoSnapSDK.jar')
     compile files('libs/bouncycastle.jar')
     compile files('libs/commons-codec-1.4.0.jar')
     compile files('libs/commons-io-1.3.2.jar')

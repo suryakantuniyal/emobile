@@ -535,7 +535,7 @@ public class GenerateXML {
     public void buildOrder(XmlSerializer serializer, boolean isOnHold) {
         OrdersHandler ordersHandler = new OrdersHandler(thisActivity);
         CustomersHandler custHandler = new CustomersHandler(thisActivity);
-        HashMap<String, String> custInfo = new HashMap<String, String>();
+        HashMap<String, String> custInfo;
         List<Order> orders;
         if (!isOnHold) {
             orders = ordersHandler.getUnsyncOrders();
