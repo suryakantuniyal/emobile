@@ -91,6 +91,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         if (myPref.getLogIn()) {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
+                dbManager.alterTables();
                 AssignEmployee assignEmployee = AssignEmployeeDAO.getAssignEmployee();
                 if (assignEmployee == null && !myPref.getEmpIdFromPreferences().isEmpty()) {
                     assignEmployee = new AssignEmployee();
