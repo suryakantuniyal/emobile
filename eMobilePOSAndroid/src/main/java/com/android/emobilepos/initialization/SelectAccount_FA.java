@@ -86,6 +86,7 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
         if (myPref.getLogIn()) {
             dbManager = new DBManager(activity, Global.FROM_LOGIN_ACTIVITTY);
             if (dbManager.isNewDBVersion()) {
+                dbManager.alterTables();
                 if (dbManager.unsynchItemsLeft()) {
                     //there are unsynch item left...
 
@@ -97,21 +98,17 @@ public class SelectAccount_FA extends BaseFragmentActivityActionBar {
                     startActivity(intent);
                     finish();
                 } else {
-
                     AlertDialog.Builder alertDlogBuilder = new AlertDialog.Builder(activity);
-
                     promptDialog = alertDlogBuilder.setTitle("Urgent").setCancelable(false)
                             .setMessage("A new Database version must be installed...").
                                     setPositiveButton("Install", new DialogInterface.OnClickListener() {
 
                                         @Override
                                         public void onClick(DialogInterface thisDialog, int which) {
-                                            // TODO Auto-generated method stub
                                             dbManager.updateDB();
                                             promptDialog.dismiss();
                                         }
                                     }).create();
-
                     promptDialog.show();
                 }
 

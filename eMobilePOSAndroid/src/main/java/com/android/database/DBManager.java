@@ -11,6 +11,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 
+import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.apache.commons.io.FileUtils;
@@ -22,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    public static final int VERSION = 45;
+    public static final int VERSION = 47;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -74,6 +75,7 @@ public class DBManager {
     public boolean resetDatabase() {
         return activity.deleteDatabase(CIPHER_DB_NAME);
     }
+
     public DBManager(Activity activity) {
 
         this.activity = activity;
@@ -162,7 +164,6 @@ public class DBManager {
 
         }
     }
-
 
     private static void decrypt(Context ctxt, String dbName, String passphrase) throws IOException {
         File originalFile = ctxt.getDatabasePath(CIPHER_DB_NAME);
@@ -253,6 +254,18 @@ public class DBManager {
         }
     }
 
+    public void alterTables() {
+        switch (VERSION) {
+            case 47:
+                Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
+                boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
+                if (!exist) {
+                    getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
+                }
+                break;
+        }
+    }
+
     private class DatabaseHelper extends net.sqlcipher.database.SQLiteOpenHelper {
         DatabaseHelper(Context context) {
             super(context, CIPHER_DB_NAME, null, VERSION);
@@ -296,7 +309,6 @@ public class DBManager {
         TemplateHandler templateHandler = new TemplateHandler(activity);
         ConsignmentTransactionHandler consHandler = new ConsignmentTransactionHandler(activity);
 
-
         return custHandler.unsyncCustomersLeft() || ordersHandler.unsyncOrdersLeft() || payHandler.unsyncPaymentsLeft()
                 || templateHandler.unsyncTemplatesLeft() || consHandler.unsyncConsignmentsLeft();
     }
@@ -316,7 +328,6 @@ public class DBManager {
         SynchMethods sm = new SynchMethods(managerInstance);
         sm.synchForceSend();
     }
-
 
     public void synchDownloadOnHoldDetails(Intent intent, String ordID, int type) {
         SynchMethods sm = new SynchMethods(managerInstance);
