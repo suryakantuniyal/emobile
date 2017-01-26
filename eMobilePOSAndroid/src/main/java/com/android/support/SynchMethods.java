@@ -483,7 +483,7 @@ public class SynchMethods {
                         proceed = true;
 
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             } else
                 xml = context.getString(R.string.dlog_msg_no_internet_access);

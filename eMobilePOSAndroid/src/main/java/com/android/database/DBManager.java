@@ -11,6 +11,7 @@ import com.android.support.Global;
 import com.android.support.MyPreferences;
 import com.android.support.SynchMethods;
 
+import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import org.apache.commons.io.FileUtils;
@@ -22,7 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DBManager {
-    private static final int VERSION = 52;
+    public static final int VERSION = 47;
     private static final String DB_NAME_OLD = "emobilepos.sqlite";
     private static final String CIPHER_DB_NAME = "emobilepos.sqlcipher";
 
@@ -249,6 +250,18 @@ public class DBManager {
                 getDatabase().execSQL("DELETE FROM " + table);
             }
         } catch (Exception e) {
+        }
+    }
+
+    public void alterTables() {
+        switch (VERSION) {
+            case 47:
+                Cursor cursor = getDatabase().rawQuery("select * from  [Orders] limit 1", new String[]{});
+                boolean exist = cursor.getColumnIndex("ord_timeStarted") > -1;
+                if (!exist) {
+                    getDatabase().execSQL("ALTER TABLE [Orders] ADD COLUMN [ord_timeStarted] [datetime] NULL");
+                }
+                break;
         }
     }
 
