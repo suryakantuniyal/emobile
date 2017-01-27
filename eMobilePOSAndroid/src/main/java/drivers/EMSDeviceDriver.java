@@ -845,7 +845,7 @@ public class EMSDeviceDriver {
                 }
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountreturned),
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
             } else {
 
@@ -920,7 +920,7 @@ public class EMSDeviceDriver {
                             tempAmount = Math.abs(tempGrandTotal);
                         }
                     }
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountreturned),
                             Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
                             .append("\n");
                 }
