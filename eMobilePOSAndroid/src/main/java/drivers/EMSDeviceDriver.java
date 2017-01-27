@@ -857,7 +857,9 @@ public class EMSDeviceDriver {
                 for (int i = 0; i < size; i++) {
                     String _pay_type = detailsList.get(i).getPaymethod_name().toUpperCase(Locale.getDefault()).trim();
                     tempAmount = tempAmount + formatStrToDouble(detailsList.get(i).getPay_amount());
-                    paidAmount += formatStrToDouble(detailsList.get(i).getPay_amount());
+                    if (Payment.PaymentType.getPaymentTypeByCode(detailsList.get(i).getPayType()) != Payment.PaymentType.VOID) {
+                        paidAmount += formatStrToDouble(detailsList.get(i).getPay_amount());
+                    }
                     totalAmountTendered += detailsList.get(i).getAmountTender();
                     tempTipAmount = tempTipAmount + formatStrToDouble(detailsList.get(i).getPay_tip());
                     tempSB.append(textHandler
