@@ -72,7 +72,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     private String tax_type = "";
     private String discount_is_taxable = "0";
     private String discount_is_fixed = "0";
-    private String prod_taxtype;
+//    private String prod_taxtype;
 
     public String priceLevelName = "";
     public List<ProductAttribute> requiredProductAttributes = new ArrayList<ProductAttribute>();
@@ -622,13 +622,13 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
         this.discount_is_fixed = discount_is_fixed;
     }
 
-    public String getProd_taxtype() {
-        return prod_taxtype;
-    }
-
-    public void setProd_taxtype(String prod_taxtype) {
-        this.prod_taxtype = prod_taxtype;
-    }
+//    public String getProd_taxtype() {
+//        return prod_taxtype;
+//    }
+//
+//    public void setProd_taxtype(String prod_taxtype) {
+//        this.prod_taxtype = prod_taxtype;
+//    }
 
     public String getPriceLevelName() {
         return priceLevelName;
