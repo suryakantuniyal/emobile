@@ -1232,6 +1232,7 @@
     <string name="sync_saving_settings">Saving settings...</string>
     <string name="device_name">Device Name</string>
     <string name="unknown">Unknown</string>
+    <string name="card_already_processed">Card has already been processed</string>
 
 
 </resources>

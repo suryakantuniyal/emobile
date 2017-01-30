@@ -1301,6 +1301,7 @@
     <string name="unknown">Unknown</string>
     <string name="split_single">Single Receipt</string>
     <string name="config_printer_width">Printer Width</string>
+    <string name="card_already_processed">Card has already been processed</string>
 
 
 </resources>
