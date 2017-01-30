@@ -872,7 +872,7 @@ public class EMSDeviceDriver {
                 }
                 sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_total_tip_paid),
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
-                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
+                sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountreturned),
                         Global.formatDoubleToCurrency(0.00), lineWidth, 0));
             } else {
 
@@ -884,7 +884,9 @@ public class EMSDeviceDriver {
                 for (int i = 0; i < size; i++) {
                     String _pay_type = detailsList.get(i).getPaymethod_name().toUpperCase(Locale.getDefault()).trim();
                     tempAmount = tempAmount + formatStrToDouble(detailsList.get(i).getPay_amount());
-                    paidAmount += formatStrToDouble(detailsList.get(i).getPay_amount());
+                    if (Payment.PaymentType.getPaymentTypeByCode(detailsList.get(i).getPayType()) != Payment.PaymentType.VOID) {
+                        paidAmount += formatStrToDouble(detailsList.get(i).getPay_amount());
+                    }
                     totalAmountTendered += detailsList.get(i).getAmountTender();
                     tempTipAmount = tempTipAmount + formatStrToDouble(detailsList.get(i).getPay_tip());
                     tempSB.append(textHandler
@@ -947,7 +949,7 @@ public class EMSDeviceDriver {
                             tempAmount = Math.abs(tempGrandTotal);
                         }
                     }
-                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_cash_returned),
+                    sb.append(textHandler.twoColumnLineWithLeftAlignedText(getString(R.string.receipt_amountreturned),
                             Global.formatDoubleStrToCurrency(Double.toString(tempAmount)), lineWidth, 0))
                             .append("\n");
                 }

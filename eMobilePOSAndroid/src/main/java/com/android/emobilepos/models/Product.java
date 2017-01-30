@@ -97,6 +97,7 @@ public class Product {
     private String prod_shipping;
     private String prod_weight;
     private String prod_disc_type_points;
+    private String categoryName;
 
     public String getId() {
         return id;
@@ -451,5 +452,13 @@ public class Product {
         } else {
             return "0";
         }
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
     }
 }

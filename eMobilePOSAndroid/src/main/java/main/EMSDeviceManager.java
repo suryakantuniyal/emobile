@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.android.emobilepos.BuildConfig;
 import com.android.emobilepos.R;
 import com.android.support.Global;
 import com.android.support.MyPreferences;

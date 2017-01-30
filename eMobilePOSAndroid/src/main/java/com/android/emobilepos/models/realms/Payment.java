@@ -133,6 +133,28 @@ public class Payment extends RealmObject {
     @Ignore
     private EMVContainer emvContainer;
 
+    public enum PaymentType {
+        PAYMENT(0), VOID(1), REFUND(2);
+        private int code;
+
+        PaymentType(int code) {
+            this.code = code;
+        }
+
+        public static PaymentType getPaymentTypeByCode(String payType) {
+            switch (payType) {
+                case "0":
+                    return PAYMENT;
+                case "1":
+                    return VOID;
+                case "2":
+                    return REFUND;
+                default:
+                    return PAYMENT;
+            }
+        }
+    }
+
     public Payment() {
         assignEmployee = AssignEmployeeDAO.getAssignEmployee();
     }
@@ -298,7 +320,8 @@ public class Payment extends RealmObject {
     public String getPaymethod_id() {
         return paymethod_id;
     }
-    private void setPaymentMethod(String paymethod_id){
+
+    private void setPaymentMethod(String paymethod_id) {
         this.paymentMethod = PaymentMethodDAO.getPaymentMethodById(paymethod_id);
 //                Realm.getDefaultInstance()
 //                .where(PaymentMethod.class)
@@ -307,6 +330,7 @@ public class Payment extends RealmObject {
             this.paymentMethod = Realm.getDefaultInstance().copyFromRealm(this.getPaymentMethod());
         }
     }
+
     public void setPaymethod_id(String paymethod_id) {
         setPaymentMethod(paymethod_id);
         this.paymethod_id = paymethod_id;
@@ -598,6 +622,18 @@ public class Payment extends RealmObject {
 
     public void setPay_type(String pay_type) {
         this.pay_type = pay_type;
+    }
+
+    public boolean isVoidPaymentType() {
+        return PaymentType.getPaymentTypeByCode(pay_type) == PaymentType.VOID;
+    }
+
+    public boolean isRefundPaymentType() {
+        return PaymentType.getPaymentTypeByCode(pay_type) == PaymentType.REFUND;
+    }
+
+    public boolean isPaymentPaymentType() {
+        return PaymentType.getPaymentTypeByCode(pay_type) == PaymentType.PAYMENT;
     }
 
     public String getPay_tip() {
@@ -937,7 +973,7 @@ public class Payment extends RealmObject {
     }
 
     public PaymentMethod getPaymentMethod() {
-        if(this.paymentMethod==null && !TextUtils.isEmpty(getPaymethod_id())){
+        if (this.paymentMethod == null && !TextUtils.isEmpty(getPaymethod_id())) {
             setPaymentMethod(getPaymethod_id());
         }
         return paymentMethod;
