@@ -69,12 +69,12 @@ public class TaxesCalculator {
         if (myPref.getPreferences(MyPreferences.pref_retail_taxes)) {
             if (!taxID.isEmpty()) {
                 taxAmount = Global.formatNumToLocale(
-                        Double.parseDouble(taxHandler.getTaxRate(taxID, orderProduct.getProd_taxtype(),
+                        Double.parseDouble(taxHandler.getTaxRate(taxID, orderProduct.getTax_type(),
                                 Global.getBigDecimalNum(orderProduct.getFinalPrice()).doubleValue())));
-                prod_taxId = orderProduct.getProd_taxtype();
+                prod_taxId = orderProduct.getTax_type();
             } else {
                 taxAmount = Global.formatNumToLocale(Double.parseDouble(taxHandler.getTaxRate(
-                        orderProduct.getProd_taxcode(), orderProduct.getProd_taxtype(),
+                        orderProduct.getProd_taxcode(), orderProduct.getTax_type(),
                         Global.getBigDecimalNum(orderProduct.getFinalPrice()).doubleValue())));
                 prod_taxId = orderProduct.getProd_taxcode();
             }
@@ -345,7 +345,7 @@ public class TaxesCalculator {
                         listMapTaxes.get(0).get("tax_code_id"));
             }
         } else {
-            Tax tax = taxesHandler.getTax(taxID, orderProduct.getProd_taxtype(),
+            Tax tax = taxesHandler.getTax(taxID, orderProduct.getTax_type(),
                     Double.parseDouble(orderProduct.getFinalPrice()));
             if (listMapTaxes == null) {
                 listMapTaxes = new ArrayList<>();
