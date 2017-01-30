@@ -98,6 +98,7 @@ public class OrderProduct implements Cloneable, Comparable<OrderProduct> {
     public OrderProduct(Product product) {
         this.setAssignedSeat(product.getAssignedSeat());
         this.setCat_id(product.getCatId());
+        this.setCat_name(product.getCategoryName());
         this.setProd_id(product.getId());
         this.setProd_sku(product.getProd_sku());
         this.setProd_upc(product.getProd_upc());
