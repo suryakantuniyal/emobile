@@ -63,10 +63,8 @@ public class MenuCatGV_Adapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, final Cursor c) {
         final int position = c.getPosition();
-
         holder = (ViewHolder) view.getTag();
-        if (holder.i_cat_name != -1) {
-
+        if (holder.i_cat_name != -1 && holder.i_url_icon != -1) {
             urlLink = c.getString(holder.i_url_icon);
             holder.title.setText(c.getString(holder.i_cat_name) != null ? c.getString(holder.i_cat_name) : "");
             if ((holder.itemImage.getTag() != null && !holder.itemImage.getTag().equals(urlLink)) || holder.itemImage.getTag() == null) {
@@ -135,7 +133,7 @@ public class MenuCatGV_Adapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
 
-        View retView = null;
+        View retView;
         ViewHolder holder = new ViewHolder();
         retView = inflater.inflate(R.layout.catalog_listview_adapter, parent, false);
         if (isPortrait) {

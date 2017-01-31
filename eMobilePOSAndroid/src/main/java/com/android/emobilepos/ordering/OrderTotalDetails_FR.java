@@ -665,7 +665,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
         return orderProducts;
     }
 
-    private static void applyMixMatch(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches) {
+    private static List<OrderProduct> applyMixMatch(MixMatchProductGroup group, RealmResults<MixMatch> mixMatches) {
         MixMatch firstMixMatch = mixMatches.get(0);
         if (group.getQuantity() >= firstMixMatch.getQty() && firstMixMatch.isDiscountOddsItems()) {
             for (OrderProduct product : group.getOrderProducts()) {
@@ -738,6 +738,7 @@ public class OrderTotalDetails_FR extends Fragment implements Receipt_FR.Recalcu
                 product.setPrices(prod_price, product.getOrdprod_qty());
             }
         }
+        return group.getOrderProducts();
     }
 
     public void reCalculate(List<OrderProduct> orderProducts) {
