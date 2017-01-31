@@ -1234,6 +1234,7 @@
     <string name="unknown">Unknown</string>
     <string name="restaurant_table">Restaurant Table:</string>
     <string name="dlog_title_waiter_manager_signin">Waiter/Manager Signin</string>
+    <string name="card_already_processed">Card has already been processed</string>
 
 
 </resources>
