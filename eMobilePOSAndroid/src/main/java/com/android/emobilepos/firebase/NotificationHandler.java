@@ -35,7 +35,7 @@ public class NotificationHandler extends NotificationsHandler {
         if (eventAction != null) {
             if (NetworkUtils.isConnectedToInternet(context)) {
                 NotificationEvent.NotificationEventAction action = NotificationEvent.NotificationEventAction.getNotificationEventByCode(Integer.parseInt(eventAction));
-//                sendNotification(eventAction);
+                updateMainActivity(context, eventAction);
                 switch (action) {
                     case SYNC_HOLDS:
                         new Thread(new Runnable() {
@@ -68,6 +68,12 @@ public class NotificationHandler extends NotificationsHandler {
                 }
             }
         }
+    }
+
+    static void updateMainActivity(Context context, String message) {
+        Intent intent = new Intent(MainMenu_FA.NOTIFICATION_RECEIVED);
+        intent.putExtra(MainMenu_FA.NOTIFICATION_MESSAGE, message);
+        context.sendBroadcast(intent);
     }
 
     private void sendNotification(String msg) {
